@@ -180,8 +180,6 @@ tabPanel("Load Data",
                           Please follow Steps 1 and 2 to upload the data file and enter the treatment labels. 
                           Instructions are as below.")),
             h4(tags$strong("Step 1:")),
-            br(),
-            downloadButton("downloadData", "Download the example dataset in long format"),
             p(),
             conditionalPanel(condition= "input.metaoutcome=='Continuous'",
               p("The long format data file should contain six columns. Headings of columns are case sensitive."), 
@@ -206,6 +204,7 @@ tabPanel("Load Data",
             ),
             p("An example of this structure can be seen in the", tags$strong("'View Data'"), "tab."),
             p("The csv file that is used to produce the example dataset can be downloaded from here:"),
+            downloadButton("downloadData", "Download the example dataset in long format"),
             br(),
             h4(tags$strong("Step 2:")),
             p("Enter the labels to match with the numerical treatment codes in the data file. Labels should be short to allow for clear display on figures."),
@@ -215,12 +214,14 @@ tabPanel("Load Data",
             br(),
             p(),
             conditionalPanel(condition = "input.metaoutcome=='Continuous'", 
-              p("This default dataset for continuous outcome data is from Gray, LJ. et al. A systematic review and mixed treatment 
-                comparison of pharmacological interventions for the treatment of obesity. Obesity reviews 13.6 (2012): 483-498."),
+              p(HTML(paste0("This default dataset for continuous outcome data is from Gray, LJ. et al. A systematic review and mixed treatment 
+                comparison of pharmacological interventions for the treatment of obesity. Obesity reviews 13.6 (2012): 483-498.
+                The continuous outcome used is BMI loss (kg/m",tags$sup("2"),") 3 months from baseline.")))
             ),
             conditionalPanel(condition = "input.metaoutcome=='Binary'", 
               p("This default dataset for binary outcome data is from Hasselblad, V. (1998), Meta-Analysis of Multi-Treatment Studies, 
-                Medical Decision Making, 18, 37-43."),
+                Medical Decision Making, 18, 37-43.
+                The binary outcome used is smoking cessation."),
             ),
             br(),
             p(tags$strong("Note: The default dataset, pre-loaded on the 'View Data' tab, and its pre-loaded treatment labels will be used for analysis if no file is selected or no treatment labels are pasted. The 'View Data' tab will automatically update once a file is successfully loaded."))
