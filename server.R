@@ -90,6 +90,7 @@ shinyServer(function(input, output, session) {
         defaultD <- read.csv("./Binary_long.csv")
       }
     })
+    
   
   
   ### Downloadable csv and labels of example dataset. download button codes are all in a separate code file
@@ -103,6 +104,12 @@ shinyServer(function(input, output, session) {
       else
         a <- read.table(file = file1$datapath, sep =",", header=TRUE, stringsAsFactors = FALSE, quote="\"")
     })
+    
+    output$fileUploaded <- reactive({
+      file1 <- input$data
+      return(!is.null(file1))
+    }) #option for conditional panels for uploaded data
+    outputOptions(output, 'fileUploaded', suspendWhenHidden=FALSE)
   
   
   ### Data analysis tab

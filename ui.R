@@ -301,10 +301,17 @@ tabPanel("Data analysis", id="dtanalysis",
          conditionalPanel(condition = "input.metaoutcome=='Binary'",
           radioButtons("outcomebina", "Outcome for binary data:", c("Odds Ratio (OR)" = "OR","Risk Ratio (RR)" = "RR", "Risk Difference (RD)" = "RD"))
          ),               
+         conditionalPanel(condition = "input.metaoutcome=='Binary' && output.fileUploaded==false",
+         radioButtons("rankopts_example", "For treatment rankings, smaller outcome values  
+                      (e.g. smaller mean values for continuous data, 
+                      or negative ORs for binary data) are:", 
+                      c("Desirable" = "good", "Undesirable" = "bad"), selected="bad")
+         ), #default is different for this example data
+         conditionalPanel(condition = "input.metaoutcome=='Continuous' || (input.metaoutcome=='Binary' && output.fileUploaded==true)",
          radioButtons('rankopts', 'For treatment rankings, smaller outcome values  
-                      (e.g. smaller mean values for continuous data, or in some cases, 
-                      e.g. log ORs, more negative values, for binary data) are:', 
-                      c("Desirable" = "good", "Undesirable" = "bad")),  
+                      (e.g. smaller mean values for continuous data, 
+                      or negative ORs for binary data) are:', 
+                        c("Desirable" = "good", "Undesirable" = "bad"))), 
          radioButtons("modelranfix", "Model:", c("Random effect (RE)" = "random", "Fixed effect (FE)" = "fixed")),
          h3("Select studies to exclude:"),
          p("Tips: you can use the data table to help find the study that you want to exclude."),
