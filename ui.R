@@ -471,7 +471,9 @@ tabPanel("Data analysis", id="dtanalysis",
             tableOutput("baye_comparison_sub"),
             downloadButton('downloadbaye_comparison_sub')
               ),
-       tabPanel("3c. Ranking table", 
+       tabPanel("3c. Ranking table",
+                helpText("Please note: if you change the selections on the sidebar, 
+                               you will need to re-run the primary and/or sensitivity analysis from the 'Forest Plot' page."),
             fixedRow(
               column(6, align = "center",
                      p(tags$strong("Ranking table for all studies - Probability for each treatment to be the best")),
@@ -491,13 +493,14 @@ tabPanel("Data analysis", id="dtanalysis",
                      plotOutput("gemtc_rank_sub")
                      
               ))),
-      tabPanel("3d. Nodesplit model", 
+      tabPanel("3d. Nodesplit model",
+               helpText("Please note: if you change the selections on the sidebar, 
+                               you will need to re-run the primary and/or sensitivity analysis from the 'Forest Plot' page."),
            p("Please note: This may take more than 10 minutes depending on the number of treatment options. The node splitting option for
            the Bayesian analysis is highly numerically intensive and using it on the app can cause the app to disconnect in some circumstances.  
-               We recommend people to download the whole app through ",
-               tags$a(href="https://rstudio.cloud/project/2145806", "R Cloud", target="_blank"),
-               "or ", tags$a(href="https://github.com/CRSU-Apps/MetaInsight", "Github",target="_blank"), 
-               "and run it locally through RStudio if they want to make use of this function. 
+               We recommend people to download the whole app through",
+               tags$a(href="https://github.com/CRSU-Apps/MetaInsight", "Github",target="_blank"), 
+               "and run it locally through RStudio on their own machine if they want to make use of this function. 
              If you are not familiar with running ShinyApps in RStudio, please read this", tags$a(href="https://shiny.rstudio.com/tutorial/written-tutorial/lesson1/", "tutorial", target="_blank"), "from Shiny."),
            fluidRow(
              column(6,
@@ -513,6 +516,8 @@ tabPanel("Data analysis", id="dtanalysis",
                     downloadButton('downloadnode_sub')
              ))),
       tabPanel("3e. Bayesian result details",
+               helpText("Please note: if you change the selections on the sidebar, 
+                               you will need to re-run the primary and/or sensitivity analysis from the 'Forest Plot' page."),
           fluidRow(
              column(6,
                 p(tags$strong("Results details for all studies")),
@@ -527,6 +532,8 @@ tabPanel("Data analysis", id="dtanalysis",
                 plotOutput("gemtc_gelman_sub"))
             )),        
       tabPanel("3f. Deviance report",
+               helpText("Please note: if you change the selections on the sidebar, 
+                               you will need to re-run the primary and/or sensitivity analysis from the 'Forest Plot' page."),
           p(tags$strong("Deviance report for all studies and the sensitivity analysis")),
           fluidRow(
            column(6,
@@ -594,7 +601,10 @@ tabPanel("Data analysis", id="dtanalysis",
             br(),
             br()
             ),
-      tabPanel("3g. Model details", tabsetPanel(
+      tabPanel("3g. Model details",
+               helpText("Please note: if you change the selections on the sidebar, 
+                               you will need to re-run the primary and/or sensitivity analysis from the 'Forest Plot' page."),
+               tabsetPanel(
         tabPanel("3g-1. Model codes",
                 p(tags$strong("Model codes for analysis of all studies")),
                 downloadButton('download_code'),
