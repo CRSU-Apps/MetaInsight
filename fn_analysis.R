@@ -136,11 +136,12 @@ groupforest.df <- function(d1, ntx, lstx, data_final, outcome) {
   
   if (outcome == "OR" | outcome =="RR" ){
     fplot <- metafor::forest(d1$TE, sei=d1$seTE, slab = paste(data_final$Study.y), subset = order(d1$treat1, d1$treat2), ylim = c(1, nrow(d1) + 2*length(text_label) + 2),rows = lines, 
-    xlim = c(-6, 10), atransf = exp, at = log(c(0.01, 1, 10, 100)) 
+    xlim = c(-6, 10), atransf = exp, at = log(c(0.01, 1, 10, 100)), xlab = paste("Observed ",outcome) 
     )    
   } 
   else {
-    fplot <- metafor::forest(d1$TE, sei=d1$seTE, slab = paste(data_final$Study.y), subset = order(d1$treat1, d1$treat2), ylim = c(1, nrow(d1) + 2*length(text_label) + 2), rows = lines)
+    fplot <- metafor::forest(d1$TE, sei=d1$seTE, slab = paste(data_final$Study.y), subset = order(d1$treat1, d1$treat2), ylim = c(1, nrow(d1) + 2*length(text_label) + 2), rows = lines,
+                             xlab = paste("Observed ",outcome))
   }
   text(-6, gaps, pos=4, font = 4, text_label)
   title("Individual study results (for all studies) grouped by treatment comparison")

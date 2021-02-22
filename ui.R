@@ -180,8 +180,6 @@ tabPanel("Load Data",
                           Please follow Steps 1 and 2 to upload the data file and enter the treatment labels. 
                           Instructions are as below.")),
             h4(tags$strong("Step 1:")),
-            br(),
-            downloadButton("downloadData", "Download the example dataset in long format"),
             p(),
             conditionalPanel(condition= "input.metaoutcome=='Continuous'",
               p("The long format data file should contain six columns. Headings of columns are case sensitive."), 
@@ -206,6 +204,7 @@ tabPanel("Load Data",
             ),
             p("An example of this structure can be seen in the", tags$strong("'View Data'"), "tab."),
             p("The csv file that is used to produce the example dataset can be downloaded from here:"),
+            downloadButton("downloadData", "Download the example dataset in long format"),
             br(),
             h4(tags$strong("Step 2:")),
             p("Enter the labels to match with the numerical treatment codes in the data file. Labels should be short to allow for clear display on figures."),
@@ -215,12 +214,14 @@ tabPanel("Load Data",
             br(),
             p(),
             conditionalPanel(condition = "input.metaoutcome=='Continuous'", 
-              p("This default dataset for continuous outcome data is from Gray, LJ. et al. A systematic review and mixed treatment 
-                comparison of pharmacological interventions for the treatment of obesity. Obesity reviews 13.6 (2012): 483-498."),
+              p(HTML(paste0("This default dataset for continuous outcome data is from Gray, LJ. et al. A systematic review and mixed treatment 
+                comparison of pharmacological interventions for the treatment of obesity. Obesity reviews 13.6 (2012): 483-498.
+                The continuous outcome used is BMI loss (kg/m",tags$sup("2"),") 3 months from baseline.")))
             ),
             conditionalPanel(condition = "input.metaoutcome=='Binary'", 
               p("This default dataset for binary outcome data is from Hasselblad, V. (1998), Meta-Analysis of Multi-Treatment Studies, 
-                Medical Decision Making, 18, 37-43."),
+                Medical Decision Making, 18, 37-43.
+                The binary outcome used is smoking cessation."),
             ),
             br(),
             p(tags$strong("Note: The default dataset, pre-loaded on the 'View Data' tab, and its pre-loaded treatment labels will be used for analysis if no file is selected or no treatment labels are pasted. The 'View Data' tab will automatically update once a file is successfully loaded."))
@@ -301,10 +302,17 @@ tabPanel("Data analysis", id="dtanalysis",
          conditionalPanel(condition = "input.metaoutcome=='Binary'",
           radioButtons("outcomebina", "Outcome for binary data:", c("Odds Ratio (OR)" = "OR","Risk Ratio (RR)" = "RR", "Risk Difference (RD)" = "RD"))
          ),               
+         conditionalPanel(condition = "input.metaoutcome=='Binary' && output.fileUploaded==false",
+         radioButtons("rankopts_example", "For treatment rankings, smaller outcome values  
+                      (e.g. smaller mean values for continuous data, 
+                      or negative ORs for binary data) are:", 
+                      c("Desirable" = "good", "Undesirable" = "bad"), selected="bad")
+         ), #default is different for this example data
+         conditionalPanel(condition = "input.metaoutcome=='Continuous' || (input.metaoutcome=='Binary' && output.fileUploaded==true)",
          radioButtons('rankopts', 'For treatment rankings, smaller outcome values  
-                      (e.g. smaller mean values for continuous data, or in some cases, 
-                      e.g. log ORs, more negative values, for binary data) are:', 
-                      c("Desirable" = "good", "Undesirable" = "bad")),  
+                      (e.g. smaller mean values for continuous data, 
+                      or negative ORs for binary data) are:', 
+                        c("Desirable" = "good", "Undesirable" = "bad"))), 
          radioButtons("modelranfix", "Model:", c("Random effect (RE)" = "random", "Fixed effect (FE)" = "fixed")),
          h3("Select studies to exclude:"),
          p("Tips: you can use the data table to help find the study that you want to exclude."),
@@ -463,7 +471,9 @@ tabPanel("Data analysis", id="dtanalysis",
             tableOutput("baye_comparison_sub"),
             downloadButton('downloadbaye_comparison_sub')
               ),
-       tabPanel("3c. Ranking table", 
+       tabPanel("3c. Ranking table",
+                helpText("Please note: if you change the selections on the sidebar, 
+                               you will need to re-run the primary and/or sensitivity analysis from the 'Forest Plot' page."),
             fixedRow(
               column(6, align = "center",
                      p(tags$strong("Ranking table for all studies - Probability for each treatment to be the best")),
@@ -483,13 +493,14 @@ tabPanel("Data analysis", id="dtanalysis",
                      plotOutput("gemtc_rank_sub")
                      
               ))),
-      tabPanel("3d. Nodesplit model", 
+      tabPanel("3d. Nodesplit model",
+               helpText("Please note: if you change the selections on the sidebar, 
+                               you will need to re-run the primary and/or sensitivity analysis from the 'Forest Plot' page."),
            p("Please note: This may take more than 10 minutes depending on the number of treatment options. The node splitting option for
            the Bayesian analysis is highly numerically intensive and using it on the app can cause the app to disconnect in some circumstances.  
-               We recommend people to download the whole app through ",
-               tags$a(href="https://rstudio.cloud/project/2145806", "R Cloud", target="_blank"),
-               "or ", tags$a(href="https://github.com/CRSU-Apps/MetaInsight", "Github",target="_blank"), 
-               "and run it locally through RStudio if they want to make use of this function. 
+               We recommend people to download the whole app through",
+               tags$a(href="https://github.com/CRSU-Apps/MetaInsight", "Github",target="_blank"), 
+               "and run it locally through RStudio on their own machine if they want to make use of this function. 
              If you are not familiar with running ShinyApps in RStudio, please read this", tags$a(href="https://shiny.rstudio.com/tutorial/written-tutorial/lesson1/", "tutorial", target="_blank"), "from Shiny."),
            fluidRow(
              column(6,
@@ -505,6 +516,8 @@ tabPanel("Data analysis", id="dtanalysis",
                     downloadButton('downloadnode_sub')
              ))),
       tabPanel("3e. Bayesian result details",
+               helpText("Please note: if you change the selections on the sidebar, 
+                               you will need to re-run the primary and/or sensitivity analysis from the 'Forest Plot' page."),
           fluidRow(
              column(6,
                 p(tags$strong("Results details for all studies")),
@@ -519,6 +532,8 @@ tabPanel("Data analysis", id="dtanalysis",
                 plotOutput("gemtc_gelman_sub"))
             )),        
       tabPanel("3f. Deviance report",
+               helpText("Please note: if you change the selections on the sidebar, 
+                               you will need to re-run the primary and/or sensitivity analysis from the 'Forest Plot' page."),
           p(tags$strong("Deviance report for all studies and the sensitivity analysis")),
           fluidRow(
            column(6,
@@ -550,10 +565,11 @@ tabPanel("Data analysis", id="dtanalysis",
              ),
              br(),
            p("This stem plot represents the posterior residual deviance per study arm. The total number of stems equals 
-             to the total number of data points in the network meta analysis. Each stem is corresponding to each arm in 
-             each study in the deviance results below ($dev.ab) (through which you can identify which stem corresponds 
-             to which study arm). The smaller residual deviance (the shorter stem), dev.ab, the better model fit for each 
-             data point. (Further reading: Dias S, Ades AE, Welton NJ, Jansen JP, Sutton AJ. Network meta-anlaysis for 
+             the total number of data points in the network meta analysis. Going from left to right, the alternating symbols 
+             on the stems indicate the different studies. Each stem corresponds to the residual deviance ($dev.ab) associated with each 
+             arm in each study. The smaller residual deviance (the shorter stem), dev.ab, the better model fit for each 
+             data point. You can identify which stem corresponds to which study arm by hovering on the stem symbols. 
+             (Further reading: Dias S, Ades AE, Welton NJ, Jansen JP, Sutton AJ. Network meta-anlaysis for 
              decision-making. Chapter 3 Model fit, model comparison and outlier detection. @2018 John Wiley & Sons Ltd.)"),
            br(),
            br(),
@@ -585,7 +601,10 @@ tabPanel("Data analysis", id="dtanalysis",
             br(),
             br()
             ),
-      tabPanel("3g. Model details", tabsetPanel(
+      tabPanel("3g. Model details",
+               helpText("Please note: if you change the selections on the sidebar, 
+                               you will need to re-run the primary and/or sensitivity analysis from the 'Forest Plot' page."),
+               tabsetPanel(
         tabPanel("3g-1. Model codes",
                 p(tags$strong("Model codes for analysis of all studies")),
                 downloadButton('download_code'),
