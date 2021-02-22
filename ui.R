@@ -558,10 +558,11 @@ tabPanel("Data analysis", id="dtanalysis",
              ),
              br(),
            p("This stem plot represents the posterior residual deviance per study arm. The total number of stems equals 
-             to the total number of data points in the network meta analysis. Each stem is corresponding to each arm in 
-             each study in the deviance results below ($dev.ab) (through which you can identify which stem corresponds 
-             to which study arm). The smaller residual deviance (the shorter stem), dev.ab, the better model fit for each 
-             data point. (Further reading: Dias S, Ades AE, Welton NJ, Jansen JP, Sutton AJ. Network meta-anlaysis for 
+             the total number of data points in the network meta analysis. Going from left to right, the alternating symbols 
+             on the stems indicate the different studies. Each stem corresponds to the residual deviance ($dev.ab) associated with each 
+             arm in each study. The smaller residual deviance (the shorter stem), dev.ab, the better model fit for each 
+             data point. You can identify which stem corresponds to which study arm by hovering on the stem symbols. 
+             (Further reading: Dias S, Ades AE, Welton NJ, Jansen JP, Sutton AJ. Network meta-anlaysis for 
              decision-making. Chapter 3 Model fit, model comparison and outlier detection. @2018 John Wiley & Sons Ltd.)"),
            br(),
            br(),
