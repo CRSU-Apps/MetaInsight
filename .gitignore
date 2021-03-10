@@ -2,6 +2,6 @@
 .Rhistory
 .RData
 .Ruserdata
-MetaInsight.Rproj
+*.Rproj
 codes.txt
 www.zip
