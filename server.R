@@ -557,10 +557,10 @@ shinyServer(function(input, output, session) {
   
   observeEvent(list(input$baye_do,input$sub_do, input$node,input$node_sub), {
     if (input$outcomeCont=="SMD") {
-      showNotification("Please note: standardised mean difference currently cannot be analysed in Bayesian analysis", type = "warning")
+      showNotification("Please note: standardised mean difference currently cannot be analysed in Bayesian analysis", type = "error", duration = NULL)
     } 
     else if (input$outcomebina=="RD") {
-      showNotification("Please note: Risk difference currently cannot be analysed in Bayesian analysis", type = "warning")
+      showNotification("Please note: Risk difference currently cannot be analysed in Bayesian analysis", type = "error", duration = NULL)
     }
     })
   

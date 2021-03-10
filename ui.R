@@ -153,6 +153,7 @@ tabPanel("Load Data",
        br(),
        p(tags$strong("Note: The first row must be 'Number' tabspace 'Label' as shown in the pre-loaded format, case sensitive.")),
        p(tags$strong("      Treatment names may only contain letters, digits, and underscore (_).")),
+       p(tags$strong("Tabspace does not work when directly typing into the texbox. Please copy and paste from a text or Excel file, or copy and paste from one of the pre-loaded rows.")),
        br(),
        conditionalPanel(condition= "input.metaoutcome=='Continuous'",
           aceEditor("listCont", value="Number\tLabel
@@ -305,13 +306,13 @@ tabPanel("Data analysis", id="dtanalysis",
          conditionalPanel(condition = "input.metaoutcome=='Binary' && output.fileUploaded==false",
          radioButtons("rankopts_example", "For treatment rankings, smaller outcome values  
                       (e.g. smaller mean values for continuous data, 
-                      or negative ORs for binary data) are:", 
+                      or ORs less than 1 for binary data) are:", 
                       c("Desirable" = "good", "Undesirable" = "bad"), selected="bad")
          ), #default is different for this example data
          conditionalPanel(condition = "input.metaoutcome=='Continuous' || (input.metaoutcome=='Binary' && output.fileUploaded==true)",
          radioButtons('rankopts', 'For treatment rankings, smaller outcome values  
                       (e.g. smaller mean values for continuous data, 
-                      or negative ORs for binary data) are:', 
+                      or ORs less than 1 for binary data) are:', 
                         c("Desirable" = "good", "Undesirable" = "bad"))), 
          radioButtons("modelranfix", "Model:", c("Random effect (RE)" = "random", "Fixed effect (FE)" = "fixed")),
          h3("Select studies to exclude:"),
@@ -415,8 +416,9 @@ tabPanel("Data analysis", id="dtanalysis",
             ))),
        tabPanel("3. Bayesian network meta-analysis", tabsetPanel(id="tab",
          tabPanel("3a. Forest plot",
-            helpText("Baysesian result using the gemtc package.Please note the outcome for continuous data has to be mean difference for the Bayesian analysis. 
-                     Standardised mean difference cannot be analysed.", tags$strong("Please note each simulation may take 20 seconds.", style="color:#FF0000")),
+            helpText("Baysesian result using the gemtc package.", tags$br(), tags$i("Please note the outcome for continuous data has to be "), tags$b("mean difference"), tags$i(" for the Bayesian analysis. 
+                     Standardised mean difference cannot be analysed."), tags$br(), tags$i("Please note the outcome for binary data has to be "), tags$b("Odds Ratio or Risk Ratio"), tags$i(" for the Bayesian analysis. 
+                     Risk difference cannot be analysed."), tags$strong("Please note each simulation may take 20 seconds.", style="color:#FF0000")),
             fixedRow(
               column(6, align = "center",
                      p(tags$strong("Results for all studies")),
