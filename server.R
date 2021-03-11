@@ -481,10 +481,13 @@ shinyServer(function(input, output, session) {
   
   make_netComp = function(freq, ref) {    # forest plot
     forest.df(freq$net1,input$modelranfix,freq$lstx, ref )
-    #output$ref4<- renderText({"All outcomes are versus the reference treatment"})
-    output$ref4<- renderText({paste("All outcomes are versus the reference treatment:", ref)})
-    
   }
+  make_refText = function(ref) {
+    #output$ref4<- renderText({"All outcomes are versus the reference treatment"})
+    y <- paste("All outcomes are versus the reference treatment:", ref)
+    return(y)
+  }
+  
   output$Comparison2<- renderPlot({
     make_netComp(freq_all(), ref_alter()$ref_all)
     title("Results for all studies")
@@ -496,13 +499,20 @@ shinyServer(function(input, output, session) {
   
   texttau = function(freq){      # Tau
     tau<- round(freq$net1$tau,2)
-    tau.df(tau, freq$net1$k, freq$net1$n, input$modelranfix)
+    outc <- ifelse (input$metaoutcome=="Continuous",input$outcomeCont, input$outcomebina)
+    tau.df(tau, freq$net1$k, freq$net1$n, input$modelranfix, outc)
   }
   output$textcomp<- renderText({
     texttau(freq_all())
   })
   output$text5<- renderText({ 
     texttau(freq_sub())
+  })
+  output$ref4 <- renderText({
+    make_refText(ref_alter()$ref_all)
+  })
+  output$ref3 <- renderText({
+    make_refText(ref_alter()$ref_sub)
   })
   
   
@@ -557,10 +567,10 @@ shinyServer(function(input, output, session) {
   
   observeEvent(list(input$baye_do,input$sub_do, input$node,input$node_sub), {
     if (input$outcomeCont=="SMD") {
-      showNotification("Please note: standardised mean difference currently cannot be analysed in Bayesian analysis", type = "warning")
+      showNotification("Please note: standardised mean difference currently cannot be analysed in Bayesian analysis", type = "error", duration = NULL)
     } 
     else if (input$outcomebina=="RD") {
-      showNotification("Please note: Risk difference currently cannot be analysed in Bayesian analysis", type = "warning")
+      showNotification("Please note: Risk difference currently cannot be analysed in Bayesian analysis", type = "error", duration = NULL)
     }
     })
   
@@ -601,11 +611,16 @@ shinyServer(function(input, output, session) {
               Bayesian", model_sub()$a,"consistency model forest plot results"))
   })
   
+  texttauB = function(results){      # Tau
+    outc <- ifelse (input$metaoutcome=="Continuous",input$outcomeCont, input$outcomebina)
+    gemtctau(results,outc)
+  }
+  
   output$text_gemtc <-renderText({          # tau
-    gemtctau(model())
+    texttauB(model())
   })
   output$text_gemtc_sub <-renderText({
-    gemtctau(model_sub())
+    texttauB(model_sub())
   })
   
   output$dic <- renderTable ({                  # DIC table
