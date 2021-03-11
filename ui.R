@@ -585,9 +585,9 @@ tabPanel("Data analysis", id="dtanalysis",
                   plotlyOutput("dev2_sub"))
            ),
            br(),
-           p("This leverage plot shows the average leverage of the data point across the arms for each study 
-           (sum($lev.ab) for each study/number of arms for each study) versus the square root of the average residual 
-             deviance across the arms for each study (sum($dev.ab) for each study / number of arms for each study). 
+           p("This leverage plot shows the average leverage across the arms for each study ({sum($lev.ab)}/{number of arms} 
+          for each study) versus the square root of the average residual deviance across the arms for each study 
+          (sqrt({sum($dev.ab)}/{number of arms}) for each study).  
              The leverage for each data point, is calculated as the posterior mean of the residual 
              deviance, minus the deviance at the posterior mean of the fitted values. The leverage plot may be used to 
              identify influential and/or poorly fitting studies and can be used to check how each study is affecting 

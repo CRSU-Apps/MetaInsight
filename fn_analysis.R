@@ -169,14 +169,31 @@ return(fp)
 ##### function for text underneath forest plot
 #######################
 
-tau.df <- function(tau,k,n,model) {
+tau.df <- function(tau,k,n,model,outcome) {
   if (model=="random"){
-    y<-paste("Between-study standard deviation:", tau,
-          ", Number of studies:", k,
-          ", Number of treatments:", n)}
+    if (outcome=="OR"){
+      y<-paste("Between-study standard deviation (log-odds scale):", tau,
+            ", Number of studies:", k,
+            ", Number of treatments:", n)}
+    else if (outcome=="RR"){
+      y<-paste("Between-study standard deviation (log probability scale):", tau,
+               ", Number of studies:", k,
+               ", Number of treatments:", n)}
+    else {
+      y<-paste("Between-study standard deviation:", tau,
+               ", Number of studies:", k,
+               ", Number of treatments:", n)}}
   else {
-    y<-paste("Between-study standard deviation set at 0. Number of studies:", k,
-             ", Number of treatments:", n)}
+    if (outcome=="OR"){
+      y<-paste("Between-study standard deviation (log-odds scale) set at 0. Number of studies:", k,
+              ", Number of treatments:", n)}
+    else if (outcome=="RR"){
+      y<-paste("Between-study standard deviation (log probability scale) set at 0. Number of studies:", k,
+               ", Number of treatments:", n)}
+    else {
+      y<-paste("Between-study standard deviation set at 0. Number of studies:", k,
+               ", Number of treatments:", n)}
+    }
   return(y)
 }
 
@@ -329,7 +346,7 @@ baye <- function(data,treat_list, model, outcome, CONBI, ref) {
 
 ### 3a. tau of gemtc
 
-gemtctau <- function(results) {
+gemtctau <- function(results,outcome) {
   sumresults<-results$sumresults
   if (results$a=="random effect") {   #SD and its 2.5% and 97.5%
     ntx <- nrow(sumresults$summaries$statistics)
@@ -343,8 +360,20 @@ gemtctau <- function(results) {
     sd_highCI=0
   }
   if (results$a=="random effect") {
-    paste("Between-study standard deviation:", sd_mean, ". 95% credible interval:",sd_lowCI,", ", sd_highCI, ".")}
-  else{paste("Between-study standard deviation set at 0")}
+    if (outcome=="OR") {
+      paste("Between-study standard deviation (log-odds scale):", sd_mean, ". 95% credible interval:",sd_lowCI,", ", sd_highCI, ".")}
+    else if (outcome=="RR") {
+      paste ("Between-study standard deviation (log probability scale):", sd_mean, ". 95% credible interval:",sd_lowCI,", ", sd_highCI, ".")}
+    else {
+      paste ("Between-study standard deviation:", sd_mean, ". 95% credible interval:",sd_lowCI,", ", sd_highCI, ".")}}
+  else{
+    if (outcome=="OR") {
+      paste("Between-study standard deviation (log-odds scale) set at 0")}
+    else if (outcome=="RR") {
+      paste("Between-study standard deviation (log probability scale) set at 0")}
+    else {
+      paste("Between-study standard deviation set at 0")}
+    }
 }
 
 ### 3d. nodesplit models
