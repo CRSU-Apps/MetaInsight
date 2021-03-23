@@ -3,6 +3,21 @@
 #####################################################################################################
 
 
+####################################
+# Function for choosing default ordering in example datasets #
+#####################################
+
+RankingOrder <- function(outcome,data) {
+  file1 <- data
+  if (outcome=="Binary" & is.null(file1)==TRUE) {
+    choice <- "bad"
+  }
+  else {
+    choice <- "good"
+  }
+  return(choice)
+}
+
 ##########################
 ##### function for formating uploaded data
 ##########################

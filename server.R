@@ -105,11 +105,6 @@ shinyServer(function(input, output, session) {
         a <- read.table(file = file1$datapath, sep =",", header=TRUE, stringsAsFactors = FALSE, quote="\"")
     })
     
-    output$fileUploaded <- reactive({
-      file1 <- input$data
-      return(!is.null(file1))
-    }) #option for conditional panels for uploaded data
-    outputOptions(output, 'fileUploaded', suspendWhenHidden=FALSE)
   
   
   ### Data analysis tab
@@ -132,6 +127,18 @@ shinyServer(function(input, output, session) {
           "<font color=\"#ffd966\"><b>" , input$metaoutcome,"</b></font>", "outcomes are now displayed.")
     })
     
+  ### Ranking defaults
+    choice <- reactive({
+      RankingOrder(input$metaoutcome,input$data)
+    })
+    
+    output$RankingPref <- renderUI({
+      choice2 <- choice()
+      radioButtons('rankopts', 'For treatment rankings, smaller outcome values  
+                      (e.g. smaller mean values for continuous data, 
+                      or ORs less than 1 for binary data) are:', 
+                   c("Desirable" = "good", "Undesirable" = "bad"), selected = choice2)
+    })
     
     
     
