@@ -70,8 +70,8 @@ output$downloadStudy <- downloadHandler(
     paste0('StudyResults.', input$format_freq0)
   },
   content = function(file) {
-    if (input$format_freq0=="PDF"){pdf(file=file, pointsize = input$ForestContent)}
-    else {svg(file=file, pointsize = input$ForestContent)}
+    if (input$format_freq0=="PDF"){pdf(file=file, pointsize = input$ForestContent, height=make_netStudy()$size, width=8)}
+    else {svg(file=file, pointsize = input$ForestContent, height=make_netStudy()$size, width=8)}
     make_netStudy()
     dev.off()
   }

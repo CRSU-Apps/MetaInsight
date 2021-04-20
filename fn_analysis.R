@@ -149,19 +149,26 @@ groupforest.df <- function(d1, ntx, lstx, data_final, outcome, HeaderSize, Title
   lines <- lines[!lines %in% gaps]
   lines <- lines[!lines %in% (gaps+1)]
   
+  if (max(lines) < 28) {size=7
+  } else if (max(lines)>=28 & max(lines)<=40) {size=max(lines)/4
+  } else if (max(lines)>40 & max(lines)<=70) {size=max(lines)/5
+  } else if (max(lines)>70 & max(lines)<=100) {size=max(lines)/6
+  } else if (max(lines)>100 & max(lines)<=130) {size=max(lines)/7
+  } else {size=max(lines)/8
+  } # sizing for output
+  
   if (outcome == "OR" | outcome =="RR" ){
     fplot <- metafor::forest(d1$TE, sei=d1$seTE, slab = paste(data_final$Study.y), subset = order(d1$treat1, d1$treat2), ylim = c(1, nrow(d1) + 2*length(text_label) + 2),rows = lines, 
-    xlim = c(-6, 10), atransf = exp, at = log(c(0.01, 1, 10, 100)), xlab = paste("Observed ",outcome) 
+    atransf = exp, at = log(c(0.01, 1, 10, 100)), xlab = paste("Observed ",outcome), efac=0.5 
     )
-    text(-6, gaps, pos=4, font = 4, text_label, cex=HeaderSize)
   } 
   else {
     fplot <- metafor::forest(d1$TE, sei=d1$seTE, slab = paste(data_final$Study.y), subset = order(d1$treat1, d1$treat2), ylim = c(1, nrow(d1) + 2*length(text_label) + 2), rows = lines,
-                             xlab = paste("Observed ",outcome))
-    text(fplot$xlim[1], gaps, pos=4, font = 4, text_label, cex=HeaderSize)
+                             xlab = paste("Observed ",outcome), efac=0.5)
   }
+  text(fplot$xlim[1], gaps, pos=4, font = 4, text_label, cex=HeaderSize)
   title("Individual study results (for all studies) grouped by treatment comparison", cex.main=TitleSize)
-  return(fplot)
+  list(fplot=fplot,size=size)
 }
 
 # } else if (outcome == "RD") {
