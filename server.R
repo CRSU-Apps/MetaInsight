@@ -259,7 +259,7 @@ shinyServer(function(input, output, session) {
   make_netStudy = function() {
     freq=freq_sub()
     outc <- ifelse (input$metaoutcome=="Continuous",input$outcomeCont, input$outcomebina)
-    groupforest.df(freq$d0, freq$ntx, freq$lstx, freq$data_final, outc, input$ForestHeader, input$ForestTitle)
+    groupforest.df(freq$d0, freq$ntx, freq$lstx, outc, input$ForestHeader, input$ForestTitle)
   }
   output$forestPlot <- renderPlot({
     study_plot <- make_netStudy()

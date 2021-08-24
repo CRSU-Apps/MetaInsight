@@ -107,14 +107,13 @@ freq_wrap <- function(data, treat_list,model,outcome, CONBI, ref) {
   on.exit(progress$close())
   progress$set(message="Updating", value=0)
   d0<- contrastform.df(data,outcome, CONBI)    # transform data to contrast form
-  data_final<- merge(d0,data,by="StudyID")   # for the grouped forest plots only
   lstx <- treat_list$Label      #obtain treatment labels
   ntx <- length(lstx)     #count treatment numbers
   d1<-labelmatching.df(d0, ntx, treat_list) #matching treatment labels to treatment code
   progress$inc(0.6, detail="Updating")
   net1<-freq.df(model,outcome,d1,lstx,ref) # NMA of all studies
   progress$inc(0.4, detail="Rendering results")
-  return (list(net1=net1,lstx=lstx, ntx=ntx, data_final=data_final,d0=d0,d1=d1))
+  return (list(net1=net1,lstx=lstx, ntx=ntx,d0=d0,d1=d1))
 }
 
 
@@ -124,7 +123,7 @@ freq_wrap <- function(data, treat_list,model,outcome, CONBI, ref) {
 ##### function for producing group forest plot
 #########################
 
-groupforest.df <- function(d1, ntx, lstx, data_final, outcome, HeaderSize, TitleSize) {
+groupforest.df <- function(d1, ntx, lstx, outcome, HeaderSize, TitleSize) {
   text_label <- character()
   n_stud <- integer()
   for (i in 1:ntx) {
@@ -157,13 +156,15 @@ groupforest.df <- function(d1, ntx, lstx, data_final, outcome, HeaderSize, Title
   } else {size=max(lines)/8
   } # sizing for output
   
+  d1 <- d1[order(d1$treat1,d1$treat2,d1$StudyID),] #ensuring the ordering is correct
+  
   if (outcome == "OR" | outcome =="RR" ){
-    fplot <- metafor::forest(d1$TE, sei=d1$seTE, slab = paste(data_final$Study.y), subset = order(d1$treat1, d1$treat2), ylim = c(1, nrow(d1) + 2*length(text_label) + 2),rows = lines, 
+    fplot <- metafor::forest(d1$TE, sei=d1$seTE, slab = paste(d1$Study.y), subset = order(d1$treat1, d1$treat2), ylim = c(1, nrow(d1) + 2*length(text_label) + 2),rows = lines, 
     atransf = exp, at = log(c(0.01, 1, 10, 100)), xlab = paste("Observed ",outcome), efac=0.5 
     )
   } 
   else {
-    fplot <- metafor::forest(d1$TE, sei=d1$seTE, slab = paste(data_final$Study.y), subset = order(d1$treat1, d1$treat2), ylim = c(1, nrow(d1) + 2*length(text_label) + 2), rows = lines,
+    fplot <- metafor::forest(d1$TE, sei=d1$seTE, slab = paste(d1$Study.y), subset = order(d1$treat1, d1$treat2), ylim = c(1, nrow(d1) + 2*length(text_label) + 2), rows = lines,
                              xlab = paste("Observed ",outcome), efac=0.5)
   }
   text(fplot$xlim[1], gaps, pos=4, font = 4, text_label, cex=HeaderSize)
