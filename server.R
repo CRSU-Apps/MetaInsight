@@ -262,7 +262,8 @@ shinyServer(function(input, output, session) {
     groupforest.df(freq$d0, freq$ntx, freq$lstx, freq$data_final, outc, input$ForestHeader, input$ForestTitle)
   }
   output$forestPlot <- renderPlot({
-    make_netStudy()
+    study_plot <- make_netStudy()
+    study_plot$fplot
   })
   
 
