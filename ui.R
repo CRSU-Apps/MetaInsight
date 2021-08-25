@@ -416,7 +416,8 @@ tabPanel("Data analysis", id="dtanalysis",
             ))),
        tabPanel("3. Bayesian network meta-analysis", tabsetPanel(id="tab",
          tabPanel("3a. Forest plot",
-            helpText("Baysesian result using the gemtc package.", tags$br(), tags$i("Please note the outcome for continuous data has to be "), tags$b("mean difference"), tags$i(" for the Bayesian analysis. 
+            helpText("Baysesian result using the gemtc package.", tags$br(), 
+                     "Heterogeneity prior: standard deviation ~ U(0,X), where X represents a ", tags$i("very large"), "difference in the analysis' outcome scale and is determined from the data.", tags$br(), tags$i("Please note the outcome for continuous data has to be "), tags$b("mean difference"), tags$i(" for the Bayesian analysis. 
                      Standardised mean difference cannot be analysed."), tags$br(), tags$i("Please note the outcome for binary data has to be "), tags$b("Odds Ratio or Risk Ratio"), tags$i(" for the Bayesian analysis. 
                      Risk difference cannot be analysed."), tags$strong("Please note each simulation may take 20 seconds.", style="color:#FF0000")),
             fixedRow(
