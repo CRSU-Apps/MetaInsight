@@ -766,7 +766,7 @@ shinyServer(function(input, output, session) {
     umeplot()
   })
   
-  umeplot_sub <- eventReactive(input$input$sub_do, {
+  umeplot_sub <- eventReactive(input$sub_do, {
     scat_plot(model_sub())$p
   })
   output$dev_scat_sub <- renderPlotly({
