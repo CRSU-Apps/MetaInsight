@@ -21,6 +21,9 @@ library(plotly)
 library(shinyjs)
 library(BUGSnet)
 library(shinyBS)
+library(patchwork)
+library(ggrepel)
+library(tidyr)
 
 
 
@@ -28,7 +31,7 @@ source("PlotFunctionsRKO.R", local = TRUE)        # Plot functions
 load("blank.rds")                                 # Objects to store data for plot functions
 source("fn_analysis.R",local = TRUE)              # functions for NMA
 
-  
+
 shinyServer(function(input, output, session) {
   source("downloadbuttons.R", local = TRUE)   #codes for download buttons for conciseness. This line must be put within the shinyserver as this is purely a code file not functions.
   
@@ -38,209 +41,209 @@ shinyServer(function(input, output, session) {
   
   ### GDPR
   
-    showModal(modalDialog(
-       title = "Important message",
-        easyClose = FALSE,
-        p(tags$strong("In accordance with Data Protection legislation, we would like to inform you of the following before you use our website:
+  showModal(modalDialog(
+    title = "Important message",
+    easyClose = FALSE,
+    p(tags$strong("In accordance with Data Protection legislation, we would like to inform you of the following before you use our website:
                                  "), "We collect your usage data within the MetaInsight app to perform analytics of usage and improve our app. By clicking",
-          tags$i(tags$u("I consent")), "below, you consent to the use of data by us through Google Analytics.
+      tags$i(tags$u("I consent")), "below, you consent to the use of data by us through Google Analytics.
           For details of policy, please check the 'Privacy notice' tab within the app, and ",tags$a(href="https://policies.google.com/privacy?hl=en", "Google Privacy & Terms.",target="_blank") ),
-        br(),
-        modalButton("I consent"),
-        footer = NULL
-      ))
-
-
+    br(),
+    modalButton("I consent"),
+    footer = NULL
+  ))
+  
+  
   
   ### view the full update history
   
-    observeEvent(input$history_click, {
-      newvalue <- "history"
-      updateNavbarPage(session,"meta", selected="Full update history")
-    })
-    
+  observeEvent(input$history_click, {
+    newvalue <- "history"
+    updateNavbarPage(session,"meta", selected="Full update history")
+  })
+  
   ### view the trouble shooting page
-    
-    observeEvent(input$tsp, {
-      #newvalue <- "history"
-      updateNavbarPage(session,"meta", selected="Troubleshooting")
-    })
-
+  
+  observeEvent(input$tsp, {
+    #newvalue <- "history"
+    updateNavbarPage(session,"meta", selected="Troubleshooting")
+  })
+  
   
   
   ############################################
   ############# Load data page ###############
   ############################################
-
+  
   ### Outcome selection
-    
-    output$CONBI <- renderText({
-      paste("You have selected", "<font color=\"#ffd966\"><b>" , input$metaoutcome,"</b></font>", 
-            "outcome on the 'Home' page. The instructions for formatting",
-            "<font color=\"#ffd966\"><b>" , input$metaoutcome,"</b></font>", "outcomes are now displayed.")
-    })
-    
-    
+  
+  output$CONBI <- renderText({
+    paste("You have selected", "<font color=\"#ffd966\"><b>" , input$metaoutcome,"</b></font>", 
+          "outcome on the 'Home' page. The instructions for formatting",
+          "<font color=\"#ffd966\"><b>" , input$metaoutcome,"</b></font>", "outcomes are now displayed.")
+  })
+  
+  
   ### Load default Data
-    
-    defaultD <- reactive({
-      if (input$metaoutcome=='Continuous') {
-        defaultD <- read.csv("./Cont_long.csv")
-      } else {
-        defaultD <- read.csv("./Binary_long.csv")
-      }
-    })
-    
+  
+  defaultD <- reactive({
+    if (input$metaoutcome=='Continuous') {
+      defaultD <- read.csv("./Cont_long.csv")
+    } else {
+      defaultD <- read.csv("./Binary_long.csv")
+    }
+  })
+  
   
   
   ### Downloadable csv and labels of example dataset. download button codes are all in a separate code file
-
+  
   
   
   ### Make data reactive
-    data <- reactive({ 
-      file1 <- input$data             # name the data file that was uploaded file1
-      if(is.null(file1)){return(defaultD())}
-      else
-        a <- read.table(file = file1$datapath, sep =",", header=TRUE, stringsAsFactors = FALSE, quote="\"")
-    })
-    
+  data <- reactive({ 
+    file1 <- input$data             # name the data file that was uploaded file1
+    if(is.null(file1)){return(defaultD())}
+    else
+      a <- read.table(file = file1$datapath, sep =",", header=TRUE, stringsAsFactors = FALSE, quote="\"")
+  })
+  
   
   
   ### Data analysis tab
-    output$tb <- renderTable({        # Create a table which displays the raw data just uploaded by the user
-      if(is.null(data())){return()}
-      data()
-    })
-
-
+  output$tb <- renderTable({        # Create a table which displays the raw data just uploaded by the user
+    if(is.null(data())){return()}
+    data()
+  })
+  
+  
   
   ############################################
   ########### Data analysis tab ##############
   ############################################
   
   ### Confirmation for continuous / binary data
-    
-    output$CONBI2 <- renderText({
+  
+  output$CONBI2 <- renderText({
     paste("You have selected", "<font color=\"#ffd966\"><b>" , input$metaoutcome,"</b></font>", 
           "outcome on the 'Home' page. The analysis page for ",
           "<font color=\"#ffd966\"><b>" , input$metaoutcome,"</b></font>", "outcomes are now displayed.")
-    })
-    
+  })
+  
   ### Ranking defaults
-    choice <- reactive({
-      RankingOrder(input$metaoutcome,input$data)
-    })
-    
-    output$RankingPref <- renderUI({
-      choice2 <- choice()
-      radioButtons('rankopts', 'For treatment rankings, smaller outcome values  
+  choice <- reactive({
+    RankingOrder(input$metaoutcome,input$data)
+  })
+  
+  output$RankingPref <- renderUI({
+    choice2 <- choice()
+    radioButtons('rankopts', 'For treatment rankings, smaller outcome values  
                       (e.g. smaller mean values for continuous data, 
                       or ORs less than 1 for binary data) are:', 
-                   c("Desirable" = "good", "Undesirable" = "bad"), selected = choice2)
-    })
-    
-    
-    
-  ### Get studies for check box input
-    
-    output$Choicesexcl <- renderUI({
-      newData <- data()
-      newData1 <- as.data.frame(newData)
-      if (ncol(newData1)==6 ||ncol(newData1)==5 ){        # long format data contain exactly 6 columns for continuous and 5 for binary. wide format will contain at least 2+4*2=10 columns.
-        newData2<-newData1[order(newData1$StudyID, -newData1$T), ]
-        newData2$number<- ave(as.numeric(newData2$StudyID),newData2$StudyID,FUN=seq_along)    # create counting variable for number of arms within each study.
-        data_wide <- reshape(newData2, timevar = "number",idvar = c("Study", "StudyID"), direction = "wide")     # reshape
-      }
-      else {
-        data_wide<- newData1
-      }
-      checkboxGroupInput("exclusionbox",
-                         label = NULL,
-                         choices = as.character(data_wide$Study))
-    })
-    
-    ### Get data for data table
-    
-    
-    filtertable <- function(){
-      lb <- ifelse(input$metaoutcome=="Continuous",input$listCont,input$listbina)
-      label <- read.csv(text=lb, sep = "\t") 
-      dt <- data()
-      ntx <- nrow(label)
-      dt$T <- factor(dt$T,
-                     levels = c(1:ntx),
-                     labels = as.character(label$Label))
-      dt
-    }
-    
-    colnames<- function(){
-      if (input$metaoutcome=="Continuous") {
-        colnames <- c('StudyID', 'Author','Treatment','Number of participants in each arm',
-                      'Mean value of the outcome in each arm', 'Standard deviation of the outcome in each arm')
-      
-      } else{
-        colnames <- c('StudyID', 'Author','Treatment','Number of participants with the outcome of interest in each arm','Number of participants in each arm'
-                      )
-    }}
-    
-    output$datatb <- DT::renderDataTable(DT::datatable({
-      filtertable()
-    },editable=TRUE, rownames= FALSE, 
-    colnames= colnames(),
-      filter = list(
-      position = 'top', clear = FALSE, stateSave = TRUE)
-    
-    ))
-    
-    observeEvent(input$datatablebutton, ({
-      updateCollapse(session, "collapse", open = "Data table (Click to open / hide this panel)")
-    }))
-    
-    
-    ### Refernce treatment if treatment 1 is removed from the network
-    
-    ref_alter <- function(){
-      newData1 <- as.data.frame(data())
-      label <- ifelse(input$metaoutcome=="Continuous",input$listCont,input$listbina)
-      treat_list <- read.csv(text=label, sep = "\t")
-      lstx <- treat_list$Label
-      ref_all <- as.character(lstx[1])
-      longsort2 <- dataform.df(newData1,treat_list,input$metaoutcome )
-      long_sort2_sub <- filter(longsort2, !Study %in% input$exclusionbox)  # subgroup
-      if (((lstx[1] %in% long_sort2_sub$T) ) == "TRUE") {
-        ref_sub<- as.character(lstx[1])
-      } else {
-        ref_sub <- as.character(long_sort2_sub$T[1])
-      }
-      list(ref_all=ref_all, ref_sub=ref_sub)
-    }
-    
-    
-    output$ref_change_bay = output$ref_change <- renderText({
-         if (identical(ref_alter()$ref_sub, ref_alter()$ref_all)=="FALSE") {
-           paste("Please note that the reference treatment for sensitivity analysis has now been changed to:", ref_alter()$ref_sub, ". This is because the treatment labelled 1 has been removed from the network of sensitivity analysis." )
-         }
-    })
-    
-
+                 c("Desirable" = "good", "Undesirable" = "bad"), selected = choice2)
+  })
   
-
-    
+  
+  
+  ### Get studies for check box input
+  
+  output$Choicesexcl <- renderUI({
+    newData <- data()
+    newData1 <- as.data.frame(newData)
+    if (ncol(newData1)==6 ||ncol(newData1)==5 ){        # long format data contain exactly 6 columns for continuous and 5 for binary. wide format will contain at least 2+4*2=10 columns.
+      newData2<-newData1[order(newData1$StudyID, -newData1$T), ]
+      newData2$number<- ave(as.numeric(newData2$StudyID),newData2$StudyID,FUN=seq_along)    # create counting variable for number of arms within each study.
+      data_wide <- reshape(newData2, timevar = "number",idvar = c("Study", "StudyID"), direction = "wide")     # reshape
+    }
+    else {
+      data_wide<- newData1
+    }
+    checkboxGroupInput("exclusionbox",
+                       label = NULL,
+                       choices = as.character(data_wide$Study))
+  })
+  
+  ### Get data for data table
+  
+  
+  filtertable <- function(){
+    lb <- ifelse(input$metaoutcome=="Continuous",input$listCont,input$listbina)
+    label <- read.csv(text=lb, sep = "\t") 
+    dt <- data()
+    ntx <- nrow(label)
+    dt$T <- factor(dt$T,
+                   levels = c(1:ntx),
+                   labels = as.character(label$Label))
+    dt
+  }
+  
+  colnames<- function(){
+    if (input$metaoutcome=="Continuous") {
+      colnames <- c('StudyID', 'Author','Treatment','Number of participants in each arm',
+                    'Mean value of the outcome in each arm', 'Standard deviation of the outcome in each arm')
+      
+    } else{
+      colnames <- c('StudyID', 'Author','Treatment','Number of participants with the outcome of interest in each arm','Number of participants in each arm'
+      )
+    }}
+  
+  output$datatb <- DT::renderDataTable(DT::datatable({
+    filtertable()
+  },editable=TRUE, rownames= FALSE, 
+  colnames= colnames(),
+  filter = list(
+    position = 'top', clear = FALSE, stateSave = TRUE)
+  
+  ))
+  
+  observeEvent(input$datatablebutton, ({
+    updateCollapse(session, "collapse", open = "Data table (Click to open / hide this panel)")
+  }))
+  
+  
+  ### Refernce treatment if treatment 1 is removed from the network
+  
+  ref_alter <- function(){
+    newData1 <- as.data.frame(data())
+    label <- ifelse(input$metaoutcome=="Continuous",input$listCont,input$listbina)
+    treat_list <- read.csv(text=label, sep = "\t")
+    lstx <- treat_list$Label
+    ref_all <- as.character(lstx[1])
+    longsort2 <- dataform.df(newData1,treat_list,input$metaoutcome )
+    long_sort2_sub <- filter(longsort2, !Study %in% input$exclusionbox)  # subgroup
+    if (((lstx[1] %in% long_sort2_sub$T) ) == "TRUE") {
+      ref_sub<- as.character(lstx[1])
+    } else {
+      ref_sub <- as.character(long_sort2_sub$T[1])
+    }
+    list(ref_all=ref_all, ref_sub=ref_sub)
+  }
+  
+  
+  output$ref_change_bay = output$ref_change <- renderText({
+    if (identical(ref_alter()$ref_sub, ref_alter()$ref_all)=="FALSE") {
+      paste("Please note that the reference treatment for sensitivity analysis has now been changed to:", ref_alter()$ref_sub, ". This is because the treatment labelled 1 has been removed from the network of sensitivity analysis." )
+    }
+  })
+  
+  
+  
+  
+  
   #####################
   #### Frequentist ####
   #####################
-    
-      
+  
+  
   ### Frequentist analysis
-    
+  
   freq_all= function(){
-      data_wide <- entry.df(data(),input$metaoutcome)    #transform data to wide form
-      label <- ifelse(input$metaoutcome=="Continuous",input$listCont,input$listbina)
-      treat_list <- read.csv(text=label, sep = "\t")   #read treatment labels from input
-      outc <- ifelse (input$metaoutcome=="Continuous",input$outcomeCont, input$outcomebina)
-      freq_wrap(data_wide, treat_list,input$modelranfix,outc,input$metaoutcome, ref_alter()$ref_all)  # use the selfdefined function, freq_wrap
-
+    data_wide <- entry.df(data(),input$metaoutcome)    #transform data to wide form
+    label <- ifelse(input$metaoutcome=="Continuous",input$listCont,input$listbina)
+    treat_list <- read.csv(text=label, sep = "\t")   #read treatment labels from input
+    outc <- ifelse (input$metaoutcome=="Continuous",input$outcomeCont, input$outcomebina)
+    freq_wrap(data_wide, treat_list,input$modelranfix,outc,input$metaoutcome, ref_alter()$ref_all)  # use the selfdefined function, freq_wrap
+    
   }
   freq_sub= function(){
     data_wide <-  entry.df(data(),input$metaoutcome)   
@@ -251,11 +254,11 @@ shinyServer(function(input, output, session) {
     freq_wrap(data_sub, treat_list,input$modelranfix,outc, input$metaoutcome, ref_alter()$ref_sub)
   }
   
-
-
+  
+  
   
   ### 1b. Study results forest plot
-    
+  
   make_netStudy = function() {
     freq=freq_sub()
     outc <- ifelse (input$metaoutcome=="Continuous",input$outcomeCont, input$outcomebina)
@@ -266,13 +269,13 @@ shinyServer(function(input, output, session) {
     study_plot$fplot
   })
   
-
+  
   
   ### 1c. Network Plot
   make_netgraph = function(freq) {  
     netgraph(freq$net1, lwd=2, number.of.studies = TRUE, plastic=FALSE, points=TRUE, cex=1.25, cex.points=2, col.points=1, col=8, pos.number.of.studies=0.43,
              col.number.of.studies = "forestgreen", col.multiarm = "white", bg.number.of.studies = "forestgreen"
-             )
+    )
   }
   
   bugsnetdt <- function(){
@@ -453,11 +456,11 @@ shinyServer(function(input, output, session) {
     long_sort2<-dataform_reg.df(newData1,treat_list,"Binary", 1)
     data.rh<-data.prep(arm.data=long_sort2, varname.t = "T", varname.s="Study")
     p<-data.plot(data = data.rh,
-              covariate = "DiseaseDuration",  # make this to be 
-              #half.length = "age_SD", #comment this line out to remove error bars
-              by = "treatment", # this is not variable name. only two options to selection: "treatment" or "study" (to plot characteristics by study)
-              #fill.str = "age_type",  #comment this line out to remove colors
-              avg.hline=TRUE) #add overall average line?
+                 covariate = "DiseaseDuration",  # make this to be 
+                 #half.length = "age_SD", #comment this line out to remove error bars
+                 by = "treatment", # this is not variable name. only two options to selection: "treatment" or "study" (to plot characteristics by study)
+                 #fill.str = "age_type",  #comment this line out to remove colors
+                 avg.hline=TRUE) #add overall average line?
     
     ##Network characteristic summary tables
     network.char <- net.tab(data = data.rh,
@@ -468,7 +471,7 @@ shinyServer(function(input, output, session) {
     tb<-network.char$network
     list(p=p, tb=tb)
   }
-
+  
   
   
   output$covp <- renderPlot({
@@ -484,7 +487,7 @@ shinyServer(function(input, output, session) {
   
   
   
-
+  
   ### 2a. Forest Plot
   
   make_netComp = function(freq, ref) {    # forest plot
@@ -545,9 +548,9 @@ shinyServer(function(input, output, session) {
   output$rankChartUpdating<- renderTable(colnames=FALSE,{
     make_netrank(freq_sub())
   })
-
-
-
+  
+  
+  
   ### 2c. Inconsistency
   
   make_Incon = function(freq) {
@@ -555,16 +558,16 @@ shinyServer(function(input, output, session) {
     make_Incon<- netsplitresult.df(incona, input$modelranfix)
   }
   output$Incon1<- renderTable(colnames=TRUE, {
-      make_Incon(freq_all())}
+    make_Incon(freq_all())}
   )
   output$Incon2<- renderTable(colnames=TRUE, {
     make_Incon(freq_sub())}
   )
-
-    
   
   
-
+  
+  
+  
   #####################
   #### 3. Bayesian ####
   #####################
@@ -580,32 +583,32 @@ shinyServer(function(input, output, session) {
     else if (input$outcomebina=="RD") {
       showNotification("Please note: Risk difference currently cannot be analysed in Bayesian analysis", type = "error", duration = NULL)
     }
-    })
+  })
   
   
   
   ### Bayesian analysis
-
+  
   model <- eventReactive(input$baye_do, {
-      newData1 <- as.data.frame(data())
-      label <- ifelse(input$metaoutcome=="Continuous",input$listCont,input$listbina)
-      treat_list <- read.csv(text=label, sep = "\t")
-      longsort2 <- dataform.df(newData1,treat_list,input$metaoutcome)    # inputting the data in long form
-      outc <- ifelse (input$metaoutcome=="Continuous",input$outcomeCont, input$outcomebina)
-      baye(longsort2,treat_list,input$modelranfix, outc,input$metaoutcome, ref_alter()$ref_all )
-    })
+    newData1 <- as.data.frame(data())
+    label <- ifelse(input$metaoutcome=="Continuous",input$listCont,input$listbina)
+    treat_list <- read.csv(text=label, sep = "\t")
+    longsort2 <- dataform.df(newData1,treat_list,input$metaoutcome)    # inputting the data in long form
+    outc <- ifelse (input$metaoutcome=="Continuous",input$outcomeCont, input$outcomebina)
+    baye(longsort2,treat_list,input$modelranfix, outc,input$metaoutcome, ref_alter()$ref_all )
+  })
   
   model_sub <- eventReactive(input$sub_do, {
-      newData1 <- as.data.frame(data())
-      label <- ifelse(input$metaoutcome=="Continuous",input$listCont,input$listbina)
-      treat_list <- read.csv(text=label, sep = "\t")
-      longsort2 <- dataform.df(newData1,treat_list,input$metaoutcome )
-      long_sort2_sub <- filter(longsort2, !Study %in% input$exclusionbox)  # subgroup
-      outc <- ifelse (input$metaoutcome=="Continuous",input$outcomeCont, input$outcomebina)
-      baye(long_sort2_sub,treat_list,input$modelranfix, outc,input$metaoutcome, ref_alter()$ref_sub)
-    })
+    newData1 <- as.data.frame(data())
+    label <- ifelse(input$metaoutcome=="Continuous",input$listCont,input$listbina)
+    treat_list <- read.csv(text=label, sep = "\t")
+    longsort2 <- dataform.df(newData1,treat_list,input$metaoutcome )
+    long_sort2_sub <- filter(longsort2, !Study %in% input$exclusionbox)  # subgroup
+    outc <- ifelse (input$metaoutcome=="Continuous",input$outcomeCont, input$outcomebina)
+    baye(long_sort2_sub,treat_list,input$modelranfix, outc,input$metaoutcome, ref_alter()$ref_sub)
+  })
   
-
+  
   ### 3a. Forest plot
   
   output$gemtc <- renderPlot({                  # forest plot
@@ -638,16 +641,16 @@ shinyServer(function(input, output, session) {
   output$dic_sub <- renderTable ({
     model_sub()$dic
   }, digits=3, rownames=TRUE, colnames=FALSE)
-
   
-
+  
+  
   
   ### 3b. comparison of all treatment pairs
   
   baye_comp <- function(baye){
     tbl <- relative.effect.table(baye$mtcResults)
     if ((input$metaoutcome=="Binary") & (input$outcomebina!="RD")) {
-        tbl<-exp(tbl)
+      tbl<-exp(tbl)
     } 
     as.data.frame(round(tbl, digits=2))
   }
@@ -662,43 +665,31 @@ shinyServer(function(input, output, session) {
   )
   
   
-  ### 3c. ranking table and chart
+  ### 3c. Litmus Rank-o-gram & Radial SUCRA
   
-  output$prob <- renderTable ({     # ranking table
-    prob <- as.data.frame(print(rank.probability(model()$mtcResults,
-          preferredDirection=(if (input$rankopts=="good") -1 else 1))))  
-                                     # Put this code here (rather than in the main model) since the ranking selection is not needed in the model. The ranking is a separate function after getting the model results. 
-                                     # so users are free to change the 'desirable' / 'undesirable' radiobutton without re-running the model.
-    names(prob)[1:ncol(prob)] <- paste("Rank ", 1:(ncol(prob)), sep="")
-    prob
-  }, digits=5, rownames=TRUE, colnames = TRUE
-  )
-  output$prob_sub <- renderTable ({
-    prob <- as.data.frame(print(rank.probability(model_sub()$mtcResults,preferredDirection=
-                                                   (if (input$rankopts=="good") -1 else 1)))) 
-    names(prob)[1:ncol(prob)] <- paste("Rank ", 1:(ncol(prob)), sep="")
-    prob
-  }, digits=5, rownames=TRUE, colnames = TRUE
-  )
-  
-  output$gemtc_rank <- renderPlot ({    # ranking chart
-    mod_list <- model()
-    prob <- as.data.frame(print(rank.probability(mod_list$mtcResults,preferredDirection=
-                                                   (if (input$rankopts=="good") -1 else 1))))
-    prjtitle <- "Ranking with all studies - network meta-analysis median rank chart"
-    rankl <- rownames(prob)
-    mtcRank2(prjtitle, mod_list$ntx, rankl, prob, bcolr=FALSE)
+  # Obtain Data needed for ranking #
+  RankingData <- reactive({
+    rankdata(data=model()$mtcResults, rankdirection=input$rankopts)
   })
-  output$gemtc_rank_sub <- renderPlot ({
-    mod_list=model_sub()
-    prob <- as.data.frame(print(rank.probability(mod_list$mtcResults,preferredDirection=
-                                                   (if (input$rankopts=="good") -1 else 1))))
-    prjtitle <- "Ranking with studies excluded - network meta-analysis median rank chart"
-    rankl <- rownames(prob)
-    ntx <- nrow(prob)
-    mtcRank2(prjtitle, ntx, rankl, prob, bcolr=FALSE)
+  RankingData_sub <- reactive({
+    rankdata(data=model_sub()$mtcResults, rankdirection=input$rankopts)
   })
   
+  # Litmus Rank-O-Gram
+  output$Litmus <- renderPlot({
+    LitmusRankOGram(CumData=RankingData()$Cumulative, SUCRAData=RankingData()$SUCRA, ColourData=RankingData()$Colour)
+  })
+  output$Litmus_sub <- renderPlot({
+    LitmusRankOGram(CumData=RankingData_sub()$Cumulative, SUCRAData=RankingData_sub()$SUCRA, ColourData=RankingData_sub()$Colour)
+  })
+  
+  # Table of Probabilities
+  output$rankdata <- renderTable({
+    RankingData()$Probabilities
+  }, digits=5, rownames=TRUE, colnames = TRUE)
+  output$rankdata_sub <- renderTable({
+    RankingData_sub()$Probabilities
+  }, digits=5, rownames=TRUE, colnames = TRUE)
   
   
   ### 3d. nodesplit model
@@ -727,7 +718,7 @@ shinyServer(function(input, output, session) {
   output$node_table_sub<- renderTable(colnames=TRUE, {
     model_nodesplit_sub()
   })
-
+  
   
   
   ### 3e. Bayesian result details and gelman
@@ -745,9 +736,9 @@ shinyServer(function(input, output, session) {
   output$gemtc_gelman_sub <- renderPlot ({
     gelman.plot(model_sub()$mtcResults)
   })
-
   
-
+  
+  
   
   ### 3f. Deviance 
   
@@ -805,7 +796,7 @@ shinyServer(function(input, output, session) {
     cat(model()$mtcResults$model$code, fill=FALSE, labels=NULL, append=FALSE)
   })
   
-
+  
   ### 3g.2 initial values
   output$inits <- renderPrint({
     model()$mtcResults$model$inits
@@ -827,4 +818,3 @@ shinyServer(function(input, output, session) {
     scat_plot(model_sub())$y
   })
 })
-
