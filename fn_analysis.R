@@ -403,19 +403,23 @@ gemtctau <- function(results,outcome) {
 ### 3c. Ranking results
 
 # Collecting data #
-rankdata <- function(data, rankdirection) {
-  colour_dat = data.frame(SUCRA = seq(0, 100, by = 0.1)) # data frame of colours to match SUCRA values
+rankdata <- function(NMAdata, rankdirection, longdata, widedata, rawlabels, netmeta) {
+  # data frame of colours
+  colour_dat = data.frame(SUCRA = seq(0, 100, by = 0.1)) 
   colour_dat = mutate(colour_dat, colour = seq(0, 100, length.out = 1001)) 
   
-  prob <- as.data.frame(print(rank.probability(data, preferredDirection=(if (rankdirection=="good") -1 else 1)))) # rows treatments, columns ranks
+  # probability rankings
+  prob <- as.data.frame(print(rank.probability(NMAdata, preferredDirection=(if (rankdirection=="good") -1 else 1)))) # rows treatments, columns ranks
   names(prob)[1:ncol(prob)] <- paste("Rank ", 1:(ncol(prob)), sep="")
   sucra <- sucra(prob)  # 1 row of SUCRA values for each treatment column
   treatments <- row.names(prob)
   # Can I remove underscores to help with labelling?
   
+  # SUCRA
   SUCRA <- data.frame(Treatment=treatments,
                       SUCRA=as.numeric(sucra)*100)
   
+  # Cumulative Probabilities
   cumprob <- prob              # obtain copy of probabilities
   for (i in 2:ncol(prob)) {    # for each rank (column)
     for (j in 1:ncol(prob)) {  # for each treatment (row)
@@ -425,9 +429,28 @@ rankdata <- function(data, rankdirection) {
   Cumulative_Data <- data.frame(Treatment=rep(treatments,each=ncol(prob)),
                                 Rank = rep(1:(ncol(prob)), times=ncol(prob)),
                                 Cumulative_Probability = as.numeric(t(cumprob)))
-  Cumulative_Data <- Cumulative_Data %>% left_join(SUCRA, by = "Treatment")
+  Cumulative_Data <- Cumulative_Data %>% left_join(SUCRA, by = "Treatment")#
   
-  return(list(SUCRA=SUCRA, Colour=colour_dat, Cumulative=Cumulative_Data, Probabilities=prob))
+  # Number of people in each node #
+  Patients <- data.frame(Treatment=longdata$T,
+                         Sample=longdata$N)
+  Patients <- aggregate(Patients$Sample, by=list(Category=Patients$Treatment), FUN=sum)
+  Patients <- rename(Patients, c("Category"="Treatment", "x"="N"))
+  SUCRA <- SUCRA %>% right_join(Patients, by = "Treatment")
+  # Node size #
+  size.max <- 15
+  size.min <- 1
+  n <- ncol(prob)
+  for (i in 1:n) {
+    SUCRA$Size[i] <- size.max * SUCRA$N[i]/max(SUCRA$N)
+    if (SUCRA$Size[i] < size.min) {
+      SUCRA$Size[i] <- size.min}
+  }
+  
+  # Number of trials as line thickness taken from netmeta object which is $net1 from the freq_wrap function#
+  NetmetaObj <- netmeta # taken from frequentist analysis already run
+  
+  return(list(SUCRA=SUCRA, Colour=colour_dat, Cumulative=Cumulative_Data, Probabilities=prob, NetmetaObj=NetmetaObj))
 }
 
 # Litmus Rank-O-Gram #
@@ -454,6 +477,100 @@ B <- Litmus_SUCRA + scale_colour_gradient2(low = "red",
 # Combo! #
 Combo <- A + B
 Combo + theme(plot.margin = margin(t=0,r=0,b=0,l=0))
+}
+
+# Radial SUCRA Plot #
+RadialSUCRA <- function(SUCRAData, ColourData, NetmetaObj) {      # SUCRAData needs Treatment & Rank; ColourData needs SUCRA & colour
+  # Background #
+  Background <- ggplot(SUCRAData, aes(x=reorder(Treatment, -SUCRA), y=SUCRA, group=1)) +
+    geom_segment(data = ColourData,
+                 aes(x = -Inf, xend = Inf,
+                     y = SUCRA, yend = SUCRA, colour = colour),
+                 show.legend = FALSE, alpha=0.05) +
+    geom_point(aes(fill=SUCRA),size=1, shape=21,show.legend=FALSE) + theme_classic() + scale_y_continuous(breaks=c(0,20,40,60,80,100), limits=c(-80,115)) +
+    theme(panel.grid.major.y = element_line(colour = c(rep("black",6),"white"))) +
+    coord_polar() +
+    theme(axis.title = element_blank(), axis.text.y = element_blank(), axis.ticks = element_blank(), axis.line = element_blank(), aspect.ratio = 1) +
+    theme(axis.text.x = element_text(size=8,family="sans",angle = 360/(2*pi)*rev(pi/2 + seq(pi/6,2*pi-pi/6, len=6)) + 360/(2*pi)*c( rep(0, 3),rep(pi,3)))) +
+    annotate("text",x = rep(0.5,7), y = c(-3,17,37,57,77,97,115), label = c("0","20","40","60","80","100","SUCRA (%)"), size=2, family="sans")
+  Background + scale_colour_gradient2(low = "red",
+                                      mid = "yellow",
+                                      high = "green", midpoint=50) +
+    scale_fill_gradient2(low = "red",
+                         mid = "yellow",
+                         high = "green", midpoint=50)
+  ggsave(filename = 'Background.png', device = 'png', bg = 'transparent', width = 5, height = 5)
+  # Create my own network plot using ggplot polar coords #
+  study_matrix <- NetmetaObj$A.matrix # give me matrix of number of trials between each treatment combo
+  SUCRA <- SUCRAData %>% arrange(-SUCRA)
+  study_matrix <- study_matrix[SUCRA$Treatment,SUCRA$Treatment]
+  A.sign <- sign(study_matrix) #1s and 0s for presence of trial
+  n.edges <- sum(study_matrix[upper.tri(study_matrix)] > 0) #number of pairwise comparisons
+  dat.edges <- data.frame(pairwiseID = rep(NA, n.edges*2),
+                          treatment = "",
+                          n.stud = NA,
+                          SUCRA = NA,
+                          adj = NA,
+                          col = "",
+                          lwd = NA)
+  lwd.max <- 4
+  lwd.min <- 0.5
+  n <- nrow(SUCRAData)
+  comp.i <- 1
+  ID <- 1
+  for (i in 1:(n - 1)) {
+    for (j in (i + 1):n) {
+      if (A.sign[i, j] > 0) {
+        dat.edges$pairwiseID[comp.i] <- ID
+        dat.edges$pairwiseID[comp.i+1] <- ID
+        dat.edges$treatment[comp.i] <- rownames(study_matrix)[i]
+        dat.edges$treatment[comp.i+1] <- colnames(study_matrix)[j]
+        dat.edges$n.stud[comp.i] <- study_matrix[i, j]
+        dat.edges$n.stud[comp.i+1] <- study_matrix[i, j]
+        dat.edges$SUCRA[comp.i] <- SUCRA$SUCRA[i]
+        dat.edges$SUCRA[comp.i+1] <- SUCRA$SUCRA[j]
+        dat.edges$lwd[comp.i] <- lwd.max * study_matrix[i,j]/max(study_matrix)
+        if (dat.edges$lwd[comp.i] < lwd.min) {
+          dat.edges$lwd[comp.i] <- lwd.min}
+        dat.edges$lwd[comp.i+1] <- lwd.max * study_matrix[i,j]/max(study_matrix)
+        if (dat.edges$lwd[comp.i+1] < lwd.min) {
+          dat.edges$lwd[comp.i+1] <- lwd.min}
+        #dat.edges$col[comp.i] <- col.matrix[i, j]
+        comp.i <- comp.i + 2
+        ID <- ID + 1
+      }
+    }
+  }
+  # add lines #
+  Network <- ggplot(dat.edges, aes(x=reorder(treatment,-SUCRA), y=SUCRA, group=pairwiseID)) +
+    geom_line(size=dat.edges$lwd,show.legend = FALSE) + ggiraphExtra:::coord_radar() + scale_y_continuous(limits=c(-80,115)) +
+    theme(panel.background = element_rect(fill = "transparent"), plot.background = element_rect(fill = "transparent", color = NA), 
+          axis.title = element_blank(), axis.text.y = element_blank(), axis.ticks = element_blank(), 
+          axis.line = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), aspect.ratio = 1) +
+    theme(axis.text.x = element_text(size=8,family="sans",angle = 360/(2*pi)*rev(pi/2 + seq(pi/6,2*pi-pi/6, len=6)) + 360/(2*pi)*c( rep(0, 3),rep(pi,3)))) +
+    annotate("text",x = rep(0.5,7), y = c(-3,17,37,57,77,97,115), label = c("0","20","40","60","80","100","SUCRA (%)"), size=2, family="sans")
+  Network
+  ggsave(filename = 'Network.png', device = 'png', bg = 'transparent', width=5, height=5)
+  # Plot of just points to go on the very top #
+  Points <- ggplot(SUCRAData, aes(x=reorder(Treatment, -SUCRA), y=SUCRA, group=1)) +
+    geom_point(aes(fill=SUCRA, size=Size), size=SUCRAData$Size,shape=21,show.legend=FALSE) + scale_y_continuous(limits=c(-80,115)) +
+    theme(panel.background = element_rect(fill = "transparent"), plot.background = element_rect(fill = "transparent", color = NA), 
+          axis.title = element_blank(), axis.text.y = element_blank(), axis.ticks = element_blank(), 
+          axis.line = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), aspect.ratio = 1) +
+    coord_polar() + theme(axis.text.x = element_text(size=8,family="sans",angle = 360/(2*pi)*rev(pi/2 + seq(pi/6,2*pi-pi/6, len=6)) + 360/(2*pi)*c( rep(0, 3),rep(pi,3)))) +
+    annotate("text",x = rep(0.5,7), y = c(-3,17,37,57,77,97,115), label = c("0","20","40","60","80","100","SUCRA (%)"), size=2, family="sans")
+  Points + scale_fill_gradient2(low = "red",
+                                mid = "yellow",
+                                high = "green", midpoint=50)
+  ggsave(filename = 'Points.png', device = 'png', bg = 'transparent', width=5, height=5)
+  # Overlay #
+  Background <- image_read('Background.png')
+  Network <- image_read('Network.png')
+  Points <- image_read('Points.png')
+  Final <- image_composite(Background,Network)
+  Final <- image_composite(Final,Points)
+  ggdraw() +
+    draw_image(Final)
 }
 
 ### 3d. nodesplit models

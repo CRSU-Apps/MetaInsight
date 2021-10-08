@@ -24,6 +24,7 @@ library(plotly)
 library(shinyWidgets)
 library(shinyjs)
 library(shinyBS)
+library(cowplot)
 
 
 source("PlotFunctionsRKO.R", local = TRUE) # Plot functions
@@ -481,12 +482,14 @@ shinyUI(navbarPage(id="meta",
                                                                                                        column(6, align = "center",
                                                                                                               p(tags$strong("Ranking results for all studies")),
                                                                                                               plotOutput("Litmus"),
+                                                                                                              plotOutput("Radial"),
                                                                                                               div(tableOutput("rankdata"), style = "font-size:100%"),
                                                                                                               #downloadButton('downloadBaye_rank')
                                                                                                        ),
                                                                                                        column(6, align = "center",
                                                                                                               p(tags$strong("Ranking results with studies excluded")),
                                                                                                               plotOutput("Litmus_sub"),
+                                                                                                              plotOutput("Radial_sub"),
                                                                                                               div(tableOutput("rankdata_sub"), style = "font-size:100%"),
                                                                                                               #downloadButton('downloadBaye_rank_sub')))
                                                                                                        ))),

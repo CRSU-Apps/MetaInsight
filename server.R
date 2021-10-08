@@ -24,6 +24,8 @@ library(shinyBS)
 library(patchwork)
 library(ggrepel)
 library(tidyr)
+library(magick)
+library(reshape2)
 
 
 
@@ -666,13 +668,29 @@ shinyServer(function(input, output, session) {
   
   
   ### 3c. Litmus Rank-o-gram & Radial SUCRA
+  # Need to implement only rerunning after pressing button (frequentist commands are affecting it)
+  # Also add 'updating' progress bars
   
   # Obtain Data needed for ranking #
   RankingData <- reactive({
-    rankdata(data=model()$mtcResults, rankdirection=input$rankopts)
+    newData1 <- as.data.frame(data())
+    label <- ifelse(input$metaoutcome=="Continuous",input$listCont,input$listbina)
+    treat_list <- as.data.frame(read.csv(text=label, sep = "\t"))
+    longsort2 <- dataform.df(newData1,treat_list,input$metaoutcome)
+    data_wide <- entry.df(data(),input$metaoutcome)    #transform data to wide form
+    rankdata(NMAdata=model()$mtcResults, rankdirection=input$rankopts, 
+             longdata=longsort2, widedata=data_wide, rawlabels=treat_list, netmeta=freq_all())
   })
   RankingData_sub <- reactive({
-    rankdata(data=model_sub()$mtcResults, rankdirection=input$rankopts)
+    newData1 <- as.data.frame(data())
+    label <- ifelse(input$metaoutcome=="Continuous",input$listCont,input$listbina)
+    treat_list <- data.frame(read.csv(text=label, sep = "\t"))
+    longsort2 <- dataform.df(newData1,treat_list,input$metaoutcome)
+    long_sort2_sub <- filter(longsort2, !Study %in% input$exclusionbox)  # subgroup
+    data_wide <- entry.df(data(),input$metaoutcome)
+    data_wide_sub <- filter(data_wide, !Study %in% input$exclusionbox)  # Get subset of data to use
+    rankdata(NMAdata=model_sub()$mtcResults, rankdirection=input$rankopts,
+             longdata=long_sort2_sub, widedata=data_wide_sub, rawlabels=treat_list, netmeta=freq_sub())
   })
   
   # Litmus Rank-O-Gram
@@ -683,13 +701,22 @@ shinyServer(function(input, output, session) {
     LitmusRankOGram(CumData=RankingData_sub()$Cumulative, SUCRAData=RankingData_sub()$SUCRA, ColourData=RankingData_sub()$Colour)
   })
   
-  # Table of Probabilities
+  # Radial SUCRA
+  output$Radial <- renderPlot({
+    RadialSUCRA(SUCRAData=RankingData()$SUCRA, ColourData=RankingData()$Colour, NetmetaObj=RankingData()$NetmetaObj$net1)
+  })
+  output$Radial_sub <- renderPlot({
+    RadialSUCRA(SUCRAData=RankingData_sub()$SUCRA, ColourData=RankingData_sub()$Colour, NetmetaObj=RankingData_sub()$NetmetaObj$net1)
+  })
+  
+  # Table of Probabilities (need to include SUCRA and have it as a collapsable table)
   output$rankdata <- renderTable({
     RankingData()$Probabilities
   }, digits=5, rownames=TRUE, colnames = TRUE)
   output$rankdata_sub <- renderTable({
     RankingData_sub()$Probabilities
   }, digits=5, rownames=TRUE, colnames = TRUE)
+  
   
   
   ### 3d. nodesplit model
