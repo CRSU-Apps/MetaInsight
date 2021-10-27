@@ -703,10 +703,22 @@ shinyServer(function(input, output, session) {
   
   # Radial SUCRA
   output$Radial <- renderPlot({
-    RadialSUCRA(SUCRAData=RankingData()$SUCRA, ColourData=RankingData()$Colour, NetmetaObj=RankingData()$NetmetaObj$net1)
+    Plot <- RadialSUCRA(SUCRAData=RankingData()$SUCRA, ColourData=RankingData()$Colour, NetmetaObj=RankingData()$NetmetaObj$net1)
+    Plot$Original
   })
   output$Radial_sub <- renderPlot({
-    RadialSUCRA(SUCRAData=RankingData_sub()$SUCRA, ColourData=RankingData_sub()$Colour, NetmetaObj=RankingData_sub()$NetmetaObj$net1)
+    Plot <- RadialSUCRA(SUCRAData=RankingData_sub()$SUCRA, ColourData=RankingData_sub()$Colour, NetmetaObj=RankingData_sub()$NetmetaObj$net1)
+    Plot$Original
+  })
+  
+  # Radial SUCRA alternative
+  output$RadialAlt <- renderPlot({
+    Plot <- RadialSUCRA(SUCRAData=RankingData()$SUCRA, ColourData=RankingData()$Colour, NetmetaObj=RankingData()$NetmetaObj$net1)
+    Plot$Alternative
+  })
+  output$RadialAlt_sub <- renderPlot({
+    Plot <- RadialSUCRA(SUCRAData=RankingData_sub()$SUCRA, ColourData=RankingData_sub()$Colour, NetmetaObj=RankingData_sub()$NetmetaObj$net1)
+    Plot$Alternative
   })
   
   # Table of Probabilities (need to include SUCRA and have it as a collapsable table)

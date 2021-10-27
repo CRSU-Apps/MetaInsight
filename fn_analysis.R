@@ -400,7 +400,7 @@ gemtctau <- function(results,outcome) {
   }
 }
 
-### 3c. Ranking results
+### 3c. Ranking results  # CONSIDER PROGRESS BARS
 
 # Collecting data #
 rankdata <- function(NMAdata, rankdirection, longdata, widedata, rawlabels, netmeta) {
@@ -438,13 +438,17 @@ rankdata <- function(NMAdata, rankdirection, longdata, widedata, rawlabels, netm
   Patients <- rename(Patients, c("Category"="Treatment", "x"="N"))
   SUCRA <- SUCRA %>% right_join(Patients, by = "Treatment")
   # Node size #
-  size.max <- 15
+  size.maxO <- 15
+  size.maxA <- 10
   size.min <- 1
   n <- ncol(prob)
   for (i in 1:n) {
-    SUCRA$Size[i] <- size.max * SUCRA$N[i]/max(SUCRA$N)
-    if (SUCRA$Size[i] < size.min) {
-      SUCRA$Size[i] <- size.min}
+    SUCRA$SizeO[i] <- size.maxO * SUCRA$N[i]/max(SUCRA$N)
+    SUCRA$SizeA[i] <- size.maxA * SUCRA$N[i]/max(SUCRA$N)
+    if (SUCRA$SizeO[i] < size.min) {
+      SUCRA$SizeO[i] <- size.min}
+    if (SUCRA$SizeA[i] < size.min) {
+      SUCRA$SizeA[i] <- size.min}
   }
   
   # Number of trials as line thickness taken from netmeta object which is $net1 from the freq_wrap function#
@@ -479,27 +483,33 @@ Combo <- A + B
 Combo + theme(plot.margin = margin(t=0,r=0,b=0,l=0))
 }
 
+
 # Radial SUCRA Plot #
 RadialSUCRA <- function(SUCRAData, ColourData, NetmetaObj) {      # SUCRAData needs Treatment & Rank; ColourData needs SUCRA & colour
+  
   # Background #
   Background <- ggplot(SUCRAData, aes(x=reorder(Treatment, -SUCRA), y=SUCRA, group=1)) +
-    geom_segment(data = ColourData,
-                 aes(x = -Inf, xend = Inf,
-                     y = SUCRA, yend = SUCRA, colour = colour),
-                 show.legend = FALSE, alpha=0.05) +
-    geom_point(aes(fill=SUCRA),size=1, shape=21,show.legend=FALSE) + theme_classic() + scale_y_continuous(breaks=c(0,20,40,60,80,100), limits=c(-80,115)) +
-    theme(panel.grid.major.y = element_line(colour = c(rep("black",6),"white"))) +
+    geom_segment(data = ColourData, aes(x = -Inf, xend = Inf, y = SUCRA, yend = SUCRA, colour = colour), show.legend = FALSE, alpha=0.05) +
+    theme_classic() + 
+    scale_y_continuous(breaks=c(0,20,40,60,80,100), limits=c(-80,115)) +
+    theme(panel.grid.major.y = element_line(colour = c(rep("black",6),"white")), axis.title = element_blank(), axis.text.y = element_blank(), axis.ticks = element_blank(), axis.line = element_blank(), 
+          aspect.ratio = 1, axis.text.x = element_text(size=8,family="sans",angle = 360/(2*pi)*rev(pi/2 + seq(pi/6,2*pi-pi/6, len=6)) + 360/(2*pi)*c( rep(0, 3),rep(pi,3)))) +
     coord_polar() +
-    theme(axis.title = element_blank(), axis.text.y = element_blank(), axis.ticks = element_blank(), axis.line = element_blank(), aspect.ratio = 1) +
-    theme(axis.text.x = element_text(size=8,family="sans",angle = 360/(2*pi)*rev(pi/2 + seq(pi/6,2*pi-pi/6, len=6)) + 360/(2*pi)*c( rep(0, 3),rep(pi,3)))) +
-    annotate("text",x = rep(0.5,7), y = c(-3,17,37,57,77,97,115), label = c("0","20","40","60","80","100","SUCRA (%)"), size=2, family="sans")
-  Background + scale_colour_gradient2(low = "red",
-                                      mid = "yellow",
-                                      high = "green", midpoint=50) +
-    scale_fill_gradient2(low = "red",
-                         mid = "yellow",
-                         high = "green", midpoint=50)
-  ggsave(filename = 'Background.png', device = 'png', bg = 'transparent', width = 5, height = 5)
+    scale_colour_gradient2(low = "red", mid = "yellow", high = "green", midpoint=50) +
+    scale_fill_gradient2(low = "red", mid = "yellow", high = "green", midpoint=50) 
+  
+  Background +
+    geom_point(aes(fill=SUCRA),size=1, shape=21,show.legend=FALSE) +  
+    annotate("text",x = rep(0.5,7), y = c(-3,17,37,57,77,97,115), label = c("0","20","40","60","80","100","SUCRA (%)"), size=2, family="sans") # annotate has to be after geoms
+  ggsave(filename = 'BackgroundO.png', device = 'png', bg = 'transparent', width = 5, height = 5)
+  
+  Background +
+    geom_segment(aes(xend=Treatment, y = -20, yend=110), linetype="dashed") +
+    geom_point(aes(fill=SUCRA),size=3, shape=21,show.legend=FALSE) +
+    annotate("text",x = rep(0.5,7), y = c(-3,17,37,57,77,97,115), label = c("0","20","40","60","80","100","SUCRA (%)"), size=2, family="sans") # annotate has to be after geoms
+  ggsave(filename = 'BackgroundA.png', device = 'png', bg = 'transparent', width = 5, height = 5)
+  
+  
   # Create my own network plot using ggplot polar coords #
   study_matrix <- NetmetaObj$A.matrix # give me matrix of number of trials between each treatment combo
   SUCRA <- SUCRAData %>% arrange(-SUCRA)
@@ -513,8 +523,10 @@ RadialSUCRA <- function(SUCRAData, ColourData, NetmetaObj) {      # SUCRAData ne
                           adj = NA,
                           col = "",
                           lwd = NA)
-  lwd.max <- 4
-  lwd.min <- 0.5
+  lwd.maxO <- 5
+  lwd.maxA <- 4 # need to sort something for node size too (currently calculated in rankdata function)
+  lwd.minO <- 1
+  lwd.minA <- 0.5
   n <- nrow(SUCRAData)
   comp.i <- 1
   ID <- 1
@@ -529,48 +541,90 @@ RadialSUCRA <- function(SUCRAData, ColourData, NetmetaObj) {      # SUCRAData ne
         dat.edges$n.stud[comp.i+1] <- study_matrix[i, j]
         dat.edges$SUCRA[comp.i] <- SUCRA$SUCRA[i]
         dat.edges$SUCRA[comp.i+1] <- SUCRA$SUCRA[j]
-        dat.edges$lwd[comp.i] <- lwd.max * study_matrix[i,j]/max(study_matrix)
-        if (dat.edges$lwd[comp.i] < lwd.min) {
-          dat.edges$lwd[comp.i] <- lwd.min}
-        dat.edges$lwd[comp.i+1] <- lwd.max * study_matrix[i,j]/max(study_matrix)
-        if (dat.edges$lwd[comp.i+1] < lwd.min) {
-          dat.edges$lwd[comp.i+1] <- lwd.min}
-        #dat.edges$col[comp.i] <- col.matrix[i, j]
+        dat.edges$lwdO[comp.i] <- lwd.maxO * study_matrix[i,j]/max(study_matrix)
+        dat.edges$lwdA[comp.i] <- lwd.maxA * study_matrix[i,j]/max(study_matrix)
+        if (dat.edges$lwdO[comp.i] < lwd.minO) {
+          dat.edges$lwdO[comp.i] <- lwd.minO}
+        if (dat.edges$lwdA[comp.i] < lwd.minA) {
+          dat.edges$lwdA[comp.i] <- lwd.minA}
+        dat.edges$lwdO[comp.i+1] <- lwd.maxO * study_matrix[i,j]/max(study_matrix)
+        dat.edges$lwdA[comp.i+1] <- lwd.maxA * study_matrix[i,j]/max(study_matrix)
+        if (dat.edges$lwdO[comp.i+1] < lwd.minO) {
+          dat.edges$lwdO[comp.i+1] <- lwd.minO}
+        if (dat.edges$lwdA[comp.i+1] < lwd.minA) {
+          dat.edges$lwdA[comp.i+1] <- lwd.minA}
         comp.i <- comp.i + 2
         ID <- ID + 1
       }
     }
   }
   # add lines #
-  Network <- ggplot(dat.edges, aes(x=reorder(treatment,-SUCRA), y=SUCRA, group=pairwiseID)) +
-    geom_line(size=dat.edges$lwd,show.legend = FALSE) + ggiraphExtra:::coord_radar() + scale_y_continuous(limits=c(-80,115)) +
-    theme(panel.background = element_rect(fill = "transparent"), plot.background = element_rect(fill = "transparent", color = NA), 
-          axis.title = element_blank(), axis.text.y = element_blank(), axis.ticks = element_blank(), 
-          axis.line = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), aspect.ratio = 1) +
-    theme(axis.text.x = element_text(size=8,family="sans",angle = 360/(2*pi)*rev(pi/2 + seq(pi/6,2*pi-pi/6, len=6)) + 360/(2*pi)*c( rep(0, 3),rep(pi,3)))) +
-    annotate("text",x = rep(0.5,7), y = c(-3,17,37,57,77,97,115), label = c("0","20","40","60","80","100","SUCRA (%)"), size=2, family="sans")
-  Network
-  ggsave(filename = 'Network.png', device = 'png', bg = 'transparent', width=5, height=5)
+  CreateNetwork <- function(Type) {
+    if (Type=='Original') {
+      g <- ggplot(dat.edges, aes(x=reorder(treatment,-SUCRA), y=SUCRA, group=pairwiseID)) +
+        geom_line(size=dat.edges$lwdO,show.legend = FALSE)
+    } else {
+      g <- ggplot(dat.edges, aes(x=reorder(treatment,-SUCRA), y=-20, group=pairwiseID)) +
+        geom_line(size=dat.edges$lwdA,show.legend = FALSE)
+    }
+    g +
+      ggiraphExtra:::coord_radar() + 
+      scale_y_continuous(limits=c(-80,115)) +
+      theme(panel.background = element_rect(fill = "transparent"), plot.background = element_rect(fill = "transparent", color = NA), 
+            axis.title = element_blank(), axis.text.y = element_blank(), axis.ticks = element_blank(), 
+            axis.line = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), aspect.ratio = 1, 
+            axis.text.x = element_text(size=8,family="sans",angle = 360/(2*pi)*rev(pi/2 + seq(pi/6,2*pi-pi/6, len=6)) + 360/(2*pi)*c( rep(0, 3),rep(pi,3)))) +
+      annotate("text",x = rep(0.5,7), y = c(-3,17,37,57,77,97,115), label = c("0","20","40","60","80","100","SUCRA (%)"), size=2, family="sans")
+  }
+  Network <- CreateNetwork(Type='Original')
+  ggsave(filename = 'NetworkO.png', device = 'png', bg = 'transparent', width=5, height=5)
+  
+  Network <- CreateNetwork(Type='Alternative')
+  ggsave(filename = "NetworkA.png", device = 'png', bg = 'transparent', width=5, height=5)
+  
+  
   # Plot of just points to go on the very top #
-  Points <- ggplot(SUCRAData, aes(x=reorder(Treatment, -SUCRA), y=SUCRA, group=1)) +
-    geom_point(aes(fill=SUCRA, size=Size), size=SUCRAData$Size,shape=21,show.legend=FALSE) + scale_y_continuous(limits=c(-80,115)) +
-    theme(panel.background = element_rect(fill = "transparent"), plot.background = element_rect(fill = "transparent", color = NA), 
-          axis.title = element_blank(), axis.text.y = element_blank(), axis.ticks = element_blank(), 
-          axis.line = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), aspect.ratio = 1) +
-    coord_polar() + theme(axis.text.x = element_text(size=8,family="sans",angle = 360/(2*pi)*rev(pi/2 + seq(pi/6,2*pi-pi/6, len=6)) + 360/(2*pi)*c( rep(0, 3),rep(pi,3)))) +
-    annotate("text",x = rep(0.5,7), y = c(-3,17,37,57,77,97,115), label = c("0","20","40","60","80","100","SUCRA (%)"), size=2, family="sans")
-  Points + scale_fill_gradient2(low = "red",
-                                mid = "yellow",
-                                high = "green", midpoint=50)
-  ggsave(filename = 'Points.png', device = 'png', bg = 'transparent', width=5, height=5)
+  CreatePoints <- function(Type) {
+    if (Type=='Original') {
+      g <- ggplot(SUCRAData, aes(x=reorder(Treatment, -SUCRA), y=SUCRA, group=1)) +
+        geom_point(aes(fill=SUCRA, size=SizeO), size=SUCRAData$SizeO, shape=21,show.legend=FALSE)
+    } else {
+      g <- ggplot(SUCRAData, aes(x=reorder(Treatment, -SUCRA), y=-20, group=1)) +
+        geom_point(aes(fill=SUCRA, size=SizeA), size=SUCRAData$SizeA, shape=21,show.legend=FALSE)
+    }
+    g +
+      scale_y_continuous(limits=c(-80,115)) +
+      theme(panel.background = element_rect(fill = "transparent"), plot.background = element_rect(fill = "transparent", color = NA), 
+            axis.title = element_blank(), axis.text.y = element_blank(), axis.ticks = element_blank(), 
+            axis.line = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), aspect.ratio = 1,
+            axis.text.x = element_text(size=8,family="sans",angle = 360/(2*pi)*rev(pi/2 + seq(pi/6,2*pi-pi/6, len=6)) + 360/(2*pi)*c( rep(0, 3),rep(pi,3)))) +
+      coord_polar() +
+      scale_fill_gradient2(low = "red", mid = "yellow", high = "green", midpoint=50) +
+      annotate("text",x = rep(0.5,7), y = c(-3,17,37,57,77,97,115), label = c("0","20","40","60","80","100","SUCRA (%)"), size=2, family="sans")
+  }
+  
+  Points <- CreatePoints(Type='Original')
+  ggsave(filename = 'PointsO.png', device = 'png', bg = 'transparent', width=5, height=5)
+  
+  Points <- CreatePoints(Type='Alternative')
+  ggsave(filename = 'PointsA.png', device = 'png', bg = 'transparent', width=5, height=5)
+  
   # Overlay #
-  Background <- image_read('Background.png')
-  Network <- image_read('Network.png')
-  Points <- image_read('Points.png')
+  Background <- image_read('BackgroundO.png')
+  Network <- image_read('NetworkO.png')
+  Points <- image_read('PointsO.png')
   Final <- image_composite(Background,Network)
   Final <- image_composite(Final,Points)
-  ggdraw() +
+  Finalplot <- ggdraw() +
+                  draw_image(Final)
+  Background <- image_read('BackgroundA.png')
+  Network <- image_read('NetworkA.png')
+  Points <- image_read('PointsA.png')
+  Final <- image_composite(Background,Network)
+  Final <- image_composite(Final,Points)
+  Finalalt <- ggdraw() +
     draw_image(Final)
+  return(list(Original=Finalplot, Alternative=Finalalt))
 }
 
 ### 3d. nodesplit models
