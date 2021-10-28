@@ -497,7 +497,6 @@ RadialSUCRA <- function(SUCRAData, ColourData, NetmetaObj) {      # SUCRAData ne
   Background <- ggplot(SUCRAData, aes(x=reorder(Treatment, -SUCRA), y=SUCRA, group=1)) +
     geom_segment(data = ColourData, aes(x = -Inf, xend = Inf, y = SUCRA, yend = SUCRA, colour = colour), show.legend = FALSE, alpha=0.05) +
     theme_classic() + 
-    scale_y_continuous(breaks=c(0,20,40,60,80,100), limits=c(-80,115)) +
     theme(panel.grid.major.y = element_line(colour = c(rep("black",6),"white")), axis.title = element_blank(), axis.text.y = element_blank(), axis.ticks = element_blank(), axis.line = element_blank(), 
           aspect.ratio = 1, axis.text.x = element_text(size=8,family="sans",angle = 360/(2*pi)*rev(pi/2 + seq(pi/6,2*pi-pi/6, len=6)) + 360/(2*pi)*c( rep(0, 3),rep(pi,3)))) +
     coord_polar() +
@@ -506,12 +505,14 @@ RadialSUCRA <- function(SUCRAData, ColourData, NetmetaObj) {      # SUCRAData ne
   
   Background +
     geom_point(aes(fill=SUCRA),size=1, shape=21,show.legend=FALSE) +  
+    scale_y_continuous(breaks=c(0,20,40,60,80,100), limits=c(-40,115)) +
     annotate("text",x = rep(0.5,7), y = c(-3,17,37,57,77,97,115), label = c("0","20","40","60","80","100","SUCRA (%)"), size=2, family="sans") # annotate has to be after geoms
   ggsave(filename = 'BackgroundO.png', device = 'png', bg = 'transparent', width = 5, height = 5)
   
   Background +
     geom_segment(aes(xend=Treatment, y = -20, yend=110), linetype="dashed") +
     geom_point(aes(fill=SUCRA),size=3, shape=21,show.legend=FALSE) +
+    scale_y_continuous(breaks=c(0,20,40,60,80,100), limits=c(-80,115)) +
     annotate("text",x = rep(0.5,7), y = c(-3,17,37,57,77,97,115), label = c("0","20","40","60","80","100","SUCRA (%)"), size=2, family="sans") # annotate has to be after geoms
   ggsave(filename = 'BackgroundA.png', device = 'png', bg = 'transparent', width = 5, height = 5)
   
@@ -568,14 +569,15 @@ RadialSUCRA <- function(SUCRAData, ColourData, NetmetaObj) {      # SUCRAData ne
   CreateNetwork <- function(Type) {
     if (Type=='Original') {
       g <- ggplot(dat.edges, aes(x=reorder(treatment,-SUCRA), y=SUCRA, group=pairwiseID)) +
-        geom_line(size=dat.edges$lwdO,show.legend = FALSE)
+        geom_line(size=dat.edges$lwdO,show.legend = FALSE) +
+        scale_y_continuous(limits=c(-40,115))
     } else {
       g <- ggplot(dat.edges, aes(x=reorder(treatment,-SUCRA), y=-20, group=pairwiseID)) +
-        geom_line(size=dat.edges$lwdA,show.legend = FALSE)
+        geom_line(size=dat.edges$lwdA,show.legend = FALSE) +
+        scale_y_continuous(limits=c(-80,115))
     }
     g +
       ggiraphExtra:::coord_radar() + 
-      scale_y_continuous(limits=c(-80,115)) +
       theme(panel.background = element_rect(fill = "transparent"), plot.background = element_rect(fill = "transparent", color = NA), 
             axis.title = element_blank(), axis.text.y = element_blank(), axis.ticks = element_blank(), 
             axis.line = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), aspect.ratio = 1, 
@@ -593,13 +595,14 @@ RadialSUCRA <- function(SUCRAData, ColourData, NetmetaObj) {      # SUCRAData ne
   CreatePoints <- function(Type) {
     if (Type=='Original') {
       g <- ggplot(SUCRAData, aes(x=reorder(Treatment, -SUCRA), y=SUCRA, group=1)) +
-        geom_point(aes(fill=SUCRA, size=SizeO), size=SUCRAData$SizeO, shape=21,show.legend=FALSE)
+        geom_point(aes(fill=SUCRA, size=SizeO), size=SUCRAData$SizeO, shape=21,show.legend=FALSE) +
+        scale_y_continuous(limits=c(-40,115))
     } else {
       g <- ggplot(SUCRAData, aes(x=reorder(Treatment, -SUCRA), y=-20, group=1)) +
-        geom_point(aes(fill=SUCRA, size=SizeA), size=SUCRAData$SizeA, shape=21,show.legend=FALSE)
+        geom_point(aes(fill=SUCRA, size=SizeA), size=SUCRAData$SizeA, shape=21,show.legend=FALSE) +
+        scale_y_continuous(limits=c(-80,115))
     }
     g +
-      scale_y_continuous(limits=c(-80,115)) +
       theme(panel.background = element_rect(fill = "transparent"), plot.background = element_rect(fill = "transparent", color = NA), 
             axis.title = element_blank(), axis.text.y = element_blank(), axis.ticks = element_blank(), 
             axis.line = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), aspect.ratio = 1,
