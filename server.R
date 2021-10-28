@@ -288,7 +288,7 @@ shinyServer(function(input, output, session) {
     return(longsort2)
   }
   
-  output$netGraphStatic <- renderPlot({
+  output$netGraphStatic1 <- renderPlot({
     if (input$networkstyle=='networkp1') {
       make_netgraph(freq_all())
     } else {
@@ -296,6 +296,10 @@ shinyServer(function(input, output, session) {
       net.plot(data.rh, node.scale = 3, edge.scale=1.5)  #, flag="Orlistat". 
     }
     title("Network plot of all studies")
+  })
+  output$netGraphStatic2 <- renderPlot({ # need it in ranking panel # NEED TO FINE-TUNE RUN-OFF #
+    netgraph(freq_all()$net1, lwd=2, number.of.studies = TRUE, plastic=FALSE, points=TRUE, cex=1, cex.points=2, col.points=1, col=8, pos.number.of.studies=0.43,
+             col.number.of.studies = "forestgreen", col.multiarm = "white", bg.number.of.studies = "forestgreen", srt.labels="orthogonal")
   })
   
   output$netGraphUpdating <- renderPlot({
@@ -613,10 +617,19 @@ shinyServer(function(input, output, session) {
   
   ### 3a. Forest plot
   
-  output$gemtc <- renderPlot({                  # forest plot
+  output$gemtc1 <- renderPlot({                  # forest plot
     forest(model()$mtcRelEffects,digits=3)
     title(paste("All studies: 
               Bayesian", model()$a, "consistency model forest plot results"))
+  })
+  output$gemtc2 <- renderPlot({                  # forest plot for ranking panel
+    png("forest.png")
+    forest(model()$mtcRelEffects,digits=3)
+    dev.off()
+    ForestImg <- image_read('forest.png')
+    Img <- ggdraw() +
+      draw_image(ForestImg)
+    return(Img)
   })
   output$gemtc_sub <- renderPlot({
     forest(model_sub()$mtcRelEffects,digits=3)

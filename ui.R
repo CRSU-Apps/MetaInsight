@@ -30,7 +30,16 @@ library(cowplot)
 source("PlotFunctionsRKO.R", local = TRUE) # Plot functions
 load("blank.rds") # Objects to store data for plot functions
 
-shinyUI(navbarPage(id="meta",
+dashboardPage(
+  dashboardHeader(disable = TRUE),
+  dashboardSidebar(disable = TRUE),
+  dashboardBody(tags$head(tags$style(HTML('
+      .content-wrapper {
+        background-color: #fff;
+      }
+    '
+  ))),
+  navbarPage(id="meta",
                    "MetaInsight", 
                    header = singleton(tags$head(includeScript("google_analytics2.js"))),
                    tabPanel(id="home", "Home", 
@@ -357,7 +366,7 @@ shinyUI(navbarPage(id="meta",
                                              radioButtons('format_freq0', 'Document format', c('PDF', 'SVG'), inline = TRUE),  
                                              downloadButton('downloadStudy')),
                                     tabPanel("1c. Network Plot",
-                                             column(6, plotOutput("netGraphStatic"),
+                                             column(6, plotOutput("netGraphStatic1"),
                                                     conditionalPanel(condition= "input.networkstyle=='networkp1'",
                                                                      p("Numbers on the line indicate the number of trials conducted for the comparison. The shaded areas indicate there exist multi-arm trials between the comparisons.")
                                                     ),
@@ -434,7 +443,7 @@ shinyUI(navbarPage(id="meta",
                                                                                                        )),
                                                                                                      fixedRow(
                                                                                                        column(6, align = "center",
-                                                                                                              plotOutput("gemtc"),
+                                                                                                              plotOutput("gemtc1"),
                                                                                                               p("Model fit:"),
                                                                                                               tableOutput("dic"),
                                                                                                               textOutput("text_gemtc"),
@@ -478,23 +487,31 @@ shinyUI(navbarPage(id="meta",
                                                                                             tabPanel("3c. Ranking table",
                                                                                                      helpText("Please note: if you change the selections on the sidebar, 
                                you will need to re-run the primary and/or sensitivity analysis from the 'Forest Plot' page."),
-                                                                                                     fixedRow(
-                                                                                                       column(6, align = "center",
-                                                                                                              p(tags$strong("Ranking results for all studies")),
-                                                                                                              plotOutput("Litmus"),
-                                                                                                              plotOutput("Radial"),
-                                                                                                              plotOutput("RadialAlt"),
-                                                                                                              div(tableOutput("rankdata"), style = "font-size:100%"),
+                                                                                                     fluidRow(
+                                                                                                       box(title="Ranking results for all studies", status='primary', solidHeader=TRUE, width=12,
+                                                                                                           splitLayout(cellWidths=c("30%","40%","30%"), cellArgs = list(style="padding: 3px; border: 2px solid gold"),
+                                                                                                                       column(12, align = "center", h5("Relative Effects"), plotOutput("gemtc2")),
+                                                                                                                       column(12, align = "center", h5("Ranking Results"), plotOutput("Litmus")),
+                                                                                                                       column(12, align = "center", h5("Summary of evidence"), plotOutput("netGraphStatic2"))))
+                                                                                                     )
+                                                                                                     #fixedRow(
+                                                                                                    # column(6, align = "center",
+                                                                                                    #          p(tags$strong("Ranking results for all studies")),
+                                                                                                    #          plotOutput("Litmus"),
+                                                                                                    #          plotOutput("Radial"),
+                                                                                                    #          plotOutput("RadialAlt"),
+                                                                                                    #          div(tableOutput("rankdata"), style = "font-size:100%"),
                                                                                                               #downloadButton('downloadBaye_rank')
-                                                                                                       ),
-                                                                                                       column(6, align = "center",
-                                                                                                              p(tags$strong("Ranking results with studies excluded")),
-                                                                                                              plotOutput("Litmus_sub"),
-                                                                                                              plotOutput("Radial_sub"),
-                                                                                                              plotOutput("RadialAlt_sub"),
-                                                                                                              div(tableOutput("rankdata_sub"), style = "font-size:100%"),
+                                                                                                    #   ),
+                                                                                                    #   column(6, align = "center",
+                                                                                                    #          p(tags$strong("Ranking results with studies excluded")),
+                                                                                                    #          plotOutput("Litmus_sub"),
+                                                                                                    #          plotOutput("Radial_sub"),
+                                                                                                    #          plotOutput("RadialAlt_sub"),
+                                                                                                    #          div(tableOutput("rankdata_sub"), style = "font-size:100%"),
                                                                                                               #downloadButton('downloadBaye_rank_sub')))
-                                                                                                       ))),
+                                                                                                    #   ))
+                                                                                                     ),
                                                                                             tabPanel("3d. Nodesplit model",
                                                                                                      helpText("Please note: if you change the selections on the sidebar, 
                                you will need to re-run the primary and/or sensitivity analysis from the 'Forest Plot' page."),
@@ -643,7 +660,7 @@ shinyUI(navbarPage(id="meta",
                                                                                                                   column(6,verbatimTextOutput("dev_ume")),
                                                                                                                   column(6,verbatimTextOutput("dev_ume_sub")
                                                                                                                   ))   
-                                                                                                       ))))))))),
+                                                                                                       )))))), width=9))),
                    
                    
                    ###################################
@@ -710,4 +727,4 @@ shinyUI(navbarPage(id="meta",
                                         src="gdpr.pdf")
                    )
 )
-)
+))
