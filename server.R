@@ -297,9 +297,12 @@ shinyServer(function(input, output, session) {
     }
     title("Network plot of all studies")
   })
-  output$netGraphStatic2 <- renderPlot({ # need it in ranking panel # NEED TO FINE-TUNE RUN-OFF #
+  netgraph2 <- eventReactive(input$baye_do, { # need it in ranking panel # NEED TO FINE-TUNE RUN-OFF #
     netgraph(freq_all()$net1, lwd=2, number.of.studies = TRUE, plastic=FALSE, points=TRUE, cex=1, cex.points=2, col.points=1, col=8, pos.number.of.studies=0.43,
-             col.number.of.studies = "forestgreen", col.multiarm = "white", bg.number.of.studies = "forestgreen", srt.labels="orthogonal")
+             col.number.of.studies = "forestgreen", col.multiarm = "white", bg.number.of.studies = "forestgreen")
+  })
+  output$netGraphStatic2 <- renderPlot({
+    netgraph2()
   })
   
   output$netGraphUpdating <- renderPlot({
@@ -681,11 +684,9 @@ shinyServer(function(input, output, session) {
   
   
   ### 3c. Litmus Rank-o-gram & Radial SUCRA
-  # Need to implement only rerunning after pressing button (frequentist commands are affecting it)
-  # Also add 'updating' progress bars
-  
+
   # Obtain Data needed for ranking #
-  RankingData <- reactive({
+  RankingData <- eventReactive(input$baye_do, {
     newData1 <- as.data.frame(data())
     label <- ifelse(input$metaoutcome=="Continuous",input$listCont,input$listbina)
     treat_list <- as.data.frame(read.csv(text=label, sep = "\t"))
@@ -694,7 +695,7 @@ shinyServer(function(input, output, session) {
     rankdata(NMAdata=model()$mtcResults, rankdirection=input$rankopts, 
              longdata=longsort2, widedata=data_wide, rawlabels=treat_list, netmeta=freq_all())
   })
-  RankingData_sub <- reactive({
+  RankingData_sub <- eventReactive(input$sub_do, {
     newData1 <- as.data.frame(data())
     label <- ifelse(input$metaoutcome=="Continuous",input$listCont,input$listbina)
     treat_list <- data.frame(read.csv(text=label, sep = "\t"))

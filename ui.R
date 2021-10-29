@@ -25,6 +25,7 @@ library(shinyWidgets)
 library(shinyjs)
 library(shinyBS)
 library(cowplot)
+library(shinycssloaders)
 
 
 source("PlotFunctionsRKO.R", local = TRUE) # Plot functions
@@ -490,9 +491,9 @@ dashboardPage(
                                                                                                      fluidRow(
                                                                                                        box(title="Ranking results for all studies", status='primary', solidHeader=TRUE, width=12,
                                                                                                            splitLayout(cellWidths=c("30%","40%","30%"), cellArgs = list(style="padding: 3px; border: 2px solid gold"),
-                                                                                                                       column(12, align = "center", h5("Relative Effects"), plotOutput("gemtc2")),
-                                                                                                                       column(12, align = "center", h5("Ranking Results"), plotOutput("Litmus")),
-                                                                                                                       column(12, align = "center", h5("Summary of evidence"), plotOutput("netGraphStatic2"))))
+                                                                                                                       column(12, align = "center", h5("Relative Effects"), withSpinner(plotOutput("gemtc2"), type=6)),
+                                                                                                                       column(12, align = "center", h5("Ranking Results"), withSpinner(plotOutput("Litmus"), type=6)),
+                                                                                                                       column(12, align = "center", h5("Summary of evidence"), withSpinner(plotOutput("netGraphStatic2"), type=6))))
                                                                                                      )
                                                                                                      #fixedRow(
                                                                                                     # column(6, align = "center",

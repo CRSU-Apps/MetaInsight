@@ -459,9 +459,6 @@ rankdata <- function(NMAdata, rankdirection, longdata, widedata, rawlabels, netm
 
 # Litmus Rank-O-Gram #
 LitmusRankOGram <- function(CumData, SUCRAData, ColourData) {    #CumData needs Treatment, Rank, Cumulative_Probability and SUCRA; SUCRAData needs Treatment & SUCRA; COlourData needs SUCRA & colour
-  progress <- shiny::Progress$new()   # Adding progress bars
-  on.exit(progress$close())
-  progress$set(message="Drawing.", value=0)
   # Basic Rankogram #
 Rankogram <- ggplot(CumData, aes(x=Rank, y=Cumulative_Probability, group=Treatment)) +
   geom_line(aes(colour=SUCRA)) + theme_classic() + theme(legend.position = "none", aspect.ratio=1) +
@@ -489,10 +486,7 @@ Combo + theme(plot.margin = margin(t=0,r=0,b=0,l=0))
 
 # Radial SUCRA Plot #
 RadialSUCRA <- function(SUCRAData, ColourData, NetmetaObj) {      # SUCRAData needs Treatment & Rank; ColourData needs SUCRA & colour
-  progress <- shiny::Progress$new()   # Adding progress bars
-  on.exit(progress$close())
-  progress$set(message="Drawing.", value=0)
-  
+
   # Background #
   Background <- ggplot(SUCRAData, aes(x=reorder(Treatment, -SUCRA), y=SUCRA, group=1)) +
     geom_segment(data = ColourData, aes(x = -Inf, xend = Inf, y = SUCRA, yend = SUCRA, colour = colour), show.legend = FALSE, alpha=0.05) +
