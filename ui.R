@@ -485,15 +485,15 @@ dashboardPage(
                                                                                                      tableOutput("baye_comparison_sub"),
                                                                                                      downloadButton('downloadbaye_comparison_sub')
                                                                                             ),
-                                                                                            tabPanel("3c. Ranking table",
+                                                                                            tabPanel("3c. Ranking Panel",
                                                                                                      helpText("Please note: if you change the selections on the sidebar, 
                                you will need to re-run the primary and/or sensitivity analysis from the 'Forest Plot' page."),
                                                                                                      fluidRow(
-                                                                                                       box(title="Ranking results for all studies", status='primary', solidHeader=TRUE, width=12,
+                                                                                                       box(title="Ranking panel for all studies", status='primary', solidHeader=TRUE, width=12,
                                                                                                            splitLayout(cellWidths=c("30%","40%","30%"), cellArgs = list(style="padding: 3px; border: 2px solid gold"),
-                                                                                                                       column(12, align = "center", h5("Relative Effects"), withSpinner(plotOutput("gemtc2"), type=6)),
-                                                                                                                       column(12, align = "center", h5("Ranking Results"), withSpinner(plotOutput("Litmus"), type=6)),
-                                                                                                                       column(12, align = "center", h5("Summary of evidence"), withSpinner(plotOutput("netGraphStatic2"), type=6))))
+                                                                                                                       column(12, align = "center", h4("Relative Effects"), withSpinner(plotOutput("gemtc2"), type=6), textOutput("forest_text")),
+                                                                                                                       #column(12, align = "center", h4("Ranking Results"), withSpinner(plotOutput("Litmus"), type=6), textOutput("litmus_text")),
+                                                                                                                       column(12, align = "center", h4("Summary of evidence"), withSpinner(plotOutput("netGraphStatic2"), type=6))))
                                                                                                      )
                                                                                                      #fixedRow(
                                                                                                     # column(6, align = "center",

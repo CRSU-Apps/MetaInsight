@@ -639,6 +639,9 @@ shinyServer(function(input, output, session) {
     title(paste("Results with studies excluded: 
               Bayesian", model_sub()$a,"consistency model forest plot results"))
   })
+  output$forest_text <- renderText({
+    paste("Forest plot of relative effects from Bayesian ", input$modelranfix, "effects consistency model")
+  })
   
   texttauB = function(results){      # Tau
     outc <- ifelse (input$metaoutcome=="Continuous",input$outcomeCont, input$outcomebina)
@@ -711,6 +714,10 @@ shinyServer(function(input, output, session) {
   output$Litmus <- renderPlot({
     LitmusRankOGram(CumData=RankingData()$Cumulative, SUCRAData=RankingData()$SUCRA, ColourData=RankingData()$Colour)
   })
+  #output$litmus_text <- renderHTML({ # need to make it bold and paragraph break (try out the HTML now) # !!!! #
+  #  paste("<b>Litmus Rank-o-gram from Bayesian ", input$modelranfix, "effects consistency model</b>", "<br>", 
+  #        "The nearer the curve to the top-left, the 'better' performance. SUCRA: surface under the cumulative ranking curve (higher values indicate better performance).")
+  #})
   output$Litmus_sub <- renderPlot({
     LitmusRankOGram(CumData=RankingData_sub()$Cumulative, SUCRAData=RankingData_sub()$SUCRA, ColourData=RankingData_sub()$Colour)
   })
