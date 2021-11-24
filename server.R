@@ -496,6 +496,29 @@ shinyServer(function(input, output, session) {
     return(y)
   }
   
+  observe({                              # forest min and max values different if continuous/binary
+    x <- input$metaoutcome
+    if (x=='Binary') {
+      updateNumericInput(session = session, inputId = "freqmin", value=0.1)
+      updateNumericInput(session = session, inputId = "freqmin_sub", value=0.1)
+      updateNumericInput(session = session, inputId = "bayesmin", value=0.1)
+      updateNumericInput(session = session, inputId = "bayesmin_sub", value=0.1)
+      updateNumericInput(session = session, inputId = "freqmax", value=5)
+      updateNumericInput(session = session, inputId = "freqmax_sub", value=5)
+      updateNumericInput(session = session, inputId = "bayesmax", value=5)
+      updateNumericInput(session = session, inputId = "bayesmax_sub", value=5)
+    } else {
+      updateNumericInput(session = session, inputId = "freqmin", value=-10)
+      updateNumericInput(session = session, inputId = "freqmin_sub", value=-10)
+      updateNumericInput(session = session, inputId = "bayesmin", value=-10)
+      updateNumericInput(session = session, inputId = "bayesmin_sub", value=-10)
+      updateNumericInput(session = session, inputId = "freqmax", value=10)
+      updateNumericInput(session = session, inputId = "freqmax_sub", value=10)
+      updateNumericInput(session = session, inputId = "bayesmax", value=10)
+      updateNumericInput(session = session, inputId = "bayesmax_sub", value=10)
+    }
+  })
+  
   output$Comparison2<- renderPlot({
     make_netComp(freq_all(), ref_alter()$ref_all, input$freqmin, input$freqmax)
     title("Results for all studies")
