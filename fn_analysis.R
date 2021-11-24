@@ -180,9 +180,9 @@ groupforest.df <- function(d1, ntx, lstx, outcome, HeaderSize, TitleSize) {
 ##### function for drawing forest plot
 ##########################
 
-forest.df <- function(netresult,model,lstx,ref) {
-  fp<- metafor::forest(netresult,reference.group=ref, pooled=model)
-  return(fp)    
+forest.df <- function(netresult,model,lstx,ref,min,max) {
+    fp<- metafor::forest(netresult,reference.group=ref, pooled=model, xlim=c(min, max))
+return(fp)    
 }
 
 

@@ -342,73 +342,85 @@ dashboardPage(
             .tabbable > .nav > li > a[data-value='3. Bayesian network meta-analysis'] {background-color: #2196c4;   color:white; font-size: 18px}
             .tabbable > .nav > li[class=active]    > a {font-weight:900;font-style: italic;text-decoration: underline }
             ")),
-                                tabsetPanel(
-                                  tabPanel("1. Data summary", tabsetPanel(
-                                    tabPanel("1a. Data Characteristics", 
-                                             p("This tab shows a summary of study characteristics."),
-                                             column(6,
-                                                    h4("Characteristics table of all studies"),
-                                                    tableOutput("sumtb")
-                                             ),
-                                             column(6,
-                                                    h4("Characteristics table with studies excluded"),
-                                                    tableOutput("sumtb_sub")
-                                             )
-                                    ),
-                                    tabPanel("1b. Study Results", 
-                                             p("If the formatting of the text for this plot needs adjusting please see options at the bottom."), 
-                                             plotOutput("forestPlot", height = "1000px", width = "800px"), 
-                                             h5("If the formatting of the text in the above plot needs adjusting (for on screen or download) please use the following options:"),
-                                             column(4,numericInput(inputId="ForestContent",label="Download text size:", value=12)),
-                                             column(4,numericInput(inputId="ForestTitle",label="Title text size:",value=1)),
-                                             column(4,numericInput(inputId="ForestHeader",label="Group headers text size:", value=1)),
-                                             helpText("The download text size alters the text sizing for all elements of the plot and is integer point sizes. The title and group header options are an additional text sizing option in terms of percentage (e.g. 0.5 indicates half the specified size)."),
-                                             p("Please note: the formatting is not guaranteed to be identical between what is shown on screen and what is downloaded."),
-                                             radioButtons('format_freq0', 'Document format', c('PDF', 'SVG'), inline = TRUE),  
-                                             downloadButton('downloadStudy')),
-                                    tabPanel("1c. Network Plot",
-                                             column(6, plotOutput("netGraphStatic1"),
-                                                    conditionalPanel(condition= "input.networkstyle=='networkp1'",
-                                                                     p("Numbers on the line indicate the number of trials conducted for the comparison. The shaded areas indicate there exist multi-arm trials between the comparisons.")
-                                                    ),
-                                                    conditionalPanel(condition= "input.networkstyle=='networkp2'",
-                                                                     p("The size of the nodes and the thickness of edges depend on the number of people randomised and the number of trials conducted, respectively.")
-                                                    ),
-                                                    radioButtons("networkstyle", "Please choose a network plot style", c("Number of trials shown on the line" = "networkp1","Number of people indicated by size of node etc." = "networkp2"), selected = "networkp2"),
-                                                    radioButtons('format_freq1', 'Document format', c('PDF', 'PNG'), inline = TRUE),
-                                                    downloadButton('downloadNetwork'), 
-                                                    br(),
-                                                    br(),
-                                                    br(),
-                                                    verbatimTextOutput("netconnect")),
-                                             column(6, plotOutput("netGraphUpdating"),
-                                                    conditionalPanel(condition= "input.networkstyle_sub=='networkp1'",
-                                                                     p("Numbers on the line indicate the number of trials conducted for the comparison. The shaded areas indicate there exist multi-arm trials between the comparisons.")
-                                                    ),
-                                                    conditionalPanel(condition= "input.networkstyle_sub=='networkp2'",
-                                                                     p("The size of the nodes and the thickness of edges depend on the number of people randomised and the number of trials conducted, respectively.")
-                                                    ),
-                                                    radioButtons("networkstyle_sub", "Please choose a network plot style", c("Number of trials shown on the line" = "networkp1","Number of people indicated by size of node etc." = "networkp2"), selected = "networkp2"),
-                                                    radioButtons('format_freq2', 'Document format', c('PDF', 'PNG'), inline = TRUE),
-                                                    downloadButton('downloadNetworkUpdate'), 
-                                                    br(),
-                                                    br(),
-                                                    br(),
-                                                    verbatimTextOutput("netconnect_sub"))
-                                    )
-                                    ###### bugsnet new code ########         
-                                    #,
-                                    # tabPanel("1d. Covariates plot", 
-                                    #          p("this is from the TSD rheumatoid arthritis dataset, as the example data do not have covariates "),
-                                    #          plotOutput("covp"))
-                                    ###### finish ########
-                                  )),
-                                  tabPanel("2. Frequentist network meta-analysis", tabsetPanel(
-                                    tabPanel("2a. Forest Plot",
-                                             column(6, plotOutput("Comparison2", height = "400px", width = "400px"), textOutput("textcomp"), textOutput("ref4"), radioButtons('format_freq3', 'Document format', c('PDF', 'PNG'), inline = TRUE), downloadButton('downloadComp2')
-                                             ),
-                                             column(6, plotOutput("SFPUpdatingComp", height = "400px", width = "400px"),
-                                                    tags$style("#ref_change {
+       tabsetPanel(
+         tabPanel("1. Data summary", tabsetPanel(
+           tabPanel("1a. Data Characteristics", 
+                    p("This tab shows a summary of study characteristics."),
+                    column(6,
+                           h4("Characteristics table of all studies"),
+                           tableOutput("sumtb")
+                    ),
+                    column(6,
+                           h4("Characteristics table with studies excluded"),
+                           tableOutput("sumtb_sub")
+                    )
+           ),
+            tabPanel("1b. Study Results", 
+                     p("If the formatting of the text for this plot needs adjusting please see options at the bottom."), 
+                     plotOutput("forestPlot", height = "1000px", width = "800px"), 
+                     h5("If the formatting of the text in the above plot needs adjusting (for on screen or download) please use the following options:"),
+                     column(4,numericInput(inputId="ForestContent",label="Download text size:", value=12)),
+                     column(4,numericInput(inputId="ForestTitle",label="Title text size:",value=1)),
+                     column(4,numericInput(inputId="ForestHeader",label="Group headers text size:", value=1)),
+                     helpText("The download text size alters the text sizing for all elements of the plot and is integer point sizes. The title and group header options are an additional text sizing option in terms of percentage (e.g. 0.5 indicates half the specified size)."),
+                     p("Please note: the formatting is not guaranteed to be identical between what is shown on screen and what is downloaded."),
+                     radioButtons('format_freq0', 'Document format', c('PDF', 'SVG'), inline = TRUE),  
+                     downloadButton('downloadStudy')),
+            tabPanel("1c. Network Plot",
+              column(6, plotOutput("netGraphStatic"),
+                     conditionalPanel(condition= "input.networkstyle=='networkp1'",
+                                      p("Numbers on the line indicate the number of trials conducted for the comparison. The shaded areas indicate there exist multi-arm trials between the comparisons.")
+                     ),
+                     conditionalPanel(condition= "input.networkstyle=='networkp2'",
+                                      p("The size of the nodes and the thickness of edges depend on the number of people randomised and the number of trials conducted, respectively.")
+                     ),
+                     radioButtons("networkstyle", "Please choose a network plot style", c("Number of trials shown on the line" = "networkp1","Number of people indicated by size of node etc." = "networkp2"), selected = "networkp2"),
+                     radioButtons('format_freq1', 'Document format', c('PDF', 'PNG'), inline = TRUE),
+                     downloadButton('downloadNetwork'), 
+                     br(),
+                     br(),
+                     br(),
+                     verbatimTextOutput("netconnect")),
+              column(6, plotOutput("netGraphUpdating"),
+                     conditionalPanel(condition= "input.networkstyle_sub=='networkp1'",
+                                      p("Numbers on the line indicate the number of trials conducted for the comparison. The shaded areas indicate there exist multi-arm trials between the comparisons.")
+                     ),
+                     conditionalPanel(condition= "input.networkstyle_sub=='networkp2'",
+                                      p("The size of the nodes and the thickness of edges depend on the number of people randomised and the number of trials conducted, respectively.")
+                     ),
+                     radioButtons("networkstyle_sub", "Please choose a network plot style", c("Number of trials shown on the line" = "networkp1","Number of people indicated by size of node etc." = "networkp2"), selected = "networkp2"),
+                     radioButtons('format_freq2', 'Document format', c('PDF', 'PNG'), inline = TRUE),
+                     downloadButton('downloadNetworkUpdate'), 
+                     br(),
+                     br(),
+                     br(),
+                     verbatimTextOutput("netconnect_sub"))
+            )
+  ###### bugsnet new code ########         
+            #,
+            # tabPanel("1d. Covariates plot", 
+            #          p("this is from the TSD rheumatoid arthritis dataset, as the example data do not have covariates "),
+            #          plotOutput("covp"))
+  ###### finish ########
+         )),
+         tabPanel("2. Frequentist network meta-analysis", tabsetPanel(
+            tabPanel("2a. Forest Plot",
+                column(6, plotOutput("Comparison2", height = "550px", width = "400px"), 
+                       fixedRow(
+                         p("Options to change limits of the x-axis:"),
+                         column(6, align = 'center', numericInput('freqmin', label="Minimum", value=0.1)),
+                         column(6, align = 'center', numericInput('freqmax', label="Maximum", value=5))
+                       ),
+                       textOutput("textcomp"), textOutput("ref4"), radioButtons('format_freq3', 'Document format', c('PDF', 'PNG'), inline = TRUE), downloadButton('downloadComp2')
+                  ),
+                column(6, plotOutput("SFPUpdatingComp", height = "550px", width = "400px"),
+                       fixedRow(
+                         p("Options to change limits of the x-axis:"),
+                         column(6, align = 'center', numericInput('freqmin_sub', label="Minimum", value=0.1)),
+                         column(6, align = 'center', numericInput('freqmax_sub', label="Maximum", value=5))
+                       ),
+                       
+                       tags$style("#ref_change {
                background-color: #ffd966;
                display:block; }"),
                                                     textOutput("ref_change"),
@@ -431,31 +443,41 @@ dashboardPage(
                                                                                                               "Heterogeneity prior: standard deviation ~ U(0,X), where X represents a ", tags$i("very large"), "difference in the analysis' outcome scale and is determined from the data.", tags$br(), tags$i("Please note the outcome for continuous data has to be "), tags$b("mean difference"), tags$i(" for the Bayesian analysis. 
                      Standardised mean difference cannot be analysed."), tags$br(), tags$i("Please note the outcome for binary data has to be "), tags$b("Odds Ratio or Risk Ratio"), tags$i(" for the Bayesian analysis. 
                      Risk difference cannot be analysed."), tags$strong("Please note each simulation may take 20 seconds.", style="color:#FF0000")),
-                                                                                                     fixedRow(
-                                                                                                       column(6, align = "center",
-                                                                                                              p(tags$strong("Results for all studies")),
-                                                                                                              p("Please click the button below to run Bayesian analysis for all studies, and after each time when you change the radiobutton selections."),
-                                                                                                              actionButton("baye_do", "Click here to run the main analysis for all studies")
-                                                                                                       ),
-                                                                                                       column(6, align = "center",
-                                                                                                              p(tags$strong("Results with studies excluded")),
-                                                                                                              p("Please click the button below to run each time after you finish the selection of studies, or change the radiobutton selections."),
-                                                                                                              actionButton("sub_do", "Click here to run the sensitivity analysis")
-                                                                                                       )),
-                                                                                                     fixedRow(
-                                                                                                       column(6, align = "center",
-                                                                                                              plotOutput("gemtc1"),
-                                                                                                              p("Model fit:"),
-                                                                                                              tableOutput("dic"),
-                                                                                                              textOutput("text_gemtc"),
-                                                                                                              br(),
-                                                                                                              br(),
-                                                                                                              radioButtons('format2', 'Document format', c('PDF', 'PNG'), inline = TRUE), 
-                                                                                                              downloadButton('downloadBaye_plot')
-                                                                                                       ),
-                                                                                                       column(6, align = "center",
-                                                                                                              plotOutput("gemtc_sub"),
-                                                                                                              tags$style("#ref_change_bay {
+            fixedRow(
+              column(6, align = "center",
+                     p(tags$strong("Results for all studies")),
+                     p("Please click the button below to run Bayesian analysis for all studies, and after each time when you change the radiobutton selections."),
+                     actionButton("baye_do", "Click here to run the main analysis for all studies")
+              ),
+              column(6, align = "center",
+                     p(tags$strong("Results with studies excluded")),
+                     p("Please click the button below to run each time after you finish the selection of studies, or change the radiobutton selections."),
+                     actionButton("sub_do", "Click here to run the sensitivity analysis")
+              )),
+            fixedRow(
+              column(6, align = "center",
+                     plotOutput("gemtc", height = 550),
+                     fixedRow(
+                       p("Options to change limits of the x-axis:"),
+                       column(6, align = 'center', numericInput('bayesmin', label="Minimum", value=0.1)),
+                       column(6, align = 'center', numericInput('bayesmax', label="Maximum", value=5))
+                     ),
+                     p("Model fit:"),
+                     tableOutput("dic"),
+                     textOutput("text_gemtc"),
+                     br(),
+                     br(),
+                     radioButtons('format2', 'Document format', c('PDF', 'PNG'), inline = TRUE), 
+                     downloadButton('downloadBaye_plot')
+              ),
+              column(6, align = "center",
+                     plotOutput("gemtc_sub", height = 550),
+                     fixedRow(
+                       p("Options to change limits of the x-axis:"),
+                       column(6, align = 'center', numericInput('bayesmin_sub', label="Minimum", value=0.1)),
+                       column(6, align = 'center', numericInput('bayesmax_sub', label="Maximum", value=5))
+                     ),
+                     tags$style("#ref_change_bay {
                                  background-color: #ffd966;
                                  display:block; }"),
                                                                                                               textOutput("ref_change_bay"),
