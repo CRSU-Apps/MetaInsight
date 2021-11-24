@@ -38,9 +38,9 @@ entry.df <- function(data, CONBI) {
   if (numbertreat < 6) {  # generate additional columns if less than 6 arms.
     for (k in (numbertreat+1):6) {
       if (CONBI=='Continuous') {
-      data_wide[c(paste0("T.",k),paste0("N.",k),paste0("Mean.",k),paste0("SD.",k))]<-NA
+        data_wide[c(paste0("T.",k),paste0("N.",k),paste0("Mean.",k),paste0("SD.",k))]<-NA
       } else {
-      data_wide[c(paste0("T.",k),paste0("R.",k),paste0("N.",k))]<-NA
+        data_wide[c(paste0("T.",k),paste0("R.",k),paste0("N.",k))]<-NA
       }
     }
   }
@@ -55,7 +55,7 @@ entry.df <- function(data, CONBI) {
 
 contrastform.df <- function(data, outcome, CONBI) {
   if (CONBI=='Continuous') {
-      d1<- pairwise(treat=list(T.1,T.2,T.3,T.4,T.5,T.6),n=list(N.1,N.2,N.3,N.4,N.5,N.6),mean=list(Mean.1,Mean.2,Mean.3,Mean.4,Mean.5,Mean.6),sd=list(SD.1,SD.2,SD.3,SD.4,SD.5,SD.6),data=data,sm=outcome)
+    d1<- pairwise(treat=list(T.1,T.2,T.3,T.4,T.5,T.6),n=list(N.1,N.2,N.3,N.4,N.5,N.6),mean=list(Mean.1,Mean.2,Mean.3,Mean.4,Mean.5,Mean.6),sd=list(SD.1,SD.2,SD.3,SD.4,SD.5,SD.6),data=data,sm=outcome)
   } else {
     d1<- pairwise(treat=list(T.1,T.2,T.3,T.4,T.5,T.6),event=list(R.1,R.2,R.3,R.4,R.5,R.6),n=list(N.1,N.2,N.3,N.4,N.5,N.6),data=data,sm=outcome)
   }
@@ -160,7 +160,7 @@ groupforest.df <- function(d1, ntx, lstx, outcome, HeaderSize, TitleSize) {
   
   if (outcome == "OR" | outcome =="RR" ){
     fplot <- metafor::forest(d1$TE, sei=d1$seTE, slab = paste(d1$Study), subset = order(d1$treat1, d1$treat2), ylim = c(1, nrow(d1) + 2*length(text_label) + 2),rows = lines, 
-    atransf = exp, at = log(c(0.01, 1, 10, 100)), xlab = paste("Observed ",outcome), efac=0.5 
+                             atransf = exp, at = log(c(0.01, 1, 10, 100)), xlab = paste("Observed ",outcome), efac=0.5 
     )
   } 
   else {
@@ -197,8 +197,8 @@ tau.df <- function(tau,k,n,model,outcome) {
   if (model=="random"){
     if (outcome=="OR"){
       y<-paste("Between-study standard deviation (log-odds scale):", tau,
-            ", Number of studies:", k,
-            ", Number of treatments:", n)}
+               ", Number of studies:", k,
+               ", Number of treatments:", n)}
     else if (outcome=="RR"){
       y<-paste("Between-study standard deviation (log probability scale):", tau,
                ", Number of studies:", k,
@@ -210,14 +210,14 @@ tau.df <- function(tau,k,n,model,outcome) {
   else {
     if (outcome=="OR"){
       y<-paste("Between-study standard deviation (log-odds scale) set at 0. Number of studies:", k,
-              ", Number of treatments:", n)}
+               ", Number of treatments:", n)}
     else if (outcome=="RR"){
       y<-paste("Between-study standard deviation (log probability scale) set at 0. Number of studies:", k,
                ", Number of treatments:", n)}
     else {
       y<-paste("Between-study standard deviation set at 0. Number of studies:", k,
                ", Number of treatments:", n)}
-    }
+  }
   return(y)
 }
 
@@ -251,7 +251,7 @@ netsplitresult.df <- function(incona, model) {
   return(df)
 }
 
-  
+
 #######################
 ##### function for progress bar
 #######################
@@ -297,7 +297,7 @@ dataform.df <- function(newData1, treat_list, CONBI) {
                         times=c(".1", ".2", ".3", ".4", ".5", ".6"), sep=".", idvar= c("StudyID", "Study"))
     long_pre<-subset(long_pre, select=-time)
     long <- long_pre[!is.na(long_pre$T), ]
-    }
+  }
   long_sort<-long[order(long$StudyID, -long$T), ]
   if (CONBI=='Continuous') {
     long_sort$se<-long_sort$SD/sqrt(long_sort$N)
@@ -319,30 +319,30 @@ baye <- function(data,treat_list, model, outcome, CONBI, ref) {
   if (outcome=="SMD" | outcome=="RD") {
   } 
   else {
-  progress <- shiny::Progress$new()   # Adding progress bars
-  on.exit(progress$close())
-  progress$set(message="Updating.This may take up to 10 minutes", value=0)
-  treat_list2<-data.frame(treat_list)
-  if (CONBI=="Continuous") { 
-    armData <- data.frame(study=data$Study,       # Create arm level data set for gemtc
-                        treatment=data$T,
-                        mean=data$Mean,
-                        std.err=data$se)
-  }
-  else {
-    armData <- data.frame(study=data$Study,
-                          treatment=data$T,
-                          responders=data$R,
-                          sampleSize=data$N)
-  }
-  progress$inc(0.2, detail="Preparing to run simulation models")
-  mtcNetwork <- mtc.network(data.ab=armData,description="Network")   # Gemtc network object
-  if (outcome == "MD") {
-    like <- "normal"
-    link <- "identity"
-  } 
-  else  {
-    like <- "binom"
+    progress <- shiny::Progress$new()   # Adding progress bars
+    on.exit(progress$close())
+    progress$set(message="Updating.This may take up to 10 minutes", value=0)
+    treat_list2<-data.frame(treat_list)
+    if (CONBI=="Continuous") { 
+      armData <- data.frame(study=data$Study,       # Create arm level data set for gemtc
+                            treatment=data$T,
+                            mean=data$Mean,
+                            std.err=data$se)
+    }
+    else {
+      armData <- data.frame(study=data$Study,
+                            treatment=data$T,
+                            responders=data$R,
+                            sampleSize=data$N)
+    }
+    progress$inc(0.2, detail="Preparing to run simulation models")
+    mtcNetwork <- mtc.network(data.ab=armData,description="Network")   # Gemtc network object
+    if (outcome == "MD") {
+      like <- "normal"
+      link <- "identity"
+    } 
+    else  {
+      like <- "binom"
       link <- ifelse (outcome == "OR","logit", "log")
     }
     mtcModel <- mtc.model(network=mtcNetwork,
@@ -397,7 +397,237 @@ gemtctau <- function(results,outcome) {
       paste("Between-study standard deviation (log probability scale) set at 0")}
     else {
       paste("Between-study standard deviation set at 0")}
+  }
+}
+
+### 3c. Ranking results  # Consider speeding up the process by avoiding re-running a frequentist analysis everytime (i.e. can we just draw network without running analysis?)
+
+# Collecting data #
+rankdata <- function(NMAdata, rankdirection, longdata, widedata, rawlabels, netmeta) {
+  # data frame of colours
+  colour_dat = data.frame(SUCRA = seq(0, 100, by = 0.1)) 
+  colour_dat = mutate(colour_dat, colour = seq(0, 100, length.out = 1001)) 
+  
+  # probability rankings
+  prob <- as.data.frame(print(rank.probability(NMAdata, preferredDirection=(if (rankdirection=="good") -1 else 1)))) # rows treatments, columns ranks
+  names(prob)[1:ncol(prob)] <- paste("Rank ", 1:(ncol(prob)), sep="")
+  sucra <- sucra(prob)  # 1 row of SUCRA values for each treatment column
+  treatments <- row.names(prob)
+  # Can I remove underscores to help with labelling?
+  
+  # SUCRA
+  SUCRA <- data.frame(Treatment=treatments,
+                      SUCRA=as.numeric(sucra)*100)
+  
+  # Cumulative Probabilities
+  cumprob <- prob              # obtain copy of probabilities
+  for (i in 2:ncol(prob)) {    # for each rank (column)
+    for (j in 1:ncol(prob)) {  # for each treatment (row)
+      cumprob[j,i] <- cumprob[j,i-1] + cumprob[j,i]
     }
+  }
+  Cumulative_Data <- data.frame(Treatment=rep(treatments,each=ncol(prob)),
+                                Rank = rep(1:(ncol(prob)), times=ncol(prob)),
+                                Cumulative_Probability = as.numeric(t(cumprob)))
+  Cumulative_Data <- Cumulative_Data %>% left_join(SUCRA, by = "Treatment")#
+  
+  # Number of people in each node #
+  Patients <- data.frame(Treatment=longdata$T,
+                         Sample=longdata$N)
+  Patients <- aggregate(Patients$Sample, by=list(Category=Patients$Treatment), FUN=sum)
+  Patients <- rename(Patients, c("Category"="Treatment", "x"="N"))
+  SUCRA <- SUCRA %>% right_join(Patients, by = "Treatment")
+  # Node size #
+  size.maxO <- 15
+  size.maxA <- 10
+  size.min <- 1
+  n <- ncol(prob)
+  for (i in 1:n) {
+    SUCRA$SizeO[i] <- size.maxO * SUCRA$N[i]/max(SUCRA$N)
+    SUCRA$SizeA[i] <- size.maxA * SUCRA$N[i]/max(SUCRA$N)
+    if (SUCRA$SizeO[i] < size.min) {
+      SUCRA$SizeO[i] <- size.min}
+    if (SUCRA$SizeA[i] < size.min) {
+      SUCRA$SizeA[i] <- size.min}
+  }
+  
+  # Number of trials as line thickness taken from netmeta object which is $net1 from the freq_wrap function#
+  NetmetaObj <- netmeta # taken from frequentist analysis already run
+  
+  return(list(SUCRA=SUCRA, Colour=colour_dat, Cumulative=Cumulative_Data, Probabilities=prob, NetmetaObj=NetmetaObj))
+}
+
+# Litmus Rank-O-Gram #
+LitmusRankOGram <- function(CumData, SUCRAData, ColourData) {    #CumData needs Treatment, Rank, Cumulative_Probability and SUCRA; SUCRAData needs Treatment & SUCRA; COlourData needs SUCRA & colour
+  # Basic Rankogram #
+Rankogram <- ggplot(CumData, aes(x=Rank, y=Cumulative_Probability, group=Treatment)) +
+  geom_line(aes(colour=SUCRA)) + theme_classic() + theme(legend.position = "none", aspect.ratio=1) +
+  labs(x = "Rank", y = "Cumulative Probability") + scale_x_continuous(expand = c(0, 0), breaks = seq(1,nrow(SUCRAData)))
+A <- Rankogram + scale_colour_gradient2(low = "red",
+                                        mid = "yellow",
+                                        high = "green", midpoint=50)
+# Litmus SUCRA Scale #
+Litmus_SUCRA <- ggplot(SUCRAData, aes(x=rep(0.45,times=nrow(SUCRAData)), y=SUCRA)) +
+  geom_segment(data = ColourData,
+               aes(x = -Inf, xend = 0.5,
+                   y = SUCRA, yend = SUCRA, colour = colour),
+               show.legend = FALSE) +
+  geom_point() + labs(y="SUCRA (%)") +
+  geom_text_repel(aes(label=Treatment), box.padding = 0, direction="y", hjust=0, nudge_x=0.05, size=3) + scale_x_continuous(limits=c(0.4,0.8)) +
+  theme_classic() + theme(axis.title.x = element_blank(), axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.line.x = element_blank(), aspect.ratio=4)
+B <- Litmus_SUCRA + scale_colour_gradient2(low = "red",
+                                           mid = "yellow",
+                                           high = "green", midpoint=50)
+# Combo! #
+Combo <- A + B
+Combo + theme(plot.margin = margin(t=0,r=0,b=0,l=0))
+}
+
+
+# Radial SUCRA Plot #
+RadialSUCRA <- function(SUCRAData, ColourData, NetmetaObj) {      # SUCRAData needs Treatment & Rank; ColourData needs SUCRA & colour
+
+  # Background #
+  Background <- ggplot(SUCRAData, aes(x=reorder(Treatment, -SUCRA), y=SUCRA, group=1)) +
+    geom_segment(data = ColourData, aes(x = -Inf, xend = Inf, y = SUCRA, yend = SUCRA, colour = colour), show.legend = FALSE, alpha=0.05) +
+    theme_classic() + 
+    theme(panel.grid.major.y = element_line(colour = c(rep("black",6),"white")), axis.title = element_blank(), axis.text.y = element_blank(), axis.ticks = element_blank(), axis.line = element_blank(), 
+          aspect.ratio = 1, axis.text.x = element_text(size=8,family="sans",angle = 360/(2*pi)*rev(pi/2 + seq(pi/6,2*pi-pi/6, len=6)) + 360/(2*pi)*c( rep(0, 3),rep(pi,3)))) +
+    coord_polar() +
+    scale_colour_gradient2(low = "red", mid = "yellow", high = "green", midpoint=50) +
+    scale_fill_gradient2(low = "red", mid = "yellow", high = "green", midpoint=50) 
+  
+  Background +
+    geom_point(aes(fill=SUCRA),size=1, shape=21,show.legend=FALSE) +  
+    scale_y_continuous(breaks=c(0,20,40,60,80,100), limits=c(-40,115)) +
+    annotate("text",x = rep(0.5,7), y = c(-3,17,37,57,77,97,115), label = c("0","20","40","60","80","100","SUCRA (%)"), size=2, family="sans") # annotate has to be after geoms
+  ggsave(filename = 'BackgroundO.png', device = 'png', bg = 'transparent', width = 5, height = 5)
+  
+  Background +
+    geom_segment(aes(xend=Treatment, y = -20, yend=110), linetype="dashed") +
+    geom_point(aes(fill=SUCRA),size=3, shape=21,show.legend=FALSE) +
+    scale_y_continuous(breaks=c(0,20,40,60,80,100), limits=c(-80,115)) +
+    annotate("text",x = rep(0.5,7), y = c(-3,17,37,57,77,97,115), label = c("0","20","40","60","80","100","SUCRA (%)"), size=2, family="sans") # annotate has to be after geoms
+  ggsave(filename = 'BackgroundA.png', device = 'png', bg = 'transparent', width = 5, height = 5)
+  
+  
+  # Create my own network plot using ggplot polar coords #
+  study_matrix <- NetmetaObj$A.matrix # give me matrix of number of trials between each treatment combo
+  SUCRA <- SUCRAData %>% arrange(-SUCRA)
+  study_matrix <- study_matrix[SUCRA$Treatment,SUCRA$Treatment]
+  A.sign <- sign(study_matrix) #1s and 0s for presence of trial
+  n.edges <- sum(study_matrix[upper.tri(study_matrix)] > 0) #number of pairwise comparisons
+  dat.edges <- data.frame(pairwiseID = rep(NA, n.edges*2),
+                          treatment = "",
+                          n.stud = NA,
+                          SUCRA = NA,
+                          adj = NA,
+                          col = "",
+                          lwd = NA)
+  lwd.maxO <- 5
+  lwd.maxA <- 4 # need to sort something for node size too (currently calculated in rankdata function)
+  lwd.minO <- 1
+  lwd.minA <- 0.5
+  n <- nrow(SUCRAData)
+  comp.i <- 1
+  ID <- 1
+  for (i in 1:(n - 1)) {
+    for (j in (i + 1):n) {
+      if (A.sign[i, j] > 0) {
+        dat.edges$pairwiseID[comp.i] <- ID
+        dat.edges$pairwiseID[comp.i+1] <- ID
+        dat.edges$treatment[comp.i] <- rownames(study_matrix)[i]
+        dat.edges$treatment[comp.i+1] <- colnames(study_matrix)[j]
+        dat.edges$n.stud[comp.i] <- study_matrix[i, j]
+        dat.edges$n.stud[comp.i+1] <- study_matrix[i, j]
+        dat.edges$SUCRA[comp.i] <- SUCRA$SUCRA[i]
+        dat.edges$SUCRA[comp.i+1] <- SUCRA$SUCRA[j]
+        dat.edges$lwdO[comp.i] <- lwd.maxO * study_matrix[i,j]/max(study_matrix)
+        dat.edges$lwdA[comp.i] <- lwd.maxA * study_matrix[i,j]/max(study_matrix)
+        if (dat.edges$lwdO[comp.i] < lwd.minO) {
+          dat.edges$lwdO[comp.i] <- lwd.minO}
+        if (dat.edges$lwdA[comp.i] < lwd.minA) {
+          dat.edges$lwdA[comp.i] <- lwd.minA}
+        dat.edges$lwdO[comp.i+1] <- lwd.maxO * study_matrix[i,j]/max(study_matrix)
+        dat.edges$lwdA[comp.i+1] <- lwd.maxA * study_matrix[i,j]/max(study_matrix)
+        if (dat.edges$lwdO[comp.i+1] < lwd.minO) {
+          dat.edges$lwdO[comp.i+1] <- lwd.minO}
+        if (dat.edges$lwdA[comp.i+1] < lwd.minA) {
+          dat.edges$lwdA[comp.i+1] <- lwd.minA}
+        comp.i <- comp.i + 2
+        ID <- ID + 1
+      }
+    }
+  }
+  # add lines #
+  CreateNetwork <- function(Type) {
+    if (Type=='Original') {
+      g <- ggplot(dat.edges, aes(x=reorder(treatment,-SUCRA), y=SUCRA, group=pairwiseID)) +
+        geom_line(size=dat.edges$lwdO,show.legend = FALSE) +
+        scale_y_continuous(limits=c(-40,115))
+    } else {
+      g <- ggplot(dat.edges, aes(x=reorder(treatment,-SUCRA), y=-20, group=pairwiseID)) +
+        geom_line(size=dat.edges$lwdA,show.legend = FALSE) +
+        scale_y_continuous(limits=c(-80,115))
+    }
+    g +
+      ggiraphExtra:::coord_radar() + 
+      theme(panel.background = element_rect(fill = "transparent"), plot.background = element_rect(fill = "transparent", color = NA), 
+            axis.title = element_blank(), axis.text.y = element_blank(), axis.ticks = element_blank(), 
+            axis.line = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), aspect.ratio = 1, 
+            axis.text.x = element_text(size=8,family="sans",angle = 360/(2*pi)*rev(pi/2 + seq(pi/6,2*pi-pi/6, len=6)) + 360/(2*pi)*c( rep(0, 3),rep(pi,3)))) +
+      annotate("text",x = rep(0.5,7), y = c(-3,17,37,57,77,97,115), label = c("0","20","40","60","80","100","SUCRA (%)"), size=2, family="sans")
+  }
+  Network <- CreateNetwork(Type='Original')
+  ggsave(filename = 'NetworkO.png', device = 'png', bg = 'transparent', width=5, height=5)
+  
+  Network <- CreateNetwork(Type='Alternative')
+  ggsave(filename = "NetworkA.png", device = 'png', bg = 'transparent', width=5, height=5)
+  
+  
+  # Plot of just points to go on the very top #
+  CreatePoints <- function(Type) {
+    if (Type=='Original') {
+      g <- ggplot(SUCRAData, aes(x=reorder(Treatment, -SUCRA), y=SUCRA, group=1)) +
+        geom_point(aes(fill=SUCRA, size=SizeO), size=SUCRAData$SizeO, shape=21,show.legend=FALSE) +
+        scale_y_continuous(limits=c(-40,115))
+    } else {
+      g <- ggplot(SUCRAData, aes(x=reorder(Treatment, -SUCRA), y=-20, group=1)) +
+        geom_point(aes(fill=SUCRA, size=SizeA), size=SUCRAData$SizeA, shape=21,show.legend=FALSE) +
+        scale_y_continuous(limits=c(-80,115))
+    }
+    g +
+      theme(panel.background = element_rect(fill = "transparent"), plot.background = element_rect(fill = "transparent", color = NA), 
+            axis.title = element_blank(), axis.text.y = element_blank(), axis.ticks = element_blank(), 
+            axis.line = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), aspect.ratio = 1,
+            axis.text.x = element_text(size=8,family="sans",angle = 360/(2*pi)*rev(pi/2 + seq(pi/6,2*pi-pi/6, len=6)) + 360/(2*pi)*c( rep(0, 3),rep(pi,3)))) +
+      coord_polar() +
+      scale_fill_gradient2(low = "red", mid = "yellow", high = "green", midpoint=50) +
+      annotate("text",x = rep(0.5,7), y = c(-3,17,37,57,77,97,115), label = c("0","20","40","60","80","100","SUCRA (%)"), size=2, family="sans")
+  }
+  
+  Points <- CreatePoints(Type='Original')
+  ggsave(filename = 'PointsO.png', device = 'png', bg = 'transparent', width=5, height=5)
+  
+  Points <- CreatePoints(Type='Alternative')
+  ggsave(filename = 'PointsA.png', device = 'png', bg = 'transparent', width=5, height=5)
+  
+  # Overlay #
+  Background <- image_read('BackgroundO.png')
+  Network <- image_read('NetworkO.png')
+  Points <- image_read('PointsO.png')
+  Final <- image_composite(Background,Network)
+  Final <- image_composite(Final,Points)
+  Finalplot <- ggdraw() +
+                  draw_image(Final)
+  Background <- image_read('BackgroundA.png')
+  Network <- image_read('NetworkA.png')
+  Points <- image_read('PointsA.png')
+  Final <- image_composite(Background,Network)
+  Final <- image_composite(Final,Points)
+  Finalalt <- ggdraw() +
+    draw_image(Final)
+  return(list(Original=Finalplot, Alternative=Finalalt))
 }
 
 ### 3d. nodesplit models
@@ -466,11 +696,11 @@ umeplot.df <- function(c,mtcNetwork, model,outcome) {
     link <- ifelse (outcome == "OR","logit", "log")
   }
   ume <- mtc.model(network=mtcNetwork,
-                    type = "ume",
-                    linearModel= model, 
-                    likelihood=like,
-                    link = link,
-                    dic = TRUE)
+                   type = "ume",
+                   linearModel= model, 
+                   likelihood=like,
+                   link = link,
+                   dic = TRUE)
   progress$inc(0.5, detail="Preparing results")
   ume_results <- mtc.run(ume)
   progress$inc(0.3, detail="Rendering results")
@@ -487,7 +717,7 @@ umeplot.df <- function(c,mtcNetwork, model,outcome) {
   m <- c(0,1,j)
   n <- c(0,1,j)
   dline<-data.frame(m,n)
-
+  
   p = plot_ly() %>%   # plot
     add_trace(data=dline, x = ~m, y = ~n, type = 'scatter', mode = 'lines',
               line = list(color = '#45171D'))
@@ -687,7 +917,6 @@ levplot.df <- function(x) {
       xaxis = xl, yaxis = yl, showlegend = FALSE, title="Leverage versus residual deviance")
   return(p)
 }
-
 
 
 
