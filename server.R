@@ -487,8 +487,8 @@ shinyServer(function(input, output, session) {
 
   ### 2a. Forest Plot
   
-  make_netComp = function(freq, ref) {    # forest plot
-    forest.df(freq$net1,input$modelranfix,freq$lstx, ref )
+  make_netComp = function(freq, ref,min,max) {    # forest plot
+    forest.df(freq$net1,input$modelranfix,freq$lstx, ref,min,max)
   }
   make_refText = function(ref) {
     #output$ref4<- renderText({"All outcomes are versus the reference treatment"})
@@ -497,11 +497,11 @@ shinyServer(function(input, output, session) {
   }
   
   output$Comparison2<- renderPlot({
-    make_netComp(freq_all(), ref_alter()$ref_all)
+    make_netComp(freq_all(), ref_alter()$ref_all, input$freqmin, input$freqmax)
     title("Results for all studies")
   })
   output$SFPUpdatingComp <- renderPlot({
-    make_netComp(freq_sub(), ref_alter()$ref_sub)
+    make_netComp(freq_sub(), ref_alter()$ref_sub, input$freqmin_sub, input$freqmax_sub)
     title("Results with studies excluded")
   })
   
@@ -609,12 +609,12 @@ shinyServer(function(input, output, session) {
   ### 3a. Forest plot
   
   output$gemtc <- renderPlot({                  # forest plot
-    forest(model()$mtcRelEffects,digits=3)
+    forest(model()$mtcRelEffects,digits=3,xlim=c(log(input$bayesmin), log(input$bayesmax)))
     title(paste("All studies: 
               Bayesian", model()$a, "consistency model forest plot results"))
   })
   output$gemtc_sub <- renderPlot({
-    forest(model_sub()$mtcRelEffects,digits=3)
+    forest(model_sub()$mtcRelEffects,digits=3,xlim=c(log(input$bayesmin_sub), log(input$bayesmax_sub)))
     title(paste("Results with studies excluded: 
               Bayesian", model_sub()$a,"consistency model forest plot results"))
   })

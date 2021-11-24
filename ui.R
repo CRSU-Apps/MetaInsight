@@ -394,9 +394,21 @@ tabPanel("Data analysis", id="dtanalysis",
          )),
          tabPanel("2. Frequentist network meta-analysis", tabsetPanel(
             tabPanel("2a. Forest Plot",
-                column(6, plotOutput("Comparison2", height = "400px", width = "400px"), textOutput("textcomp"), textOutput("ref4"), radioButtons('format_freq3', 'Document format', c('PDF', 'PNG'), inline = TRUE), downloadButton('downloadComp2')
+                column(6, plotOutput("Comparison2", height = "550px", width = "400px"), 
+                       fixedRow(
+                         p("Options to change limits of the x-axis:"),
+                         column(6, align = 'center', numericInput('freqmin', label="Minimum", value=0.1)),
+                         column(6, align = 'center', numericInput('freqmax', label="Maximum", value=5))
+                       ),
+                       textOutput("textcomp"), textOutput("ref4"), radioButtons('format_freq3', 'Document format', c('PDF', 'PNG'), inline = TRUE), downloadButton('downloadComp2')
                   ),
-                column(6, plotOutput("SFPUpdatingComp", height = "400px", width = "400px"),
+                column(6, plotOutput("SFPUpdatingComp", height = "550px", width = "400px"),
+                       fixedRow(
+                         p("Options to change limits of the x-axis:"),
+                         column(6, align = 'center', numericInput('freqmin_sub', label="Minimum", value=0.1)),
+                         column(6, align = 'center', numericInput('freqmax_sub', label="Maximum", value=5))
+                       ),
+                       
                        tags$style("#ref_change {
                background-color: #ffd966;
                display:block; }"),
@@ -433,7 +445,12 @@ tabPanel("Data analysis", id="dtanalysis",
               )),
             fixedRow(
               column(6, align = "center",
-                     plotOutput("gemtc"),
+                     plotOutput("gemtc", height = 550),
+                     fixedRow(
+                       p("Options to change limits of the x-axis:"),
+                       column(6, align = 'center', numericInput('bayesmin', label="Minimum", value=0.1)),
+                       column(6, align = 'center', numericInput('bayesmax', label="Maximum", value=5))
+                     ),
                      p("Model fit:"),
                      tableOutput("dic"),
                      textOutput("text_gemtc"),
@@ -443,7 +460,12 @@ tabPanel("Data analysis", id="dtanalysis",
                      downloadButton('downloadBaye_plot')
               ),
               column(6, align = "center",
-                     plotOutput("gemtc_sub"),
+                     plotOutput("gemtc_sub", height = 550),
+                     fixedRow(
+                       p("Options to change limits of the x-axis:"),
+                       column(6, align = 'center', numericInput('bayesmin_sub', label="Minimum", value=0.1)),
+                       column(6, align = 'center', numericInput('bayesmax_sub', label="Maximum", value=5))
+                     ),
                      tags$style("#ref_change_bay {
                                  background-color: #ffd966;
                                  display:block; }"),
