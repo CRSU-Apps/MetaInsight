@@ -123,10 +123,17 @@ output$downloadComp2 <- downloadHandler(
   content = function(file) {
     if (input$format_freq3=="PDF"){pdf(file=file)}
     else {png(file=file)}
-    make_netComp(freq_all(), ref_alter()$ref_all)
-    #title("Results for all studies")
+    make_netComp(freq_all(), ref_alter()$ref_all, input$freqmin, input$freqmax)
+    #title("All studies")
+    #title(paste("All studies: 
+    #          Frequentist", model()$a, "model forest plot results"))
     dev.off()
-  }
+  },
+  #contentType = function() {
+  #  if (input$format_freq3=="PDF") {"image/pdf"}
+  #  else {"image/png"}
+  #}
+  contentType = "image/pdf"
 )
 output$downloadComp<- downloadHandler(
   filename = function() {
@@ -135,8 +142,9 @@ output$downloadComp<- downloadHandler(
   content = function(file) {
     if (input$format_freq4=="PDF"){pdf(file=file)}
     else {png(file=file)}
-    make_netComp(freq_sub(), ref_alter()$ref_sub)
-    #title("Results with studies excluded")
+    make_netComp(freq_sub(), ref_alter()$ref_sub, input$freqmin_sub, input$freqmax_sub)
+    #title(paste("Results with studies excluded: 
+    #          Frequentist", model()$a, "model forest plot results"))
     dev.off()
   }
 )
@@ -198,29 +206,31 @@ output$downloadBaye_plot <- downloadHandler(
     paste0('All_studies.', input$format2)
   },
   content = function(file) {
-    if (input$format2=="pdf"){pdf(file=file)}
+    if (input$format2=="PDF"){pdf(file=file)}
     else {png(file=file)}
-    forest(model()$mtcRelEffects,digits=3)
-    title(paste("All studies: 
-              Bayesian", model()$a, "consistency model forest plot results"))
+    if (input$metaoutcome=="Binary") {forest(model()$mtcRelEffects,digits=3,xlim=c(log(input$bayesmin), log(input$bayesmax)))}
+    if (input$metaoutcome=="Continuous") {forest(model()$mtcRelEffects,digits=3,xlim=c(input$bayesmin, input$bayesmax))}
+    #title(paste("All studies: 
+    #          Bayesian", model()$a, "consistency model forest plot results"))
     dev.off()
   }
 )
 
-
-output$downloadBaye_plot_sub <- downloadHandler(
+output$downloadBaye_plot_sub<- downloadHandler(
   filename = function() {
-    paste0('subgroup.', input$format4)
+    paste0('Excluded_studies.', input$format4)
   },
   content = function(file) {
-    if (input$format4=="pdf"){pdf(file=file)}
+    if (input$format4=="PDF"){pdf(file=file)}
     else {png(file=file)}
-    forest(model_sub()$mtcRelEffects,digits=3)
-    title(paste("Results with studies excluded: 
-              Bayesian", model()$a, "consistency model forest plot results"))
+    if (input$metaoutcome=="Binary") {forest(model_sub()$mtcRelEffects,digits=3,xlim=c(log(input$bayesmin_sub), log(input$bayesmax_sub)))}
+    if (input$metaoutcome=="Continuous") {forest(model_sub()$mtcRelEffects,digits=3,xlim=c(input$bayesmin_sub, input$bayesmax_sub))}
+    #title(paste("Results with studies excluded: 
+    #          Bayesian", model()$a, "consistency model forest plot results"))
     dev.off()
   }
 )
+
 
 
 ##### 3b. comparison of all treatment pairs
