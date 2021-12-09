@@ -54,7 +54,7 @@ shinyUI(navbarPage(id="meta",
            #   zoom: 75%; /* Webkit browsers */
            #   }
            #   "), 
-     h2("MetaInsight (including Bayesian estimates) V3.14 **", 
+     h2("MetaInsight (including Bayesian estimates) V3.1.9 **", 
         #tags$sup("Beta", style="color:#6CC0ED"), 
         align= "left"),
      prettyRadioButtons("metaoutcome","Please select your outcome type:",
@@ -66,28 +66,22 @@ shinyUI(navbarPage(id="meta",
        column(2),
        column(5, 
        br(),
-       p(tags$strong("** New link for MetaInsight from 12 Aug 2020 (v3.14)  ** :")),
+       p(tags$strong("Latest Updates:")),
        actionLink("history_click", "Click here to view a full update history of MetaInsight"),
-       p(tags$ul(tags$li( "Please note that the MetaInsight has a new web address now: ", style="color:#FF0000"), tags$a(href="https://crsu.shinyapps.io/MetaInsight/", "https://crsu.shinyapps.io/MetaInsight/",align="left"),
-         ". This is because we have combined the binary and continuous app together into one app in March 2020 hence to eliminate confusion, we think it will be good to give it a new link. This will replace the previous links, including",
-         tags$a(href="https://crsu.shinyapps.io/MetaInsight_continuous2/", "https://crsu.shinyapps.io/MetaInsight_continuous2/",align="left"), 
-         tags$a(href="https://crsu.shinyapps.io/MetaInsight_binary2/", "https://crsu.shinyapps.io/MetaInsight_binary2/",align="left"), 
-         ". For the time being, the previous links will still be working which will automatically redirect to the new link. "
-         )),
-       
-       p(tags$strong("** Bugs fixed and new features updated on 2 July 2020 (V3.13) ** :")),
-       p(tags$ul(tags$li( "All users: a bug was fixed associated with the estimate of confidence intervals in the 
-                          grouped forest plot on the '1. Data summary' - '1b. Study results' tab. The bug caused 
-                          inflation of the confidence intervals within said plot. Please note that this bug does not 
-                          affect any of the results of network meta-analysis, but only the descriptive forest plot of individual 
-                          studies. If you have used this grouped forest plot before or your interpretation was based 
-                          on this plot, please re-upload the studies and re-check the plot using the most recent 
-                          version of the app. We apologise for any inconvenience caused. If you have any questions, 
-                          please feel free to contact us."))),
+       br(),
+       tags$a(href="https://github.com/CRSU-Apps/MetaInsight/commits/main", "Click here to view the full version history of the code base for MetaInsight",target="_blank"),
+       p(tags$strong("** Bug fixed on 6 December 2021 (v3.1.9) ** :")),
+       p(tags$ul(tags$li( "It was discovered that the new feature added in v3.1.8 was not implemented for downloading forest 
+       plots and so caused errors. This has now been resolved, and the new formatting options follow through when downloading 
+       forest plots."))),
+       p(tags$strong("** New feature added on 24 November 2021 (v3.1.8) ** :")),
+       p(tags$ul(tags$li( "The forest plots of results for both frequentist and Bayesian analyses now have additional formatting 
+                          options regarding the width of the x-axis. If the user decided to shorten the x-axis such that a confidence 
+                          interval would ‘run-off’ the page, the respective confidence interval will have an arrowhead instead."))),
 
        )),
        br(),
-       p("Yiqiao Xin, Rhiannon K Owen,  Naomi Bradbury, Nicola Cooper, and Alex Sutton", align= "left"),
+       p("Yiqiao Xin, Clareece Nevill, Rhiannon K Owen,  Naomi Bradbury, Nicola Cooper, and Alex Sutton", align= "left"),
        p("For feedback/questions about this app please contact Professor Alex Sutton", tags$a(href="mailto:ajs22@leicester.ac.uk", "ajs22@leicester.ac.uk", align= "left"), ". If you encounter any errors with using the app, please check  
          the",  actionLink("tsp", "trouble shooting page"), "first before contacting us."),
        br(),
