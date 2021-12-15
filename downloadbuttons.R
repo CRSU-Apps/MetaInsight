@@ -86,10 +86,10 @@ output$downloadNetwork <- downloadHandler(
     if (input$format_freq1=="PDF"){pdf(file=file)}
     else {png(file=file)}
     if (input$networkstyle=='networkp1') {
-      make_netgraph(freq_all())
+      make_netgraph(freq_all(),input$label_all)
     } else {
       data.rh<-data.prep(arm.data=bugsnetdt(), varname.t = "T", varname.s="Study")
-      net.plot(data.rh, node.scale = 3, edge.scale=1.5) 
+      net.plot(data.rh, node.scale = 3, edge.scale=1.5, node.lab.cex=input$label_all) 
     }
     title("Network plot of all studies")
     dev.off()
@@ -103,11 +103,11 @@ output$downloadNetworkUpdate <- downloadHandler(
     if (input$format_freq2=="PDF"){pdf(file=file)}
     else {png(file=file)}
     if (input$networkstyle_sub=='networkp1') {
-      make_netgraph(freq_sub())
+      make_netgraph(freq_sub(),input$label_excluded)
     } else {
       long_sort2_sub <- filter(bugsnetdt(), !Study %in% input$exclusionbox)  # subgroup
       data.rh<-data.prep(arm.data=long_sort2_sub, varname.t = "T", varname.s="Study")
-      net.plot(data.rh, node.scale = 3, edge.scale=1.5)
+      net.plot(data.rh, node.scale = 3, edge.scale=1.5, node.lab.cex=input$label_excluded)
     }
     title("Network plot with studies excluded")
     dev.off()

@@ -269,8 +269,8 @@ shinyServer(function(input, output, session) {
 
   
   ### 1c. Network Plot
-  make_netgraph = function(freq) {  
-    netgraph(freq$net1, lwd=2, number.of.studies = TRUE, plastic=FALSE, points=TRUE, cex=1.25, cex.points=2, col.points=1, col=8, pos.number.of.studies=0.43,
+  make_netgraph = function(freq,label_size) {  
+    netgraph(freq$net1, lwd=2, number.of.studies = TRUE, plastic=FALSE, points=TRUE, cex=label_size, cex.points=2, col.points=1, col=8, pos.number.of.studies=0.43,
              col.number.of.studies = "forestgreen", col.multiarm = "white", bg.number.of.studies = "forestgreen"
              )
   }
@@ -285,21 +285,21 @@ shinyServer(function(input, output, session) {
   
   output$netGraphStatic <- renderPlot({
     if (input$networkstyle=='networkp1') {
-      make_netgraph(freq_all())
+      make_netgraph(freq_all(),input$label_all)
     } else {
       data.rh<-data.prep(arm.data=bugsnetdt(), varname.t = "T", varname.s="Study")
-      net.plot(data.rh, node.scale = 3, edge.scale=1.5)  #, flag="Orlistat". 
+      net.plot(data.rh, node.scale = 3, edge.scale=1.5, node.lab.cex=input$label_all)  #, flag="Orlistat". 
     }
     title("Network plot of all studies")
   })
   
   output$netGraphUpdating <- renderPlot({
     if (input$networkstyle_sub=='networkp1') {
-      make_netgraph(freq_sub())
+      make_netgraph(freq_sub(),input$label_excluded)
     } else {
       long_sort2_sub <- filter(bugsnetdt(), !Study %in% input$exclusionbox)  # subgroup
       data.rh<-data.prep(arm.data=long_sort2_sub, varname.t = "T", varname.s="Study")
-      net.plot(data.rh, node.scale = 3, edge.scale=1.5)
+      net.plot(data.rh, node.scale = 3, edge.scale=1.5, node.lab.cex=input$label_excluded)
     }
     title("Network plot with studies excluded")
   })

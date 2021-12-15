@@ -54,7 +54,7 @@ shinyUI(navbarPage(id="meta",
            #   zoom: 75%; /* Webkit browsers */
            #   }
            #   "), 
-     h2("MetaInsight (including Bayesian estimates) V3.1.9 **", 
+     h2("MetaInsight (including Bayesian estimates) V3.1.10 **", 
         #tags$sup("Beta", style="color:#6CC0ED"), 
         align= "left"),
      prettyRadioButtons("metaoutcome","Please select your outcome type:",
@@ -70,14 +70,12 @@ shinyUI(navbarPage(id="meta",
        actionLink("history_click", "Click here to view a full update history of MetaInsight"),
        br(),
        tags$a(href="https://github.com/CRSU-Apps/MetaInsight/commits/main", "Click here to view the full version history of the code base for MetaInsight",target="_blank"),
+       p(tags$strong("** New feature added on 15 December 2021 (v3.1.10)  ** :")),
+       p(tags$ul(tags$li( "The user can now adjust the size of the labels on the network plots. "))),
        p(tags$strong("** Bug fixed on 6 December 2021 (v3.1.9) ** :")),
        p(tags$ul(tags$li( "It was discovered that the new feature added in v3.1.8 was not implemented for downloading forest 
        plots and so caused errors. This has now been resolved, and the new formatting options follow through when downloading 
        forest plots."))),
-       p(tags$strong("** New feature added on 24 November 2021 (v3.1.8) ** :")),
-       p(tags$ul(tags$li( "The forest plots of results for both frequentist and Bayesian analyses now have additional formatting 
-                          options regarding the width of the x-axis. If the user decided to shorten the x-axis such that a confidence 
-                          interval would ‘run-off’ the page, the respective confidence interval will have an arrowhead instead."))),
 
        )),
        br(),
@@ -358,7 +356,8 @@ tabPanel("Data analysis", id="dtanalysis",
                                       p("The size of the nodes and the thickness of edges depend on the number of people randomised and the number of trials conducted, respectively.")
                      ),
                      radioButtons("networkstyle", "Please choose a network plot style", c("Number of trials shown on the line" = "networkp1","Number of people indicated by size of node etc." = "networkp2"), selected = "networkp2"),
-                     radioButtons('format_freq1', 'Document format', c('PDF', 'PNG'), inline = TRUE),
+                     column(6, radioButtons('format_freq1', 'Document format', c('PDF', 'PNG'), inline = TRUE)),
+                     column(6, numericInput('label_all', 'Label size multiplier', value=1.25)),
                      downloadButton('downloadNetwork'), 
                      br(),
                      br(),
@@ -372,7 +371,8 @@ tabPanel("Data analysis", id="dtanalysis",
                                       p("The size of the nodes and the thickness of edges depend on the number of people randomised and the number of trials conducted, respectively.")
                      ),
                      radioButtons("networkstyle_sub", "Please choose a network plot style", c("Number of trials shown on the line" = "networkp1","Number of people indicated by size of node etc." = "networkp2"), selected = "networkp2"),
-                     radioButtons('format_freq2', 'Document format', c('PDF', 'PNG'), inline = TRUE),
+                     column(6, radioButtons('format_freq2', 'Document format', c('PDF', 'PNG'), inline = TRUE)),
+                     column(6, numericInput('label_excluded', 'Label size multiplier', value=1.25)),
                      downloadButton('downloadNetworkUpdate'), 
                      br(),
                      br(),
