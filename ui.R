@@ -38,8 +38,11 @@ dashboardPage(
       .content-wrapper {
         background-color: #fff;
       }
+      .shiny-split-layout>div {
+      overflow: hidden;
+      }
     '
-  ))),
+  ))),  #ensure white background and no horizontal scroll bars on ranking panel
   navbarPage(id="meta",
                    "MetaInsight", 
                    header = singleton(tags$head(includeScript("google_analytics2.js"))),
@@ -510,12 +513,25 @@ dashboardPage(
                                                                                             tabPanel("3c. Ranking Panel",
                                                                                                      helpText("Please note: if you change the selections on the sidebar, 
                                you will need to re-run the primary and/or sensitivity analysis from the 'Forest Plot' page."),
-                                                                                                     fluidRow(
-                                                                                                       box(title="Ranking panel for all studies", status='primary', solidHeader=TRUE, width=12,
-                                                                                                           splitLayout(cellWidths=c("30%","40%","30%"), cellArgs = list(style="padding: 3px; border: 2px solid gold"),
-                                                                                                                       column(12, align = "center", h4("Relative Effects"), withSpinner(plotOutput("gemtc2"), type=6), textOutput("forest_text")),
-                                                                                                                       #column(12, align = "center", h4("Ranking Results"), withSpinner(plotOutput("Litmus"), type=6), textOutput("litmus_text")),
-                                                                                                                       column(12, align = "center", h4("Summary of evidence"), withSpinner(plotOutput("netGraphStatic2"), type=6))))
+                                                                                                     fluidRow(   
+                                                                                                       box(title="Ranking panel for all studies", status='primary', solidHeader=TRUE, width=12, collapsible=TRUE,
+                                                                                                           splitLayout(cellWidths=c("30%","40%","30%"), cellArgs = list(style="height: 600px; padding: 12px; border: 2px solid gold; white-space: normal"),
+                                                                                                                       fluidRow(align = "center", h4("Relative Effects"), withSpinner(plotOutput("gemtc2"), type=6),
+                                                                                                                                textOutput("relative_rank_text")),
+                                                                                                                       fluidRow(align = "center", h4("Ranking Results"), withSpinner(plotOutput("Litmus"), type=6),
+                                                                                                                                p("Litmus Rank-O-Gram: Higher SUCRA values and cumulative probability curves nearer the top left indicate better performance")),
+                                                                                                                       fluidRow(align = "center", h4("Summary of evidence"), withSpinner(plotOutput("netGraphStatic2"), type=6), 
+                                                                                                                                p("Network diagram: Numbers on the line indicate the number of trials conducted for the comparison. Any shaded areas indicate existence of multi-arm trials between the comparisons."))))
+                                                                                                     ),
+                                                                                                     fluidRow(   
+                                                                                                       box(title="Ranking panel with studies excluded", status='primary', solidHeader=TRUE, width=12, collapsible=TRUE,
+                                                                                                           splitLayout(cellWidths=c("30%","40%","30%"), cellArgs = list(style="height: 600px; padding: 12px; border: 2px solid gold; white-space: normal"),
+                                                                                                                       fluidRow(align = "center", h4("Relative Effects"), withSpinner(plotOutput("gemtc_sub2"), type=6),
+                                                                                                                                textOutput("relative_rank_text_sub")),
+                                                                                                                       fluidRow(align = "center", h4("Ranking Results"), withSpinner(plotOutput("Litmus_sub"), type=6),
+                                                                                                                                p("Litmus Rank-O-Gram: Higher SUCRA values and cumulative probability curves nearer the top left indicate better performance")),
+                                                                                                                       fluidRow(align = "center", h4("Summary of evidence"), withSpinner(plotOutput("netGraphStatic_sub"), type=6), 
+                                                                                                                                p("Network diagram: Numbers on the line indicate the number of trials conducted for the comparison. Any shaded areas indicate existence of multi-arm trials between the comparisons."))))
                                                                                                      )
                                                                                                      #fixedRow(
                                                                                                     # column(6, align = "center",

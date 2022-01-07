@@ -297,12 +297,19 @@ shinyServer(function(input, output, session) {
     }
     title("Network plot of all studies")
   })
-  netgraph2 <- eventReactive(input$baye_do, { # need it in ranking panel # NEED TO FINE-TUNE RUN-OFF #
+  netgraph2 <- eventReactive(input$baye_do, { # need it in ranking panel (only when run Bayesian) # NEED TO FINE-TUNE RUN-OFF #
     netgraph(freq_all()$net1, lwd=2, number.of.studies = TRUE, plastic=FALSE, points=TRUE, cex=1, cex.points=2, col.points=1, col=8, pos.number.of.studies=0.43,
              col.number.of.studies = "forestgreen", col.multiarm = "white", bg.number.of.studies = "forestgreen")
   })
   output$netGraphStatic2 <- renderPlot({
     netgraph2()
+  })
+  netgraph_sub <- eventReactive(input$sub_do, { # sensitivity analysis
+    netgraph(freq_sub()$net1, lwd=2, number.of.studies = TRUE, plastic=FALSE, points=TRUE, cex=1, cex.points=2, col.points=1, col=8, pos.number.of.studies=0.43,
+             col.number.of.studies = "forestgreen", col.multiarm = "white", bg.number.of.studies = "forestgreen")
+  })
+  output$netGraphStatic_sub <- renderPlot({
+    netgraph_sub()
   })
   
   output$netGraphUpdating <- renderPlot({
@@ -625,7 +632,7 @@ shinyServer(function(input, output, session) {
     title(paste("All studies: 
               Bayesian", model()$a, "consistency model forest plot results"))
   })
-  output$gemtc2 <- renderPlot({                  # forest plot for ranking panel
+  output$gemtc2 <- renderPlot({                  # forest plot for ranking panel (different style needed due to using 'boxes' in UI)
     png("forest.png")
     forest(model()$mtcRelEffects,digits=3)
     dev.off()
@@ -639,8 +646,14 @@ shinyServer(function(input, output, session) {
     title(paste("Results with studies excluded: 
               Bayesian", model_sub()$a,"consistency model forest plot results"))
   })
-  output$forest_text <- renderText({
-    paste("Forest plot of relative effects from Bayesian ", input$modelranfix, "effects consistency model")
+  output$gemtc_sub2 <- renderPlot({                  
+    png("forest_sub.png")
+    forest(model_sub()$mtcRelEffects,digits=3)
+    dev.off()
+    ForestImg <- image_read('forest_sub.png')
+    Img <- ggdraw() +
+      draw_image(ForestImg)
+    return(Img)
   })
   
   texttauB = function(results){      # Tau
@@ -749,6 +762,14 @@ shinyServer(function(input, output, session) {
   output$rankdata_sub <- renderTable({
     RankingData_sub()$Probabilities
   }, digits=5, rownames=TRUE, colnames = TRUE)
+  
+  # Text underneath
+  output$relative_rank_text <-renderText({          
+    relative_rank_text(model())
+  })
+  output$relative_rank_text_sub <-renderText({          
+    relative_rank_text(model_sub())
+  })
   
   
   

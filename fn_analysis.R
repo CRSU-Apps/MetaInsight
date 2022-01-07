@@ -630,6 +630,12 @@ RadialSUCRA <- function(SUCRAData, ColourData, NetmetaObj) {      # SUCRAData ne
   return(list(Original=Finalplot, Alternative=Finalalt))
 }
 
+# text to go underneath plots #
+relative_rank_text <- function(results) {
+  paste("Forest plot of relative effects from Bayesian ", results$a, " consistency model", sep="")
+}
+
+
 ### 3d. nodesplit models
 
 bayenode <- function(data, treat_list, model, outcome, CONBI) {
