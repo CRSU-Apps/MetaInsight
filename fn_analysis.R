@@ -458,14 +458,18 @@ rankdata <- function(NMAdata, rankdirection, longdata, widedata, rawlabels, netm
 }
 
 # Litmus Rank-O-Gram #
-LitmusRankOGram <- function(CumData, SUCRAData, ColourData) {    #CumData needs Treatment, Rank, Cumulative_Probability and SUCRA; SUCRAData needs Treatment & SUCRA; COlourData needs SUCRA & colour
+LitmusRankOGram <- function(CumData, SUCRAData, ColourData, colourblind=FALSE) {    #CumData needs Treatment, Rank, Cumulative_Probability and SUCRA; SUCRAData needs Treatment & SUCRA; COlourData needs SUCRA & colour; colourblind friendly option
   # Basic Rankogram #
 Rankogram <- ggplot(CumData, aes(x=Rank, y=Cumulative_Probability, group=Treatment)) +
   geom_line(aes(colour=SUCRA)) + theme_classic() + theme(legend.position = "none", aspect.ratio=1) +
   labs(x = "Rank", y = "Cumulative Probability") + scale_x_continuous(expand = c(0, 0), breaks = seq(1,nrow(SUCRAData)))
-A <- Rankogram + scale_colour_gradient2(low = "red",
+if (colourblind==FALSE) {
+  A <- Rankogram + scale_colour_gradient2(low = "red",
                                         mid = "yellow",
                                         high = "green", midpoint=50)
+} else {
+  A <- Rankogram + scale_colour_gradientn(colours=c("#7b3294","#c2a5cf","#a6dba0", "#008837"), values=c(0, 0.33, 0.66, 1))
+}
 # Litmus SUCRA Scale #
 Litmus_SUCRA <- ggplot(SUCRAData, aes(x=rep(0.45,times=nrow(SUCRAData)), y=SUCRA)) +
   geom_segment(data = ColourData,
@@ -475,9 +479,13 @@ Litmus_SUCRA <- ggplot(SUCRAData, aes(x=rep(0.45,times=nrow(SUCRAData)), y=SUCRA
   geom_point() + labs(y="SUCRA (%)") +
   geom_text_repel(aes(label=Treatment), box.padding = 0, direction="y", hjust=0, nudge_x=0.05, size=3) + scale_x_continuous(limits=c(0.4,0.8)) +
   theme_classic() + theme(axis.title.x = element_blank(), axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.line.x = element_blank(), aspect.ratio=4)
-B <- Litmus_SUCRA + scale_colour_gradient2(low = "red",
+if (colourblind==FALSE) {
+  B <- Litmus_SUCRA + scale_colour_gradient2(low = "red",
                                            mid = "yellow",
                                            high = "green", midpoint=50)
+} else {
+  B <- Litmus_SUCRA + scale_colour_gradientn(colours=c("#7b3294","#c2a5cf","#a6dba0", "#008837"), values=c(0, 0.33, 0.66, 1))
+}
 # Combo! #
 Combo <- A + B
 Combo + theme(plot.margin = margin(t=0,r=0,b=0,l=0))
@@ -485,7 +493,7 @@ Combo + theme(plot.margin = margin(t=0,r=0,b=0,l=0))
 
 
 # Radial SUCRA Plot #
-RadialSUCRA <- function(SUCRAData, ColourData, NetmetaObj) {      # SUCRAData needs Treatment & Rank; ColourData needs SUCRA & colour
+RadialSUCRA <- function(SUCRAData, ColourData, NetmetaObj, colourblind=FALSE) {      # SUCRAData needs Treatment & Rank; ColourData needs SUCRA & colour; colourblind friendly option
 
   # Background #
   Background <- ggplot(SUCRAData, aes(x=reorder(Treatment, -SUCRA), y=SUCRA, group=1)) +
@@ -493,9 +501,14 @@ RadialSUCRA <- function(SUCRAData, ColourData, NetmetaObj) {      # SUCRAData ne
     theme_classic() + 
     theme(panel.grid.major.y = element_line(colour = c(rep("black",6),"white")), axis.title = element_blank(), axis.text.y = element_blank(), axis.ticks = element_blank(), axis.line = element_blank(), 
           aspect.ratio = 1, axis.text.x = element_text(size=8,family="sans",angle = 360/(2*pi)*rev(pi/2 + seq(pi/6,2*pi-pi/6, len=6)) + 360/(2*pi)*c( rep(0, 3),rep(pi,3)))) +
-    coord_polar() +
-    scale_colour_gradient2(low = "red", mid = "yellow", high = "green", midpoint=50) +
-    scale_fill_gradient2(low = "red", mid = "yellow", high = "green", midpoint=50) 
+    coord_polar()
+  if (colourblind==FALSE) {
+    Background <- Background + scale_colour_gradient2(low = "red", mid = "yellow", high = "green", midpoint=50) +
+                               scale_fill_gradient2(low = "red", mid = "yellow", high = "green", midpoint=50)
+  } else {
+    Background <- Background + scale_colour_gradientn(colours=c("#7b3294","#c2a5cf","#a6dba0", "#008837"), values=c(0, 0.33, 0.66, 1)) +
+      scale_fill_gradientn(colours=c("#7b3294","#c2a5cf","#a6dba0", "#008837"), values=c(0, 0.33, 0.66, 1))
+  }
   
   Background +
     geom_point(aes(fill=SUCRA),size=1, shape=21,show.legend=FALSE) +  
@@ -586,7 +599,7 @@ RadialSUCRA <- function(SUCRAData, ColourData, NetmetaObj) {      # SUCRAData ne
   
   
   # Plot of just points to go on the very top #
-  CreatePoints <- function(Type) {
+  CreatePoints <- function(Type, colourblind=FALSE) {
     if (Type=='Original') {
       g <- ggplot(SUCRAData, aes(x=reorder(Treatment, -SUCRA), y=SUCRA, group=1)) +
         geom_point(aes(fill=SUCRA, size=SizeO), size=SUCRAData$SizeO, shape=21,show.legend=FALSE) +
@@ -596,20 +609,24 @@ RadialSUCRA <- function(SUCRAData, ColourData, NetmetaObj) {      # SUCRAData ne
         geom_point(aes(fill=SUCRA, size=SizeA), size=SUCRAData$SizeA, shape=21,show.legend=FALSE) +
         scale_y_continuous(limits=c(-80,115))
     }
+    if (colourblind==FALSE) {
+      g <- g + scale_fill_gradient2(low = "red", mid = "yellow", high = "green", midpoint=50)
+    } else {
+      g <- g + scale_fill_gradientn(colours=c("#7b3294","#c2a5cf","#a6dba0", "#008837"), values=c(0, 0.33, 0.66, 1))
+    }
     g +
       theme(panel.background = element_rect(fill = "transparent"), plot.background = element_rect(fill = "transparent", color = NA), 
             axis.title = element_blank(), axis.text.y = element_blank(), axis.ticks = element_blank(), 
             axis.line = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), aspect.ratio = 1,
             axis.text.x = element_text(size=8,family="sans",angle = 360/(2*pi)*rev(pi/2 + seq(pi/6,2*pi-pi/6, len=6)) + 360/(2*pi)*c( rep(0, 3),rep(pi,3)))) +
       coord_polar() +
-      scale_fill_gradient2(low = "red", mid = "yellow", high = "green", midpoint=50) +
       annotate("text",x = rep(0.5,7), y = c(-3,17,37,57,77,97,115), label = c("0","20","40","60","80","100","SUCRA (%)"), size=2, family="sans")
   }
   
-  Points <- CreatePoints(Type='Original')
+  Points <- CreatePoints(Type='Original', colourblind=colourblind)
   ggsave(filename = 'PointsO.png', device = 'png', bg = 'transparent', width=5, height=5)
   
-  Points <- CreatePoints(Type='Alternative')
+  Points <- CreatePoints(Type='Alternative', colourblind=colourblind)
   ggsave(filename = 'PointsA.png', device = 'png', bg = 'transparent', width=5, height=5)
   
   # Overlay #

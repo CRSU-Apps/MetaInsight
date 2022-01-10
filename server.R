@@ -725,34 +725,32 @@ shinyServer(function(input, output, session) {
   
   # Litmus Rank-O-Gram
   output$Litmus <- renderPlot({
-    LitmusRankOGram(CumData=RankingData()$Cumulative, SUCRAData=RankingData()$SUCRA, ColourData=RankingData()$Colour)
+    LitmusRankOGram(CumData=RankingData()$Cumulative, SUCRAData=RankingData()$SUCRA, ColourData=RankingData()$Colour, colourblind=input$Colour_blind)
   })
-  #output$litmus_text <- renderHTML({ # need to make it bold and paragraph break (try out the HTML now) # !!!! #
-  #  paste("<b>Litmus Rank-o-gram from Bayesian ", input$modelranfix, "effects consistency model</b>", "<br>", 
-  #        "The nearer the curve to the top-left, the 'better' performance. SUCRA: surface under the cumulative ranking curve (higher values indicate better performance).")
-  #})
   output$Litmus_sub <- renderPlot({
-    LitmusRankOGram(CumData=RankingData_sub()$Cumulative, SUCRAData=RankingData_sub()$SUCRA, ColourData=RankingData_sub()$Colour)
+    LitmusRankOGram(CumData=RankingData_sub()$Cumulative, SUCRAData=RankingData_sub()$SUCRA, ColourData=RankingData_sub()$Colour, colourblind=input$Colour_blind_sub)
   })
   
-  # Radial SUCRA
+  # Radial SUCRA function
+  SUCRARadialplots <- reactive({
+    RadialSUCRA(SUCRAData=RankingData()$SUCRA, ColourData=RankingData()$Colour, NetmetaObj=RankingData()$NetmetaObj$net1, colourblind=input$Colour_blind)
+  })
+  SUCRARadialplots_sub <- reactive({
+    RadialSUCRA(SUCRAData=RankingData_sub()$SUCRA, ColourData=RankingData_sub()$Colour, NetmetaObj=RankingData_sub()$NetmetaObj$net1, colourblind=input$Colour_blind_sub)
+  })
+  # 'Original' plots
   output$Radial <- renderPlot({
-    Plot <- RadialSUCRA(SUCRAData=RankingData()$SUCRA, ColourData=RankingData()$Colour, NetmetaObj=RankingData()$NetmetaObj$net1)
-    Plot$Original
+    SUCRARadialplots()$Original
   })
   output$Radial_sub <- renderPlot({
-    Plot <- RadialSUCRA(SUCRAData=RankingData_sub()$SUCRA, ColourData=RankingData_sub()$Colour, NetmetaObj=RankingData_sub()$NetmetaObj$net1)
-    Plot$Original
+    SUCRARadialplots_sub()$Original
   })
-  
-  # Radial SUCRA alternative
+  # Alternative plots
   output$RadialAlt <- renderPlot({
-    Plot <- RadialSUCRA(SUCRAData=RankingData()$SUCRA, ColourData=RankingData()$Colour, NetmetaObj=RankingData()$NetmetaObj$net1)
-    Plot$Alternative
+    SUCRARadialplots()$Alternative
   })
   output$RadialAlt_sub <- renderPlot({
-    Plot <- RadialSUCRA(SUCRAData=RankingData_sub()$SUCRA, ColourData=RankingData_sub()$Colour, NetmetaObj=RankingData_sub()$NetmetaObj$net1)
-    Plot$Alternative
+    SUCRARadialplots_sub()$Alternative
   })
   
   # Table of Probabilities (need to include SUCRA and have it as a collapsable table)
