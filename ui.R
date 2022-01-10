@@ -512,10 +512,10 @@ dashboardPage(
                                                                                             ),
                                                                                             tabPanel("3c. Ranking Panel",
                                                                                                      helpText("Please note: if you change the selections on the sidebar, 
-                               you will need to re-run the primary and/or sensitivity analysis from the 'Forest Plot' page."),
+                               you will need to re-run the primary and/or sensitivity analysis from the 'Forest Plot' page.", tags$br(), tags$strong("Please note each simulation may take 20 seconds.", style="color:#FF0000")),
                                                                                                      fluidRow(   
                                                                                                        box(title="Ranking panel for all studies", status='primary', solidHeader=TRUE, width=12, collapsible=TRUE,
-                                                                                                           splitLayout(cellWidths=c("30%","40%","30%"), cellArgs = list(style="height: 650px; padding: 12px; border: 2px solid gold; white-space: normal"),
+                                                                                                           splitLayout(cellWidths=c("30%","40%","30%"), cellArgs = list(style="height: 700px; padding: 12px; border: 2px solid gold; white-space: normal"),
                                                                                                                        fluidRow(align = "center", h4("Relative Effects"), withSpinner(plotOutput("gemtc2"), type=6),
                                                                                                                                 textOutput("relative_rank_text")),
                                                                                                                        fluidRow(align = "center", h4("Ranking Results"), 
@@ -533,7 +533,7 @@ dashboardPage(
                                                                                                      ),
                                                                                                      fluidRow(   
                                                                                                        box(title="Ranking panel with studies excluded", status='primary', solidHeader=TRUE, width=12, collapsible=TRUE,
-                                                                                                           splitLayout(cellWidths=c("30%","40%","30%"), cellArgs = list(style="height: 650px; padding: 12px; border: 2px solid gold; white-space: normal"),
+                                                                                                           splitLayout(cellWidths=c("30%","40%","30%"), cellArgs = list(style="height: 700px; padding: 12px; border: 2px solid gold; white-space: normal"),
                                                                                                                        fluidRow(align = "center", h4("Relative Effects"), withSpinner(plotOutput("gemtc_sub2"), type=6),
                                                                                                                                 textOutput("relative_rank_text_sub")),
                                                                                                                        fluidRow(align = "center", h4("Ranking Results"), 
