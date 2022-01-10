@@ -400,10 +400,10 @@ gemtctau <- function(results,outcome) {
   }
 }
 
-### 3c. Ranking results  # Consider speeding up the process by avoiding re-running a frequentist analysis everytime (i.e. can we just draw network without running analysis?)
+### 3c. Ranking results  
 
 # Collecting data #
-rankdata <- function(NMAdata, rankdirection, longdata, widedata, rawlabels, netmeta) {
+rankdata <- function(NMAdata, rankdirection, longdata, widedata, netmeta) {
   # data frame of colours
   colour_dat = data.frame(SUCRA = seq(0, 100, by = 0.1)) 
   colour_dat = mutate(colour_dat, colour = seq(0, 100, length.out = 1001)) 
@@ -412,8 +412,7 @@ rankdata <- function(NMAdata, rankdirection, longdata, widedata, rawlabels, netm
   prob <- as.data.frame(print(rank.probability(NMAdata, preferredDirection=(if (rankdirection=="good") -1 else 1)))) # rows treatments, columns ranks
   names(prob)[1:ncol(prob)] <- paste("Rank ", 1:(ncol(prob)), sep="")
   sucra <- sucra(prob)  # 1 row of SUCRA values for each treatment column
-  treatments <- row.names(prob)
-  # Can I remove underscores to help with labelling?
+  treatments <- str_wrap(sub("_", " ", row.names(prob)), width=10) 
   
   # SUCRA
   SUCRA <- data.frame(Treatment=treatments,
@@ -429,13 +428,14 @@ rankdata <- function(NMAdata, rankdirection, longdata, widedata, rawlabels, netm
   Cumulative_Data <- data.frame(Treatment=rep(treatments,each=ncol(prob)),
                                 Rank = rep(1:(ncol(prob)), times=ncol(prob)),
                                 Cumulative_Probability = as.numeric(t(cumprob)))
-  Cumulative_Data <- Cumulative_Data %>% left_join(SUCRA, by = "Treatment")#
+  Cumulative_Data <- Cumulative_Data %>% left_join(SUCRA, by = "Treatment")
   
   # Number of people in each node #
-  Patients <- data.frame(Treatment=longdata$T,
+  Patients <- data.frame(Treatment=str_wrap(sub("_", " ",longdata$T), width=10),
                          Sample=longdata$N)
   Patients <- aggregate(Patients$Sample, by=list(Category=Patients$Treatment), FUN=sum)
   Patients <- rename(Patients, c("Category"="Treatment", "x"="N"))
+  Patients$Treatment <- sub("_", " ", Patients$Treatment) #remove underscores, otherwise next line won't work
   SUCRA <- SUCRA %>% right_join(Patients, by = "Treatment")
   # Node size #
   size.maxO <- 15
@@ -526,6 +526,8 @@ RadialSUCRA <- function(SUCRAData, ColourData, NetmetaObj, colourblind=FALSE) { 
   
   # Create my own network plot using ggplot polar coords #
   study_matrix <- NetmetaObj$A.matrix # give me matrix of number of trials between each treatment combo
+  row.names(study_matrix) <- str_wrap(sub("_", " ", row.names(study_matrix)), width=10)
+  colnames(study_matrix) <- str_wrap(sub("_", " ", colnames(study_matrix)), width=10)
   SUCRA <- SUCRAData %>% arrange(-SUCRA)
   study_matrix <- study_matrix[SUCRA$Treatment,SUCRA$Treatment]
   A.sign <- sign(study_matrix) #1s and 0s for presence of trial

@@ -26,6 +26,7 @@ library(ggrepel)
 library(tidyr)
 library(magick)
 library(reshape2)
+library(stringr)
 
 
 
@@ -275,7 +276,7 @@ shinyServer(function(input, output, session) {
   
   ### 1c. Network Plot
   make_netgraph = function(freq) {  
-    netgraph(freq$net1, lwd=2, number.of.studies = TRUE, plastic=FALSE, points=TRUE, cex=1.25, cex.points=2, col.points=1, col=8, pos.number.of.studies=0.43,
+    netgraph(freq$net1, labels=str_wrap(sub("_", " ",freq$net1$trts), width=10), lwd=2, number.of.studies = TRUE, plastic=FALSE, points=TRUE, cex=1.25, cex.points=2, col.points=1, col=8, pos.number.of.studies=0.43,
              col.number.of.studies = "forestgreen", col.multiarm = "white", bg.number.of.studies = "forestgreen"
     )
   }
@@ -297,19 +298,18 @@ shinyServer(function(input, output, session) {
     }
     title("Network plot of all studies")
   })
-  netgraph2 <- eventReactive(input$baye_do, { # need it in ranking panel (only when run Bayesian) # NEED TO FINE-TUNE RUN-OFF #
-    netgraph(freq_all()$net1, lwd=2, number.of.studies = TRUE, plastic=FALSE, points=TRUE, cex=1, cex.points=2, col.points=1, col=8, pos.number.of.studies=0.43,
-             col.number.of.studies = "forestgreen", col.multiarm = "white", bg.number.of.studies = "forestgreen")
+
+  network_rank <- eventReactive(input$baye_do, {   # network plots for ranking panel (Bayesian)
+    make_netgraph(freq_all())
   })
   output$netGraphStatic2 <- renderPlot({
-    netgraph2()
+    network_rank()
   })
-  netgraph_sub <- eventReactive(input$sub_do, { # sensitivity analysis
-    netgraph(freq_sub()$net1, lwd=2, number.of.studies = TRUE, plastic=FALSE, points=TRUE, cex=1, cex.points=2, col.points=1, col=8, pos.number.of.studies=0.43,
-             col.number.of.studies = "forestgreen", col.multiarm = "white", bg.number.of.studies = "forestgreen")
+  network_rank_sub <- eventReactive(input$sub_do, {
+    make_netgraph(freq_sub())
   })
   output$netGraphStatic_sub <- renderPlot({
-    netgraph_sub()
+    network_rank_sub()
   })
   
   output$netGraphUpdating <- renderPlot({
@@ -709,7 +709,7 @@ shinyServer(function(input, output, session) {
     longsort2 <- dataform.df(newData1,treat_list,input$metaoutcome)
     data_wide <- entry.df(data(),input$metaoutcome)    #transform data to wide form
     rankdata(NMAdata=model()$mtcResults, rankdirection=input$rankopts, 
-             longdata=longsort2, widedata=data_wide, rawlabels=treat_list, netmeta=freq_all())
+             longdata=longsort2, widedata=data_wide, netmeta=freq_all())
   })
   RankingData_sub <- eventReactive(input$sub_do, {
     newData1 <- as.data.frame(data())
@@ -720,7 +720,7 @@ shinyServer(function(input, output, session) {
     data_wide <- entry.df(data(),input$metaoutcome)
     data_wide_sub <- filter(data_wide, !Study %in% input$exclusionbox)  # Get subset of data to use
     rankdata(NMAdata=model_sub()$mtcResults, rankdirection=input$rankopts,
-             longdata=long_sort2_sub, widedata=data_wide_sub, rawlabels=treat_list, netmeta=freq_sub())
+             longdata=long_sort2_sub, widedata=data_wide_sub, netmeta=freq_sub())
   })
   
   # All rank plots in one function for easier loading when switching options #

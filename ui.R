@@ -370,7 +370,7 @@ dashboardPage(
                      radioButtons('format_freq0', 'Document format', c('PDF', 'SVG'), inline = TRUE),  
                      downloadButton('downloadStudy')),
             tabPanel("1c. Network Plot",
-              column(6, plotOutput("netGraphStatic"),
+              column(6, plotOutput("netGraphStatic1"),
                      conditionalPanel(condition= "input.networkstyle=='networkp1'",
                                       p("Numbers on the line indicate the number of trials conducted for the comparison. The shaded areas indicate there exist multi-arm trials between the comparisons.")
                      ),
@@ -512,7 +512,7 @@ dashboardPage(
                                                                                             ),
                                                                                             tabPanel("3c. Ranking Panel",
                                                                                                      helpText("Please note: if you change the selections on the sidebar, 
-                               you will need to re-run the primary and/or sensitivity analysis from the 'Forest Plot' page.", tags$br(), tags$strong("Please note each simulation may take 20 seconds.", style="color:#FF0000")),
+                               you will need to re-run the primary and/or sensitivity analysis from the 'Forest Plot' page.", tags$br(), tags$strong("Please note it may take up to 5 minutes to load the results.", style="color:#FF0000")),
                                                                                                      fluidRow(   
                                                                                                        box(title="Ranking panel for all studies", status='primary', solidHeader=TRUE, width=12, collapsible=TRUE,
                                                                                                            splitLayout(cellWidths=c("30%","40%","30%"), cellArgs = list(style="height: 700px; padding: 12px; border: 2px solid gold; white-space: normal"),
