@@ -244,31 +244,22 @@ output$downloadbaye_comparison_sub <- downloadHandler(
 
 
 
-##### 3c. Ranking table
-output$downloadBaye_rank <- downloadHandler(
+##### 3c. Ranking panel
+
+output$download_rank_plot <- downloadHandler(
   filename = function() {
-    paste('Rank_allstudies', '.csv', sep='')
+    paste0('Ranking_Allstudies.png')
   },
   content = function(file) {
-    write.csv({
-      prob <- as.data.frame(print(rank.probability(model()$mtcResults,
-                                                   preferredDirection=(if (input$rankopts=="good") -1 else 1))))  
-      names(prob)[1:ncol(prob)] <- paste("Rank ", 1:(ncol(prob)), sep="")
-      prob
-      }, file)
-  }
-)
-output$downloadBaye_rank_sub <- downloadHandler(
-  filename = function() {
-    paste('Rank_subgroup', '.csv', sep='')
-  },
-  content = function(file) {
-    write.csv({
-      prob <- as.data.frame(print(rank.probability(model_sub()$mtcResults,preferredDirection=
-                                                     (if (input$rankopts=="good") -1 else 1)))) 
-      names(prob)[1:ncol(prob)] <- paste("Rank ", 1:(ncol(prob)), sep="")
-      prob
-      }, file)
+    if (input$rank_plot_choice==0) { #Litmus Rank-O-Grams
+      if (input$Colour_blind==FALSE) {ggsave(file,Rankplots()$Litmus)} else {ggsave(file,Rankplots()$Litmus_blind)}
+    } else {  # Radial SUCRA plots
+      if (input$Radial_alt==FALSE) { #Default plot
+        if (input$Colour_blind==FALSE) {ggsave(file,Rankplots()$Radial$Original)} else {ggsave(file,Rankplots()$Radial_blind$Original)}
+      } else { # Alternative plot
+        if (input$Colour_blind==FALSE) {ggsave(file,Rankplots()$Radial$Alternative)} else {ggsave(file,Rankplots()$Radial_blind$Alternative)}
+      }
+    }
   }
 )
 
