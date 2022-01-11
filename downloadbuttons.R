@@ -262,6 +262,48 @@ output$download_rank_plot <- downloadHandler(
     }
   }
 )
+output$download_rank_plot_sub <- downloadHandler(
+  filename = function() {
+    paste0('Ranking_Excludedstudies.png')
+  },
+  content = function(file) {
+    if (input$rank_plot_choice_sub==0) { #Litmus Rank-O-Grams
+      if (input$Colour_blind_sub==FALSE) {ggsave(file,Rankplots_sub()$Litmus)} else {ggsave(file,Rankplots_sub()$Litmus_blind)}
+    } else {  # Radial SUCRA plots
+      if (input$Radial_alt_sub==FALSE) { #Default plot
+        if (input$Colour_blind_sub==FALSE) {ggsave(file,Rankplots_sub()$Radial$Original)} else {ggsave(file,Rankplots_sub()$Radial_blind$Original)}
+      } else { # Alternative plot
+        if (input$Colour_blind_sub==FALSE) {ggsave(file,Rankplots_sub()$Radial$Alternative)} else {ggsave(file,Rankplots_sub()$Radial_blind$Alternative)}
+      }
+    }
+  }
+)
+
+output$download_rank_table <- downloadHandler(
+  filename = function() {
+    paste0('RankingTable.csv')
+  },
+  content = function(file) {
+    write.csv({
+      Probs <- setDT(RankingData()$Probabilities, keep.rownames = "Treatment")
+      Probs$Treatment <- str_wrap(sub("_", " ", Probs$Treatment), width=10)
+      Probs %>% right_join(RankingData()$SUCRA[,1:2], by="Treatment")
+      }, file, row.names=FALSE, col.names=TRUE)
+  }
+)
+output$download_rank_table_sub <- downloadHandler(
+  filename = function() {
+    paste0('RankingTable_Excluded.csv')
+  },
+  content = function(file) {
+    write.csv({
+      Probs <- setDT(RankingData_sub()$Probabilities, keep.rownames = "Treatment")
+      Probs$Treatment <- str_wrap(sub("_", " ", Probs$Treatment), width=10)
+      Probs %>% right_join(RankingData_sub()$SUCRA[,1:2], by="Treatment")
+    }, file, row.names=FALSE, col.names=TRUE)
+  }
+)
+
 
 
 
