@@ -513,14 +513,14 @@ RadialSUCRA <- function(SUCRAData, ColourData, NetmetaObj, colourblind=FALSE) { 
   Background +
     geom_point(aes(fill=SUCRA),size=1, shape=21,show.legend=FALSE) +  
     scale_y_continuous(breaks=c(0,20,40,60,80,100), limits=c(-40,115)) +
-    annotate("text",x = rep(0.5,7), y = c(-3,17,37,57,77,97,115), label = c("0","20","40","60","80","100","SUCRA (%)"), size=2, family="sans") # annotate has to be after geoms
+    annotate("text",x = rep(0.5,7), y = c(-3,17,37,57,77,97,115), label = c("0","20","40","60","80","100","SUCRA (%)"), size=2.5, family="sans") # annotate has to be after geoms
   ggsave(filename = 'BackgroundO.png', device = 'png', bg = 'transparent', width = 5, height = 5)
   
   Background +
     geom_segment(aes(xend=Treatment, y = -20, yend=110), linetype="dashed") +
     geom_point(aes(fill=SUCRA),size=3, shape=21,show.legend=FALSE) +
     scale_y_continuous(breaks=c(0,20,40,60,80,100), limits=c(-80,115)) +
-    annotate("text",x = rep(0.5,7), y = c(-3,17,37,57,77,97,115), label = c("0","20","40","60","80","100","SUCRA (%)"), size=2, family="sans") # annotate has to be after geoms
+    annotate("text",x = rep(0.5,7), y = c(-3,17,37,57,77,97,115), label = c("0","20","40","60","80","100","SUCRA (%)"), size=2.5, family="sans") # annotate has to be after geoms
   ggsave(filename = 'BackgroundA.png', device = 'png', bg = 'transparent', width = 5, height = 5)
   
   
@@ -591,7 +591,7 @@ RadialSUCRA <- function(SUCRAData, ColourData, NetmetaObj, colourblind=FALSE) { 
             axis.title = element_blank(), axis.text.y = element_blank(), axis.ticks = element_blank(), 
             axis.line = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), aspect.ratio = 1, 
             axis.text.x = element_text(size=8,family="sans",angle = 360/(2*pi)*rev(pi/2 + seq(pi/6,2*pi-pi/6, len=6)) + 360/(2*pi)*c( rep(0, 3),rep(pi,3)))) +
-      annotate("text",x = rep(0.5,7), y = c(-3,17,37,57,77,97,115), label = c("0","20","40","60","80","100","SUCRA (%)"), size=2, family="sans")
+      annotate("text",x = rep(0.5,7), y = c(-3,17,37,57,77,97,115), label = c("0","20","40","60","80","100","SUCRA (%)"), size=2.5, family="sans")
   }
   Network <- CreateNetwork(Type='Original')
   ggsave(filename = 'NetworkO.png', device = 'png', bg = 'transparent', width=5, height=5)
@@ -622,7 +622,7 @@ RadialSUCRA <- function(SUCRAData, ColourData, NetmetaObj, colourblind=FALSE) { 
             axis.line = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), aspect.ratio = 1,
             axis.text.x = element_text(size=8,family="sans",angle = 360/(2*pi)*rev(pi/2 + seq(pi/6,2*pi-pi/6, len=6)) + 360/(2*pi)*c( rep(0, 3),rep(pi,3)))) +
       coord_polar() +
-      annotate("text",x = rep(0.5,7), y = c(-3,17,37,57,77,97,115), label = c("0","20","40","60","80","100","SUCRA (%)"), size=2, family="sans")
+      annotate("text",x = rep(0.5,7), y = c(-3,17,37,57,77,97,115), label = c("0","20","40","60","80","100","SUCRA (%)"), size=2.5, family="sans")
   }
   
   Points <- CreatePoints(Type='Original', colourblind=colourblind)
