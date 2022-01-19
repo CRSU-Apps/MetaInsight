@@ -276,7 +276,7 @@ shinyServer(function(input, output, session) {
   
   ### 1c. Network Plot
   make_netgraph = function(freq) {  
-    netgraph(freq$net1, labels=str_wrap(sub("_", " ",freq$net1$trts), width=10), lwd=2, number.of.studies = TRUE, plastic=FALSE, points=TRUE, cex=1.25, cex.points=2, col.points=1, col=8, pos.number.of.studies=0.43,
+    netgraph(freq$net1, labels=str_wrap(sub("_", " ",freq$net1$trts), width=10), lwd=2, number.of.studies = TRUE, plastic=FALSE, points=TRUE, cex=1, cex.points=2, col.points=1, col=8, pos.number.of.studies=0.43,
              col.number.of.studies = "forestgreen", col.multiarm = "white", bg.number.of.studies = "forestgreen"
     )
   }
@@ -298,19 +298,6 @@ shinyServer(function(input, output, session) {
     }
     title("Network plot of all studies")
   })
-
-  network_rank <- eventReactive(input$baye_do, {   # network plots for ranking panel (Bayesian)
-    make_netgraph(freq_all())
-  })
-  output$netGraphStatic2 <- renderPlot({
-    network_rank()
-  })
-  network_rank_sub <- eventReactive(input$sub_do, {
-    make_netgraph(freq_sub())
-  })
-  output$netGraphStatic_sub <- renderPlot({
-    network_rank_sub()
-  })
   
   output$netGraphUpdating <- renderPlot({
     if (input$networkstyle_sub=='networkp1') {
@@ -323,6 +310,40 @@ shinyServer(function(input, output, session) {
     title("Network plot with studies excluded")
   })
   
+  # network plots for ranking panel (Bayesian)
+  freq_all_react <- eventReactive(input$baye_do, {
+    freq_all()
+  })
+  bugsnetdt_react <- eventReactive(input$baye_do, {
+    bugsnetdt()
+  })
+  output$netGraphStatic1_rank <- renderPlot({
+    if (input$networkstyle_rank=='networkp1') {
+      make_netgraph(freq_all_react())
+    } else {
+      data.rh<-data.prep(arm.data=bugsnetdt_react(), varname.t = "T", varname.s="Study")
+      net.plot(data.rh, node.scale = 3, edge.scale=1.5)  
+    }
+    title("Network plot of all studies")
+  })
+  freq_all_react_sub <- eventReactive(input$sub_do, {
+    freq_sub()
+  })
+  bugsnetdt_react_sub <- eventReactive(input$sub_do, {
+    bugsnetdt()
+  })
+  output$netGraphStatic1_rank_sub <- renderPlot({
+    if (input$networkstyle_rank_sub=='networkp1') {
+      make_netgraph(freq_all_react_sub())
+    } else {
+      long_sort2_sub <- filter(bugsnetdt_react_sub(), !Study %in% input$exclusionbox)
+      data.rh<-data.prep(arm.data=long_sort2_sub, varname.t = "T", varname.s="Study")
+      net.plot(data.rh, node.scale = 3, edge.scale=1.5)  
+    }
+    title("Network plot with studies excluded")
+  })
+  
+
   make_netconnect = function(freq) {    # network connectivity
     d1 <- freq$d1
     nc1 <- netconnection(d1$treat1,d1$treat2,d1$studlab, data=NULL)
