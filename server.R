@@ -285,6 +285,7 @@ shinyServer(function(input, output, session) {
     newData1 <- as.data.frame(data())
     label <- ifelse(input$metaoutcome=="Continuous",input$listCont,input$listbina)
     treat_list <- read.csv(text=label, sep = "\t")
+    treat_list$Label <- str_wrap(sub("_", " ",treat_list$Label), width=10)
     longsort2 <- dataform.df(newData1,treat_list,input$metaoutcome)    # inputting the data in long form
     return(longsort2)
   }
@@ -311,6 +312,12 @@ shinyServer(function(input, output, session) {
   })
   
   # network plots for ranking panel (Bayesian)
+  treat_order <- reactive(RankingData()$SUCRA[order(RankingData()$SUCRA$SUCRA),1]) # obtain treatments ordered by SUCRA #
+  make_netgraph_rank = function(freq, order) {  
+    netgraph(freq$net1, labels=str_wrap(sub("_", " ",freq$net1$trts), width=10), lwd=2, number.of.studies = TRUE, plastic=FALSE, points=TRUE, cex=1, cex.points=2, col.points=1, col=8, pos.number.of.studies=0.43,
+             col.number.of.studies = "forestgreen", col.multiarm = "white", bg.number.of.studies = "forestgreen", seq=sub(" ", "_", order),
+    )
+  }
   freq_all_react <- eventReactive(input$baye_do, {
     freq_all()
   })
@@ -319,13 +326,14 @@ shinyServer(function(input, output, session) {
   })
   output$netGraphStatic1_rank <- renderPlot({
     if (input$networkstyle_rank=='networkp1') {
-      make_netgraph(freq_all_react())
+      make_netgraph_rank(freq_all_react(), treat_order())
     } else {
       data.rh<-data.prep(arm.data=bugsnetdt_react(), varname.t = "T", varname.s="Study")
-      net.plot(data.rh, node.scale = 3, edge.scale=1.5)  
+      net.plot(data.rh, node.scale = 3, edge.scale=1.5, layout.params=list(order=treat_order()))  
     }
     title("Network plot of all studies")
   })
+  treat_order_sub <- reactive(RankingData_sub()$SUCRA[order(RankingData_sub()$SUCRA$SUCRA),1])
   freq_all_react_sub <- eventReactive(input$sub_do, {
     freq_sub()
   })
@@ -334,11 +342,11 @@ shinyServer(function(input, output, session) {
   })
   output$netGraphStatic1_rank_sub <- renderPlot({
     if (input$networkstyle_rank_sub=='networkp1') {
-      make_netgraph(freq_all_react_sub())
+      make_netgraph_rank(freq_all_react_sub(), treat_order_sub())
     } else {
       long_sort2_sub <- filter(bugsnetdt_react_sub(), !Study %in% input$exclusionbox)
       data.rh<-data.prep(arm.data=long_sort2_sub, varname.t = "T", varname.s="Study")
-      net.plot(data.rh, node.scale = 3, edge.scale=1.5)  
+      net.plot(data.rh, node.scale = 3, edge.scale=1.5, layout.params=list(order=treat_order_sub()))  
     }
     title("Network plot with studies excluded")
   })
