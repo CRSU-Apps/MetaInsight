@@ -95,6 +95,26 @@ output$downloadNetwork <- downloadHandler(
     dev.off()
   }
 )
+
+output$download_network_rank <- downloadHandler(  # version for ranking panel
+  filename = function() {
+    paste0('Network.', input$network_rank_choice)
+  },
+  content = function(file) {
+    if (input$network_rank_choice=='pdf'){pdf(file=file)}
+    else {png(file=file)}
+    if (input$networkstyle_rank=='networkp1') {
+      make_netgraph_rank(freq_all_react(), treat_order())
+    } else {
+      data.rh<-data.prep(arm.data=bugsnetdt_react(), varname.t = "T", varname.s="Study")
+      net.plot(data.rh, node.scale = 3, edge.scale=1.5, layout.params=list(order=treat_order()))
+    }
+    title("Network plot of all studies")
+    dev.off()
+  }
+)
+
+
 output$downloadNetworkUpdate <- downloadHandler(
   filename = function() {
     paste0('Network_sen.', input$format_freq2)
@@ -108,6 +128,25 @@ output$downloadNetworkUpdate <- downloadHandler(
       long_sort2_sub <- filter(bugsnetdt(), !Study %in% input$exclusionbox)  # subgroup
       data.rh<-data.prep(arm.data=long_sort2_sub, varname.t = "T", varname.s="Study")
       net.plot(data.rh, node.scale = 3, edge.scale=1.5)
+    }
+    title("Network plot with studies excluded")
+    dev.off()
+  }
+)
+
+output$download_network_rank_sub <- downloadHandler(  # version for ranking panel
+  filename = function() {
+    paste0('Network_sen.', input$network_rank_choice_sub)
+  },
+  content = function(file) {
+    if (input$network_rank_choice_sub=='pdf'){pdf(file=file)}
+    else {png(file=file)}
+    if (input$networkstyle_rank_sub=='networkp1') {
+      make_netgraph_rank(freq_all_react_sub(), treat_order_sub())
+    } else {
+      long_sort2_sub <- filter(bugsnetdt_react_sub(), !Study %in% input$exclusionbox)
+      data.rh<-data.prep(arm.data=long_sort2_sub, varname.t = "T", varname.s="Study")
+      net.plot(data.rh, node.scale = 3, edge.scale=1.5, layout.params=list(order=treat_order_sub())) 
     }
     title("Network plot with studies excluded")
     dev.off()
@@ -207,6 +246,20 @@ output$downloadBaye_plot <- downloadHandler(
   }
 )
 
+output$download_rank_forest <- downloadHandler(  # version for ranking panel
+  filename = function() {
+    paste0('All_studies.', input$rank_forest_choice)
+  },
+  content = function(file) {
+    if (input$rank_forest_choice=='pdf') {pdf(file=file)}
+    else {png(file=file)}
+    forest(model()$mtcRelEffects,digits=3)
+    title(paste("All studies: 
+              Bayesian", model()$a, "consistency model forest plot results"), cex.main = 0.85)
+    dev.off()
+  }
+)
+
 
 output$downloadBaye_plot_sub <- downloadHandler(
   filename = function() {
@@ -218,6 +271,20 @@ output$downloadBaye_plot_sub <- downloadHandler(
     forest(model_sub()$mtcRelEffects,digits=3)
     title(paste("Results with studies excluded: 
               Bayesian", model()$a, "consistency model forest plot results"))
+    dev.off()
+  }
+)
+
+output$download_rank_forest_sub <- downloadHandler(  # version for ranking panel
+  filename = function() {
+    paste0('Subgroup.', input$rank_forest_choice_sub)
+  },
+  content = function(file) {
+    if (input$rank_forest_choice_sub=='pdf') {pdf(file=file)}
+    else {png(file=file)}
+    forest(model_sub()$mtcRelEffects,digits=3)
+    title(paste("Results with studies excluded: 
+              Bayesian", model()$a, "consistency model forest plot results"), cex.main = 0.85)
     dev.off()
   }
 )

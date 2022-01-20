@@ -517,7 +517,9 @@ dashboardPage(
                                                                                                        box(title="Ranking panel for all studies", status='primary', solidHeader=TRUE, width=12, collapsible=TRUE,
                                                                                                            splitLayout(cellWidths=c("30%","40%","30%"), cellArgs = list(style="height: 730px; padding: 12px; border: 2px solid gold; white-space: normal"),
                                                                                                                        fluidRow(align = "center", h4("Relative Effects"), withSpinner(plotOutput("gemtc2"), type=6),
-                                                                                                                                textOutput("relative_rank_text")),
+                                                                                                                                textOutput("relative_rank_text"),
+                                                                                                                                radioButtons('rank_forest_choice', 'Document format', c('PDF'='pdf', 'PNG'='png'), inline = TRUE), 
+                                                                                                                                downloadButton('download_rank_forest')),
                                                                                                                        fluidRow(align = "center", h4("Ranking Results"), 
                                                                                                                                 radioButtons("rank_plot_choice", label="Choice of Rank plot", choices=list("Litmus Rank-O-Gram"=0, "Radial SUCRA"=1), selected=0, inline=TRUE),
                                                                                                                                 checkboxInput("Colour_blind", label="Display colour-blind friendly version", value=FALSE),
@@ -537,14 +539,18 @@ dashboardPage(
                                                                                                                                 conditionalPanel(condition= "input.networkstyle_rank=='networkp2'",
                                                                                                                                                  p("Size of  nodes and  thickness of edges depend on the number of people randomised and the number of trials conducted, respectively.")
                                                                                                                                 ),
-                                                                                                                                radioButtons("networkstyle_rank", "Please choose a network plot style", c("Number of trials shown on the line" = "networkp1","Number of people indicated by size of node etc." = "networkp2"), inline=TRUE)
+                                                                                                                                radioButtons("networkstyle_rank", "Please choose a network plot style", c("Number of trials shown on the line" = "networkp1","Number of people indicated by size of node etc." = "networkp2"), inline=TRUE),
+                                                                                                                                radioButtons('network_rank_choice', 'Document format', c('PDF'='pdf', 'PNG'='png'), inline = TRUE),
+                                                                                                                                downloadButton('download_network_rank')
                                                                                                                                 ))
                                                                                                      )),
                                                                                                      fluidRow(   
                                                                                                        box(title="Ranking panel with studies excluded", status='primary', solidHeader=TRUE, width=12, collapsible=TRUE,
                                                                                                            splitLayout(cellWidths=c("30%","40%","30%"), cellArgs = list(style="height: 730px; padding: 12px; border: 2px solid gold; white-space: normal"),
                                                                                                                        fluidRow(align = "center", h4("Relative Effects"), withSpinner(plotOutput("gemtc_sub2"), type=6),
-                                                                                                                                textOutput("relative_rank_text_sub")),
+                                                                                                                                textOutput("relative_rank_text_sub"),
+                                                                                                                                radioButtons('rank_forest_choice_sub', 'Document format', c('PDF'='pdf', 'PNG'='png'), inline = TRUE), 
+                                                                                                                                downloadButton('download_rank_forest_sub')),
                                                                                                                        fluidRow(align = "center", h4("Ranking Results"), 
                                                                                                                                 radioButtons("rank_plot_choice_sub", label="Choice of Rank plot", choices=list("Litmus Rank-O-Gram"=0, "Radial SUCRA"=1), selected=0, inline=TRUE),
                                                                                                                                 checkboxInput("Colour_blind_sub", label="Display colour-blind friendly version", value=FALSE),
@@ -564,7 +570,9 @@ dashboardPage(
                                                                                                                                 conditionalPanel(condition= "input.networkstyle_rank_sub=='networkp2'",
                                                                                                                                                  p("Size of  nodes and  thickness of edges depend on the number of people randomised and the number of trials conducted, respectively.")
                                                                                                                                 ),
-                                                                                                                                radioButtons("networkstyle_rank_sub", "Please choose a network plot style", c("Number of trials shown on the line" = "networkp1","Number of people indicated by size of node etc." = "networkp2"), inline=TRUE)
+                                                                                                                                radioButtons("networkstyle_rank_sub", "Please choose a network plot style", c("Number of trials shown on the line" = "networkp1","Number of people indicated by size of node etc." = "networkp2"), inline=TRUE),
+                                                                                                                                radioButtons('network_rank_choice_sub', 'Document format', c('PDF'='pdf', 'PNG'='png'), inline = TRUE),
+                                                                                                                                downloadButton('download_network_rank_sub')
                                                                                                                        ))
                                                                                                      ))),
                                                                                             tabPanel("3d. Nodesplit model",
