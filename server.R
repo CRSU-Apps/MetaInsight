@@ -794,12 +794,18 @@ shinyServer(function(input, output, session) {
   })
   
   # Table of Probabilities (need to include SUCRA and have it as a collapsable table)
-  output$rankdata <- renderTable({
-    RankingData()$Probabilities
-  }, digits=5, rownames=TRUE, colnames = TRUE)
-  output$rankdata_sub <- renderTable({
-    RankingData_sub()$Probabilities
-  }, digits=5, rownames=TRUE, colnames = TRUE)
+  output$rank_probs <- renderTable({
+    Probs <- setDT(RankingData()$Probabilities, keep.rownames = "Treatment")
+    Probs$Treatment <- str_wrap(sub("_", " ", Probs$Treatment), width=10)
+    Probs <- Probs %>% right_join(RankingData()$SUCRA[,1:2], by="Treatment")
+    Probs[order(-Probs$SUCRA),]
+  }, digits=2, rownames=FALSE, colnames=TRUE)
+  output$rank_probs_sub <- renderTable({
+    Probs <- setDT(RankingData_sub()$Probabilities, keep.rownames = "Treatment")
+    Probs$Treatment <- str_wrap(sub("_", " ", Probs$Treatment), width=10)
+    Probs <- Probs %>% right_join(RankingData_sub()$SUCRA[,1:2], by="Treatment")
+    Probs[order(-Probs$SUCRA),]
+  }, digits=2, rownames=FALSE, colnames=TRUE)
   
   # Text underneath
   output$relative_rank_text <-renderText({          
