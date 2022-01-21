@@ -495,12 +495,13 @@ Combo + theme(plot.margin = margin(t=0,r=0,b=0,l=0))
 # Radial SUCRA Plot #
 RadialSUCRA <- function(SUCRAData, ColourData, NetmetaObj, colourblind=FALSE) {      # SUCRAData needs Treatment & Rank; ColourData needs SUCRA & colour; colourblind friendly option
 
+  n <- nrow(SUCRAData) # number of treatments
   # Background #
   Background <- ggplot(SUCRAData, aes(x=reorder(Treatment, -SUCRA), y=SUCRA, group=1)) +
     geom_segment(data = ColourData, aes(x = -Inf, xend = Inf, y = SUCRA, yend = SUCRA, colour = colour), show.legend = FALSE, alpha=0.05) +
     theme_classic() + 
     theme(panel.grid.major.y = element_line(colour = c(rep("black",6),"white")), axis.title = element_blank(), axis.text.y = element_blank(), axis.ticks = element_blank(), axis.line = element_blank(), 
-          aspect.ratio = 1, axis.text.x = element_text(size=8,family="sans",angle = 360/(2*pi)*rev(pi/2 + seq(pi/6,2*pi-pi/6, len=6)) + 360/(2*pi)*c( rep(0, 3),rep(pi,3)))) +
+          aspect.ratio = 1, axis.text.x = element_text(size=8,family="sans",angle = 360/(2*pi)*rev(pi/2 + seq(pi/n,2*pi-pi/n, len=n)) + 360/(2*pi)*c(rep(0,ceiling(n/2)),rep(pi,floor(n/2))))) +
     coord_polar()
   if (colourblind==FALSE) {
     Background <- Background + scale_colour_gradient2(low = "red", mid = "yellow", high = "green", midpoint=50) +
@@ -543,7 +544,6 @@ RadialSUCRA <- function(SUCRAData, ColourData, NetmetaObj, colourblind=FALSE) { 
   lwd.maxA <- 4 # need to sort something for node size too (currently calculated in rankdata function)
   lwd.minO <- 1
   lwd.minA <- 0.5
-  n <- nrow(SUCRAData)
   comp.i <- 1
   ID <- 1
   for (i in 1:(n - 1)) {
@@ -590,7 +590,7 @@ RadialSUCRA <- function(SUCRAData, ColourData, NetmetaObj, colourblind=FALSE) { 
       theme(panel.background = element_rect(fill = "transparent"), plot.background = element_rect(fill = "transparent", color = NA), 
             axis.title = element_blank(), axis.text.y = element_blank(), axis.ticks = element_blank(), 
             axis.line = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), aspect.ratio = 1, 
-            axis.text.x = element_text(size=8,family="sans",angle = 360/(2*pi)*rev(pi/2 + seq(pi/6,2*pi-pi/6, len=6)) + 360/(2*pi)*c( rep(0, 3),rep(pi,3)))) +
+            axis.text.x = element_text(size=8,family="sans",angle = 360/(2*pi)*rev(pi/2 + seq(pi/n,2*pi-pi/n, len=n)) + 360/(2*pi)*c(rep(0,ceiling(n/2)),rep(pi,floor(n/2))))) +
       annotate("text",x = rep(0.5,7), y = c(-3,17,37,57,77,97,115), label = c("0","20","40","60","80","100","SUCRA (%)"), size=2.5, family="sans")
   }
   Network <- CreateNetwork(Type='Original')
@@ -620,7 +620,7 @@ RadialSUCRA <- function(SUCRAData, ColourData, NetmetaObj, colourblind=FALSE) { 
       theme(panel.background = element_rect(fill = "transparent"), plot.background = element_rect(fill = "transparent", color = NA), 
             axis.title = element_blank(), axis.text.y = element_blank(), axis.ticks = element_blank(), 
             axis.line = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), aspect.ratio = 1,
-            axis.text.x = element_text(size=8,family="sans",angle = 360/(2*pi)*rev(pi/2 + seq(pi/6,2*pi-pi/6, len=6)) + 360/(2*pi)*c( rep(0, 3),rep(pi,3)))) +
+            axis.text.x = element_text(size=8,family="sans",angle = 360/(2*pi)*rev(pi/2 + seq(pi/n,2*pi-pi/n, len=n)) + 360/(2*pi)*c( rep(0, ceiling(n/2)),rep(pi,floor(n/2))))) +
       coord_polar() +
       annotate("text",x = rep(0.5,7), y = c(-3,17,37,57,77,97,115), label = c("0","20","40","60","80","100","SUCRA (%)"), size=2.5, family="sans")
   }

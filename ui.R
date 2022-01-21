@@ -515,7 +515,7 @@ dashboardPage(
                                you will need to re-run the primary and/or sensitivity analysis from the 'Forest Plot' page.", tags$br(), tags$strong("Please note it may take up to 5 minutes to load the results.", style="color:#FF0000")),
                                                                                                      fluidRow(   
                                                                                                        box(title="Ranking panel for all studies", status='primary', solidHeader=TRUE, width=12, collapsible=TRUE,
-                                                                                                           splitLayout(cellWidths=c("30%","40%","30%"), cellArgs = list(style="height: 780px; padding: 12px; border: 2px solid gold; white-space: normal"),
+                                                                                                           splitLayout(cellWidths=c("30%","40%","30%"), cellArgs = list(style="height: 780px; padding: 16px; border: 2px solid gold; white-space: normal"),
                                                                                                                        fluidRow(align = "center", h4("Relative Effects"), withSpinner(plotOutput("gemtc2"), type=6),
                                                                                                                                 textOutput("relative_rank_text"),
                                                                                                                                 radioButtons('rank_forest_choice', 'Document format', c('PDF'='pdf', 'PNG'='png'), inline = TRUE), 
@@ -549,7 +549,7 @@ dashboardPage(
                                                                                                      )),
                                                                                                      fluidRow(   
                                                                                                        box(title="Ranking panel with studies excluded", status='primary', solidHeader=TRUE, width=12, collapsible=TRUE,
-                                                                                                           splitLayout(cellWidths=c("30%","40%","30%"), cellArgs = list(style="height: 780px; padding: 12px; border: 2px solid gold; white-space: normal"),
+                                                                                                           splitLayout(cellWidths=c("30%","40%","30%"), cellArgs = list(style="height: 780px; padding: 16px; border: 2px solid gold; white-space: normal"),
                                                                                                                        fluidRow(align = "center", h4("Relative Effects"), withSpinner(plotOutput("gemtc_sub2"), type=6),
                                                                                                                                 textOutput("relative_rank_text_sub"),
                                                                                                                                 radioButtons('rank_forest_choice_sub', 'Document format', c('PDF'='pdf', 'PNG'='png'), inline = TRUE), 
