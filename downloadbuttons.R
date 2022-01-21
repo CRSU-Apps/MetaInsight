@@ -363,9 +363,7 @@ output$download_rank_table <- downloadHandler(
   },
   content = function(file) {
     write.csv({
-      Probs <- setDT(RankingData()$Probabilities, keep.rownames = "Treatment")
-      Probs$Treatment <- str_wrap(sub("_", " ", Probs$Treatment), width=10)
-      Probs %>% right_join(RankingData()$SUCRA[,1:2], by="Treatment")
+      RankingData()$Probabilities %>% right_join(RankingData()$SUCRA[,1:2], by="Treatment")
       }, file, row.names=FALSE, col.names=TRUE)
   }
 )
@@ -375,9 +373,7 @@ output$download_rank_table_sub <- downloadHandler(
   },
   content = function(file) {
     write.csv({
-      Probs <- setDT(RankingData_sub()$Probabilities, keep.rownames = "Treatment")
-      Probs$Treatment <- str_wrap(sub("_", " ", Probs$Treatment), width=10)
-      Probs %>% right_join(RankingData_sub()$SUCRA[,1:2], by="Treatment")
+      RankingData_sub()$Probabilities %>% right_join(RankingData_sub()$SUCRA[,1:2], by="Treatment")
     }, file, row.names=FALSE, col.names=TRUE)
   }
 )

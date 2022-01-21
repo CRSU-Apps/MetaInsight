@@ -412,7 +412,7 @@ rankdata <- function(NMAdata, rankdirection, longdata, widedata, netmeta) {
   prob <- as.data.frame(print(rank.probability(NMAdata, preferredDirection=(if (rankdirection=="good") -1 else 1)))) # rows treatments, columns ranks
   names(prob)[1:ncol(prob)] <- paste("Rank ", 1:(ncol(prob)), sep="")
   sucra <- sucra(prob)  # 1 row of SUCRA values for each treatment column
-  treatments <- str_wrap(sub("_", " ", row.names(prob)), width=10) 
+  treatments <- str_wrap(sub("_", " ", row.names(prob)), width=10)
   
   # SUCRA
   SUCRA <- data.frame(Treatment=treatments,
@@ -450,6 +450,9 @@ rankdata <- function(NMAdata, rankdirection, longdata, widedata, netmeta) {
     if (SUCRA$SizeA[i] < size.min) {
       SUCRA$SizeA[i] <- size.min}
   }
+  
+  prob <- setDT(prob, keep.rownames = "Treatment") # treatment as a column rather than rownames (useful for exporting)
+  prob$Treatment <- str_wrap(sub("_", " ", prob$Treatment), width=10)
   
   # Number of trials as line thickness taken from netmeta object which is $net1 from the freq_wrap function#
   NetmetaObj <- netmeta # taken from frequentist analysis already run
