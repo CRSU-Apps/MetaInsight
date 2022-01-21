@@ -275,8 +275,8 @@ shinyServer(function(input, output, session) {
   
   
   ### 1c. Network Plot
-  make_netgraph = function(freq) {  
-    netgraph(freq$net1, labels=str_wrap(sub("_", " ",freq$net1$trts), width=10), lwd=2, number.of.studies = TRUE, plastic=FALSE, points=TRUE, cex=1, cex.points=2, col.points=1, col=8, pos.number.of.studies=0.43,
+  make_netgraph = function(freq,label_size) {  
+    netgraph(freq$net1, labels=str_wrap(sub("_", " ",freq$net1$trts), width=10), lwd=2, number.of.studies = TRUE, plastic=FALSE, points=TRUE, cex=label_size, cex.points=2, col.points=1, col=8, pos.number.of.studies=0.43,
              col.number.of.studies = "forestgreen", col.multiarm = "white", bg.number.of.studies = "forestgreen"
     )
   }
@@ -292,21 +292,21 @@ shinyServer(function(input, output, session) {
   
   output$netGraphStatic1 <- renderPlot({
     if (input$networkstyle=='networkp1') {
-      make_netgraph(freq_all())
+      make_netgraph(freq_all(),input$label_all)
     } else {
       data.rh<-data.prep(arm.data=bugsnetdt(), varname.t = "T", varname.s="Study")
-      net.plot(data.rh, node.scale = 3, edge.scale=1.5)  #, flag="Orlistat". 
+      net.plot(data.rh, node.scale = 3, edge.scale=1.5, node.lab.cex=input$label_all)  #, flag="Orlistat". 
     }
     title("Network plot of all studies")
   })
   
   output$netGraphUpdating <- renderPlot({
     if (input$networkstyle_sub=='networkp1') {
-      make_netgraph(freq_sub())
+      make_netgraph(freq_sub(),input$label_excluded)
     } else {
       long_sort2_sub <- filter(bugsnetdt(), !Study %in% input$exclusionbox)  # subgroup
       data.rh<-data.prep(arm.data=long_sort2_sub, varname.t = "T", varname.s="Study")
-      net.plot(data.rh, node.scale = 3, edge.scale=1.5)
+      net.plot(data.rh, node.scale = 3, edge.scale=1.5, node.lab.cex=input$label_excluded)
     }
     title("Network plot with studies excluded")
   })
@@ -544,6 +544,29 @@ shinyServer(function(input, output, session) {
     return(y)
   }
   
+  observe({                              # forest min and max values different if continuous/binary
+    x <- input$metaoutcome
+    if (x=='Binary') {
+      updateNumericInput(session = session, inputId = "freqmin", value=0.1)
+      updateNumericInput(session = session, inputId = "freqmin_sub", value=0.1)
+      updateNumericInput(session = session, inputId = "bayesmin", value=0.1)
+      updateNumericInput(session = session, inputId = "bayesmin_sub", value=0.1)
+      updateNumericInput(session = session, inputId = "freqmax", value=5)
+      updateNumericInput(session = session, inputId = "freqmax_sub", value=5)
+      updateNumericInput(session = session, inputId = "bayesmax", value=5)
+      updateNumericInput(session = session, inputId = "bayesmax_sub", value=5)
+    } else {
+      updateNumericInput(session = session, inputId = "freqmin", value=-10)
+      updateNumericInput(session = session, inputId = "freqmin_sub", value=-10)
+      updateNumericInput(session = session, inputId = "bayesmin", value=-10)
+      updateNumericInput(session = session, inputId = "bayesmin_sub", value=-10)
+      updateNumericInput(session = session, inputId = "freqmax", value=10)
+      updateNumericInput(session = session, inputId = "freqmax_sub", value=10)
+      updateNumericInput(session = session, inputId = "bayesmax", value=10)
+      updateNumericInput(session = session, inputId = "bayesmax_sub", value=10)
+    }
+  })
+  
   output$Comparison2<- renderPlot({
     make_netComp(freq_all(), ref_alter()$ref_all, input$freqmin, input$freqmax)
     title("Results for all studies")
@@ -657,7 +680,8 @@ shinyServer(function(input, output, session) {
   ### 3a. Forest plot
   
   output$gemtc <- renderPlot({                  # forest plot
-    forest(model()$mtcRelEffects,digits=3,xlim=c(log(input$bayesmin), log(input$bayesmax)))
+    if (input$metaoutcome=="Binary") {forest(model()$mtcRelEffects,digits=3,xlim=c(log(input$bayesmin), log(input$bayesmax)))}
+    if (input$metaoutcome=="Continuous") {forest(model()$mtcRelEffects,digits=3,xlim=c(input$bayesmin, input$bayesmax))}
     title(paste("All studies: 
               Bayesian", model()$a, "consistency model forest plot results"))
   })
@@ -671,7 +695,8 @@ shinyServer(function(input, output, session) {
     return(Img)
   })
   output$gemtc_sub <- renderPlot({
-    forest(model_sub()$mtcRelEffects,digits=3,xlim=c(log(input$bayesmin_sub), log(input$bayesmax_sub)))
+    if (input$metaoutcome=="Binary") {forest(model_sub()$mtcRelEffects,digits=3,xlim=c(log(input$bayesmin_sub), log(input$bayesmax_sub)))}
+    if (input$metaoutcome=="Continuous") {forest(model_sub()$mtcRelEffects,digits=3,xlim=c(input$bayesmin_sub, input$bayesmax_sub))}
     title(paste("Results with studies excluded: 
               Bayesian", model_sub()$a,"consistency model forest plot results"))
   })

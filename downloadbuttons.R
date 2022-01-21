@@ -86,10 +86,10 @@ output$downloadNetwork <- downloadHandler(
     if (input$format_freq1=="PDF"){pdf(file=file)}
     else {png(file=file)}
     if (input$networkstyle=='networkp1') {
-      make_netgraph(freq_all())
+      make_netgraph(freq_all(),input$label_all)
     } else {
       data.rh<-data.prep(arm.data=bugsnetdt(), varname.t = "T", varname.s="Study")
-      net.plot(data.rh, node.scale = 3, edge.scale=1.5) 
+      net.plot(data.rh, node.scale = 3, edge.scale=1.5, node.lab.cex=input$label_all) 
     }
     title("Network plot of all studies")
     dev.off()
@@ -123,11 +123,11 @@ output$downloadNetworkUpdate <- downloadHandler(
     if (input$format_freq2=="PDF"){pdf(file=file)}
     else {png(file=file)}
     if (input$networkstyle_sub=='networkp1') {
-      make_netgraph(freq_sub())
+      make_netgraph(freq_sub(),input$label_excluded)
     } else {
       long_sort2_sub <- filter(bugsnetdt(), !Study %in% input$exclusionbox)  # subgroup
       data.rh<-data.prep(arm.data=long_sort2_sub, varname.t = "T", varname.s="Study")
-      net.plot(data.rh, node.scale = 3, edge.scale=1.5)
+      net.plot(data.rh, node.scale = 3, edge.scale=1.5, node.lab.cex=input$label_excluded)
     }
     title("Network plot with studies excluded")
     dev.off()
@@ -162,10 +162,17 @@ output$downloadComp2 <- downloadHandler(
   content = function(file) {
     if (input$format_freq3=="PDF"){pdf(file=file)}
     else {png(file=file)}
-    make_netComp(freq_all(), ref_alter()$ref_all)
-    #title("Results for all studies")
+    make_netComp(freq_all(), ref_alter()$ref_all, input$freqmin, input$freqmax)
+    #title("All studies")
+    #title(paste("All studies: 
+    #          Frequentist", model()$a, "model forest plot results"))
     dev.off()
-  }
+  },
+  #contentType = function() {
+  #  if (input$format_freq3=="PDF") {"image/pdf"}
+  #  else {"image/png"}
+  #}
+  contentType = "image/pdf"
 )
 output$downloadComp<- downloadHandler(
   filename = function() {
@@ -174,8 +181,9 @@ output$downloadComp<- downloadHandler(
   content = function(file) {
     if (input$format_freq4=="PDF"){pdf(file=file)}
     else {png(file=file)}
-    make_netComp(freq_sub(), ref_alter()$ref_sub)
-    #title("Results with studies excluded")
+    make_netComp(freq_sub(), ref_alter()$ref_sub, input$freqmin_sub, input$freqmax_sub)
+    #title(paste("Results with studies excluded: 
+    #          Frequentist", model()$a, "model forest plot results"))
     dev.off()
   }
 )
@@ -237,11 +245,12 @@ output$downloadBaye_plot <- downloadHandler(
     paste0('All_studies.', input$format2)
   },
   content = function(file) {
-    if (input$format2=="pdf"){pdf(file=file)}
+    if (input$format2=="PDF"){pdf(file=file)}
     else {png(file=file)}
-    forest(model()$mtcRelEffects,digits=3)
-    title(paste("All studies: 
-              Bayesian", model()$a, "consistency model forest plot results"))
+    if (input$metaoutcome=="Binary") {forest(model()$mtcRelEffects,digits=3,xlim=c(log(input$bayesmin), log(input$bayesmax)))}
+    if (input$metaoutcome=="Continuous") {forest(model()$mtcRelEffects,digits=3,xlim=c(input$bayesmin, input$bayesmax))}
+    #title(paste("All studies: 
+    #          Bayesian", model()$a, "consistency model forest plot results"))
     dev.off()
   }
 )
@@ -263,14 +272,15 @@ output$download_rank_forest <- downloadHandler(  # version for ranking panel
 
 output$downloadBaye_plot_sub <- downloadHandler(
   filename = function() {
-    paste0('subgroup.', input$format4)
+    paste0('Excluded_studies.', input$format4)
   },
   content = function(file) {
-    if (input$format4=="pdf"){pdf(file=file)}
+    if (input$format4=="PDF"){pdf(file=file)}
     else {png(file=file)}
-    forest(model_sub()$mtcRelEffects,digits=3)
-    title(paste("Results with studies excluded: 
-              Bayesian", model()$a, "consistency model forest plot results"))
+    if (input$metaoutcome=="Binary") {forest(model_sub()$mtcRelEffects,digits=3,xlim=c(log(input$bayesmin_sub), log(input$bayesmax_sub)))}
+    if (input$metaoutcome=="Continuous") {forest(model_sub()$mtcRelEffects,digits=3,xlim=c(input$bayesmin_sub, input$bayesmax_sub))}
+    #title(paste("Results with studies excluded: 
+    #          Bayesian", model()$a, "consistency model forest plot results"))
     dev.off()
   }
 )
@@ -288,6 +298,7 @@ output$download_rank_forest_sub <- downloadHandler(  # version for ranking panel
     dev.off()
   }
 )
+
 
 
 ##### 3b. comparison of all treatment pairs
