@@ -68,8 +68,9 @@ dashboardPage(
                             #   zoom: 75%; /* Webkit browsers */
                             #   }
                             #   "), 
-                            h2("MetaInsight (including Bayesian estimates) V3.1.10 **", 
-                               #tags$sup("Beta", style="color:#6CC0ED"), 
+                            #h2("MetaInsight (including Bayesian estimates) V3.1.10 **", 
+                            h2("MetaInsight V4.0.0",
+                               tags$sup("Beta", style="color:#6CC0ED"), 
                                align= "left"),
                             prettyRadioButtons("metaoutcome","Please select your outcome type:",
                                                c("Continuous (e.g. mean difference) " = "Continuous","Binary (e.g. Odds Ratio)" = "Binary"), 
@@ -80,16 +81,23 @@ dashboardPage(
                               column(2),
                               column(5, 
                                      br(),
-                                     p(tags$strong("Latest Updates:")),
-                                     actionLink("history_click", "Click here to view a full update history of MetaInsight"),
+                                     p(tags$em("This beta version of MetaInsight is trialling the ", style="font-size:14pt; color:#6CC0ED"), tags$strong("new treatment ranking panel", style="font-size:14pt; color:#6CC0ED"), tags$em(" for Bayesian analyses", style="font-size:14pt; color:#6CC0ED")),
                                      br(),
-       tags$a(href="https://github.com/CRSU-Apps/MetaInsight/commits/main", "Click here to view the full version history of the code base for MetaInsight",target="_blank"),
-       p(tags$strong("** New feature added on 15 December 2021 (v3.1.10)  ** :")),
-       p(tags$ul(tags$li( "The user can now adjust the size of the labels on the network plots. "))),
-       p(tags$strong("** Bug fixed on 6 December 2021 (v3.1.9) ** :")),
-       p(tags$ul(tags$li( "It was discovered that the new feature added in v3.1.8 was not implemented for downloading forest 
-       plots and so caused errors. This has now been resolved, and the new formatting options follow through when downloading 
-       forest plots."))),
+                                     p("This beta version follows from version 3.1.10 of MetaInsight"),
+                                     br(),
+                                     p("If you have any feedback regarding this new major feature, please feel free to send an email to ", tags$a(href="mailto:crn4@leicester.ac.uk", "crn4@leicester.ac.uk", align= "left")),
+                                     br(),
+                                     tags$a(href="https://github.com/CRSU-Apps/MetaInsight/tree/ranking", "Click here to view the code base for this Beta version of MetaInsight", target="_blank")
+                                     #p(tags$strong("Latest Updates:")),
+                                     #actionLink("history_click", "Click here to view a full update history of MetaInsight"),
+                                     #br(),
+       #tags$a(href="https://github.com/CRSU-Apps/MetaInsight/commits/main", "Click here to view the full version history of the code base for MetaInsight",target="_blank"),
+       #p(tags$strong("** New feature added on 15 December 2021 (v3.1.10)  ** :")),
+       #p(tags$ul(tags$li( "The user can now adjust the size of the labels on the network plots. "))),
+       #p(tags$strong("** Bug fixed on 6 December 2021 (v3.1.9) ** :")),
+       #p(tags$ul(tags$li( "It was discovered that the new feature added in v3.1.8 was not implemented for downloading forest 
+       #plots and so caused errors. This has now been resolved, and the new formatting options follow through when downloading 
+       #forest plots."))),
                                      
                               )),
                             br(),
