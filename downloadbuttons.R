@@ -121,7 +121,7 @@ output$downloadComp2 <- downloadHandler(
     paste0('All_studies.', input$format_freq3)
   },
   content = function(file) {
-    if (input$format_freq3=="PDF"){pdf(file=file)}
+    if (input$format_freq3=="PDF"){pdf(file=file, height=9, width=9)}
     else {png(file=file)}
     make_netComp(freq_all(), ref_alter()$ref_all, input$freqmin, input$freqmax)
     #title("All studies")
@@ -140,7 +140,7 @@ output$downloadComp<- downloadHandler(
     paste0('Excluded_studies.', input$format_freq4)
   },
   content = function(file) {
-    if (input$format_freq4=="PDF"){pdf(file=file)}
+    if (input$format_freq4=="PDF"){pdf(file=file, height=9, width=9)}
     else {png(file=file)}
     make_netComp(freq_sub(), ref_alter()$ref_sub, input$freqmin_sub, input$freqmax_sub)
     #title(paste("Results with studies excluded: 
@@ -206,7 +206,7 @@ output$downloadBaye_plot <- downloadHandler(
     paste0('All_studies.', input$format2)
   },
   content = function(file) {
-    if (input$format2=="PDF"){pdf(file=file)}
+    if (input$format2=="PDF"){pdf(file=file, width=9, height=9)}
     else {png(file=file)}
     if (input$metaoutcome=="Binary") {forest(model()$mtcRelEffects,digits=3,xlim=c(log(input$bayesmin), log(input$bayesmax)))}
     if (input$metaoutcome=="Continuous") {forest(model()$mtcRelEffects,digits=3,xlim=c(input$bayesmin, input$bayesmax))}
@@ -221,7 +221,7 @@ output$downloadBaye_plot_sub<- downloadHandler(
     paste0('Excluded_studies.', input$format4)
   },
   content = function(file) {
-    if (input$format4=="PDF"){pdf(file=file)}
+    if (input$format4=="PDF"){pdf(file=file, width=9, height=9)}
     else {png(file=file)}
     if (input$metaoutcome=="Binary") {forest(model_sub()$mtcRelEffects,digits=3,xlim=c(log(input$bayesmin_sub), log(input$bayesmax_sub)))}
     if (input$metaoutcome=="Continuous") {forest(model_sub()$mtcRelEffects,digits=3,xlim=c(input$bayesmin_sub, input$bayesmax_sub))}
