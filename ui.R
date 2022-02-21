@@ -74,10 +74,12 @@ shinyUI(navbarPage(id="meta",
        p(tags$ul(tags$li("When downloading forest plots after running frequentist of Bayesian analyses, the PDF outputs are larger, giving more space to larger networks/treatment names"))),
        p(tags$strong("** New feature added on 15 December 2021 (v3.1.10)** :")),
        p(tags$ul(tags$li( "The user can now adjust the size of the labels on the network plots. "))),
-
+       br(),
+       p(tags$strong("Beta version available!", style="color:#6CC0ED; font-size:18px")),
+       p("A beta version of MetaInsight is available, containing a ", tags$strong("new ranking panel"), " for Bayesian analyses. Check it out ", tags$a(href="https://crsu.shinyapps.io/MetaInsight_Beta", "here."))
        )),
        br(),
-       p("Yiqiao Xin, Clareece Nevill, Rhiannon K Owen,  Naomi Bradbury, Nicola Cooper, and Alex Sutton", align= "left"),
+       p("Clareece Nevill, Yiqiao Xin, Rhiannon K Owen,  Naomi Bradbury, Nicola Cooper, and Alex Sutton", align= "left"),
        p("For feedback/questions about this app please contact Professor Alex Sutton", tags$a(href="mailto:ajs22@leicester.ac.uk", "ajs22@leicester.ac.uk", align= "left"), ". If you encounter any errors with using the app, please check  
          the",  actionLink("tsp", "trouble shooting page"), "first before contacting us."),
        br(),
@@ -489,6 +491,8 @@ tabPanel("Data analysis", id="dtanalysis",
             downloadButton('downloadbaye_comparison_sub')
               ),
        tabPanel("3c. Ranking table",
+                p("The MetaInsight team have developed a new exciting ", tags$strong("treatment ranking panel"), " to replace this ranking tab!", style="color:white; font-size:15px; background-color: #2196c4"),
+                p("Access the new features in the Beta version by clicking ", tags$a(href="https://crsu.shinyapps.io/MetaInsight_Beta", "here.")),
                 helpText("Please note: if you change the selections on the sidebar, 
                                you will need to re-run the primary and/or sensitivity analysis from the 'Forest Plot' page."),
             fixedRow(
