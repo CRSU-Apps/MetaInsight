@@ -87,7 +87,12 @@ dashboardPage(
                                      br(),
                                      p("If you have any feedback regarding this new major feature, please feel free to send an email to ", tags$a(href="mailto:crn4@leicester.ac.uk", "crn4@leicester.ac.uk", align= "left")),
                                      br(),
-                                     tags$a(href="https://github.com/CRSU-Apps/MetaInsight/tree/ranking", "Click here to view the code base for this Beta version of MetaInsight", target="_blank")
+                                     tags$a(href="https://github.com/CRSU-Apps/MetaInsight/tree/ranking", "Click here to view the code base for this Beta version of MetaInsight", target="_blank"),
+                                     br(),
+                                     br(),
+                                     p(tags$strong("Current bugs"), " that we are aware of and working on:", style="font-size:13pt"),
+                                     p(tags$ul(tags$li("If the Litmus Rank-O-Gram has added lines to help link data points and labels, these lines do not always appear when downloading the plot."))),
+                                     p(tags$ul(tags$li("For binary data, the panel does not load if the dataset contains studies with double zeros (i.e. the number of events is zero for all/both treatments arms in a study).")))
                                      #p(tags$strong("Latest Updates:")),
                                      #actionLink("history_click", "Click here to view a full update history of MetaInsight"),
                                      #br(),
@@ -101,7 +106,7 @@ dashboardPage(
                                      
                               )),
                             br(),
-                            p("Yiqiao Xin, Clareece Nevill, Rhiannon K Owen,  Naomi Bradbury, Nicola Cooper, and Alex Sutton", align= "left"),
+                            p("Clareece Nevill, Yiqiao Xin, Rhiannon K Owen,  Naomi Bradbury, Nicola Cooper, and Alex Sutton", align= "left"),
                             p("For feedback/questions about this app please contact Professor Alex Sutton", tags$a(href="mailto:ajs22@leicester.ac.uk", "ajs22@leicester.ac.uk", align= "left"), ". If you encounter any errors with using the app, please check  
          the",  actionLink("tsp", "trouble shooting page"), "first before contacting us."),
                             br(),
