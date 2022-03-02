@@ -412,7 +412,7 @@ rankdata <- function(NMAdata, rankdirection, longdata, widedata, netmeta) {
   prob <- as.data.frame(print(rank.probability(NMAdata, preferredDirection=(if (rankdirection=="good") -1 else 1)))) # rows treatments, columns ranks
   names(prob)[1:ncol(prob)] <- paste("Rank ", 1:(ncol(prob)), sep="")
   sucra <- sucra(prob)  # 1 row of SUCRA values for each treatment column
-  treatments <- str_wrap(sub("_", " ", row.names(prob)), width=10)
+  treatments <- str_wrap(gsub("_", " ", row.names(prob)), width=10)
   
   # SUCRA
   SUCRA <- data.frame(Treatment=treatments,
@@ -431,11 +431,11 @@ rankdata <- function(NMAdata, rankdirection, longdata, widedata, netmeta) {
   Cumulative_Data <- Cumulative_Data %>% left_join(SUCRA, by = "Treatment")
   
   # Number of people in each node #
-  Patients <- data.frame(Treatment=str_wrap(sub("_", " ",longdata$T), width=10),
+  Patients <- data.frame(Treatment=str_wrap(gsub("_", " ",longdata$T), width=10),
                          Sample=longdata$N)
   Patients <- aggregate(Patients$Sample, by=list(Category=Patients$Treatment), FUN=sum)
   Patients <- rename(Patients, c("Category"="Treatment", "x"="N"))
-  Patients$Treatment <- sub("_", " ", Patients$Treatment) #remove underscores, otherwise next line won't work
+  Patients$Treatment <- gsub("_", " ", Patients$Treatment) #remove underscores, otherwise next line won't work
   SUCRA <- SUCRA %>% right_join(Patients, by = "Treatment")
   # Node size #
   size.maxO <- 15
@@ -452,7 +452,7 @@ rankdata <- function(NMAdata, rankdirection, longdata, widedata, netmeta) {
   }
   
   prob <- setDT(prob, keep.rownames = "Treatment") # treatment as a column rather than rownames (useful for exporting)
-  prob$Treatment <- str_wrap(sub("_", " ", prob$Treatment), width=10)
+  prob$Treatment <- str_wrap(gsub("_", " ", prob$Treatment), width=10)
   
   # Number of trials as line thickness taken from netmeta object which is $net1 from the freq_wrap function#
   NetmetaObj <- netmeta # taken from frequentist analysis already run
@@ -530,8 +530,8 @@ RadialSUCRA <- function(SUCRAData, ColourData, NetmetaObj, colourblind=FALSE) { 
   
   # Create my own network plot using ggplot polar coords #
   study_matrix <- NetmetaObj$A.matrix # give me matrix of number of trials between each treatment combo
-  row.names(study_matrix) <- str_wrap(sub("_", " ", row.names(study_matrix)), width=10)
-  colnames(study_matrix) <- str_wrap(sub("_", " ", colnames(study_matrix)), width=10)
+  row.names(study_matrix) <- str_wrap(gsub("_", " ", row.names(study_matrix)), width=10)
+  colnames(study_matrix) <- str_wrap(gsub("_", " ", colnames(study_matrix)), width=10)
   SUCRA <- SUCRAData %>% arrange(-SUCRA)
   study_matrix <- study_matrix[SUCRA$Treatment,SUCRA$Treatment]
   A.sign <- sign(study_matrix) #1s and 0s for presence of trial
@@ -543,10 +543,10 @@ RadialSUCRA <- function(SUCRAData, ColourData, NetmetaObj, colourblind=FALSE) { 
                           adj = NA,
                           col = "",
                           lwd = NA)
-  lwd.maxO <- 5
-  lwd.maxA <- 4 # need to sort something for node size too (currently calculated in rankdata function)
-  lwd.minO <- 1
-  lwd.minA <- 0.5
+  lwd.maxO <- 4
+  lwd.maxA <- 3
+  lwd.minO <- 0.5
+  lwd.minA <- 0.25
   comp.i <- 1
   ID <- 1
   for (i in 1:(n - 1)) {
