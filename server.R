@@ -276,7 +276,7 @@ shinyServer(function(input, output, session) {
   
   ### 1c. Network Plot
   make_netgraph = function(freq,label_size) {  
-    netgraph(freq$net1, labels=str_wrap(sub("_", " ",freq$net1$trts), width=10), lwd=2, number.of.studies = TRUE, plastic=FALSE, points=TRUE, cex=label_size, cex.points=2, col.points=1, col=8, pos.number.of.studies=0.43,
+    netgraph(freq$net1, labels=str_wrap(gsub("_", " ",freq$net1$trts), width=10), lwd=2, number.of.studies = TRUE, plastic=FALSE, points=TRUE, cex=label_size, cex.points=2, col.points=1, col=8, pos.number.of.studies=0.43,
              col.number.of.studies = "forestgreen", col.multiarm = "white", bg.number.of.studies = "forestgreen"
     )
   }
@@ -285,7 +285,7 @@ shinyServer(function(input, output, session) {
     newData1 <- as.data.frame(data())
     label <- ifelse(input$metaoutcome=="Continuous",input$listCont,input$listbina)
     treat_list <- read.csv(text=label, sep = "\t")
-    treat_list$Label <- str_wrap(sub("_", " ",treat_list$Label), width=10)
+    treat_list$Label <- str_wrap(gsub("_", " ",treat_list$Label), width=10)
     longsort2 <- dataform.df(newData1,treat_list,input$metaoutcome)    # inputting the data in long form
     return(longsort2)
   }
@@ -314,8 +314,8 @@ shinyServer(function(input, output, session) {
   # network plots for ranking panel (Bayesian)
   treat_order <- reactive(RankingData()$SUCRA[order(RankingData()$SUCRA$SUCRA),1]) # obtain treatments ordered by SUCRA #
   make_netgraph_rank = function(freq, order) {  
-    netgraph(freq$net1, labels=str_wrap(sub("_", " ",freq$net1$trts), width=10), lwd=2, number.of.studies = TRUE, plastic=FALSE, points=TRUE, cex=1, cex.points=2, col.points=1, col=8, pos.number.of.studies=0.43,
-             col.number.of.studies = "forestgreen", col.multiarm = "white", bg.number.of.studies = "forestgreen", seq=sub(" ", "_", str_wrap(order, width=1000)),  #freq$net1$trts has not been formatted but 'order' has
+    netgraph(freq$net1, labels=str_wrap(gsub("_", " ",freq$net1$trts), width=10), lwd=2, number.of.studies = TRUE, plastic=FALSE, points=TRUE, cex=1, cex.points=2, col.points=1, col=8, pos.number.of.studies=0.43,
+             col.number.of.studies = "forestgreen", col.multiarm = "white", bg.number.of.studies = "forestgreen", seq=gsub(" ", "_", str_wrap(order, width=1000)),  #freq$net1$trts has not been formatted but 'order' has
     )
   }
   freq_all_react <- eventReactive(input$baye_do, {
