@@ -330,7 +330,7 @@ output$download_rank_plot <- downloadHandler(
   },
   content = function(file) {
     if (input$rank_plot_choice==0) { #Litmus Rank-O-Grams
-      if (input$Colour_blind==FALSE) {ggsave(file,Rankplots()$Litmus)} else {ggsave(file,Rankplots()$Litmus_blind)}
+      if (input$Colour_blind==FALSE) {ggsave(file,Rankplots()$Litmus,width=6,height=6,units="in")} else {ggsave(file,Rankplots()$Litmus_blind,width=6,height=6,units="in")}
     } else {  # Radial SUCRA plots
       if (input$Radial_alt==FALSE) { #Default plot
         if (input$Colour_blind==FALSE) {ggsave(file,Rankplots()$Radial$Original)} else {ggsave(file,Rankplots()$Radial_blind$Original)}
@@ -346,7 +346,7 @@ output$download_rank_plot_sub <- downloadHandler(
   },
   content = function(file) {
     if (input$rank_plot_choice_sub==0) { #Litmus Rank-O-Grams
-      if (input$Colour_blind_sub==FALSE) {ggsave(file,Rankplots_sub()$Litmus)} else {ggsave(file,Rankplots_sub()$Litmus_blind)}
+      if (input$Colour_blind_sub==FALSE) {ggsave(file,Rankplots_sub()$Litmus,width=6,height=6,units="in")} else {ggsave(file,Rankplots_sub()$Litmus_blind,width=6,height=6,units="in")}
     } else {  # Radial SUCRA plots
       if (input$Radial_alt_sub==FALSE) { #Default plot
         if (input$Colour_blind_sub==FALSE) {ggsave(file,Rankplots_sub()$Radial$Original)} else {ggsave(file,Rankplots_sub()$Radial_blind$Original)}
