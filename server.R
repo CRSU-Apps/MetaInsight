@@ -546,6 +546,15 @@ shinyServer(function(input, output, session) {
     make_refText(ref_alter()$ref_sub)
   })
   
+  ### Interactive UI ###
+  
+  output$FreqForestPlot <- renderUI({
+    plotOutput("Comparison2", height = BayesPixels(as.numeric(bugsnet_sumtb(bugsnetdt())$Value[1]), title=TRUE), width = "630px")
+  })
+  output$FreqForestPlot_sub <- renderUI({
+    plotOutput("SFPUpdatingComp", height = BayesPixels(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% input$exclusionbox))$Value[1]), title=TRUE), width = "630px")
+  })
+  
   
   
   
@@ -663,6 +672,15 @@ shinyServer(function(input, output, session) {
   output$dic_sub <- renderTable ({
     model_sub()$dic
   }, digits=3, rownames=TRUE, colnames=FALSE)
+  
+  ### Interactive UI ###
+  
+  output$BayesianForestPlot <- renderUI({
+    plotOutput("gemtc", width="630px", height = BayesPixels(as.numeric(bugsnet_sumtb(bugsnetdt())$Value[1]), title=TRUE))
+  })
+  output$BayesianForestPlot_sub <- renderUI({
+    plotOutput("gemtc_sub", width="630px", height = BayesPixels(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% input$exclusionbox))$Value[1]), title=TRUE))
+  })
 
   
 

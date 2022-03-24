@@ -54,7 +54,7 @@ shinyUI(navbarPage(id="meta",
            #   zoom: 75%; /* Webkit browsers */
            #   }
            #   "), 
-     h2("MetaInsight (including Bayesian estimates) V3.1.11 **", 
+     h2("MetaInsight (including Bayesian estimates) V3.1.12 **", 
         #tags$sup("Beta", style="color:#6CC0ED"), 
         align= "left"),
      prettyRadioButtons("metaoutcome","Please select your outcome type:",
@@ -70,10 +70,11 @@ shinyUI(navbarPage(id="meta",
        actionLink("history_click", "Click here to view a full update history of MetaInsight"),
        br(),
        tags$a(href="https://github.com/CRSU-Apps/MetaInsight/commits/main", "Click here to view the full version history of the code base for MetaInsight",target="_blank"),
+       p(tags$strong("** Minor feature changes on 24 March 2022 (v3.1.12) **:")),
+       p(tags$ul(tags$li("Size of forest plots (UI and downloads) are now reactive to the size of the network."))),
+       p(tags$ul(tags$li("Ranking tab has been rearranged and sizing editing to help with large networks regarding readability."))),
        p(tags$strong("** Minor feature change on 14 February 2022 (v3.1.11) **:")),
        p(tags$ul(tags$li("When downloading forest plots after running frequentist of Bayesian analyses, the PDF outputs are larger, giving more space to larger networks/treatment names"))),
-       p(tags$strong("** New feature added on 15 December 2021 (v3.1.10)** :")),
-       p(tags$ul(tags$li( "The user can now adjust the size of the labels on the network plots. "))),
        br(),
        p(tags$strong("Beta version available!", style="color:#6CC0ED; font-size:18px")),
        p("A beta version of MetaInsight is available, containing a ", tags$strong("new ranking panel"), " for Bayesian analyses. Check it out ", tags$a(href="https://crsu.shinyapps.io/MetaInsight_Beta", "here."))
@@ -388,7 +389,7 @@ tabPanel("Data analysis", id="dtanalysis",
          )),
          tabPanel("2. Frequentist network meta-analysis", tabsetPanel(
             tabPanel("2a. Forest Plot",
-                column(6, plotOutput("Comparison2", height = "550px", width = "400px"), 
+                column(6, uiOutput("FreqForestPlot"), 
                        fixedRow(
                          p("Options to change limits of the x-axis:"),
                          column(6, align = 'center', numericInput('freqmin', label="Minimum", value=0.1)),
@@ -396,7 +397,7 @@ tabPanel("Data analysis", id="dtanalysis",
                        ),
                        textOutput("textcomp"), textOutput("ref4"), radioButtons('format_freq3', 'Document format', c('PDF', 'PNG'), inline = TRUE), downloadButton('downloadComp2')
                   ),
-                column(6, plotOutput("SFPUpdatingComp", height = "550px", width = "400px"),
+                column(6, uiOutput("FreqForestPlot_sub"),
                        fixedRow(
                          p("Options to change limits of the x-axis:"),
                          column(6, align = 'center', numericInput('freqmin_sub', label="Minimum", value=0.1)),
@@ -439,7 +440,7 @@ tabPanel("Data analysis", id="dtanalysis",
               )),
             fixedRow(
               column(6, align = "center",
-                     plotOutput("gemtc", height = 550),
+                     uiOutput("BayesianForestPlot"),
                      fixedRow(
                        p("Options to change limits of the x-axis:"),
                        column(6, align = 'center', numericInput('bayesmin', label="Minimum", value=0.1)),
@@ -454,7 +455,7 @@ tabPanel("Data analysis", id="dtanalysis",
                      downloadButton('downloadBaye_plot')
               ),
               column(6, align = "center",
-                     plotOutput("gemtc_sub", height = 550),
+                     uiOutput("BayesianForestPlot_sub"),
                      fixedRow(
                        p("Options to change limits of the x-axis:"),
                        column(6, align = 'center', numericInput('bayesmin_sub', label="Minimum", value=0.1)),
@@ -497,22 +498,22 @@ tabPanel("Data analysis", id="dtanalysis",
                                you will need to re-run the primary and/or sensitivity analysis from the 'Forest Plot' page."),
             fixedRow(
               column(6, align = "center",
+                     plotOutput("gemtc_rank", height = "700px")
+              ),
+              column(6, align = "center",
                      p(tags$strong("Ranking table for all studies - Probability for each treatment to be the best")),
                      div(tableOutput("prob"), style = "font-size:100%"),
                      downloadButton('downloadBaye_rank')
-              ),
-              column(6, align = "center",
-                     plotOutput("gemtc_rank")
               )),
             fixedRow(
+              column(6, align = "center",
+                     plotOutput("gemtc_rank_sub", height = "700px")
+                     
+              ),
               column(6, align = "center",
                      p(tags$strong("Ranking table with studies excluded - Probability for each treatment to be the best")),
                      div(tableOutput("prob_sub"), style = "font-size:100%"),
                      downloadButton('downloadBaye_rank_sub')
-              ),
-              column(6, align = "center",
-                     plotOutput("gemtc_rank_sub")
-                     
               ))),
       tabPanel("3d. Nodesplit model",
                helpText("Please note: if you change the selections on the sidebar, 

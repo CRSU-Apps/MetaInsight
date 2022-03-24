@@ -178,8 +178,8 @@ mtcRank2 <- function(stytitle, ntx, rankl, prob,  bcolr=FALSE) {
   text(11, 2, "Intervention", cex=1.15, adj=c(0.5,0.5))
   for (i in 1:ntx) {
     rect(xleft=1, ybottom=-10*i, xright=20, ytop=-10*(i-1), col = clrlst[i])
-    text(3,-10*i+5, i , cex=10/ntx, adj=c(0.5,0.5),font=1)
-    text(11,-10*i+5, v.rank[i] , cex=8/ntx, adj=c(0.5,0.5),font=1)
+    text(3,-10*i+5, i , cex=ifelse(ntx<=20, 10/ntx, 0.5), adj=c(0.5,0.5),font=1)
+    text(11,-10*i+5, v.rank[i] , cex=ifelse(ntx<=16, 8/ntx, 0.5), adj=c(0.5,0.5),font=1)
   }
 }
 

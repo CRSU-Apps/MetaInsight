@@ -1,6 +1,33 @@
 ## MEtaInsight - downloadable files for data uploading instructions - code.
 
 
+## Sizing functions for forest plots ##
+BayesPixels <- function(notrt, title=FALSE) {    # input is total number of treatments and whether title is included in plot
+  if (title==FALSE) {
+    if (notrt <= 25) {
+      height <- 420        # default for 25 or less treatments
+    } else {
+      height <- 15*(notrt-1) + 60
+    }
+  } else {
+    if (notrt <= 25) {
+      height <- 420 + 100        # default for 25 or less treatments
+    } else {
+      height <- 15*(notrt-1) + 60 + 100
+    }
+  }
+  return(height)
+}
+BayesInch <- function(notrt) {
+  if (notrt <= 25) {
+    height <- 6
+  } else {
+    height <- 6 + 0.2*(notrt-25)
+  }
+  return(height)
+}
+
+
 #########################
 ### Tab 2 - Load data ###
 #########################
@@ -121,8 +148,8 @@ output$downloadComp2 <- downloadHandler(
     paste0('All_studies.', input$format_freq3)
   },
   content = function(file) {
-    if (input$format_freq3=="PDF"){pdf(file=file, height=9, width=9)}
-    else {png(file=file)}
+    if (input$format_freq3=="PDF"){pdf(file=file, height=BayesInch(as.numeric(bugsnet_sumtb(bugsnetdt())$Value[1])), width=9)}
+    else {png(file=file, width=610, height=BayesPixels(as.numeric(bugsnet_sumtb(bugsnetdt())$Value[1])))}
     make_netComp(freq_all(), ref_alter()$ref_all, input$freqmin, input$freqmax)
     #title("All studies")
     #title(paste("All studies: 
@@ -140,8 +167,8 @@ output$downloadComp<- downloadHandler(
     paste0('Excluded_studies.', input$format_freq4)
   },
   content = function(file) {
-    if (input$format_freq4=="PDF"){pdf(file=file, height=9, width=9)}
-    else {png(file=file)}
+    if (input$format_freq4=="PDF"){pdf(file=file, height=BayesInch(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% input$exclusionbox))$Value[1])), width=9)}
+    else {png(file=file, width=610, height=BayesPixels(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% input$exclusionbox))$Value[1])))}
     make_netComp(freq_sub(), ref_alter()$ref_sub, input$freqmin_sub, input$freqmax_sub)
     #title(paste("Results with studies excluded: 
     #          Frequentist", model()$a, "model forest plot results"))
@@ -206,8 +233,8 @@ output$downloadBaye_plot <- downloadHandler(
     paste0('All_studies.', input$format2)
   },
   content = function(file) {
-    if (input$format2=="PDF"){pdf(file=file, width=9, height=9)}
-    else {png(file=file)}
+    if (input$format2=="PDF"){pdf(file=file, width=9, height=BayesInch(as.numeric(bugsnet_sumtb(bugsnetdt())$Value[1])))}
+    else {png(file=file, width=610, height=BayesPixels(as.numeric(bugsnet_sumtb(bugsnetdt())$Value[1])))}
     if (input$metaoutcome=="Binary") {forest(model()$mtcRelEffects,digits=3,xlim=c(log(input$bayesmin), log(input$bayesmax)))}
     if (input$metaoutcome=="Continuous") {forest(model()$mtcRelEffects,digits=3,xlim=c(input$bayesmin, input$bayesmax))}
     #title(paste("All studies: 
@@ -221,8 +248,8 @@ output$downloadBaye_plot_sub<- downloadHandler(
     paste0('Excluded_studies.', input$format4)
   },
   content = function(file) {
-    if (input$format4=="PDF"){pdf(file=file, width=9, height=9)}
-    else {png(file=file)}
+    if (input$format4=="PDF"){pdf(file=file, width=9, height=BayesInch(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% input$exclusionbox))$Value[1])))}
+    else {png(file=file, width=610, height=BayesPixels(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% input$exclusionbox))$Value[1])))}
     if (input$metaoutcome=="Binary") {forest(model_sub()$mtcRelEffects,digits=3,xlim=c(log(input$bayesmin_sub), log(input$bayesmax_sub)))}
     if (input$metaoutcome=="Continuous") {forest(model_sub()$mtcRelEffects,digits=3,xlim=c(input$bayesmin_sub, input$bayesmax_sub))}
     #title(paste("Results with studies excluded: 
