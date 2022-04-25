@@ -54,7 +54,7 @@ shinyUI(navbarPage(id="meta",
            #   zoom: 75%; /* Webkit browsers */
            #   }
            #   "), 
-     h2("MetaInsight (including Bayesian estimates) V3.1.12 **", 
+     h2("MetaInsight (including Bayesian estimates) V3.1.13 **", 
         #tags$sup("Beta", style="color:#6CC0ED"), 
         align= "left"),
      prettyRadioButtons("metaoutcome","Please select your outcome type:",
@@ -70,11 +70,11 @@ shinyUI(navbarPage(id="meta",
        actionLink("history_click", "Click here to view a full update history of MetaInsight"),
        br(),
        tags$a(href="https://github.com/CRSU-Apps/MetaInsight/commits/main", "Click here to view the full version history of the code base for MetaInsight",target="_blank"),
+       p(tags$strong("** Minor text change on 25 April 2022 (v3.1.13) **:")),
+       p(tags$ul(tags$li("Sub headers have been added to deviance details in tab 3g-4."))),
        p(tags$strong("** Minor feature changes on 24 March 2022 (v3.1.12) **:")),
        p(tags$ul(tags$li("Size of forest plots (UI and downloads) are now reactive to the size of the network."))),
        p(tags$ul(tags$li("Ranking tab has been rearranged and sizing editing to help with large networks regarding readability."))),
-       p(tags$strong("** Minor feature change on 14 February 2022 (v3.1.11) **:")),
-       p(tags$ul(tags$li("When downloading forest plots after running frequentist of Bayesian analyses, the PDF outputs are larger, giving more space to larger networks/treatment names"))),
        br(),
        p(tags$strong("Beta version available!", style="color:#6CC0ED; font-size:18px")),
        p("A beta version of MetaInsight is available, containing a ", tags$strong("new ranking panel"), " for Bayesian analyses. Check it out ", tags$a(href="https://crsu.shinyapps.io/MetaInsight_Beta", "here."))
@@ -654,14 +654,16 @@ tabPanel("Data analysis", id="dtanalysis",
         fluidRow(
          column(6,
                 p(tags$strong("Deviance data for all studies")),
+                p("NMA (consistency) model"),
                 verbatimTextOutput("dev")),
          column(6,
                 p(tags$strong("Deviance data for sensitivity analysis")),
+                p("NMA (consistency) model"),
                verbatimTextOutput("dev_sub")
          )),
         fluidRow(
-               column(6,verbatimTextOutput("dev_ume")),
-               column(6,verbatimTextOutput("dev_ume_sub")
+               column(6, p("UME (inconsistency) model"), verbatimTextOutput("dev_ume")),
+               column(6, p("UME (inconsistency) model"), verbatimTextOutput("dev_ume_sub")
                ))   
 ))))))))),
 

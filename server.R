@@ -102,7 +102,7 @@ shinyServer(function(input, output, session) {
       file1 <- input$data             # name the data file that was uploaded file1
       if(is.null(file1)){return(defaultD())}
       else
-        a <- read.table(file = file1$datapath, sep =",", header=TRUE, stringsAsFactors = FALSE, quote="\"")
+        a <- read.table(file = file1$datapath, sep =",", header=TRUE, stringsAsFactors = FALSE, quote="\"", fileEncoding = 'UTF-8-BOM')
     })
     
   
