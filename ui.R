@@ -109,10 +109,11 @@ shinyUI(navbarPage(id="meta",
        fluidRow(
          column(5, img(src='NIHR_Logo4.jpg', width=472, height=125)),
          column(7, tags$div(class="header", checked=NA,
-                            tags$strong("Funding Acknowledgement:"),
-                            tags$p("The Complex Reviews Support Unit is funded by the National Institute for Health Research (project number 14/178/29)."),
-                            tags$strong("Department of Health Disclaimer: "),
-                            tags$p("The views and opinions expressed herein are those of the authors and do not necessarily reflect those of the NIHR, NHS or the Department of Health."),
+                            tags$strong("Funding and Support Acknowledgement:"),
+                            tags$p("The Complex Reviews Support Unit is funded by the National Institute for Health Research (NIHR) (project number 14/178/29).
+                                   This app is also supported by the NIHR Applied Research Collaboration East Midlands (ARC EM)."),
+                            tags$strong("Disclaimer: "),
+                            tags$p("The views and opinions expressed herein are those of the authors and do not necessarily reflect those of the NIHR, NHS or the Department of Health and Social Care."),
                             tags$p("Please click ", tags$a(href="http://www.nihrcrsu.org", "here ",
                                                            target="_blank"), "for more information about the UK NIHR Complex Reviews Support Unit (CRSU).")
          ))))),
