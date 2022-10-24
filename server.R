@@ -763,7 +763,7 @@ shinyServer(function(input, output, session) {
     longsort2 <- dataform.df(newData1,treat_list,input$metaoutcome)
     data_wide <- entry.df(data(),input$metaoutcome)    #transform data to wide form
     rankdata(NMAdata=model()$mtcResults, rankdirection=input$rankopts, 
-             longdata=longsort2, widedata=data_wide, netmeta=freq_all())
+             longdata=longsort2, widedata=data_wide)
   })
   RankingData_sub <- eventReactive(input$sub_do, {
     newData1 <- as.data.frame(data())
@@ -774,24 +774,24 @@ shinyServer(function(input, output, session) {
     data_wide <- entry.df(data(),input$metaoutcome)
     data_wide_sub <- filter(data_wide, !Study %in% input$exclusionbox)  # Get subset of data to use
     rankdata(NMAdata=model_sub()$mtcResults, rankdirection=input$rankopts,
-             longdata=long_sort2_sub, widedata=data_wide_sub, netmeta=freq_sub())
+             longdata=long_sort2_sub, widedata=data_wide_sub)
   })
   
   # All rank plots in one function for easier loading when switching options #
   Rankplots <- reactive({
     plots <- list()
     plots$Litmus <- LitmusRankOGram(CumData=RankingData()$Cumulative, SUCRAData=RankingData()$SUCRA, ColourData=RankingData()$Colour, colourblind=FALSE)
-    plots$Radial <- RadialSUCRA(SUCRAData=RankingData()$SUCRA, ColourData=RankingData()$Colour, NetmetaObj=RankingData()$NetmetaObj$net1, colourblind=FALSE)
+    plots$Radial <- RadialSUCRA(SUCRAData=RankingData()$SUCRA, ColourData=RankingData()$Colour, BUGSnetData=RankingData()$BUGSnetData, colourblind=FALSE)
     plots$Litmus_blind <- LitmusRankOGram(CumData=RankingData()$Cumulative, SUCRAData=RankingData()$SUCRA, ColourData=RankingData()$Colour, colourblind=TRUE)
-    plots$Radial_blind <- RadialSUCRA(SUCRAData=RankingData()$SUCRA, ColourData=RankingData()$Colour, NetmetaObj=RankingData()$NetmetaObj$net1, colourblind=TRUE)
+    plots$Radial_blind <- RadialSUCRA(SUCRAData=RankingData()$SUCRA, ColourData=RankingData()$Colour, BUGSnetData=RankingData()$BUGSnetData, colourblind=TRUE)
     plots
   })
   Rankplots_sub <- reactive({
     plots <- list()
     plots$Litmus <- LitmusRankOGram(CumData=RankingData_sub()$Cumulative, SUCRAData=RankingData_sub()$SUCRA, ColourData=RankingData_sub()$Colour, colourblind=FALSE)
-    plots$Radial <- RadialSUCRA(SUCRAData=RankingData_sub()$SUCRA, ColourData=RankingData_sub()$Colour, NetmetaObj=RankingData_sub()$NetmetaObj$net1, colourblind=FALSE)
+    plots$Radial <- RadialSUCRA(SUCRAData=RankingData_sub()$SUCRA, ColourData=RankingData_sub()$Colour, BUGSnetData=RankingData_sub()$BUGSnetData, colourblind=FALSE)
     plots$Litmus_blind <- LitmusRankOGram(CumData=RankingData_sub()$Cumulative, SUCRAData=RankingData_sub()$SUCRA, ColourData=RankingData_sub()$Colour, colourblind=TRUE)
-    plots$Radial_blind <- RadialSUCRA(SUCRAData=RankingData_sub()$SUCRA, ColourData=RankingData_sub()$Colour, NetmetaObj=RankingData_sub()$NetmetaObj$net1, colourblind=TRUE)
+    plots$Radial_blind <- RadialSUCRA(SUCRAData=RankingData_sub()$SUCRA, ColourData=RankingData_sub()$Colour, BUGSnetData=RankingData_sub()$BUGSnetData, colourblind=TRUE)
     plots
   })
   
