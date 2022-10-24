@@ -395,7 +395,7 @@ dashboardPage(
                                       p("Numbers on the line indicate the number of trials conducted for the comparison. The shaded areas indicate there exist multi-arm trials between the comparisons.")
                      ),
                      conditionalPanel(condition= "input.networkstyle_sub=='networkp2'",
-                                      p("The size of the nodes and the thickness of edges depend on the number of people randomised and the number of trials conducted, respectively.")
+                                      p("The size of the nodes and thickness of edges represent the number of studies that examined a treatment and compared two given treatments respectively.")
                      ),
                      radioButtons("networkstyle_sub", "Please choose a network plot style", c("Number of trials shown on the line" = "networkp1","Number of people indicated by size of node etc." = "networkp2"), selected = "networkp2"),
                      column(6, radioButtons('format_freq2', 'Document format', c('PDF', 'PNG'), inline = TRUE)),
@@ -547,7 +547,7 @@ dashboardPage(
                                                                                                                                                  p("Numbers on the line indicate number of trials conducted for the comparison. Any shaded areas indicate existence of multi-arm trials between the comparisons.")
                                                                                                                                 ),
                                                                                                                                 conditionalPanel(condition= "input.networkstyle_rank=='networkp2'",
-                                                                                                                                                 p("Size of  nodes and  thickness of edges depend on the number of people randomised and the number of trials conducted, respectively.")
+                                                                                                                                                 p("The size of the nodes and thickness of edges represent the number of studies that examined a treatment and compared two given treatments respectively.")
                                                                                                                                 ),
                                                                                                                                 radioButtons("networkstyle_rank", "Please choose a network plot style", c("Number of trials shown on the line" = "networkp1","Number of people indicated by size of node etc." = "networkp2"), inline=TRUE),
                                                                                                                                 radioButtons('network_rank_choice', 'Document format', c('PDF'='pdf', 'PNG'='png'), inline = TRUE),
@@ -580,7 +580,7 @@ dashboardPage(
                                                                                                                                                  p("Numbers on the line indicate number of trials conducted for the comparison. Any shaded areas indicate existence of multi-arm trials between the comparisons.")
                                                                                                                                 ),
                                                                                                                                 conditionalPanel(condition= "input.networkstyle_rank_sub=='networkp2'",
-                                                                                                                                                 p("Size of  nodes and  thickness of edges depend on the number of people randomised and the number of trials conducted, respectively.")
+                                                                                                                                                 p("The size of the nodes and thickness of edges represent the number of studies that examined a treatment and compared two given treatments respectively.")
                                                                                                                                 ),
                                                                                                                                 radioButtons("networkstyle_rank_sub", "Please choose a network plot style", c("Number of trials shown on the line" = "networkp1","Number of people indicated by size of node etc." = "networkp2"), inline=TRUE),
                                                                                                                                 radioButtons('network_rank_choice_sub', 'Document format', c('PDF'='pdf', 'PNG'='png'), inline = TRUE),
