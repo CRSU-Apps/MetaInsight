@@ -457,7 +457,6 @@ rankdata <- function(NMAdata, rankdirection, longdata, widedata) {
   prob$Treatment <- str_wrap(gsub("_", " ", prob$Treatment), width=10)
   
   # Number of trials as line thickness taken from BUDGnetData object #
-  #NetmetaObj <- netmeta # taken from frequentist analysis already run
   BUGSnetData <- data.prep(arm.data=longdata, varname.t = "T", varname.s="Study")
   
   return(list(SUCRA=SUCRA, Colour=colour_dat, Cumulative=Cumulative_Data, Probabilities=prob, BUGSnetData=BUGSnetData))
@@ -532,13 +531,7 @@ RadialSUCRA <- function(SUCRAData, ColourData, BUGSnetData, colourblind=FALSE) {
   
   
   # Create my own network plot using ggplot polar coords #
-  #study_matrix <- NetmetaObj$A.matrix # give me matrix of number of trials between each treatment combo
-  #row.names(study_matrix) <- str_wrap(gsub("_", " ", row.names(study_matrix)), width=10)
-  #colnames(study_matrix) <- str_wrap(gsub("_", " ", colnames(study_matrix)), width=10)
   SUCRA <- SUCRAData %>% arrange(-SUCRA)
-  #study_matrix <- study_matrix[SUCRA$Treatment,SUCRA$Treatment]
-  #A.sign <- sign(study_matrix) #1s and 0s for presence of trial
-  #n.edges <- sum(study_matrix[upper.tri(study_matrix)] > 0) #number of pairwise comparisons
   edges <- network.structure(BUGSnetData, my_order = SUCRA$Treatment)
   dat.edges <- data.frame(pairwiseID = rep(NA, nrow(edges)*2),
                           treatment = "",
@@ -557,35 +550,6 @@ RadialSUCRA <- function(SUCRAData, ColourData, BUGSnetData, colourblind=FALSE) {
   study_range <- max(edges$edge.weight) - study_min
   comp.i <- 1
   ID <- 1
-  #for (i in 1:(n - 1)) {
-  #  for (j in (i + 1):n) {
-  #    if (A.sign[i, j] > 0) {
-  #      dat.edges$pairwiseID[comp.i] <- ID
-  #      dat.edges$pairwiseID[comp.i+1] <- ID
-  #      dat.edges$treatment[comp.i] <- rownames(study_matrix)[i]
-  #      dat.edges$treatment[comp.i+1] <- colnames(study_matrix)[j]
-  #      dat.edges$n.stud[comp.i] <- study_matrix[i, j]
-  #      dat.edges$n.stud[comp.i+1] <- study_matrix[i, j]
-  #      dat.edges$SUCRA[comp.i] <- SUCRA$SUCRA[i]
-  #      dat.edges$SUCRA[comp.i+1] <- SUCRA$SUCRA[j]
-  #      dat.edges$lwdO[comp.i] <- lwd.maxO * study_matrix[i,j]/max(study_matrix)
-  #      dat.edges$lwdA[comp.i] <- lwd.maxA * study_matrix[i,j]/max(study_matrix)
-  #      if (dat.edges$lwdO[comp.i] < lwd.minO) {
-  #        dat.edges$lwdO[comp.i] <- lwd.minO}
-  #      if (dat.edges$lwdA[comp.i] < lwd.minA) {
-  #        dat.edges$lwdA[comp.i] <- lwd.minA}
-  #      dat.edges$lwdO[comp.i+1] <- lwd.maxO * study_matrix[i,j]/max(study_matrix)
-  #      dat.edges$lwdA[comp.i+1] <- lwd.maxA * study_matrix[i,j]/max(study_matrix)
-  #      if (dat.edges$lwdO[comp.i+1] < lwd.minO) {
-  #        dat.edges$lwdO[comp.i+1] <- lwd.minO}
-  #      if (dat.edges$lwdA[comp.i+1] < lwd.minA) {
-  #        dat.edges$lwdA[comp.i+1] <- lwd.minA}
-  #      comp.i <- comp.i + 2
-  #      ID <- ID + 1
-  #    }
-  #  }
-  #}
-  # a new version with the output from BUGSnet altered code
   for (i in 1:nrow(edges)) {
     dat.edges$pairwiseID[comp.i] <- ID
     dat.edges$pairwiseID[comp.i+1] <- ID
