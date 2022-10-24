@@ -69,7 +69,7 @@ dashboardPage(
                             #   }
                             #   "), 
                             #h2("MetaInsight (including Bayesian estimates) V3.1.10 **", 
-                            h2("MetaInsight V4.0.0",
+                            h2("MetaInsight V4.0.1",
                                tags$sup("Beta", style="color:#6CC0ED"), 
                                align= "left"),
                             prettyRadioButtons("metaoutcome","Please select your outcome type:",
@@ -91,8 +91,7 @@ dashboardPage(
                                      br(),
                                      br(),
                                      p(tags$strong("Current bugs"), " that we are aware of and working on:", style="font-size:13pt"),
-                                     p(tags$ul(tags$li("If the Litmus Rank-O-Gram has added lines to help link data points and labels, these lines do not always appear when downloading the plot."))),
-                                     p(tags$ul(tags$li("For binary data, the panel does not load if the dataset contains studies with double zeros (i.e. the number of events is zero for all/both treatments arms in a study).")))
+                                     p(tags$ul(tags$li("If the Litmus Rank-O-Gram has added lines to help link data points and labels, these lines do not always appear when downloading the plot.")))
                                      #p(tags$strong("Latest Updates:")),
                                      #actionLink("history_click", "Click here to view a full update history of MetaInsight"),
                                      #br(),
