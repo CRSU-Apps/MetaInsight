@@ -22,10 +22,10 @@ network.structure <- function(data.nma, my_order=NA) {     # data.nma is a BUGSn
   
   cnt <- data.nma$arm.data %>%
     select(data.nma$varname.s, data.nma$varname.t) %>%
-    count(data.nma$varname.s)     # number of treatments within each study
+    dplyr::count(data.nma$varname.s)     # number of treatments within each study
   
   tmp1 <- bind_cols(studytrt, cnt) %>%
-    filter(freq>1)   # removes single arm studies
+    filter(n>1)   # removes single arm studies
   
   if (is.empty(my_order)) {
     pairs <- tmp1[1,"data"] %>% unlist %>% sort %>% combn(2)    # each set of treatment pairs is put in alphabetical order

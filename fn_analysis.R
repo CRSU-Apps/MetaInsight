@@ -531,7 +531,7 @@ RadialSUCRA <- function(SUCRAData, ColourData, BUGSnetData, colourblind=FALSE) {
   
   
   # Create my own network plot using ggplot polar coords #
-  SUCRA <- SUCRAData %>% arrange(-SUCRA)
+  SUCRA <- SUCRAData %>% dplyr::arrange(-SUCRA)
   edges <- network.structure(BUGSnetData, my_order = SUCRA$Treatment)
   dat.edges <- data.frame(pairwiseID = rep(NA, nrow(edges)*2),
                           treatment = "",

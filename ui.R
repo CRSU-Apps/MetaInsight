@@ -9,7 +9,6 @@
 # remotes::install_github("audrey-b/BUGSnet@v1.0.4", upgrade = TRUE, build_vignettes = TRUE)
 # devtools::install_github("audrey-b/BUGSnet@v1.0.4", upgrade = TRUE, build_vignettes = TRUE)
 
-library(dplyr)
 library(metafor)
 library(netmeta)
 library(shiny)
@@ -379,9 +378,9 @@ dashboardPage(
                                       p("Numbers on the line indicate the number of trials conducted for the comparison. The shaded areas indicate there exist multi-arm trials between the comparisons.")
                      ),
                      conditionalPanel(condition= "input.networkstyle=='networkp2'",
-                                      p("The size of the nodes and the thickness of edges depend on the number of people randomised and the number of trials conducted, respectively.")
+                                      p("The size of the nodes and thickness of edges represent the number of studies that examined a treatment and compared two given treatments respectively.")
                      ),
-                     radioButtons("networkstyle", "Please choose a network plot style", c("Number of trials shown on the line" = "networkp1","Number of people indicated by size of node etc." = "networkp2"), selected = "networkp2"),
+                     radioButtons("networkstyle", "Please choose a network plot style", c("Number of trials shown on the line" = "networkp1","Number of trials indicated by node size and line thickness" = "networkp2"), selected = "networkp2", width='100%'),
                      column(6, radioButtons('format_freq1', 'Document format', c('PDF', 'PNG'), inline = TRUE)),
                      column(6, numericInput('label_all', 'Label size multiplier', value=1.25)),
                      downloadButton('downloadNetwork'), 
@@ -396,7 +395,7 @@ dashboardPage(
                      conditionalPanel(condition= "input.networkstyle_sub=='networkp2'",
                                       p("The size of the nodes and thickness of edges represent the number of studies that examined a treatment and compared two given treatments respectively.")
                      ),
-                     radioButtons("networkstyle_sub", "Please choose a network plot style", c("Number of trials shown on the line" = "networkp1","Number of people indicated by size of node etc." = "networkp2"), selected = "networkp2"),
+                     radioButtons("networkstyle_sub", "Please choose a network plot style", c("Number of trials shown on the line" = "networkp1","Number of trials indicated by node size and line thickness" = "networkp2"), selected = "networkp2", width='100%'),
                      column(6, radioButtons('format_freq2', 'Document format', c('PDF', 'PNG'), inline = TRUE)),
                      column(6, numericInput('label_excluded', 'Label size multiplier', value=1.25)),
                      downloadButton('downloadNetworkUpdate'), 
@@ -535,7 +534,7 @@ dashboardPage(
                                                                                                                                 conditionalPanel(condition="input.rank_plot_choice==1 && input.Radial_alt", withSpinner(plotOutput("RadialAlt"), type=6)),
                                                                                                                                 conditionalPanel(condition="input.rank_plot_choice==1",
                                                                                                                                   checkboxInput("Radial_alt", label="Display simplified version", value=FALSE),
-                                                                                                                                  p("Radial SUCRA plot: Higher SUCRA values indicate better treatments; size of nodes represent number of patients and thickness of lines indicate number of trials conducted")),
+                                                                                                                                  p("Radial SUCRA plot: Higher SUCRA values indicate better treatments; size of nodes represent number of participants and thickness of lines indicate number of trials conducted")),
                                                                                                                                 dropMenu(dropdownButton(circle=FALSE, status='warning', label="Ranking probabilities and SUCRA values for all treatments"),
                                                                                                                                          tableOutput("rank_probs")), div(style="margin-bottom:10px"), #some padding between buttons
                                                                                                                                 fluidRow(column(6, downloadButton('download_rank_plot', "Download Rank plot (PNG)", style = "width:220px; white-space: normal")), column(6, downloadButton('download_rank_table', label="Download table of rank probablities and SUCRA", style = "width:220px; white-space: normal")))
@@ -548,7 +547,7 @@ dashboardPage(
                                                                                                                                 conditionalPanel(condition= "input.networkstyle_rank=='networkp2'",
                                                                                                                                                  p("The size of the nodes and thickness of edges represent the number of studies that examined a treatment and compared two given treatments respectively.")
                                                                                                                                 ),
-                                                                                                                                radioButtons("networkstyle_rank", "Please choose a network plot style", c("Number of trials shown on the line" = "networkp1","Number of people indicated by size of node etc." = "networkp2"), inline=TRUE),
+                                                                                                                                radioButtons("networkstyle_rank", "Please choose a network plot style", c("Number of trials shown on the line" = "networkp1","Number of trials indicated by node size and line thickness" = "networkp2"), inline=TRUE),
                                                                                                                                 radioButtons('network_rank_choice', 'Document format', c('PDF'='pdf', 'PNG'='png'), inline = TRUE),
                                                                                                                                 downloadButton('download_network_rank')
                                                                                                                                 ))
@@ -569,7 +568,7 @@ dashboardPage(
                                                                                                                                 conditionalPanel(condition="input.rank_plot_choice_sub==1 && input.Radial_alt_sub", withSpinner(plotOutput("RadialAlt_sub"), type=6)),
                                                                                                                                 conditionalPanel(condition="input.rank_plot_choice_sub==1",
                                                                                                                                                  checkboxInput("Radial_alt_sub", label="Display simplified version", value=FALSE),
-                                                                                                                                                 p("Radial SUCRA plot: Higher SUCRA values indicate better treatments; size of nodes represent number of patients and thickness of lines indicate number of trials conducted")),
+                                                                                                                                                 p("Radial SUCRA plot: Higher SUCRA values indicate better treatments; size of nodes represent number of participants and thickness of lines indicate number of trials conducted")),
                                                                                                                                 dropMenu(dropdownButton(circle=FALSE, status='warning', label="Ranking probabilities and SUCRA values for all treatments"),
                                                                                                                                          tableOutput("rank_probs_sub")), div(style="margin-bottom:10px"), #some padding between buttons
                                                                                                                                 fluidRow(column(6, downloadButton('download_rank_plot_sub', "Download Rank plot (PNG)", style = "width:220px; white-space: normal")), column(6, downloadButton('download_rank_table_sub', label="Download table of rank probablities and SUCRA", style = "width:220px; white-space: normal")))),
@@ -581,7 +580,7 @@ dashboardPage(
                                                                                                                                 conditionalPanel(condition= "input.networkstyle_rank_sub=='networkp2'",
                                                                                                                                                  p("The size of the nodes and thickness of edges represent the number of studies that examined a treatment and compared two given treatments respectively.")
                                                                                                                                 ),
-                                                                                                                                radioButtons("networkstyle_rank_sub", "Please choose a network plot style", c("Number of trials shown on the line" = "networkp1","Number of people indicated by size of node etc." = "networkp2"), inline=TRUE),
+                                                                                                                                radioButtons("networkstyle_rank_sub", "Please choose a network plot style", c("Number of trials shown on the line" = "networkp1","Number of trials indicated by node size and line thickness" = "networkp2"), inline=TRUE),
                                                                                                                                 radioButtons('network_rank_choice_sub', 'Document format', c('PDF'='pdf', 'PNG'='png'), inline = TRUE),
                                                                                                                                 downloadButton('download_network_rank_sub')
                                                                                                                        ))

@@ -6,7 +6,6 @@
 
 # the data for meta-regression is from: http://nicedsu.org.uk/wp-content/uploads/2016/03/TSD3-Heterogeneity.final-report.08.05.12.pdf
 
-library(dplyr)
 library(metafor)
 library(netmeta)
 library(shiny) 
@@ -15,6 +14,7 @@ library(rmarkdown)
 library(knitr)
 library(gemtc)
 library(plyr)
+library(dplyr)
 library(data.table)
 library(shinyalert)
 library(plotly)
