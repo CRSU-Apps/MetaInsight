@@ -54,7 +54,7 @@ shinyUI(navbarPage(id="meta",
            #   zoom: 75%; /* Webkit browsers */
            #   }
            #   "), 
-     h2("MetaInsight (including Bayesian estimates) V3.1.13 **", 
+     h2("MetaInsight (including Bayesian estimates) V3.1.14 **", 
         #tags$sup("Beta", style="color:#6CC0ED"), 
         align= "left"),
      prettyRadioButtons("metaoutcome","Please select your outcome type:",
@@ -70,11 +70,13 @@ shinyUI(navbarPage(id="meta",
        actionLink("history_click", "Click here to view a full update history of MetaInsight"),
        br(),
        tags$a(href="https://github.com/CRSU-Apps/MetaInsight/commits/main", "Click here to view the full version history of the code base for MetaInsight",target="_blank"),
+       p(tags$strong("** Annotation correction on 25 October 2022 (v3.1.14) **:")),
+       p(tags$ul(tags$li("We apologise that the annotation regarding the second option of network plot on tab 1c has been incorrect.
+                         The size of the nodes do not represent the number of participants that were tested with the respective treatment, 
+                         but instead represent the number of studies that included the respective treatment. 
+                         This has now been corrected and we apologise for any inconvenience caused as a result."))),
        p(tags$strong("** Minor text change on 25 April 2022 (v3.1.13) **:")),
        p(tags$ul(tags$li("Sub headers have been added to deviance details in tab 3g-4."))),
-       p(tags$strong("** Minor feature changes on 24 March 2022 (v3.1.12) **:")),
-       p(tags$ul(tags$li("Size of forest plots (UI and downloads) are now reactive to the size of the network."))),
-       p(tags$ul(tags$li("Ranking tab has been rearranged and sizing editing to help with large networks regarding readability."))),
        br(),
        p(tags$strong("Beta version available!", style="color:#6CC0ED; font-size:18px")),
        p("A beta version of MetaInsight is available, containing a ", tags$strong("new ranking panel"), " for Bayesian analyses. Check it out ", tags$a(href="https://crsu.shinyapps.io/MetaInsight_Beta", "here."))
@@ -355,9 +357,9 @@ tabPanel("Data analysis", id="dtanalysis",
                                       p("Numbers on the line indicate the number of trials conducted for the comparison. The shaded areas indicate there exist multi-arm trials between the comparisons.")
                      ),
                      conditionalPanel(condition= "input.networkstyle=='networkp2'",
-                                      p("The size of the nodes and the thickness of edges depend on the number of people randomised and the number of trials conducted, respectively.")
+                                      p("The size of the nodes and thickness of edges represent the number of studies that examined a treatment and compared two given treatments respectively.")
                      ),
-                     radioButtons("networkstyle", "Please choose a network plot style", c("Number of trials shown on the line" = "networkp1","Number of people indicated by size of node etc." = "networkp2"), selected = "networkp2"),
+                     radioButtons("networkstyle", "Please choose a network plot style", c("Number of trials shown on the line" = "networkp1","Number of trials indicated by node size and line thickness" = "networkp2"), selected = "networkp2", width='100%'),
                      column(6, radioButtons('format_freq1', 'Document format', c('PDF', 'PNG'), inline = TRUE)),
                      column(6, numericInput('label_all', 'Label size multiplier', value=1.25)),
                      downloadButton('downloadNetwork'), 
@@ -370,9 +372,9 @@ tabPanel("Data analysis", id="dtanalysis",
                                       p("Numbers on the line indicate the number of trials conducted for the comparison. The shaded areas indicate there exist multi-arm trials between the comparisons.")
                      ),
                      conditionalPanel(condition= "input.networkstyle_sub=='networkp2'",
-                                      p("The size of the nodes and the thickness of edges depend on the number of people randomised and the number of trials conducted, respectively.")
+                                      p("The size of the nodes and thickness of edges represent the number of studies that examined a treatment and compared two given treatments respectively.")
                      ),
-                     radioButtons("networkstyle_sub", "Please choose a network plot style", c("Number of trials shown on the line" = "networkp1","Number of people indicated by size of node etc." = "networkp2"), selected = "networkp2"),
+                     radioButtons("networkstyle_sub", "Please choose a network plot style", c("Number of trials shown on the line" = "networkp1","Number of trials indicated by node size and line thickness" = "networkp2"), selected = "networkp2", width='100%'),
                      column(6, radioButtons('format_freq2', 'Document format', c('PDF', 'PNG'), inline = TRUE)),
                      column(6, numericInput('label_excluded', 'Label size multiplier', value=1.25)),
                      downloadButton('downloadNetworkUpdate'), 
