@@ -471,9 +471,9 @@ Rankogram <- ggplot(CumData, aes(x=Rank, y=Cumulative_Probability, group=Treatme
 if (colourblind==FALSE) {
   A <- Rankogram + scale_colour_gradient2(low = "red",
                                         mid = "yellow",
-                                        high = "green", midpoint=50)
+                                        high = "green", midpoint=50, limits=c(0,100))
 } else {
-  A <- Rankogram + scale_colour_gradientn(colours=c("#7b3294","#c2a5cf","#a6dba0", "#008837"), values=c(0, 0.33, 0.66, 1))
+  A <- Rankogram + scale_colour_gradientn(colours=c("#7b3294","#c2a5cf","#a6dba0", "#008837"), values=c(0, 0.33, 0.66, 1), limits=c(0,100))
 }
 # Litmus SUCRA Scale #
 Litmus_SUCRA <- ggplot(SUCRAData, aes(x=rep(0.45,times=nrow(SUCRAData)), y=SUCRA)) +
@@ -487,9 +487,9 @@ Litmus_SUCRA <- ggplot(SUCRAData, aes(x=rep(0.45,times=nrow(SUCRAData)), y=SUCRA
 if (colourblind==FALSE) {
   B <- Litmus_SUCRA + scale_colour_gradient2(low = "red",
                                            mid = "yellow",
-                                           high = "green", midpoint=50)
+                                           high = "green", midpoint=50, limits=c(0,100))
 } else {
-  B <- Litmus_SUCRA + scale_colour_gradientn(colours=c("#7b3294","#c2a5cf","#a6dba0", "#008837"), values=c(0, 0.33, 0.66, 1))
+  B <- Litmus_SUCRA + scale_colour_gradientn(colours=c("#7b3294","#c2a5cf","#a6dba0", "#008837"), values=c(0, 0.33, 0.66, 1), limits=c(0,100))
 }
 # Combo! #
 Combo <- A + B
@@ -604,9 +604,9 @@ RadialSUCRA <- function(SUCRAData, ColourData, BUGSnetData, colourblind=FALSE) {
         scale_y_continuous(limits=c(-80,115))
     }
     if (colourblind==FALSE) {
-      g <- g + scale_fill_gradient2(low = "red", mid = "yellow", high = "green", midpoint=50)
+      g <- g + scale_fill_gradient2(low = "red", mid = "yellow", high = "green", midpoint=50, limits=c(0,100))
     } else {
-      g <- g + scale_fill_gradientn(colours=c("#7b3294","#c2a5cf","#a6dba0", "#008837"), values=c(0, 0.33, 0.66, 1))
+      g <- g + scale_fill_gradientn(colours=c("#7b3294","#c2a5cf","#a6dba0", "#008837"), values=c(0, 0.33, 0.66, 1), limits=c(0,100))
     }
     g +
       theme(panel.background = element_rect(fill = "transparent"), plot.background = element_rect(fill = "transparent", color = NA), 
