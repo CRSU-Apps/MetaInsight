@@ -672,67 +672,77 @@ tabPanel("Data analysis", id="dtanalysis",
 
 
 ###################################
-### Tab 4 - User Guide ###
+### Tab 4 - Download report ###
 ###################################
 
-tabPanel("User Guide",
-         h2 (tags$strong("User Guide")),
-         h4 (tags$strong("A complete User Guide for MetaInsight regular version", style = "cursive;
-                      color: #2196c4")),
-         p("Please click the button below to download a copy of the MetaInsight User Guide."),
-         downloadButton("UG", "Download User Guide"),
-         br(),
-         br(),
-         h4 (tags$strong("Cochrane training Webinar materials", style = "cursive;
-                      color: #2196c4")),
-         p(tags$strong("MetaInsight: Background, introduction, demonstration, limitations, and future plans")),
-         p("These videos were recorded live as part of the ", 
-           tags$a(href="https://training.cochrane.org/resource/metainsight-complex-review-support-unit-crsu-network-meta-analysis-nma-web-based-app", "Cochrane Training network meta-analysis learning live webinar series.",target="_blank"), 
-           "They are intended for people who are interested in undertaking a network meta-analysis using MetaInsight."),
-         br(),
-         HTML('<iframe width="560" height="315" src="https://www.youtube.com/embed/RR_tkICQv_s" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'),
-         HTML('<iframe width="560" height="315" src="https://www.youtube.com/embed/b-fYoUdksRo" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'),
-         HTML('<iframe width="560" height="315" src="https://www.youtube.com/embed/g0n5yxQ4Z34" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>')
-         )
-,
+tabPanel("Report",
+         downloadButton("report", "Generate report")
+),
 
+# Commented out remaining tabs for speed while editing
 
 ###################################
-### Tab 4 - trouble shooting ###
+### Tab 5 - User Guide ###
 ###################################
 
-tabPanel(id="trouble", "Troubleshooting",
-#          tags$div(
-# includeHTML("troublesh.html")
+# tabPanel("User Guide",
+#          h2 (tags$strong("User Guide")),
+#          h4 (tags$strong("A complete User Guide for MetaInsight regular version", style = "cursive;
+#                       color: #2196c4")),
+#          p("Please click the button below to download a copy of the MetaInsight User Guide."),
+#          downloadButton("UG", "Download User Guide"),
+#          br(),
+#          br(),
+#          h4 (tags$strong("Cochrane training Webinar materials", style = "cursive;
+#                       color: #2196c4")),
+#          p(tags$strong("MetaInsight: Background, introduction, demonstration, limitations, and future plans")),
+#          p("These videos were recorded live as part of the ", 
+#            tags$a(href="https://training.cochrane.org/resource/metainsight-complex-review-support-unit-crsu-network-meta-analysis-nma-web-based-app", "Cochrane Training network meta-analysis learning live webinar series.",target="_blank"), 
+#            "They are intended for people who are interested in undertaking a network meta-analysis using MetaInsight."),
+#          br(),
+#          HTML('<iframe width="560" height="315" src="https://www.youtube.com/embed/RR_tkICQv_s" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'),
+#          HTML('<iframe width="560" height="315" src="https://www.youtube.com/embed/b-fYoUdksRo" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'),
+#          HTML('<iframe width="560" height="315" src="https://www.youtube.com/embed/g0n5yxQ4Z34" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>')
 #          )
-tags$iframe(style="height:1500px; width:100%; scrolling=yes", 
-            src="ts2.pdf")
-),
+# ,
+
+
+###################################
+### Tab 6 - trouble shooting ###
+###################################
+
+# tabPanel(id="trouble", "Troubleshooting",
+# #          tags$div(
+# # includeHTML("troublesh.html")
+# #          )
+# tags$iframe(style="height:1500px; width:100%; scrolling=yes", 
+#             src="ts2.pdf")
+# ),
 
 
 
 
 
 ###################################
-### Tab 5 - Full update history ###
+### Tab 7 - Full update history ###
 ###################################
 
-tabPanel(id="update", "Full update history",
-         tags$iframe(style="height:1500px; width:100%; scrolling=yes", 
-                     src="fullupdatehistory4.pdf")
-),
+# tabPanel(id="update", "Full update history",
+#          tags$iframe(style="height:1500px; width:100%; scrolling=yes", 
+#                      src="fullupdatehistory4.pdf")
+# ),
 
 
 
 ##############################
-### Tab 6 - Privacy notice ###
+### Tab 8 - Privacy notice ###
 ##############################
 
 
-
-tabPanel(id="privacy", "Privacy notice",
-   tags$iframe(style="height:1500px; width:100%; scrolling=yes", 
-               src="gdpr.pdf")
-)
+# 
+# tabPanel(id="privacy", "Privacy notice",
+#    tags$iframe(style="height:1500px; width:100%; scrolling=yes", 
+#                src="gdpr.pdf")
+# )
 )
 )

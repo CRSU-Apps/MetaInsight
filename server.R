@@ -32,23 +32,53 @@ source("fn_analysis.R",local = TRUE)              # functions for NMA
 shinyServer(function(input, output, session) {
   source("downloadbuttons.R", local = TRUE)   #codes for download buttons for conciseness. This line must be put within the shinyserver as this is purely a code file not functions.
   
+  #####
+  # Report
+  #####
+  
+  output$report <- downloadHandler(
+    # For PDF output, change this to "report.pdf"
+    filename = "report.html",
+    content = function(file) {
+      # Copy the report file to a temporary directory before processing it, in
+      # case we don't have write permissions to the current working dir (which
+      # can happen when deployed).
+      tempReport <- file.path(tempdir(), "report.Rmd")
+      file.copy("report.Rmd", tempReport, overwrite = TRUE)
+      
+      # Set up parameters to pass to Rmd document
+      # params <- list(n = input$slider)
+      params <- list(data = data(), outcome = input$metaoutcome, ranking = input$rankopts)
+      
+      # Knit the document, passing in the `params` list, and eval it in a
+      # child of the global environment (this isolates the code in the document
+      # from the code in this app).
+      rmarkdown::render(tempReport, output_file = file,
+                        params = params,
+                        envir = new.env(parent = globalenv())
+      )
+    }
+  )
+  
+  
   ############################################
   ######### Home page - linking pages ########
   ############################################
   
+  # Commented out while editing
   ### GDPR
   
-    showModal(modalDialog(
-       title = "Important message",
-        easyClose = FALSE,
-        p(tags$strong("In accordance with Data Protection legislation, we would like to inform you of the following before you use our website:
-                                 "), "We collect your usage data within the MetaInsight app to perform analytics of usage and improve our app. By clicking",
-          tags$i(tags$u("I consent")), "below, you consent to the use of data by us through Google Analytics.
-          For details of policy, please check the 'Privacy notice' tab within the app, and ",tags$a(href="https://policies.google.com/privacy?hl=en", "Google Privacy & Terms.",target="_blank") ),
-        br(),
-        modalButton("I consent"),
-        footer = NULL
-      ))
+    # showModal(modalDialog(
+    #    title = "Important message",
+    #     easyClose = FALSE,
+    #     p(tags$strong("In accordance with Data Protection legislation, we would like to inform you of the following before you use our website:
+    #                              "), "We collect your usage data within the MetaInsight app to perform analytics of usage and improve our app. By clicking",
+    #       tags$i(tags$u("I consent")), "below, you consent to the use of data by us through Google Analytics.
+    #       For details of policy, please check the 'Privacy notice' tab within the app, and ",tags$a(href="https://policies.google.com/privacy?hl=en", "Google Privacy & Terms.",target="_blank") ),
+    #     br(),
+    #     modalButton("I consent"),
+    #     footer = NULL
+    #   ))
 
 
   

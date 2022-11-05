@@ -1,0 +1,28 @@
+---
+title: "MetaInsight report"
+output: html_document
+params:
+  data: NA
+  outcome: NA
+  ranking: NA
+---
+
+```{r include = FALSE}
+library(knitr)
+```
+
+User inputs
+
+```{r}
+params$data
+
+params$outcome
+
+params$ranking
+```
+
+Data used for NMA 
+
+```{r}
+knitr::kable(params$data)
+```
