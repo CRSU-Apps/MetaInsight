@@ -43,7 +43,7 @@ shinyServer(function(input, output, session) {
     content = function(file) {
       
       label <- ifelse(input$metaoutcome=="Continuous",input$listCont,input$listbina)
-      # outcome_measure <- ifelse(input$metaoutcome=="Continuous", input$outcomeCont, input$outcomebina)
+      outcome_measure <- ifelse(input$metaoutcome=="Continuous", input$outcomeCont, input$outcomebina)
       
       # Copy the report file to a temporary directory before processing it
       tempReport <- file.path(tempdir(), "report.Rmd")
@@ -51,7 +51,11 @@ shinyServer(function(input, output, session) {
       
       # Set up parameters to pass to Rmd document
       params <- list(outcome_type = input$metaoutcome,
-                     data = data(), label = label)
+                     data = data(), label = label,
+                     outcome_measure = outcome_measure, ranking = input$rankopts, model = input$modelranfix)
+      
+      # Excluded studies
+      #exclusion = Study %in% input$exclusionbox
 
       # params <- list(outcome_type = input$metaoutcome,
       #                data = data(), label = label,
