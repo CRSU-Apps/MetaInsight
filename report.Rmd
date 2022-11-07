@@ -2,27 +2,108 @@
 title: "MetaInsight report"
 output: html_document
 params:
+  outcome_type: NA
   data: NA
-  outcome: NA
-  ranking: NA
+  label: NA
+  # outcome_measure: NA
+  # ranking: NA
+  # model: NA
+  # exclusion: NA
+  # sumtb: NA
+  # sumtb_sub: NA
+  # forestPlot: NA
+  # netGraphStatic: NA
+  # netGraphUpdating: NA
 ---
 
 ```{r include = FALSE}
 library(knitr)
 ```
 
-User inputs
+### User inputs and selections
+
+**Outcome type**  
+Continuous (mean difference) or binary (odds ratio)
+
+```{r}
+params$outcome_type
+```
+
+**Study data and treatment labels**
 
 ```{r}
 params$data
 
-params$outcome
-
-params$ranking
+params$label
 ```
 
-Data used for NMA 
+<!-- **Outcome measure**    -->
+<!-- Mean difference or standardised mean difference for continuous data   -->
+<!-- Odds ratio, risk ratio or risk difference for binary data -->
+
+<!-- ```{r} -->
+<!-- params$outcome_measure -->
+<!-- ``` -->
+
+<!-- For treatment rankings, smaller outcome values (e.g. smaller mean values for continuous data, or ORs less than 1 for binary data) are desirable (good) or undesirable (bad) -->
+
+<!-- ```{r} -->
+<!-- params$ranking -->
+<!-- ``` -->
+
+<!-- **Model**   -->
+<!-- Random effect (RE) or fixed effect (FE) -->
+
+<!-- ```{r} -->
+<!-- params$model -->
+<!-- ``` -->
+
+<!-- **Excluded studies** -->
+
+<!-- # ```{r} -->
+<!-- # params$exclusion -->
+<!-- # ``` -->
+
+### MetaInsight app outputs  
+
+**Data used for NMA** 
 
 ```{r}
 knitr::kable(params$data)
 ```
+
+<!-- **Summary of study characteristics**   -->
+<!-- Characteristics table of all studies -->
+
+<!-- ```{r} -->
+<!-- params$sumtb -->
+<!-- ``` -->
+
+<!-- Characteristics table with studies excluded -->
+
+<!-- ```{r} -->
+<!-- params$sumtb -->
+<!-- ``` -->
+
+<!-- **Individual study results for all studies grouped by treatment comparison -->
+
+<!-- ```{r} -->
+<!-- params$forestPlot -->
+<!-- ``` -->
+
+<!-- **Network plots**   -->
+<!-- Network plot of all studies -->
+
+<!-- ```{r} -->
+<!-- params$netGraphStatic -->
+<!-- ``` -->
+
+<!-- Network plot with studies excluded -->
+
+<!-- ```{r} -->
+<!-- params$netGraphUpdating -->
+<!-- ``` -->
+
+
+
+

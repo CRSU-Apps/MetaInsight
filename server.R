@@ -36,23 +36,32 @@ shinyServer(function(input, output, session) {
   # Report
   #####
   
+  # Create Rmd report
   output$report <- downloadHandler(
-    # For PDF output, change this to "report.pdf"
+    
     filename = "report.html",
     content = function(file) {
-      # Copy the report file to a temporary directory before processing it, in
-      # case we don't have write permissions to the current working dir (which
-      # can happen when deployed).
+      
+      label <- ifelse(input$metaoutcome=="Continuous",input$listCont,input$listbina)
+      # outcome_measure <- ifelse(input$metaoutcome=="Continuous", input$outcomeCont, input$outcomebina)
+      
+      # Copy the report file to a temporary directory before processing it
       tempReport <- file.path(tempdir(), "report.Rmd")
       file.copy("report.Rmd", tempReport, overwrite = TRUE)
       
       # Set up parameters to pass to Rmd document
-      # params <- list(n = input$slider)
-      params <- list(data = data(), outcome = input$metaoutcome, ranking = input$rankopts)
+      params <- list(outcome_type = input$metaoutcome,
+                     data = data(), label = label)
+
+      # params <- list(outcome_type = input$metaoutcome,
+      #                data = data(), label = label,
+      #                outcome_measure = outcome_measure, ranking = input$rankopts, model = input$modelranfix,
+      #                exclusion = input$exclusionbox,
+      #                sumtb = output$sumtb, subtb_sub = output$sumtb_sub, forestPlot = output$forestPlot,
+      #                netGraphStatic = output$netGraphStatic, netGraphUpdating = output$netGraphUpdating
+      #                )
       
-      # Knit the document, passing in the `params` list, and eval it in a
-      # child of the global environment (this isolates the code in the document
-      # from the code in this app).
+      # Knit the document, passing in the `params` list, and eval it in a child of the global environment 
       rmarkdown::render(tempReport, output_file = file,
                         params = params,
                         envir = new.env(parent = globalenv())
@@ -228,7 +237,7 @@ shinyServer(function(input, output, session) {
     }))
     
     
-    ### Refernce treatment if treatment 1 is removed from the network
+    ### Reference treatment if treatment 1 is removed from the network
     
     ref_alter <- function(){
       newData1 <- as.data.frame(data())
