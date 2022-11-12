@@ -22,7 +22,7 @@ library(shinyjs)
 library(BUGSnet)
 library(shinyBS)
 
-
+source("util.R")
 
 source("PlotFunctionsRKO.R", local = TRUE)        # Plot functions
 load("blank.rds")                                 # Objects to store data for plot functions
@@ -31,9 +31,11 @@ source("fn_analysis.R",local = TRUE)              # functions for NMA
   
 shinyServer(function(input, output, session) {
   source("downloadbuttons.R", local = TRUE)   #codes for download buttons for conciseness. This line must be put within the shinyserver as this is purely a code file not functions.
+
   
   #####
   # Report
+  # NVB
   #####
   
   # Create Rmd report
@@ -42,7 +44,6 @@ shinyServer(function(input, output, session) {
     filename = "report.html",
     content = function(file) {
       
-      label <- ifelse(input$metaoutcome=="Continuous",input$listCont,input$listbina)
       outcome_measure <- ifelse(input$metaoutcome=="Continuous", input$outcomeCont, input$outcomebina)
       
       # Copy the report file to a temporary directory before processing it
@@ -51,19 +52,9 @@ shinyServer(function(input, output, session) {
       
       # Set up parameters to pass to Rmd document
       params <- list(outcome_type = input$metaoutcome,
-                     data = data(), label = label,
+                     data = data(), label = treatment_label(treatment_list()),
                      outcome_measure = outcome_measure, ranking = input$rankopts, model = input$modelranfix)
-      
-      # Excluded studies
-      #exclusion = Study %in% input$exclusionbox
-
-      # params <- list(outcome_type = input$metaoutcome,
-      #                data = data(), label = label,
-      #                outcome_measure = outcome_measure, ranking = input$rankopts, model = input$modelranfix,
-      #                exclusion = input$exclusionbox,
-      #                sumtb = output$sumtb, subtb_sub = output$sumtb_sub, forestPlot = output$forestPlot,
-      #                netGraphStatic = output$netGraphStatic, netGraphUpdating = output$netGraphUpdating
-      #                )
+    
       
       # Knit the document, passing in the `params` list, and eval it in a child of the global environment 
       rmarkdown::render(tempReport, output_file = file,
@@ -148,15 +139,19 @@ shinyServer(function(input, output, session) {
         a <- read.table(file = file1$datapath, sep =",", header=TRUE, stringsAsFactors = FALSE, quote="\"", fileEncoding = 'UTF-8-BOM')
     })
     
-  
-  
+    ### Make treatment input list reactive - NVB
+    
+    treatment_list <- reactive({
+      if (input$metaoutcome == "Continuous") {return (input$listCont)}
+      else {return (input$listbina)}
+    })
+    
+    
   ### Data analysis tab
     output$tb <- renderTable({        # Create a table which displays the raw data just uploaded by the user
       if(is.null(data())){return()}
       data()
     })
-
-
   
   ############################################
   ########### Data analysis tab ##############
@@ -205,10 +200,9 @@ shinyServer(function(input, output, session) {
     
     ### Get data for data table
     
-    
+
     filtertable <- function(){
-      lb <- ifelse(input$metaoutcome=="Continuous",input$listCont,input$listbina)
-      label <- read.csv(text=lb, sep = "\t") 
+      label <- treatment_label(treatment_list())
       dt <- data()
       ntx <- nrow(label)
       dt$T <- factor(dt$T,
@@ -245,8 +239,7 @@ shinyServer(function(input, output, session) {
     
     ref_alter <- function(){
       newData1 <- as.data.frame(data())
-      label <- ifelse(input$metaoutcome=="Continuous",input$listCont,input$listbina)
-      treat_list <- read.csv(text=label, sep = "\t")
+      treat_list <- treatment_label(treatment_list())
       lstx <- treat_list$Label
       ref_all <- as.character(lstx[1])
       longsort2 <- dataform.df(newData1,treat_list,input$metaoutcome )
@@ -276,20 +269,18 @@ shinyServer(function(input, output, session) {
     
       
   ### Frequentist analysis
-    
+
   freq_all= function(){
       data_wide <- entry.df(data(),input$metaoutcome)    #transform data to wide form
-      label <- ifelse(input$metaoutcome=="Continuous",input$listCont,input$listbina)
-      treat_list <- read.csv(text=label, sep = "\t")   #read treatment labels from input
+      treat_list <- treatment_label(treatment_list())
       outc <- ifelse (input$metaoutcome=="Continuous",input$outcomeCont, input$outcomebina)
       freq_wrap(data_wide, treat_list,input$modelranfix,outc,input$metaoutcome, ref_alter()$ref_all)  # use the selfdefined function, freq_wrap
 
   }
   freq_sub= function(){
-    data_wide <-  entry.df(data(),input$metaoutcome)   
+    data_wide <-  entry.df(data(),input$metaoutcome)
     data_sub <- filter(data_wide, !Study %in% input$exclusionbox)  # Get subset of data to use
-    label <- ifelse(input$metaoutcome=="Continuous",input$listCont,input$listbina)
-    treat_list <- read.csv(text=label, sep = "\t")
+    treat_list <- treatment_label(treatment_list())
     outc <- ifelse (input$metaoutcome=="Continuous",input$outcomeCont, input$outcomebina)
     freq_wrap(data_sub, treat_list,input$modelranfix,outc, input$metaoutcome, ref_alter()$ref_sub)
   }
@@ -304,9 +295,11 @@ shinyServer(function(input, output, session) {
     outc <- ifelse (input$metaoutcome=="Continuous",input$outcomeCont, input$outcomebina)
     groupforest.df(freq$d0, freq$ntx, freq$lstx, outc, input$ForestHeader, input$ForestTitle)
   }
+  
   output$forestPlot <- renderPlot({
-    study_plot <- make_netStudy()
-    study_plot$fplot
+    # study_plot <- make_netStudy()
+    # study_plot$fplot
+    make_netStudy()$fplot
   })
   
 
@@ -320,8 +313,7 @@ shinyServer(function(input, output, session) {
   
   bugsnetdt <- function(){
     newData1 <- as.data.frame(data())
-    label <- ifelse(input$metaoutcome=="Continuous",input$listCont,input$listbina)
-    treat_list <- read.csv(text=label, sep = "\t")
+    treat_list <- treatment_label(treatment_list())
     longsort2 <- dataform.df(newData1,treat_list,input$metaoutcome)    # inputting the data in long form
     return(longsort2)
   }
@@ -391,6 +383,11 @@ shinyServer(function(input, output, session) {
     longsort2_sub <- filter(bugsnetdt(), !Study %in% input$exclusionbox)  # subgroup
     bugsnet_sumtb(longsort2_sub)
   })
+  
+  # New version working, not working for subset - load source files NVB
+  # output$sumtb <- renderTable({
+  #   bugsnet_sumtb(bugsnetdt(data(), input$metaoutcome, ifelse(input$metaoutcome=="Continuous",input$listCont,input$listbina)), input$metaoutcome)
+  # })
   
   ### (notification on disconnection when data are uploaded)
   # disconnect_load <- function(){
@@ -594,6 +591,7 @@ shinyServer(function(input, output, session) {
   output$FreqForestPlot <- renderUI({
     plotOutput("Comparison2", height = BayesPixels(as.numeric(bugsnet_sumtb(bugsnetdt())$Value[1]), title=TRUE), width = "630px")
   })
+  
   output$FreqForestPlot_sub <- renderUI({
     plotOutput("SFPUpdatingComp", height = BayesPixels(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% input$exclusionbox))$Value[1]), title=TRUE), width = "630px")
   })
@@ -663,8 +661,7 @@ shinyServer(function(input, output, session) {
 
   model <- eventReactive(input$baye_do, {
       newData1 <- as.data.frame(data())
-      label <- ifelse(input$metaoutcome=="Continuous",input$listCont,input$listbina)
-      treat_list <- read.csv(text=label, sep = "\t")
+      treat_list <- treatment_label(treatment_list())
       longsort2 <- dataform.df(newData1,treat_list,input$metaoutcome)    # inputting the data in long form
       outc <- ifelse (input$metaoutcome=="Continuous",input$outcomeCont, input$outcomebina)
       baye(longsort2,treat_list,input$modelranfix, outc,input$metaoutcome, ref_alter()$ref_all )
@@ -672,8 +669,7 @@ shinyServer(function(input, output, session) {
   
   model_sub <- eventReactive(input$sub_do, {
       newData1 <- as.data.frame(data())
-      label <- ifelse(input$metaoutcome=="Continuous",input$listCont,input$listbina)
-      treat_list <- read.csv(text=label, sep = "\t")
+      treat_list <- treatment_label(treatment_list())
       longsort2 <- dataform.df(newData1,treat_list,input$metaoutcome )
       long_sort2_sub <- filter(longsort2, !Study %in% input$exclusionbox)  # subgroup
       outc <- ifelse (input$metaoutcome=="Continuous",input$outcomeCont, input$outcomebina)
@@ -791,8 +787,7 @@ shinyServer(function(input, output, session) {
   
   model_nodesplit <- eventReactive(input$node, {
     newData1 <- as.data.frame(data())
-    label <- ifelse(input$metaoutcome=="Continuous",input$listCont,input$listbina)
-    treat_list <- read.csv(text=label, sep = "\t")
+    treat_list <- treatment_label(treatment_list())
     longsort2 <- dataform.df(newData1,treat_list,input$metaoutcome)
     outc <- ifelse (input$metaoutcome=="Continuous",input$outcomeCont, input$outcomebina)
     bayenode(longsort2,treat_list, input$modelranfix, outc,input$metaoutcome )
@@ -803,8 +798,7 @@ shinyServer(function(input, output, session) {
   
   model_nodesplit_sub <- eventReactive(input$node_sub, {
     newData1 <- as.data.frame(data())
-    label <- ifelse(input$metaoutcome=="Continuous",input$listCont,input$listbina)
-    treat_list <- read.csv(text=label, sep = "\t")
+    treat_list <- treatment_label(treatment_list())
     longsort2 <- dataform.df(newData1,treat_list,input$metaoutcome)
     longsort2_sub <- filter(longsort2, !Study %in% input$exclusionbox)
     outc <- ifelse (input$metaoutcome=="Continuous",input$outcomeCont, input$outcomebina)

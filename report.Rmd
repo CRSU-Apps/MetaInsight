@@ -8,12 +8,6 @@ params:
   outcome_measure: NA
   ranking: NA
   model: NA
-  # exclusion: NA
-  # sumtb: NA
-  # sumtb_sub: NA
-  # forestPlot: NA
-  # netGraphStatic: NA
-  # netGraphUpdating: NA
 ---
 
 ```{r include = FALSE}
@@ -72,37 +66,15 @@ params$model
 knitr::kable(params$data)
 ```
 
-<!-- **Summary of study characteristics**   -->
+<!-- **Summary of study characteristics** -->
 <!-- Characteristics table of all studies -->
 
 <!-- ```{r} -->
-<!-- params$sumtb -->
+<!-- bugsnet_sumtb(bugsnetdt(params$data, params$outcome_type, params$label), params$outcome_type) -->
 <!-- ``` -->
 
-<!-- Characteristics table with studies excluded -->
 
-<!-- ```{r} -->
-<!-- params$sumtb -->
-<!-- ``` -->
 
-<!-- **Individual study results for all studies grouped by treatment comparison -->
-
-<!-- ```{r} -->
-<!-- params$forestPlot -->
-<!-- ``` -->
-
-<!-- **Network plots**   -->
-<!-- Network plot of all studies -->
-
-<!-- ```{r} -->
-<!-- params$netGraphStatic -->
-<!-- ``` -->
-
-<!-- Network plot with studies excluded -->
-
-<!-- ```{r} -->
-<!-- params$netGraphUpdating -->
-<!-- ``` -->
 
 
 
