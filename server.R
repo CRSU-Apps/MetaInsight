@@ -24,6 +24,7 @@ library(shinyBS)
 
 source("util.R")
 source("bugsnet_sumtb.R")
+source("bugsnetdt.R")
 
 source("PlotFunctionsRKO.R", local = TRUE)        # Plot functions
 load("blank.rds")                                 # Objects to store data for plot functions
@@ -314,18 +315,11 @@ shinyServer(function(input, output, session) {
              )
   }
   
-  bugsnetdt <- function(){
-    newData1 <- as.data.frame(data())
-    treat_list <- treatment_label(treatment_list())
-    longsort2 <- dataform.df(newData1,treat_list,input$metaoutcome)    # inputting the data in long form
-    return(longsort2)
-  }
-  
   output$netGraphStatic <- renderPlot({
     if (input$networkstyle=='networkp1') {
       make_netgraph(freq_all(),input$label_all)
     } else {
-      data.rh<-data.prep(arm.data=bugsnetdt(), varname.t = "T", varname.s="Study")
+      data.rh<-data.prep(arm.data=bugsnetdt(data(), input$metaoutcome, treatment_list()), varname.t = "T", varname.s="Study")
       net.plot(data.rh, node.scale = 3, edge.scale=1.5, node.lab.cex=input$label_all)  #, flag="Orlistat". 
     }
     title("Network plot of all studies")
@@ -335,7 +329,7 @@ shinyServer(function(input, output, session) {
     if (input$networkstyle_sub=='networkp1') {
       make_netgraph(freq_sub(),input$label_excluded)
     } else {
-      long_sort2_sub <- filter(bugsnetdt(), !Study %in% input$exclusionbox)  # subgroup
+      long_sort2_sub <- filter(bugsnetdt(data(), input$metaoutcome, treatment_list()), !Study %in% input$exclusionbox)  # subgroup
       data.rh<-data.prep(arm.data=long_sort2_sub, varname.t = "T", varname.s="Study")
       net.plot(data.rh, node.scale = 3, edge.scale=1.5, node.lab.cex=input$label_excluded)
     }
@@ -360,13 +354,13 @@ shinyServer(function(input, output, session) {
   ### 1a. Data characteristics
   
   output$sumtb <- renderTable({
-    longsort2 <- bugsnetdt()    # inputting the data in long form
+    longsort2 <- bugsnetdt(data(), input$metaoutcome, treatment_list())    # inputting the data in long form
     bugsnet_sumtb(longsort2, input$metaoutcome)
   })
   
   output$sumtb_sub <- renderTable({
-    longsort2 <- bugsnetdt()    # inputting the data in long form
-    longsort2_sub <- filter(bugsnetdt(), !Study %in% input$exclusionbox)  # subgroup
+    longsort2 <- bugsnetdt(data(), input$metaoutcome, treatment_list())    # inputting the data in long form
+    longsort2_sub <- filter(bugsnetdt(data(), input$metaoutcome, treatment_list()), !Study %in% input$exclusionbox)  # subgroup
     bugsnet_sumtb(longsort2_sub, input$metaoutcome)
   })
   
@@ -424,8 +418,8 @@ shinyServer(function(input, output, session) {
   
   
   observeEvent(input$exclusionbox,{
-    longsort2 <- bugsnetdt()
-    longsort2_sub <- filter(bugsnetdt(), !Study %in% input$exclusionbox)  # subgroup
+    longsort2 <- bugsnetdt(data(), input$metaoutcome, treatment_list())
+    longsort2_sub <- filter(bugsnetdt(data(), input$metaoutcome, treatment_list()), !Study %in% input$exclusionbox)  # subgroup
     sumtb_sub <- bugsnet_sumtb(longsort2_sub, input$metaoutcome)
     if (sumtb_sub$Value[6]=="FALSE") {
       disconnect()
@@ -575,11 +569,11 @@ shinyServer(function(input, output, session) {
   ### Interactive UI ###
   
   output$FreqForestPlot <- renderUI({
-    plotOutput("Comparison2", height = BayesPixels(as.numeric(bugsnet_sumtb(bugsnetdt(), input$metaoutcome)$Value[1]), title=TRUE), width = "630px")
+    plotOutput("Comparison2", height = BayesPixels(as.numeric(bugsnet_sumtb(bugsnetdt(data(), input$metaoutcome, treatment_list()), input$metaoutcome)$Value[1]), title=TRUE), width = "630px")
   })
   
   output$FreqForestPlot_sub <- renderUI({
-    plotOutput("SFPUpdatingComp", height = BayesPixels(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% input$exclusionbox), input$metaoutcome)$Value[1]), title=TRUE), width = "630px")
+    plotOutput("SFPUpdatingComp", height = BayesPixels(as.numeric(bugsnet_sumtb(filter(bugsnetdt(data(), input$metaoutcome, treatment_list()), !Study %in% input$exclusionbox), input$metaoutcome)$Value[1]), title=TRUE), width = "630px")
   })
   
   
@@ -701,10 +695,10 @@ shinyServer(function(input, output, session) {
   ### Interactive UI ###
   
   output$BayesianForestPlot <- renderUI({
-    plotOutput("gemtc", width="630px", height = BayesPixels(as.numeric(bugsnet_sumtb(bugsnetdt(), input$metaoutcome)$Value[1]), title=TRUE))
+    plotOutput("gemtc", width="630px", height = BayesPixels(as.numeric(bugsnet_sumtb(bugsnetdt(data(), input$metaoutcome, treatment_list()), input$metaoutcome)$Value[1]), title=TRUE))
   })
   output$BayesianForestPlot_sub <- renderUI({
-    plotOutput("gemtc_sub", width="630px", height = BayesPixels(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% input$exclusionbox), input$metaoutcome)$Value[1]), title=TRUE))
+    plotOutput("gemtc_sub", width="630px", height = BayesPixels(as.numeric(bugsnet_sumtb(filter(bugsnetdt(data(), input$metaoutcome, treatment_list()), !Study %in% input$exclusionbox), input$metaoutcome)$Value[1]), title=TRUE))
   })
 
   
