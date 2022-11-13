@@ -23,6 +23,7 @@ library(BUGSnet)
 library(shinyBS)
 
 source("util.R")
+source("bugsnet_sumtb.R")
 
 source("PlotFunctionsRKO.R", local = TRUE)        # Plot functions
 load("blank.rds")                                 # Objects to store data for plot functions
@@ -69,7 +70,7 @@ shinyServer(function(input, output, session) {
   ######### Home page - linking pages ########
   ############################################
   
-  # Commented out while editing
+  # Commented out while editing - NVB
   ### GDPR
   
     # showModal(modalDialog(
@@ -86,14 +87,14 @@ shinyServer(function(input, output, session) {
 
 
   
-  ### view the full update history
+  ### View the full update history
   
     observeEvent(input$history_click, {
       newvalue <- "history"
       updateNavbarPage(session,"meta", selected="Full update history")
     })
     
-  ### view the trouble shooting page
+  ### View the trouble shooting page
     
     observeEvent(input$tsp, {
       #newvalue <- "history"
@@ -139,7 +140,8 @@ shinyServer(function(input, output, session) {
         a <- read.table(file = file1$datapath, sep =",", header=TRUE, stringsAsFactors = FALSE, quote="\"", fileEncoding = 'UTF-8-BOM')
     })
     
-    ### Make treatment input list reactive - NVB
+    # Make reactive treatment input list and select correct input 
+    # depending on if outcome is continuous or binary - NVB
     
     treatment_list <- reactive({
       if (input$metaoutcome == "Continuous") {return (input$listCont)}
@@ -148,7 +150,8 @@ shinyServer(function(input, output, session) {
     
     
   ### Data analysis tab
-    output$tb <- renderTable({        # Create a table which displays the raw data just uploaded by the user
+    # Create a table which displays the raw data just uploaded by the user
+    output$tb <- renderTable({       
       if(is.null(data())){return()}
       data()
     })
@@ -356,32 +359,15 @@ shinyServer(function(input, output, session) {
   
   ### 1a. Data characteristics
   
-  bugsnet_sumtb <- function(data){
-    data.rh<-data.prep(arm.data=data, varname.t = "T", varname.s="Study")
-    if (input$metaoutcome=="Continuous") {
-      outcome = "Mean"
-      typeO= "continuous"
-    } else {
-      outcome = "R"
-      typeO = "binomial"
-    }
-    network.char <- net.tab(data = data.rh,
-                            outcome = outcome,
-                            N = "N",
-                            type.outcome = typeO,
-                            time = NULL)
-    return(network.char$network)
-  }
-  
   output$sumtb <- renderTable({
     longsort2 <- bugsnetdt()    # inputting the data in long form
-    bugsnet_sumtb(longsort2)
+    bugsnet_sumtb(longsort2, input$metaoutcome)
   })
   
   output$sumtb_sub <- renderTable({
     longsort2 <- bugsnetdt()    # inputting the data in long form
     longsort2_sub <- filter(bugsnetdt(), !Study %in% input$exclusionbox)  # subgroup
-    bugsnet_sumtb(longsort2_sub)
+    bugsnet_sumtb(longsort2_sub, input$metaoutcome)
   })
   
   # New version working, not working for subset - load source files NVB
@@ -440,7 +426,7 @@ shinyServer(function(input, output, session) {
   observeEvent(input$exclusionbox,{
     longsort2 <- bugsnetdt()
     longsort2_sub <- filter(bugsnetdt(), !Study %in% input$exclusionbox)  # subgroup
-    sumtb_sub <- bugsnet_sumtb(longsort2_sub)
+    sumtb_sub <- bugsnet_sumtb(longsort2_sub, input$metaoutcome)
     if (sumtb_sub$Value[6]=="FALSE") {
       disconnect()
     }})
@@ -589,11 +575,11 @@ shinyServer(function(input, output, session) {
   ### Interactive UI ###
   
   output$FreqForestPlot <- renderUI({
-    plotOutput("Comparison2", height = BayesPixels(as.numeric(bugsnet_sumtb(bugsnetdt())$Value[1]), title=TRUE), width = "630px")
+    plotOutput("Comparison2", height = BayesPixels(as.numeric(bugsnet_sumtb(bugsnetdt(), input$metaoutcome)$Value[1]), title=TRUE), width = "630px")
   })
   
   output$FreqForestPlot_sub <- renderUI({
-    plotOutput("SFPUpdatingComp", height = BayesPixels(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% input$exclusionbox))$Value[1]), title=TRUE), width = "630px")
+    plotOutput("SFPUpdatingComp", height = BayesPixels(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% input$exclusionbox), input$metaoutcome)$Value[1]), title=TRUE), width = "630px")
   })
   
   
@@ -715,10 +701,10 @@ shinyServer(function(input, output, session) {
   ### Interactive UI ###
   
   output$BayesianForestPlot <- renderUI({
-    plotOutput("gemtc", width="630px", height = BayesPixels(as.numeric(bugsnet_sumtb(bugsnetdt())$Value[1]), title=TRUE))
+    plotOutput("gemtc", width="630px", height = BayesPixels(as.numeric(bugsnet_sumtb(bugsnetdt(), input$metaoutcome)$Value[1]), title=TRUE))
   })
   output$BayesianForestPlot_sub <- renderUI({
-    plotOutput("gemtc_sub", width="630px", height = BayesPixels(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% input$exclusionbox))$Value[1]), title=TRUE))
+    plotOutput("gemtc_sub", width="630px", height = BayesPixels(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% input$exclusionbox), input$metaoutcome)$Value[1]), title=TRUE))
   })
 
   
