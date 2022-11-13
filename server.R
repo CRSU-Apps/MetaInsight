@@ -54,9 +54,8 @@ shinyServer(function(input, output, session) {
       
       # Set up parameters to pass to Rmd document
       params <- list(outcome_type = input$metaoutcome,
-                     data = data(), label = treatment_label(treatment_list()),
+                     data = data(), label = treatment_list(),
                      outcome_measure = outcome_measure, ranking = input$rankopts, model = input$modelranfix)
-    
       
       # Knit the document, passing in the `params` list, and eval it in a child of the global environment 
       rmarkdown::render(tempReport, output_file = file,
@@ -354,8 +353,7 @@ shinyServer(function(input, output, session) {
   ### 1a. Data characteristics
   
   output$sumtb <- renderTable({
-    longsort2 <- bugsnetdt(data(), input$metaoutcome, treatment_list())    # inputting the data in long form
-    bugsnet_sumtb(longsort2, input$metaoutcome)
+    summary_table_plot(data(), input$metaoutcome, treatment_list())
   })
   
   output$sumtb_sub <- renderTable({
@@ -363,11 +361,6 @@ shinyServer(function(input, output, session) {
     longsort2_sub <- filter(bugsnetdt(data(), input$metaoutcome, treatment_list()), !Study %in% input$exclusionbox)  # subgroup
     bugsnet_sumtb(longsort2_sub, input$metaoutcome)
   })
-  
-  # New version working, not working for subset - load source files NVB
-  # output$sumtb <- renderTable({
-  #   bugsnet_sumtb(bugsnetdt(data(), input$metaoutcome, ifelse(input$metaoutcome=="Continuous",input$listCont,input$listbina)), input$metaoutcome)
-  # })
   
   ### (notification on disconnection when data are uploaded)
   # disconnect_load <- function(){

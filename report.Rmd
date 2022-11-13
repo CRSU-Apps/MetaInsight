@@ -12,6 +12,7 @@ params:
 
 ```{r include = FALSE}
 library(knitr)
+
 ```
 
 ### User inputs and selections
@@ -28,7 +29,7 @@ params$outcome_type
 ```{r}
 params$data
 
-params$label
+treatment_label(params$label)
 ```
 
 **Outcome measure**  
@@ -66,12 +67,22 @@ params$model
 knitr::kable(params$data)
 ```
 
-<!-- **Summary of study characteristics** -->
-<!-- Characteristics table of all studies -->
+**Summary of study characteristics**
+Characteristics table of all studies
 
-<!-- ```{r} -->
-<!-- bugsnet_sumtb(bugsnetdt(params$data, params$outcome_type, params$label), params$outcome_type) -->
-<!-- ``` -->
+```{r}
+renderTable({
+  bugsnet_sumtb(bugsnetdt(params$data, params$outcome_type, params$label), params$outcome_type)
+})
+```
+
+**Summary of study characteristics**  
+Characteristics table of all studies
+
+```{r}
+summary_table_plot(params$data, params$outcome_type, params$label)
+```
+
 
 
 
