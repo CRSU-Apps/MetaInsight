@@ -360,16 +360,8 @@ shinyServer(function(input, output, session) {
   })
   
   output$sumtb_sub <- renderTable({
-    longsort2 <- bugsnetdt(data(), input$metaoutcome, treatment_list())    # inputting the data in long form
-    longsort2_sub <- filter(bugsnetdt(data(), input$metaoutcome, treatment_list()), !Study %in% input$exclusionbox)  # subgroup
-    bugsnet_sumtb(longsort2_sub, input$metaoutcome)
+    summary_table_plot(filter(data(), !Study %in% input$exclusionbox), input$metaoutcome, treatment_list())
   })
-  
-  # output$sumtb_sub <- renderTable({
-  #   longsort2 <- bugsnetdt(data(), input$metaoutcome, treatment_list())    # inputting the data in long form
-  #   longsort2_sub <- filter(bugsnetdt(data(), input$metaoutcome, treatment_list()), !Study %in% input$exclusionbox)  # subgroup
-  #   bugsnet_sumtb(longsort2_sub, input$metaoutcome)
-  # })
   
   ### (notification on disconnection when data are uploaded)
   # disconnect_load <- function(){

@@ -75,6 +75,13 @@ Characteristics table of all studies
 summary_table_plot(params$data, params$outcome_type, params$label)
 ```
 
+**Summary of study characteristics**  
+Characteristics table with studies excluded
+
+```{r}
+summary_table_plot(filter(params$data, !Study %in% params$excluded), params$outcome_type, params$label)
+
+```
 
 
 
