@@ -270,23 +270,12 @@ shinyServer(function(input, output, session) {
 
   }
   
-  # freq_sub <- function(){
-  #   data_wide <-  entry.df(data(),input$metaoutcome)
-  #   data_sub <- filter(data_wide, !Study %in% input$exclusionbox)  # Get subset of data to use
-  #   treat_list <- treatment_label(treatment_list())
-  #   outc <- ifelse (input$metaoutcome=="Continuous",input$outcomeCont, input$outcomebina)
-  #   freq_wrap(data_sub, treat_list,input$modelranfix,outc, input$metaoutcome, ref_alter(data(), input$metaoutcome, input$exclusionbox, treatment_list())$ref_sub)
-  # }
-  
-
-
   
   ### 1b. Study results forest plot
     
   make_netStudy = function() {
     freq <- freq_sub(data(), input$metaoutcome, input$exclusionbox, treatment_list(), outcome_measure(), input$modelranfix)
-    outc <- ifelse (input$metaoutcome=="Continuous",input$outcomeCont, input$outcomebina)
-    groupforest.df(freq$d0, freq$ntx, freq$lstx, outc, input$ForestHeader, input$ForestTitle)
+    groupforest.df(freq$d0, freq$ntx, freq$lstx, outcome_measure(), input$ForestHeader, input$ForestTitle)
   }
   
 
