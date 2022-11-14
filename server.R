@@ -22,9 +22,11 @@ library(shinyjs)
 library(BUGSnet)
 library(shinyBS)
 
-source("util.R")
 source("bugsnet_sumtb.R")
 source("bugsnetdt.R")
+source("ref_alter.R")
+source("util.R")
+
 
 source("PlotFunctionsRKO.R", local = TRUE)        # Plot functions
 load("blank.rds")                                 # Objects to store data for plot functions
@@ -133,8 +135,12 @@ shinyServer(function(input, output, session) {
   
   ### Downloadable csv and labels of example dataset. download button codes are all in a separate code file
 
-  
-  
+  # Make outcome measure reactive - NVB
+    outcome_measure <- reactive({
+      if (input$metaoutcome == "Continuous") {return(input$outcomeCont)}
+      else {return(input$outcomebina)}
+    })
+
   ### Make data reactive
     data <- reactive({ 
       file1 <- input$data             # name the data file that was uploaded file1
@@ -241,27 +247,9 @@ shinyServer(function(input, output, session) {
     }))
     
     
-    ### Reference treatment if treatment 1 is removed from the network
-    
-    ref_alter <- function(){
-      newData1 <- as.data.frame(data())
-      treat_list <- treatment_label(treatment_list())
-      lstx <- treat_list$Label
-      ref_all <- as.character(lstx[1])
-      longsort2 <- dataform.df(newData1,treat_list,input$metaoutcome )
-      long_sort2_sub <- filter(longsort2, !Study %in% input$exclusionbox)  # subgroup
-      if (((lstx[1] %in% long_sort2_sub$T) ) == "TRUE") {
-        ref_sub<- as.character(lstx[1])
-      } else {
-        ref_sub <- as.character(long_sort2_sub$T[1])
-      }
-      list(ref_all=ref_all, ref_sub=ref_sub)
-    }
-    
-    
     output$ref_change_bay = output$ref_change <- renderText({
-         if (identical(ref_alter()$ref_sub, ref_alter()$ref_all)=="FALSE") {
-           paste("Please note that the reference treatment for sensitivity analysis has now been changed to:", ref_alter()$ref_sub, ". This is because the treatment labelled 1 has been removed from the network of sensitivity analysis." )
+         if (identical(ref_alter(data(), input$metaoutcome, input$exclusionbox, treatment_list())$ref_sub, ref_alter(data(), input$metaoutcome, input$exclusionbox, treatment_list())$ref_all)=="FALSE") {
+           paste("Please note that the reference treatment for sensitivity analysis has now been changed to:", ref_alter(data(), input$metaoutcome, input$exclusionbox, treatment_list())$ref_sub, ". This is because the treatment labelled 1 has been removed from the network of sensitivity analysis." )
          }
     })
     
@@ -280,16 +268,24 @@ shinyServer(function(input, output, session) {
       data_wide <- entry.df(data(),input$metaoutcome)    #transform data to wide form
       treat_list <- treatment_label(treatment_list())
       outc <- ifelse (input$metaoutcome=="Continuous",input$outcomeCont, input$outcomebina)
-      freq_wrap(data_wide, treat_list,input$modelranfix,outc,input$metaoutcome, ref_alter()$ref_all)  # use the selfdefined function, freq_wrap
+      freq_wrap(data_wide, treat_list,input$modelranfix,outc,input$metaoutcome, ref_alter(data(), input$metaoutcome, input$exclusionbox, treatment_list())$ref_all)  # use the selfdefined function, freq_wrap
 
   }
-  freq_sub= function(){
-    data_wide <-  entry.df(data(),input$metaoutcome)
-    data_sub <- filter(data_wide, !Study %in% input$exclusionbox)  # Get subset of data to use
+    
+  freq_sub <- function(data, metaoutcome, excluded, outcome_measure, modelranfix){
+    data_wide <-  entry.df(data, metaoutcome)
+    data_sub <- filter(data_wide, !Study %in% excluded)  # Get subset of data to use
     treat_list <- treatment_label(treatment_list())
-    outc <- ifelse (input$metaoutcome=="Continuous",input$outcomeCont, input$outcomebina)
-    freq_wrap(data_sub, treat_list,input$modelranfix,outc, input$metaoutcome, ref_alter()$ref_sub)
+    freq_wrap(data_sub, treat_list, modelranfix, outcome_measure, metaoutcome, ref_alter(data, metaoutcome, excluded, treatment_list())$ref_sub)
   }
+  
+  # freq_sub <- function(){
+  #   data_wide <-  entry.df(data(),input$metaoutcome)
+  #   data_sub <- filter(data_wide, !Study %in% input$exclusionbox)  # Get subset of data to use
+  #   treat_list <- treatment_label(treatment_list())
+  #   outc <- ifelse (input$metaoutcome=="Continuous",input$outcomeCont, input$outcomebina)
+  #   freq_wrap(data_sub, treat_list,input$modelranfix,outc, input$metaoutcome, ref_alter()$ref_sub)
+  # }
   
 
 
@@ -297,11 +293,12 @@ shinyServer(function(input, output, session) {
   ### 1b. Study results forest plot
     
   make_netStudy = function() {
-    freq=freq_sub()
+    freq <- freq_sub(data(), input$metaoutcome, input$exclusionbox, outcome_measure(), input$modelranfix)
     outc <- ifelse (input$metaoutcome=="Continuous",input$outcomeCont, input$outcomebina)
     groupforest.df(freq$d0, freq$ntx, freq$lstx, outc, input$ForestHeader, input$ForestTitle)
   }
   
+
   output$forestPlot <- renderPlot({
     # study_plot <- make_netStudy()
     # study_plot$fplot
@@ -534,11 +531,11 @@ shinyServer(function(input, output, session) {
   })
   
   output$Comparison2<- renderPlot({
-    make_netComp(freq_all(), ref_alter()$ref_all, input$freqmin, input$freqmax)
+    make_netComp(freq_all(), ref_alter(data(), input$metaoutcome, input$exclusionbox, treatment_list())$ref_all, input$freqmin, input$freqmax)
     title("Results for all studies")
   })
   output$SFPUpdatingComp <- renderPlot({
-    make_netComp(freq_sub(), ref_alter()$ref_sub, input$freqmin_sub, input$freqmax_sub)
+    make_netComp(freq_sub(), ref_alter(data(), input$metaoutcome, input$exclusionbox, treatment_list())$ref_sub, input$freqmin_sub, input$freqmax_sub)
     title("Results with studies excluded")
   })
   
@@ -554,10 +551,10 @@ shinyServer(function(input, output, session) {
     texttau(freq_sub())
   })
   output$ref4 <- renderText({
-    make_refText(ref_alter()$ref_all)
+    make_refText(ref_alter(data(), input$metaoutcome, input$exclusionbox, treatment_list())$ref_all)
   })
   output$ref3 <- renderText({
-    make_refText(ref_alter()$ref_sub)
+    make_refText(ref_alter(data(), input$metaoutcome, input$exclusionbox, treatment_list())$ref_sub)
   })
   
   ### Interactive UI ###
@@ -638,7 +635,7 @@ shinyServer(function(input, output, session) {
       treat_list <- treatment_label(treatment_list())
       longsort2 <- dataform.df(newData1,treat_list,input$metaoutcome)    # inputting the data in long form
       outc <- ifelse (input$metaoutcome=="Continuous",input$outcomeCont, input$outcomebina)
-      baye(longsort2,treat_list,input$modelranfix, outc,input$metaoutcome, ref_alter()$ref_all )
+      baye(longsort2,treat_list,input$modelranfix, outc,input$metaoutcome, ref_alter(data(), input$metaoutcome, input$exclusionbox, treatment_list())$ref_all )
     })
   
   model_sub <- eventReactive(input$sub_do, {
@@ -647,7 +644,7 @@ shinyServer(function(input, output, session) {
       longsort2 <- dataform.df(newData1,treat_list,input$metaoutcome )
       long_sort2_sub <- filter(longsort2, !Study %in% input$exclusionbox)  # subgroup
       outc <- ifelse (input$metaoutcome=="Continuous",input$outcomeCont, input$outcomebina)
-      baye(long_sort2_sub,treat_list,input$modelranfix, outc,input$metaoutcome, ref_alter()$ref_sub)
+      baye(long_sort2_sub,treat_list,input$modelranfix, outc,input$metaoutcome, ref_alter(data(), input$metaoutcome, input$exclusionbox, treatment_list())$ref_sub)
     })
   
 
