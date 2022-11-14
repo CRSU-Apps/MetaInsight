@@ -270,13 +270,13 @@ shinyServer(function(input, output, session) {
 
   }
   
-  freq_sub <- function(){
-    data_wide <-  entry.df(data(),input$metaoutcome)
-    data_sub <- filter(data_wide, !Study %in% input$exclusionbox)  # Get subset of data to use
-    treat_list <- treatment_label(treatment_list())
-    outc <- ifelse (input$metaoutcome=="Continuous",input$outcomeCont, input$outcomebina)
-    freq_wrap(data_sub, treat_list,input$modelranfix,outc, input$metaoutcome, ref_alter(data(), input$metaoutcome, input$exclusionbox, treatment_list())$ref_sub)
-  }
+  # freq_sub <- function(){
+  #   data_wide <-  entry.df(data(),input$metaoutcome)
+  #   data_sub <- filter(data_wide, !Study %in% input$exclusionbox)  # Get subset of data to use
+  #   treat_list <- treatment_label(treatment_list())
+  #   outc <- ifelse (input$metaoutcome=="Continuous",input$outcomeCont, input$outcomebina)
+  #   freq_wrap(data_sub, treat_list,input$modelranfix,outc, input$metaoutcome, ref_alter(data(), input$metaoutcome, input$exclusionbox, treatment_list())$ref_sub)
+  # }
   
 
 
@@ -284,7 +284,7 @@ shinyServer(function(input, output, session) {
   ### 1b. Study results forest plot
     
   make_netStudy = function() {
-    freq <- freq_sub()
+    freq <- freq_sub(data(), input$metaoutcome, input$exclusionbox, treatment_list(), outcome_measure(), input$modelranfix)
     outc <- ifelse (input$metaoutcome=="Continuous",input$outcomeCont, input$outcomebina)
     groupforest.df(freq$d0, freq$ntx, freq$lstx, outc, input$ForestHeader, input$ForestTitle)
   }
@@ -317,7 +317,7 @@ shinyServer(function(input, output, session) {
   
   output$netGraphUpdating <- renderPlot({
     if (input$networkstyle_sub=='networkp1') {
-      make_netgraph(freq_sub(),input$label_excluded)
+      make_netgraph(freq_sub(data(), input$metaoutcome, input$exclusionbox, treatment_list(), outcome_measure(), input$modelranfix),input$label_excluded)
     } else {
       long_sort2_sub <- filter(bugsnetdt(data(), input$metaoutcome, treatment_list()), !Study %in% input$exclusionbox)  # subgroup
       data.rh<-data.prep(arm.data=long_sort2_sub, varname.t = "T", varname.s="Study")
@@ -335,7 +335,7 @@ shinyServer(function(input, output, session) {
     make_netconnect(freq_all())
   })
   output$netconnect_sub <- renderPrint ({
-    make_netconnect(freq_sub())
+    make_netconnect(freq_sub(data(), input$metaoutcome, input$exclusionbox, treatment_list(), outcome_measure(), input$modelranfix))
   })
   
   
@@ -526,7 +526,7 @@ shinyServer(function(input, output, session) {
     title("Results for all studies")
   })
   output$SFPUpdatingComp <- renderPlot({
-    make_netComp(freq_sub(), ref_alter(data(), input$metaoutcome, input$exclusionbox, treatment_list())$ref_sub, input$freqmin_sub, input$freqmax_sub)
+    make_netComp(freq_sub(data(), input$metaoutcome, input$exclusionbox, treatment_list(), outcome_measure(), input$modelranfix), ref_alter(data(), input$metaoutcome, input$exclusionbox, treatment_list())$ref_sub, input$freqmin_sub, input$freqmax_sub)
     title("Results with studies excluded")
   })
   
@@ -539,7 +539,7 @@ shinyServer(function(input, output, session) {
     texttau(freq_all())
   })
   output$text5<- renderText({ 
-    texttau(freq_sub())
+    texttau(freq_sub(data(), input$metaoutcome, input$exclusionbox, treatment_list(), outcome_measure(), input$modelranfix))
   })
   output$ref4 <- renderText({
     make_refText(ref_alter(data(), input$metaoutcome, input$exclusionbox, treatment_list())$ref_all)
@@ -578,7 +578,7 @@ shinyServer(function(input, output, session) {
     make_netrank(freq_all())
   })
   output$rankChartUpdating<- renderTable(colnames=FALSE,{
-    make_netrank(freq_sub())
+    make_netrank(freq_sub(data(), input$metaoutcome, input$exclusionbox, treatment_list(), outcome_measure(), input$modelranfix))
   })
 
 
@@ -593,7 +593,7 @@ shinyServer(function(input, output, session) {
       make_Incon(freq_all())}
   )
   output$Incon2<- renderTable(colnames=TRUE, {
-    make_Incon(freq_sub())}
+    make_Incon(freq_sub(data(), input$metaoutcome, input$exclusionbox, treatment_list(), outcome_measure(), input$modelranfix))}
   )
 
     
