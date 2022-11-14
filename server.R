@@ -48,8 +48,6 @@ shinyServer(function(input, output, session) {
     filename = "report.html",
     content = function(file) {
       
-      outcome_measure <- ifelse(input$metaoutcome=="Continuous", input$outcomeCont, input$outcomebina)
-      
       # Copy the report file to a temporary directory before processing it
       tempReport <- file.path(tempdir(), "report.Rmd")
       file.copy("report.Rmd", tempReport, overwrite = TRUE)
@@ -58,7 +56,7 @@ shinyServer(function(input, output, session) {
       params <- list(outcome_type = input$metaoutcome,
                      data = data(), 
                      label = treatment_list(),
-                     outcome_measure = outcome_measure, 
+                     outcome_measure = outcome_measure(), 
                      ranking = input$rankopts, 
                      model = input$modelranfix,
                      excluded = paste(input$exclusionbox, collapse = ", "))
@@ -271,21 +269,14 @@ shinyServer(function(input, output, session) {
       freq_wrap(data_wide, treat_list,input$modelranfix,outc,input$metaoutcome, ref_alter(data(), input$metaoutcome, input$exclusionbox, treatment_list())$ref_all)  # use the selfdefined function, freq_wrap
 
   }
-    
-  freq_sub <- function(data, metaoutcome, excluded, outcome_measure, modelranfix){
-    data_wide <-  entry.df(data, metaoutcome)
-    data_sub <- filter(data_wide, !Study %in% excluded)  # Get subset of data to use
-    treat_list <- treatment_label(treatment_list())
-    freq_wrap(data_sub, treat_list, modelranfix, outcome_measure, metaoutcome, ref_alter(data, metaoutcome, excluded, treatment_list())$ref_sub)
-  }
   
-  # freq_sub <- function(){
-  #   data_wide <-  entry.df(data(),input$metaoutcome)
-  #   data_sub <- filter(data_wide, !Study %in% input$exclusionbox)  # Get subset of data to use
-  #   treat_list <- treatment_label(treatment_list())
-  #   outc <- ifelse (input$metaoutcome=="Continuous",input$outcomeCont, input$outcomebina)
-  #   freq_wrap(data_sub, treat_list,input$modelranfix,outc, input$metaoutcome, ref_alter()$ref_sub)
-  # }
+  freq_sub <- function(){
+    data_wide <-  entry.df(data(),input$metaoutcome)
+    data_sub <- filter(data_wide, !Study %in% input$exclusionbox)  # Get subset of data to use
+    treat_list <- treatment_label(treatment_list())
+    outc <- ifelse (input$metaoutcome=="Continuous",input$outcomeCont, input$outcomebina)
+    freq_wrap(data_sub, treat_list,input$modelranfix,outc, input$metaoutcome, ref_alter(data(), input$metaoutcome, input$exclusionbox, treatment_list())$ref_sub)
+  }
   
 
 
@@ -293,7 +284,7 @@ shinyServer(function(input, output, session) {
   ### 1b. Study results forest plot
     
   make_netStudy = function() {
-    freq <- freq_sub(data(), input$metaoutcome, input$exclusionbox, outcome_measure(), input$modelranfix)
+    freq <- freq_sub()
     outc <- ifelse (input$metaoutcome=="Continuous",input$outcomeCont, input$outcomebina)
     groupforest.df(freq$d0, freq$ntx, freq$lstx, outc, input$ForestHeader, input$ForestTitle)
   }

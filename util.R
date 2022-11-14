@@ -11,5 +11,3 @@ summary_table_plot <- function(data, metaoutcome, treatment_list) {
   plot <- bugsnet_sumtb(longsort, metaoutcome)
   return(plot)
 }
-
-
