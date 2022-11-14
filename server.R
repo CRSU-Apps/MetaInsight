@@ -54,8 +54,12 @@ shinyServer(function(input, output, session) {
       
       # Set up parameters to pass to Rmd document
       params <- list(outcome_type = input$metaoutcome,
-                     data = data(), label = treatment_list(),
-                     outcome_measure = outcome_measure, ranking = input$rankopts, model = input$modelranfix)
+                     data = data(), 
+                     label = treatment_list(),
+                     outcome_measure = outcome_measure, 
+                     ranking = input$rankopts, 
+                     model = input$modelranfix,
+                     excluded = paste(input$exclusionbox, collapse = ", "))
       
       # Knit the document, passing in the `params` list, and eval it in a child of the global environment 
       rmarkdown::render(tempReport, output_file = file,
@@ -64,7 +68,6 @@ shinyServer(function(input, output, session) {
       )
     }
   )
-  
   
   ############################################
   ######### Home page - linking pages ########
@@ -140,7 +143,7 @@ shinyServer(function(input, output, session) {
         a <- read.table(file = file1$datapath, sep =",", header=TRUE, stringsAsFactors = FALSE, quote="\"", fileEncoding = 'UTF-8-BOM')
     })
     
-    # Make reactive treatment input list and select correct input 
+    # Make reactive treatment input list selecting correct input 
     # depending on if outcome is continuous or binary - NVB
     
     treatment_list <- reactive({
@@ -361,6 +364,12 @@ shinyServer(function(input, output, session) {
     longsort2_sub <- filter(bugsnetdt(data(), input$metaoutcome, treatment_list()), !Study %in% input$exclusionbox)  # subgroup
     bugsnet_sumtb(longsort2_sub, input$metaoutcome)
   })
+  
+  # output$sumtb_sub <- renderTable({
+  #   longsort2 <- bugsnetdt(data(), input$metaoutcome, treatment_list())    # inputting the data in long form
+  #   longsort2_sub <- filter(bugsnetdt(data(), input$metaoutcome, treatment_list()), !Study %in% input$exclusionbox)  # subgroup
+  #   bugsnet_sumtb(longsort2_sub, input$metaoutcome)
+  # })
   
   ### (notification on disconnection when data are uploaded)
   # disconnect_load <- function(){
