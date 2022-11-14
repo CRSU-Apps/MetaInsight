@@ -59,7 +59,8 @@ shinyServer(function(input, output, session) {
                      outcome_measure = outcome_measure(), 
                      ranking = input$rankopts, 
                      model = input$modelranfix,
-                     excluded = paste(input$exclusionbox, collapse = ", "))
+                     excluded = paste(input$exclusionbox, collapse = ", "),
+                     forest = list(input$ForestHeader, input$ForestTitle))
       
       # Knit the document, passing in the `params` list, and eval it in a child of the global environment 
       rmarkdown::render(tempReport, output_file = file,
@@ -269,20 +270,25 @@ shinyServer(function(input, output, session) {
       freq_wrap(data_wide, treat_list,input$modelranfix,outc,input$metaoutcome, ref_alter(data(), input$metaoutcome, input$exclusionbox, treatment_list())$ref_all)  # use the selfdefined function, freq_wrap
 
   }
-  
-  
-  ### 1b. Study results forest plot
     
-  make_netStudy = function() {
-    freq <- freq_sub(data(), input$metaoutcome, input$exclusionbox, treatment_list(), outcome_measure(), input$modelranfix)
-    groupforest.df(freq$d0, freq$ntx, freq$lstx, outcome_measure(), input$ForestHeader, input$ForestTitle)
-  }
+  # 1a. Data Characteristics
   
-
+  # Characteristics table of all studies
+  output$sumtb <- renderTable({
+    summary_table_plot(data(), input$metaoutcome, treatment_list())
+  })
+  
+  # Characteristics table with studies excluded
+  output$sumtb_sub <- renderTable({
+    summary_table_plot(filter(data(), !Study %in% input$exclusionbox), input$metaoutcome, treatment_list())
+  })
+  
+  # 1b. Study Results 
+  
+  # Forest plot
   output$forestPlot <- renderPlot({
-    # study_plot <- make_netStudy()
-    # study_plot$fplot
-    make_netStudy()$fplot
+    make_netStudy(data(), input$metaoutcome, input$exclusionbox, treatment_list(), 
+                  outcome_measure(), input$modelranfix, input$ForestHeader, input$ForestTitle)$fplot
   })
   
 
@@ -329,16 +335,6 @@ shinyServer(function(input, output, session) {
   
   
   ############### bugsnet code #################
-  
-  ### 1a. Data characteristics
-  
-  output$sumtb <- renderTable({
-    summary_table_plot(data(), input$metaoutcome, treatment_list())
-  })
-  
-  output$sumtb_sub <- renderTable({
-    summary_table_plot(filter(data(), !Study %in% input$exclusionbox), input$metaoutcome, treatment_list())
-  })
   
   ### (notification on disconnection when data are uploaded)
   # disconnect_load <- function(){

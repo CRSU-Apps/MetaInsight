@@ -9,6 +9,7 @@ params:
   ranking: NA
   model: NA
   excluded: NA
+  forest: NA
 ---
 
 ```{r include = FALSE}
@@ -57,7 +58,7 @@ params$model
 **Excluded studies**
 
 ```{r}
-params$excluded
+paste(params$excluded, collapse = (", "))
 ```
 
 ### MetaInsight app outputs  
@@ -75,14 +76,22 @@ Characteristics table of all studies
 summary_table_plot(params$data, params$outcome_type, params$label)
 ```
 
-**Summary of study characteristics**  
-Characteristics table with studies excluded
+<!-- **Summary of study characteristics**   -->
+<!-- Characteristics table with studies excluded -->
+
+<!-- ```{r} -->
+<!-- summary_table_plot(filter(params$data, !Study %in% params$excluded), params$outcome_type, params$label) -->
+<!-- ``` -->
+
+**Study results**
+Individual study results (for all studies) grouped by treatment comparison
 
 ```{r}
-summary_table_plot(filter(params$data, !Study %in% params$excluded), params$outcome_type, params$label)
+make_netStudy(params$data, params$outcome_type, params$excluded, params$label,
+              params$outcome_measure, params$model, params$forest$ForestHeader,
+              params$forest$ForestTitle)$fplot
 
 ```
-
 
 
 
