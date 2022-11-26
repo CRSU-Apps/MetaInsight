@@ -24,6 +24,7 @@ library(shinyBS)
 
 source("bugsnet_sumtb.R")
 source("bugsnetdt.R")
+source("freq_all.R")
 source("ref_alter.R")
 source("util.R")
 
@@ -54,13 +55,14 @@ shinyServer(function(input, output, session) {
       
       # Set up parameters to pass to Rmd document
       params <- list(outcome_type = input$metaoutcome,
-                     data = data(), 
+                     data = data(),
                      label = treatment_list(),
-                     outcome_measure = outcome_measure(), 
-                     ranking = input$rankopts, 
+                     outcome_measure = outcome_measure(),
+                     ranking = input$rankopts,
                      model = input$modelranfix,
                      excluded = paste(input$exclusionbox, collapse = ", "),
-                     forest = list(input$ForestHeader, input$ForestTitle))
+                     forest = list(input$ForestHeader, input$ForestTitle),
+                     networkstyle = input$networkstyle)
       
       # Knit the document, passing in the `params` list, and eval it in a child of the global environment 
       rmarkdown::render(tempReport, output_file = file,
@@ -256,20 +258,9 @@ shinyServer(function(input, output, session) {
   
 
     
-  #####################
-  #### Frequentist ####
-  #####################
-    
-      
-  ### Frequentist analysis
-
-  freq_all= function(){
-      data_wide <- entry.df(data(),input$metaoutcome)    #transform data to wide form
-      treat_list <- treatment_label(treatment_list())
-      outc <- ifelse (input$metaoutcome=="Continuous",input$outcomeCont, input$outcomebina)
-      freq_wrap(data_wide, treat_list,input$modelranfix,outc,input$metaoutcome, ref_alter(data(), input$metaoutcome, input$exclusionbox, treatment_list())$ref_all)  # use the selfdefined function, freq_wrap
-
-  }
+  ######################
+  #### Data Summary ####
+  ######################
     
   # 1a. Data Characteristics
   
@@ -291,21 +282,13 @@ shinyServer(function(input, output, session) {
                   outcome_measure(), input$modelranfix, input$ForestHeader, input$ForestTitle)$fplot
   })
   
-
-  
   ### 1c. Network Plot
-  make_netgraph = function(freq,label_size) {  
-    netgraph(freq$net1, lwd=2, number.of.studies = TRUE, plastic=FALSE, points=TRUE, cex=label_size, cex.points=2, col.points=1, col=8, pos.number.of.studies=0.43,
-             col.number.of.studies = "forestgreen", col.multiarm = "white", bg.number.of.studies = "forestgreen"
-             )
-  }
-  
   output$netGraphStatic <- renderPlot({
     if (input$networkstyle=='networkp1') {
-      make_netgraph(freq_all(),input$label_all)
+      make_netgraph(freq_all(data(), input$metaoutcome, treatment_list(), outcome_measure(), input$modelranfix, input$exclusionbox),input$label_all)
     } else {
       data.rh<-data.prep(arm.data=bugsnetdt(data(), input$metaoutcome, treatment_list()), varname.t = "T", varname.s="Study")
-      net.plot(data.rh, node.scale = 3, edge.scale=1.5, node.lab.cex=input$label_all)  #, flag="Orlistat". 
+      net.plot(data.rh, node.scale = 3, edge.scale=1.5, node.lab.cex=input$label_all)  #, flag="Orlistat".
     }
     title("Network plot of all studies")
   })
@@ -327,7 +310,7 @@ shinyServer(function(input, output, session) {
     print(nc1)
   }
   output$netconnect <- renderPrint ({
-    make_netconnect(freq_all())
+    make_netconnect(freq_all(data(), input$metaoutcome, treatment_list(), outcome_measure(), input$modelranfix, input$exclusionbox))
   })
   output$netconnect_sub <- renderPrint ({
     make_netconnect(freq_sub(data(), input$metaoutcome, input$exclusionbox, treatment_list(), outcome_measure(), input$modelranfix))
@@ -507,7 +490,7 @@ shinyServer(function(input, output, session) {
   })
   
   output$Comparison2<- renderPlot({
-    make_netComp(freq_all(), ref_alter(data(), input$metaoutcome, input$exclusionbox, treatment_list())$ref_all, input$freqmin, input$freqmax)
+    make_netComp(freq_all(data(), input$metaoutcome, treatment_list(), outcome_measure(), input$modelranfix, input$exclusionbox), ref_alter(data(), input$metaoutcome, input$exclusionbox, treatment_list())$ref_all, input$freqmin, input$freqmax)
     title("Results for all studies")
   })
   output$SFPUpdatingComp <- renderPlot({
@@ -521,7 +504,7 @@ shinyServer(function(input, output, session) {
     tau.df(tau, freq$net1$k, freq$net1$n, input$modelranfix, outc)
   }
   output$textcomp<- renderText({
-    texttau(freq_all())
+    texttau(freq_all(data(), input$metaoutcome, treatment_list(), outcome_measure(), input$modelranfix, input$exclusionbox))
   })
   output$text5<- renderText({ 
     texttau(freq_sub(data(), input$metaoutcome, input$exclusionbox, treatment_list(), outcome_measure(), input$modelranfix))
@@ -560,7 +543,7 @@ shinyServer(function(input, output, session) {
     leaguedf
   }
   output$rankChartStatic<- renderTable(colnames=FALSE,{
-    make_netrank(freq_all())
+    make_netrank(freq_all(data(), input$metaoutcome, treatment_list(), outcome_measure(), input$modelranfix, input$exclusionbox))
   })
   output$rankChartUpdating<- renderTable(colnames=FALSE,{
     make_netrank(freq_sub(data(), input$metaoutcome, input$exclusionbox, treatment_list(), outcome_measure(), input$modelranfix))
@@ -575,7 +558,7 @@ shinyServer(function(input, output, session) {
     make_Incon<- netsplitresult.df(incona, input$modelranfix)
   }
   output$Incon1<- renderTable(colnames=TRUE, {
-      make_Incon(freq_all())}
+      make_Incon(freq_all(data(), input$metaoutcome, treatment_list(), outcome_measure(), input$modelranfix, input$exclusionbox))}
   )
   output$Incon2<- renderTable(colnames=TRUE, {
     make_Incon(freq_sub(data(), input$metaoutcome, input$exclusionbox, treatment_list(), outcome_measure(), input$modelranfix))}

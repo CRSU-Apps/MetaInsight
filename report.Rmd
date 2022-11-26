@@ -10,6 +10,7 @@ params:
   model: NA
   excluded: NA
   forest: NA
+  networkstyle: NA
 ---
 
 ```{r include = FALSE}
@@ -93,8 +94,17 @@ make_netStudy(params$data, params$outcome_type, params$excluded, params$label,
 
 ```
 
+**Network plot**
+Network plot of all studies  
 
+Network plot style
 
+```{r}
+params$networkstyle
+```
 
+```{r}
+params$networkstyle
+```
 
 
