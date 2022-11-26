@@ -2,6 +2,13 @@
 ############################################ Frequentist ############################################
 #####################################################################################################
 
+freq_all <- function(data, metaoutcome, treatment_list, outcome_measure, modelranfix, excluded){
+  data_wide <- entry.df(data,metaoutcome)    #transform data to wide form
+  treat_list <- treatment_label(treatment_list)
+  freq_wrap(data_wide, treat_list, modelrandfix, outcome_measure, metaoutcome,
+            ref_alter(data, metaoutcome, excluded, treatment_list)$ref_all)  # use the selfdefined function, freq_wrap
+}
+
 freq_sub <- function(data, metaoutcome, excluded, treatment_list, outcome_measure, modelranfix){
   data_wide <-  entry.df(data, metaoutcome)
   data_sub <- filter(data_wide, !Study %in% excluded)  # Get subset of data to use

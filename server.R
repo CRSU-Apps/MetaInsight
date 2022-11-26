@@ -24,7 +24,6 @@ library(shinyBS)
 
 source("bugsnet_sumtb.R")
 source("bugsnetdt.R")
-source("freq_all.R")
 source("ref_alter.R")
 source("util.R")
 
