@@ -21,7 +21,7 @@ make_netStudy <- function(data, metaoutcome, excluded, treatment_list, outcome_m
 }
 
 # Network plot - nodesize
-make_netgraph = function(freq,label_size) {  
+make_netgraph <- function(freq,label_size) {  
   netgraph(freq$net1, lwd=2, number.of.studies = TRUE, plastic=FALSE, points=TRUE, cex=label_size, cex.points=2, col.points=1, col=8, pos.number.of.studies=0.43,
            col.number.of.studies = "forestgreen", col.multiarm = "white", bg.number.of.studies = "forestgreen"
   )

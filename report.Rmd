@@ -103,8 +103,10 @@ Network plot style
 params$networkstyle
 ```
 
-```{r}
-params$networkstyle
-```
+Need to fix excluded data
+<!-- # ```{r} -->
+<!-- # make_netgraph(freq_all(params$data, params$metaoutcome, params$label,  -->
+<!-- #                        params$outcome_measure, params$model, params$excluded), 1.25) -->
+<!-- # ``` -->
 
 

@@ -135,7 +135,7 @@ shinyServer(function(input, output, session) {
   
   
   ### Downloadable csv and labels of example dataset. download button codes are all in a separate code file
-
+    
   # Make outcome measure reactive - NVB
     outcome_measure <- reactive({
       if (input$metaoutcome == "Continuous") {return(input$outcomeCont)}
@@ -156,6 +156,11 @@ shinyServer(function(input, output, session) {
     treatment_list <- reactive({
       if (input$metaoutcome == "Continuous") {return (input$listCont)}
       else {return (input$listbina)}
+    })
+    
+    # Make freqentist analysis (freq_all function) reactive
+    freq <- reactive({
+      return(freq_all(data(), input$metaoutcome, treatment_list(), outcome_measure(), input$modelranfix, input$exclusionbox))
     })
     
     
@@ -285,7 +290,7 @@ shinyServer(function(input, output, session) {
   ### 1c. Network Plot
   output$netGraphStatic <- renderPlot({
     if (input$networkstyle=='networkp1') {
-      make_netgraph(freq_all(data(), input$metaoutcome, treatment_list(), outcome_measure(), input$modelranfix, input$exclusionbox),input$label_all)
+      make_netgraph(freq(),input$label_all)
     } else {
       data.rh<-data.prep(arm.data=bugsnetdt(data(), input$metaoutcome, treatment_list()), varname.t = "T", varname.s="Study")
       net.plot(data.rh, node.scale = 3, edge.scale=1.5, node.lab.cex=input$label_all)  #, flag="Orlistat".
@@ -310,7 +315,7 @@ shinyServer(function(input, output, session) {
     print(nc1)
   }
   output$netconnect <- renderPrint ({
-    make_netconnect(freq_all(data(), input$metaoutcome, treatment_list(), outcome_measure(), input$modelranfix, input$exclusionbox))
+    make_netconnect(freq())
   })
   output$netconnect_sub <- renderPrint ({
     make_netconnect(freq_sub(data(), input$metaoutcome, input$exclusionbox, treatment_list(), outcome_measure(), input$modelranfix))
@@ -457,9 +462,10 @@ shinyServer(function(input, output, session) {
 
   ### 2a. Forest Plot
   
-  make_netComp = function(freq, ref,min,max) {    # forest plot
+  make_netComp <- function(freq, ref, min, max) {    # forest plot
     forest.df(freq$net1,input$modelranfix,freq$lstx, ref,min,max)
   }
+  
   make_refText = function(ref) {
     #output$ref4<- renderText({"All outcomes are versus the reference treatment"})
     y <- paste("All outcomes are versus the reference treatment:", ref)
@@ -490,7 +496,7 @@ shinyServer(function(input, output, session) {
   })
   
   output$Comparison2<- renderPlot({
-    make_netComp(freq_all(data(), input$metaoutcome, treatment_list(), outcome_measure(), input$modelranfix, input$exclusionbox), ref_alter(data(), input$metaoutcome, input$exclusionbox, treatment_list())$ref_all, input$freqmin, input$freqmax)
+    make_netComp(freq(), ref_alter(data(), input$metaoutcome, input$exclusionbox, treatment_list())$ref_all, input$freqmin, input$freqmax)
     title("Results for all studies")
   })
   output$SFPUpdatingComp <- renderPlot({
@@ -504,7 +510,7 @@ shinyServer(function(input, output, session) {
     tau.df(tau, freq$net1$k, freq$net1$n, input$modelranfix, outc)
   }
   output$textcomp<- renderText({
-    texttau(freq_all(data(), input$metaoutcome, treatment_list(), outcome_measure(), input$modelranfix, input$exclusionbox))
+    texttau(freq())
   })
   output$text5<- renderText({ 
     texttau(freq_sub(data(), input$metaoutcome, input$exclusionbox, treatment_list(), outcome_measure(), input$modelranfix))
@@ -543,7 +549,7 @@ shinyServer(function(input, output, session) {
     leaguedf
   }
   output$rankChartStatic<- renderTable(colnames=FALSE,{
-    make_netrank(freq_all(data(), input$metaoutcome, treatment_list(), outcome_measure(), input$modelranfix, input$exclusionbox))
+    make_netrank(freq())
   })
   output$rankChartUpdating<- renderTable(colnames=FALSE,{
     make_netrank(freq_sub(data(), input$metaoutcome, input$exclusionbox, treatment_list(), outcome_measure(), input$modelranfix))
@@ -558,7 +564,7 @@ shinyServer(function(input, output, session) {
     make_Incon<- netsplitresult.df(incona, input$modelranfix)
   }
   output$Incon1<- renderTable(colnames=TRUE, {
-      make_Incon(freq_all(data(), input$metaoutcome, treatment_list(), outcome_measure(), input$modelranfix, input$exclusionbox))}
+      make_Incon(freq())}
   )
   output$Incon2<- renderTable(colnames=TRUE, {
     make_Incon(freq_sub(data(), input$metaoutcome, input$exclusionbox, treatment_list(), outcome_measure(), input$modelranfix))}
