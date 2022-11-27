@@ -292,7 +292,9 @@ shinyServer(function(input, output, session) {
     make_netStudy(freq_sub(), outcome_measure(), input$ForestHeader, input$ForestTitle)$fplot
   })
   
-  ### 1c. Network Plot
+  # 1c. Network Plot
+  
+  # Network plot of all studies
   output$netGraphStatic <- renderPlot({
     if (input$networkstyle=='networkp1') {
       make_netgraph(freq_all(),input$label_all)
@@ -314,7 +316,7 @@ shinyServer(function(input, output, session) {
     title("Network plot with studies excluded")
   })
   
-  make_netconnect = function(freq) {    # network connectivity
+  make_netconnect <- function(freq) {    # network connectivity
     d1 <- freq$d1
     nc1 <- netconnection(d1$treat1,d1$treat2,d1$studlab, data=NULL)
     print(nc1)
@@ -462,17 +464,13 @@ shinyServer(function(input, output, session) {
   
   
   
+  ######################
+  ### 2. Frequestist ###
+  ###################### 
   
-  
-
-  ### 2a. Forest Plot
-  
-  make_netComp <- function(freq, ref, min, max) {    # forest plot
-    forest.df(freq$net1,input$modelranfix,freq$lstx, ref,min,max)
-  }
+  # 2a. Forest Plot
   
   make_refText = function(ref) {
-    #output$ref4<- renderText({"All outcomes are versus the reference treatment"})
     y <- paste("All outcomes are versus the reference treatment:", ref)
     return(y)
   }
@@ -501,11 +499,11 @@ shinyServer(function(input, output, session) {
   })
   
   output$Comparison2<- renderPlot({
-    make_netComp(freq_all(), ref_alter(data(), input$metaoutcome, input$exclusionbox, treatment_list())$ref_all, input$freqmin, input$freqmax)
+    make_netComp(freq_all(), input$modelranfix, ref_alter(data(), input$metaoutcome, input$exclusionbox, treatment_list())$ref_all, input$freqmin, input$freqmax)
     title("Results for all studies")
   })
   output$SFPUpdatingComp <- renderPlot({
-    make_netComp(freq_sub(), ref_alter(data(), input$metaoutcome, input$exclusionbox, treatment_list())$ref_sub, input$freqmin_sub, input$freqmax_sub)
+    make_netComp(freq_sub(), input$modelranfix, ref_alter(data(), input$metaoutcome, input$exclusionbox, treatment_list())$ref_sub, input$freqmin_sub, input$freqmax_sub)
     title("Results with studies excluded")
   })
   
