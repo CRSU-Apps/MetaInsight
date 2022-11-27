@@ -1,3 +1,9 @@
+#####
+# Contains utility functions
+# May want to re-organise location later
+# File created by NVB
+#####
+
 # Function to create treatment labels from user input - NVB
 
 treatment_label <- function(label) {

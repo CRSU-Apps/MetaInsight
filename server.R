@@ -25,7 +25,7 @@ library(shinyBS)
 source("bugsnet_sumtb.R")
 source("bugsnetdt.R")
 source("ref_alter.R")
-source("util.R")
+source("util.R") # Utility functions added by NVB
 
 
 source("PlotFunctionsRKO.R", local = TRUE)        # Plot functions
@@ -157,16 +157,15 @@ shinyServer(function(input, output, session) {
       else {return (input$listbina)}
     })
     
-    # Make frequentist_all function reactive (in fn_analysis.R) - NVB
+    # Make frequentist function (in fn_analysis.R) reactive - NVB
     freq_all <- reactive({
-      return(frequentist_all(data(), input$metaoutcome, treatment_list(), outcome_measure(), input$modelranfix, input$exclusionbox))
+      return(frequentist(sub = FALSE, data(), input$metaoutcome, treatment_list(), outcome_measure(), input$modelranfix, input$exclusionbox))
     })
     
-    # Make frequentist_sub function reactive (in fn_analysis.R) - NVB
+    # Make frequentist function (in fn_analysis.R) reactive with excluded studies - NVB
     freq_sub <- reactive({
-      return(frequentist_sub(data(), input$metaoutcome, treatment_list(), outcome_measure(), input$modelranfix, input$exclusionbox))
+      return(frequentist(sub = TRUE, data(), input$metaoutcome, treatment_list(), outcome_measure(), input$modelranfix, input$exclusionbox))
     })
-    
     
   ### Data analysis tab
     # Create a table which displays the raw data just uploaded by the user
