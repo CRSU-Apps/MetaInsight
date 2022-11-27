@@ -22,9 +22,9 @@ library(shinyjs)
 library(BUGSnet)
 library(shinyBS)
 
+# Source files
 source("bugsnet_sumtb.R")
-source("bugsnetdt.R")
-source("ref_alter.R")
+source("plot.R")
 source("util.R") # Utility functions added by NVB
 
 
@@ -71,6 +71,51 @@ shinyServer(function(input, output, session) {
     }
   )
   
+  #####
+  # Reactive functions used in various places
+  #####
+  
+  # Define outcome measure (continuous or binary) - NVB
+  outcome_measure <- reactive({
+    if (input$metaoutcome == "Continuous") {return(input$outcomeCont)}
+    else {return(input$outcomebina)}
+  })
+  
+  # Load default data
+  defaultD <- reactive({
+    if (input$metaoutcome=='Continuous') {
+      defaultD <- read.csv("./Cont_long.csv")
+    } else {
+      defaultD <- read.csv("./Binary_long.csv")
+    }
+  })
+  
+  # Make data reactive i.e. default or user uploaded
+  data <- reactive({ 
+    file1 <- input$data # Name the data file that was uploaded file1
+    if(is.null(file1)){return(defaultD())}
+    else
+      a <- read.table(file = file1$datapath, sep =",", header=TRUE, stringsAsFactors = FALSE, quote="\"", fileEncoding = 'UTF-8-BOM')
+  })
+  
+  # Make reactive treatment input list selecting correct input 
+  # depending on if outcome is continuous or binary - NVB
+  
+  treatment_list <- reactive({
+    if (input$metaoutcome == "Continuous") {return (input$listCont)}
+    else {return (input$listbina)}
+  })
+  
+  # Make frequentist function (in fn_analysis.R) reactive - NVB
+  freq_all <- reactive({
+    return(frequentist(sub = FALSE, data(), input$metaoutcome, treatment_list(), outcome_measure(), input$modelranfix, input$exclusionbox))
+  })
+  
+  # Make frequentist function (in fn_analysis.R) reactive with excluded studies - NVB
+  freq_sub <- reactive({
+    return(frequentist(sub = TRUE, data(), input$metaoutcome, treatment_list(), outcome_measure(), input$modelranfix, input$exclusionbox))
+  })
+  
   ############################################
   ######### Home page - linking pages ########
   ############################################
@@ -89,8 +134,6 @@ shinyServer(function(input, output, session) {
     #     modalButton("I consent"),
     #     footer = NULL
     #   ))
-
-
   
   ### View the full update history
   
@@ -119,53 +162,8 @@ shinyServer(function(input, output, session) {
             "outcome on the 'Home' page. The instructions for formatting",
             "<font color=\"#ffd966\"><b>" , input$metaoutcome,"</b></font>", "outcomes are now displayed.")
     })
-    
-    
-  ### Load default Data
-    
-    defaultD <- reactive({
-      if (input$metaoutcome=='Continuous') {
-        defaultD <- read.csv("./Cont_long.csv")
-      } else {
-        defaultD <- read.csv("./Binary_long.csv")
-      }
-    })
-    
-  
-  
-  ### Downloadable csv and labels of example dataset. download button codes are all in a separate code file
-    
-  # Make outcome measure reactive - NVB
-    outcome_measure <- reactive({
-      if (input$metaoutcome == "Continuous") {return(input$outcomeCont)}
-      else {return(input$outcomebina)}
-    })
 
-  ### Make data reactive
-    data <- reactive({ 
-      file1 <- input$data             # name the data file that was uploaded file1
-      if(is.null(file1)){return(defaultD())}
-      else
-        a <- read.table(file = file1$datapath, sep =",", header=TRUE, stringsAsFactors = FALSE, quote="\"", fileEncoding = 'UTF-8-BOM')
-    })
-    
-    # Make reactive treatment input list selecting correct input 
-    # depending on if outcome is continuous or binary - NVB
-    
-    treatment_list <- reactive({
-      if (input$metaoutcome == "Continuous") {return (input$listCont)}
-      else {return (input$listbina)}
-    })
-    
-    # Make frequentist function (in fn_analysis.R) reactive - NVB
-    freq_all <- reactive({
-      return(frequentist(sub = FALSE, data(), input$metaoutcome, treatment_list(), outcome_measure(), input$modelranfix, input$exclusionbox))
-    })
-    
-    # Make frequentist function (in fn_analysis.R) reactive with excluded studies - NVB
-    freq_sub <- reactive({
-      return(frequentist(sub = TRUE, data(), input$metaoutcome, treatment_list(), outcome_measure(), input$modelranfix, input$exclusionbox))
-    })
+  ### Downloadable csv and labels of example dataset. download button codes are all in a separate code file
     
   ### Data analysis tab
     # Create a table which displays the raw data just uploaded by the user
@@ -266,9 +264,9 @@ shinyServer(function(input, output, session) {
   
 
     
-  ######################
-  #### Data Summary ####
-  ######################
+  #######################
+  ### 1. Data Summary ###
+  #######################
     
   # 1a. Data Characteristics
   
