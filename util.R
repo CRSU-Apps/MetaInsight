@@ -12,7 +12,7 @@ treatment_label <- function(label) {
 
 
 # Reference treatment if treatment 1 is removed from the network
-ref_alter <- function(data, metaoutcome, excluded, treatment_list){
+reference_alter <- function(data, metaoutcome, excluded, treatment_list){
   newData1 <- as.data.frame(data)
   treat_list <- treatment_label(treatment_list)
   lstx <- treat_list$Label

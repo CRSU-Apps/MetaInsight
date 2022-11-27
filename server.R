@@ -121,6 +121,11 @@ shinyServer(function(input, output, session) {
     return(bugsnetdata(data(), input$metaoutcome, treatment_list()))
   })
   
+  # Make reference_alter (in util.R) reactive - NVB
+  ref_alter <- reactive({
+    return(reference_alter(data(), input$metaoutcome, input$exclusionbox, treatment_list()))
+  })
+  
   ############################################
   ######### Home page - linking pages ########
   ############################################
@@ -260,7 +265,7 @@ shinyServer(function(input, output, session) {
     
     
     output$ref_change_bay = output$ref_change <- renderText({
-         if (identical(ref_alter(data(), input$metaoutcome, input$exclusionbox, treatment_list())$ref_sub, ref_alter(data(), input$metaoutcome, input$exclusionbox, treatment_list())$ref_all)=="FALSE") {
+         if (identical(ref_alter()$ref_sub, ref_alter()$ref_all)=="FALSE") {
            paste("Please note that the reference treatment for sensitivity analysis has now been changed to:", ref_alter(data(), input$metaoutcome, input$exclusionbox, treatment_list())$ref_sub, ". This is because the treatment labelled 1 has been removed from the network of sensitivity analysis." )
          }
     })
@@ -499,11 +504,11 @@ shinyServer(function(input, output, session) {
   })
   
   output$Comparison2<- renderPlot({
-    make_netComp(freq_all(), input$modelranfix, ref_alter(data(), input$metaoutcome, input$exclusionbox, treatment_list())$ref_all, input$freqmin, input$freqmax)
+    make_netComp(freq_all(), input$modelranfix, ref_alter()$ref_all, input$freqmin, input$freqmax)
     title("Results for all studies")
   })
   output$SFPUpdatingComp <- renderPlot({
-    make_netComp(freq_sub(), input$modelranfix, ref_alter(data(), input$metaoutcome, input$exclusionbox, treatment_list())$ref_sub, input$freqmin_sub, input$freqmax_sub)
+    make_netComp(freq_sub(), input$modelranfix, ref_alter()$ref_sub, input$freqmin_sub, input$freqmax_sub)
     title("Results with studies excluded")
   })
   
@@ -519,10 +524,10 @@ shinyServer(function(input, output, session) {
     texttau(freq_sub())
   })
   output$ref4 <- renderText({
-    make_refText(ref_alter(data(), input$metaoutcome, input$exclusionbox, treatment_list())$ref_all)
+    make_refText(ref_alter()$ref_all)
   })
   output$ref3 <- renderText({
-    make_refText(ref_alter(data(), input$metaoutcome, input$exclusionbox, treatment_list())$ref_sub)
+    make_refText(ref_alter()$ref_sub)
   })
   
   ### Interactive UI ###
@@ -603,7 +608,7 @@ shinyServer(function(input, output, session) {
       treat_list <- treatment_label(treatment_list())
       longsort2 <- dataform.df(newData1,treat_list,input$metaoutcome)    # inputting the data in long form
       outc <- ifelse (input$metaoutcome=="Continuous",input$outcomeCont, input$outcomebina)
-      baye(longsort2,treat_list,input$modelranfix, outc,input$metaoutcome, ref_alter(data(), input$metaoutcome, input$exclusionbox, treatment_list())$ref_all )
+      baye(longsort2,treat_list,input$modelranfix, outc,input$metaoutcome, ref_alter()$ref_all )
     })
   
   model_sub <- eventReactive(input$sub_do, {
@@ -612,13 +617,13 @@ shinyServer(function(input, output, session) {
       longsort2 <- dataform.df(newData1,treat_list,input$metaoutcome )
       long_sort2_sub <- filter(longsort2, !Study %in% input$exclusionbox)  # subgroup
       outc <- ifelse (input$metaoutcome=="Continuous",input$outcomeCont, input$outcomebina)
-      baye(long_sort2_sub,treat_list,input$modelranfix, outc,input$metaoutcome, ref_alter(data(), input$metaoutcome, input$exclusionbox, treatment_list())$ref_sub)
+      baye(long_sort2_sub,treat_list,input$modelranfix, outc,input$metaoutcome, ref_alter()$ref_sub)
     })
   
 
   ### 3a. Forest plot
   
-  output$gemtc <- renderPlot({                  # forest plot
+  output$gemtc <- renderPlot({                  
     if (input$metaoutcome=="Binary") {forest(model()$mtcRelEffects,digits=3,xlim=c(log(input$bayesmin), log(input$bayesmax)))}
     if (input$metaoutcome=="Continuous") {forest(model()$mtcRelEffects,digits=3,xlim=c(input$bayesmin, input$bayesmax))}
     title(paste("All studies: 
