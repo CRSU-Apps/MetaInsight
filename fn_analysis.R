@@ -11,8 +11,9 @@ frequentist <- function(sub, data, metaoutcome, treatment_list, outcome_measure,
             ref_alter(data, metaoutcome, excluded, treatment_list)$ref_sub)
 }
 
+# # Inputting the data in long form
 # Inputting the data in long form
-bugsnetdt <- function(data, metaoutcome, treatment_list){
+bugsnetdata <- function(data, metaoutcome, treatment_list){
   newData1 <- as.data.frame(data)
   treat_list <- treatment_label(treatment_list)
   longsort2 <- dataform.df(newData1,treat_list,metaoutcome)    

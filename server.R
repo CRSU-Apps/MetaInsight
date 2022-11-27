@@ -116,6 +116,11 @@ shinyServer(function(input, output, session) {
     return(frequentist(sub = TRUE, data(), input$metaoutcome, treatment_list(), outcome_measure(), input$modelranfix, input$exclusionbox))
   })
   
+  # Make bugsnetdata function (in fn_analysis.R) reactive - NVB
+  bugsnetdt <- reactive({
+    return(bugsnetdata(data(), input$metaoutcome, treatment_list()))
+  })
+  
   ############################################
   ######### Home page - linking pages ########
   ############################################
@@ -292,7 +297,7 @@ shinyServer(function(input, output, session) {
     if (input$networkstyle=='networkp1') {
       make_netgraph(freq_all(),input$label_all)
     } else {
-      data.rh<-data.prep(arm.data=bugsnetdt(data(), input$metaoutcome, treatment_list()), varname.t = "T", varname.s="Study")
+      data.rh<-data.prep(arm.data=bugsnetdt(), varname.t = "T", varname.s="Study")
       net.plot(data.rh, node.scale = 3, edge.scale=1.5, node.lab.cex=input$label_all)  #, flag="Orlistat".
     }
     title("Network plot of all studies")
@@ -302,7 +307,7 @@ shinyServer(function(input, output, session) {
     if (input$networkstyle_sub=='networkp1') {
       make_netgraph(freq_sub(),input$label_excluded)
     } else {
-      long_sort2_sub <- filter(bugsnetdt(data(), input$metaoutcome, treatment_list()), !Study %in% input$exclusionbox)  # subgroup
+      long_sort2_sub <- filter(bugsnetdt(), !Study %in% input$exclusionbox)  # subgroup
       data.rh<-data.prep(arm.data=long_sort2_sub, varname.t = "T", varname.s="Study")
       net.plot(data.rh, node.scale = 3, edge.scale=1.5, node.lab.cex=input$label_excluded)
     }
@@ -374,7 +379,7 @@ shinyServer(function(input, output, session) {
   
   observeEvent(input$exclusionbox,{
     longsort2 <- bugsnetdt(data(), input$metaoutcome, treatment_list())
-    longsort2_sub <- filter(bugsnetdt(data(), input$metaoutcome, treatment_list()), !Study %in% input$exclusionbox)  # subgroup
+    longsort2_sub <- filter(bugsnetdt(), !Study %in% input$exclusionbox)  # subgroup
     sumtb_sub <- bugsnet_sumtb(longsort2_sub, input$metaoutcome)
     if (sumtb_sub$Value[6]=="FALSE") {
       disconnect()
@@ -525,11 +530,11 @@ shinyServer(function(input, output, session) {
   ### Interactive UI ###
   
   output$FreqForestPlot <- renderUI({
-    plotOutput("Comparison2", height = BayesPixels(as.numeric(bugsnet_sumtb(bugsnetdt(data(), input$metaoutcome, treatment_list()), input$metaoutcome)$Value[1]), title=TRUE), width = "630px")
+    plotOutput("Comparison2", height = BayesPixels(as.numeric(bugsnet_sumtb(bugsnetdt(), input$metaoutcome)$Value[1]), title=TRUE), width = "630px")
   })
   
   output$FreqForestPlot_sub <- renderUI({
-    plotOutput("SFPUpdatingComp", height = BayesPixels(as.numeric(bugsnet_sumtb(filter(bugsnetdt(data(), input$metaoutcome, treatment_list()), !Study %in% input$exclusionbox), input$metaoutcome)$Value[1]), title=TRUE), width = "630px")
+    plotOutput("SFPUpdatingComp", height = BayesPixels(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% input$exclusionbox), input$metaoutcome)$Value[1]), title=TRUE), width = "630px")
   })
   
   
@@ -651,10 +656,10 @@ shinyServer(function(input, output, session) {
   ### Interactive UI ###
   
   output$BayesianForestPlot <- renderUI({
-    plotOutput("gemtc", width="630px", height = BayesPixels(as.numeric(bugsnet_sumtb(bugsnetdt(data(), input$metaoutcome, treatment_list()), input$metaoutcome)$Value[1]), title=TRUE))
+    plotOutput("gemtc", width="630px", height = BayesPixels(as.numeric(bugsnet_sumtb(bugsnetdt(), input$metaoutcome)$Value[1]), title=TRUE))
   })
   output$BayesianForestPlot_sub <- renderUI({
-    plotOutput("gemtc_sub", width="630px", height = BayesPixels(as.numeric(bugsnet_sumtb(filter(bugsnetdt(data(), input$metaoutcome, treatment_list()), !Study %in% input$exclusionbox), input$metaoutcome)$Value[1]), title=TRUE))
+    plotOutput("gemtc_sub", width="630px", height = BayesPixels(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% input$exclusionbox), input$metaoutcome)$Value[1]), title=TRUE))
   })
 
   
