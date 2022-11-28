@@ -7,8 +7,8 @@ frequentist <- function(sub, data, metaoutcome, treatment_list, outcome_measure,
   if (sub == TRUE) {data_wide <- filter(data_wide, !Study %in% excluded)} # Subset of data when studies excluded
   treat_list <- treatment_label(treatment_list)
   # Use the self-defined function, freq_wrap
-  freq_wrap(data_wide, treat_list, modelranfix, outcome_measure, metaoutcome, 
-            ref_alter(data, metaoutcome, excluded, treatment_list)$ref_sub)
+  return(freq_wrap(data_wide, treat_list, modelranfix, outcome_measure, metaoutcome, 
+            ref_alter(data, metaoutcome, excluded, treatment_list)$ref_sub))
 }
 
 # # Inputting the data in long form

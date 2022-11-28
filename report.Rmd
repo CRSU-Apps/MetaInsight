@@ -8,6 +8,7 @@ params:
   outcome_measure: NA
   ranking: NA
   model: NA
+  exclusionbox: NA
   excluded: NA
   forest: NA
   networkstyle: NA
@@ -77,12 +78,12 @@ Characteristics table of all studies
 summary_table_plot(params$data, params$outcome_type, params$label)
 ```
 
-<!-- **Summary of study characteristics**   -->
-<!-- Characteristics table with studies excluded -->
+**Summary of study characteristics**
+Characteristics table with studies excluded
 
-<!-- ```{r} -->
-<!-- summary_table_plot(filter(params$data, !Study %in% params$excluded), params$outcome_type, params$label) -->
-<!-- ``` -->
+```{r}
+summary_table_plot(filter(params$data, !Study %in% params$exclusionbox), params$outcome_type, params$label)
+```
 
 **Study results**
 Individual study results (for all studies) grouped by treatment comparison
