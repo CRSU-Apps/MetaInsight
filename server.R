@@ -552,26 +552,12 @@ shinyServer(function(input, output, session) {
   
   ### 2b. Comparison and rank table
   
-  # make_netrank = function(freq) {
-  #   model <- input$modelranfix
-  #   league <- netleague(freq$net1, comb.random=(model=="random"), comb.fixed = (model=="fixed"), digits =2, seq= netrank(freq$net1, small = input$rankopts))
-  #   if (model=="random"){
-  #     leaguedf<- as.data.frame(league$random)
-  #   }
-  #   else {
-  #     leaguedf<- as.data.frame(league$fixed)
-  #   }
-  #   leaguedf
-  # }
-  
   output$rankChartStatic<- renderTable(colnames=FALSE,{
     make_netrank(freq_all(), input$modelranfix, input$rankopts)
   })
   output$rankChartUpdating<- renderTable(colnames=FALSE,{
     make_netrank(freq_sub(), input$modelranfix, input$rankopts)
   })
-
-
 
   ### 2c. Inconsistency
   

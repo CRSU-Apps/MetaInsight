@@ -162,6 +162,21 @@ texttau(params$freq_sub, params$outcome_measure, params$model)
 make_refText(params$reference_alter$ref_sub)
 ```
 
+**Comparison of all treatment pairs**
+
+Relative treatment effects in ranked order for all studies
+
+```{r}
+make_netrank(params$freq_all, params$model, params$ranking)
+```
+
+Relative treatment effects in ranked order with studies excluded
+
+```{r}
+make_netrank(params$freq_su, params$model, params$ranking)
+```
+
+
 
 
 
