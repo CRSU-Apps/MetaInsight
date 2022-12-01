@@ -7,10 +7,12 @@ params:
   excluded: NA
   exclusionbox: NA
   forest: NA
+  freq_all: NA
+  freq_sub: NA
   label: NA
   metaoutcome: NA
   model: NA
-  networkstyle: NA
+  netgraph_label: NA
   outcome_measure: NA
   ranking: NA
 ---
@@ -86,29 +88,43 @@ Characteristics table with studies excluded
 summary_table_plot(filter(params$bugsnetdt, !Study %in% params$exclusionbox), params$metaoutcome)
 ```
 
-<!-- **Study results** -->
-<!-- Individual study results (for all studies) grouped by treatment comparison -->
+**Study results**
+Individual study results (for all studies) grouped by treatment comparison
 
-<!-- ```{r} -->
-<!-- make_netStudy(params$data, params$metaoutcome, params$excluded, params$label, -->
-<!--               params$outcome_measure, params$model, params$forest$ForestHeader, -->
-<!--               params$forest$ForestTitle)$fplot -->
+```{r}
+make_netStudy(params$freq_sub, params$outcome_measure, params$forest$ForestHeader, params$forest$ForestTitle)
+```
 
-<!-- ``` -->
+**Network plot**  
+Network plot of all studies
 
-<!-- **Network plot** -->
-<!-- Network plot of all studies   -->
+Number of trials shown on the line
 
-<!-- Network plot style -->
+```{r}
+make_netgraph(params$freq_all, params$netgraph_label$label_all)
+```
 
-<!-- ```{r} -->
-<!-- params$networkstyle -->
-<!-- ``` -->
+Number of trials indicated by node size and line thickness
 
-<!-- Need to fix excluded data -->
-<!-- # ```{r} -->
-<!-- # make_netgraph(freq_all(params$data, params$metaoutcome, params$label,  -->
-<!-- #                        params$outcome_measure, params$model, params$excluded), 1.25) -->
-<!-- # ``` -->
+```{r}
+make_netplot(params$bugsnetdt, params$netgraph_label$label_all)
+```
+
+**Network plot**  
+Network plot with studies excluded  
+
+Number of trials shown on the line
+
+```{r}
+make_netgraph(params$freq_sub, params$netgraph_label$label_excluded)
+```
+
+Number of trials indicated by node size and line thickness
+
+```{r}
+make_netplot(filter(params$bugsnetdt, !Study %in% params$exclusionbox), params$netgraph_label$label_all)
+```
+
+
 
 

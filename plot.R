@@ -14,10 +14,16 @@ make_netStudy <- function(freq, outcome_measure, ForestHeader, ForestTitle) {
   return(groupforest.df(freq$d0, freq$ntx, freq$lstx, outcome_measure, ForestHeader, ForestTitle))
 }
 
-# 1c Network plot - nodesize
+# 1c Network plot - number of trials on line
 make_netgraph <- function(freq, label_size) {  
   return(netgraph(freq$net1, lwd=2, number.of.studies = TRUE, plastic=FALSE, points=TRUE, cex=label_size, cex.points=2, col.points=1, col=8, pos.number.of.studies=0.43,
            col.number.of.studies = "forestgreen", col.multiarm = "white", bg.number.of.studies = "forestgreen"))
+}
+
+# 1c Network plot - number of trials by nodesize and line thickness
+make_netplot <- function(bugsnetdt, label_size) {
+  data.rh<-data.prep(arm.data=bugsnetdt, varname.t = "T", varname.s="Study")
+  return(net.plot(data.rh, node.scale = 3, edge.scale=1.5, node.lab.cex=label_size))
 }
 
 # 2a. Forest Plot
