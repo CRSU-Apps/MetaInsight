@@ -20,6 +20,22 @@ bugsnetdata <- function(data, metaoutcome, treatment_list){
   return(longsort2)
 }
 
+# Reference treatment if treatment 1 is removed from the network
+ref_alter <- function(data, metaoutcome, excluded, treatment_list){
+  newData1 <- as.data.frame(data)
+  treat_list <- treatment_label(treatment_list)
+  lstx <- treat_list$Label
+  ref_all <- as.character(lstx[1])
+  longsort2 <- dataform.df(newData1, treat_list, metaoutcome)
+  long_sort2_sub <- filter(longsort2, !Study %in% excluded)  # subgroup
+  if (((lstx[1] %in% long_sort2_sub$T) ) == "TRUE") {
+    ref_sub<- as.character(lstx[1])
+  } else {
+    ref_sub <- as.character(long_sort2_sub$T[1])
+  }
+  return(list(ref_all=ref_all, ref_sub=ref_sub))
+}
+
 ####################################
 # Function for choosing default ordering in example datasets #
 #####################################
