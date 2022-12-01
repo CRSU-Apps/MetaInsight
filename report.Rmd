@@ -2,6 +2,7 @@
 title: "MetaInsight report"
 output: html_document
 params:
+  axis: NA
   bugsnetdt: NA
   data: NA
   excluded: NA
@@ -15,6 +16,7 @@ params:
   netgraph_label: NA
   outcome_measure: NA
   ranking: NA
+  reference_alter: NA
 ---
 
 ```{r include = FALSE}
@@ -137,6 +139,33 @@ Network connectivity
 ```{r}
 make_netconnect(params$freq_sub)
 ```
+
+**Forest Plot**  
+
+Results for all studies
+
+```{r}
+make_netComp(params$freq_all, params$model, params$reference_alter$ref_all, params$axis$freqmin, params$axis$freqmax)
+
+texttau(params$freq_all, params$outcome_measure, params$model)
+
+make_refText(params$reference_alter$ref_all)
+```
+
+Results with studies excluded
+
+```{r}
+make_netComp(params$freq_sub, params$model, params$reference_alter$ref_sub, params$axis$freqmin_sub, params$axis$freqmax_sub)
+
+texttau(params$freq_sub, params$outcome_measure, params$model)
+
+make_refText(params$reference_alter$ref_sub)
+```
+
+
+
+
+
 
 
 

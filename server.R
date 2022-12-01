@@ -53,7 +53,8 @@ shinyServer(function(input, output, session) {
       file.copy("report.Rmd", tempReport, overwrite = TRUE)
       
       # Set up parameters to pass to Rmd document
-      params <- list(bugsnetdt = bugsnetdt(),
+      params <- list(axis = list(input$freqmin, input$freqmax, input$freqmin_sub, input$freqmax_sub),
+                     bugsnetdt = bugsnetdt(),
                      data = data(),
                      excluded = paste(input$exclusionbox, collapse = ", "),
                      exclusionbox = input$exclusionbox,
@@ -65,7 +66,8 @@ shinyServer(function(input, output, session) {
                      model = input$modelranfix,
                      netgraph_label = list(input$label_all, input$label_excluded),
                      outcome_measure = outcome_measure(),
-                     ranking = input$rankopts)
+                     ranking = input$rankopts,
+                     reference_alter = reference_alter())
       
       # Knit the document, passing in the `params` list, and eval it in a child of the global environment 
       rmarkdown::render(tempReport, output_file = file,
@@ -390,7 +392,6 @@ shinyServer(function(input, output, session) {
   
   observeEvent(input$exclusionbox,{
     longsort2 <- bugsnetdt()
-    # longsort2 <- bugsnetdt(data(), input$metaoutcome, treatment_list())
     longsort2_sub <- filter(bugsnetdt(), !Study %in% input$exclusionbox)  # subgroup
     sumtb_sub <- bugsnet_sumtb(longsort2_sub, input$metaoutcome)
     if (sumtb_sub$Value[6]=="FALSE") {
@@ -508,29 +509,33 @@ shinyServer(function(input, output, session) {
     }
   })
   
+  # Forest plot for all studies
   output$Comparison2<- renderPlot({
     make_netComp(freq_all(), input$modelranfix, reference_alter()$ref_all, input$freqmin, input$freqmax)
     title("Results for all studies")
   })
-  output$SFPUpdatingComp <- renderPlot({
-    make_netComp(freq_sub(), input$modelranfix, reference_alter()$ref_sub, input$freqmin_sub, input$freqmax_sub)
-    title("Results with studies excluded")
+  
+  # Text output displayed under forest plot  
+  output$textcomp<- renderText({
+    texttau(freq_all(), outcome_measure(), input$modelranfix)
   })
   
-  texttau = function(freq){      # Tau
-    tau<- round(freq$net1$tau,2)
-    outc <- ifelse (input$metaoutcome=="Continuous",input$outcomeCont, input$outcomebina)
-    tau.df(tau, freq$net1$k, freq$net1$n, input$modelranfix, outc)
-  }
-  output$textcomp<- renderText({
-    texttau(freq_all())
-  })
-  output$text5<- renderText({ 
-    texttau(freq_sub())
-  })
   output$ref4 <- renderText({
     make_refText(reference_alter()$ref_all)
   })
+
+  
+  # Forest plot with studies excluded
+  output$SFPUpdatingComp <- renderPlot({
+    make_netComp(freq_sub(), input$modelranfix, reference_alter()$ref_sub, input$freqmin_sub, input$freqmax_sub)
+    title("Results with studies excluded")
+  }) 
+  
+  # Text output displayed under forest plot
+  output$text5<- renderText({ 
+    texttau(freq_sub(), outcome_measure(), input$modelranfix)
+  })
+
   output$ref3 <- renderText({
     make_refText(reference_alter()$ref_sub)
   })
@@ -545,27 +550,25 @@ shinyServer(function(input, output, session) {
     plotOutput("SFPUpdatingComp", height = BayesPixels(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% input$exclusionbox), input$metaoutcome)$Value[1]), title=TRUE), width = "630px")
   })
   
-  
-  
-  
   ### 2b. Comparison and rank table
   
-  make_netrank = function(freq) {
-    model <- input$modelranfix
-    league <- netleague(freq$net1, comb.random=(model=="random"), comb.fixed = (model=="fixed"), digits =2, seq= netrank(freq$net1, small = input$rankopts))
-    if (model=="random"){
-      leaguedf<- as.data.frame(league$random)
-    }
-    else {
-      leaguedf<- as.data.frame(league$fixed)
-    }
-    leaguedf
-  }
+  # make_netrank = function(freq) {
+  #   model <- input$modelranfix
+  #   league <- netleague(freq$net1, comb.random=(model=="random"), comb.fixed = (model=="fixed"), digits =2, seq= netrank(freq$net1, small = input$rankopts))
+  #   if (model=="random"){
+  #     leaguedf<- as.data.frame(league$random)
+  #   }
+  #   else {
+  #     leaguedf<- as.data.frame(league$fixed)
+  #   }
+  #   leaguedf
+  # }
+  
   output$rankChartStatic<- renderTable(colnames=FALSE,{
-    make_netrank(freq_all())
+    make_netrank(freq_all(), input$modelranfix, input$rankopts)
   })
   output$rankChartUpdating<- renderTable(colnames=FALSE,{
-    make_netrank(freq_sub())
+    make_netrank(freq_sub(), input$modelranfix, input$rankopts)
   })
 
 

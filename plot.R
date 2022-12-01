@@ -30,3 +30,18 @@ make_netplot <- function(bugsnetdt, label_size) {
 make_netComp <- function(freq, modelranfix, ref, min, max) {    
   return(forest.df(freq$net1, modelranfix, freq$lstx, ref, min, max))
 }
+
+# 2b Treatment comparison and rank table
+make_netrank <- function(freq, modelranfix, rankopts) {
+  league <- netleague(freq$net1, 
+                      comb.random=(modelranfix=="random"), comb.fixed = (modelranfix=="fixed"), 
+                      digits =2, seq= netrank(freq$net1, small = rankopts))
+  if (modelranfix=="random"){
+    leaguedf<- as.data.frame(league$random)
+  }
+  else {
+    leaguedf<- as.data.frame(league$fixed)
+  }
+  return(leaguedf)
+}
+
