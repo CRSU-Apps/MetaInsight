@@ -2,16 +2,17 @@
 title: "MetaInsight report"
 output: html_document
 params:
-  outcome_type: NA
+  bugsnetdt: NA
   data: NA
+  excluded: NA
+  exclusionbox: NA
+  forest: NA
   label: NA
+  metaoutcome: NA
+  model: NA
+  networkstyle: NA
   outcome_measure: NA
   ranking: NA
-  model: NA
-  exclusionbox: NA
-  excluded: NA
-  forest: NA
-  networkstyle: NA
 ---
 
 ```{r include = FALSE}
@@ -25,7 +26,7 @@ library(knitr)
 Continuous (mean difference) or binary (odds ratio)
 
 ```{r}
-params$outcome_type
+params$metaoutcome
 ```
 
 **Study data and treatment labels**
@@ -63,9 +64,9 @@ params$model
 paste(params$excluded, collapse = (", "))
 ```
 
-### MetaInsight app outputs  
+### MetaInsight app outputs
 
-**Data used for NMA** 
+**Data used for NMA**
 
 ```{r}
 knitr::kable(params$data)
@@ -75,36 +76,36 @@ knitr::kable(params$data)
 Characteristics table of all studies
 
 ```{r}
-summary_table_plot(params$data, params$outcome_type, params$label)
+summary_table_plot(params$bugsnetdt, params$metaoutcome)
 ```
 
-**Summary of study characteristics**
+**Summary of study characteristics**  
 Characteristics table with studies excluded
 
 ```{r}
-summary_table_plot(filter(params$data, !Study %in% params$exclusionbox), params$outcome_type, params$label)
+summary_table_plot(filter(params$bugsnetdt, !Study %in% params$exclusionbox), params$metaoutcome)
 ```
 
-**Study results**
-Individual study results (for all studies) grouped by treatment comparison
+<!-- **Study results** -->
+<!-- Individual study results (for all studies) grouped by treatment comparison -->
 
-```{r}
-make_netStudy(params$data, params$outcome_type, params$excluded, params$label,
-              params$outcome_measure, params$model, params$forest$ForestHeader,
-              params$forest$ForestTitle)$fplot
+<!-- ```{r} -->
+<!-- make_netStudy(params$data, params$metaoutcome, params$excluded, params$label, -->
+<!--               params$outcome_measure, params$model, params$forest$ForestHeader, -->
+<!--               params$forest$ForestTitle)$fplot -->
 
-```
+<!-- ``` -->
 
-**Network plot**
-Network plot of all studies  
+<!-- **Network plot** -->
+<!-- Network plot of all studies   -->
 
-Network plot style
+<!-- Network plot style -->
 
-```{r}
-params$networkstyle
-```
+<!-- ```{r} -->
+<!-- params$networkstyle -->
+<!-- ``` -->
 
-Need to fix excluded data
+<!-- Need to fix excluded data -->
 <!-- # ```{r} -->
 <!-- # make_netgraph(freq_all(params$data, params$metaoutcome, params$label,  -->
 <!-- #                        params$outcome_measure, params$model, params$excluded), 1.25) -->

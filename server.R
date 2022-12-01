@@ -23,9 +23,9 @@ library(BUGSnet)
 library(shinyBS)
 
 # Source files
-source("bugsnet_sumtb.R")
-source("plot.R") # Plot functions added by NVB
-source("util.R") # Utility functions added by NVB
+source("bugsnet_sumtb.R") # bugsnet_sumtb function, req BUGSnet - separate file added by NVB
+source("plot.R") # Plot functions - separate file added by NVB
+source("util.R") # Utility functions - separate file added by NVB
 
 
 source("PlotFunctionsRKO.R", local = TRUE)        # Plot functions
@@ -53,16 +53,17 @@ shinyServer(function(input, output, session) {
       file.copy("report.Rmd", tempReport, overwrite = TRUE)
       
       # Set up parameters to pass to Rmd document
-      params <- list(outcome_type = input$metaoutcome,
+      params <- list(bugsnetdt = bugsnetdt(),
                      data = data(),
-                     label = treatment_list(),
-                     outcome_measure = outcome_measure(),
-                     ranking = input$rankopts,
-                     model = input$modelranfix,
-                     exclusionbox = input$exclusionbox,
                      excluded = paste(input$exclusionbox, collapse = ", "),
+                     exclusionbox = input$exclusionbox,
                      forest = list(input$ForestHeader, input$ForestTitle),
-                     networkstyle = input$networkstyle)
+                     label = treatment_list(),
+                     metaoutcome = input$metaoutcome,
+                     model = input$modelranfix,
+                     networkstyle = input$networkstyle,
+                     outcome_measure = outcome_measure(),
+                     ranking = input$rankopts)
       
       # Knit the document, passing in the `params` list, and eval it in a child of the global environment 
       rmarkdown::render(tempReport, output_file = file,
@@ -386,7 +387,8 @@ shinyServer(function(input, output, session) {
   
   
   observeEvent(input$exclusionbox,{
-    longsort2 <- bugsnetdt(data(), input$metaoutcome, treatment_list())
+    longsort2 <- bugsnetdt()
+    # longsort2 <- bugsnetdt(data(), input$metaoutcome, treatment_list())
     longsort2_sub <- filter(bugsnetdt(), !Study %in% input$exclusionbox)  # subgroup
     sumtb_sub <- bugsnet_sumtb(longsort2_sub, input$metaoutcome)
     if (sumtb_sub$Value[6]=="FALSE") {
@@ -471,7 +473,7 @@ shinyServer(function(input, output, session) {
   
   
   ######################
-  ### 2. Frequestist ###
+  ### 2. Frequentist ###
   ###################### 
   
   # 2a. Forest Plot
