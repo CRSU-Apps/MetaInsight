@@ -315,6 +315,12 @@ shinyServer(function(input, output, session) {
     title("Network plot of all studies")
   })
   
+  # Network connectivity all studies
+  output$netconnect <- renderPrint ({
+    make_netconnect(freq_all())
+  })
+  
+  # Network plot with studies excluded
   output$netGraphUpdating <- renderPlot({
     if (input$networkstyle_sub=='networkp1') {
       # Number of trials on line
@@ -325,15 +331,8 @@ shinyServer(function(input, output, session) {
     }
     title("Network plot with studies excluded")
   })
-  
-  make_netconnect <- function(freq) {    # network connectivity
-    d1 <- freq$d1
-    nc1 <- netconnection(d1$treat1,d1$treat2,d1$studlab, data=NULL)
-    print(nc1)
-  }
-  output$netconnect <- renderPrint ({
-    make_netconnect(freq_all())
-  })
+
+  # Network connectivity with studies excluded 
   output$netconnect_sub <- renderPrint ({
     make_netconnect(freq_sub())
   })

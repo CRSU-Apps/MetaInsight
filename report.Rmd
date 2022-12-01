@@ -110,6 +110,13 @@ Number of trials indicated by node size and line thickness
 make_netplot(params$bugsnetdt, params$netgraph_label$label_all)
 ```
 
+Network connectivity
+
+```{r}
+make_netconnect(params$freq_all)
+```
+
+
 **Network plot**  
 Network plot with studies excluded  
 
@@ -125,6 +132,11 @@ Number of trials indicated by node size and line thickness
 make_netplot(filter(params$bugsnetdt, !Study %in% params$exclusionbox), params$netgraph_label$label_all)
 ```
 
+Network connectivity
+
+```{r}
+make_netconnect(params$freq_sub)
+```
 
 
 
