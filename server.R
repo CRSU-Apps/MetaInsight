@@ -54,6 +54,9 @@ shinyServer(function(input, output, session) {
       
       # Set up parameters to pass to Rmd document
       params <- list(axis = list(input$freqmin, input$freqmax, input$freqmin_sub, input$freqmax_sub),
+                     axis_bayes = list(input$bayesmax, input$bayesmin, input$bayesmax_sub, input$bayesmin_sub),
+                     bayes = model(),
+                     bayes_sub = model_sub(),
                      bugsnetdt = bugsnetdt(),
                      data = data(),
                      excluded = paste(input$exclusionbox, collapse = ", "),
@@ -63,7 +66,7 @@ shinyServer(function(input, output, session) {
                      freq_sub = freq_sub(),
                      label = treatment_list(),
                      metaoutcome = input$metaoutcome,
-                     model = input$modelranfix,
+                     modelranfix = input$modelranfix,
                      netgraph_label = list(input$label_all, input$label_excluded),
                      outcome_measure = outcome_measure(),
                      ranking = input$rankopts,
@@ -76,6 +79,7 @@ shinyServer(function(input, output, session) {
       )
     }
   )
+  
   
   #####
   # Reactive functions used in various places
@@ -560,27 +564,18 @@ shinyServer(function(input, output, session) {
   })
 
   ### 2c. Inconsistency
-  
-  make_Incon = function(freq) {
-    incona<- netsplit(freq$net1)
-    make_Incon<- netsplitresult.df(incona, input$modelranfix)
-  }
+
   output$Incon1<- renderTable(colnames=TRUE, {
-      make_Incon(freq_all())}
+    make_Incon(freq_all(), input$modelranfix)}
   )
   output$Incon2<- renderTable(colnames=TRUE, {
-    make_Incon(freq_sub())}
+    make_Incon(freq_sub(), input$modelranfix)}
   )
 
-    
-  
-  
 
   #####################
   #### 3. Bayesian ####
   #####################
-  
-  
   
   ### SMD warninig alert
   
@@ -595,37 +590,27 @@ shinyServer(function(input, output, session) {
   
   
   
-  ### Bayesian analysis
-
+  # Bayesian analysis
+  
   model <- eventReactive(input$baye_do, {
-      newData1 <- as.data.frame(data())
-      treat_list <- treatment_label(treatment_list())
-      longsort2 <- dataform.df(newData1,treat_list,input$metaoutcome)    # inputting the data in long form
-      outc <- ifelse (input$metaoutcome=="Continuous",input$outcomeCont, input$outcomebina)
-      baye(longsort2,treat_list,input$modelranfix, outc,input$metaoutcome, reference_alter()$ref_all)
-    })
+    bayesian_model(sub = FALSE, data(), treatment_list(), input$metaoutcome, input$exclusionbox, 
+                   outcome_measure(), input$modelranfix, reference_alter())
+  })
   
   model_sub <- eventReactive(input$sub_do, {
-      newData1 <- as.data.frame(data())
-      treat_list <- treatment_label(treatment_list())
-      longsort2 <- dataform.df(newData1,treat_list,input$metaoutcome )
-      long_sort2_sub <- filter(longsort2, !Study %in% input$exclusionbox)  # subgroup
-      outc <- ifelse (input$metaoutcome=="Continuous",input$outcomeCont, input$outcomebina)
-      baye(long_sort2_sub,treat_list,input$modelranfix, outc,input$metaoutcome, reference_alter()$ref_sub)
-    })
-  
+    bayesian_model(sub = TRUE, data(), treatment_list(), input$metaoutcome, input$exclusionbox, 
+                   outcome_measure(), input$modelranfix, reference_alter())
+  })
 
-  ### 3a. Forest plot
+  # 3a. Forest plot
   
-  output$gemtc <- renderPlot({                  
-    if (input$metaoutcome=="Binary") {forest(model()$mtcRelEffects,digits=3,xlim=c(log(input$bayesmin), log(input$bayesmax)))}
-    if (input$metaoutcome=="Continuous") {forest(model()$mtcRelEffects,digits=3,xlim=c(input$bayesmin, input$bayesmax))}
+  output$gemtc <- renderPlot({    
+    make_Forest(model(), input$metaoutcome, input$bayesmin, input$bayesmax)
     title(paste("All studies: 
               Bayesian", model()$a, "consistency model forest plot results"))
   })
   output$gemtc_sub <- renderPlot({
-    if (input$metaoutcome=="Binary") {forest(model_sub()$mtcRelEffects,digits=3,xlim=c(log(input$bayesmin_sub), log(input$bayesmax_sub)))}
-    if (input$metaoutcome=="Continuous") {forest(model_sub()$mtcRelEffects,digits=3,xlim=c(input$bayesmin_sub, input$bayesmax_sub))}
+    make_Forest(model_sub(), input$metaoutcome, input$bayesmin_sub, input$bayesmax_sub)
     title(paste("Results with studies excluded: 
               Bayesian", model_sub()$a,"consistency model forest plot results"))
   })

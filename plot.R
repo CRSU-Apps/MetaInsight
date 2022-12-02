@@ -26,9 +26,27 @@ make_netplot <- function(bugsnetdt, label_size) {
   return(net.plot(data.rh, node.scale = 3, edge.scale=1.5, node.lab.cex=label_size))
 }
 
+# 1c Creates network connectivity info displayed under network plots 
+make_netconnect <- function(freq) {   
+  d1 <- freq$d1
+  nc1 <- netconnection(d1$treat1,d1$treat2,d1$studlab, data=NULL)
+  print(nc1)
+}
+
 # 2a. Forest Plot
 make_netComp <- function(freq, modelranfix, ref, min, max) {    
   return(forest.df(freq$net1, modelranfix, freq$lstx, ref, min, max))
+}
+
+# 2a. Creates text displayed under forest plots 
+texttau <- function(freq, outcome_measure, modelranfix){      
+  tau <- round(freq$net1$tau,2)
+  return(tau.df(tau, freq$net1$k, freq$net1$n, modelranfix, outcome_measure))
+}
+
+make_refText = function(ref) {
+  y <- paste("All outcomes are versus the reference treatment:", ref)
+  return(y)
 }
 
 # 2b Treatment comparison and rank table
@@ -44,4 +62,26 @@ make_netrank <- function(freq, modelranfix, rankopts) {
   }
   return(leaguedf)
 }
+
+# 2c Inconsistency
+
+make_Incon <- function(freq, modelranfix) {
+  incona <- netsplit(freq$net1)
+  return(netsplitresult.df(incona, modelranfix))
+}
+
+# 3a Forest plot (Bayesian)
+make_Forest <- function(model, metaoutcome, bayesmin, bayesmax) {
+  if (metaoutcome=="Binary") {
+    return(forest(model$mtcRelEffects, digits=3, xlim=c(log(bayesmin), log(bayesmax))))
+  } else if (metaoutcome=="Continuous") {
+    return(forest(model$mtcRelEffects, digits=3, xlim=c(bayesmin, bayesmax)))
+  }
+}
+
+
+
+
+
+
 

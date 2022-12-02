@@ -10,20 +10,18 @@ treatment_label <- function(label) {
   return(label_list)
 } 
 
-# Creates network connectivity info displayed under network plots (1c) 
-make_netconnect <- function(freq) {   
-  d1 <- freq$d1
-  nc1 <- netconnection(d1$treat1,d1$treat2,d1$studlab, data=NULL)
-  print(nc1)
-}
-
-# Creates text displayed under forest plots (2a)
-texttau <- function(freq, outcome_measure, modelranfix){      
-  tau <- round(freq$net1$tau,2)
-  return(tau.df(tau, freq$net1$k, freq$net1$n, modelranfix, outcome_measure))
-}
-
-make_refText = function(ref) {
-  y <- paste("All outcomes are versus the reference treatment:", ref)
-  return(y)
+# Bayesian analysis
+bayesian_model <- function(sub, data, treatment_list, metaoutcome, exclusionbox, 
+                           outcome_measure, modelranfix, reference_alter) {
+  newData1 <- as.data.frame(data)
+  treat_list <- treatment_label(treatment_list)
+  longsort2 <- dataform.df(newData1, treat_list, metaoutcome) 
+  if (sub == TRUE) {
+    longsort2 <- filter(longsort2, !Study %in% exclusionbox)
+    return(baye(longsort2, treat_list, modelranfix, outcome_measure ,metaoutcome, 
+                reference_alter$ref_sub))
+  } else {
+    return(baye(longsort2, treat_list, modelranfix, outcome_measure ,metaoutcome, 
+                reference_alter$ref_all))
+  }
 }

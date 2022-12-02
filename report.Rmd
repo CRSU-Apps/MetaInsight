@@ -3,6 +3,9 @@ title: "MetaInsight report"
 output: html_document
 params:
   axis: NA
+  axis_bayes: NA
+  bayes: NA
+  bayes_sub: NA
   bugsnetdt: NA
   data: NA
   excluded: NA
@@ -12,7 +15,7 @@ params:
   freq_sub: NA
   label: NA
   metaoutcome: NA
-  model: NA
+  modelranfix: NA
   netgraph_label: NA
   outcome_measure: NA
   ranking: NA
@@ -59,7 +62,7 @@ params$ranking
 Random effect (RE) or fixed effect (FE)
 
 ```{r}
-params$model
+params$modelranfix
 ```
 
 **Excluded studies**
@@ -76,29 +79,34 @@ paste(params$excluded, collapse = (", "))
 knitr::kable(params$data)
 ```
 
-**Summary of study characteristics**  
-Characteristics table of all studies
+
+#### 1. Data summary
+
+##### 1a. Data characteristics
+
+**Characteristics table of all studies**
 
 ```{r}
 summary_table_plot(params$bugsnetdt, params$metaoutcome)
 ```
 
-**Summary of study characteristics**  
-Characteristics table with studies excluded
+**Characteristics table with studies excluded**
 
 ```{r}
 summary_table_plot(filter(params$bugsnetdt, !Study %in% params$exclusionbox), params$metaoutcome)
 ```
 
-**Study results**
-Individual study results (for all studies) grouped by treatment comparison
+##### 1b. Study results  
+
+**Individual study results (for all studies) grouped by treatment comparison**
 
 ```{r}
 make_netStudy(params$freq_sub, params$outcome_measure, params$forest$ForestHeader, params$forest$ForestTitle)
 ```
 
-**Network plot**  
-Network plot of all studies
+##### 1c. Network plot  
+
+**Network plot of all studies**
 
 Number of trials shown on the line
 
@@ -118,9 +126,7 @@ Network connectivity
 make_netconnect(params$freq_all)
 ```
 
-
-**Network plot**  
-Network plot with studies excluded  
+**Network plot with studies excluded**   
 
 Number of trials shown on the line
 
@@ -140,46 +146,74 @@ Network connectivity
 make_netconnect(params$freq_sub)
 ```
 
-**Forest Plot**  
+#### 2. Frequentist network meta-analysis
 
-Results for all studies
+##### 2a. Forest plot 
+
+**Results for all studies**
 
 ```{r}
-make_netComp(params$freq_all, params$model, params$reference_alter$ref_all, params$axis$freqmin, params$axis$freqmax)
+make_netComp(params$freq_all, params$modelranfix, params$reference_alter$ref_all, params$axis$freqmin, params$axis$freqmax)
 
-texttau(params$freq_all, params$outcome_measure, params$model)
+texttau(params$freq_all, params$outcome_measure, params$modelranfix)
 
 make_refText(params$reference_alter$ref_all)
 ```
 
-Results with studies excluded
+**Results with studies excluded**
 
 ```{r}
-make_netComp(params$freq_sub, params$model, params$reference_alter$ref_sub, params$axis$freqmin_sub, params$axis$freqmax_sub)
+make_netComp(params$freq_sub, params$modelranfix, params$reference_alter$ref_sub, params$axis$freqmin_sub, params$axis$freqmax_sub)
 
-texttau(params$freq_sub, params$outcome_measure, params$model)
+texttau(params$freq_sub, params$outcome_measure, params$modelranfix)
 
 make_refText(params$reference_alter$ref_sub)
 ```
 
-**Comparison of all treatment pairs**
+##### 2b. Comparison of all treatment pairs
 
-Relative treatment effects in ranked order for all studies
-
-```{r}
-make_netrank(params$freq_all, params$model, params$ranking)
-```
-
-Relative treatment effects in ranked order with studies excluded
+**Relative treatment effects in ranked order for all studies**
 
 ```{r}
-make_netrank(params$freq_su, params$model, params$ranking)
+make_netrank(params$freq_all, params$modelranfix, params$ranking)
+```
+
+**Relative treatment effects in ranked order with studies excluded**
+
+```{r}
+make_netrank(params$freq_sub, params$modelranfix, params$ranking)
 ```
 
 
+##### 2c. Inconsistency
 
+**Assessment of inconsistency for all studies**
 
+```{r}
+make_Incon(params$freq_all, params$modelranfix)
+```
 
+**Assessment of inconsistency with studies removed**
+
+```{r}
+make_Incon(params$freq_sub, params$modelranfix)
+```
+
+#### 3. Bayesian Network Meta-analysis
+
+##### 3a. Forest plot 
+
+**Forest plot for all studies
+
+```{r}
+make_Forest(params$bayes, params$metaoutcome, params$axis_bayes$bayesmin, params$axis_bayes$bayesmax)
+```
+
+**Forest plot with studies excluded**
+
+```{r}
+make_Forest(params$bayes_sub, params$metaoutcome, params$axis_bayes$bayesmin_sub, params$axis_bayes$bayesmax_sub)
+```
 
 
 
