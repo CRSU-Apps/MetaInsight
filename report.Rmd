@@ -1,11 +1,10 @@
 ---
 title: "MetaInsight report"
 output: html_document
+
 params:
   axis: NA
-  axis_bayes: NA
   bayes: NA
-  bayes_sub: NA
   bugsnetdt: NA
   data: NA
   excluded: NA
@@ -203,18 +202,36 @@ make_Incon(params$freq_sub, params$modelranfix)
 
 ##### 3a. Forest plot 
 
-**Forest plot for all studies
+**Forest plot for all studies**
+<!-- {r eval = (params$bayes != 0)} -->
 
 ```{r}
-make_Forest(params$bayes, params$metaoutcome, params$axis_bayes$bayesmin, params$axis_bayes$bayesmax)
+make_Forest(params$bayes$model, params$metaoutcome, params$bayes$bayesmin, params$bayes$bayesmax)
 ```
+
+DIC table 
+
+```{r}
+knitr::kable(params$bayes$model$dic, digits=3)
+
+gemtctau(params$bayes$model, params$outcome_measure)
+```
+
 
 **Forest plot with studies excluded**
 
 ```{r}
-make_Forest(params$bayes_sub, params$metaoutcome, params$axis_bayes$bayesmin_sub, params$axis_bayes$bayesmax_sub)
+make_Forest(params$bayes$model_sub, params$metaoutcome, params$bayes$bayesmin_sub, params$bayes$bayesmax_sub)
 ```
 
+DIC table 
+
+```{r}
+knitr::kable(params$bayes$model_sub$dic, digits=3)
+
+gemtctau(params$bayes$model_sub, params$outcome_measure)
+
+```
 
 
 

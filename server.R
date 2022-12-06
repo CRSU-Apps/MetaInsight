@@ -53,21 +53,22 @@ shinyServer(function(input, output, session) {
       file.copy("report.Rmd", tempReport, overwrite = TRUE)
       
       # Set up parameters to pass to Rmd document
-      params <- list(axis = list(input$freqmin, input$freqmax, input$freqmin_sub, input$freqmax_sub),
-                     axis_bayes = list(input$bayesmax, input$bayesmin, input$bayesmax_sub, input$bayesmin_sub),
-                     bayes = model(),
-                     bayes_sub = model_sub(),
+      params <- list(axis = list(freqmin = input$freqmin, freqmax = input$freqmax, 
+                                 freqmin_sub = input$freqmin_sub, freqmax_sub = input$freqmax_sub),
+                     bayes = list(model = model(), model_sub = model_sub(),
+                                  bayesmax = input$bayesmax, bayesmin = input$bayesmin, 
+                                  bayesmax_sub = input$bayesmax_sub, bayesmin_sub = input$bayesmin_sub),
                      bugsnetdt = bugsnetdt(),
                      data = data(),
                      excluded = paste(input$exclusionbox, collapse = ", "),
                      exclusionbox = input$exclusionbox,
-                     forest = list(input$ForestHeader, input$ForestTitle),
+                     forest = list(ForestHeader = input$ForestHeader, ForestTitle = input$ForestTitle),
                      freq_all = freq_all(),
                      freq_sub = freq_sub(),
                      label = treatment_list(),
                      metaoutcome = input$metaoutcome,
                      modelranfix = input$modelranfix,
-                     netgraph_label = list(input$label_all, input$label_excluded),
+                     netgraph_label = list(label_all = input$label_all, label_excluded = input$label_excluded),
                      outcome_measure = outcome_measure(),
                      ranking = input$rankopts,
                      reference_alter = reference_alter())
@@ -593,7 +594,7 @@ shinyServer(function(input, output, session) {
   # Bayesian analysis
   
   model <- eventReactive(input$baye_do, {
-    bayesian_model(sub = FALSE, data(), treatment_list(), input$metaoutcome, input$exclusionbox, 
+    bayesian_model(sub = FALSE, data(), treatment_list(), input$metaoutcome, input$exclusionbox,
                    outcome_measure(), input$modelranfix, reference_alter())
   })
   
@@ -604,39 +605,42 @@ shinyServer(function(input, output, session) {
 
   # 3a. Forest plot
   
+  # Forest plot for all studies
   output$gemtc <- renderPlot({    
     make_Forest(model(), input$metaoutcome, input$bayesmin, input$bayesmax)
     title(paste("All studies: 
               Bayesian", model()$a, "consistency model forest plot results"))
   })
+  
+  # DIC tabel for all studies
+  output$dic <- renderTable ({                  
+    model()$dic
+  }, digits=3, rownames=TRUE, colnames=FALSE
+  )
+  
+  # Tau all studies
+  output$text_gemtc <-renderText({          
+    gemtctau(model(), outcome_measure())
+  })
+  
+  # Forest plot with studies excluded
   output$gemtc_sub <- renderPlot({
     make_Forest(model_sub(), input$metaoutcome, input$bayesmin_sub, input$bayesmax_sub)
     title(paste("Results with studies excluded: 
               Bayesian", model_sub()$a,"consistency model forest plot results"))
   })
   
-  texttauB = function(results){      # Tau
-    outc <- ifelse (input$metaoutcome=="Continuous",input$outcomeCont, input$outcomebina)
-    gemtctau(results,outc)
-  }
-  
-  output$text_gemtc <-renderText({          # tau
-    texttauB(model())
-  })
-  output$text_gemtc_sub <-renderText({
-    texttauB(model_sub())
-  })
-  
-  output$dic <- renderTable ({                  # DIC table
-    model()$dic
-  }, digits=3, rownames=TRUE, colnames=FALSE
-  )
+ # DIC table with studies excluded
   output$dic_sub <- renderTable ({
     model_sub()$dic
   }, digits=3, rownames=TRUE, colnames=FALSE)
   
-  ### Interactive UI ###
+  # Tau with studies excluded
+  output$text_gemtc_sub <-renderText({
+    gemtctau(model_sub(), outcome_measure())
+  })
   
+  # Interactive UI 
   output$BayesianForestPlot <- renderUI({
     plotOutput("gemtc", width="630px", height = BayesPixels(as.numeric(bugsnet_sumtb(bugsnetdt(), input$metaoutcome)$Value[1]), title=TRUE))
   })
@@ -645,9 +649,7 @@ shinyServer(function(input, output, session) {
   })
 
   
-
-  
-  ### 3b. comparison of all treatment pairs
+  # 3b. Comparison of all treatment pairs
   
   baye_comp <- function(baye){
     tbl <- relative.effect.table(baye$mtcResults)
