@@ -734,19 +734,10 @@ shinyServer(function(input, output, session) {
     gelman.plot(model_sub()$mtcResults)
   })
 
+  # 3f. Deviance report
   
-
-  
-  ### 3f. Deviance 
-  
-  scat_plot = function(baye){   # ume scatter plot
-    mod_list=baye
-    x<-mtc.deviance({mod_list$mtcResults})
-    c <- data.frame(x$dev.ab)
-    outc <- ifelse (input$metaoutcome=="Continuous",input$outcomeCont, input$outcomebina)
-    umeplot.df(c,mod_list$mtcNetwork, mod_list$model, mod_list$outcome)
-  }
-  umeplot <- eventReactive(input$baye_do, {      # to prevent 
+  # Residual deviance from NMA model and UME inconsistency model for all studies
+  umeplot <- eventReactive(input$baye_do, {      
     scat_plot(model())$p
   })
   
@@ -754,39 +745,33 @@ shinyServer(function(input, output, session) {
     umeplot()
   })
   
+  # Residual deviance from NMA model and UME inconsistency model with studies excluded
   umeplot_sub <- eventReactive(input$sub_do, {
     scat_plot(model_sub())$p
   })
+  
   output$dev_scat_sub <- renderPlotly({
     umeplot_sub()
   })
-  
-  stemplot <- function(baye) {   # stemplot
-    mod_list=baye
-    x<-mtc.deviance({mod_list$mtcResults})
-    c <- data.frame(x$dev.ab)
-    c$names <- rownames(c)
-    p<-stemplot.df(c,x)
-  }
+
+  # Per-arm residual deviance for all studies
   output$dev1 <- renderPlotly({
     stemplot(model())
   })
+  
+  # Per-arm residual deviance for sensitivity analysis
   output$dev1_sub <- renderPlotly({
     stemplot(model_sub())
   })
   
-  levplot <- function(baye) {    # leverage plot
-    mod_list=baye
-    x<-mtc.deviance({mod_list$mtcResults})
-    p<-levplot.df(x)
-  }
+  # Leverage plot for all studies
   output$dev2 <- renderPlotly({
     levplot(model())
   })
+  
   output$dev2_sub <- renderPlotly({
     levplot(model_sub())
   })
-  
   
   ### 3g.1 Model codes
   output$code <- renderPrint({

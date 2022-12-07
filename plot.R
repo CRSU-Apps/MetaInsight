@@ -112,6 +112,29 @@ ranking_table <- function(model, rankopts) {
   return(prob)
 }
 
+# 3f Deviance report
+
+# UME scatter plot
+scat_plot = function(model){   
+  x <- mtc.deviance({model$mtcResults})
+  c <- data.frame(x$dev.ab)
+  umeplot.df(c, model$mtcNetwork, model$model, model$outcome)
+}
+
+# Stemplot
+stemplot <- function(model) {   
+  x <- mtc.deviance({model$mtcResults})
+  c <- data.frame(x$dev.ab)
+  c$names <- rownames(c)
+  return(stemplot.df(c,x))
+}
+
+# Leverage plot
+levplot <- function(model) {    
+  x <- mtc.deviance({model$mtcResults})
+  return(levplot.df(x))
+}
+
 
 
 

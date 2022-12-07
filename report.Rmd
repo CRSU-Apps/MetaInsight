@@ -295,5 +295,40 @@ params$bayes$model_sub$sumresults
 gelman.plot(params$bayes$model_sub$mtcResults)
 ```
 
+##### 3f. Deviance report
 
+**Residual deviance from NMA model and UME inconsistency model for all studies**
 
+```{r}
+scat_plot(params$bayes$model)$p
+```
+
+**Residual deviance from NMA model and UME inconsistency model with studies excluded**
+
+```{r}
+scat_plot(params$bayes$model_sub)$p
+```
+
+**Per-arm residual deviance for all studies**
+
+```{r}
+stemplot(params$bayes$model)
+```
+
+**Per-arm residual deviance for sensitivity analysis**
+
+```{r}
+stemplot(params$bayes$model_sub)
+```
+
+**Leverage plot for all studies**
+
+```{r}
+levplot(params$bayes$model)
+```
+
+**Leverage plot for sensitivity analysis**
+
+```{r}
+levplot(params$bayes$model_sub)
+```
