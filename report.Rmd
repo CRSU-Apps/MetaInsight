@@ -269,3 +269,31 @@ knitr::kable(ranking_chart(sub = TRUE, params$bayes$model_sub, params$ranking))
 knitr::kable(ranking_table(params$bayes$model_sub, params$ranking), digits = 5)
 ```
 
+##### 3e. Bayesian result details
+
+**Results details for all studies**
+
+```{r}
+params$bayes$model$sumresults
+```
+
+**Gelman convergence assessment plot for all studies**
+
+```{r}
+gelman.plot(params$bayes$model$mtcResults)
+```
+
+**Results details with studies excluded**
+
+```{r}
+params$bayes$model_sub$sumresults
+```
+
+**Gelman convergence assessment plot with studies excluded**
+
+```{r}
+gelman.plot(params$bayes$model_sub$mtcResults)
+```
+
+
+

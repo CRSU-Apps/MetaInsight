@@ -711,21 +711,25 @@ shinyServer(function(input, output, session) {
   output$node_table_sub<- renderTable(colnames=TRUE, {
     model_nodesplit_sub()
   })
-
   
+  # 3e. Bayesian result details 
   
-  ### 3e. Bayesian result details and gelman
-  
-  output$gemtc_results <- renderPrint ({             # Results details
+  # Results details for all studies
+  output$gemtc_results <- renderPrint ({             
     model()$sumresults
   })
+  
+  # Results details with studies excluded
   output$gemtc_results_sub <- renderPrint ({
     model_sub()$sumresults
   })
   
-  output$gemtc_gelman <- renderPlot ({              # Gelman plots
+  # Gelman plots for all studies
+  output$gemtc_gelman <- renderPlot ({              
     gelman.plot(model()$mtcResults)
   })
+  
+  # Gelman plots with studies excluded
   output$gemtc_gelman_sub <- renderPlot ({
     gelman.plot(model_sub()$mtcResults)
   })
