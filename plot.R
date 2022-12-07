@@ -2,7 +2,8 @@
 # Plot functions used in both app and report - NVB
 #####
 
-source("fn_analysis.R") # Contains groupforest.df, forest.df - should probably organise better NVB
+source("fn_analysis.R") # Contains groupforest.df, forest.df 
+source("PlotFunctionsRKO.R") # Contains mtcRank2
 
 # 1a Summary table plot 
 summary_table_plot <- function(bugsnetdt, metaoutcome) {
@@ -70,7 +71,7 @@ make_Incon <- function(freq, modelranfix) {
   return(netsplitresult.df(incona, modelranfix))
 }
 
-# 3a Forest plot (Bayesian)
+# 3a Forest plot 
 make_Forest <- function(model, metaoutcome, bayesmin, bayesmax) {
   if (metaoutcome=="Binary") {
     return(forest(model$mtcRelEffects, digits=3, xlim=c(log(bayesmin), log(bayesmax))))
@@ -78,6 +79,40 @@ make_Forest <- function(model, metaoutcome, bayesmin, bayesmax) {
     return(forest(model$mtcRelEffects, digits=3, xlim=c(bayesmin, bayesmax)))
   }
 }
+
+# 3b Comparison of all treatment pairs
+baye_comp <- function(model, metaoutcome, outcome_measure){
+  tbl <- relative.effect.table(model$mtcResults)
+  if ((metaoutcome == "Binary") & (outcome_measure != "RD")) {
+    tbl<-exp(tbl)
+  } 
+  return(as.data.frame(round(tbl, digits=2)))
+}
+
+# 3c Ranking table
+
+# Ranking chart
+ranking_chart <- function(sub, model, rankopts) {
+  prob <- as.data.frame(print(rank.probability(model$mtcResults, 
+                                               preferredDirection=(if (rankopts=="good") -1 else 1))))
+  # Put this code here (rather than in the main model) since the ranking selection is not needed in the model. The ranking is a separate function after getting the model results. 
+  # so users are free to change the 'desirable' / 'undesirable' radiobutton without re-running the model.
+  if (sub == FALSE) {
+    prjtitle <- "Ranking with all studies - network meta-analysis median rank chart"
+  } else {prjtitle <- "Ranking with studies excluded - network meta-analysis median rank chart"}
+  rankl <- rownames(prob)
+  return(mtcRank2(prjtitle, model$ntx, rankl, prob, bcolr=FALSE))
+}
+
+# Ranking table
+ranking_table <- function(model, rankopts) {  
+  prob <- as.data.frame(print(rank.probability(model$mtcResults,
+                                               preferredDirection = (if (rankopts == "good") -1 else 1))))  
+  names(prob)[1:ncol(prob)] <- paste("Rank ", 1:(ncol(prob)), sep="")
+  return(prob)
+}
+
+
 
 
 

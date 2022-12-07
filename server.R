@@ -651,62 +651,41 @@ shinyServer(function(input, output, session) {
   
   # 3b. Comparison of all treatment pairs
   
-  baye_comp <- function(baye){
-    tbl <- relative.effect.table(baye$mtcResults)
-    if ((input$metaoutcome=="Binary") & (input$outcomebina!="RD")) {
-        tbl<-exp(tbl)
-    } 
-    as.data.frame(round(tbl, digits=2))
-  }
-  
+  # Treatment effects for all studies
   output$baye_comparison <- renderTable ({
-    baye_comp(model())
-  }, digits=2, rownames=TRUE, colnames = TRUE
+    baye_comp(model(), input$metaoutcome, outcome_measure())
+  }, rownames=TRUE, colnames = TRUE
   )
+  
+  # Treatment effects with studies excluded
   output$baye_comparison_sub <- renderTable ({
-    baye_comp(model_sub())
-  }, digits=2, rownames=TRUE, colnames = TRUE
+    baye_comp(model_sub(), input$metaoutcome, outcome_measure())
+  }, rownames=TRUE, colnames = TRUE
   )
   
+  # 3c. Ranking table and chart
   
-  ### 3c. ranking table and chart
-  
-  output$prob <- renderTable ({     # ranking table
-    prob <- as.data.frame(print(rank.probability(model()$mtcResults,
-          preferredDirection=(if (input$rankopts=="good") -1 else 1))))  
-                                     # Put this code here (rather than in the main model) since the ranking selection is not needed in the model. The ranking is a separate function after getting the model results. 
-                                     # so users are free to change the 'desirable' / 'undesirable' radiobutton without re-running the model.
-    names(prob)[1:ncol(prob)] <- paste("Rank ", 1:(ncol(prob)), sep="")
-    prob
-  }, digits=5, rownames=TRUE, colnames = TRUE
-  )
-  output$prob_sub <- renderTable ({
-    prob <- as.data.frame(print(rank.probability(model_sub()$mtcResults,preferredDirection=
-                                                   (if (input$rankopts=="good") -1 else 1)))) 
-    names(prob)[1:ncol(prob)] <- paste("Rank ", 1:(ncol(prob)), sep="")
-    prob
-  }, digits=5, rownames=TRUE, colnames = TRUE
-  )
-  
-  output$gemtc_rank <- renderPlot ({    # ranking chart
-    mod_list <- model()
-    prob <- as.data.frame(print(rank.probability(mod_list$mtcResults,preferredDirection=
-                                                   (if (input$rankopts=="good") -1 else 1))))
-    prjtitle <- "Ranking with all studies - network meta-analysis median rank chart"
-    rankl <- rownames(prob)
-    mtcRank2(prjtitle, mod_list$ntx, rankl, prob, bcolr=FALSE)
+  # Ranking chart with all studies
+  output$gemtc_rank <- renderPlot ({    
+    ranking_chart(sub = FALSE, model(), input$rankopts)
   })
+  
+  # Ranking table with all studies
+  output$prob <- renderTable ({
+    ranking_table(model(), input$rankopts)  
+    }, digits=5, rownames=TRUE, colnames = TRUE
+  )
+  
+  # Ranking chart with studies excluded
   output$gemtc_rank_sub <- renderPlot ({
-    mod_list=model_sub()
-    prob <- as.data.frame(print(rank.probability(mod_list$mtcResults,preferredDirection=
-                                                   (if (input$rankopts=="good") -1 else 1))))
-    prjtitle <- "Ranking with studies excluded - network meta-analysis median rank chart"
-    rankl <- rownames(prob)
-    ntx <- nrow(prob)
-    mtcRank2(prjtitle, ntx, rankl, prob, bcolr=FALSE)
+    ranking_chart(sub = TRUE, model_sub(), input$rankopts)
   })
   
-  
+  # Ranking table with studies excluded
+  output$prob_sub <- renderTable ({
+    ranking_table(model_sub(), input$rankopts) 
+  }, digits=5, rownames=TRUE, colnames = TRUE
+  )
   
   ### 3d. nodesplit model
   

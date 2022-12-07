@@ -233,5 +233,39 @@ gemtctau(params$bayes$model_sub, params$outcome_measure)
 
 ```
 
+##### 3b. Comparison of all treatment pairs
 
+**Treatment effects for all studies: comparison of all treatment pairs**
+
+```{r}
+baye_comp(params$bayes$model, params$metaoutcome, params$outcome_measure)
+```
+
+**Treatment effects with studies excluded: comparison of all treatment pairs**
+
+```{r}
+baye_comp(params$bayes$model_sub, params$metaoutcome, params$outcome_measure)
+```
+
+##### 3c. Ranking table
+
+```{r}
+knitr::kable(ranking_chart(sub = FALSE, params$bayes$model, params$ranking))
+```
+
+**Ranking table for all studies - Probability for each treatment to be the best**
+
+```{r}
+knitr::kable(ranking_table(params$bayes$model, params$ranking), digits = 5)
+```
+
+```{r}
+knitr::kable(ranking_chart(sub = TRUE, params$bayes$model_sub, params$ranking))
+```
+
+**Ranking table with studies excluded - Probability for each treatment to be the best**
+
+```{r}
+knitr::kable(ranking_table(params$bayes$model_sub, params$ranking), digits = 5)
+```
 
