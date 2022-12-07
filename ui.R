@@ -562,10 +562,10 @@ tabPanel("Data analysis", id="dtanalysis",
           p(tags$strong("Deviance report for all studies and the sensitivity analysis")),
           fluidRow(
            column(6,
-                  p(tags$strong("residual deviance from NMA model and UME inconsistency model for all studies")),
+                  p(tags$strong("Residual deviance from NMA model and UME inconsistency model for all studies")),
                   plotlyOutput("dev_scat")),
            column(6,
-                  p(tags$strong("residual deviance from NMA model and UME inconsistency model with studies excluded")),
+                  p(tags$strong("Residual deviance from NMA model and UME inconsistency model with studies excluded")),
                   plotlyOutput("dev_scat_sub")
            )),
            p("This plot represents each data points' contribution to the residual deviance for the 

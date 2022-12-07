@@ -773,29 +773,38 @@ shinyServer(function(input, output, session) {
     levplot(model_sub())
   })
   
-  ### 3g.1 Model codes
+  # 3g. Model details
+  
+  # 3g-1 Model codes
   output$code <- renderPrint({
     cat(model()$mtcResults$model$code, fill=FALSE, labels=NULL, append=FALSE)
   })
   
-
-  ### 3g.2 initial values
+  # 3g-2 Initial values
   output$inits <- renderPrint({
     model()$mtcResults$model$inits
   })
   
-  ### 3g.3 download codes are in the download file.
+  # 3g-3 Download codes are in the download file.
   
-  ### 3g.4 output deviance
+  # 3g-4 Output deviance
+  
+  # NMA consistency model (all studies)
   output$dev <- renderPrint({
     mtc.deviance({model()$mtcResults})
   })
+  
+  # NMA consistency model (sensitivity)
   output$dev_sub <- renderPrint({
     mtc.deviance({model_sub()$mtcResults})
   })
+  
+  # UME inconsistency model (all studies)
   output$dev_ume<- renderPrint({
     scat_plot(model())$y
   })
+  
+  # UME inconsistency model (sensitivity)
   output$dev_ume_sub<- renderPrint({
     scat_plot(model_sub())$y
   })

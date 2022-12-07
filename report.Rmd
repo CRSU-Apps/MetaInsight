@@ -332,3 +332,44 @@ levplot(params$bayes$model)
 ```{r}
 levplot(params$bayes$model_sub)
 ```
+
+##### 3g. Model details
+
+**3g-1 Model codes for analysis of all studies**
+
+```{r}
+cat(params$bayesmodel$mtcResults$model$code, fill=FALSE, labels=NULL, append=FALSE)
+```
+
+**3g-2 Initial values**  
+
+```{r}
+params$bayes$model$mtcResults$model$inits
+```
+  
+**3g-4 Deviance details**
+
+NMA consistency model (all studies)
+```{r}
+mtc.deviance({params$bayes$model$mtcResults})
+```
+  
+NMA consistency model 
+
+```{r}
+mtc.deviance({params$bayes$model_sub$mtcResults})
+```
+
+UME inconsistency model (all studies)
+```{r}
+scat_plot(params$bayes$model)$y
+```
+
+UME inconsistency model (sensitivity)
+
+```{r}
+scat_plot(params$bayes$model_sub)$y
+```
+
+
+
