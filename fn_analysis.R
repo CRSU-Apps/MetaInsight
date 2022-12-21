@@ -509,11 +509,11 @@ RadialSUCRA <- function(SUCRAData, ColourData, BUGSnetData, colourblind=FALSE) {
           aspect.ratio = 1, axis.text.x = element_text(size=8,family="sans",angle = 360/(2*pi)*rev(pi/2 + seq(pi/n,2*pi-pi/n, len=n)) + 360/(2*pi)*c(rep(0,ceiling(n/2)),rep(pi,floor(n/2))))) +
     coord_polar()
   if (colourblind==FALSE) {
-    Background <- Background + scale_colour_gradient2(low = "red", mid = "yellow", high = "green", midpoint=50) +
-                               scale_fill_gradient2(low = "red", mid = "yellow", high = "green", midpoint=50)
+    Background <- Background + scale_colour_gradient2(low = "red", mid = "yellow", high = "green", midpoint=50, limits=c(0,100)) +
+                               scale_fill_gradient2(low = "red", mid = "yellow", high = "green", midpoint=50, limits=c(0,100))
   } else {
-    Background <- Background + scale_colour_gradientn(colours=c("#7b3294","#c2a5cf","#a6dba0", "#008837"), values=c(0, 0.33, 0.66, 1)) +
-      scale_fill_gradientn(colours=c("#7b3294","#c2a5cf","#a6dba0", "#008837"), values=c(0, 0.33, 0.66, 1))
+    Background <- Background + scale_colour_gradientn(colours=c("#7b3294","#c2a5cf","#a6dba0", "#008837"), values=c(0, 0.33, 0.66, 1), limits=c(0,100)) +
+      scale_fill_gradientn(colours=c("#7b3294","#c2a5cf","#a6dba0", "#008837"), values=c(0, 0.33, 0.66, 1), limits=c(0,100))
   }
   
   Background +

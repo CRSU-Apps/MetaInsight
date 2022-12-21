@@ -68,7 +68,7 @@ dashboardPage(
                             #   }
                             #   "), 
                             #h2("MetaInsight (including Bayesian estimates) V3.1.10 **", 
-                            h2("MetaInsight V4.0.1",
+                            h2("MetaInsight V4.0.2",
                                tags$sup("Beta", style="color:#6CC0ED"), 
                                align= "left"),
                             prettyRadioButtons("metaoutcome","Please select your outcome type:",
@@ -88,6 +88,8 @@ dashboardPage(
                                      br(),
                                      tags$a(href="https://github.com/CRSU-Apps/MetaInsight/tree/ranking", "Click here to view the code base for this Beta version of MetaInsight", target="_blank"),
                                      br(),
+                                     br(),
+                                     p("Version 4.0.2 corrects the minor incorrect colouring that was present on the outer nodes of the 'simplified' Radial SUCRA plot (21st Dec 2022)"),
                                      br(),
                                      p(tags$strong("Current bugs"), " that we are aware of and working on:", style="font-size:13pt"),
                                      p(tags$ul(tags$li("If the Litmus Rank-O-Gram has added lines to help link data points and labels, these lines do not always appear when downloading the plot.")))
