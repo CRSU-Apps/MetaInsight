@@ -35,51 +35,6 @@ source("fn_analysis.R",local = TRUE)              # functions for NMA
   
 shinyServer(function(input, output, session) {
   source("downloadbuttons.R", local = TRUE)   #codes for download buttons for conciseness. This line must be put within the shinyserver as this is purely a code file not functions.
-
-  
-  #####
-  # Report
-  # NVB
-  #####
-  
-  # Create Rmd report
-  output$report <- downloadHandler(
-    
-    filename = "report.html",
-    content = function(file) {
-      
-      # Copy the report file to a temporary directory before processing it
-      tempReport <- file.path(tempdir(), "report.Rmd")
-      file.copy("report.Rmd", tempReport, overwrite = TRUE)
-      
-      # Set up parameters to pass to Rmd document
-      params <- list(axis = list(freqmin = input$freqmin, freqmax = input$freqmax, 
-                                 freqmin_sub = input$freqmin_sub, freqmax_sub = input$freqmax_sub),
-                     bayes = list(model = model(), model_sub = model_sub(),
-                                  bayesmax = input$bayesmax, bayesmin = input$bayesmin, 
-                                  bayesmax_sub = input$bayesmax_sub, bayesmin_sub = input$bayesmin_sub),
-                     bugsnetdt = bugsnetdt(),
-                     data = data(),
-                     excluded = paste(input$exclusionbox, collapse = ", "),
-                     exclusionbox = input$exclusionbox,
-                     forest = list(ForestHeader = input$ForestHeader, ForestTitle = input$ForestTitle),
-                     freq_all = freq_all(),
-                     freq_sub = freq_sub(),
-                     label = treatment_list(),
-                     metaoutcome = input$metaoutcome,
-                     modelranfix = input$modelranfix,
-                     netgraph_label = list(label_all = input$label_all, label_excluded = input$label_excluded),
-                     outcome_measure = outcome_measure(),
-                     ranking = input$rankopts,
-                     reference_alter = reference_alter())
-      
-      # Knit the document, passing in the `params` list, and eval it in a child of the global environment 
-      rmarkdown::render(tempReport, output_file = file,
-                        params = params,
-                        envir = new.env(parent = globalenv())
-      )
-    }
-  )
   
   
   #####
@@ -141,20 +96,19 @@ shinyServer(function(input, output, session) {
   ######### Home page - linking pages ########
   ############################################
   
-  # Commented out while editing - NVB
   ### GDPR
-  
-    # showModal(modalDialog(
-    #    title = "Important message",
-    #     easyClose = FALSE,
-    #     p(tags$strong("In accordance with Data Protection legislation, we would like to inform you of the following before you use our website:
-    #                              "), "We collect your usage data within the MetaInsight app to perform analytics of usage and improve our app. By clicking",
-    #       tags$i(tags$u("I consent")), "below, you consent to the use of data by us through Google Analytics.
-    #       For details of policy, please check the 'Privacy notice' tab within the app, and ",tags$a(href="https://policies.google.com/privacy?hl=en", "Google Privacy & Terms.",target="_blank") ),
-    #     br(),
-    #     modalButton("I consent"),
-    #     footer = NULL
-    #   ))
+
+    showModal(modalDialog(
+       title = "Important message",
+        easyClose = FALSE,
+        p(tags$strong("In accordance with Data Protection legislation, we would like to inform you of the following before you use our website:
+                                 "), "We collect your usage data within the MetaInsight app to perform analytics of usage and improve our app. By clicking",
+          tags$i(tags$u("I consent")), "below, you consent to the use of data by us through Google Analytics.
+          For details of policy, please check the 'Privacy notice' tab within the app, and ",tags$a(href="https://policies.google.com/privacy?hl=en", "Google Privacy & Terms.",target="_blank") ),
+        br(),
+        modalButton("I consent"),
+        footer = NULL
+      ))
   
   ### View the full update history
   
@@ -687,7 +641,29 @@ shinyServer(function(input, output, session) {
   }, digits=5, rownames=TRUE, colnames = TRUE
   )
   
-  ### 3d. nodesplit model
+  # 3d. Nodesplit model
+  
+  # Inconsistency test with notesplitting model for all studies
+  model_nodesplit <- eventReactive(input$baye_do, {
+    model_nodesplit(sub = FALSE, data(), treatment_list(), input$metaoutcome, outcome_measure(),
+                    input$modelranfix, input$exclusionbox)
+  })
+
+  output$node_table<- renderTable(colnames=TRUE, {
+    model_nodesplit()
+  })
+
+  # Inconsistency test with notesplitting model with studies excluded
+  model_nodesplit_sub <- eventReactive(input$sub_do, {
+    model_nodesplit(sub = TRUE, data(), treatment_list(), input$metaoutcome, outcome_measure(),
+                    input$modelranfix, input$exclusionbox)
+  })
+
+  output$node_table_sub<- renderTable(colnames=TRUE, {
+    model_nodesplit_sub()
+  })
+  
+
   
   model_nodesplit <- eventReactive(input$node, {
     newData1 <- as.data.frame(data())
@@ -699,7 +675,7 @@ shinyServer(function(input, output, session) {
   output$node_table<- renderTable(colnames=TRUE, {
     model_nodesplit()
   })
-  
+
   model_nodesplit_sub <- eventReactive(input$node_sub, {
     newData1 <- as.data.frame(data())
     treat_list <- treatment_label(treatment_list())
