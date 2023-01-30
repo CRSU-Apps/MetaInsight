@@ -175,7 +175,8 @@ tabPanel("Load Data",
             br(),
             p(tags$strong("MetaInsight allows data in either long format, or wide format. This tab provides instructions for long format data, where each row contains one treatment arm. 
                           Please follow Steps 1 and 2 to upload the data file and enter the treatment labels. 
-                          Instructions are as below.")),
+                          Instructions are as below.
+                          Please note that MetaInsight is not compatible with studies containing multiple arms of the same treatment.")),
             h4(tags$strong("Step 1:")),
             p(),
             conditionalPanel(condition= "input.metaoutcome=='Continuous'",
@@ -228,7 +229,8 @@ tabPanel("Load Data",
             h2(tags$strong("Instructions for uploading wide format data")),
             br(),
             p(tags$strong("MetaInsight allows data in either long format, or wide format. This tab provides instructions for wide format data, where each row contains all the treatment arms from one study. Please follow Steps 1 and 2 to upload the data file and enter the treatment labels. 
-                          Instructions are as below.")),
+                          Instructions are as below.
+                          Please note that MetaInsight is not compatible with studies containing multiple arms of the same treatment.")),
             h4(tags$strong("Step 1:")),
             downloadButton("downloadDataWide", "Download the example dataset in wide format"), # Button
             br(),
