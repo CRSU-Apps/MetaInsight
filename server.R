@@ -644,8 +644,8 @@ shinyServer(function(input, output, session) {
   # 3d. Nodesplit model
   
   # Inconsistency test with notesplitting model for all studies
-  model_nodesplit <- eventReactive(input$baye_do, {
-    model_nodesplit(sub = FALSE, data(), treatment_list(), input$metaoutcome, outcome_measure(),
+  model_nodesplit <- eventReactive(input$node, {
+    nodesplit(sub = FALSE, data(), treatment_list(), input$metaoutcome, outcome_measure(),
                     input$modelranfix, input$exclusionbox)
   })
 
@@ -654,36 +654,11 @@ shinyServer(function(input, output, session) {
   })
 
   # Inconsistency test with notesplitting model with studies excluded
-  model_nodesplit_sub <- eventReactive(input$sub_do, {
-    model_nodesplit(sub = TRUE, data(), treatment_list(), input$metaoutcome, outcome_measure(),
+  model_nodesplit_sub <- eventReactive(input$node, {
+    nodesplit(sub = TRUE, data(), treatment_list(), input$metaoutcome, outcome_measure(),
                     input$modelranfix, input$exclusionbox)
   })
 
-  output$node_table_sub<- renderTable(colnames=TRUE, {
-    model_nodesplit_sub()
-  })
-  
-
-  
-  model_nodesplit <- eventReactive(input$node, {
-    newData1 <- as.data.frame(data())
-    treat_list <- treatment_label(treatment_list())
-    longsort2 <- dataform.df(newData1,treat_list,input$metaoutcome)
-    outc <- ifelse (input$metaoutcome=="Continuous",input$outcomeCont, input$outcomebina)
-    bayenode(longsort2,treat_list, input$modelranfix, outc,input$metaoutcome )
-  })
-  output$node_table<- renderTable(colnames=TRUE, {
-    model_nodesplit()
-  })
-
-  model_nodesplit_sub <- eventReactive(input$node_sub, {
-    newData1 <- as.data.frame(data())
-    treat_list <- treatment_label(treatment_list())
-    longsort2 <- dataform.df(newData1,treat_list,input$metaoutcome)
-    longsort2_sub <- filter(longsort2, !Study %in% input$exclusionbox)
-    outc <- ifelse (input$metaoutcome=="Continuous",input$outcomeCont, input$outcomebina)
-    bayenode(longsort2_sub,treat_list, input$modelranfix, outc,input$metaoutcome)
-  })
   output$node_table_sub<- renderTable(colnames=TRUE, {
     model_nodesplit_sub()
   })

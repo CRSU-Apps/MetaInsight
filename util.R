@@ -26,16 +26,16 @@ bayesian_model <- function(sub, data, treatment_list, metaoutcome, exclusionbox,
   }
 }
 
-# # Nodesplit model
-# 
-# nodesplit <- function(sub, data, treatment_list, metaoutcome, outcome_measure, modelranfix, exclusionbox) {
-#   newData1 <- as.data.frame(data)
-#   treat_list <- treatment_label(treatment_list)
-#   if (sub == FALSE) {
-#     longsort2 <- dataform.df(newData1, treat_list, metaoutcome)
-#   } else {
-#     longsort2 <- filter(dataform.df(newData1, treat_list, metaoutcome), !Study %in% exclusionbox )
-#   }
-#   bayenode(longsort2, treat_list, modelranfix, outcome_measure ,metaoutcome )
-# }
+# Nodesplit model
+
+nodesplit <- function(sub, data, treatment_list, metaoutcome, outcome_measure, modelranfix, exclusionbox) {
+  newData1 <- as.data.frame(data)
+  treat_list <- treatment_label(treatment_list)
+  if (sub == FALSE) {
+    longsort2 <- dataform.df(newData1, treat_list, metaoutcome)
+  } else {
+    longsort2 <- filter(dataform.df(newData1, treat_list, metaoutcome), !Study %in% exclusionbox )
+  }
+  bayenode(longsort2, treat_list, modelranfix, outcome_measure, metaoutcome)
+}
 
