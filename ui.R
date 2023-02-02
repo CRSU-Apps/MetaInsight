@@ -71,7 +71,7 @@ shinyUI(navbarPage(id="meta",
        br(),
        tags$a(href="https://github.com/CRSU-Apps/MetaInsight/commits/main", "Click here to view the full version history of the code base for MetaInsight",target="_blank"),
        p(tags$strong("** 'Under-the-hood' changes on 02 February 2023 (v3.1.15) **:")),
-       p(tags$ul(yags$li("Changes have been made 'under-the-hood' of MetaInsight to improve the code base and prepare it for future features.
+       p(tags$ul(tags$li("Changes have been made 'under-the-hood' of MetaInsight to improve the code base and prepare it for future features.
                           No changes have been made to the functionality of MetaInsight."))),
        p(tags$strong("** Annotation correction on 25 October 2022 (v3.1.14) **:")),
        p(tags$ul(tags$li("We apologise that the annotation regarding the second option of network plot on tab 1c has been incorrect.
