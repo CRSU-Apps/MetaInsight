@@ -5,4 +5,6 @@ MetaInsight is a tool that conducts NMA via the web requiring no specialist soft
 
 If you use the app please cite it as:
 
-Owen, RK, Bradbury, N, Xin, Y, Cooper, N, Sutton, A. MetaInsight: An interactive web-based tool for analyzing, interrogating, and visualizing network meta-analyses using R-shiny and netmeta. Res Syn Meth. 2019; 10: 569-581.
+Owen, RK, Bradbury, N, Xin, Y, Cooper, N, Sutton, A. MetaInsight: An interactive web-based tool for analyzing, interrogating, and visualizing network meta-analyses using R-shiny and netmeta. Res Syn Meth. 2019; 10: 569-581.  
+
+A guide for downloading and running MetaInsight offline is available here: [a relative link](offline_user_guide.md)
