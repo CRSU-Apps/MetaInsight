@@ -54,7 +54,7 @@ shinyUI(navbarPage(id="meta",
            #   zoom: 75%; /* Webkit browsers */
            #   }
            #   "), 
-     h2("MetaInsight (including Bayesian estimates) V3.1.14 **", 
+     h2("MetaInsight (including Bayesian estimates) V3.1.15 **", 
         #tags$sup("Beta", style="color:#6CC0ED"), 
         align= "left"),
      prettyRadioButtons("metaoutcome","Please select your outcome type:",
@@ -70,13 +70,14 @@ shinyUI(navbarPage(id="meta",
        actionLink("history_click", "Click here to view a full update history of MetaInsight"),
        br(),
        tags$a(href="https://github.com/CRSU-Apps/MetaInsight/commits/main", "Click here to view the full version history of the code base for MetaInsight",target="_blank"),
+       p(tags$strong("** 'Under-the-hood' changes on 02 February 2023 (v3.1.15) **:")),
+       p(tags$ul(tags$li("Changes have been made 'under-the-hood' of MetaInsight to improve the code base and prepare it for future features.
+                          No changes have been made to the functionality of MetaInsight."))),
        p(tags$strong("** Annotation correction on 25 October 2022 (v3.1.14) **:")),
        p(tags$ul(tags$li("We apologise that the annotation regarding the second option of network plot on tab 1c has been incorrect.
                          The size of the nodes do not represent the number of participants that were tested with the respective treatment, 
                          but instead represent the number of studies that included the respective treatment. 
                          This has now been corrected and we apologise for any inconvenience caused as a result."))),
-       p(tags$strong("** Minor text change on 25 April 2022 (v3.1.13) **:")),
-       p(tags$ul(tags$li("Sub headers have been added to deviance details in tab 3g-4."))),
        br(),
        p(tags$strong("Beta version available!", style="color:#6CC0ED; font-size:18px")),
        p("A beta version of MetaInsight is available, containing a ", tags$strong("new ranking panel"), " for Bayesian analyses. Check it out ", tags$a(href="https://crsu.shinyapps.io/MetaInsight_Beta", "here."))
