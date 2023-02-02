@@ -90,8 +90,9 @@ shinyUI(navbarPage(id="meta",
       p(tags$a(href=" https://doi.org/10.1002/jrsm.1373", "Owen, RK, Bradbury, N, Xin, Y, Cooper, N, Sutton, A. MetaInsight: An interactive web-based tool for analyzing, interrogating, 
         and visualizing network meta-analyses using R-shiny and netmeta. Res Syn Meth. 2019; 10: 569-581.",align="left")),
      br(),
-    
-       p("Codes for this app are available on Github. Please click ", tags$a(href="https://github.com/CRSU-Apps/MetaInsight", "here",target="_blank"), "to access."),
+       p("The code for MetaInsight is available on", tags$a(href="https://github.com/CRSU-Apps/MetaInsight", "GitHub",target="_blank"), 
+         ". There is also an", tags$a(href="https://github.com/nabury/MetaInsight/blob/offline_user_guide/offline_user_guide.md", "Offline User Guide",target="_blank"),
+         "with instructions on how to download and run MetaInsight on a local machine using RStudio."),   
        br(),
        p("App powered by Rshiny.All frequentist statistical calculations are performed using R package netmeta (Gerta Rücker, Guido Schwarzer, Ulrike Krahn and Jochem König
         2017).", tags$a(href="http://CRAN.R-project.org/package=netmeta", "netmeta: Network Meta-Analysis using Frequentist Methods. R package version 0.9-8.",target="_blank"),
