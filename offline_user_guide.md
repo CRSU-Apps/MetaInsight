@@ -1,4 +1,4 @@
-Guide For Offline Users of MetaInsight  
+*Guide For Offline Users of MetaInsight*  
 
 This guide is designed to for users who wish to download MetaInsight and run the app on their own machine. We have attempted to provide step-by-step instructions, but users with no experience of using R Studio may find it helpful to follow a short tutorial such as those found in the first bulletpoint here: RStudio Education
 
