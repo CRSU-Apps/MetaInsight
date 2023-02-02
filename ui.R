@@ -91,16 +91,9 @@ shinyUI(navbarPage(id="meta",
       p(tags$a(href=" https://doi.org/10.1002/jrsm.1373", "Owen, RK, Bradbury, N, Xin, Y, Cooper, N, Sutton, A. MetaInsight: An interactive web-based tool for analyzing, interrogating, 
         and visualizing network meta-analyses using R-shiny and netmeta. Res Syn Meth. 2019; 10: 569-581.",align="left")),
      br(),
-<<<<<<< HEAD
-    
-       p("The code for MetaInsight is available on", tags$a(href="https://github.com/CRSU-Apps/MetaInsight", "GitHub",target="_blank"), 
+     p("The code for MetaInsight is available on", tags$a(href="https://github.com/CRSU-Apps/MetaInsight", "GitHub",target="_blank"), 
          ". There is also an", tags$a(href="https://github.com/CRSU-Apps/MetaInsight/offline_user_guide.md", "Offline User Guide",target="_blank"),
          "with instructions on how to download and run MetaInsight on a local machine using RStudio."),
-=======
-       p("The code for MetaInsight is available on", tags$a(href="https://github.com/CRSU-Apps/MetaInsight", "GitHub",target="_blank"), 
-         ". There is also an", tags$a(href="https://github.com/nabury/MetaInsight/blob/offline_user_guide/offline_user_guide.md", "Offline User Guide",target="_blank"),
-         "with instructions on how to download and run MetaInsight on a local machine using RStudio."),   
->>>>>>> 4bd772b761dd57d6c99e2ffedb5f2cf0a3c8244e
        br(),
        p("App powered by Rshiny.All frequentist statistical calculations are performed using R package netmeta (Gerta Rücker, Guido Schwarzer, Ulrike Krahn and Jochem König
         2017).", tags$a(href="http://CRAN.R-project.org/package=netmeta", "netmeta: Network Meta-Analysis using Frequentist Methods. R package version 0.9-8.",target="_blank"),
@@ -537,15 +530,9 @@ tabPanel("Data analysis", id="dtanalysis",
                We recommend people to download the whole app through",
                tags$a(href="https://github.com/CRSU-Apps/MetaInsight", "Github",target="_blank"), 
                "and run it locally through RStudio on their own machine if they want to make use of this function. Please consult the ", 
-<<<<<<< HEAD
             tags$a(href="https://github.com/CRSU-Apps/MetaInsight/offline_user_guide.md", "Offline User Guide",target="_blank"),
                "for instructions on how to do this."),
            fluidRow(
-=======
-            tags$a(href="https://github.com/nabury/MetaInsight/blob/offline_user_guide/offline_user_guide.md", "Offline User Guide",target="_blank"),
-               "for instructions on how to do this."),
-          fluidRow(
->>>>>>> 4bd772b761dd57d6c99e2ffedb5f2cf0a3c8244e
              column(6,
                     p(tags$strong("Inconsistency test with notesplitting model for all studies")),
                     actionButton("node", "Click here to run the nodesplitting analysis for all studies"),
