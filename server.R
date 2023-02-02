@@ -22,6 +22,10 @@ library(shinyjs)
 library(BUGSnet)
 library(shinyBS)
 
+# Source files
+source("bugsnet_sumtb.R") # bugsnet_sumtb function, req BUGSnet - separate file added by NVB
+source("plot.R") # Plot functions - separate file added by NVB
+source("util.R") # Utility functions - separate file added by NVB
 
 
 source("PlotFunctionsRKO.R", local = TRUE)        # Plot functions
@@ -32,12 +36,68 @@ source("fn_analysis.R",local = TRUE)              # functions for NMA
 shinyServer(function(input, output, session) {
   source("downloadbuttons.R", local = TRUE)   #codes for download buttons for conciseness. This line must be put within the shinyserver as this is purely a code file not functions.
   
+  
+  #####
+  # Reactive functions used in various places
+  #####
+  
+  # Define outcome measure (continuous or binary) - NVB
+  outcome_measure <- reactive({
+    if (input$metaoutcome == "Continuous") {return(input$outcomeCont)}
+    else {return(input$outcomebina)}
+  })
+  
+  # Load default data
+  defaultD <- reactive({
+    if (input$metaoutcome=='Continuous') {
+      defaultD <- read.csv("./Cont_long.csv")
+    } else {
+      defaultD <- read.csv("./Binary_long.csv")
+    }
+  })
+  
+  # Make data reactive i.e. default or user uploaded
+  data <- reactive({ 
+    file1 <- input$data # Name the data file that was uploaded file1
+    if(is.null(file1)){return(defaultD())}
+    else
+      a <- read.table(file = file1$datapath, sep =",", header=TRUE, stringsAsFactors = FALSE, quote="\"", fileEncoding = 'UTF-8-BOM')
+  })
+  
+  # Make reactive treatment input list selecting correct input 
+  # depending on if outcome is continuous or binary - NVB
+  
+  treatment_list <- reactive({
+    if (input$metaoutcome == "Continuous") {return (input$listCont)}
+    else {return (input$listbina)}
+  })
+  
+  # Make frequentist function (in fn_analysis.R) reactive - NVB
+  freq_all <- reactive({
+    return(frequentist(sub = FALSE, data(), input$metaoutcome, treatment_list(), outcome_measure(), input$modelranfix, input$exclusionbox))
+  })
+  
+  # Make frequentist function (in fn_analysis.R) reactive with excluded studies - NVB
+  freq_sub <- reactive({
+    return(frequentist(sub = TRUE, data(), input$metaoutcome, treatment_list(), outcome_measure(), input$modelranfix, input$exclusionbox))
+  })
+  
+  # Make bugsnetdata function (in fn_analysis.R) reactive - NVB
+  bugsnetdt <- reactive({
+    return(bugsnetdata(data(), input$metaoutcome, treatment_list()))
+  })
+   
+  # Make ref_alter function (in fn_analysis.R) reactive - NVB
+  reference_alter <- reactive({
+    return(ref_alter(data(), input$metaoutcome, input$exclusionbox, treatment_list()))
+  })
+
   ############################################
   ######### Home page - linking pages ########
   ############################################
   
   ### GDPR
-  
+
     showModal(modalDialog(
        title = "Important message",
         easyClose = FALSE,
@@ -49,17 +109,15 @@ shinyServer(function(input, output, session) {
         modalButton("I consent"),
         footer = NULL
       ))
-
-
   
-  ### view the full update history
+  ### View the full update history
   
     observeEvent(input$history_click, {
       newvalue <- "history"
       updateNavbarPage(session,"meta", selected="Full update history")
     })
     
-  ### view the trouble shooting page
+  ### View the trouble shooting page
     
     observeEvent(input$tsp, {
       #newvalue <- "history"
@@ -79,41 +137,15 @@ shinyServer(function(input, output, session) {
             "outcome on the 'Home' page. The instructions for formatting",
             "<font color=\"#ffd966\"><b>" , input$metaoutcome,"</b></font>", "outcomes are now displayed.")
     })
-    
-    
-  ### Load default Data
-    
-    defaultD <- reactive({
-      if (input$metaoutcome=='Continuous') {
-        defaultD <- read.csv("./Cont_long.csv")
-      } else {
-        defaultD <- read.csv("./Binary_long.csv")
-      }
-    })
-    
-  
-  
-  ### Downloadable csv and labels of example dataset. download button codes are all in a separate code file
 
-  
-  
-  ### Make data reactive
-    data <- reactive({ 
-      file1 <- input$data             # name the data file that was uploaded file1
-      if(is.null(file1)){return(defaultD())}
-      else
-        a <- read.table(file = file1$datapath, sep =",", header=TRUE, stringsAsFactors = FALSE, quote="\"", fileEncoding = 'UTF-8-BOM')
-    })
+  ### Downloadable csv and labels of example dataset. download button codes are all in a separate code file
     
-  
-  
   ### Data analysis tab
-    output$tb <- renderTable({        # Create a table which displays the raw data just uploaded by the user
+    # Create a table which displays the raw data just uploaded by the user
+    output$tb <- renderTable({       
       if(is.null(data())){return()}
       data()
     })
-
-
   
   ############################################
   ########### Data analysis tab ##############
@@ -162,10 +194,9 @@ shinyServer(function(input, output, session) {
     
     ### Get data for data table
     
-    
+
     filtertable <- function(){
-      lb <- ifelse(input$metaoutcome=="Continuous",input$listCont,input$listbina)
-      label <- read.csv(text=lb, sep = "\t") 
+      label <- treatment_label(treatment_list())
       dt <- data()
       ntx <- nrow(label)
       dt$T <- factor(dt$T,
@@ -198,28 +229,9 @@ shinyServer(function(input, output, session) {
     }))
     
     
-    ### Refernce treatment if treatment 1 is removed from the network
-    
-    ref_alter <- function(){
-      newData1 <- as.data.frame(data())
-      label <- ifelse(input$metaoutcome=="Continuous",input$listCont,input$listbina)
-      treat_list <- read.csv(text=label, sep = "\t")
-      lstx <- treat_list$Label
-      ref_all <- as.character(lstx[1])
-      longsort2 <- dataform.df(newData1,treat_list,input$metaoutcome )
-      long_sort2_sub <- filter(longsort2, !Study %in% input$exclusionbox)  # subgroup
-      if (((lstx[1] %in% long_sort2_sub$T) ) == "TRUE") {
-        ref_sub<- as.character(lstx[1])
-      } else {
-        ref_sub <- as.character(long_sort2_sub$T[1])
-      }
-      list(ref_all=ref_all, ref_sub=ref_sub)
-    }
-    
-    
     output$ref_change_bay = output$ref_change <- renderText({
-         if (identical(ref_alter()$ref_sub, ref_alter()$ref_all)=="FALSE") {
-           paste("Please note that the reference treatment for sensitivity analysis has now been changed to:", ref_alter()$ref_sub, ". This is because the treatment labelled 1 has been removed from the network of sensitivity analysis." )
+         if (identical(reference_alter()$ref_sub, reference_alter()$ref_all)=="FALSE") {
+           paste("Please note that the reference treatment for sensitivity analysis has now been changed to:", reference_alter()$ref_sub, ". This is because the treatment labelled 1 has been removed from the network of sensitivity analysis." )
          }
     })
     
@@ -227,127 +239,67 @@ shinyServer(function(input, output, session) {
   
 
     
-  #####################
-  #### Frequentist ####
-  #####################
+  #######################
+  ### 1. Data Summary ###
+  #######################
     
-      
-  ### Frequentist analysis
-    
-  freq_all= function(){
-      data_wide <- entry.df(data(),input$metaoutcome)    #transform data to wide form
-      label <- ifelse(input$metaoutcome=="Continuous",input$listCont,input$listbina)
-      treat_list <- read.csv(text=label, sep = "\t")   #read treatment labels from input
-      outc <- ifelse (input$metaoutcome=="Continuous",input$outcomeCont, input$outcomebina)
-      freq_wrap(data_wide, treat_list,input$modelranfix,outc,input$metaoutcome, ref_alter()$ref_all)  # use the selfdefined function, freq_wrap
-
-  }
-  freq_sub= function(){
-    data_wide <-  entry.df(data(),input$metaoutcome)   
-    data_sub <- filter(data_wide, !Study %in% input$exclusionbox)  # Get subset of data to use
-    label <- ifelse(input$metaoutcome=="Continuous",input$listCont,input$listbina)
-    treat_list <- read.csv(text=label, sep = "\t")
-    outc <- ifelse (input$metaoutcome=="Continuous",input$outcomeCont, input$outcomebina)
-    freq_wrap(data_sub, treat_list,input$modelranfix,outc, input$metaoutcome, ref_alter()$ref_sub)
-  }
+  # 1a. Data Characteristics
   
-
-
-  
-  ### 1b. Study results forest plot
-    
-  make_netStudy = function() {
-    freq=freq_sub()
-    outc <- ifelse (input$metaoutcome=="Continuous",input$outcomeCont, input$outcomebina)
-    groupforest.df(freq$d0, freq$ntx, freq$lstx, outc, input$ForestHeader, input$ForestTitle)
-  }
-  output$forestPlot <- renderPlot({
-    study_plot <- make_netStudy()
-    study_plot$fplot
+  # Characteristics table of all studies
+  output$sumtb <- renderTable({
+    summary_table_plot(bugsnetdt(), input$metaoutcome)
   })
   
-
+  # Characteristics table with studies excluded
+  output$sumtb_sub <- renderTable({
+    summary_table_plot(filter(bugsnetdt(), !Study %in% input$exclusionbox), input$metaoutcome)
+  })
   
-  ### 1c. Network Plot
-  make_netgraph = function(freq,label_size) {  
-    netgraph(freq$net1, lwd=2, number.of.studies = TRUE, plastic=FALSE, points=TRUE, cex=label_size, cex.points=2, col.points=1, col=8, pos.number.of.studies=0.43,
-             col.number.of.studies = "forestgreen", col.multiarm = "white", bg.number.of.studies = "forestgreen"
-             )
-  }
+  # 1b. Study Results 
   
-  bugsnetdt <- function(){
-    newData1 <- as.data.frame(data())
-    label <- ifelse(input$metaoutcome=="Continuous",input$listCont,input$listbina)
-    treat_list <- read.csv(text=label, sep = "\t")
-    longsort2 <- dataform.df(newData1,treat_list,input$metaoutcome)    # inputting the data in long form
-    return(longsort2)
-  }
+  # Forest plot
+  output$forestPlot <- renderPlot({
+    make_netStudy(freq_sub(), outcome_measure(), input$ForestHeader, input$ForestTitle)$fplot
+  })
   
+  # 1c. Network Plot
+  
+  # Network plot of all studies
   output$netGraphStatic <- renderPlot({
     if (input$networkstyle=='networkp1') {
-      make_netgraph(freq_all(),input$label_all)
+      # Number of trials on line
+      make_netgraph(freq_all(),input$label_all) 
     } else {
-      data.rh<-data.prep(arm.data=bugsnetdt(), varname.t = "T", varname.s="Study")
-      net.plot(data.rh, node.scale = 3, edge.scale=1.5, node.lab.cex=input$label_all)  #, flag="Orlistat". 
+      # Number of trials by nodesize and line thickness
+      make_netplot(bugsnetdt(), input$label_all) 
     }
     title("Network plot of all studies")
   })
   
-  output$netGraphUpdating <- renderPlot({
-    if (input$networkstyle_sub=='networkp1') {
-      make_netgraph(freq_sub(),input$label_excluded)
-    } else {
-      long_sort2_sub <- filter(bugsnetdt(), !Study %in% input$exclusionbox)  # subgroup
-      data.rh<-data.prep(arm.data=long_sort2_sub, varname.t = "T", varname.s="Study")
-      net.plot(data.rh, node.scale = 3, edge.scale=1.5, node.lab.cex=input$label_excluded)
-    }
-    title("Network plot with studies excluded")
-  })
-  
-  make_netconnect = function(freq) {    # network connectivity
-    d1 <- freq$d1
-    nc1 <- netconnection(d1$treat1,d1$treat2,d1$studlab, data=NULL)
-    print(nc1)
-  }
+  # Network connectivity all studies
   output$netconnect <- renderPrint ({
     make_netconnect(freq_all())
   })
+  
+  # Network plot with studies excluded
+  output$netGraphUpdating <- renderPlot({
+    if (input$networkstyle_sub=='networkp1') {
+      # Number of trials on line
+      make_netgraph(freq_sub(),input$label_excluded) 
+    } else {
+      # Number of trials by nodesize and line thickness
+      make_netplot(filter(bugsnetdt(), !Study %in% input$exclusionbox), input$label_excluded)
+    }
+    title("Network plot with studies excluded")
+  })
+
+  # Network connectivity with studies excluded 
   output$netconnect_sub <- renderPrint ({
     make_netconnect(freq_sub())
   })
   
   
   ############### bugsnet code #################
-  
-  ### 1a. Data characteristics
-  
-  bugsnet_sumtb <- function(data){
-    data.rh<-data.prep(arm.data=data, varname.t = "T", varname.s="Study")
-    if (input$metaoutcome=="Continuous") {
-      outcome = "Mean"
-      typeO= "continuous"
-    } else {
-      outcome = "R"
-      typeO = "binomial"
-    }
-    network.char <- net.tab(data = data.rh,
-                            outcome = outcome,
-                            N = "N",
-                            type.outcome = typeO,
-                            time = NULL)
-    return(network.char$network)
-  }
-  
-  output$sumtb <- renderTable({
-    longsort2 <- bugsnetdt()    # inputting the data in long form
-    bugsnet_sumtb(longsort2)
-  })
-  
-  output$sumtb_sub <- renderTable({
-    longsort2 <- bugsnetdt()    # inputting the data in long form
-    longsort2_sub <- filter(bugsnetdt(), !Study %in% input$exclusionbox)  # subgroup
-    bugsnet_sumtb(longsort2_sub)
-  })
   
   ### (notification on disconnection when data are uploaded)
   # disconnect_load <- function(){
@@ -400,7 +352,7 @@ shinyServer(function(input, output, session) {
   observeEvent(input$exclusionbox,{
     longsort2 <- bugsnetdt()
     longsort2_sub <- filter(bugsnetdt(), !Study %in% input$exclusionbox)  # subgroup
-    sumtb_sub <- bugsnet_sumtb(longsort2_sub)
+    sumtb_sub <- bugsnet_sumtb(longsort2_sub, input$metaoutcome)
     if (sumtb_sub$Value[6]=="FALSE") {
       disconnect()
     }})
@@ -482,16 +434,13 @@ shinyServer(function(input, output, session) {
   
   
   
+  ######################
+  ### 2. Frequentist ###
+  ###################### 
   
+  # 2a. Forest Plot
   
-
-  ### 2a. Forest Plot
-  
-  make_netComp = function(freq, ref,min,max) {    # forest plot
-    forest.df(freq$net1,input$modelranfix,freq$lstx, ref,min,max)
-  }
   make_refText = function(ref) {
-    #output$ref4<- renderText({"All outcomes are versus the reference treatment"})
     y <- paste("All outcomes are versus the reference treatment:", ref)
     return(y)
   }
@@ -519,89 +468,69 @@ shinyServer(function(input, output, session) {
     }
   })
   
+  # Forest plot for all studies
   output$Comparison2<- renderPlot({
-    make_netComp(freq_all(), ref_alter()$ref_all, input$freqmin, input$freqmax)
+    make_netComp(freq_all(), input$modelranfix, reference_alter()$ref_all, input$freqmin, input$freqmax)
     title("Results for all studies")
   })
-  output$SFPUpdatingComp <- renderPlot({
-    make_netComp(freq_sub(), ref_alter()$ref_sub, input$freqmin_sub, input$freqmax_sub)
-    title("Results with studies excluded")
+  
+  # Text output displayed under forest plot  
+  output$textcomp<- renderText({
+    texttau(freq_all(), outcome_measure(), input$modelranfix)
   })
   
-  texttau = function(freq){      # Tau
-    tau<- round(freq$net1$tau,2)
-    outc <- ifelse (input$metaoutcome=="Continuous",input$outcomeCont, input$outcomebina)
-    tau.df(tau, freq$net1$k, freq$net1$n, input$modelranfix, outc)
-  }
-  output$textcomp<- renderText({
-    texttau(freq_all())
-  })
-  output$text5<- renderText({ 
-    texttau(freq_sub())
-  })
   output$ref4 <- renderText({
-    make_refText(ref_alter()$ref_all)
+    make_refText(reference_alter()$ref_all)
   })
+
+  
+  # Forest plot with studies excluded
+  output$SFPUpdatingComp <- renderPlot({
+    make_netComp(freq_sub(), input$modelranfix, reference_alter()$ref_sub, input$freqmin_sub, input$freqmax_sub)
+    title("Results with studies excluded")
+  }) 
+  
+  # Text output displayed under forest plot
+  output$text5<- renderText({ 
+    texttau(freq_sub(), outcome_measure(), input$modelranfix)
+  })
+
   output$ref3 <- renderText({
-    make_refText(ref_alter()$ref_sub)
+    make_refText(reference_alter()$ref_sub)
   })
   
   ### Interactive UI ###
   
   output$FreqForestPlot <- renderUI({
-    plotOutput("Comparison2", height = BayesPixels(as.numeric(bugsnet_sumtb(bugsnetdt())$Value[1]), title=TRUE), width = "630px")
+    plotOutput("Comparison2", height = BayesPixels(as.numeric(bugsnet_sumtb(bugsnetdt(), input$metaoutcome)$Value[1]), title=TRUE), width = "630px")
   })
+  
   output$FreqForestPlot_sub <- renderUI({
-    plotOutput("SFPUpdatingComp", height = BayesPixels(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% input$exclusionbox))$Value[1]), title=TRUE), width = "630px")
+    plotOutput("SFPUpdatingComp", height = BayesPixels(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% input$exclusionbox), input$metaoutcome)$Value[1]), title=TRUE), width = "630px")
   })
-  
-  
-  
   
   ### 2b. Comparison and rank table
   
-  make_netrank = function(freq) {
-    model <- input$modelranfix
-    league <- netleague(freq$net1, comb.random=(model=="random"), comb.fixed = (model=="fixed"), digits =2, seq= netrank(freq$net1, small = input$rankopts))
-    if (model=="random"){
-      leaguedf<- as.data.frame(league$random)
-    }
-    else {
-      leaguedf<- as.data.frame(league$fixed)
-    }
-    leaguedf
-  }
   output$rankChartStatic<- renderTable(colnames=FALSE,{
-    make_netrank(freq_all())
+    make_netrank(freq_all(), input$modelranfix, input$rankopts)
   })
   output$rankChartUpdating<- renderTable(colnames=FALSE,{
-    make_netrank(freq_sub())
+    make_netrank(freq_sub(), input$modelranfix, input$rankopts)
   })
 
-
-
   ### 2c. Inconsistency
-  
-  make_Incon = function(freq) {
-    incona<- netsplit(freq$net1)
-    make_Incon<- netsplitresult.df(incona, input$modelranfix)
-  }
+
   output$Incon1<- renderTable(colnames=TRUE, {
-      make_Incon(freq_all())}
+    make_Incon(freq_all(), input$modelranfix)}
   )
   output$Incon2<- renderTable(colnames=TRUE, {
-    make_Incon(freq_sub())}
+    make_Incon(freq_sub(), input$modelranfix)}
   )
 
-    
-  
-  
 
   #####################
   #### 3. Bayesian ####
   #####################
-  
-  
   
   ### SMD warninig alert
   
@@ -616,192 +545,150 @@ shinyServer(function(input, output, session) {
   
   
   
-  ### Bayesian analysis
-
+  # Bayesian analysis
+  
   model <- eventReactive(input$baye_do, {
-      newData1 <- as.data.frame(data())
-      label <- ifelse(input$metaoutcome=="Continuous",input$listCont,input$listbina)
-      treat_list <- read.csv(text=label, sep = "\t")
-      longsort2 <- dataform.df(newData1,treat_list,input$metaoutcome)    # inputting the data in long form
-      outc <- ifelse (input$metaoutcome=="Continuous",input$outcomeCont, input$outcomebina)
-      baye(longsort2,treat_list,input$modelranfix, outc,input$metaoutcome, ref_alter()$ref_all )
-    })
+    bayesian_model(sub = FALSE, data(), treatment_list(), input$metaoutcome, input$exclusionbox,
+                   outcome_measure(), input$modelranfix, reference_alter())
+  })
   
   model_sub <- eventReactive(input$sub_do, {
-      newData1 <- as.data.frame(data())
-      label <- ifelse(input$metaoutcome=="Continuous",input$listCont,input$listbina)
-      treat_list <- read.csv(text=label, sep = "\t")
-      longsort2 <- dataform.df(newData1,treat_list,input$metaoutcome )
-      long_sort2_sub <- filter(longsort2, !Study %in% input$exclusionbox)  # subgroup
-      outc <- ifelse (input$metaoutcome=="Continuous",input$outcomeCont, input$outcomebina)
-      baye(long_sort2_sub,treat_list,input$modelranfix, outc,input$metaoutcome, ref_alter()$ref_sub)
-    })
-  
+    bayesian_model(sub = TRUE, data(), treatment_list(), input$metaoutcome, input$exclusionbox, 
+                   outcome_measure(), input$modelranfix, reference_alter())
+  })
 
-  ### 3a. Forest plot
+  # 3a. Forest plot
   
-  output$gemtc <- renderPlot({                  # forest plot
-    if (input$metaoutcome=="Binary") {forest(model()$mtcRelEffects,digits=3,xlim=c(log(input$bayesmin), log(input$bayesmax)))}
-    if (input$metaoutcome=="Continuous") {forest(model()$mtcRelEffects,digits=3,xlim=c(input$bayesmin, input$bayesmax))}
+  # Forest plot for all studies
+  output$gemtc <- renderPlot({    
+    make_Forest(model(), input$metaoutcome, input$bayesmin, input$bayesmax)
     title(paste("All studies: 
               Bayesian", model()$a, "consistency model forest plot results"))
   })
+  
+  # DIC tabel for all studies
+  output$dic <- renderTable ({                  
+    model()$dic
+  }, digits=3, rownames=TRUE, colnames=FALSE
+  )
+  
+  # Tau all studies
+  output$text_gemtc <-renderText({          
+    gemtctau(model(), outcome_measure())
+  })
+  
+  # Forest plot with studies excluded
   output$gemtc_sub <- renderPlot({
-    if (input$metaoutcome=="Binary") {forest(model_sub()$mtcRelEffects,digits=3,xlim=c(log(input$bayesmin_sub), log(input$bayesmax_sub)))}
-    if (input$metaoutcome=="Continuous") {forest(model_sub()$mtcRelEffects,digits=3,xlim=c(input$bayesmin_sub, input$bayesmax_sub))}
+    make_Forest(model_sub(), input$metaoutcome, input$bayesmin_sub, input$bayesmax_sub)
     title(paste("Results with studies excluded: 
               Bayesian", model_sub()$a,"consistency model forest plot results"))
   })
   
-  texttauB = function(results){      # Tau
-    outc <- ifelse (input$metaoutcome=="Continuous",input$outcomeCont, input$outcomebina)
-    gemtctau(results,outc)
-  }
-  
-  output$text_gemtc <-renderText({          # tau
-    texttauB(model())
-  })
-  output$text_gemtc_sub <-renderText({
-    texttauB(model_sub())
-  })
-  
-  output$dic <- renderTable ({                  # DIC table
-    model()$dic
-  }, digits=3, rownames=TRUE, colnames=FALSE
-  )
+ # DIC table with studies excluded
   output$dic_sub <- renderTable ({
     model_sub()$dic
   }, digits=3, rownames=TRUE, colnames=FALSE)
   
-  ### Interactive UI ###
+  # Tau with studies excluded
+  output$text_gemtc_sub <-renderText({
+    gemtctau(model_sub(), outcome_measure())
+  })
   
+  # Interactive UI 
   output$BayesianForestPlot <- renderUI({
-    plotOutput("gemtc", width="630px", height = BayesPixels(as.numeric(bugsnet_sumtb(bugsnetdt())$Value[1]), title=TRUE))
+    plotOutput("gemtc", width="630px", height = BayesPixels(as.numeric(bugsnet_sumtb(bugsnetdt(), input$metaoutcome)$Value[1]), title=TRUE))
   })
   output$BayesianForestPlot_sub <- renderUI({
-    plotOutput("gemtc_sub", width="630px", height = BayesPixels(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% input$exclusionbox))$Value[1]), title=TRUE))
+    plotOutput("gemtc_sub", width="630px", height = BayesPixels(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% input$exclusionbox), input$metaoutcome)$Value[1]), title=TRUE))
   })
 
   
-
+  # 3b. Comparison of all treatment pairs
   
-  ### 3b. comparison of all treatment pairs
-  
-  baye_comp <- function(baye){
-    tbl <- relative.effect.table(baye$mtcResults)
-    if ((input$metaoutcome=="Binary") & (input$outcomebina!="RD")) {
-        tbl<-exp(tbl)
-    } 
-    as.data.frame(round(tbl, digits=2))
-  }
-  
+  # Treatment effects for all studies
   output$baye_comparison <- renderTable ({
-    baye_comp(model())
-  }, digits=2, rownames=TRUE, colnames = TRUE
+    baye_comp(model(), input$metaoutcome, outcome_measure())
+  }, rownames=TRUE, colnames = TRUE
   )
+  
+  # Treatment effects with studies excluded
   output$baye_comparison_sub <- renderTable ({
-    baye_comp(model_sub())
-  }, digits=2, rownames=TRUE, colnames = TRUE
+    baye_comp(model_sub(), input$metaoutcome, outcome_measure())
+  }, rownames=TRUE, colnames = TRUE
   )
   
+  # 3c. Ranking table and chart
   
-  ### 3c. ranking table and chart
-  
-  output$prob <- renderTable ({     # ranking table
-    prob <- as.data.frame(print(rank.probability(model()$mtcResults,
-          preferredDirection=(if (input$rankopts=="good") -1 else 1))))  
-                                     # Put this code here (rather than in the main model) since the ranking selection is not needed in the model. The ranking is a separate function after getting the model results. 
-                                     # so users are free to change the 'desirable' / 'undesirable' radiobutton without re-running the model.
-    names(prob)[1:ncol(prob)] <- paste("Rank ", 1:(ncol(prob)), sep="")
-    prob
-  }, digits=5, rownames=TRUE, colnames = TRUE
-  )
-  output$prob_sub <- renderTable ({
-    prob <- as.data.frame(print(rank.probability(model_sub()$mtcResults,preferredDirection=
-                                                   (if (input$rankopts=="good") -1 else 1)))) 
-    names(prob)[1:ncol(prob)] <- paste("Rank ", 1:(ncol(prob)), sep="")
-    prob
-  }, digits=5, rownames=TRUE, colnames = TRUE
-  )
-  
-  output$gemtc_rank <- renderPlot ({    # ranking chart
-    mod_list <- model()
-    prob <- as.data.frame(print(rank.probability(mod_list$mtcResults,preferredDirection=
-                                                   (if (input$rankopts=="good") -1 else 1))))
-    prjtitle <- "Ranking with all studies - network meta-analysis median rank chart"
-    rankl <- rownames(prob)
-    mtcRank2(prjtitle, mod_list$ntx, rankl, prob, bcolr=FALSE)
+  # Ranking chart with all studies
+  output$gemtc_rank <- renderPlot ({    
+    ranking_chart(sub = FALSE, model(), input$rankopts)
   })
+  
+  # Ranking table with all studies
+  output$prob <- renderTable ({
+    ranking_table(model(), input$rankopts)  
+    }, digits=5, rownames=TRUE, colnames = TRUE
+  )
+  
+  # Ranking chart with studies excluded
   output$gemtc_rank_sub <- renderPlot ({
-    mod_list=model_sub()
-    prob <- as.data.frame(print(rank.probability(mod_list$mtcResults,preferredDirection=
-                                                   (if (input$rankopts=="good") -1 else 1))))
-    prjtitle <- "Ranking with studies excluded - network meta-analysis median rank chart"
-    rankl <- rownames(prob)
-    ntx <- nrow(prob)
-    mtcRank2(prjtitle, ntx, rankl, prob, bcolr=FALSE)
+    ranking_chart(sub = TRUE, model_sub(), input$rankopts)
   })
   
+  # Ranking table with studies excluded
+  output$prob_sub <- renderTable ({
+    ranking_table(model_sub(), input$rankopts) 
+  }, digits=5, rownames=TRUE, colnames = TRUE
+  )
   
+  # 3d. Nodesplit model
   
-  ### 3d. nodesplit model
-  
+  # Inconsistency test with notesplitting model for all studies
   model_nodesplit <- eventReactive(input$node, {
-    newData1 <- as.data.frame(data())
-    label <- ifelse(input$metaoutcome=="Continuous",input$listCont,input$listbina)
-    treat_list <- read.csv(text=label, sep = "\t")
-    longsort2 <- dataform.df(newData1,treat_list,input$metaoutcome)
-    outc <- ifelse (input$metaoutcome=="Continuous",input$outcomeCont, input$outcomebina)
-    bayenode(longsort2,treat_list, input$modelranfix, outc,input$metaoutcome )
+    nodesplit(sub = FALSE, data(), treatment_list(), input$metaoutcome, outcome_measure(),
+                    input$modelranfix, input$exclusionbox)
   })
+
   output$node_table<- renderTable(colnames=TRUE, {
     model_nodesplit()
   })
-  
-  model_nodesplit_sub <- eventReactive(input$node_sub, {
-    newData1 <- as.data.frame(data())
-    label <- ifelse(input$metaoutcome=="Continuous",input$listCont,input$listbina)
-    treat_list <- read.csv(text=label, sep = "\t")
-    longsort2 <- dataform.df(newData1,treat_list,input$metaoutcome)
-    longsort2_sub <- filter(longsort2, !Study %in% input$exclusionbox)
-    outc <- ifelse (input$metaoutcome=="Continuous",input$outcomeCont, input$outcomebina)
-    bayenode(longsort2_sub,treat_list, input$modelranfix, outc,input$metaoutcome)
+
+  # Inconsistency test with notesplitting model with studies excluded
+  model_nodesplit_sub <- eventReactive(input$node, {
+    nodesplit(sub = TRUE, data(), treatment_list(), input$metaoutcome, outcome_measure(),
+                    input$modelranfix, input$exclusionbox)
   })
+
   output$node_table_sub<- renderTable(colnames=TRUE, {
     model_nodesplit_sub()
   })
-
   
+  # 3e. Bayesian result details 
   
-  ### 3e. Bayesian result details and gelman
-  
-  output$gemtc_results <- renderPrint ({             # Results details
+  # Results details for all studies
+  output$gemtc_results <- renderPrint ({             
     model()$sumresults
   })
+  
+  # Results details with studies excluded
   output$gemtc_results_sub <- renderPrint ({
     model_sub()$sumresults
   })
   
-  output$gemtc_gelman <- renderPlot ({              # Gelman plots
+  # Gelman plots for all studies
+  output$gemtc_gelman <- renderPlot ({              
     gelman.plot(model()$mtcResults)
   })
+  
+  # Gelman plots with studies excluded
   output$gemtc_gelman_sub <- renderPlot ({
     gelman.plot(model_sub()$mtcResults)
   })
 
+  # 3f. Deviance report
   
-
-  
-  ### 3f. Deviance 
-  
-  scat_plot = function(baye){   # ume scatter plot
-    mod_list=baye
-    x<-mtc.deviance({mod_list$mtcResults})
-    c <- data.frame(x$dev.ab)
-    outc <- ifelse (input$metaoutcome=="Continuous",input$outcomeCont, input$outcomebina)
-    umeplot.df(c,mod_list$mtcNetwork, mod_list$model, mod_list$outcome)
-  }
-  umeplot <- eventReactive(input$baye_do, {      # to prevent 
+  # Residual deviance from NMA model and UME inconsistency model for all studies
+  umeplot <- eventReactive(input$baye_do, {      
     scat_plot(model())$p
   })
   
@@ -809,63 +696,66 @@ shinyServer(function(input, output, session) {
     umeplot()
   })
   
+  # Residual deviance from NMA model and UME inconsistency model with studies excluded
   umeplot_sub <- eventReactive(input$sub_do, {
     scat_plot(model_sub())$p
   })
+  
   output$dev_scat_sub <- renderPlotly({
     umeplot_sub()
   })
-  
-  stemplot <- function(baye) {   # stemplot
-    mod_list=baye
-    x<-mtc.deviance({mod_list$mtcResults})
-    c <- data.frame(x$dev.ab)
-    c$names <- rownames(c)
-    p<-stemplot.df(c,x)
-  }
+
+  # Per-arm residual deviance for all studies
   output$dev1 <- renderPlotly({
     stemplot(model())
   })
+  
+  # Per-arm residual deviance for sensitivity analysis
   output$dev1_sub <- renderPlotly({
     stemplot(model_sub())
   })
   
-  levplot <- function(baye) {    # leverage plot
-    mod_list=baye
-    x<-mtc.deviance({mod_list$mtcResults})
-    p<-levplot.df(x)
-  }
+  # Leverage plot for all studies
   output$dev2 <- renderPlotly({
     levplot(model())
   })
+  
   output$dev2_sub <- renderPlotly({
     levplot(model_sub())
   })
   
+  # 3g. Model details
   
-  ### 3g.1 Model codes
+  # 3g-1 Model codes
   output$code <- renderPrint({
     cat(model()$mtcResults$model$code, fill=FALSE, labels=NULL, append=FALSE)
   })
   
-
-  ### 3g.2 initial values
+  # 3g-2 Initial values
   output$inits <- renderPrint({
     model()$mtcResults$model$inits
   })
   
-  ### 3g.3 download codes are in the download file.
+  # 3g-3 Download codes are in the download file.
   
-  ### 3g.4 output deviance
+  # 3g-4 Output deviance
+  
+  # NMA consistency model (all studies)
   output$dev <- renderPrint({
     mtc.deviance({model()$mtcResults})
   })
+  
+  # NMA consistency model (sensitivity)
   output$dev_sub <- renderPrint({
     mtc.deviance({model_sub()$mtcResults})
   })
+  
+  # UME inconsistency model (all studies)
   output$dev_ume<- renderPrint({
     scat_plot(model())$y
   })
+  
+  # UME inconsistency model (sensitivity)
   output$dev_ume_sub<- renderPrint({
     scat_plot(model_sub())$y
   })

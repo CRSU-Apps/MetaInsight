@@ -564,10 +564,10 @@ tabPanel("Data analysis", id="dtanalysis",
           p(tags$strong("Deviance report for all studies and the sensitivity analysis")),
           fluidRow(
            column(6,
-                  p(tags$strong("residual deviance from NMA model and UME inconsistency model for all studies")),
+                  p(tags$strong("Residual deviance from NMA model and UME inconsistency model for all studies")),
                   plotlyOutput("dev_scat")),
            column(6,
-                  p(tags$strong("residual deviance from NMA model and UME inconsistency model with studies excluded")),
+                  p(tags$strong("Residual deviance from NMA model and UME inconsistency model with studies excluded")),
                   plotlyOutput("dev_scat_sub")
            )),
            p("This plot represents each data points' contribution to the residual deviance for the 
@@ -672,9 +672,8 @@ tabPanel("Data analysis", id="dtanalysis",
                ))   
 ))))))))),
 
-
 ###################################
-### Tab 4 - User Guide ###
+### Tab 5 - User Guide ###
 ###################################
 
 tabPanel("User Guide",
@@ -688,8 +687,8 @@ tabPanel("User Guide",
          h4 (tags$strong("Cochrane training Webinar materials", style = "cursive;
                       color: #2196c4")),
          p(tags$strong("MetaInsight: Background, introduction, demonstration, limitations, and future plans")),
-         p("These videos were recorded live as part of the ", 
-           tags$a(href="https://training.cochrane.org/resource/metainsight-complex-review-support-unit-crsu-network-meta-analysis-nma-web-based-app", "Cochrane Training network meta-analysis learning live webinar series.",target="_blank"), 
+         p("These videos were recorded live as part of the ",
+           tags$a(href="https://training.cochrane.org/resource/metainsight-complex-review-support-unit-crsu-network-meta-analysis-nma-web-based-app", "Cochrane Training network meta-analysis learning live webinar series.",target="_blank"),
            "They are intended for people who are interested in undertaking a network meta-analysis using MetaInsight."),
          br(),
          HTML('<iframe width="560" height="315" src="https://www.youtube.com/embed/RR_tkICQv_s" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'),
@@ -700,14 +699,14 @@ tabPanel("User Guide",
 
 
 ###################################
-### Tab 4 - trouble shooting ###
+### Tab 6 - trouble shooting ###
 ###################################
 
 tabPanel(id="trouble", "Troubleshooting",
 #          tags$div(
 # includeHTML("troublesh.html")
 #          )
-tags$iframe(style="height:1500px; width:100%; scrolling=yes", 
+tags$iframe(style="height:1500px; width:100%; scrolling=yes",
             src="ts2.pdf")
 ),
 
@@ -716,25 +715,26 @@ tags$iframe(style="height:1500px; width:100%; scrolling=yes",
 
 
 ###################################
-### Tab 5 - Full update history ###
+### Tab 7 - Full update history ###
 ###################################
 
 tabPanel(id="update", "Full update history",
-         tags$iframe(style="height:1500px; width:100%; scrolling=yes", 
+         tags$iframe(style="height:1500px; width:100%; scrolling=yes",
                      src="fullupdatehistory4.pdf")
 ),
 
 
 
 ##############################
-### Tab 6 - Privacy notice ###
+### Tab 8 - Privacy notice ###
 ##############################
 
 
 
 tabPanel(id="privacy", "Privacy notice",
-   tags$iframe(style="height:1500px; width:100%; scrolling=yes", 
+   tags$iframe(style="height:1500px; width:100%; scrolling=yes",
                src="gdpr.pdf")
 )
+
 )
 )

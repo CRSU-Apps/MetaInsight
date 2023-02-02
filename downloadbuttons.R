@@ -1,5 +1,6 @@
-## MEtaInsight - downloadable files for data uploading instructions - code.
+## MetaInsight - downloadable files for data uploading instructions - code.
 
+source("plot.R") # Contains code for plots
 
 ## Sizing functions for forest plots ##
 BayesPixels <- function(notrt, title=FALSE) {    # input is total number of treatments and whether title is included in plot
@@ -91,20 +92,20 @@ output$downloadlabel2 <- downloadHandler(
 ### Tab 3 - Data analysis ###
 #############################
 
-##### 1a. Study Results download the grouped forest plot
+##### 1b. Study Results - download the grouped forest plot
 output$downloadStudy <- downloadHandler(
   filename = function() {
     paste0('StudyResults.', input$format_freq0)
   },
   content = function(file) {
-    if (input$format_freq0=="PDF"){pdf(file=file, pointsize = input$ForestContent, height=make_netStudy()$size, width=8)}
-    else {svg(file=file, pointsize = input$ForestContent, height=make_netStudy()$size, width=8)}
-    make_netStudy()
+    if (input$format_freq0=="PDF"){pdf(file=file, pointsize = input$ForestContent, height=make_netStudy(freq_sub(), outcome_measure(), input$ForestHeader, input$ForestTitle)$size, width=8)}
+    else {svg(file=file, pointsize = input$ForestContent, height=make_netStudy(freq_sub(), outcome_measure(), input$ForestHeader, input$ForestTitle)$size, width=8)}
+    make_netStudy(freq_sub(), outcome_measure(), input$ForestHeader, input$ForestTitle)
     dev.off()
   }
 )
 
-##### 1b. Network plot
+##### 1c. Network plot
 output$downloadNetwork <- downloadHandler(
   filename = function() {
     paste0('Network.', input$format_freq1)
@@ -142,15 +143,15 @@ output$downloadNetworkUpdate <- downloadHandler(
 )
 
 
-##### 2a. forest plot
+##### 2a. Forest plot
 output$downloadComp2 <- downloadHandler(
   filename = function() {
     paste0('All_studies.', input$format_freq3)
   },
   content = function(file) {
-    if (input$format_freq3=="PDF"){pdf(file=file, height=BayesInch(as.numeric(bugsnet_sumtb(bugsnetdt())$Value[1])), width=9)}
-    else {png(file=file, width=610, height=BayesPixels(as.numeric(bugsnet_sumtb(bugsnetdt())$Value[1])))}
-    make_netComp(freq_all(), ref_alter()$ref_all, input$freqmin, input$freqmax)
+    if (input$format_freq3=="PDF"){pdf(file=file, height=BayesInch(as.numeric(bugsnet_sumtb(bugsnetdt(), input$metaoutcome)$Value[1])), width=9)}
+    else {png(file=file, width=610, height=BayesPixels(as.numeric(bugsnet_sumtb(bugsnetdt(), input$metaoutcome)$Value[1])))}
+    make_netComp(freq_all(), input$modelranfix, reference_alter()$ref_all, input$freqmin, input$freqmax)
     #title("All studies")
     #title(paste("All studies: 
     #          Frequentist", model()$a, "model forest plot results"))
@@ -167,30 +168,23 @@ output$downloadComp<- downloadHandler(
     paste0('Excluded_studies.', input$format_freq4)
   },
   content = function(file) {
-    if (input$format_freq4=="PDF"){pdf(file=file, height=BayesInch(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% input$exclusionbox))$Value[1])), width=9)}
-    else {png(file=file, width=610, height=BayesPixels(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% input$exclusionbox))$Value[1])))}
-    make_netComp(freq_sub(), ref_alter()$ref_sub, input$freqmin_sub, input$freqmax_sub)
+    if (input$format_freq4=="PDF"){pdf(file=file, height=BayesInch(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% input$exclusionbox), input$metaoutcome)$Value[1])), width=9)}
+    else {png(file=file, width=610, height=BayesPixels(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% input$exclusionbox), input$metaoutcome)$Value[1])))}
+    make_netComp(freq_sub(), input$modelranfix, reference_alter()$ref_sub, input$freqmin_sub, input$freqmax_sub)
     #title(paste("Results with studies excluded: 
     #          Frequentist", model()$a, "model forest plot results"))
     dev.off()
   }
 )
 
-
-
-
-
-
-
-
-##### 2b. comparison rank table
+##### 2b. Comparison of all treatment pairs - comparison rank table
 output$downloadRank <- downloadHandler(
   filename = function() {
     paste('Rank.', '.csv', sep='')
   },
   content = function(file) {
     write.csv({
-      make_netrank(freq_all())
+      make_netrank(freq_all(), input$modelranfix, input$rankopts)
       }, file)
   })
 output$downloadRankUpdate <- downloadHandler(
@@ -199,18 +193,18 @@ output$downloadRankUpdate <- downloadHandler(
   },
   content = function(file) {
     write.csv({
-      make_netrank(freq_sub())
+      make_netrank(freq_sub(), input$modelranfix, input$rankopts)
       }, file)
   })
 
 
-##### 2c. inconsistency
+##### 2c. Inconsistency
 output$downloadIncon <- downloadHandler(
   filename = function() {
     paste('Inconsistency.', '.csv', sep='')
   },
   content = function(file) {
-    write.csv({make_Incon(freq_all())}, file)
+    write.csv({make_Incon(freq_all(), input$modelranfix)}, file)
   }
 )
 output$downloadIncon2 <- downloadHandler(
@@ -218,7 +212,7 @@ output$downloadIncon2 <- downloadHandler(
     paste('Inconsistency_sub.', '.csv', sep='')
   },
   content = function(file) {
-    write.csv({make_Incon(freq_sub())}, file)
+    write.csv({make_Incon(freq_sub(), input$modelranfix)}, file)
   }
 )
 
@@ -227,17 +221,17 @@ output$downloadIncon2 <- downloadHandler(
 #### 3. Bayesian ####
 #####################
 
-##### 3a. forest plot
+#### 3a. Forest plot
 output$downloadBaye_plot <- downloadHandler(
   filename = function() {
     paste0('All_studies.', input$format2)
   },
   content = function(file) {
-    if (input$format2=="PDF"){pdf(file=file, width=9, height=BayesInch(as.numeric(bugsnet_sumtb(bugsnetdt())$Value[1])))}
-    else {png(file=file, width=610, height=BayesPixels(as.numeric(bugsnet_sumtb(bugsnetdt())$Value[1])))}
+    if (input$format2=="PDF"){pdf(file=file, width=9, height=BayesInch(as.numeric(bugsnet_sumtb(bugsnetdt(), input$metaoutcome)$Value[1])))}
+    else {png(file=file, width=610, height=BayesPixels(as.numeric(bugsnet_sumtb(bugsnetdt(), input$metaoutcome)$Value[1])))}
     if (input$metaoutcome=="Binary") {forest(model()$mtcRelEffects,digits=3,xlim=c(log(input$bayesmin), log(input$bayesmax)))}
     if (input$metaoutcome=="Continuous") {forest(model()$mtcRelEffects,digits=3,xlim=c(input$bayesmin, input$bayesmax))}
-    #title(paste("All studies: 
+    #title(paste("All studies:
     #          Bayesian", model()$a, "consistency model forest plot results"))
     dev.off()
   }
@@ -248,25 +242,24 @@ output$downloadBaye_plot_sub<- downloadHandler(
     paste0('Excluded_studies.', input$format4)
   },
   content = function(file) {
-    if (input$format4=="PDF"){pdf(file=file, width=9, height=BayesInch(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% input$exclusionbox))$Value[1])))}
-    else {png(file=file, width=610, height=BayesPixels(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% input$exclusionbox))$Value[1])))}
+    if (input$format4=="PDF"){pdf(file=file, width=9, height=BayesInch(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% input$exclusionbox), input$metaoutcome)$Value[1])))}
+    else {png(file=file, width=610, height=BayesPixels(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% input$exclusionbox), input$metaoutcome)$Value[1])))}
     if (input$metaoutcome=="Binary") {forest(model_sub()$mtcRelEffects,digits=3,xlim=c(log(input$bayesmin_sub), log(input$bayesmax_sub)))}
     if (input$metaoutcome=="Continuous") {forest(model_sub()$mtcRelEffects,digits=3,xlim=c(input$bayesmin_sub, input$bayesmax_sub))}
-    #title(paste("Results with studies excluded: 
+    #title(paste("Results with studies excluded:
     #          Bayesian", model()$a, "consistency model forest plot results"))
     dev.off()
   }
 )
 
 
-
-##### 3b. comparison of all treatment pairs
+##### 3b. Comparison of all treatment pairs
 output$downloadbaye_comparison <- downloadHandler(
   filename = function() {
     paste('baye_comparison', '.csv', sep='')
   },
   content = function(file) {
-    write.csv({baye_comp(model())}, file)
+    write.csv({baye_comp(model(), input$metaoutcome, outcome_measure())}, file)
   }
 )
 
@@ -275,11 +268,9 @@ output$downloadbaye_comparison_sub <- downloadHandler(
     paste('baye_comparison_sub', '.csv', sep='')
   },
   content = function(file) {
-    write.csv({baye_comp(model_sub())}, file)
+    write.csv({baye_comp(model_sub(), input$metaoutcome, outcome_measure())}, file)
   }
 )
-
-
 
 ##### 3c. Ranking table
 output$downloadBaye_rank <- downloadHandler(
