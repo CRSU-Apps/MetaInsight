@@ -91,7 +91,9 @@ shinyUI(navbarPage(id="meta",
         and visualizing network meta-analyses using R-shiny and netmeta. Res Syn Meth. 2019; 10: 569-581.",align="left")),
      br(),
     
-       p("Codes for this app are available on Github. Please click ", tags$a(href="https://github.com/CRSU-Apps/MetaInsight", "here",target="_blank"), "to access."),
+       p("The code for MetaInsight is available on", tags$a(href="https://github.com/CRSU-Apps/MetaInsight", "GitHub",target="_blank"), 
+         ". There is also an", tags$a(href="https://github.com/CRSU-Apps/MetaInsight/offline_user_guide.md", "Offline User Guide",target="_blank"),
+         "with instructions on how to download and run MetaInsight on a local machine using RStudio."),
        br(),
        p("App powered by Rshiny.All frequentist statistical calculations are performed using R package netmeta (Gerta Rücker, Guido Schwarzer, Ulrike Krahn and Jochem König
         2017).", tags$a(href="http://CRAN.R-project.org/package=netmeta", "netmeta: Network Meta-Analysis using Frequentist Methods. R package version 0.9-8.",target="_blank"),
@@ -527,8 +529,9 @@ tabPanel("Data analysis", id="dtanalysis",
            the Bayesian analysis is highly numerically intensive and using it on the app can cause the app to disconnect in some circumstances.  
                We recommend people to download the whole app through",
                tags$a(href="https://github.com/CRSU-Apps/MetaInsight", "Github",target="_blank"), 
-               "and run it locally through RStudio on their own machine if they want to make use of this function. 
-             If you are not familiar with running ShinyApps in RStudio, please read this", tags$a(href="https://shiny.rstudio.com/tutorial/written-tutorial/lesson1/", "tutorial", target="_blank"), "from Shiny."),
+               "and run it locally through RStudio on their own machine if they want to make use of this function. Please consult the ", 
+            tags$a(href="https://github.com/CRSU-Apps/MetaInsight/offline_user_guide.md", "Offline User Guide",target="_blank"),
+               "for instructions on how to do this."),
            fluidRow(
              column(6,
                     p(tags$strong("Inconsistency test with notesplitting model for all studies")),
