@@ -654,7 +654,7 @@ shinyServer(function(input, output, session) {
   })
 
   # Inconsistency test with notesplitting model with studies excluded
-  model_nodesplit_sub <- eventReactive(input$node, {
+  model_nodesplit_sub <- eventReactive(input$node_sub, {
     nodesplit(sub = TRUE, data(), treatment_list(), input$metaoutcome, outcome_measure(),
                     input$modelranfix, input$exclusionbox)
   })
