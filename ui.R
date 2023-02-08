@@ -67,93 +67,76 @@ dashboardPage(
                             #   zoom: 75%; /* Webkit browsers */
                             #   }
                             #   "), 
-                            #h2("MetaInsight (including Bayesian estimates) V3.1.10 **", 
-                            h2("MetaInsight V4.0.2",
-                               tags$sup("Beta", style="color:#6CC0ED"), 
-                               align= "left"),
-                            prettyRadioButtons("metaoutcome","Please select your outcome type:",
-                                               c("Continuous (e.g. mean difference) " = "Continuous","Binary (e.g. Odds Ratio)" = "Binary"), 
-                                               animation = "pulse", status = "info", width = '400px'),
-                            fluidRow(
-                              column(3, br(), br(),
-                                     img(src='network2.jpg', width=500, height=400, align = "center")),
-                              column(2),
-                              column(5, 
-                                     br(),
-                                     p(tags$em("This beta version of MetaInsight is trialling the ", style="font-size:14pt; color:#6CC0ED"), tags$strong("new treatment ranking panel", style="font-size:14pt; color:#6CC0ED"), tags$em(" for Bayesian analyses", style="font-size:14pt; color:#6CC0ED")),
-                                     br(),
-                                     p("This beta version follows from version 3.1.10 of MetaInsight"),
-                                     br(),
-                                     p("If you have any feedback regarding this new major feature, please feel free to send an email to ", tags$a(href="mailto:crn4@leicester.ac.uk", "crn4@leicester.ac.uk", align= "left")),
-                                     br(),
-                                     tags$a(href="https://github.com/CRSU-Apps/MetaInsight/tree/ranking", "Click here to view the code base for this Beta version of MetaInsight", target="_blank"),
-                                     br(),
-                                     br(),
-                                     p("Version 4.0.2 corrects the minor incorrect colouring that was present on the outer nodes of the 'simplified' Radial SUCRA plot (21st Dec 2022)"),
-                                     br(),
-                                     p(tags$strong("Current bugs"), " that we are aware of and working on:", style="font-size:13pt"),
-                                     p(tags$ul(tags$li("If the Litmus Rank-O-Gram has added lines to help link data points and labels, these lines do not always appear when downloading the plot.")))
-                                     #p(tags$strong("Latest Updates:")),
-                                     #actionLink("history_click", "Click here to view a full update history of MetaInsight"),
-                                     #br(),
-       #tags$a(href="https://github.com/CRSU-Apps/MetaInsight/commits/main", "Click here to view the full version history of the code base for MetaInsight",target="_blank"),
-       #p(tags$strong("** New feature added on 15 December 2021 (v3.1.10)  ** :")),
-       #p(tags$ul(tags$li( "The user can now adjust the size of the labels on the network plots. "))),
-       #p(tags$strong("** Bug fixed on 6 December 2021 (v3.1.9) ** :")),
-       #p(tags$ul(tags$li( "It was discovered that the new feature added in v3.1.8 was not implemented for downloading forest 
-       #plots and so caused errors. This has now been resolved, and the new formatting options follow through when downloading 
-       #forest plots."))),
-                                     
-                              )),
-                            br(),
-                            p("Clareece Nevill, Yiqiao Xin, Rhiannon K Owen,  Naomi Bradbury, Nicola Cooper, and Alex Sutton", align= "left"),
-                            p("For feedback/questions about this app please contact Professor Alex Sutton", tags$a(href="mailto:ajs22@leicester.ac.uk", "ajs22@leicester.ac.uk", align= "left"), ". If you encounter any errors with using the app, please check  
-         the",  actionLink("tsp", "trouble shooting page"), "first before contacting us."),
-                            br(),
-                            p("If you use the app please cite it as:"),
-                            p(tags$a(href=" https://doi.org/10.1002/jrsm.1373", "Owen, RK, Bradbury, N, Xin, Y, Cooper, N, Sutton, A. MetaInsight: An interactive web-based tool for analyzing, interrogating, 
-        and visualizing network meta-analyses using R-shiny and netmeta. Res Syn Meth. 2019; 10: 569-581.",align="left")),
-                            br(),
-                            
-                            p("Codes for this app are available on Github. Please click ", tags$a(href="https://github.com/CRSU-Apps/MetaInsight", "here",target="_blank"), "to access."),
-                            br(),
-                            p("App powered by Rshiny.All frequentist statistical calculations are performed using R package netmeta (Gerta Rücker, Guido Schwarzer, Ulrike Krahn and Jochem König
-        2017).", tags$a(href="http://CRAN.R-project.org/package=netmeta", "netmeta: Network Meta-Analysis using Frequentist Methods. R package version 0.9-8.",target="_blank"),
-                              "All Bayesian statistical calculations are performed using R package gemtc (Gert van Valkenhoef, Joel Kuiper 2016)",
-                              tags$a(href="https://cran.r-project.org/web/packages/gemtc/gemtc.pdf", "gemtc: Network Meta-Analysis Using Bayesian Methods R package version 0.8-2.",target="_blank"),
-                              "and R package BUGSNET (Audrey Beliveau, Devon J. Boyne, Justin Slater, Darren Brenner & Paul Arora)",
-                              tags$a(href="https://bugsnetsoftware.github.io/", "BUGSnet: Bayesian inference Using Gibbs Sampling to conduct NETwork meta-analysis version 1.0.3.
-        ",target="_blank")),
-                            p("For users wishing to analyse large treatment networks or fit complex network meta-analysis models, please seek advice from technical experts."),
-                            br(),
-                            p("THE SOFTWARE IS PROVIDED AS IS, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
-         NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-         IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-         WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
-         OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."),
-                            wellPanel(
-                              fluidRow(
-                                column(5, img(src='NIHR_Logo4.jpg', width=472, height=125)),
-                                column(7, tags$div(class="header", checked=NA,
-                                                   tags$strong("Funding Acknowledgement:"),
-                                                   tags$p("The Complex Reviews Support Unit is funded by the National Institute for Health Research (project number 14/178/29)."),
-                                                   tags$strong("Department of Health Disclaimer: "),
-                                                   tags$p("The views and opinions expressed herein are those of the authors and do not necessarily reflect those of the NIHR, NHS or the Department of Health."),
-                                                   tags$p("Please click ", tags$a(href="http://www.nihrcrsu.org", "here ",
-                                                                                  target="_blank"), "for more information about the UK NIHR Complex Reviews Support Unit (CRSU).")
-                                ))))),
-                   
-                   
-                   #########################
-                   ### Tab 2 - Load data ###
-                   #########################
-                   
-                   # Within the load data tab let users select a file to upload, the upload happens in a sidebarPanel on
-                   # the left and the mainPanel will show the data once file uploaded.
-                   
-                   tabPanel("Load Data",
-                            htmlOutput("CONBI"),
-                            tags$head(tags$style("#CONBI{color: white;
+    h2("MetaInsight V4.0.0",
+      #tags$sup("Beta", style="color:#6CC0ED"), 
+      align= "left"),
+    prettyRadioButtons("metaoutcome","Please select your outcome type:",
+                      c("Continuous (e.g. mean difference) " = "Continuous","Binary (e.g. Odds Ratio)" = "Binary"), 
+                      animation = "pulse", status = "info", width = '400px'),
+    fluidRow(
+      column(3, br(), br(),
+            img(src='network2.jpg', width=500, height=400, align = "center")),
+      column(2),
+      column(5, 
+            p(tags$strong("Latest Updates:")),
+            actionLink("history_click", "Click here to view a full update history of MetaInsight"),
+            br(),
+            tags$a(href="https://github.com/CRSU-Apps/MetaInsight/commits/main", "Click here to view the full version history of the code base for MetaInsight",target="_blank"),
+            p(tags$strong("** Major New Feature: Redesign of Bayesian Ranking Panel (08 February 2023 v4.0.0) **:")),
+            p(tags$ul(tags$li("The Bayesian treatment ranking section has had a complete redesign including two newly developed plots 
+                              and a multifaceted panel to interpret the results with other evidence."))),
+            p(tags$strong("** 'Under-the-hood' changes on 02 February 2023 (v3.1.15) **:")),
+            p(tags$ul(tags$li("Changes have been made 'under-the-hood' of MetaInsight to improve the code base and prepare it for future features.
+                          No changes have been made to the functionality of MetaInsight.")))
+            )),
+    br(),
+    p("Clareece Nevill, Naomi Bradbury, Yiqiao Xin, Rhiannon K Owen, Nicola Cooper, and Alex Sutton", align= "left"),
+    p("For feedback/questions about this app please contact Professor Alex Sutton", tags$a(href="mailto:ajs22@leicester.ac.uk", "ajs22@leicester.ac.uk", align= "left"), ". If you encounter any errors with using the app, please check  
+       the",  actionLink("tsp", "trouble shooting page"), "first before contacting us."),
+    br(),
+    p("If you use the app please cite it as:"),
+    p(tags$a(href=" https://doi.org/10.1002/jrsm.1373", "Owen, RK, Bradbury, N, Xin, Y, Cooper, N, Sutton, A. MetaInsight: An interactive web-based tool for analyzing, interrogating, 
+      and visualizing network meta-analyses using R-shiny and netmeta. Res Syn Meth. 2019; 10: 569-581.",align="left")),
+    br(),
+    p("Codes for this app are available on Github. Please click ", tags$a(href="https://github.com/CRSU-Apps/MetaInsight", "here",target="_blank"), "to access."),
+    br(),
+    p("App powered by Rshiny.All frequentist statistical calculations are performed using R package netmeta (Gerta Rücker, Guido Schwarzer, Ulrike Krahn and Jochem König 2017).", 
+      tags$a(href="http://CRAN.R-project.org/package=netmeta", "netmeta: Network Meta-Analysis using Frequentist Methods. R package version 0.9-8.",target="_blank"),
+      "All Bayesian statistical calculations are performed using R package gemtc (Gert van Valkenhoef, Joel Kuiper 2016)",
+      tags$a(href="https://cran.r-project.org/web/packages/gemtc/gemtc.pdf", "gemtc: Network Meta-Analysis Using Bayesian Methods R package version 0.8-2.",target="_blank"),
+      "and R package BUGSNET (Audrey Beliveau, Devon J. Boyne, Justin Slater, Darren Brenner & Paul Arora)",
+      tags$a(href="https://bugsnetsoftware.github.io/", "BUGSnet: Bayesian inference Using Gibbs Sampling to conduct NETwork meta-analysis version 1.0.3.",target="_blank")),
+    p("For users wishing to analyse large treatment networks or fit complex network meta-analysis models, please seek advice from technical experts."),
+    br(),
+    p("THE SOFTWARE IS PROVIDED AS IS, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+      NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+      IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+      WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
+      OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."),
+     wellPanel(
+       fluidRow(
+         column(5, img(src='NIHR_Logo4.jpg', width=472, height=125)),
+         column(7, tags$div(class="header", checked=NA,
+                            tags$strong("Funding and Support Acknowledgement:"),
+                            tags$p("The Complex Reviews Support Unit is funded by the National Institute for Health Research (NIHR) (project number 14/178/29).
+                                   This app is also supported by the NIHR Applied Research Collaboration East Midlands (ARC EM)."),
+                            tags$strong("Disclaimer: "),
+                            tags$p("The views and opinions expressed herein are those of the authors and do not necessarily reflect those of the NIHR, NHS or the Department of Health and Social Care."),
+                            tags$p("Please click ", tags$a(href="http://www.nihrcrsu.org", "here ",
+                                                           target="_blank"), "for more information about the UK NIHR Complex Reviews Support Unit (CRSU).")
+         ))))),
+
+
+#########################
+### Tab 2 - Load data ###
+#########################
+
+# Within the load data tab let users select a file to upload, the upload happens in a sidebarPanel on
+# the left and the mainPanel will show the data once file uploaded.
+
+tabPanel("Load Data",
+   htmlOutput("CONBI"),
+   tags$head(tags$style("#CONBI{color: white;
                            font-size: 20px;
                            font-style: bold;
                            background-color: #2196c4
@@ -198,91 +181,93 @@ dashboardPage(
                                                      br(),
                                                      p(tags$strong("MetaInsight allows data in either long format, or wide format. This tab provides instructions for long format data, where each row contains one treatment arm. 
                           Please follow Steps 1 and 2 to upload the data file and enter the treatment labels. 
-                          Instructions are as below.")),
-                                                     h4(tags$strong("Step 1:")),
-                                                     p(),
-                                                     conditionalPanel(condition= "input.metaoutcome=='Continuous'",
-                                                                      p("The long format data file should contain six columns. Headings of columns are case sensitive."), 
-                                                                      p(tags$ul(tags$li("The", tags$strong("first"), "column should be labelled", tags$strong("StudyID"), "and contain the study identifier, starting from 1, then 2, 3, 4... etc."))),
-                                                                      p(tags$ul(tags$li("The", tags$strong("second"), "column should be labelled", tags$strong("Study"), "and contain the name (e.g., author,year) of the study. The study name must be unique for each study."))),
-                                                                      p(tags$ul(tags$li("The", tags$strong("third"), "column should be labelled", tags$strong("T"), "and contain the numerical treatment code used in each arm of the study.", 
-                                                                                        tags$strong("If applicable, your reference treatment (e.g. Placebo/Control)"), tags$strong(tags$u("needs to be labelled as 1."))))),
-                                                                      p(tags$ul(tags$li("The", tags$strong("fourth"), "column should be labelled", tags$strong("N"), "and contain the number of participants in each arm of the study."))),
-                                                                      p(tags$ul(tags$li("The", tags$strong("fifth"), "column should be labelled", tags$strong("Mean"), "and contain the mean value of the outcome in each arm of the study."))),
-                                                                      p(tags$ul(tags$li("The", tags$strong("sixth"), "column should be labelled", tags$strong("SD"), "and contain the standard deviation of the outcome in each arm of the study."))),
-                                                     ), 
-                                                     conditionalPanel(condition = "input.metaoutcome=='Binary'", 
-                                                                      p("The long format data file should contain five columns. Headings of columns are case sensitive."), 
-                                                                      p(tags$ul(tags$li("The", tags$strong("first"), "column should be labelled", tags$strong("StudyID"), "and contain the study identifier, starting from 1, then 2, 3, 4... etc."))),
-                                                                      p(tags$ul(tags$li("The", tags$strong("second"), "column should be labelled", tags$strong("Study"), "and contain the name (e.g., author,year) of the study. The study name must be unique for each study."))),
-                                                                      p(tags$ul(tags$li("The", tags$strong("third"), "column should be labelled", tags$strong("T"), "and contain the numerical treatment code used in each arm of the study.", 
-                                                                                        tags$strong("If applicable, your reference treatment (e.g. Placebo/Control)"), tags$strong(tags$u("needs to be labelled as 1."))))),
-                                                                      p(tags$ul(tags$li("The", tags$strong("fourth"), "column should be labelled", tags$strong("R"), 
-                                                                                        "and contain the number of participants with the outcome of interest in each arm of the study."))),
-                                                                      p(tags$ul(tags$li("The", tags$strong("fifth"), "column should be labelled", tags$strong("N"), "and contain the number of participants in each arm of the study."))),
-                                                                      p("N.B. Continuity corrections will need to be applied to cells containing 0 values"),               
-                                                     ),
-                                                     p("An example of this structure can be seen in the", tags$strong("'View Data'"), "tab."),
-                                                     p("The csv file that is used to produce the example dataset can be downloaded from here:"),
-                                                     downloadButton("downloadData", "Download the example dataset in long format"),
-                                                     br(),
-                                                     h4(tags$strong("Step 2:")),
-                                                     p("Enter the labels to match with the numerical treatment codes in the data file. Labels should be short to allow for clear display on figures."),
-                                                     p("Data can be copy and pasted from Excel or another tab separated file such as '.txt'"),
-                                                     p("The default 'treatment labels' text file can be downloaded from here:"),
-                                                     downloadButton("downloadlabel", "Download the example 'treatment labels' text file"),
-                                                     br(),
-                                                     p(),
-                                                     conditionalPanel(condition = "input.metaoutcome=='Continuous'", 
-                                                                      p(HTML(paste0("This default dataset for continuous outcome data is from Gray, LJ. et al. A systematic review and mixed treatment 
+                          Instructions are as below.
+                          Please note that MetaInsight is not compatible with studies containing multiple arms of the same treatment.")),
+            h4(tags$strong("Step 1:")),
+            p(),
+            conditionalPanel(condition= "input.metaoutcome=='Continuous'",
+              p("The long format data file should contain six columns. Headings of columns are case sensitive."), 
+              p(tags$ul(tags$li("The", tags$strong("first"), "column should be labelled", tags$strong("StudyID"), "and contain the study identifier, starting from 1, then 2, 3, 4... etc."))),
+              p(tags$ul(tags$li("The", tags$strong("second"), "column should be labelled", tags$strong("Study"), "and contain the name (e.g., author,year) of the study. The study name must be unique for each study."))),
+              p(tags$ul(tags$li("The", tags$strong("third"), "column should be labelled", tags$strong("T"), "and contain the numerical treatment code used in each arm of the study.", 
+                                tags$strong("If applicable, your reference treatment (e.g. Placebo/Control)"), tags$strong(tags$u("needs to be labelled as 1."))))),
+              p(tags$ul(tags$li("The", tags$strong("fourth"), "column should be labelled", tags$strong("N"), "and contain the number of participants in each arm of the study."))),
+              p(tags$ul(tags$li("The", tags$strong("fifth"), "column should be labelled", tags$strong("Mean"), "and contain the mean value of the outcome in each arm of the study."))),
+              p(tags$ul(tags$li("The", tags$strong("sixth"), "column should be labelled", tags$strong("SD"), "and contain the standard deviation of the outcome in each arm of the study.")))
+            ), 
+            conditionalPanel(condition = "input.metaoutcome=='Binary'", 
+              p("The long format data file should contain five columns. Headings of columns are case sensitive."), 
+              p(tags$ul(tags$li("The", tags$strong("first"), "column should be labelled", tags$strong("StudyID"), "and contain the study identifier, starting from 1, then 2, 3, 4... etc."))),
+              p(tags$ul(tags$li("The", tags$strong("second"), "column should be labelled", tags$strong("Study"), "and contain the name (e.g., author,year) of the study. The study name must be unique for each study."))),
+              p(tags$ul(tags$li("The", tags$strong("third"), "column should be labelled", tags$strong("T"), "and contain the numerical treatment code used in each arm of the study.", 
+                        tags$strong("If applicable, your reference treatment (e.g. Placebo/Control)"), tags$strong(tags$u("needs to be labelled as 1."))))),
+              p(tags$ul(tags$li("The", tags$strong("fourth"), "column should be labelled", tags$strong("R"), 
+                        "and contain the number of participants with the outcome of interest in each arm of the study."))),
+              p(tags$ul(tags$li("The", tags$strong("fifth"), "column should be labelled", tags$strong("N"), "and contain the number of participants in each arm of the study."))),
+              p("N.B. Continuity corrections will need to be applied to cells containing 0 values")               
+            ),
+            p("An example of this structure can be seen in the", tags$strong("'View Data'"), "tab."),
+            p("The csv file that is used to produce the example dataset can be downloaded from here:"),
+            downloadButton("downloadData", "Download the example dataset in long format"),
+            br(),
+            h4(tags$strong("Step 2:")),
+            p("Enter the labels to match with the numerical treatment codes in the data file. Labels should be short to allow for clear display on figures."),
+            p("Data can be copy and pasted from Excel or another tab separated file such as '.txt'"),
+            p("The default 'treatment labels' text file can be downloaded from here:"),
+            downloadButton("downloadlabel", "Download the example 'treatment labels' text file"),
+            br(),
+            p(),
+            conditionalPanel(condition = "input.metaoutcome=='Continuous'", 
+              p(HTML(paste0("This default dataset for continuous outcome data is from Gray, LJ. et al. A systematic review and mixed treatment 
                 comparison of pharmacological interventions for the treatment of obesity. Obesity reviews 13.6 (2012): 483-498.
                 The continuous outcome used is BMI loss (kg/m",tags$sup("2"),") 3 months from baseline.")))
                                                      ),
                                                      conditionalPanel(condition = "input.metaoutcome=='Binary'", 
                                                                       p("This default dataset for binary outcome data is from Hasselblad, V. (1998), Meta-Analysis of Multi-Treatment Studies, 
                 Medical Decision Making, 18, 37-43.
-                The binary outcome used is smoking cessation."),
-                                                     ),
-                                                     br(),
-                                                     p(tags$strong("Note: The default dataset, pre-loaded on the 'View Data' tab, and its pre-loaded treatment labels will be used for analysis if no file is selected or no treatment labels are pasted. The 'View Data' tab will automatically update once a file is successfully loaded."))
-                                            ),
-                                            
-                                            tabPanel("Wide format upload",
-                                                     h2(tags$strong("Instructions for uploading wide format data")),
-                                                     br(),
-                                                     p(tags$strong("MetaInsight allows data in either long format, or wide format. This tab provides instructions for wide format data, where each row contains all the treatment arms from one study. Please follow Steps 1 and 2 to upload the data file and enter the treatment labels. 
-                          Instructions are as below.")),
-                                                     h4(tags$strong("Step 1:")),
-                                                     downloadButton("downloadDataWide", "Download the example dataset in wide format"), # Button
-                                                     br(),
-                                                     p("Your data needs to have exactly the same variable names as in the example data which can be downloaded from here:"),
-                                                     p("Headings of columns are case sensitive."),
-                                                     p(tags$ul(tags$li(tags$strong("StudyID"), "contains study identifier, starting from 1, then 2, 3, 4... etc."))),
-                                                     p(tags$ul(tags$li(tags$strong("Study"), "contains name (e.g., author,year) of the study. The study name must be unique for each study."))),
-                                                     p(tags$ul(tags$li(tags$strong("T.1, T.2, ..., up to T.6"), "contains treatment given for study arm 1, 2, ..., up to 6, respectively given as a numerical code"))),
-                                                     conditionalPanel(condition= "input.metaoutcome=='Continuous'",
-                                                                      p(tags$ul(tags$li(tags$strong("N.1, N.2, ..., up to N.6"), "contains number of participants in study arm 1, 2, ..., up to 6, respectively"))),
-                                                                      p(tags$ul(tags$li(tags$strong("Mean.1, Mean.2, ..., up to Mean.6"), "contains the mean value of the outcome in study arm 1, 2, ..., up to 6, respectively"))),
-                                                                      p(tags$ul(tags$li(tags$strong("SD.1, SD.2, ..., up to SD.6"), "contains standard deviation of the outcome in study arm 1, 2, ..., up to 6, respectively"))),
-                                                     ),
-                                                     conditionalPanel(condition = "input.metaoutcome=='Binary'",
-                                                                      p(tags$ul(tags$li(tags$strong("R.1, R.2, ..., up to R.6"), "contains number of participants with the outcome of interest in study arm 1, 2, ..., up to 6, respectively"))),
-                                                                      p(tags$ul(tags$li(tags$strong("N.1, N.2, ..., up to N.6"), "contains number of participants in study arm 1, 2, ..., up to 6, respectively"))),
-                                                     ),
-                                                     p(tags$strong("Note: If applicable, your reference treatment (e.g. Placebo/Control)", 
-                                                                   tags$u("needs to be labelled as treatment 1"))),
-                                                     p(tags$strong("The maximum number of arms for each trial allowed in the MetaInsight app is 6.")),
-                                                     br(),
-                                                     h4(tags$strong("Step 2:")),
-                                                     p("Enter the labels to match with the numerical treatment codes in the data file. Labels should be short to allow for clear display on figures."),
-                                                     p("Data can be copy and pasted from Excel or another tab separated file such as '.txt'"),
-                                                     p("The default 'treatment labels' text file can be downloaded from here:"),
-                                                     downloadButton("downloadlabel2", "Download the example 'treatment labels' text file"),
-                                                     br(),
-                                                     p(),
-                                                     conditionalPanel(condition= "input.metaoutcome=='Continuous'",
-                                                                      p("This default dataset is from Gray, LJ. et al. A systematic review and mixed treatment 
-              comparison of pharmacological interventions for the treatment of obesity. Obesity reviews 13.6 (2012): 483-498."),
+                The binary outcome used is smoking cessation.")
+            ),
+            br(),
+            p(tags$strong("Note: The default dataset, pre-loaded on the 'View Data' tab, and its pre-loaded treatment labels will be used for analysis if no file is selected or no treatment labels are pasted. The 'View Data' tab will automatically update once a file is successfully loaded."))
+            ),
+
+         tabPanel("Wide format upload",
+            h2(tags$strong("Instructions for uploading wide format data")),
+            br(),
+            p(tags$strong("MetaInsight allows data in either long format, or wide format. This tab provides instructions for wide format data, where each row contains all the treatment arms from one study. Please follow Steps 1 and 2 to upload the data file and enter the treatment labels. 
+                          Instructions are as below.
+                          Please note that MetaInsight is not compatible with studies containing multiple arms of the same treatment.")),
+            h4(tags$strong("Step 1:")),
+            downloadButton("downloadDataWide", "Download the example dataset in wide format"), # Button
+            br(),
+            p("Your data needs to have exactly the same variable names as in the example data which can be downloaded from here:"),
+            p("Headings of columns are case sensitive."),
+            p(tags$ul(tags$li(tags$strong("StudyID"), "contains study identifier, starting from 1, then 2, 3, 4... etc."))),
+            p(tags$ul(tags$li(tags$strong("Study"), "contains name (e.g., author,year) of the study. The study name must be unique for each study."))),
+            p(tags$ul(tags$li(tags$strong("T.1, T.2, ..., up to T.6"), "contains treatment given for study arm 1, 2, ..., up to 6, respectively given as a numerical code"))),
+            conditionalPanel(condition= "input.metaoutcome=='Continuous'",
+              p(tags$ul(tags$li(tags$strong("N.1, N.2, ..., up to N.6"), "contains number of participants in study arm 1, 2, ..., up to 6, respectively"))),
+              p(tags$ul(tags$li(tags$strong("Mean.1, Mean.2, ..., up to Mean.6"), "contains the mean value of the outcome in study arm 1, 2, ..., up to 6, respectively"))),
+              p(tags$ul(tags$li(tags$strong("SD.1, SD.2, ..., up to SD.6"), "contains standard deviation of the outcome in study arm 1, 2, ..., up to 6, respectively")))
+            ),
+            conditionalPanel(condition = "input.metaoutcome=='Binary'",
+              p(tags$ul(tags$li(tags$strong("R.1, R.2, ..., up to R.6"), "contains number of participants with the outcome of interest in study arm 1, 2, ..., up to 6, respectively"))),
+              p(tags$ul(tags$li(tags$strong("N.1, N.2, ..., up to N.6"), "contains number of participants in study arm 1, 2, ..., up to 6, respectively")))
+            ),
+            p(tags$strong("Note: If applicable, your reference treatment (e.g. Placebo/Control)", 
+                          tags$u("needs to be labelled as treatment 1"))),
+            p(tags$strong("The maximum number of arms for each trial allowed in the MetaInsight app is 6.")),
+            br(),
+            h4(tags$strong("Step 2:")),
+            p("Enter the labels to match with the numerical treatment codes in the data file. Labels should be short to allow for clear display on figures."),
+            p("Data can be copy and pasted from Excel or another tab separated file such as '.txt'"),
+            p("The default 'treatment labels' text file can be downloaded from here:"),
+            downloadButton("downloadlabel2", "Download the example 'treatment labels' text file"),
+            br(),
+            p(),
+            conditionalPanel(condition= "input.metaoutcome=='Continuous'",
+              p("This default dataset is from Gray, LJ. et al. A systematic review and mixed treatment 
+              comparison of pharmacological interventions for the treatment of obesity. Obesity reviews 13.6 (2012): 483-498.")
                                                      ),
                                                      conditionalPanel(condition = "input.metaoutcome=='Binary'",
                                                                       p("This default dataset for binary outcome data is from Hasselblad, V. (1998), Meta-Analysis of Multi-Treatment Studies, 
@@ -415,7 +400,7 @@ dashboardPage(
          )),
          tabPanel("2. Frequentist network meta-analysis", tabsetPanel(
             tabPanel("2a. Forest Plot",
-                column(6, plotOutput("Comparison2", height = "550px", width = "400px"), 
+                column(6, uiOutput("FreqForestPlot"), 
                        fixedRow(
                          p("Options to change limits of the x-axis:"),
                          column(6, align = 'center', numericInput('freqmin', label="Minimum", value=0.1)),
@@ -423,7 +408,7 @@ dashboardPage(
                        ),
                        textOutput("textcomp"), textOutput("ref4"), radioButtons('format_freq3', 'Document format', c('PDF', 'PNG'), inline = TRUE), downloadButton('downloadComp2')
                   ),
-                column(6, plotOutput("SFPUpdatingComp", height = "550px", width = "400px"),
+                column(6, uiOutput("FreqForestPlot_sub"),
                        fixedRow(
                          p("Options to change limits of the x-axis:"),
                          column(6, align = 'center', numericInput('freqmin_sub', label="Minimum", value=0.1)),
@@ -448,9 +433,9 @@ dashboardPage(
                                              tableOutput("Incon2"), downloadButton('downloadIncon2', "Download")
                                     ))),
                                   tabPanel("3. Bayesian network meta-analysis", tabsetPanel(id="tab",
-                                                                                            tabPanel("3a. Forest plot",
-                                                                                                     helpText("Baysesian result using the gemtc package.", tags$br(), 
-                                                                                                              "Heterogeneity prior: standard deviation ~ U(0,X), where X represents a ", tags$i("very large"), "difference in the analysis' outcome scale and is determined from the data.", tags$br(), tags$i("Please note the outcome for continuous data has to be "), tags$b("mean difference"), tags$i(" for the Bayesian analysis. 
+            tabPanel("3a. Forest plot",
+                    helpText("Baysesian result using the gemtc package.", tags$br(), 
+                            "Heterogeneity prior: standard deviation ~ U(0,X), where X represents a ", tags$i("very large"), "difference in the analysis' outcome scale and is determined from the data.", tags$br(), tags$i("Please note the outcome for continuous data has to be "), tags$b("mean difference"), tags$i(" for the Bayesian analysis. 
                      Standardised mean difference cannot be analysed."), tags$br(), tags$i("Please note the outcome for binary data has to be "), tags$b("Odds Ratio or Risk Ratio"), tags$i(" for the Bayesian analysis. 
                      Risk difference cannot be analysed."), tags$strong("Please note each simulation may take 20 seconds.", style="color:#FF0000")),
             fixedRow(
@@ -466,7 +451,7 @@ dashboardPage(
               )),
             fixedRow(
               column(6, align = "center",
-                     plotOutput("gemtc", height = 550),
+                     uiOutput("BayesianForestPlot"),
                      fixedRow(
                        p("Options to change limits of the x-axis:"),
                        column(6, align = 'center', numericInput('bayesmin', label="Minimum", value=0.1)),
@@ -481,7 +466,7 @@ dashboardPage(
                      downloadButton('downloadBaye_plot')
               ),
               column(6, align = "center",
-                     plotOutput("gemtc_sub", height = 550),
+                     uiOutput("BayesianForestPlot_sub"),
                      fixedRow(
                        p("Options to change limits of the x-axis:"),
                        column(6, align = 'center', numericInput('bayesmin_sub', label="Minimum", value=0.1)),
@@ -490,154 +475,155 @@ dashboardPage(
                      tags$style("#ref_change_bay {
                                  background-color: #ffd966;
                                  display:block; }"),
-                                                                                                              textOutput("ref_change_bay"),
-                                                                                                              br(),
-                                                                                                              p("Model fit:"),
-                                                                                                              tableOutput("dic_sub"),
-                                                                                                              textOutput("text_gemtc_sub"),
-                                                                                                              br(),
-                                                                                                              br(),
-                                                                                                              radioButtons('format4', 'Document format', c('PDF', 'PNG'), inline = TRUE), 
-                                                                                                              downloadButton('downloadBaye_plot_sub')
-                                                                                                       ))),
-                                                                                            tabPanel("3b. Comparison of all treatment pairs",
-                                                                                                     helpText("Please note: if you change the selections on the sidebar, 
+                     textOutput("ref_change_bay"),
+                     br(),
+                     p("Model fit:"),
+                     tableOutput("dic_sub"),
+                     textOutput("text_gemtc_sub"),
+                     br(),
+                     br(),
+                     radioButtons('format4', 'Document format', c('PDF', 'PNG'), inline = TRUE), 
+                     downloadButton('downloadBaye_plot_sub')
+                     ))),
+              tabPanel("3b. Comparison of all treatment pairs",
+                      helpText("Please note: if you change the selections on the sidebar, 
                                you will need to re-run the primary and/or sensitivity analysis from the 'Forest Plot' page."),
-                                                                                                     p(tags$strong("In contrast to the 'comparison of all treatment pairs' tab in the frequentist NMA results, 
-              this table only contains the estimates from the network meta analysis, 
-              i.e. does not contain estimates from pairwise meta-analysis which only contains direct evidence. 
-                          If you would like to obtain the pairwise meta-analysis results, please run 3d. Nodesplit model")),
-                                                                                                     br(),
-                                                                                                     p(tags$strong("Treatment effects for all studies: comparison of all treatment pairs.")),
-                                                                                                     tableOutput("baye_comparison"),
-                                                                                                     downloadButton('downloadbaye_comparison'),
-                                                                                                     br(),
-                                                                                                     br(),
-                                                                                                     p(tags$strong("Treatment effects with studies excluded: comparison of all treatment pairs.")),
-                                                                                                     tableOutput("baye_comparison_sub"),
-                                                                                                     downloadButton('downloadbaye_comparison_sub')
-                                                                                            ),
-                                                                                            tabPanel("3c. Ranking Panel",
-                                                                                                     helpText("Please note: if you change the selections on the sidebar, 
-                               you will need to re-run the primary and/or sensitivity analysis from the 'Forest Plot' page.", tags$br(), tags$strong("Please note it may take up to 5 minutes to load the results.", style="color:#FF0000")),
-                                                                                                     fluidRow(   
-                                                                                                       box(title="Ranking panel for all studies", status='primary', solidHeader=TRUE, width=12, collapsible=TRUE,
-                                                                                                           splitLayout(cellWidths=c("30%","40%","30%"), cellArgs = list(style="height: 780px; padding: 16px; border: 2px solid gold; white-space: normal"),
-                                                                                                                       fluidRow(align = "center", h4("Relative Effects"), withSpinner(plotOutput("gemtc2"), type=6),
-                                                                                                                                textOutput("relative_rank_text"),
-                                                                                                                                radioButtons('rank_forest_choice', 'Document format', c('PDF'='pdf', 'PNG'='png'), inline = TRUE), 
-                                                                                                                                downloadButton('download_rank_forest')),
-                                                                                                                       fluidRow(align = "center", h4("Ranking Results"), 
-                                                                                                                                radioButtons("rank_plot_choice", label="Choice of Rank plot", choices=list("Litmus Rank-O-Gram"=0, "Radial SUCRA"=1), selected=0, inline=TRUE),
-                                                                                                                                checkboxInput("Colour_blind", label="Display colour-blind friendly version", value=FALSE),
-                                                                                                                                conditionalPanel(condition= "input.rank_plot_choice==0", withSpinner(plotOutput("Litmus"), type=6),
-                                                                                                                                  p("Litmus Rank-O-Gram: Higher SUCRA (Surface Under the Cumulative Ranking Curve) values and cumulative ranking curves nearer the top left indicate better performance")),
-                                                                                                                                conditionalPanel(condition="input.rank_plot_choice==1 && !input.Radial_alt", withSpinner(plotOutput("Radial"), type=6)),
-                                                                                                                                conditionalPanel(condition="input.rank_plot_choice==1 && input.Radial_alt", withSpinner(plotOutput("RadialAlt"), type=6)),
-                                                                                                                                conditionalPanel(condition="input.rank_plot_choice==1",
-                                                                                                                                  checkboxInput("Radial_alt", label="Display simplified version", value=FALSE),
-                                                                                                                                  p("Radial SUCRA plot: Higher SUCRA values indicate better treatments; size of nodes represent number of participants and thickness of lines indicate number of trials conducted")),
-                                                                                                                                dropMenu(dropdownButton(circle=FALSE, status='warning', label="Ranking probabilities and SUCRA values for all treatments"),
-                                                                                                                                         tableOutput("rank_probs")), div(style="margin-bottom:10px"), #some padding between buttons
-                                                                                                                                fluidRow(column(6, downloadButton('download_rank_plot', "Download Rank plot (PNG)", style = "width:220px; white-space: normal")), column(6, downloadButton('download_rank_table', label="Download table of rank probablities and SUCRA", style = "width:220px; white-space: normal")))
-                                                                                                                                ),
-                                                                                                                       fluidRow(align = "center", h4("Summary of evidence"), 
-                                                                                                                                withSpinner(plotOutput("netGraphStatic1_rank"), type=6),
-                                                                                                                                conditionalPanel(condition= "input.networkstyle_rank=='networkp1'",
-                                                                                                                                                 p("Numbers on the line indicate number of trials conducted for the comparison. Any shaded areas indicate existence of multi-arm trials between the comparisons.")
-                                                                                                                                ),
-                                                                                                                                conditionalPanel(condition= "input.networkstyle_rank=='networkp2'",
-                                                                                                                                                 p("The size of the nodes and thickness of edges represent the number of studies that examined a treatment and compared two given treatments respectively.")
-                                                                                                                                ),
-                                                                                                                                radioButtons("networkstyle_rank", "Please choose a network plot style", c("Number of trials shown on the line" = "networkp1","Number of trials indicated by node size and line thickness" = "networkp2"), inline=TRUE),
-                                                                                                                                radioButtons('network_rank_choice', 'Document format', c('PDF'='pdf', 'PNG'='png'), inline = TRUE),
-                                                                                                                                downloadButton('download_network_rank')
-                                                                                                                                ))
-                                                                                                     )),
-                                                                                                     fluidRow(   
-                                                                                                       box(title="Ranking panel with studies excluded", status='primary', solidHeader=TRUE, width=12, collapsible=TRUE,
-                                                                                                           splitLayout(cellWidths=c("30%","40%","30%"), cellArgs = list(style="height: 780px; padding: 16px; border: 2px solid gold; white-space: normal"),
-                                                                                                                       fluidRow(align = "center", h4("Relative Effects"), withSpinner(plotOutput("gemtc_sub2"), type=6),
-                                                                                                                                textOutput("relative_rank_text_sub"),
-                                                                                                                                radioButtons('rank_forest_choice_sub', 'Document format', c('PDF'='pdf', 'PNG'='png'), inline = TRUE), 
-                                                                                                                                downloadButton('download_rank_forest_sub')),
-                                                                                                                       fluidRow(align = "center", h4("Ranking Results"), 
-                                                                                                                                radioButtons("rank_plot_choice_sub", label="Choice of Rank plot", choices=list("Litmus Rank-O-Gram"=0, "Radial SUCRA"=1), selected=0, inline=TRUE),
-                                                                                                                                checkboxInput("Colour_blind_sub", label="Display colour-blind friendly version", value=FALSE),
-                                                                                                                                conditionalPanel(condition="input.rank_plot_choice_sub==0", withSpinner(plotOutput("Litmus_sub"), type=6),
-                                                                                                                                  p("Litmus Rank-O-Gram: Higher SUCRA (Surface Under the Cumulative Ranking Curve) values and cumulative ranking curves nearer the top left indicate better performance")),
-                                                                                                                                conditionalPanel(condition="input.rank_plot_choice_sub==1 && !input.Radial_alt_sub", withSpinner(plotOutput("Radial_sub"), type=6)),
-                                                                                                                                conditionalPanel(condition="input.rank_plot_choice_sub==1 && input.Radial_alt_sub", withSpinner(plotOutput("RadialAlt_sub"), type=6)),
-                                                                                                                                conditionalPanel(condition="input.rank_plot_choice_sub==1",
-                                                                                                                                                 checkboxInput("Radial_alt_sub", label="Display simplified version", value=FALSE),
-                                                                                                                                                 p("Radial SUCRA plot: Higher SUCRA values indicate better treatments; size of nodes represent number of participants and thickness of lines indicate number of trials conducted")),
-                                                                                                                                dropMenu(dropdownButton(circle=FALSE, status='warning', label="Ranking probabilities and SUCRA values for all treatments"),
-                                                                                                                                         tableOutput("rank_probs_sub")), div(style="margin-bottom:10px"), #some padding between buttons
-                                                                                                                                fluidRow(column(6, downloadButton('download_rank_plot_sub', "Download Rank plot (PNG)", style = "width:220px; white-space: normal")), column(6, downloadButton('download_rank_table_sub', label="Download table of rank probablities and SUCRA", style = "width:220px; white-space: normal")))),
-                                                                                                                       fluidRow(align = "center", h4("Summary of evidence"), 
-                                                                                                                                withSpinner(plotOutput("netGraphStatic1_rank_sub"), type=6),
-                                                                                                                                conditionalPanel(condition= "input.networkstyle_rank_sub=='networkp1'",
-                                                                                                                                                 p("Numbers on the line indicate number of trials conducted for the comparison. Any shaded areas indicate existence of multi-arm trials between the comparisons.")
-                                                                                                                                ),
-                                                                                                                                conditionalPanel(condition= "input.networkstyle_rank_sub=='networkp2'",
-                                                                                                                                                 p("The size of the nodes and thickness of edges represent the number of studies that examined a treatment and compared two given treatments respectively.")
-                                                                                                                                ),
-                                                                                                                                radioButtons("networkstyle_rank_sub", "Please choose a network plot style", c("Number of trials shown on the line" = "networkp1","Number of trials indicated by node size and line thickness" = "networkp2"), inline=TRUE),
-                                                                                                                                radioButtons('network_rank_choice_sub', 'Document format', c('PDF'='pdf', 'PNG'='png'), inline = TRUE),
-                                                                                                                                downloadButton('download_network_rank_sub')
-                                                                                                                       ))
-                                                                                                     ))),
-                                                                                            tabPanel("3d. Nodesplit model",
-                                                                                                     helpText("Please note: if you change the selections on the sidebar, 
-                               you will need to re-run the primary and/or sensitivity analysis from the 'Forest Plot' page."),
-                                                                                                     p("Please note: This may take more than 10 minutes depending on the number of treatment options. The node splitting option for
-           the Bayesian analysis is highly numerically intensive and using it on the app can cause the app to disconnect in some circumstances.  
-               We recommend people to download the whole app through",
-                                                                                                       tags$a(href="https://github.com/CRSU-Apps/MetaInsight", "Github",target="_blank"), 
-                                                                                                       "and run it locally through RStudio on their own machine if they want to make use of this function. 
-             If you are not familiar with running ShinyApps in RStudio, please read this", tags$a(href="https://shiny.rstudio.com/tutorial/written-tutorial/lesson1/", "tutorial", target="_blank"), "from Shiny."),
-                                                                                                     fluidRow(
-                                                                                                       column(6,
-                                                                                                              p(tags$strong("Inconsistency test with notesplitting model for all studies")),
-                                                                                                              actionButton("node", "Click here to run the nodesplitting analysis for all studies"),
-                                                                                                              tableOutput("node_table"),
-                                                                                                              downloadButton('downloadnode')
-                                                                                                       ),
-                                                                                                       column(6,
-                                                                                                              p(tags$strong("Inconsistency test with notesplitting model with studies excluded")),
-                                                                                                              actionButton("node_sub", "Click here to run the nodesplitting analysis with studies excluded"),
-                                                                                                              tableOutput("node_table_sub"),
-                                                                                                              downloadButton('downloadnode_sub')
-                                                                                                       ))),
-                                                                                            tabPanel("3e. Bayesian result details",
-                                                                                                     helpText("Please note: if you change the selections on the sidebar, 
-                               you will need to re-run the primary and/or sensitivity analysis from the 'Forest Plot' page."),
-                                                                                                     fluidRow(
-                                                                                                       column(6,
-                                                                                                              p(tags$strong("Results details for all studies")),
-                                                                                                              verbatimTextOutput("gemtc_results"),
-                                                                                                              p(tags$strong("Gelman convergence assessment plot for all studies")),
-                                                                                                              plotOutput("gemtc_gelman")
-                                                                                                       ),
-                                                                                                       column(6,
-                                                                                                              p(tags$strong("Results details with studies excluded")),
-                                                                                                              verbatimTextOutput("gemtc_results_sub"),
-                                                                                                              p(tags$strong("Gelman convergence assessment plot with studies excluded")),
-                                                                                                              plotOutput("gemtc_gelman_sub"))
-                                                                                                     )),        
-                                                                                            tabPanel("3f. Deviance report",
-                                                                                                     helpText("Please note: if you change the selections on the sidebar, 
-                               you will need to re-run the primary and/or sensitivity analysis from the 'Forest Plot' page."),
-                                                                                                     p(tags$strong("Deviance report for all studies and the sensitivity analysis")),
-                                                                                                     fluidRow(
-                                                                                                       column(6,
-                                                                                                              p(tags$strong("residual deviance from NMA model and UME inconsistency model for all studies")),
-                                                                                                              plotlyOutput("dev_scat")),
-                                                                                                       column(6,
-                                                                                                              p(tags$strong("residual deviance from NMA model and UME inconsistency model with studies excluded")),
-                                                                                                              plotlyOutput("dev_scat_sub")
-                                                                                                       )),
-                                                                                                     p("This plot represents each data points' contribution to the residual deviance for the 
+                      p(tags$strong("In contrast to the 'comparison of all treatment pairs' tab in the frequentist NMA results, 
+                                    this table only contains the estimates from the network meta analysis, 
+                                    i.e. does not contain estimates from pairwise meta-analysis which only contains direct evidence. 
+                                    If you would like to obtain the pairwise meta-analysis results, please run 3d. Nodesplit model")),
+              br(),
+              p(tags$strong("Treatment effects for all studies: comparison of all treatment pairs.")),
+              tableOutput("baye_comparison"),
+              downloadButton('downloadbaye_comparison'),
+              br(),
+              br(),
+              p(tags$strong("Treatment effects with studies excluded: comparison of all treatment pairs.")),
+              tableOutput("baye_comparison_sub"),
+              downloadButton('downloadbaye_comparison_sub')
+              ),
+        tabPanel("3c. Ranking Panel",
+                helpText("Please note: if you change the selections on the sidebar, 
+                         you may need to re-run the primary and/or sensitivity analysis from the 'Forest Plot' page.", 
+                         tags$br(), tags$strong("Please note it may take up to 5 minutes to load the results.", style="color:#FF0000")),
+                fluidRow(   
+                    box(title="Ranking panel for all studies", status='primary', solidHeader=TRUE, width=12, collapsible=TRUE,
+                        splitLayout(cellWidths=c("30%","40%","30%"), cellArgs = list(style="height: 780px; padding: 16px; border: 2px solid gold; white-space: normal"),
+                        fluidRow(align = "center", h4("Relative Effects"), withSpinner(plotOutput("gemtc2"), type=6),
+                                textOutput("relative_rank_text"),
+                                radioButtons('rank_forest_choice', 'Document format', c('PDF'='pdf', 'PNG'='png'), inline = TRUE), 
+                                downloadButton('download_rank_forest')),
+                        fluidRow(align = "center", h4("Ranking Results"), 
+                                radioButtons("rank_plot_choice", label="Choice of Rank plot", choices=list("Litmus Rank-O-Gram"=0, "Radial SUCRA"=1), selected=0, inline=TRUE),
+                                checkboxInput("Colour_blind", label="Display colour-blind friendly version", value=FALSE),
+                                conditionalPanel(condition= "input.rank_plot_choice==0", withSpinner(plotOutput("Litmus"), type=6),
+                                  p("Litmus Rank-O-Gram: Higher SUCRA (Surface Under the Cumulative Ranking Curve) values and cumulative ranking curves nearer the top left indicate better performance")),
+                                conditionalPanel(condition="input.rank_plot_choice==1 && !input.Radial_alt", withSpinner(plotOutput("Radial"), type=6)),
+                                conditionalPanel(condition="input.rank_plot_choice==1 && input.Radial_alt", withSpinner(plotOutput("RadialAlt"), type=6)),
+                                conditionalPanel(condition="input.rank_plot_choice==1",
+                                  checkboxInput("Radial_alt", label="Display simplified version", value=FALSE),
+                                  p("Radial SUCRA plot: Higher SUCRA values indicate better treatments; size of nodes represent number of participants and thickness of lines indicate number of trials conducted")),
+                                dropMenu(dropdownButton(circle=FALSE, status='warning', label="Ranking probabilities and SUCRA values for all treatments"),
+                                tableOutput("rank_probs")), div(style="margin-bottom:10px"), #some padding between buttons
+                                fluidRow(column(6, downloadButton('download_rank_plot', "Download Rank plot (PNG)", style = "width:220px; white-space: normal")), column(6, downloadButton('download_rank_table', label="Download table of rank probablities and SUCRA", style = "width:220px; white-space: normal")))
+                                ),
+                        fluidRow(align = "center", h4("Summary of evidence"), 
+                                withSpinner(plotOutput("netGraphStatic1_rank"), type=6),
+                                conditionalPanel(condition= "input.networkstyle_rank=='networkp1'",
+                                                p("Numbers on the line indicate number of trials conducted for the comparison. Any shaded areas indicate existence of multi-arm trials between the comparisons.")
+                                ),
+                                conditionalPanel(condition= "input.networkstyle_rank=='networkp2'",
+                                                p("The size of the nodes and thickness of edges represent the number of studies that examined a treatment and compared two given treatments respectively.")
+                                ),
+                                radioButtons("networkstyle_rank", "Please choose a network plot style", c("Number of trials shown on the line" = "networkp1","Number of trials indicated by node size and line thickness" = "networkp2"), inline=TRUE),
+                                radioButtons('network_rank_choice', 'Document format', c('PDF'='pdf', 'PNG'='png'), inline = TRUE),
+                                downloadButton('download_network_rank')
+                                ))
+                )),
+                fluidRow(   
+                    box(title="Ranking panel with studies excluded", status='primary', solidHeader=TRUE, width=12, collapsible=TRUE,
+                        splitLayout(cellWidths=c("30%","40%","30%"), cellArgs = list(style="height: 780px; padding: 16px; border: 2px solid gold; white-space: normal"),
+                        fluidRow(align = "center", h4("Relative Effects"), withSpinner(plotOutput("gemtc_sub2"), type=6),
+                                textOutput("relative_rank_text_sub"),
+                                radioButtons('rank_forest_choice_sub', 'Document format', c('PDF'='pdf', 'PNG'='png'), inline = TRUE), 
+                                downloadButton('download_rank_forest_sub')),
+                        fluidRow(align = "center", h4("Ranking Results"), 
+                                radioButtons("rank_plot_choice_sub", label="Choice of Rank plot", choices=list("Litmus Rank-O-Gram"=0, "Radial SUCRA"=1), selected=0, inline=TRUE),
+                                checkboxInput("Colour_blind_sub", label="Display colour-blind friendly version", value=FALSE),
+                                conditionalPanel(condition="input.rank_plot_choice_sub==0", withSpinner(plotOutput("Litmus_sub"), type=6),
+                                 p("Litmus Rank-O-Gram: Higher SUCRA (Surface Under the Cumulative Ranking Curve) values and cumulative ranking curves nearer the top left indicate better performance")),
+                                conditionalPanel(condition="input.rank_plot_choice_sub==1 && !input.Radial_alt_sub", withSpinner(plotOutput("Radial_sub"), type=6)),
+                                conditionalPanel(condition="input.rank_plot_choice_sub==1 && input.Radial_alt_sub", withSpinner(plotOutput("RadialAlt_sub"), type=6)),
+                                conditionalPanel(condition="input.rank_plot_choice_sub==1",
+                                                checkboxInput("Radial_alt_sub", label="Display simplified version", value=FALSE),
+                                                p("Radial SUCRA plot: Higher SUCRA values indicate better treatments; size of nodes represent number of participants and thickness of lines indicate number of trials conducted")),
+                                dropMenu(dropdownButton(circle=FALSE, status='warning', label="Ranking probabilities and SUCRA values for all treatments"),
+                                        tableOutput("rank_probs_sub")), div(style="margin-bottom:10px"), #some padding between buttons
+                                        fluidRow(column(6, downloadButton('download_rank_plot_sub', "Download Rank plot (PNG)", style = "width:220px; white-space: normal")), column(6, downloadButton('download_rank_table_sub', label="Download table of rank probablities and SUCRA", style = "width:220px; white-space: normal")))),
+                        fluidRow(align = "center", h4("Summary of evidence"), 
+                                withSpinner(plotOutput("netGraphStatic1_rank_sub"), type=6),
+                                conditionalPanel(condition= "input.networkstyle_rank_sub=='networkp1'",
+                                  p("Numbers on the line indicate number of trials conducted for the comparison. Any shaded areas indicate existence of multi-arm trials between the comparisons.")
+                                ),
+                                conditionalPanel(condition= "input.networkstyle_rank_sub=='networkp2'",
+                                 p("The size of the nodes and thickness of edges represent the number of studies that examined a treatment and compared two given treatments respectively.")
+                                ),
+                                radioButtons("networkstyle_rank_sub", "Please choose a network plot style", c("Number of trials shown on the line" = "networkp1","Number of trials indicated by node size and line thickness" = "networkp2"), inline=TRUE),
+                                radioButtons('network_rank_choice_sub', 'Document format', c('PDF'='pdf', 'PNG'='png'), inline = TRUE),
+                                downloadButton('download_network_rank_sub')
+                        ))
+        ))),
+        tabPanel("3d. Nodesplit model",
+                helpText("Please note: if you change the selections on the sidebar, 
+                          you will need to re-run the primary and/or sensitivity analysis from the 'Forest Plot' page."),
+                p("Please note: This may take more than 10 minutes depending on the number of treatment options. The node splitting option for
+                  the Bayesian analysis is highly numerically intensive and using it on the app can cause the app to disconnect in some circumstances.  
+                  We recommend people to download the whole app through",
+                  tags$a(href="https://github.com/CRSU-Apps/MetaInsight", "Github",target="_blank"), 
+                  "and run it locally through RStudio on their own machine if they want to make use of this function. 
+                  If you are not familiar with running ShinyApps in RStudio, please read this", tags$a(href="https://shiny.rstudio.com/tutorial/written-tutorial/lesson1/", "tutorial", target="_blank"), "from Shiny."),
+                  fluidRow(
+                    column(6,
+                          p(tags$strong("Inconsistency test with notesplitting model for all studies")),
+                         actionButton("node", "Click here to run the nodesplitting analysis for all studies"),
+                         tableOutput("node_table"),
+                         downloadButton('downloadnode')
+                    ),
+                    column(6,
+                          p(tags$strong("Inconsistency test with notesplitting model with studies excluded")),
+                          actionButton("node_sub", "Click here to run the nodesplitting analysis with studies excluded"),
+                          tableOutput("node_table_sub"),
+                          downloadButton('downloadnode_sub')
+                ))),
+        tabPanel("3e. Bayesian result details",
+                helpText("Please note: if you change the selections on the sidebar, 
+                        you will need to re-run the primary and/or sensitivity analysis from the 'Forest Plot' page."),
+                fluidRow(
+                  column(6,
+                        p(tags$strong("Results details for all studies")),
+                        verbatimTextOutput("gemtc_results"),
+                        p(tags$strong("Gelman convergence assessment plot for all studies")),
+                        plotOutput("gemtc_gelman")
+                  ),
+                  column(6,
+                        p(tags$strong("Results details with studies excluded")),
+                        verbatimTextOutput("gemtc_results_sub"),
+                        p(tags$strong("Gelman convergence assessment plot with studies excluded")),
+                        plotOutput("gemtc_gelman_sub"))
+                  )),        
+        tabPanel("3f. Deviance report",
+                helpText("Please note: if you change the selections on the sidebar, 
+                         you will need to re-run the primary and/or sensitivity analysis from the 'Forest Plot' page."),
+          p(tags$strong("Deviance report for all studies and the sensitivity analysis")),
+          fluidRow(
+           column(6,
+                  p(tags$strong("Residual deviance from NMA model and UME inconsistency model for all studies")),
+                  plotlyOutput("dev_scat")),
+           column(6,
+                  p(tags$strong("Residual deviance from NMA model and UME inconsistency model with studies excluded")),
+                  plotlyOutput("dev_scat_sub")
+           )),
+           p("This plot represents each data points' contribution to the residual deviance for the 
           NMA with consistency (horizontal axis) and the unrelated mean effect (ume) inconsistency models 
           (vertical axis) along with the line of equality. The points on the equality line means there is no
           improvement in model fit when using the inconsistency model, suggesting that there is no evidence of inconsistency. 
@@ -698,53 +684,54 @@ dashboardPage(
                                                                                             tabPanel("3g. Model details",
                                                                                                      helpText("Please note: if you change the selections on the sidebar, 
                                you will need to re-run the primary and/or sensitivity analysis from the 'Forest Plot' page."),
-                                                                                                     tabsetPanel(
-                                                                                                       tabPanel("3g-1. Model codes",
-                                                                                                                p(tags$strong("Model codes for analysis of all studies")),
-                                                                                                                downloadButton('download_code'),
-                                                                                                                verbatimTextOutput("code")
-                                                                                                       ),
-                                                                                                       tabPanel("3g-2. Initial values",
-                                                                                                                p(tags$strong("Initial values")),
-                                                                                                                downloadButton('download_inits_1', "Download initial values for chain 1"),
-                                                                                                                downloadButton('download_inits_2', "Download initial values for chain 2"),
-                                                                                                                downloadButton('download_inits_3', "Download initial values for chain 3"),
-                                                                                                                downloadButton('download_inits_4', "Download initial values for chain 4"),
-                                                                                                                verbatimTextOutput("inits")
-                                                                                                       ),
-                                                                                                       tabPanel("3g-3. Download simulations",
-                                                                                                                p(tags$strong("Download simulated data")),
-                                                                                                                downloadButton('download_data1', "Download data from chain 1"),
-                                                                                                                br(),
-                                                                                                                downloadButton('download_data2', "Download data from chain 2"),
-                                                                                                                br(),
-                                                                                                                downloadButton('download_data3', "Download data from chain 3"),
-                                                                                                                br(),
-                                                                                                                downloadButton('download_data4', "Download data from chain 4")
-                                                                                                       ),
-                                                                                                       tabPanel("3g-4. Deviance details",
-                                                                                                                fluidRow(
-                                                                                                                  column(6,
-                                                                                                                         p(tags$strong("Deviance data for all studies")),
-                                                                                                                         verbatimTextOutput("dev")),
-                                                                                                                  column(6,
-                                                                                                                         p(tags$strong("Deviance data for sensitivity analysis")),
-                                                                                                                         verbatimTextOutput("dev_sub")
-                                                                                                                  )),
-                                                                                                                fluidRow(
-                                                                                                                  column(6,verbatimTextOutput("dev_ume")),
-                                                                                                                  column(6,verbatimTextOutput("dev_ume_sub")
-                                                                                                                  ))   
-                                                                                                       )))))), width=9))),
-                   
-                   
-                   ###################################
-                   ### Tab 4 - User Guide ###
-                   ###################################
-                   
-                   tabPanel("User Guide",
-                            h2 (tags$strong("User Guide")),
-                            h4 (tags$strong("A complete User Guide for MetaInsight regular version", style = "cursive;
+               tabsetPanel(
+        tabPanel("3g-1. Model codes",
+                p(tags$strong("Model codes for analysis of all studies")),
+                downloadButton('download_code'),
+                verbatimTextOutput("code")
+                ),
+        tabPanel("3g-2. Initial values",
+                p(tags$strong("Initial values")),
+                downloadButton('download_inits_1', "Download initial values for chain 1"),
+                downloadButton('download_inits_2', "Download initial values for chain 2"),
+                downloadButton('download_inits_3', "Download initial values for chain 3"),
+                downloadButton('download_inits_4', "Download initial values for chain 4"),
+                verbatimTextOutput("inits")
+                ),
+        tabPanel("3g-3. Download simulations",
+                 p(tags$strong("Download simulated data")),
+                 downloadButton('download_data1', "Download data from chain 1"),
+                 br(),
+                 downloadButton('download_data2', "Download data from chain 2"),
+                 br(),
+                 downloadButton('download_data3', "Download data from chain 3"),
+                 br(),
+                 downloadButton('download_data4', "Download data from chain 4")
+        ),
+        tabPanel("3g-4. Deviance details",
+        fluidRow(
+         column(6,
+                p(tags$strong("Deviance data for all studies")),
+                p("NMA (consistency) model"),
+                verbatimTextOutput("dev")),
+         column(6,
+                p(tags$strong("Deviance data for sensitivity analysis")),
+                p("NMA (consistency) model"),
+               verbatimTextOutput("dev_sub")
+         )),
+        fluidRow(
+               column(6, p("UME (inconsistency) model"), verbatimTextOutput("dev_ume")),
+               column(6, p("UME (inconsistency) model"), verbatimTextOutput("dev_ume_sub")
+               ))   
+))))))))),
+
+###################################
+### Tab 5 - User Guide ###
+###################################
+
+tabPanel("User Guide",
+         h2 (tags$strong("User Guide")),
+         h4 (tags$strong("A complete User Guide for MetaInsight regular version", style = "cursive;
                       color: #2196c4")),
                             p("Please click the button below to download a copy of the MetaInsight User Guide."),
                             downloadButton("UG", "Download User Guide"),
@@ -752,54 +739,56 @@ dashboardPage(
                             br(),
                             h4 (tags$strong("Cochrane training Webinar materials", style = "cursive;
                       color: #2196c4")),
-                            p(tags$strong("MetaInsight: Background, introduction, demonstration, limitations, and future plans")),
-                            p("These videos were recorded live as part of the ", 
-                              tags$a(href="https://training.cochrane.org/resource/metainsight-complex-review-support-unit-crsu-network-meta-analysis-nma-web-based-app", "Cochrane Training network meta-analysis learning live webinar series.",target="_blank"), 
-                              "They are intended for people who are interested in undertaking a network meta-analysis using MetaInsight."),
-                            br(),
-                            HTML('<iframe width="560" height="315" src="https://www.youtube.com/embed/RR_tkICQv_s" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'),
-                            HTML('<iframe width="560" height="315" src="https://www.youtube.com/embed/b-fYoUdksRo" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'),
-                            HTML('<iframe width="560" height="315" src="https://www.youtube.com/embed/g0n5yxQ4Z34" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>')
-                   )
-                   ,
-                   
-                   
-                   ###################################
-                   ### Tab 4 - trouble shooting ###
-                   ###################################
-                   
-                   tabPanel(id="trouble", "Troubleshooting",
-                            #          tags$div(
-                            # includeHTML("troublesh.html")
-                            #          )
-                            tags$iframe(style="height:1500px; width:100%; scrolling=yes", 
-                                        src="ts2.pdf")
-                   ),
-                   
-                   
-                   
-                   
-                   
-                   ###################################
-                   ### Tab 5 - Full update history ###
-                   ###################################
-                   
-                   tabPanel(id="update", "Full update history",
-                            tags$iframe(style="height:1500px; width:100%; scrolling=yes", 
-                                        src="fullupdatehistory4.pdf")
-                   ),
-                   
-                   
-                   
-                   ##############################
-                   ### Tab 6 - Privacy notice ###
-                   ##############################
-                   
-                   
-                   
-                   tabPanel(id="privacy", "Privacy notice",
-                            tags$iframe(style="height:1500px; width:100%; scrolling=yes", 
-                                        src="gdpr.pdf")
-                   )
+         p(tags$strong("MetaInsight: Background, introduction, demonstration, limitations, and future plans")),
+         p("These videos were recorded live as part of the ",
+           tags$a(href="https://training.cochrane.org/resource/metainsight-complex-review-support-unit-crsu-network-meta-analysis-nma-web-based-app", "Cochrane Training network meta-analysis learning live webinar series.",target="_blank"),
+           "They are intended for people who are interested in undertaking a network meta-analysis using MetaInsight."),
+         br(),
+         HTML('<iframe width="560" height="315" src="https://www.youtube.com/embed/RR_tkICQv_s" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'),
+         HTML('<iframe width="560" height="315" src="https://www.youtube.com/embed/b-fYoUdksRo" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'),
+         HTML('<iframe width="560" height="315" src="https://www.youtube.com/embed/g0n5yxQ4Z34" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>')
+         )
+,
+
+
+###################################
+### Tab 6 - trouble shooting ###
+###################################
+
+tabPanel(id="trouble", "Troubleshooting",
+#          tags$div(
+# includeHTML("troublesh.html")
+#          )
+tags$iframe(style="height:1500px; width:100%; scrolling=yes",
+            src="ts2.pdf")
+),
+
+
+
+
+
+###################################
+### Tab 7 - Full update history ###
+###################################
+
+tabPanel(id="update", "Full update history",
+         tags$iframe(style="height:1500px; width:100%; scrolling=yes",
+                     src="fullupdatehistory4.pdf")
+),
+
+
+
+##############################
+### Tab 8 - Privacy notice ###
+##############################
+
+
+
+tabPanel(id="privacy", "Privacy notice",
+   tags$iframe(style="height:1500px; width:100%; scrolling=yes",
+               src="gdpr.pdf")
 )
-))
+
+)
+)
+)

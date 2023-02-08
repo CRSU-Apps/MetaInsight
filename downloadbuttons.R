@@ -1,4 +1,32 @@
-## MEtaInsight - downloadable files for data uploading instructions - code.
+## MetaInsight - downloadable files for data uploading instructions - code.
+
+source("plot.R") # Contains code for plots
+
+## Sizing functions for forest plots ##
+BayesPixels <- function(notrt, title=FALSE) {    # input is total number of treatments and whether title is included in plot
+  if (title==FALSE) {
+    if (notrt <= 25) {
+      height <- 420        # default for 25 or less treatments
+    } else {
+      height <- 15*(notrt-1) + 60
+    }
+  } else {
+    if (notrt <= 25) {
+      height <- 420 + 100        # default for 25 or less treatments
+    } else {
+      height <- 15*(notrt-1) + 60 + 100
+    }
+  }
+  return(height)
+}
+BayesInch <- function(notrt) {
+  if (notrt <= 25) {
+    height <- 6
+  } else {
+    height <- 6 + 0.2*(notrt-25)
+  }
+  return(height)
+}
 
 
 #########################
@@ -64,20 +92,20 @@ output$downloadlabel2 <- downloadHandler(
 ### Tab 3 - Data analysis ###
 #############################
 
-##### 1a. Study Results download the grouped forest plot
+##### 1b. Study Results - download the grouped forest plot
 output$downloadStudy <- downloadHandler(
   filename = function() {
     paste0('StudyResults.', input$format_freq0)
   },
   content = function(file) {
-    if (input$format_freq0=="PDF"){pdf(file=file, pointsize = input$ForestContent, height=make_netStudy()$size, width=8)}
-    else {svg(file=file, pointsize = input$ForestContent, height=make_netStudy()$size, width=8)}
-    make_netStudy()
+    if (input$format_freq0=="PDF"){pdf(file=file, pointsize = input$ForestContent, height=make_netStudy(freq_sub(), outcome_measure(), input$ForestHeader, input$ForestTitle)$size, width=8)}
+    else {svg(file=file, pointsize = input$ForestContent, height=make_netStudy(freq_sub(), outcome_measure(), input$ForestHeader, input$ForestTitle)$size, width=8)}
+    make_netStudy(freq_sub(), outcome_measure(), input$ForestHeader, input$ForestTitle)
     dev.off()
   }
 )
 
-##### 1b. Network plot
+##### 1c. Network plot
 output$downloadNetwork <- downloadHandler(
   filename = function() {
     paste0('Network.', input$format_freq1)
@@ -90,24 +118,6 @@ output$downloadNetwork <- downloadHandler(
     } else {
       data.rh<-data.prep(arm.data=bugsnetdt(), varname.t = "T", varname.s="Study")
       net.plot(data.rh, node.scale = 3, edge.scale=1.5, node.lab.cex=input$label_all) 
-    }
-    title("Network plot of all studies")
-    dev.off()
-  }
-)
-
-output$download_network_rank <- downloadHandler(  # version for ranking panel
-  filename = function() {
-    paste0('Network.', input$network_rank_choice)
-  },
-  content = function(file) {
-    if (input$network_rank_choice=='pdf'){pdf(file=file)}
-    else {png(file=file)}
-    if (input$networkstyle_rank=='networkp1') {
-      make_netgraph_rank(freq_all_react(), treat_order())
-    } else {
-      data.rh<-data.prep(arm.data=bugsnetdt_react(), varname.t = "T", varname.s="Study")
-      net.plot(data.rh, node.scale = 3, edge.scale=1.5, layout.params=list(order=treat_order()))
     }
     title("Network plot of all studies")
     dev.off()
@@ -134,35 +144,18 @@ output$downloadNetworkUpdate <- downloadHandler(
   }
 )
 
-output$download_network_rank_sub <- downloadHandler(  # version for ranking panel
-  filename = function() {
-    paste0('Network_sen.', input$network_rank_choice_sub)
-  },
-  content = function(file) {
-    if (input$network_rank_choice_sub=='pdf'){pdf(file=file)}
-    else {png(file=file)}
-    if (input$networkstyle_rank_sub=='networkp1') {
-      make_netgraph_rank(freq_all_react_sub(), treat_order_sub())
-    } else {
-      long_sort2_sub <- filter(bugsnetdt_react_sub(), !Study %in% input$exclusionbox)
-      data.rh<-data.prep(arm.data=long_sort2_sub, varname.t = "T", varname.s="Study")
-      net.plot(data.rh, node.scale = 3, edge.scale=1.5, layout.params=list(order=treat_order_sub())) 
-    }
-    title("Network plot with studies excluded")
-    dev.off()
-  }
-)
 
 
-##### 2a. forest plot
+
+##### 2a. Forest plot
 output$downloadComp2 <- downloadHandler(
   filename = function() {
     paste0('All_studies.', input$format_freq3)
   },
   content = function(file) {
-    if (input$format_freq3=="PDF"){pdf(file=file)}
-    else {png(file=file)}
-    make_netComp(freq_all(), ref_alter()$ref_all, input$freqmin, input$freqmax)
+    if (input$format_freq3=="PDF"){pdf(file=file, height=BayesInch(as.numeric(bugsnet_sumtb(bugsnetdt(), input$metaoutcome)$Value[1])), width=9)}
+    else {png(file=file, width=610, height=BayesPixels(as.numeric(bugsnet_sumtb(bugsnetdt(), input$metaoutcome)$Value[1])))}
+    make_netComp(freq_all(), input$modelranfix, reference_alter()$ref_all, input$freqmin, input$freqmax)
     #title("All studies")
     #title(paste("All studies: 
     #          Frequentist", model()$a, "model forest plot results"))
@@ -179,30 +172,23 @@ output$downloadComp<- downloadHandler(
     paste0('Excluded_studies.', input$format_freq4)
   },
   content = function(file) {
-    if (input$format_freq4=="PDF"){pdf(file=file)}
-    else {png(file=file)}
-    make_netComp(freq_sub(), ref_alter()$ref_sub, input$freqmin_sub, input$freqmax_sub)
+    if (input$format_freq4=="PDF"){pdf(file=file, height=BayesInch(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% input$exclusionbox), input$metaoutcome)$Value[1])), width=9)}
+    else {png(file=file, width=610, height=BayesPixels(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% input$exclusionbox), input$metaoutcome)$Value[1])))}
+    make_netComp(freq_sub(), input$modelranfix, reference_alter()$ref_sub, input$freqmin_sub, input$freqmax_sub)
     #title(paste("Results with studies excluded: 
     #          Frequentist", model()$a, "model forest plot results"))
     dev.off()
   }
 )
 
-
-
-
-
-
-
-
-##### 2b. comparison rank table
+##### 2b. Comparison of all treatment pairs - comparison rank table
 output$downloadRank <- downloadHandler(
   filename = function() {
     paste('Rank.', '.csv', sep='')
   },
   content = function(file) {
     write.csv({
-      make_netrank(freq_all())
+      make_netrank(freq_all(), input$modelranfix, input$rankopts)
       }, file)
   })
 output$downloadRankUpdate <- downloadHandler(
@@ -211,18 +197,18 @@ output$downloadRankUpdate <- downloadHandler(
   },
   content = function(file) {
     write.csv({
-      make_netrank(freq_sub())
+      make_netrank(freq_sub(), input$modelranfix, input$rankopts)
       }, file)
   })
 
 
-##### 2c. inconsistency
+##### 2c. Inconsistency
 output$downloadIncon <- downloadHandler(
   filename = function() {
     paste('Inconsistency.', '.csv', sep='')
   },
   content = function(file) {
-    write.csv({make_Incon(freq_all())}, file)
+    write.csv({make_Incon(freq_all(), input$modelranfix)}, file)
   }
 )
 output$downloadIncon2 <- downloadHandler(
@@ -230,7 +216,7 @@ output$downloadIncon2 <- downloadHandler(
     paste('Inconsistency_sub.', '.csv', sep='')
   },
   content = function(file) {
-    write.csv({make_Incon(freq_sub())}, file)
+    write.csv({make_Incon(freq_sub(), input$modelranfix)}, file)
   }
 )
 
@@ -239,23 +225,100 @@ output$downloadIncon2 <- downloadHandler(
 #### 3. Bayesian ####
 #####################
 
-##### 3a. forest plot
+#### 3a. Forest plot
 output$downloadBaye_plot <- downloadHandler(
   filename = function() {
     paste0('All_studies.', input$format2)
   },
   content = function(file) {
-    if (input$format2=="PDF"){pdf(file=file)}
-    else {png(file=file)}
+    if (input$format2=="PDF"){pdf(file=file, width=9, height=BayesInch(as.numeric(bugsnet_sumtb(bugsnetdt(), input$metaoutcome)$Value[1])))}
+    else {png(file=file, width=610, height=BayesPixels(as.numeric(bugsnet_sumtb(bugsnetdt(), input$metaoutcome)$Value[1])))}
     if (input$metaoutcome=="Binary") {forest(model()$mtcRelEffects,digits=3,xlim=c(log(input$bayesmin), log(input$bayesmax)))}
     if (input$metaoutcome=="Continuous") {forest(model()$mtcRelEffects,digits=3,xlim=c(input$bayesmin, input$bayesmax))}
-    #title(paste("All studies: 
+    #title(paste("All studies:
     #          Bayesian", model()$a, "consistency model forest plot results"))
     dev.off()
   }
 )
 
-output$download_rank_forest <- downloadHandler(  # version for ranking panel
+
+output$downloadBaye_plot_sub <- downloadHandler(
+  filename = function() {
+    paste0('Excluded_studies.', input$format4)
+  },
+  content = function(file) {
+    if (input$format4=="PDF"){pdf(file=file, width=9, height=BayesInch(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% input$exclusionbox), input$metaoutcome)$Value[1])))}
+    else {png(file=file, width=610, height=BayesPixels(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% input$exclusionbox), input$metaoutcome)$Value[1])))}
+    if (input$metaoutcome=="Binary") {forest(model_sub()$mtcRelEffects,digits=3,xlim=c(log(input$bayesmin_sub), log(input$bayesmax_sub)))}
+    if (input$metaoutcome=="Continuous") {forest(model_sub()$mtcRelEffects,digits=3,xlim=c(input$bayesmin_sub, input$bayesmax_sub))}
+    #title(paste("Results with studies excluded:
+    #          Bayesian", model()$a, "consistency model forest plot results"))
+    dev.off()
+  }
+)
+
+
+##### 3b. Comparison of all treatment pairs
+output$downloadbaye_comparison <- downloadHandler(
+  filename = function() {
+    paste('baye_comparison', '.csv', sep='')
+  },
+  content = function(file) {
+    write.csv({baye_comp(model(), input$metaoutcome, outcome_measure())}, file)
+  }
+)
+
+output$downloadbaye_comparison_sub <- downloadHandler(
+  filename = function() {
+    paste('baye_comparison_sub', '.csv', sep='')
+  },
+  content = function(file) {
+    write.csv({baye_comp(model_sub(), input$metaoutcome, outcome_measure())}, file)
+  }
+)
+
+
+
+##### 3c. Ranking panel CRN
+
+# Network plots #
+
+output$download_network_rank <- downloadHandler(  
+  filename = function() {
+    paste0('Network.', input$network_rank_choice)
+  },
+  content = function(file) {
+    if (input$network_rank_choice=='pdf'){pdf(file=file)}
+    else {png(file=file)}
+    if (input$networkstyle_rank=='networkp1') {
+      make_netgraph_rank(freq_all_react(), treat_order())
+    } else {
+      make_netplot(bugsnetdt_react(), order=list(order=treat_order()))
+    }
+    title("Network plot of all studies")
+    dev.off()
+  }
+)
+output$download_network_rank_sub <- downloadHandler(
+  filename = function() {
+    paste0('Network_sen.', input$network_rank_choice_sub)
+  },
+  content = function(file) {
+    if (input$network_rank_choice_sub=='pdf'){pdf(file=file)}
+    else {png(file=file)}
+    if (input$networkstyle_rank_sub=='networkp1') {
+      make_netgraph_rank(freq_all_react_sub(), treat_order_sub())
+    } else {
+      make_netplot(filter(bugsnetdt_react_sub(), !Study %in% input$exclusionbox), order=list(order=treat_order_sub())) 
+    }
+    title("Network plot with studies excluded")
+    dev.off()
+  }
+)
+
+# Forest plots #
+
+output$download_rank_forest <- downloadHandler(  
   filename = function() {
     paste0('All_studies.', input$rank_forest_choice)
   },
@@ -269,23 +332,7 @@ output$download_rank_forest <- downloadHandler(  # version for ranking panel
   }
 )
 
-
-output$downloadBaye_plot_sub <- downloadHandler(
-  filename = function() {
-    paste0('Excluded_studies.', input$format4)
-  },
-  content = function(file) {
-    if (input$format4=="PDF"){pdf(file=file)}
-    else {png(file=file)}
-    if (input$metaoutcome=="Binary") {forest(model_sub()$mtcRelEffects,digits=3,xlim=c(log(input$bayesmin_sub), log(input$bayesmax_sub)))}
-    if (input$metaoutcome=="Continuous") {forest(model_sub()$mtcRelEffects,digits=3,xlim=c(input$bayesmin_sub, input$bayesmax_sub))}
-    #title(paste("Results with studies excluded: 
-    #          Bayesian", model()$a, "consistency model forest plot results"))
-    dev.off()
-  }
-)
-
-output$download_rank_forest_sub <- downloadHandler(  # version for ranking panel
+output$download_rank_forest_sub <- downloadHandler(  
   filename = function() {
     paste0('Subgroup.', input$rank_forest_choice_sub)
   },
@@ -299,30 +346,7 @@ output$download_rank_forest_sub <- downloadHandler(  # version for ranking panel
   }
 )
 
-
-
-##### 3b. comparison of all treatment pairs
-output$downloadbaye_comparison <- downloadHandler(
-  filename = function() {
-    paste('baye_comparison', '.csv', sep='')
-  },
-  content = function(file) {
-    write.csv({baye_comp(model())}, file)
-  }
-)
-
-output$downloadbaye_comparison_sub <- downloadHandler(
-  filename = function() {
-    paste('baye_comparison_sub', '.csv', sep='')
-  },
-  content = function(file) {
-    write.csv({baye_comp(model_sub())}, file)
-  }
-)
-
-
-
-##### 3c. Ranking panel
+# Rank plots #
 
 output$download_rank_plot <- downloadHandler(
   filename = function() {
