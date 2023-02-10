@@ -16,7 +16,7 @@ frequentist <- function(sub, data, metaoutcome, treatment_list, outcome_measure,
 bugsnetdata <- function(data, metaoutcome, treatment_list){
   newData1 <- as.data.frame(data)
   treat_list <- treatment_label(treatment_list)
-  treat_list$Label <- str_wrap(gsub("_", " ",treat_list$Label), width=10)  # better formatting (although does assume underscores have only been added due to the treatment label entry limitations) CRN
+  treat_list$Label <- stringr::str_wrap(gsub("_", " ",treat_list$Label), width=10)  # better formatting (although does assume underscores have only been added due to the treatment label entry limitations) CRN
   longsort2 <- dataform.df(newData1,treat_list,metaoutcome)    
   return(longsort2)
 }
@@ -439,13 +439,13 @@ gemtctau <- function(results,outcome) {
 rankdata <- function(NMAdata, rankdirection, longdata) {
   # data frame of colours
   colour_dat = data.frame(SUCRA = seq(0, 100, by = 0.1)) 
-  colour_dat = mutate(colour_dat, colour = seq(0, 100, length.out = 1001)) 
+  colour_dat = dplyr::mutate(colour_dat, colour = seq(0, 100, length.out = 1001)) 
   
   # probability rankings
-  prob <- as.data.frame(print(rank.probability(NMAdata, preferredDirection=(if (rankdirection=="good") -1 else 1)))) # rows treatments, columns ranks
+  prob <- as.data.frame(print(gemtc::rank.probability(NMAdata, preferredDirection=(if (rankdirection=="good") -1 else 1)))) # rows treatments, columns ranks
   names(prob)[1:ncol(prob)] <- paste("Rank ", 1:(ncol(prob)), sep="")
-  sucra <- sucra(prob)  # 1 row of SUCRA values for each treatment column
-  treatments <- str_wrap(gsub("_", " ", row.names(prob)), width=10)
+  sucra <- gemtc::sucra(prob)  # 1 row of SUCRA values for each treatment column
+  treatments <- stringr::str_wrap(gsub("_", " ", row.names(prob)), width=10)
   
   # SUCRA
   SUCRA <- data.frame(Treatment=treatments,
@@ -469,7 +469,7 @@ rankdata <- function(NMAdata, rankdirection, longdata) {
   Patients <- aggregate(Patients$Sample, by=list(Category=Patients$Treatment), FUN=sum)
   Patients <- dplyr::rename(Patients, c("Treatment"="Category", "N"="x"))  # previously using plyr::rename where old/new names are other way round
   Patients$Treatment <- gsub("_", " ", Patients$Treatment) #remove underscores, otherwise next line won't work
-  SUCRA <- SUCRA %>% right_join(Patients, by = "Treatment")
+  SUCRA <- SUCRA %>% dplyr::right_join(Patients, by = "Treatment")
   # Node size #
   size.maxO <- 15
   size.maxA <- 10
@@ -484,8 +484,8 @@ rankdata <- function(NMAdata, rankdirection, longdata) {
       SUCRA$SizeA[i] <- size.min}
   }
   
-  prob <- setDT(prob, keep.rownames = "Treatment") # treatment as a column rather than rownames (useful for exporting)
-  prob$Treatment <- str_wrap(gsub("_", " ", prob$Treatment), width=10)
+  prob <- data.table::setDT(prob, keep.rownames = "Treatment") # treatment as a column rather than rownames (useful for exporting)
+  prob$Treatment <- stringr::str_wrap(gsub("_", " ", prob$Treatment), width=10)
   
   # Number of trials as line thickness taken from BUDGnetData object #
   BUGSnetData <- data.prep(arm.data=longdata, varname.t = "T", varname.s="Study")

@@ -23,10 +23,10 @@ library(BUGSnet)
 library(shinyBS)
 library(patchwork)
 library(ggrepel)
-library(tidyr)
 library(magick)
-library(reshape2)
 library(stringr)
+library(ggiraphExtra)
+library(tidyr)
 
 # Source files
 source("bugsnet_sumtb.R") # bugsnet_sumtb function, req BUGSnet - separate file added by NVB
@@ -629,6 +629,17 @@ shinyServer(function(input, output, session) {
   
   # 3c. Ranking Panel
   
+  # Obtain Data needed for ranking #
+  RankingData <- eventReactive(input$baye_do, {
+    obtain_rank_data(sub=TRUE, data(), input$metaoutcome, input$exclusionbox, 
+                     treatment_list(), model(), input$rankopts)
+  })
+  
+  RankingData_sub <- eventReactive(input$sub_do, {
+    obtain_rank_data(sub=FALSE, data(), input$metaoutcome, input$exclusionbox, 
+                     treatment_list(), model_sub(), input$rankopts)
+  })
+  
   # Network plots for ranking panel (Bayesian) (they have slightly different formatting to those on tab1) CRN
   treat_order <- reactive(RankingData()$SUCRA[order(RankingData()$SUCRA$SUCRA),1]) # obtain treatments ordered by SUCRA #
   freq_all_react <- eventReactive(input$baye_do, {  # these two lines are needed in case someone jumped to Bayesian page without running frequentist section, but am aware this can cause frequentist analysis to run twice (CRN)
@@ -672,9 +683,9 @@ shinyServer(function(input, output, session) {
     png("forest.png")  # initialise image
     forest(model()$mtcRelEffects,digits=3)
     dev.off()
-    ForestImg <- image_read('forest.png')
-    Img <- ggdraw() +
-      draw_image(ForestImg)
+    ForestImg <- magick::image_read('forest.png')
+    Img <- cowplot::ggdraw() +
+      cowplot::draw_image(ForestImg)
     return(Img)
   })
   # With studies excluded
@@ -682,21 +693,10 @@ shinyServer(function(input, output, session) {
     png("forest_sub.png")
     forest(model_sub()$mtcRelEffects,digits=3)
     dev.off()
-    ForestImg <- image_read('forest_sub.png')
-    Img <- ggdraw() +
-      draw_image(ForestImg)
+    ForestImg <- magick::image_read('forest_sub.png')
+    Img <- cowplot::ggdraw() +
+      cowplot::draw_image(ForestImg)
     return(Img)
-  })
-
-  # Obtain Data needed for ranking #
-  RankingData <- eventReactive(input$baye_do, {
-    obtain_rank_data(sub=TRUE, data(), input$metaoutcome, input$exclusionbox, 
-                     treatment_list(), model(), input$rankopts)
-  })
-  
-  RankingData_sub <- eventReactive(input$sub_do, {
-    obtain_rank_data(sub=FALSE, data(), input$metaoutcome, input$exclusionbox, 
-                     treatment_list(), model_sub(), input$rankopts)
   })
 
   # All rank plots in one function for easier loading when switching options #
@@ -770,7 +770,7 @@ shinyServer(function(input, output, session) {
   })
 
   # Inconsistency test with notesplitting model with studies excluded
-  model_nodesplit_sub <- eventReactive(input$node, {
+  model_nodesplit_sub <- eventReactive(input$node_sub, {
     nodesplit(sub = TRUE, data(), treatment_list(), input$metaoutcome, outcome_measure(),
                     input$modelranfix, input$exclusionbox)
   })

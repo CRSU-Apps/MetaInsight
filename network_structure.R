@@ -18,7 +18,7 @@ network.structure <- function(data.nma, my_order=NA) {     # data.nma is a BUGSn
   
   studytrt <- data.nma$arm.data %>%
     select(data.nma$varname.s, data.nma$varname.t) %>%
-    nest(data=c(data.nma$varname.t))      # nest treatments within each study
+    tidyr::nest(data=c(data.nma$varname.t))      # nest treatments within each study
   
   cnt <- data.nma$arm.data %>%
     select(data.nma$varname.s, data.nma$varname.t) %>%

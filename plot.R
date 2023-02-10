@@ -94,7 +94,7 @@ baye_comp <- function(model, metaoutcome, outcome_measure){
 
 # Network plot - number of trials on line
 make_netgraph_rank = function(freq, order) {  
-  return(netgraph(freq$net1, labels=str_wrap(gsub("_", " ",freq$net1$trts), width=10), lwd=2, number.of.studies = TRUE, plastic=FALSE, points=TRUE, cex=1, cex.points=2, col.points=1, col=8, pos.number.of.studies=0.43,
+  return(netmeta::netgraph(freq$net1, labels=str_wrap(gsub("_", " ",freq$net1$trts), width=10), lwd=2, number.of.studies = TRUE, plastic=FALSE, points=TRUE, cex=1, cex.points=2, col.points=1, col=8, pos.number.of.studies=0.43,
                   col.number.of.studies = "forestgreen", col.multiarm = "white", bg.number.of.studies = "forestgreen", seq=gsub(" ", "_", str_wrap(order, width=1000)),  #freq$net1$trts has not been formatted but 'order' has
   ))
 }
@@ -119,7 +119,7 @@ LitmusRankOGram <- function(CumData, SUCRAData, ColourData, colourblind=FALSE) {
                      y = SUCRA, yend = SUCRA, colour = colour),
                  show.legend = FALSE) +
     geom_point() + labs(y="SUCRA (%)") +
-    geom_text_repel(aes(label=Treatment), box.padding = 0, direction="y", hjust=0, nudge_x=0.05, size=3) + scale_x_continuous(limits=c(0.4,0.8)) +
+    ggrepel::geom_text_repel(aes(label=Treatment), box.padding = 0, direction="y", hjust=0, nudge_x=0.05, size=3) + scale_x_continuous(limits=c(0.4,0.8)) +
     theme_classic() + theme(axis.title.x = element_blank(), axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.line.x = element_blank(), aspect.ratio=4)
   if (colourblind==FALSE) {
     B <- Litmus_SUCRA + scale_colour_gradient2(low = "red",
@@ -129,7 +129,7 @@ LitmusRankOGram <- function(CumData, SUCRAData, ColourData, colourblind=FALSE) {
     B <- Litmus_SUCRA + scale_colour_gradientn(colours=c("#7b3294","#c2a5cf","#a6dba0", "#008837"), values=c(0, 0.33, 0.66, 1), limits=c(0,100))
   }
   # Combo! #
-  Combo <- A + B
+  Combo <- A + B    # '+' functionality from {patchwork}
   Combo + theme(plot.margin = margin(t=0,r=0,b=0,l=0))
 }
 
@@ -168,7 +168,7 @@ RadialSUCRA <- function(SUCRAData, ColourData, BUGSnetData, colourblind=FALSE) {
   
   # Create my own network plot using ggplot polar coords #
   SUCRA <- SUCRAData %>% dplyr::arrange(-SUCRA)
-  edges <- network.structure(BUGSnetData, my_order = SUCRA$Treatment)
+  edges <- network.structure(BUGSnetData, my_order = SUCRA$Treatment)  # from file 'network_structure.R'
   dat.edges <- data.frame(pairwiseID = rep(NA, nrow(edges)*2),
                           treatment = "",
                           n.stud = NA,
@@ -214,7 +214,7 @@ RadialSUCRA <- function(SUCRAData, ColourData, BUGSnetData, colourblind=FALSE) {
         scale_y_continuous(limits=c(-80,115))
     }
     g +
-      ggiraphExtra:::coord_radar() + 
+      ggiraphExtra::coord_radar() + 
       theme(panel.background = element_rect(fill = "transparent"), plot.background = element_rect(fill = "transparent", color = NA), 
             axis.title = element_blank(), axis.text.y = element_blank(), axis.ticks = element_blank(), 
             axis.line = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), aspect.ratio = 1, 
@@ -260,25 +260,25 @@ RadialSUCRA <- function(SUCRAData, ColourData, BUGSnetData, colourblind=FALSE) {
   ggsave(filename = 'PointsA.png', device = 'png', bg = 'transparent', width=5, height=5)
   
   # Overlay #
-  Background <- image_read('BackgroundO.png')
-  Network <- image_read('NetworkO.png')
-  Points <- image_read('PointsO.png')
-  Final <- image_composite(Background,Network)
-  Final <- image_composite(Final,Points)
-  Finalplot <- ggdraw() +
-    draw_image(Final)
-  Background <- image_read('BackgroundA.png')
-  Network <- image_read('NetworkA.png')
-  Points <- image_read('PointsA.png')
-  Final <- image_composite(Background,Network)
-  Final <- image_composite(Final,Points)
-  Finalalt <- ggdraw() +
-    draw_image(Final)
+  Background <- magick::image_read('BackgroundO.png')
+  Network <- magick::image_read('NetworkO.png')
+  Points <- magick::image_read('PointsO.png')
+  Final <- magick::image_composite(Background,Network)
+  Final <- magick::image_composite(Final,Points)
+  Finalplot <- cowplot::ggdraw() +
+    cowplot::draw_image(Final)
+  Background <- magick::image_read('BackgroundA.png')
+  Network <- magick::image_read('NetworkA.png')
+  Points <- magick::image_read('PointsA.png')
+  Final <- magick::image_composite(Background,Network)
+  Final <- magick::image_composite(Final,Points)
+  Finalalt <- cowplot::ggdraw() +
+    cowplot::draw_image(Final)
   return(list(Original=Finalplot, Alternative=Finalalt))
 }
 
 rank_probs_table = function(data) {
-  Probs <- data$Probabilities %>% right_join(data$SUCRA[,1:2], by="Treatment")
+  Probs <- data$Probabilities %>% dplyr::right_join(data$SUCRA[,1:2], by="Treatment")
   Probs[order(-Probs$SUCRA),]
   return(Probs)
 }
