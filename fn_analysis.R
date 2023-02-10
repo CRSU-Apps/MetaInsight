@@ -8,7 +8,7 @@ frequentist <- function(sub, data, metaoutcome, treatment_list, outcome_measure,
   treat_list <- treatment_label(treatment_list)
   # Use the self-defined function, freq_wrap
   return(freq_wrap(data_wide, treat_list, modelranfix, outcome_measure, metaoutcome, 
-            ref_alter(data, metaoutcome, excluded, treatment_list)$ref_sub))
+                   ref_alter(data, metaoutcome, excluded, treatment_list)$ref_sub))
 }
 
 # # Inputting the data in long form
@@ -16,6 +16,7 @@ frequentist <- function(sub, data, metaoutcome, treatment_list, outcome_measure,
 bugsnetdata <- function(data, metaoutcome, treatment_list){
   newData1 <- as.data.frame(data)
   treat_list <- treatment_label(treatment_list)
+  treat_list$Label <- stringr::str_wrap(gsub("_", " ",treat_list$Label), width=10)  # better formatting (although does assume underscores have only been added due to the treatment label entry limitations) CRN
   longsort2 <- dataform.df(newData1,treat_list,metaoutcome)    
   return(longsort2)
 }
@@ -71,15 +72,14 @@ entry.df <- function(data, CONBI) {
   if (numbertreat < 6) {  # generate additional columns if less than 6 arms.
     for (k in (numbertreat+1):6) {
       if (CONBI=='Continuous') {
-      data_wide[c(paste0("T.",k),paste0("N.",k),paste0("Mean.",k),paste0("SD.",k))]<-NA
+        data_wide[c(paste0("T.",k),paste0("N.",k),paste0("Mean.",k),paste0("SD.",k))]<-NA
       } else {
-      data_wide[c(paste0("T.",k),paste0("R.",k),paste0("N.",k))]<-NA
+        data_wide[c(paste0("T.",k),paste0("R.",k),paste0("N.",k))]<-NA
       }
     }
   }
   return(data_wide)
 }
-
 
 
 #########################
@@ -88,7 +88,7 @@ entry.df <- function(data, CONBI) {
 
 contrastform.df <- function(data, outcome, CONBI) {
   if (CONBI=='Continuous') {
-      d1<- pairwise(treat=list(T.1,T.2,T.3,T.4,T.5,T.6),n=list(N.1,N.2,N.3,N.4,N.5,N.6),mean=list(Mean.1,Mean.2,Mean.3,Mean.4,Mean.5,Mean.6),sd=list(SD.1,SD.2,SD.3,SD.4,SD.5,SD.6),data=data,sm=outcome)
+    d1<- pairwise(treat=list(T.1,T.2,T.3,T.4,T.5,T.6),n=list(N.1,N.2,N.3,N.4,N.5,N.6),mean=list(Mean.1,Mean.2,Mean.3,Mean.4,Mean.5,Mean.6),sd=list(SD.1,SD.2,SD.3,SD.4,SD.5,SD.6),data=data,sm=outcome)
   } else {
     d1<- pairwise(treat=list(T.1,T.2,T.3,T.4,T.5,T.6),event=list(R.1,R.2,R.3,R.4,R.5,R.6),n=list(N.1,N.2,N.3,N.4,N.5,N.6),data=data,sm=outcome)
   }
@@ -193,7 +193,7 @@ groupforest.df <- function(d1, ntx, lstx, outcome, HeaderSize, TitleSize) {
   
   if (outcome == "OR" | outcome =="RR" ){
     fplot <- metafor::forest(d1$TE, sei=d1$seTE, slab = paste(d1$Study), subset = order(d1$treat1, d1$treat2), ylim = c(1, nrow(d1) + 2*length(text_label) + 2),rows = lines, 
-    atransf = exp, at = log(c(0.01, 1, 10, 100)), xlab = paste("Observed ",outcome), efac=0.5 
+                             atransf = exp, at = log(c(0.01, 1, 10, 100)), xlab = paste("Observed ",outcome), efac=0.5 
     )
   } 
   else {
@@ -230,8 +230,8 @@ tau.df <- function(tau,k,n,model,outcome) {
   if (model=="random"){
     if (outcome=="OR"){
       y<-paste("Between-study standard deviation (log-odds scale):", tau,
-            ", Number of studies:", k,
-            ", Number of treatments:", n)}
+               ", Number of studies:", k,
+               ", Number of treatments:", n)}
     else if (outcome=="RR"){
       y<-paste("Between-study standard deviation (log probability scale):", tau,
                ", Number of studies:", k,
@@ -243,14 +243,14 @@ tau.df <- function(tau,k,n,model,outcome) {
   else {
     if (outcome=="OR"){
       y<-paste("Between-study standard deviation (log-odds scale) set at 0. Number of studies:", k,
-              ", Number of treatments:", n)}
+               ", Number of treatments:", n)}
     else if (outcome=="RR"){
       y<-paste("Between-study standard deviation (log probability scale) set at 0. Number of studies:", k,
                ", Number of treatments:", n)}
     else {
       y<-paste("Between-study standard deviation set at 0. Number of studies:", k,
                ", Number of treatments:", n)}
-    }
+  }
   return(y)
 }
 
@@ -284,7 +284,7 @@ netsplitresult.df <- function(incona, model) {
   return(df)
 }
 
-  
+
 #######################
 ##### function for progress bar
 #######################
@@ -330,7 +330,7 @@ dataform.df <- function(newData1, treat_list, CONBI) {
                         times=c(".1", ".2", ".3", ".4", ".5", ".6"), sep=".", idvar= c("StudyID", "Study"))
     long_pre<-subset(long_pre, select=-time)
     long <- long_pre[!is.na(long_pre$T), ]
-    }
+  }
   long_sort<-long[order(long$StudyID, -long$T), ]
   if (CONBI=='Continuous') {
     long_sort$se<-long_sort$SD/sqrt(long_sort$N)
@@ -352,30 +352,30 @@ baye <- function(data,treat_list, model, outcome, CONBI, ref) {
   if (outcome=="SMD" | outcome=="RD") {
   } 
   else {
-  progress <- shiny::Progress$new()   # Adding progress bars
-  on.exit(progress$close())
-  progress$set(message="Updating.This may take up to 10 minutes", value=0)
-  treat_list2<-data.frame(treat_list)
-  if (CONBI=="Continuous") { 
-    armData <- data.frame(study=data$Study,       # Create arm level data set for gemtc
-                        treatment=data$T,
-                        mean=data$Mean,
-                        std.err=data$se)
-  }
-  else {
-    armData <- data.frame(study=data$Study,
-                          treatment=data$T,
-                          responders=data$R,
-                          sampleSize=data$N)
-  }
-  progress$inc(0.2, detail="Preparing to run simulation models")
-  mtcNetwork <- mtc.network(data.ab=armData,description="Network")   # Gemtc network object
-  if (outcome == "MD") {
-    like <- "normal"
-    link <- "identity"
-  } 
-  else  {
-    like <- "binom"
+    progress <- shiny::Progress$new()   # Adding progress bars
+    on.exit(progress$close())
+    progress$set(message="Updating.This may take up to 10 minutes", value=0)
+    treat_list2<-data.frame(treat_list)
+    if (CONBI=="Continuous") { 
+      armData <- data.frame(study=data$Study,       # Create arm level data set for gemtc
+                            treatment=data$T,
+                            mean=data$Mean,
+                            std.err=data$se)
+    }
+    else {
+      armData <- data.frame(study=data$Study,
+                            treatment=data$T,
+                            responders=data$R,
+                            sampleSize=data$N)
+    }
+    progress$inc(0.2, detail="Preparing to run simulation models")
+    mtcNetwork <- mtc.network(data.ab=armData,description="Network")   # Gemtc network object
+    if (outcome == "MD") {
+      like <- "normal"
+      link <- "identity"
+    } 
+    else  {
+      like <- "binom"
       link <- ifelse (outcome == "OR","logit", "log")
     }
     mtcModel <- mtc.model(network=mtcNetwork,
@@ -430,8 +430,74 @@ gemtctau <- function(results,outcome) {
       paste("Between-study standard deviation (log probability scale) set at 0")}
     else {
       paste("Between-study standard deviation set at 0")}
-    }
+  }
 }
+
+### 3c. Ranking results 
+
+# Collecting data #
+rankdata <- function(NMAdata, rankdirection, longdata) {
+  # data frame of colours
+  colour_dat = data.frame(SUCRA = seq(0, 100, by = 0.1)) 
+  colour_dat = dplyr::mutate(colour_dat, colour = seq(0, 100, length.out = 1001)) 
+  
+  # probability rankings
+  prob <- as.data.frame(print(gemtc::rank.probability(NMAdata, preferredDirection=(if (rankdirection=="good") -1 else 1)))) # rows treatments, columns ranks
+  names(prob)[1:ncol(prob)] <- paste("Rank ", 1:(ncol(prob)), sep="")
+  sucra <- gemtc::sucra(prob)  # 1 row of SUCRA values for each treatment column
+  treatments <- stringr::str_wrap(gsub("_", " ", row.names(prob)), width=10)
+  
+  # SUCRA
+  SUCRA <- data.frame(Treatment=treatments,
+                      SUCRA=as.numeric(sucra)*100)
+  
+  # Cumulative Probabilities
+  cumprob <- prob              # obtain copy of probabilities
+  for (i in 2:ncol(prob)) {    # for each rank (column)
+    for (j in 1:ncol(prob)) {  # for each treatment (row)
+      cumprob[j,i] <- cumprob[j,i-1] + cumprob[j,i]
+    }
+  }
+  Cumulative_Data <- data.frame(Treatment=rep(treatments,each=ncol(prob)),
+                                Rank = rep(1:(ncol(prob)), times=ncol(prob)),
+                                Cumulative_Probability = as.numeric(t(cumprob)))
+  Cumulative_Data <- Cumulative_Data %>% left_join(SUCRA, by = "Treatment")
+  
+  # Number of people in each node #
+  Patients <- data.frame(Treatment=str_wrap(gsub("_", " ",longdata$T), width=10),
+                         Sample=longdata$N)
+  Patients <- aggregate(Patients$Sample, by=list(Category=Patients$Treatment), FUN=sum)
+  Patients <- dplyr::rename(Patients, c("Treatment"="Category", "N"="x"))  # previously using plyr::rename where old/new names are other way round
+  Patients$Treatment <- gsub("_", " ", Patients$Treatment) #remove underscores, otherwise next line won't work
+  SUCRA <- SUCRA %>% dplyr::right_join(Patients, by = "Treatment")
+  # Node size #
+  size.maxO <- 15
+  size.maxA <- 10
+  size.min <- 1
+  n <- ncol(prob)
+  for (i in 1:n) {
+    SUCRA$SizeO[i] <- size.maxO * SUCRA$N[i]/max(SUCRA$N)
+    SUCRA$SizeA[i] <- size.maxA * SUCRA$N[i]/max(SUCRA$N)
+    if (SUCRA$SizeO[i] < size.min) {
+      SUCRA$SizeO[i] <- size.min}
+    if (SUCRA$SizeA[i] < size.min) {
+      SUCRA$SizeA[i] <- size.min}
+  }
+  
+  prob <- data.table::setDT(prob, keep.rownames = "Treatment") # treatment as a column rather than rownames (useful for exporting)
+  prob$Treatment <- stringr::str_wrap(gsub("_", " ", prob$Treatment), width=10)
+  
+  # Number of trials as line thickness taken from BUDGnetData object #
+  BUGSnetData <- data.prep(arm.data=longdata, varname.t = "T", varname.s="Study")
+  
+  return(list(SUCRA=SUCRA, Colour=colour_dat, Cumulative=Cumulative_Data, Probabilities=prob, BUGSnetData=BUGSnetData))
+}
+
+# text to go underneath plots #
+relative_rank_text <- function(results) {
+  paste("Forest plot of relative effects from Bayesian ", results$a, " consistency model", sep="")
+}
+
 
 ### 3d. nodesplit models
 
@@ -499,11 +565,11 @@ umeplot.df <- function(c,mtcNetwork, model,outcome) {
     link <- ifelse (outcome == "OR","logit", "log")
   }
   ume <- mtc.model(network=mtcNetwork,
-                    type = "ume",
-                    linearModel= model, 
-                    likelihood=like,
-                    link = link,
-                    dic = TRUE)
+                   type = "ume",
+                   linearModel= model, 
+                   likelihood=like,
+                   link = link,
+                   dic = TRUE)
   progress$inc(0.5, detail="Preparing results")
   ume_results <- mtc.run(ume)
   progress$inc(0.3, detail="Rendering results")
@@ -520,7 +586,7 @@ umeplot.df <- function(c,mtcNetwork, model,outcome) {
   m <- c(0,1,j)
   n <- c(0,1,j)
   dline<-data.frame(m,n)
-
+  
   p = plot_ly() %>%   # plot
     add_trace(data=dline, x = ~m, y = ~n, type = 'scatter', mode = 'lines',
               line = list(color = '#45171D'))
@@ -720,8 +786,3 @@ levplot.df <- function(x) {
       xaxis = xl, yaxis = yl, showlegend = FALSE, title="Leverage versus residual deviance")
   return(p)
 }
-
-
-
-
-

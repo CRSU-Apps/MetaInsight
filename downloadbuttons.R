@@ -123,6 +123,8 @@ output$downloadNetwork <- downloadHandler(
     dev.off()
   }
 )
+
+
 output$downloadNetworkUpdate <- downloadHandler(
   filename = function() {
     paste0('Network_sen.', input$format_freq2)
@@ -141,6 +143,8 @@ output$downloadNetworkUpdate <- downloadHandler(
     dev.off()
   }
 )
+
+
 
 
 ##### 2a. Forest plot
@@ -237,7 +241,8 @@ output$downloadBaye_plot <- downloadHandler(
   }
 )
 
-output$downloadBaye_plot_sub<- downloadHandler(
+
+output$downloadBaye_plot_sub <- downloadHandler(
   filename = function() {
     paste0('Excluded_studies.', input$format4)
   },
@@ -272,33 +277,131 @@ output$downloadbaye_comparison_sub <- downloadHandler(
   }
 )
 
-##### 3c. Ranking table
-output$downloadBaye_rank <- downloadHandler(
+
+
+##### 3c. Ranking panel CRN
+
+# Network plots #
+
+output$download_network_rank <- downloadHandler(  
   filename = function() {
-    paste('Rank_allstudies', '.csv', sep='')
+    paste0('Network.', input$network_rank_choice)
+  },
+  content = function(file) {
+    if (input$network_rank_choice=='pdf'){pdf(file=file)}
+    else {png(file=file)}
+    if (input$networkstyle_rank=='networkp1') {
+      make_netgraph_rank(freq_all_react(), treat_order())
+    } else {
+      make_netplot(bugsnetdt_react(), order=list(order=treat_order()))
+    }
+    title("Network plot of all studies")
+    dev.off()
+  }
+)
+output$download_network_rank_sub <- downloadHandler(
+  filename = function() {
+    paste0('Network_sen.', input$network_rank_choice_sub)
+  },
+  content = function(file) {
+    if (input$network_rank_choice_sub=='pdf'){pdf(file=file)}
+    else {png(file=file)}
+    if (input$networkstyle_rank_sub=='networkp1') {
+      make_netgraph_rank(freq_all_react_sub(), treat_order_sub())
+    } else {
+      make_netplot(filter(bugsnetdt_react_sub(), !Study %in% input$exclusionbox), order=list(order=treat_order_sub())) 
+    }
+    title("Network plot with studies excluded")
+    dev.off()
+  }
+)
+
+# Forest plots #
+
+output$download_rank_forest <- downloadHandler(  
+  filename = function() {
+    paste0('All_studies.', input$rank_forest_choice)
+  },
+  content = function(file) {
+    if (input$rank_forest_choice=='pdf') {pdf(file=file)}
+    else {png(file=file)}
+    forest(model()$mtcRelEffects,digits=3)
+    title(paste("All studies: 
+              Bayesian", model()$a, "consistency model forest plot results"), cex.main = 0.85)
+    dev.off()
+  }
+)
+
+output$download_rank_forest_sub <- downloadHandler(  
+  filename = function() {
+    paste0('Subgroup.', input$rank_forest_choice_sub)
+  },
+  content = function(file) {
+    if (input$rank_forest_choice_sub=='pdf') {pdf(file=file)}
+    else {png(file=file)}
+    forest(model_sub()$mtcRelEffects,digits=3)
+    title(paste("Results with studies excluded: 
+              Bayesian", model()$a, "consistency model forest plot results"), cex.main = 0.85)
+    dev.off()
+  }
+)
+
+# Rank plots #
+
+output$download_rank_plot <- downloadHandler(
+  filename = function() {
+    paste0('Ranking_Allstudies.png')
+  },
+  content = function(file) {
+    if (input$rank_plot_choice==0) { #Litmus Rank-O-Grams
+      if (input$Colour_blind==FALSE) {ggsave(file,Rankplots()$Litmus,width=6,height=6,units="in")} else {ggsave(file,Rankplots()$Litmus_blind,width=6,height=6,units="in")}
+    } else {  # Radial SUCRA plots
+      if (input$Radial_alt==FALSE) { #Default plot
+        if (input$Colour_blind==FALSE) {ggsave(file,Rankplots()$Radial$Original)} else {ggsave(file,Rankplots()$Radial_blind$Original)}
+      } else { # Alternative plot
+        if (input$Colour_blind==FALSE) {ggsave(file,Rankplots()$Radial$Alternative)} else {ggsave(file,Rankplots()$Radial_blind$Alternative)}
+      }
+    }
+  }
+)
+output$download_rank_plot_sub <- downloadHandler(
+  filename = function() {
+    paste0('Ranking_Excludedstudies.png')
+  },
+  content = function(file) {
+    if (input$rank_plot_choice_sub==0) { #Litmus Rank-O-Grams
+      if (input$Colour_blind_sub==FALSE) {ggsave(file,Rankplots_sub()$Litmus,width=6,height=6,units="in")} else {ggsave(file,Rankplots_sub()$Litmus_blind,width=6,height=6,units="in")}
+    } else {  # Radial SUCRA plots
+      if (input$Radial_alt_sub==FALSE) { #Default plot
+        if (input$Colour_blind_sub==FALSE) {ggsave(file,Rankplots_sub()$Radial$Original)} else {ggsave(file,Rankplots_sub()$Radial_blind$Original)}
+      } else { # Alternative plot
+        if (input$Colour_blind_sub==FALSE) {ggsave(file,Rankplots_sub()$Radial$Alternative)} else {ggsave(file,Rankplots_sub()$Radial_blind$Alternative)}
+      }
+    }
+  }
+)
+
+output$download_rank_table <- downloadHandler(
+  filename = function() {
+    paste0('RankingTable.csv')
   },
   content = function(file) {
     write.csv({
-      prob <- as.data.frame(print(rank.probability(model()$mtcResults,
-                                                   preferredDirection=(if (input$rankopts=="good") -1 else 1))))  
-      names(prob)[1:ncol(prob)] <- paste("Rank ", 1:(ncol(prob)), sep="")
-      prob
-      }, file)
+      RankingData()$Probabilities %>% right_join(RankingData()$SUCRA[,1:2], by="Treatment")
+      }, file, row.names=FALSE, col.names=TRUE)
   }
 )
-output$downloadBaye_rank_sub <- downloadHandler(
+output$download_rank_table_sub <- downloadHandler(
   filename = function() {
-    paste('Rank_subgroup', '.csv', sep='')
+    paste0('RankingTable_Excluded.csv')
   },
   content = function(file) {
     write.csv({
-      prob <- as.data.frame(print(rank.probability(model_sub()$mtcResults,preferredDirection=
-                                                     (if (input$rankopts=="good") -1 else 1)))) 
-      names(prob)[1:ncol(prob)] <- paste("Rank ", 1:(ncol(prob)), sep="")
-      prob
-      }, file)
+      RankingData_sub()$Probabilities %>% right_join(RankingData_sub()$SUCRA[,1:2], by="Treatment")
+    }, file, row.names=FALSE, col.names=TRUE)
   }
 )
+
 
 
 

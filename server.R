@@ -6,7 +6,6 @@
 
 # the data for meta-regression is from: http://nicedsu.org.uk/wp-content/uploads/2016/03/TSD3-Heterogeneity.final-report.08.05.12.pdf
 
-library(dplyr)
 library(metafor)
 library(netmeta)
 library(shiny) 
@@ -15,12 +14,19 @@ library(rmarkdown)
 library(knitr)
 library(gemtc)
 library(plyr)
+library(dplyr)
 library(data.table)
 library(shinyalert)
 library(plotly)
 library(shinyjs)
 library(BUGSnet)
 library(shinyBS)
+library(patchwork)
+library(ggrepel)
+library(magick)
+library(stringr)
+library(ggiraphExtra)
+library(tidyr)
 
 # Source files
 source("bugsnet_sumtb.R") # bugsnet_sumtb function, req BUGSnet - separate file added by NVB
@@ -32,7 +38,7 @@ source("PlotFunctionsRKO.R", local = TRUE)        # Plot functions
 load("blank.rds")                                 # Objects to store data for plot functions
 source("fn_analysis.R",local = TRUE)              # functions for NMA
 
-  
+
 shinyServer(function(input, output, session) {
   source("downloadbuttons.R", local = TRUE)   #codes for download buttons for conciseness. This line must be put within the shinyserver as this is purely a code file not functions.
   
@@ -103,13 +109,13 @@ shinyServer(function(input, output, session) {
         easyClose = FALSE,
         p(tags$strong("In accordance with Data Protection legislation, we would like to inform you of the following before you use our website:
                                  "), "We collect your usage data within the MetaInsight app to perform analytics of usage and improve our app. By clicking",
-          tags$i(tags$u("I consent")), "below, you consent to the use of data by us through Google Analytics.
+      tags$i(tags$u("I consent")), "below, you consent to the use of data by us through Google Analytics.
           For details of policy, please check the 'Privacy notice' tab within the app, and ",tags$a(href="https://policies.google.com/privacy?hl=en", "Google Privacy & Terms.",target="_blank") ),
         br(),
         modalButton("I consent"),
         footer = NULL
       ))
-  
+
   ### View the full update history
   
     observeEvent(input$history_click, {
@@ -124,14 +130,13 @@ shinyServer(function(input, output, session) {
       updateNavbarPage(session,"meta", selected="Troubleshooting")
     })
 
-  
+
   
   ############################################
   ############# Load data page ###############
   ############################################
-
+  
   ### Outcome selection
-    
     output$CONBI <- renderText({
       paste("You have selected", "<font color=\"#ffd966\"><b>" , input$metaoutcome,"</b></font>", 
             "outcome on the 'Home' page. The instructions for formatting",
@@ -146,36 +151,37 @@ shinyServer(function(input, output, session) {
       if(is.null(data())){return()}
       data()
     })
+
   
   ############################################
   ########### Data analysis tab ##############
   ############################################
   
   ### Confirmation for continuous / binary data
-    
-    output$CONBI2 <- renderText({
+  
+  output$CONBI2 <- renderText({
     paste("You have selected", "<font color=\"#ffd966\"><b>" , input$metaoutcome,"</b></font>", 
           "outcome on the 'Home' page. The analysis page for ",
           "<font color=\"#ffd966\"><b>" , input$metaoutcome,"</b></font>", "outcomes are now displayed.")
-    })
-    
+  })
+  
   ### Ranking defaults
-    choice <- reactive({
-      RankingOrder(input$metaoutcome,input$data)
-    })
-    
-    output$RankingPref <- renderUI({
-      choice2 <- choice()
-      radioButtons('rankopts', 'For treatment rankings, smaller outcome values  
+  choice <- reactive({
+    RankingOrder(input$metaoutcome,input$data)
+  })
+  
+  output$RankingPref <- renderUI({
+    choice2 <- choice()
+    radioButtons('rankopts', 'For treatment rankings, smaller outcome values  
                       (e.g. smaller mean values for continuous data, 
                       or ORs less than 1 for binary data) are:', 
-                   c("Desirable" = "good", "Undesirable" = "bad"), selected = choice2)
-    })
-    
-    
-    
+                 c("Desirable" = "good", "Undesirable" = "bad"), selected = choice2)
+  })
+  
+  
+  
   ### Get studies for check box input
-    
+
     output$Choicesexcl <- renderUI({
       newData <- data()
       newData1 <- as.data.frame(newData)
@@ -204,17 +210,17 @@ shinyServer(function(input, output, session) {
                      labels = as.character(label$Label))
       dt
     }
-    
-    colnames<- function(){
-      if (input$metaoutcome=="Continuous") {
-        colnames <- c('StudyID', 'Author','Treatment','Number of participants in each arm',
-                      'Mean value of the outcome in each arm', 'Standard deviation of the outcome in each arm')
+
+  colnames<- function(){
+    if (input$metaoutcome=="Continuous") {
+      colnames <- c('StudyID', 'Author','Treatment','Number of participants in each arm',
+                    'Mean value of the outcome in each arm', 'Standard deviation of the outcome in each arm')
       
-      } else{
-        colnames <- c('StudyID', 'Author','Treatment','Number of participants with the outcome of interest in each arm','Number of participants in each arm'
-                      )
+    } else{
+      colnames <- c('StudyID', 'Author','Treatment','Number of participants with the outcome of interest in each arm','Number of participants in each arm'
+      )
     }}
-    
+
     output$datatb <- DT::renderDataTable(DT::datatable({
       filtertable()
     },editable=TRUE, rownames= FALSE, 
@@ -265,7 +271,7 @@ shinyServer(function(input, output, session) {
   # 1c. Network Plot
   
   # Network plot of all studies
-  output$netGraphStatic <- renderPlot({
+  output$netGraphStatic1 <- renderPlot({
     if (input$networkstyle=='networkp1') {
       # Number of trials on line
       make_netgraph(freq_all(),input$label_all) 
@@ -292,11 +298,15 @@ shinyServer(function(input, output, session) {
     }
     title("Network plot with studies excluded")
   })
-
+  
   # Network connectivity with studies excluded 
   output$netconnect_sub <- renderPrint ({
     make_netconnect(freq_sub())
   })
+
+  
+  
+
   
   
   ############### bugsnet code #################
@@ -405,11 +415,11 @@ shinyServer(function(input, output, session) {
     long_sort2<-dataform_reg.df(newData1,treat_list,"Binary", 1)
     data.rh<-data.prep(arm.data=long_sort2, varname.t = "T", varname.s="Study")
     p<-data.plot(data = data.rh,
-              covariate = "DiseaseDuration",  # make this to be 
-              #half.length = "age_SD", #comment this line out to remove error bars
-              by = "treatment", # this is not variable name. only two options to selection: "treatment" or "study" (to plot characteristics by study)
-              #fill.str = "age_type",  #comment this line out to remove colors
-              avg.hline=TRUE) #add overall average line?
+                 covariate = "DiseaseDuration",  # make this to be 
+                 #half.length = "age_SD", #comment this line out to remove error bars
+                 by = "treatment", # this is not variable name. only two options to selection: "treatment" or "study" (to plot characteristics by study)
+                 #fill.str = "age_type",  #comment this line out to remove colors
+                 avg.hline=TRUE) #add overall average line?
     
     ##Network characteristic summary tables
     network.char <- net.tab(data = data.rh,
@@ -420,7 +430,7 @@ shinyServer(function(input, output, session) {
     tb<-network.char$network
     list(p=p, tb=tb)
   }
-
+  
   
   
   output$covp <- renderPlot({
@@ -532,7 +542,7 @@ shinyServer(function(input, output, session) {
   #### 3. Bayesian ####
   #####################
   
-  ### SMD warninig alert
+  ### SMD warning alert
   
   observeEvent(list(input$baye_do,input$sub_do, input$node,input$node_sub), {
     if (input$outcomeCont=="SMD") {
@@ -541,7 +551,7 @@ shinyServer(function(input, output, session) {
     else if (input$outcomebina=="RD") {
       showNotification("Please note: Risk difference currently cannot be analysed in Bayesian analysis", type = "error", duration = NULL)
     }
-    })
+  })
   
   
   
@@ -558,14 +568,14 @@ shinyServer(function(input, output, session) {
   })
 
   # 3a. Forest plot
-  
+
   # Forest plot for all studies
   output$gemtc <- renderPlot({    
     make_Forest(model(), input$metaoutcome, input$bayesmin, input$bayesmax)
     title(paste("All studies: 
               Bayesian", model()$a, "consistency model forest plot results"))
   })
-  
+
   # DIC tabel for all studies
   output$dic <- renderTable ({                  
     model()$dic
@@ -604,7 +614,7 @@ shinyServer(function(input, output, session) {
 
   
   # 3b. Comparison of all treatment pairs
-  
+
   # Treatment effects for all studies
   output$baye_comparison <- renderTable ({
     baye_comp(model(), input$metaoutcome, outcome_measure())
@@ -617,30 +627,136 @@ shinyServer(function(input, output, session) {
   }, rownames=TRUE, colnames = TRUE
   )
   
-  # 3c. Ranking table and chart
+  # 3c. Ranking Panel
   
-  # Ranking chart with all studies
-  output$gemtc_rank <- renderPlot ({    
-    ranking_chart(sub = FALSE, model(), input$rankopts)
+  # Obtain Data needed for ranking #
+  RankingData <- eventReactive(input$baye_do, {
+    obtain_rank_data(sub=TRUE, data(), input$metaoutcome, input$exclusionbox, 
+                     treatment_list(), model(), input$rankopts)
   })
   
-  # Ranking table with all studies
-  output$prob <- renderTable ({
-    ranking_table(model(), input$rankopts)  
-    }, digits=5, rownames=TRUE, colnames = TRUE
-  )
-  
-  # Ranking chart with studies excluded
-  output$gemtc_rank_sub <- renderPlot ({
-    ranking_chart(sub = TRUE, model_sub(), input$rankopts)
+  RankingData_sub <- eventReactive(input$sub_do, {
+    obtain_rank_data(sub=FALSE, data(), input$metaoutcome, input$exclusionbox, 
+                     treatment_list(), model_sub(), input$rankopts)
   })
   
-  # Ranking table with studies excluded
-  output$prob_sub <- renderTable ({
-    ranking_table(model_sub(), input$rankopts) 
-  }, digits=5, rownames=TRUE, colnames = TRUE
-  )
+  # Network plots for ranking panel (Bayesian) (they have slightly different formatting to those on tab1) CRN
+  treat_order <- reactive(RankingData()$SUCRA[order(RankingData()$SUCRA$SUCRA),1]) # obtain treatments ordered by SUCRA #
+  freq_all_react <- eventReactive(input$baye_do, {  # these two lines are needed in case someone jumped to Bayesian page without running frequentist section, but am aware this can cause frequentist analysis to run twice (CRN)
+    freq_all()
+  })
+  bugsnetdt_react <- eventReactive(input$baye_do, {
+    bugsnetdt()
+  })
+  output$netGraphStatic1_rank <- renderPlot({
+    if (input$networkstyle_rank=='networkp1') {
+      # Number of trials on line
+      make_netgraph_rank(freq_all_react(), treat_order())
+    } else {
+      # Number of trials by nodesize and line thickness 
+      make_netplot(bugsnetdt_react(), order=list(order=treat_order()))
+    }
+    title("Network plot of all studies")
+  })
+  # Repeat for excluded studies
+  treat_order_sub <- reactive(RankingData_sub()$SUCRA[order(RankingData_sub()$SUCRA$SUCRA),1])
+  freq_all_react_sub <- eventReactive(input$sub_do, {
+    freq_sub()
+  })
+  bugsnetdt_react_sub <- eventReactive(input$sub_do, {
+    bugsnetdt()
+  })
+  output$netGraphStatic1_rank_sub <- renderPlot({
+    if (input$networkstyle_rank_sub=='networkp1') {
+      # Number of trials on line
+      make_netgraph_rank(freq_all_react_sub(), treat_order_sub())
+    } else {
+      # Number of trials by nodesize and line thickness
+      make_netplot(filter(bugsnetdt_react_sub(), !Study %in% input$exclusionbox), order=list(order=treat_order_sub()))
+    }
+    title("Network plot with studies excluded")
+  })
   
+  # Forest plots for ranking panel (different style due to using 'boxes' in UI) CRN
+  # All studies #
+  output$gemtc2 <- renderPlot({                  
+    png("forest.png")  # initialise image
+    forest(model()$mtcRelEffects,digits=3)
+    dev.off()
+    ForestImg <- magick::image_read('forest.png')
+    Img <- cowplot::ggdraw() +
+      cowplot::draw_image(ForestImg)
+    return(Img)
+  })
+  # With studies excluded
+  output$gemtc_sub2 <- renderPlot({                  
+    png("forest_sub.png")
+    forest(model_sub()$mtcRelEffects,digits=3)
+    dev.off()
+    ForestImg <- magick::image_read('forest_sub.png')
+    Img <- cowplot::ggdraw() +
+      cowplot::draw_image(ForestImg)
+    return(Img)
+  })
+
+  # All rank plots in one function for easier loading when switching options #
+  Rankplots <- reactive({
+    plots <- list()
+    plots$Litmus <- LitmusRankOGram(CumData=RankingData()$Cumulative, SUCRAData=RankingData()$SUCRA, ColourData=RankingData()$Colour, colourblind=FALSE)
+    plots$Radial <- RadialSUCRA(SUCRAData=RankingData()$SUCRA, ColourData=RankingData()$Colour, BUGSnetData=RankingData()$BUGSnetData, colourblind=FALSE)
+    plots$Litmus_blind <- LitmusRankOGram(CumData=RankingData()$Cumulative, SUCRAData=RankingData()$SUCRA, ColourData=RankingData()$Colour, colourblind=TRUE)
+    plots$Radial_blind <- RadialSUCRA(SUCRAData=RankingData()$SUCRA, ColourData=RankingData()$Colour, BUGSnetData=RankingData()$BUGSnetData, colourblind=TRUE)
+    plots
+  })
+  Rankplots_sub <- reactive({
+    plots <- list()
+    plots$Litmus <- LitmusRankOGram(CumData=RankingData_sub()$Cumulative, SUCRAData=RankingData_sub()$SUCRA, ColourData=RankingData_sub()$Colour, colourblind=FALSE)
+    plots$Radial <- RadialSUCRA(SUCRAData=RankingData_sub()$SUCRA, ColourData=RankingData_sub()$Colour, BUGSnetData=RankingData_sub()$BUGSnetData, colourblind=FALSE)
+    plots$Litmus_blind <- LitmusRankOGram(CumData=RankingData_sub()$Cumulative, SUCRAData=RankingData_sub()$SUCRA, ColourData=RankingData_sub()$Colour, colourblind=TRUE)
+    plots$Radial_blind <- RadialSUCRA(SUCRAData=RankingData_sub()$SUCRA, ColourData=RankingData_sub()$Colour, BUGSnetData=RankingData_sub()$BUGSnetData, colourblind=TRUE)
+    plots
+  })
+  
+  # Litmus Rank-O-Gram
+  output$Litmus <- renderPlot({
+    if (input$Colour_blind==FALSE) {Rankplots()$Litmus} else {Rankplots()$Litmus_blind}
+  })
+  output$Litmus_sub <- renderPlot({
+    if (input$Colour_blind_sub==FALSE) {Rankplots_sub()$Litmus} else {Rankplots_sub()$Litmus_blind}
+  })
+  
+  # Radial SUCRA 
+  output$Radial <- renderPlot({
+    if (input$Colour_blind==FALSE) {Rankplots()$Radial$Original} else {Rankplots()$Radial_blind$Original}
+  })
+  output$Radial_sub <- renderPlot({
+    if (input$Colour_blind_sub==FALSE) {Rankplots_sub()$Radial$Original} else {Rankplots_sub()$Radial_blind$Original}
+  })
+  # Alternative SUCRA plots
+  output$RadialAlt <- renderPlot({
+    if (input$Colour_blind==FALSE) {Rankplots()$Radial$Alternative} else {Rankplots()$Radial_blind$Alternative}
+  })
+  output$RadialAlt_sub <- renderPlot({
+    if (input$Colour_blind_sub==FALSE) {Rankplots_sub()$Radial$Alternative} else {Rankplots_sub()$Radial_blind$Alternative}
+  })
+  
+  # Table of Probabilities (need to include SUCRA and have it as a collapsable table)
+  output$rank_probs <- renderTable(
+    {rank_probs_table(RankingData())}, 
+    digits=2, rownames=FALSE, colnames=TRUE)
+  output$rank_probs_sub <- renderTable(
+    {rank_probs_table(RankingData_sub())}, 
+    digits=2, rownames=FALSE, colnames=TRUE)
+  
+  # Text underneath
+  output$relative_rank_text <-renderText({          
+    relative_rank_text(model())
+  })
+  output$relative_rank_text_sub <-renderText({          
+    relative_rank_text(model_sub())
+  })
+  
+
   # 3d. Nodesplit model
   
   # Inconsistency test with notesplitting model for all studies
@@ -654,7 +770,7 @@ shinyServer(function(input, output, session) {
   })
 
   # Inconsistency test with notesplitting model with studies excluded
-  model_nodesplit_sub <- eventReactive(input$node, {
+  model_nodesplit_sub <- eventReactive(input$node_sub, {
     nodesplit(sub = TRUE, data(), treatment_list(), input$metaoutcome, outcome_measure(),
                     input$modelranfix, input$exclusionbox)
   })
@@ -662,7 +778,7 @@ shinyServer(function(input, output, session) {
   output$node_table_sub<- renderTable(colnames=TRUE, {
     model_nodesplit_sub()
   })
-  
+
   # 3e. Bayesian result details 
   
   # Results details for all studies
@@ -760,4 +876,3 @@ shinyServer(function(input, output, session) {
     scat_plot(model_sub())$y
   })
 })
-
