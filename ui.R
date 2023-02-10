@@ -70,11 +70,11 @@ dashboardPage(
     h2("MetaInsight V4.0.0",
       #tags$sup("Beta", style="color:#6CC0ED"), 
       align= "left"),
-    prettyRadioButtons("metaoutcome","Please select your outcome type:",
+    fluidRow(
+      column(3, prettyRadioButtons("metaoutcome","Please select your outcome type:",
                       c("Continuous (e.g. mean difference) " = "Continuous","Binary (e.g. Odds Ratio)" = "Binary"), 
                       animation = "pulse", status = "info", width = '400px'),
-    fluidRow(
-      column(3, br(), br(),
+             br(), br(),
             img(src='network2.jpg', width=500, height=400, align = "center")),
       column(2),
       column(5, 
@@ -82,9 +82,12 @@ dashboardPage(
             actionLink("history_click", "Click here to view a full update history of MetaInsight"),
             br(),
             tags$a(href="https://github.com/CRSU-Apps/MetaInsight/commits/main", "Click here to view the full version history of the code base for MetaInsight",target="_blank"),
-            p(tags$strong("** Major New Feature: Redesign of Bayesian Ranking Panel (08 February 2023 v4.0.0) **:")),
+            p(tags$strong("** Major New Feature: Redesign of Bayesian Ranking Panel (10 February 2023 v4.0.0) **:")),
             p(tags$ul(tags$li("The Bayesian treatment ranking section has had a complete redesign including two newly developed plots 
-                              and a multifaceted panel to interpret the results with other evidence."))),
+                              and a multifaceted panel to interpret the results with other evidence.
+                              A short demo video of how to use the new panel is available below."))),
+            HTML('<iframe width="560" height="315" src="https://www.youtube.com/embed/scbLwTY0kvc" title="MetaInsight Treatment Ranking Demo" 
+                 frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'),
             p(tags$strong("** 'Under-the-hood' changes on 02 February 2023 (v3.1.15) **:")),
             p(tags$ul(tags$li("Changes have been made 'under-the-hood' of MetaInsight to improve the code base and prepare it for future features.
                           No changes have been made to the functionality of MetaInsight.")))
@@ -119,7 +122,7 @@ dashboardPage(
          column(7, tags$div(class="header", checked=NA,
                             tags$strong("Funding and Support Acknowledgement:"),
                             tags$p("The Complex Reviews Support Unit is funded by the National Institute for Health Research (NIHR) (project number 14/178/29).
-                                   This app is also supported by the NIHR Applied Research Collaboration East Midlands (ARC EM)."),
+                                   Development of this app is also funded by the NIHR Applied Research Collaboration East Midlands (ARC EM)."),
                             tags$strong("Disclaimer: "),
                             tags$p("The views and opinions expressed herein are those of the authors and do not necessarily reflect those of the NIHR, NHS or the Department of Health and Social Care."),
                             tags$p("Please click ", tags$a(href="http://www.nihrcrsu.org", "here ",
@@ -723,7 +726,7 @@ tabPanel("Load Data",
                column(6, p("UME (inconsistency) model"), verbatimTextOutput("dev_ume")),
                column(6, p("UME (inconsistency) model"), verbatimTextOutput("dev_ume_sub")
                ))   
-))))))))),
+)))))), width=9))),
 
 ###################################
 ### Tab 5 - User Guide ###
