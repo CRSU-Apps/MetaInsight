@@ -85,7 +85,10 @@ dashboardPage(
             p(tags$strong("** Major New Feature: Redesign of Bayesian Ranking Panel (10 February 2023 v4.0.0) **:")),
             p(tags$ul(tags$li("The Bayesian treatment ranking section has had a complete redesign including two newly developed plots 
                               and a multifaceted panel to interpret the results with other evidence.
-                              A short demo video of how to use the new panel is available below."))),
+                              A short demo video of how to use the new panel is available below."),
+                      tags$li("The new feature is associated with the following peer-reviewed paper: ",
+                              tags$a(href="https://doi.org/10.1016/j.jclinepi.2023.02.016", "Nevill CR, Cooper NJ, Sutton AJ, A multifaceted graphical display, including treatment ranking, was developed to aid interpretation of network meta-analysis, 
+                              Journal of Clinical Epidemiology (2023)")))),
             HTML('<iframe width="560" height="315" src="https://www.youtube.com/embed/scbLwTY0kvc" title="MetaInsight Treatment Ranking Demo" 
                  frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'),
             p(tags$strong("** 'Under-the-hood' changes on 02 February 2023 (v3.1.15) **:")),
@@ -508,7 +511,12 @@ tabPanel("Load Data",
         tabPanel("3c. Ranking Panel",
                 helpText("Please note: if you change the selections on the sidebar, 
                          you will need to re-run the primary and/or sensitivity analysis from the 'Forest Plot' page.", 
-                         tags$br(), tags$strong("Please note it may take up to 5 minutes to load the results.", style="color:#FF0000")),
+                         tags$br(), 
+                         tags$strong("Please note it may take up to 5 minutes to load the results.", style="color:#FF0000"),
+                         tags$br(),
+                         tags$strong("IMPORTANT: If you export and include the Litmus Rank-O-Gram or the Radial SUCRA plot in your work, please cite it as:", style="color:#4863A0"),
+                         tags$a(href="https://doi.org/10.1016/j.jclinepi.2023.02.016", "Nevill CR, Cooper NJ, Sutton AJ, A multifaceted graphical display, including treatment ranking, was developed to aid interpretation of network meta-analysis, 
+                              Journal of Clinical Epidemiology (2023)")),
                 fluidRow(   
                     shinydashboard::box(title="Ranking panel for all studies", status='primary', solidHeader=TRUE, width=12, collapsible=TRUE,
                         splitLayout(cellWidths=c("30%","40%","30%"), cellArgs = list(style="height: 780px; padding: 16px; border: 2px solid gold; white-space: normal"),
