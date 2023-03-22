@@ -42,6 +42,71 @@ source("fn_analysis.R",local = TRUE)              # functions for NMA
 shinyServer(function(input, output, session) {
   source("downloadbuttons.R", local = TRUE)   #codes for download buttons for conciseness. This line must be put within the shinyserver as this is purely a code file not functions.
   
+  # Create a definable reactive value to allow reloading of data
+  reload <- reactiveVal(F)
+  
+  # Render function for file input dynamically to allow the button to be set to Null
+  default_file_input <- 
+    renderUI({
+      fileInput(inputId="data", label="", buttonLabel="Select", placeholder="No file selected")
+    })
+  
+  # Render function reload button dynamically to allow the button to be set to Null
+  default_reload_button <-
+    renderUI({
+      div(style = "display:inline-block; float:right", actionButton("reload_button", "Delete Data", icon("trash"), 
+                   style="color: #fff; background-color: #dc3545; border-color: #dc3545"))
+    })
+  
+  # Make the treatment panel reactive to allow switching between continous and binary more dynamic
+  default_trt_panel <- reactive({
+    # respond to reload
+    reload()
+    if (input$metaoutcome=='Continuous') {
+      return(
+        panel(
+          aceEditor(
+            "listCont",
+            value = paste0(
+              "Number\tLabel",
+              "\n1\tPlacebo",
+              "\n2\tOrlistat",
+              "\n3\tSibutramine",
+              "\n4\tMetformin",
+              "\n5\tOrli_Sibut",
+              "\n6\tRimonbant"),
+            mode = "r" ,
+            theme = "eclipse"
+          )
+        )
+      )
+    }
+    else{
+      return(
+        panel(
+          aceEditor(
+            "listbina",
+            value = paste0(
+              "Number\tLabel",
+              "\n1\tNo_contact",
+              "\n2\tSelf_help",
+              "\n3\tIndividual_counselling",
+              "\n4\tGroup_counselling"),
+            mode = "r",
+            theme = "eclipse"
+          )
+        )
+      )
+    }
+  })
+  
+  # Render the above treatment panel
+  output$trt_panel <- renderUI({
+    default_trt_panel()
+  })
+  
+  # Render the file input intially
+  output$file_input = default_file_input
   
   #####
   # Reactive functions used in various places
@@ -65,7 +130,13 @@ shinyServer(function(input, output, session) {
   # Make data reactive i.e. default or user uploaded
   data <- reactive({ 
     file1 <- input$data # Name the data file that was uploaded file1
-    if(is.null(file1)){return(defaultD())}
+    # if a reload is triggered show the reload the file input and data
+    if(reload()){
+      output$file_input = default_file_input
+      return(defaultD())
+    }
+    # if data is triggered without reload, only load the default data
+    else if(is.null(file1)){return(defaultD())      }
     else
       a <- read.table(file = file1$datapath, sep =",", header=TRUE, stringsAsFactors = FALSE, quote="\"", fileEncoding = 'UTF-8-BOM')
   })
@@ -96,6 +167,37 @@ shinyServer(function(input, output, session) {
   # Make ref_alter function (in fn_analysis.R) reactive - NVB
   reference_alter <- reactive({
     return(ref_alter(data(), input$metaoutcome, input$exclusionbox, treatment_list()))
+  })
+  
+  #####
+  # observer functions to trigger specific reactions
+  #####
+  
+  # if the outcome is changed, reload the data and labels, reset the file input and hide the reload button
+  observeEvent(input$metaoutcome, {
+    reload(T)
+    output$file_input = default_file_input
+    output$reload_button = NULL
+  })
+  
+  # if the data is changed load the new data (reset the labels) and show the reload button
+  observeEvent(input$data, {
+    reload(F)
+    output$reload_button = default_reload_button
+  })
+  
+  # if the reload button is clicked, reload the appropriate default data and labels and hide the reload button
+  observeEvent(input$reload_button,{
+    reload(T)
+    output$file_input = default_file_input
+    output$reload_button = NULL
+  })
+  
+  # if the reload lables button is clicked reload the default labels
+  observeEvent(input$reload_labels, {
+    output$trt_panel <- renderUI({
+      default_trt_panel()
+    })
   })
 
   ############################################
