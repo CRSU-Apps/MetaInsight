@@ -193,12 +193,15 @@ shinyServer(function(input, output, session) {
     output$reload_button = NULL
   })
   
-  # if the reload lables button is clicked reload the default labels
+  # if the reload labels button is clicked reload the default labels
   observeEvent(input$reload_labels, {
     output$trt_panel <- renderUI({
       default_trt_panel()
     })
-  })
+  }, ignoreNULL = F)
+  
+  # Allow the treatment list to be rendered without the data tab being loaded.
+  outputOptions(output, "trt_panel", suspendWhenHidden = F)
 
   ############################################
   ######### Home page - linking pages ########
