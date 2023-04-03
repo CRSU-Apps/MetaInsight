@@ -19,7 +19,7 @@ make_netStudy <- function(freq, outcome_measure, ForestHeader, ForestTitle) {
 # 1c Network plot - number of trials on line
 make_netgraph <- function(freq, label_size) {  
   return(netgraph(freq$net1, lwd=2, number.of.studies = TRUE, plastic=FALSE, points=TRUE, cex=label_size, cex.points=2, col.points=1, col=8, pos.number.of.studies=0.43,
-           col.number.of.studies = "forestgreen", col.multiarm = "white", bg.number.of.studies = "forestgreen"))
+                  col.number.of.studies = "forestgreen", col.multiarm = "white", bg.number.of.studies = "forestgreen"))
 }
 
 # 1c Network plot - number of trials by nodesize and line thickness
@@ -95,7 +95,7 @@ baye_comp <- function(model, metaoutcome, outcome_measure){
 # Network plot - number of trials on line
 make_netgraph_rank = function(freq, order) {  
   return(netmeta::netgraph(freq$net1, labels=str_wrap(gsub("_", " ",freq$net1$trts), width=10), lwd=2, number.of.studies = TRUE, plastic=FALSE, points=TRUE, cex=1, cex.points=2, col.points=1, col=8, pos.number.of.studies=0.43,
-                  col.number.of.studies = "forestgreen", col.multiarm = "white", bg.number.of.studies = "forestgreen", seq=gsub(" ", "_", str_wrap(order, width=1000)),  #freq$net1$trts has not been formatted but 'order' has
+                           col.number.of.studies = "forestgreen", col.multiarm = "white", bg.number.of.studies = "forestgreen", seq=gsub(" ", "_", str_wrap(order, width=1000)),  #freq$net1$trts has not been formatted but 'order' has
   ))
 }
 
@@ -137,13 +137,19 @@ LitmusRankOGram <- function(CumData, SUCRAData, ColourData, colourblind=FALSE) {
 RadialSUCRA <- function(SUCRAData, ColourData, BUGSnetData, colourblind=FALSE) {      # SUCRAData needs Treatment & Rank; ColourData needs SUCRA & colour; colourblind friendly option
   
   n <- nrow(SUCRAData) # number of treatments
+  # Add values to angle and adjust radial treatment labels
+  SUCRAData <- SUCRAData[order(-SUCRAData$SUCRA),]
+  SUCRAData$Angle <- rev(90 + seq(180/n, 360-180/n, len=n)) - c(rep(360,ceiling(n/2)), rep(180,floor(n/2)))
+  SUCRAData$Adjust <- c(rep(0,ceiling(n/2)),rep(1,floor(n/2)))
   # Background #
   Background <- ggplot(SUCRAData, aes(x=reorder(Treatment, -SUCRA), y=SUCRA, group=1)) +
     geom_segment(data = ColourData, aes(x = -Inf, xend = Inf, y = SUCRA, yend = SUCRA, colour = colour), show.legend = FALSE, alpha=0.05) +
     theme_classic() + 
     theme(panel.grid.major.y = element_line(colour = c(rep("black",6),"white")), axis.title = element_blank(), axis.text.y = element_blank(), axis.ticks = element_blank(), axis.line = element_blank(), 
-          aspect.ratio = 1, axis.text.x = element_text(size=8,family="sans",angle = 360/(2*pi)*rev(pi/2 + seq(pi/n,2*pi-pi/n, len=n)) + 360/(2*pi)*c(rep(0,ceiling(n/2)),rep(pi,floor(n/2))))) +
-    coord_polar()
+          aspect.ratio = 1, axis.text.x = element_blank()) +
+    coord_polar() +
+    geom_text(aes(label=reorder(Treatment, -SUCRA), y=110, angle=Angle, hjust=Adjust),
+              size=3, family="sans")
   if (colourblind==FALSE) {
     Background <- Background + scale_colour_gradient2(low = "red", mid = "yellow", high = "green", midpoint=50, limits=c(0,100)) +
       scale_fill_gradient2(low = "red", mid = "yellow", high = "green", midpoint=50, limits=c(0,100))
@@ -206,11 +212,11 @@ RadialSUCRA <- function(SUCRAData, ColourData, BUGSnetData, colourblind=FALSE) {
   CreateNetwork <- function(Type) {
     if (Type=='Original') {
       g <- ggplot(dat.edges, aes(x=reorder(treatment,-SUCRA), y=SUCRA, group=pairwiseID)) +
-        geom_line(size=dat.edges$lwdO,show.legend = FALSE) +
+        geom_line(linewidth=dat.edges$lwdO,show.legend = FALSE) +
         scale_y_continuous(limits=c(-40,115))
     } else {
       g <- ggplot(dat.edges, aes(x=reorder(treatment,-SUCRA), y=-20, group=pairwiseID)) +
-        geom_line(size=dat.edges$lwdA,show.legend = FALSE) +
+        geom_line(linewidth=dat.edges$lwdA,show.legend = FALSE) +
         scale_y_continuous(limits=c(-80,115))
     }
     g +
@@ -218,7 +224,7 @@ RadialSUCRA <- function(SUCRAData, ColourData, BUGSnetData, colourblind=FALSE) {
       theme(panel.background = element_rect(fill = "transparent"), plot.background = element_rect(fill = "transparent", color = NA), 
             axis.title = element_blank(), axis.text.y = element_blank(), axis.ticks = element_blank(), 
             axis.line = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), aspect.ratio = 1, 
-            axis.text.x = element_text(size=8,family="sans",angle = 360/(2*pi)*rev(pi/2 + seq(pi/n,2*pi-pi/n, len=n)) + 360/(2*pi)*c(rep(0,ceiling(n/2)),rep(pi,floor(n/2))))) +
+            axis.text.x = element_blank()) +
       annotate("text",x = rep(0.5,7), y = c(-3,17,37,57,77,97,115), label = c("0","20","40","60","80","100","SUCRA (%)"), size=2.5, family="sans")
   }
   Network <- CreateNetwork(Type='Original')
@@ -248,7 +254,7 @@ RadialSUCRA <- function(SUCRAData, ColourData, BUGSnetData, colourblind=FALSE) {
       theme(panel.background = element_rect(fill = "transparent"), plot.background = element_rect(fill = "transparent", color = NA), 
             axis.title = element_blank(), axis.text.y = element_blank(), axis.ticks = element_blank(), 
             axis.line = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), aspect.ratio = 1,
-            axis.text.x = element_text(size=8,family="sans",angle = 360/(2*pi)*rev(pi/2 + seq(pi/n,2*pi-pi/n, len=n)) + 360/(2*pi)*c( rep(0, ceiling(n/2)),rep(pi,floor(n/2))))) +
+            axis.text.x = element_blank()) +
       coord_polar() +
       annotate("text",x = rep(0.5,7), y = c(-3,17,37,57,77,97,115), label = c("0","20","40","60","80","100","SUCRA (%)"), size=2.5, family="sans")
   }
@@ -305,7 +311,6 @@ levplot <- function(model) {
   x <- mtc.deviance({model$mtcResults})
   return(levplot.df(x))
 }
-
 
 
 
