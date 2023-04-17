@@ -154,7 +154,8 @@ tabPanel("Load Data",
                                 h4(tags$strong("Step 1 - Please select a data file (.csv) to upload")),
                                 br(),
                                 p(tags$strong("Note: Excel files should be saved in 'csv (Comma delimited) (*.csv)' format. Default maximum file size is 5MB.")),
-                                fileInput(inputId="data", label="", buttonLabel="Select", placeholder="No file selected"),
+                                uiOutput("file_input"),
+                                uiOutput("reload_button"),
                                 br(),
                                 tags$hr(),
                                 h4(tags$strong("Step 2 - Please copy and paste the treatment labels")),
@@ -163,22 +164,10 @@ tabPanel("Load Data",
                                 p(tags$strong("      Treatment names may only contain letters, digits, and underscore (_).")),
                                 p(tags$strong("Tabspace does not work when directly typing into the texbox. Please copy and paste from a text or Excel file, or copy and paste from one of the pre-loaded rows.")),
                                 br(),
-                                conditionalPanel(condition= "input.metaoutcome=='Continuous'",
-                                                 aceEditor("listCont", value="Number\tLabel
-1\tPlacebo
-2\tOrlistat
-3\tSibutramine
-4\tMetformin
-5\tOrli_Sibut
-6\tRimonbant", mode="r" , theme="eclipse")   # note: no tabs allowed in front of the treatment labels. all the tabs will be relected as tabs in the input.
-                                ),
-                                conditionalPanel(condition = "input.metaoutcome=='Binary'",
-                                                 aceEditor("listbina", value="Number\tLabel
-1\tNo_contact
-2\tSelf_help
-3\tIndividual_counselling
-4\tGroup_counselling", mode="r", theme="eclipse")
-                                )
+                                uiOutput("trt_panel"),
+                                div(style = "display:inline-block; float:right", actionButton("reload_labels", "Reload Default Labels", icon("arrows-rotate"), 
+                                                                                              style="color: #fff; background-color: #007bff; border-color: #007bff")),
+                                div(class = "clearfix")
                               ),
                               mainPanel(
                                 tabsetPanel(id="instructions",
