@@ -10,11 +10,11 @@ type: software
 authors:
   - family-names: Nevill
     given-names: Clareece R
-    affiliation: University of Leceister
+    affiliation: University of Leicester
     orcid: 'https://orcid.org/0000-0001-8305-2516'
   - family-names: Naomi
     given-names: Bradbury
-    affiliation: University of Leceister
+    affiliation: University of Leicester
     orcid: 'https://orcid.org/0000-0002-8934-6301'
   - family-names: Yiqiao
     given-names: Xin
@@ -28,11 +28,11 @@ authors:
     orcid: 'https://orcid.org/0000-0002-4424-9890'
   - family-names: Cooper
     given-names: Nicola J
-    affiliation: University of Leceister
+    affiliation: UUniversity of Leicester
     orcid: 'https://orcid.org/0000-0002-4486-2791'
   - family-names: Sutton
     given-names: Alex J
-    affiliation: University of Leceister
+    affiliation: University of Leicester
 repository-code: 'https://github.com/CRSU-Apps/MetaInsight'
 abstract: >-
   MetaInsight is a tool that conducts NMA via the web
