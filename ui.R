@@ -578,10 +578,10 @@ tabPanel("Load Data",
                           you will need to re-run the primary and/or sensitivity analysis from the 'Forest Plot' page."),
                 p("Please note: This may take more than 10 minutes depending on the number of treatment options. The node splitting option for
                   the Bayesian analysis is highly numerically intensive and using it on the app can cause the app to disconnect in some circumstances.  
-                  We recommend people to download the whole app through",
-                  tags$a(href="https://github.com/CRSU-Apps/MetaInsight", "Github",target="_blank"), 
-                  "and run it locally through RStudio on their own machine if they want to make use of this function. 
-                  If you are not familiar with running ShinyApps in RStudio, please read this", tags$a(href="https://shiny.rstudio.com/tutorial/written-tutorial/lesson1/", "tutorial", target="_blank"), "from Shiny."),
+                  We have produced a",
+                  tags$a(href="https://github.com/CRSU-Apps/MetaInsight/wiki/Local-User-Guide", "guide",target="_blank"), 
+                  "to running MetaInsight locally through RStudio on the user's own machine if they want to make use of this function."),
+                
                   fluidRow(
                     column(6,
                           p(tags$strong("Inconsistency test with notesplitting model for all studies")),
