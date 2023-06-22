@@ -456,11 +456,10 @@ create_chain_initial_data_download_handler <- function(index) {
         lapply(
           model()$mtcResults$model$inits[[index]],
           write,
-          filename,
+          file,
           append=TRUE,
           ncolumns=1000
         )
-        file.copy(filename, file)
       }
     )
   )
