@@ -125,9 +125,8 @@ dashboardPage(
          column(7, tags$div(class="header", checked=NA,
                             tags$strong("Funding and Support Acknowledgement:"),
                             tags$p("The Complex Reviews Support Unit is funded by the National Institute for Health Research (NIHR) (project number 14/178/29).
-                                   Development of this app is also funded by the NIHR Applied Research Collaboration East Midlands (ARC EM)."),
-                            tags$strong("Disclaimer: "),
-                            tags$p("The views and opinions expressed herein are those of the authors and do not necessarily reflect those of the NIHR, NHS or the Department of Health and Social Care."),
+                                   Development of this app is also funded by the NIHR Applied Research Collaboration East Midlands (ARC EM) and the Leicester NIHR Biomedical Research Centre (BRC).
+                                   The views expressed are those of the author(s) and not necessarily those of the NIHR or the Department of Health and Social Care."),
                             tags$p("Please click ", tags$a(href="http://www.nihrcrsu.org", "here ",
                                                            target="_blank"), "for more information about the UK NIHR Complex Reviews Support Unit (CRSU).")
          ))))),
