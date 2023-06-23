@@ -1,3 +1,4 @@
+###### MEtaInsight ######
 
 library(BUGSnet)
 library(cowplot)
@@ -40,6 +41,3 @@ libcombinat <- function(){
   require(combinat)
 }
 ifelse(any(grepl('combinat',installed.packages()[,1])), require(combinat), libcombinat())
-
-
-load("blank.rds")                                 # Objects to store data for plot functions
