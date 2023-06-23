@@ -8,8 +8,6 @@
 
 
 shinyServer(function(input, output, session) {
-  setup_dowload_handlers(input, output)
-  
   # Create a definable reactive value to allow reloading of data
   reload <- reactiveVal(F)
   
@@ -721,6 +719,9 @@ shinyServer(function(input, output, session) {
     ForestImg <- magick::image_read('forest.png')
     Img <- cowplot::ggdraw() +
       cowplot::draw_image(ForestImg)
+    
+    file.remove('forest.png')
+    
     return(Img)
   })
   # With studies excluded
@@ -731,6 +732,9 @@ shinyServer(function(input, output, session) {
     ForestImg <- magick::image_read('forest_sub.png')
     Img <- cowplot::ggdraw() +
       cowplot::draw_image(ForestImg)
+    
+    file.remove('forest_sub.png')
+    
     return(Img)
   })
 
@@ -910,4 +914,16 @@ shinyServer(function(input, output, session) {
   output$dev_ume_sub<- renderPrint({
     scat_plot(model_sub())$y
   })
+  
+  create_raw_data_download_handlers(input, output)
+  create_data_summary_download_handlers(input, output, freq_sub, outcome_measure, bugsnetdt)
+  create_frequentist_download_handlers(input, output, bugsnetdt, freq_all, freq_sub, reference_alter)
+  create_bayesian_analysis_download_handlers(input, output, bugsnetdt, model, model_sub, outcome_measure)
+  create_bayesian_ranking_network_download_handlers(
+    input, output, freq_all_react, treat_order, bugsnetdt_react, freq_all_react_sub, treat_order_sub, bugsnetdt_react_sub)
+  create_bayesian_ranking_forest_download_handlers(input, output, model, model_sub)
+  create_bayesian_ranking_rank_download_handlers(input, output, Rankplots, Rankplots_sub, RankingData, RankingData_sub)
+  create_bayesian_nodesplit_download_handlers(input, output, model_nodesplit, model_nodesplit_sub)
+  create_bayesian_model_download_handlers(input, output, model)
+  create_user_guide_download_handler(input, output)
 })

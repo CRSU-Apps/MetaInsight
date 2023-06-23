@@ -276,6 +276,14 @@ RadialSUCRA <- function(SUCRAData, ColourData, BUGSnetData, colourblind=FALSE) {
   Final <- magick::image_composite(Final,Points)
   Finalalt <- cowplot::ggdraw() +
     cowplot::draw_image(Final)
+  
+  file.remove('BackgroundO.png')
+  file.remove('NetworkO.png')
+  file.remove('PointsO.png')
+  file.remove('BackgroundA.png')
+  file.remove('NetworkA.png')
+  file.remove('PointsA.png')
+  
   return(list(Original=Finalplot, Alternative=Finalalt))
 }
 

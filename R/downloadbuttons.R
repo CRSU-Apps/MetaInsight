@@ -38,16 +38,17 @@ write_to_pdf_or_png <- function(file, type, renderFunction) {
 }
 
 
-setup_dowload_handlers <- function(input, output) {
-  #########################
-  ### Tab 2 - Load data ###
-  #########################
+#########################
+### Tab 2 - Load data ###
+#########################
+
+create_raw_data_download_handlers <- function(input, output) {
   
   create_raw_data_download_handler <- function(filename, continuousFile, bindaryFile) {
     return(
       downloadHandler(
         filename = filename,
-        content = function(file){
+        content = function(file) {
           if (input$metaoutcome=='Continuous') {
             file.copy(continuousFile, file)
           } else {
@@ -65,12 +66,14 @@ setup_dowload_handlers <- function(input, output) {
   ##### in the 'UPload wide data' tab
   output$downloadDataWide <- create_raw_data_download_handler("MetaInsightdataWIDE.csv", "Cont_wide.csv", "Binary_wide.csv")
   output$downloadlabel2 <- create_raw_data_download_handler("treatmentlabels.txt", "defaultlabels_continuous.txt", "defaultlabels_binary.txt")
-  
+}
+
   
   #############################
   ### Tab 3 - Data analysis ###
   #############################
-  
+
+create_data_summary_download_handlers <- function(input, output, freq_sub, outcome_measure, bugsnetdt) {
   ##### 1b. Study Results - download the grouped forest plot
   
   output$downloadStudy <- downloadHandler(
@@ -78,7 +81,7 @@ setup_dowload_handlers <- function(input, output) {
       paste0('StudyResults.', input$format_freq0)
     },
     content = function(file) {
-      if (input$format_freq0 == "PDF"){
+      if (input$format_freq0 == "PDF") {
         pdf(file = file, pointsize = input$ForestContent, width = 8, height = make_netStudy(freq_sub(), outcome_measure(), input$ForestHeader, input$ForestTitle)$size)
       } else {
         svg(file = file, pointsize = input$ForestContent, width = 8, height = make_netStudy(freq_sub(), outcome_measure(), input$ForestHeader, input$ForestTitle)$size)
@@ -100,7 +103,7 @@ setup_dowload_handlers <- function(input, output) {
         if (input$networkstyle == 'networkp1') {
           make_netgraph(freq_all(), input$label_all)
         } else {
-          data.rh <- data.prep(arm.data=bugsnetdt(), varname.t = "T", varname.s = "Study")
+          data.rh <- data.prep(arm.data = bugsnetdt(), varname.t = "T", varname.s = "Study")
           net.plot(data.rh, node.scale = 3, edge.scale = 1.5, node.lab.cex = input$label_all) 
         }
         title("Network plot of all studies")
@@ -135,8 +138,9 @@ setup_dowload_handlers <- function(input, output) {
       )
     }
   )
-  
-  
+}
+
+create_frequentist_download_handlers <- function(input, output, bugsnetdt, freq_all, freq_sub, reference_alter) {
   ##### 2a. Forest plot
   
   output$downloadComp2 <- downloadHandler(
@@ -203,12 +207,14 @@ setup_dowload_handlers <- function(input, output) {
       write.csv(make_Incon(freq_sub(), input$modelranfix), file)
     }
   )
+}
   
   
-  #####################
-  #### 3. Bayesian ####
-  #####################
-  
+#####################
+#### 3. Bayesian ####
+#####################
+
+create_bayesian_analysis_download_handlers <- function(input, output, bugsnetdt, model, model_sub, outcome_measure) {
   #### 3a. Forest plot
   
   output$downloadBaye_plot <- downloadHandler(
@@ -222,10 +228,10 @@ setup_dowload_handlers <- function(input, output) {
         png(file = file, width = 610, height = BayesPixels(as.numeric(bugsnet_sumtb(bugsnetdt(), input$metaoutcome)$Value[1])))
       }
       if (input$metaoutcome == "Binary") {
-        forest(model()$mtcRelEffects, digits = 3, xlim = c(log(input$bayesmin), log(input$bayesmax)))
+        gemtc::forest(model()$mtcRelEffects, digits = 3, xlim = c(log(input$bayesmin), log(input$bayesmax)))
       }
       if (input$metaoutcome == "Continuous") {
-        forest(model()$mtcRelEffects, digits = 3, xlim = c(input$bayesmin, input$bayesmax))
+        gemtc::forest(model()$mtcRelEffects, digits = 3, xlim = c(input$bayesmin, input$bayesmax))
       }
       dev.off()
     }
@@ -242,10 +248,10 @@ setup_dowload_handlers <- function(input, output) {
         png(file = file, width = 610, height = BayesPixels(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% input$exclusionbox), input$metaoutcome)$Value[1])))
       }
       if (input$metaoutcome == "Binary") {
-        forest(model_sub()$mtcRelEffects, digits = 3, xlim = c(log(input$bayesmin_sub), log(input$bayesmax_sub)))
+        gemtc::forest(model_sub()$mtcRelEffects, digits = 3, xlim = c(log(input$bayesmin_sub), log(input$bayesmax_sub)))
         }
       if (input$metaoutcome == "Continuous") {
-        forest(model_sub()$mtcRelEffects, digits = 3, xlim = c(input$bayesmin_sub, input$bayesmax_sub))
+        gemtc::forest(model_sub()$mtcRelEffects, digits = 3, xlim = c(input$bayesmin_sub, input$bayesmax_sub))
       }
       dev.off()
     }
@@ -267,10 +273,12 @@ setup_dowload_handlers <- function(input, output) {
       write.csv(baye_comp(model_sub(), input$metaoutcome, outcome_measure()), file)
     }
   )
+}
   
   
   ##### 3c. Ranking panel CRN
-  
+
+create_bayesian_ranking_network_download_handlers <- function(input, output, freq_all_react, treat_order, bugsnetdt_react, freq_all_react_sub, treat_order_sub, bugsnetdt_react_sub) {
   # Network plots #
   
   output$download_network_rank <- downloadHandler(  
@@ -314,8 +322,10 @@ setup_dowload_handlers <- function(input, output) {
       )
     }
   )
+}
   
   
+create_bayesian_ranking_forest_download_handlers <- function(input, output, model, model_sub) {
   # Forest plots #
   
   output$download_rank_forest <- downloadHandler(  
@@ -324,7 +334,7 @@ setup_dowload_handlers <- function(input, output) {
     },
     content = function(file) {
       draw_forest <- function() {
-        forest(model()$mtcRelEffects, digits = 3)
+        gemtc::forest(model()$mtcRelEffects, digits = 3)
         title(paste("All studies: 
                 Bayesian", model()$a, "consistency model forest plot results"), cex.main = 0.85)
       }
@@ -342,7 +352,7 @@ setup_dowload_handlers <- function(input, output) {
     },
     content = function(file) {
       draw_forest <- function() {
-        forest(model_sub()$mtcRelEffects,digits=3)
+        gemtc::forest(model_sub()$mtcRelEffects,digits=3)
         title(paste("Results with studies excluded: 
                 Bayesian", model()$a, "consistency model forest plot results"), cex.main = 0.85)
       }
@@ -353,8 +363,10 @@ setup_dowload_handlers <- function(input, output) {
       )
     }
   )
+}
   
   
+create_bayesian_ranking_rank_download_handlers <- function(input, output, Rankplots, Rankplots_sub, RankingData, RankingData_sub) {
   # Rank plots #
   
   output$download_rank_plot <- downloadHandler(
@@ -362,13 +374,25 @@ setup_dowload_handlers <- function(input, output) {
       paste0('Ranking_Allstudies.png')
     },
     content = function(file) {
-      if (input$rank_plot_choice==0) { #Litmus Rank-O-Grams
-        if (input$Colour_blind==FALSE) {ggsave(file,Rankplots()$Litmus,width=6,height=6,units="in")} else {ggsave(file,Rankplots()$Litmus_blind,width=6,height=6,units="in")}
+      if (input$rank_plot_choice == 0) { #Litmus Rank-O-Grams
+        if (input$Colour_blind == FALSE) {
+          ggsave(file, Rankplots()$Litmus, width = 6, height = 6, units = "in")
+        } else {
+          ggsave(file, Rankplots()$Litmus_blind, width = 6, height = 6, units = "in")
+        }
       } else {  # Radial SUCRA plots
-        if (input$Radial_alt==FALSE) { #Default plot
-          if (input$Colour_blind==FALSE) {ggsave(file,Rankplots()$Radial$Original)} else {ggsave(file,Rankplots()$Radial_blind$Original)}
+        if (input$Radial_alt == FALSE) { #Default plot
+          if (input$Colour_blind == FALSE) {
+            ggsave(file, Rankplots()$Radial$Original)
+          } else {
+            ggsave(file, Rankplots()$Radial_blind$Original)
+          }
         } else { # Alternative plot
-          if (input$Colour_blind==FALSE) {ggsave(file,Rankplots()$Radial$Alternative)} else {ggsave(file,Rankplots()$Radial_blind$Alternative)}
+          if (input$Colour_blind == FALSE) {
+            ggsave(file, Rankplots()$Radial$Alternative)
+          } else {
+            ggsave(file, Rankplots()$Radial_blind$Alternative)
+          }
         }
       }
     }
@@ -379,13 +403,25 @@ setup_dowload_handlers <- function(input, output) {
       paste0('Ranking_Excludedstudies.png')
     },
     content = function(file) {
-      if (input$rank_plot_choice_sub==0) { #Litmus Rank-O-Grams
-        if (input$Colour_blind_sub==FALSE) {ggsave(file,Rankplots_sub()$Litmus,width=6,height=6,units="in")} else {ggsave(file,Rankplots_sub()$Litmus_blind,width=6,height=6,units="in")}
+      if (input$rank_plot_choice_sub == 0) { #Litmus Rank-O-Grams
+        if (input$Colour_blind_sub == FALSE) {
+          ggsave(file, Rankplots_sub()$Litmus, width = 6, height = 6, units = "in")
+        } else {
+          ggsave(file, Rankplots_sub()$Litmus_blind, width = 6, height = 6, units = "in")
+        }
       } else {  # Radial SUCRA plots
-        if (input$Radial_alt_sub==FALSE) { #Default plot
-          if (input$Colour_blind_sub==FALSE) {ggsave(file,Rankplots_sub()$Radial$Original)} else {ggsave(file,Rankplots_sub()$Radial_blind$Original)}
+        if (input$Radial_alt_sub == FALSE) { #Default plot
+          if (input$Colour_blind_sub == FALSE) {
+            ggsave(file, Rankplots_sub()$Radial$Original)
+          } else {
+            ggsave(file, Rankplots_sub()$Radial_blind$Original)
+          }
         } else { # Alternative plot
-          if (input$Colour_blind_sub==FALSE) {ggsave(file,Rankplots_sub()$Radial$Alternative)} else {ggsave(file,Rankplots_sub()$Radial_blind$Alternative)}
+          if (input$Colour_blind_sub == FALSE) {
+            ggsave(file, Rankplots_sub()$Radial$Alternative)
+          } else {
+            ggsave(file, Rankplots_sub()$Radial_blind$Alternative)
+          }
         }
       }
     }
@@ -395,7 +431,7 @@ setup_dowload_handlers <- function(input, output) {
     filename = 'RankingTable.csv',
     content = function(file) {
       write.csv(
-        RankingData()$Probabilities %>% right_join(RankingData()$SUCRA[,1:2], by="Treatment"),
+        RankingData()$Probabilities %>% right_join(RankingData()$SUCRA[,1:2], by = "Treatment"),
         file,
         row.names=FALSE,
         col.names=TRUE
@@ -407,15 +443,17 @@ setup_dowload_handlers <- function(input, output) {
     filename = 'RankingTable_Excluded.csv',
     content = function(file) {
       write.csv(
-        RankingData_sub()$Probabilities %>% right_join(RankingData_sub()$SUCRA[,1:2], by="Treatment"),
+        RankingData_sub()$Probabilities %>% right_join(RankingData_sub()$SUCRA[,1:2], by = "Treatment"),
         file,
         row.names=FALSE,
         col.names=TRUE
       )
     }
   )
+}
   
-  
+
+create_bayesian_nodesplit_download_handlers <- function(input, output, model_nodesplit, model_nodesplit_sub) {
   ##### 3d. nodesplit model
   
   output$downloadnode <- downloadHandler(
@@ -431,8 +469,10 @@ setup_dowload_handlers <- function(input, output) {
       write.csv(model_nodesplit_sub(), file)
     }
   )
+}
   
-  
+
+create_bayesian_model_download_handlers <- function(input, output, model) {
   ##### 3g.1 model code
   
   output$download_code <- downloadHandler(
@@ -487,10 +527,11 @@ setup_dowload_handlers <- function(input, output) {
   output$download_data2 <- create_chain_data_download_handler(2)
   output$download_data3 <- create_chain_data_download_handler(3)
   output$download_data4 <- create_chain_data_download_handler(4)
+}
   
   
   ######## User Guide ########
-  
+create_user_guide_download_handler <- function(input, output) {
   output$UG <- downloadHandler(
     filename = "MetaInsightUserGBayv0.1.pdf",
     content = function(file) {
