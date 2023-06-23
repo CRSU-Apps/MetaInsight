@@ -2,10 +2,6 @@
 # Plot functions used in both app and report - NVB
 #####
 
-source("fn_analysis.R") # Contains groupforest.df, forest.df 
-source("PlotFunctionsRKO.R") # Contains mtcRank2
-source("network_structure.R",local = TRUE)  # Contains network.structure for Radial SUCRA plot (edited code by CRN)
-
 # 1a Summary table plot 
 summary_table_plot <- function(bugsnetdt, metaoutcome) {
   return(bugsnet_sumtb(bugsnetdt, metaoutcome))
@@ -75,9 +71,9 @@ make_Incon <- function(freq, modelranfix) {
 # 3a Forest plot 
 make_Forest <- function(model, metaoutcome, bayesmin, bayesmax) {
   if (metaoutcome=="Binary") {
-    return(forest(model$mtcRelEffects, digits=3, xlim=c(log(bayesmin), log(bayesmax))))
+    return(gemtc::forest(model$mtcRelEffects, digits=3, xlim=c(log(bayesmin), log(bayesmax))))
   } else if (metaoutcome=="Continuous") {
-    return(forest(model$mtcRelEffects, digits=3, xlim=c(bayesmin, bayesmax)))
+    return(gemtc::forest(model$mtcRelEffects, digits=3, xlim=c(bayesmin, bayesmax)))
   }
 }
 

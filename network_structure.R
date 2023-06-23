@@ -45,26 +45,26 @@ network.structure <- function(data.nma, my_order=NA) {     # data.nma is a BUGSn
   pairs2 <- data.frame(from = pairs[1,],
                        to = pairs[2,]) %>%
     group_by(from, to) %>%
-    mutate(edge.weight = max(1:n())) %>%   # counts number of pairwise comparisons
+    plotly::mutate(edge.weight = max(1:n())) %>%   # counts number of pairwise comparisons
     arrange(from, to) %>%
     distinct() %>%
-    mutate(mtchvar = 1)
+    plotly::mutate(mtchvar = 1)
   
   studylabs <- studytrt %>%
     group_by(!! trial) %>%
-    mutate(trt = paste( unlist(data), collapse=';')) %>%
+    plotly::mutate(trt = paste( unlist(data), collapse=';')) %>%
     select(!! trial, trt) %>%
-    mutate(mtchvar = 1)
+    plotly::mutate(mtchvar = 1)
   
   edges <- left_join(pairs2, studylabs, by="mtchvar") %>%
     ungroup() %>%
-    mutate(flag = ifelse(stringr::str_detect(trt, stringr::coll(from)) &
+    plotly::mutate(flag = ifelse(stringr::str_detect(trt, stringr::coll(from)) &
                            stringr::str_detect(trt, stringr::coll(to)), 1, 0)) %>%
     filter(flag == 1) %>%
     select(-c(mtchvar, flag, trt)) %>%
     nest(data=c(!! trial)) %>%          # nests the studies for which belonged to each treatment comparison
     group_by(from, to) %>%
-    mutate(study = paste(unlist(data), collapse=', \n')) %>%
+    plotly::mutate(study = paste(unlist(data), collapse=', \n')) %>%
     select(-data)
   
   #return(list("edges"=edges, "nodes"=nodes))

@@ -6,41 +6,9 @@
 
 # the data for meta-regression is from: http://nicedsu.org.uk/wp-content/uploads/2016/03/TSD3-Heterogeneity.final-report.08.05.12.pdf
 
-library(metafor)
-library(netmeta)
-library(shiny) 
-library(shinyAce)
-library(rmarkdown)
-library(knitr)
-library(gemtc)
-library(plyr)
-library(dplyr)
-library(data.table)
-library(shinyalert)
-library(plotly)
-library(shinyjs)
-library(BUGSnet)
-library(shinyBS)
-library(patchwork)
-library(ggrepel)
-library(magick)
-library(stringr)
-library(ggiraphExtra)
-library(tidyr)
-
-# Source files
-source("bugsnet_sumtb.R") # bugsnet_sumtb function, req BUGSnet - separate file added by NVB
-source("plot.R") # Plot functions - separate file added by NVB
-source("util.R") # Utility functions - separate file added by NVB
-
-
-source("PlotFunctionsRKO.R", local = TRUE)        # Plot functions
-load("blank.rds")                                 # Objects to store data for plot functions
-source("fn_analysis.R",local = TRUE)              # functions for NMA
-
 
 shinyServer(function(input, output, session) {
-  source("downloadbuttons.R", local = TRUE)   #codes for download buttons for conciseness. This line must be put within the shinyserver as this is purely a code file not functions.
+  setup_dowload_handlers(input, output)
   
   # Create a definable reactive value to allow reloading of data
   reload <- reactiveVal(F)
@@ -410,23 +378,7 @@ shinyServer(function(input, output, session) {
   })
 
   
-  
-
-  
-  
   ############### bugsnet code #################
-  
-  ### (notification on disconnection when data are uploaded)
-  # disconnect_load <- function(){
-  #     showModal(modalDialog(
-  #       title = "Disconnected network",
-  #       easyClose = FALSE,
-  #       p(tags$strong("Please note that the network of the uploaded data is disconnected. Two or more networks exist. The disconnected networks are displayed at 'Data analysis' - '1c. Network Plot' tab. Please upload the data for each network separately.")),
-  #       br(),
-  #       modalButton("Close warning"),
-  #       footer = NULL
-  #     ))
-  # }
   
   ### (notification on disconnection)
   disconnect <- function(){
@@ -440,28 +392,6 @@ shinyServer(function(input, output, session) {
       footer = NULL
     ))
   }
-  
-  # checklabel <- function(){    
-  #   label <- ifelse(input$metaoutcome=="Continuous",input$listCont,input$listbina)
-  #   treat_list <- read.csv(text=label, sep = "\t")
-  #   
-  #   if (input$metaoutcome=="Continuous") {
-  #     def_con<-read.delim("./defaultlabels_continuous.txt")
-  #   } else {
-  #     def_con<-read.delim("./defaultlabels_binary.txt")
-  #   }
-  #   check <- identical(def_con, treat_list)
-  # }
-  
-  # observeEvent(checklabel()==FALSE,{   # after users uploaded the label, run the disconnection check.
-  #     longsort2 <- bugsnetdt() # inputting the data in long form
-  #     sumtb<-bugsnet_sumtb(longsort2)
-  #     
-  #     if (sumtb$Value[6]=="FALSE") {
-  #       disconnect_load()
-  #     }
-  #   
-  # })
   
   
   observeEvent(input$exclusionbox,{
@@ -786,7 +716,7 @@ shinyServer(function(input, output, session) {
   # All studies #
   output$gemtc2 <- renderPlot({                  
     png("forest.png")  # initialise image
-    forest(model()$mtcRelEffects,digits=3)
+    gemtc::forest(model()$mtcRelEffects,digits=3)
     dev.off()
     ForestImg <- magick::image_read('forest.png')
     Img <- cowplot::ggdraw() +
@@ -796,7 +726,7 @@ shinyServer(function(input, output, session) {
   # With studies excluded
   output$gemtc_sub2 <- renderPlot({                  
     png("forest_sub.png")
-    forest(model_sub()$mtcRelEffects,digits=3)
+    gemtc::forest(model_sub()$mtcRelEffects,digits=3)
     dev.off()
     ForestImg <- magick::image_read('forest_sub.png')
     Img <- cowplot::ggdraw() +
