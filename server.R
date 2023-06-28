@@ -206,6 +206,8 @@ shinyServer(function(input, output, session) {
   ############################################
   ############# Load data page ###############
   ############################################
+    
+  create_raw_data_download_handlers(input, output)
   
   ### Outcome selection
     output$CONBI <- renderText({
@@ -311,7 +313,6 @@ shinyServer(function(input, output, session) {
            paste("Please note that the reference treatment for sensitivity analysis has now been changed to:", reference_alter()$ref_sub, ". This is because the treatment labelled 1 has been removed from the network of sensitivity analysis." )
          }
     })
-    
 
   
 
@@ -319,6 +320,8 @@ shinyServer(function(input, output, session) {
   #######################
   ### 1. Data Summary ###
   #######################
+    
+  create_data_summary_download_handlers(input, output, freq_sub, outcome_measure, bugsnetdt)
     
   # 1a. Data Characteristics
   
@@ -481,6 +484,8 @@ shinyServer(function(input, output, session) {
   ### 2. Frequentist ###
   ###################### 
   
+  create_frequentist_download_handlers(input, output, bugsnetdt, freq_all, freq_sub, reference_alter)
+  
   # 2a. Forest Plot
   
   make_refText = function(ref) {
@@ -563,17 +568,15 @@ shinyServer(function(input, output, session) {
 
   ### 2c. Inconsistency
 
-  output$Incon1<- renderTable(colnames=TRUE, {
-    make_Incon(freq_all(), input$modelranfix)}
-  )
-  output$Incon2<- renderTable(colnames=TRUE, {
-    make_Incon(freq_sub(), input$modelranfix)}
-  )
+  output$Incon1 <- renderTable(colnames=TRUE, make_Incon(freq_all(), input$modelranfix))
+  output$Incon2 <- renderTable(colnames=TRUE, make_Incon(freq_sub(), input$modelranfix))
 
 
   #####################
   #### 3. Bayesian ####
   #####################
+  
+  create_bayesian_analysis_download_handlers(input, output, bugsnetdt, model, model_sub, outcome_measure)
   
   ### SMD warning alert
   
@@ -661,6 +664,11 @@ shinyServer(function(input, output, session) {
   )
   
   # 3c. Ranking Panel
+  
+  create_bayesian_ranking_network_download_handlers(
+    input, output, freq_all_react, treat_order, bugsnetdt_react, freq_all_react_sub, treat_order_sub, bugsnetdt_react_sub)
+  create_bayesian_ranking_forest_download_handlers(input, output, model, model_sub)
+  create_bayesian_ranking_rank_download_handlers(input, output, Rankplots, Rankplots_sub, RankingData, RankingData_sub)
   
   # Obtain Data needed for ranking #
   RankingData <- eventReactive(input$baye_do, {
@@ -798,6 +806,8 @@ shinyServer(function(input, output, session) {
 
   # 3d. Nodesplit model
   
+  create_bayesian_nodesplit_download_handlers(input, output, model_nodesplit, model_nodesplit_sub)
+  
   # Inconsistency test with notesplitting model for all studies
   model_nodesplit <- eventReactive(input$node, {
     nodesplit(sub = FALSE, data(), treatment_list(), input$metaoutcome, outcome_measure(),
@@ -881,6 +891,8 @@ shinyServer(function(input, output, session) {
   
   # 3g. Model details
   
+  create_bayesian_model_download_handlers(input, output, model)
+  
   # 3g-1 Model codes
   output$code <- renderPrint({
     cat(model()$mtcResults$model$code, fill=FALSE, labels=NULL, append=FALSE)
@@ -915,15 +927,6 @@ shinyServer(function(input, output, session) {
     scat_plot(model_sub())$y
   })
   
-  create_raw_data_download_handlers(input, output)
-  create_data_summary_download_handlers(input, output, freq_sub, outcome_measure, bugsnetdt)
-  create_frequentist_download_handlers(input, output, bugsnetdt, freq_all, freq_sub, reference_alter)
-  create_bayesian_analysis_download_handlers(input, output, bugsnetdt, model, model_sub, outcome_measure)
-  create_bayesian_ranking_network_download_handlers(
-    input, output, freq_all_react, treat_order, bugsnetdt_react, freq_all_react_sub, treat_order_sub, bugsnetdt_react_sub)
-  create_bayesian_ranking_forest_download_handlers(input, output, model, model_sub)
-  create_bayesian_ranking_rank_download_handlers(input, output, Rankplots, Rankplots_sub, RankingData, RankingData_sub)
-  create_bayesian_nodesplit_download_handlers(input, output, model_nodesplit, model_nodesplit_sub)
-  create_bayesian_model_download_handlers(input, output, model)
   create_user_guide_download_handler(input, output)
+  
 })

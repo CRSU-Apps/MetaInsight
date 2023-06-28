@@ -44,7 +44,7 @@ write_to_pdf_or_png <- function(file, type, renderFunction) {
 
 create_raw_data_download_handlers <- function(input, output) {
   
-  create_raw_data_download_handler <- function(filename, continuousFile, bindaryFile) {
+  create_raw_data_download_handler <- function(filename, continuousFile, binaryFile) {
     return(
       downloadHandler(
         filename = filename,
@@ -52,7 +52,7 @@ create_raw_data_download_handlers <- function(input, output) {
           if (input$metaoutcome=='Continuous') {
             file.copy(continuousFile, file)
           } else {
-            file.copy(bindaryFile, file)
+            file.copy(binaryFile, file)
           }
         }
       )
