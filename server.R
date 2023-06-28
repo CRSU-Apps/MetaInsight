@@ -321,7 +321,7 @@ shinyServer(function(input, output, session) {
   ### 1. Data Summary ###
   #######################
     
-  create_data_summary_download_handlers(input, output, freq_sub, outcome_measure, bugsnetdt)
+  create_data_summary_download_handlers(input, output, freq_all, freq_sub, outcome_measure, bugsnetdt)
     
   # 1a. Data Characteristics
   
@@ -484,7 +484,7 @@ shinyServer(function(input, output, session) {
   ### 2. Frequentist ###
   ###################### 
   
-  create_frequentist_download_handlers(input, output, bugsnetdt, freq_all, freq_sub, reference_alter)
+  create_frequentist_download_handlers(input, output, freq_all, freq_sub, bugsnetdt, reference_alter)
   
   # 2a. Forest Plot
   

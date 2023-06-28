@@ -2,22 +2,31 @@
 
 
 ## Sizing functions for forest plots ##
+
+#' Calculate the pixel height of a forest plot for a given number of treatments
+#' 
+#' @param notrt The number of treatments in the plot
+#' @param title TRUE if the title is included in the plot
+#' @return The height of the plot in pixels
 BayesPixels <- function(notrt, title=FALSE) {    # input is total number of treatments and whether title is included in plot
-  if (title==FALSE) {
-    if (notrt <= 25) {
-      height <- 420        # default for 25 or less treatments
-    } else {
-      height <- 15*(notrt-1) + 60
-    }
+  if (notrt <= 25) {
+    height <- 420        # default for 25 or less treatments
   } else {
-    if (notrt <= 25) {
-      height <- 420 + 100        # default for 25 or less treatments
-    } else {
-      height <- 15*(notrt-1) + 60 + 100
-    }
+    height <- 15*(notrt-1) + 60
   }
+  
+  if (title==FALSE) {
+    height <- height + 100
+  }
+  
   return(height)
 }
+
+
+#' Calculate the inch height of a forest plot for a given number of treatments
+#' 
+#' @param notrt The number of treatments in the plot
+#' @return The height of the plot in inches
 BayesInch <- function(notrt) {
   if (notrt <= 25) {
     height <- 6
@@ -27,6 +36,11 @@ BayesInch <- function(notrt) {
   return(height)
 }
 
+#' Write some plot to a .pdf or .png file
+#' 
+#' @param file The file to which to write
+#' @param type String containing the type of file to which to write
+#' @param renderFunction A function to render the plot
 write_to_pdf_or_png <- function(file, type, renderFunction) {
   if (tolower(type) == "pdf") {
     pdf(file = file)
@@ -44,6 +58,12 @@ write_to_pdf_or_png <- function(file, type, renderFunction) {
 
 create_raw_data_download_handlers <- function(input, output) {
   
+  #' Create a download handler for raw data
+  #' 
+  #' @param filenameName of file to which to download
+  #' @param continuousFile File to download if continuous
+  #' @param binaryFile File to download if binary
+  #' @return The created download handler
   create_raw_data_download_handler <- function(filename, continuousFile, binaryFile) {
     return(
       downloadHandler(
@@ -73,7 +93,7 @@ create_raw_data_download_handlers <- function(input, output) {
   ### Tab 3 - Data analysis ###
   #############################
 
-create_data_summary_download_handlers <- function(input, output, freq_sub, outcome_measure, bugsnetdt) {
+create_data_summary_download_handlers <- function(input, output, freq_all, freq_sub, outcome_measure, bugsnetdt) {
   ##### 1b. Study Results - download the grouped forest plot
   
   output$downloadStudy <- downloadHandler(
@@ -140,7 +160,7 @@ create_data_summary_download_handlers <- function(input, output, freq_sub, outco
   )
 }
 
-create_frequentist_download_handlers <- function(input, output, bugsnetdt, freq_all, freq_sub, reference_alter) {
+create_frequentist_download_handlers <- function(input, output, freq_all, freq_sub, bugsnetdt, reference_alter) {
   ##### 2a. Forest plot
   
   output$downloadComp2 <- downloadHandler(
@@ -485,6 +505,10 @@ create_bayesian_model_download_handlers <- function(input, output, model) {
   
   ##### 3g.2 initial value
   
+  #' Create a download handler for the initial values for a given chain
+  #'
+  #' @param index the Index of the chain
+  #' @return The created download handler
   create_chain_initial_data_download_handler <- function(index) {
     filename <- paste0("initialvalues_chain", index, ".txt")
     return(
@@ -511,6 +535,10 @@ create_bayesian_model_download_handlers <- function(input, output, model) {
   
   ##### 3g.3 download data
   
+  #' Create a download handler for the data for a given chain
+  #'
+  #' @param index the Index of the chain
+  #' @return The created download handler
   create_chain_data_download_handler <- function(index) {
     return(
       downloadHandler(
