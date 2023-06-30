@@ -1,0 +1,6 @@
+.content-wrapper {
+  background-color: #fff;
+}
+.shiny-split-layout>div {
+  overflow: hidden;
+}

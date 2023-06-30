@@ -33,15 +33,18 @@ load("blank.rds") # Objects to store data for plot functions
 dashboardPage(
   dashboardHeader(disable = TRUE),
   dashboardSidebar(disable = TRUE),
-  dashboardBody(tags$head(tags$style(HTML('
-      .content-wrapper {
-        background-color: #fff;
-      }
-      .shiny-split-layout>div {
-      overflow: hidden;
-      }
-    '
-  ))),  #ensure white background and no horizontal scroll bars on ranking panel
+  dashboardBody(
+  tags$head(
+    # load custom stylesheet
+    # To ensure white background and no horizontal scroll bars on ranking panel
+    tags$link(rel = "stylesheet", type = "text/css", href = "app.css"),
+    includeHTML("www/favicon/favicon.html"),
+    tags$meta(name="description", content="A interactive web tool for network meta-analysis (NMA) that leverages established analysis routines"),
+    tags$meta(name="keywords", content="MetaInsight, NMA, Network Meta Analysis, App"),
+    tags$meta(property="og:title", content="Meta Insight: V4.1.0"),
+    tags$meta(property="og:description", content="A interactive web tool for network meta-analysis (NMA) that leverages established analysis routines"),
+    tags$meta(property="og:image", content="images/MetaInsightLogo.png")
+  ),
   navbarPage(id="meta",
                    "MetaInsight", 
                    header = singleton(tags$head(includeScript("google_analytics2.js"))),
