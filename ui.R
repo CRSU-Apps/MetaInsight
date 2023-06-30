@@ -40,9 +40,9 @@ dashboardPage(
     tags$link(rel = "stylesheet", type = "text/css", href = "app.css"),
     includeHTML("www/favicon/favicon.html"),
     tags$meta(name="description", content="A interactive web tool for network meta-analysis (NMA) that leverages established analysis routines"),
-    tags$meta(name="keywords", content="MetaInsight, NMA, Network Meta Analysis, App"),
+    tags$meta(name="keywords", content="MetaInsight, NMA, Network, Meta, Analysis, App"),
     tags$meta(property="og:title", content="Meta Insight: V4.1.0"),
-    tags$meta(property="og:description", content="A interactive web tool for network meta-analysis (NMA) that leverages established analysis routines"),
+    tags$meta(property="og:description", content="An interactive web tool for network meta-analysis (NMA) that leverages established analysis routines"),
     tags$meta(property="og:image", content="images/MetaInsightLogo.png")
   ),
   navbarPage(id="meta",
