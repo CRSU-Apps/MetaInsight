@@ -1,5 +1,3 @@
-library(BUGSnet)
-
 bugsnet_sumtb <- function(data, metaoutcome){
   data.rh<-data.prep(arm.data=data, varname.t = "T", varname.s="Study")
   if (metaoutcome=="Continuous") {

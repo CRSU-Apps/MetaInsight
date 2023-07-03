@@ -2,10 +2,6 @@
 # Plot functions used in both app and report - NVB
 #####
 
-source("fn_analysis.R") # Contains groupforest.df, forest.df 
-source("PlotFunctionsRKO.R") # Contains mtcRank2
-source("network_structure.R",local = TRUE)  # Contains network.structure for Radial SUCRA plot (edited code by CRN)
-
 # 1a Summary table plot 
 summary_table_plot <- function(bugsnetdt, metaoutcome) {
   return(bugsnet_sumtb(bugsnetdt, metaoutcome))
@@ -75,9 +71,9 @@ make_Incon <- function(freq, modelranfix) {
 # 3a Forest plot 
 make_Forest <- function(model, metaoutcome, bayesmin, bayesmax) {
   if (metaoutcome=="Binary") {
-    return(forest(model$mtcRelEffects, digits=3, xlim=c(log(bayesmin), log(bayesmax))))
+    return(gemtc::forest(model$mtcRelEffects, digits=3, xlim=c(log(bayesmin), log(bayesmax))))
   } else if (metaoutcome=="Continuous") {
-    return(forest(model$mtcRelEffects, digits=3, xlim=c(bayesmin, bayesmax)))
+    return(gemtc::forest(model$mtcRelEffects, digits=3, xlim=c(bayesmin, bayesmax)))
   }
 }
 
@@ -280,6 +276,14 @@ RadialSUCRA <- function(SUCRAData, ColourData, BUGSnetData, colourblind=FALSE) {
   Final <- magick::image_composite(Final,Points)
   Finalalt <- cowplot::ggdraw() +
     cowplot::draw_image(Final)
+  
+  file.remove('BackgroundO.png')
+  file.remove('NetworkO.png')
+  file.remove('PointsO.png')
+  file.remove('BackgroundA.png')
+  file.remove('NetworkA.png')
+  file.remove('PointsA.png')
+  
   return(list(Original=Finalplot, Alternative=Finalalt))
 }
 

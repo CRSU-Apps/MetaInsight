@@ -9,26 +9,6 @@
 # remotes::install_github("audrey-b/BUGSnet@v1.0.4", upgrade = TRUE, build_vignettes = TRUE)
 # devtools::install_github("audrey-b/BUGSnet@v1.0.4", upgrade = TRUE, build_vignettes = TRUE)
 
-library(metafor)
-library(netmeta)
-library(shiny)
-library(shinyAce)
-library(rmarkdown)
-library(knitr)
-library(shinydashboard)
-library(gemtc)
-library(shinyalert)
-library(ggplot2)
-library(plotly)
-library(shinyWidgets)
-library(shinyjs)
-library(shinyBS)
-library(cowplot)
-library(shinycssloaders)
-
-
-source("PlotFunctionsRKO.R", local = TRUE) # Plot functions
-load("blank.rds") # Objects to store data for plot functions
 
 dashboardPage(
   dashboardHeader(disable = TRUE),
