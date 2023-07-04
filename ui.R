@@ -59,9 +59,6 @@ dashboardPage(
       column(2),
       column(5, 
             p(tags$strong("Latest Updates:")),
-            actionLink("history_click", "Click here to view a full update history of MetaInsight"),
-            br(),
-            tags$a(href="https://github.com/CRSU-Apps/MetaInsight/commits/main", "Click here to view the full version history of the code base for MetaInsight",target="_blank"),
             p(tags$strong("** Minor update (21 April 2023 v4.1.0 **:")),
             p(tags$ul(tags$li("During a session, any data uploaded remains uploaded when switching between outcome types. Previously entered labels can also be reloaded."),
                       tags$li("Compatibility improvements to code for future package dependencies updates."))),
@@ -72,6 +69,9 @@ dashboardPage(
                       tags$li("The new feature is associated with the following peer-reviewed paper: ",
                               tags$a(href="https://doi.org/10.1016/j.jclinepi.2023.02.016", "Nevill CR, Cooper NJ, Sutton AJ, A multifaceted graphical display, including treatment ranking, was developed to aid interpretation of network meta-analysis, 
                               Journal of Clinical Epidemiology (2023)")))),
+            p("Click", tags$a(href = "https://github.com/CRSU-Apps/MetaInsight/wiki/Full-Update-History", "here", target="_blank"), "to view a full update history of MetaInsight"),
+            p("The code for MetaInsight is available on", tags$a(href="https://github.com/CRSU-Apps/MetaInsight", "GitHub",target="_blank")),
+            br(),
             HTML('<iframe width="560" height="315" src="https://www.youtube.com/embed/scbLwTY0kvc" title="MetaInsight Treatment Ranking Demo" 
                  frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>')
             )),
@@ -83,8 +83,6 @@ dashboardPage(
     p("If you use the app please cite it as:"),
     p(tags$a(href=" https://doi.org/10.1002/jrsm.1373", "Owen, RK, Bradbury, N, Xin, Y, Cooper, N, Sutton, A. MetaInsight: An interactive web-based tool for analyzing, interrogating, 
       and visualizing network meta-analyses using R-shiny and netmeta. Res Syn Meth. 2019; 10: 569-581.",align="left")),
-    br(),
-    p("Codes for this app are available on Github. Please click ", tags$a(href="https://github.com/CRSU-Apps/MetaInsight", "here",target="_blank"), "to access."),
     br(),
     p("App powered by Rshiny.All frequentist statistical calculations are performed using R package netmeta (Gerta Rücker, Guido Schwarzer, Ulrike Krahn and Jochem König 2017).", 
       tags$a(href="http://CRAN.R-project.org/package=netmeta", "netmeta: Network Meta-Analysis using Frequentist Methods. R package version 0.9-8.",target="_blank"),
@@ -702,7 +700,7 @@ tabPanel("Load Data",
 )))))), width=9))),
 
 ###################################
-### Tab 5 - User Guide ###
+### Tab 4 - User Guide ###
 ###################################
 
 tabPanel("User Guide",
@@ -735,7 +733,7 @@ tabPanel("User Guide",
 
 
 ###################################
-### Tab 6 - trouble shooting ###
+### Tab 5 - Troublehshooting.   ###
 ###################################
 
 tabPanel(id="trouble", "Troubleshooting",
@@ -746,23 +744,8 @@ tags$iframe(style="height:1500px; width:100%; scrolling=yes",
             src="ts2.pdf")
 ),
 
-
-
-
-
-###################################
-### Tab 7 - Full update history ###
-###################################
-
-tabPanel(id="update", "Full update history",
-         tags$iframe(style="height:1500px; width:100%; scrolling=yes",
-                     src="fullupdatehistory4.pdf")
-),
-
-
-
 ##############################
-### Tab 8 - Privacy notice ###
+### Tab 6 - Privacy notice ###
 ##############################
 
 
