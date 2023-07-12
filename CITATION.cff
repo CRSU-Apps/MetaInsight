@@ -12,12 +12,12 @@ authors:
     given-names: Clareece R
     affiliation: University of Leicester
     orcid: 'https://orcid.org/0000-0001-8305-2516'
-  - family-names: Naomi
-    given-names: Bradbury
+  - family-names: Bradbury
+    given-names: Naomi
     affiliation: University of Leicester
     orcid: 'https://orcid.org/0000-0002-8934-6301'
-  - family-names: Yiqiao
-    given-names: Xin
+  - family-names: Xin
+    given-names: Yiqiao 
     orcid: 'https://orcid.org/0000-0001-5856-3103'
   - family-names: Owen
     given-names: Rhiannon K
@@ -26,9 +26,12 @@ authors:
     given-names: Ryan
     affiliation: University of Glasgow
     orcid: 'https://orcid.org/0000-0002-4424-9890'
+  - family-names: Nevill
+    given-names: Janion
+    affiliation: University of Leicester
   - family-names: Cooper
     given-names: Nicola J
-    affiliation: UUniversity of Leicester
+    affiliation: University of Leicester
     orcid: 'https://orcid.org/0000-0002-4486-2791'
   - family-names: Sutton
     given-names: Alex J

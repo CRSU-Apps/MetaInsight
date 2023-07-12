@@ -9,27 +9,6 @@
 # remotes::install_github("audrey-b/BUGSnet@v1.0.4", upgrade = TRUE, build_vignettes = TRUE)
 # devtools::install_github("audrey-b/BUGSnet@v1.0.4", upgrade = TRUE, build_vignettes = TRUE)
 
-library(metafor)
-library(netmeta)
-library(shiny)
-library(shinyAce)
-library(rmarkdown)
-library(knitr)
-library(shinydashboard)
-library(gemtc)
-library(shinyalert)
-library(ggplot2)
-library(plotly)
-library(shinyWidgets)
-library(shinyjs)
-library(shinyBS)
-library(cowplot)
-library(shinycssloaders)
-
-
-source("PlotFunctionsRKO.R", local = TRUE) # Plot functions
-load("blank.rds") # Objects to store data for plot functions
-
 dashboardPage(
   dashboardHeader(disable = TRUE),
   dashboardSidebar(disable = TRUE),
@@ -70,7 +49,7 @@ dashboardPage(
                             #   zoom: 75%; /* Webkit browsers */
                             #   }
                             #   "), 
-    h2("MetaInsight V4.1.0",
+    h2("MetaInsight V4.2.0",
       #tags$sup("Beta", style="color:#6CC0ED"), 
       align= "left"),
     fluidRow(
@@ -82,12 +61,8 @@ dashboardPage(
       column(2),
       column(5, 
             p(tags$strong("Latest Updates:")),
-            actionLink("history_click", "Click here to view a full update history of MetaInsight"),
-            br(),
-            tags$a(href="https://github.com/CRSU-Apps/MetaInsight/commits/main", "Click here to view the full version history of the code base for MetaInsight",target="_blank"),
-            p(tags$strong("** Minor update (21 April 2023 v4.1.0 **:")),
-            p(tags$ul(tags$li("During a session, any data uploaded remains uploaded when switching between outcome types. Previously entered labels can also be reloaded."),
-                      tags$li("Compatibility improvements to code for future package dependencies updates."))),
+            p(tags$strong("** Minor update (11 July 2023 v4.2.0 **:")),
+            p(tags$ul(tags$li("A new video tutorial from ESMARConf2023 is available in the User Guide tab"))),
             p(tags$strong("** Major New Feature: Redesign of Bayesian Ranking Panel (10 February 2023 v4.0.0) **:")),
             p(tags$ul(tags$li("The Bayesian treatment ranking section has had a complete redesign including two newly developed plots 
                               and a multifaceted panel to interpret the results with other evidence.
@@ -95,6 +70,10 @@ dashboardPage(
                       tags$li("The new feature is associated with the following peer-reviewed paper: ",
                               tags$a(href="https://doi.org/10.1016/j.jclinepi.2023.02.016", "Nevill CR, Cooper NJ, Sutton AJ, A multifaceted graphical display, including treatment ranking, was developed to aid interpretation of network meta-analysis, 
                               Journal of Clinical Epidemiology (2023)")))),
+            p("Click", tags$a(href = "https://github.com/CRSU-Apps/MetaInsight/wiki/Full-Update-History", "here", target="_blank"), "to view a full update history of MetaInsight"),
+            p("The code for MetaInsight is available on", tags$a(href="https://github.com/CRSU-Apps/MetaInsight", "GitHub",target="_blank")),
+            br(),
+
             HTML('<iframe width="560" height="315" src="https://www.youtube.com/embed/scbLwTY0kvc" title="MetaInsight Treatment Ranking Demo" 
                  frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>')
             )),
@@ -106,8 +85,6 @@ dashboardPage(
     p("If you use the app please cite it as:"),
     p(tags$a(href=" https://doi.org/10.1002/jrsm.1373", "Owen, RK, Bradbury, N, Xin, Y, Cooper, N, Sutton, A. MetaInsight: An interactive web-based tool for analyzing, interrogating, 
       and visualizing network meta-analyses using R-shiny and netmeta. Res Syn Meth. 2019; 10: 569-581.",align="left")),
-    br(),
-    p("Codes for this app are available on Github. Please click ", tags$a(href="https://github.com/CRSU-Apps/MetaInsight", "here",target="_blank"), "to access."),
     br(),
     p("App powered by Rshiny.All frequentist statistical calculations are performed using R package netmeta (Gerta Rücker, Guido Schwarzer, Ulrike Krahn and Jochem König 2017).", 
       tags$a(href="http://CRAN.R-project.org/package=netmeta", "netmeta: Network Meta-Analysis using Frequentist Methods. R package version 0.9-8.",target="_blank"),
@@ -123,19 +100,14 @@ dashboardPage(
       WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
       OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."),
      wellPanel(
-       fluidRow(
-         column(5, img(src='NIHR_Logo4.jpg', width=472, height=125)),
-         column(7, tags$div(class="header", checked=NA,
-                            tags$strong("Funding and Support Acknowledgement:"),
-                            tags$p("The Complex Reviews Support Unit is funded by the National Institute for Health Research (NIHR) (project number 14/178/29).
-                                   Development of this app is also funded by the NIHR Applied Research Collaboration East Midlands (ARC EM)."),
-                            tags$strong("Disclaimer: "),
-                            tags$p("The views and opinions expressed herein are those of the authors and do not necessarily reflect those of the NIHR, NHS or the Department of Health and Social Care."),
-                            tags$p("Please click ", tags$a(href="http://www.nihrcrsu.org", "here ",
-                                                           target="_blank"), "for more information about the UK NIHR Complex Reviews Support Unit (CRSU).")
-         ))))),
-
-
+       img(src='CRSULogo.png', width = "100%"),
+       tags$strong("Funding and Support Acknowledgement:"),
+       tags$p("The Complex Reviews Support Unit is funded by the National Institute for Health Research (NIHR) (project number 14/178/29).
+       Development of this app is also funded by the NIHR Applied Research Collaboration East Midlands (ARC EM) and the Leicester NIHR Biomedical Research Centre (BRC).
+       The views expressed are those of the author(s) and not necessarily those of the NIHR or the Department of Health and Social Care."),
+       tags$p("Please click ", tags$a(href="http://www.nihrcrsu.org", "here ", target="_blank"), "for more information about the UK NIHR Complex Reviews Support Unit (CRSU).")
+     )),
+                   
 #########################
 ### Tab 2 - Load data ###
 #########################
@@ -580,11 +552,9 @@ tabPanel("Load Data",
                 helpText("Please note: if you change the selections on the sidebar, 
                           you will need to re-run the primary and/or sensitivity analysis from the 'Forest Plot' page."),
                 p("Please note: This may take more than 10 minutes depending on the number of treatment options. The node splitting option for
-                  the Bayesian analysis is highly numerically intensive and using it on the app can cause the app to disconnect in some circumstances.  
-                  We recommend people to download the whole app through",
-                  tags$a(href="https://github.com/CRSU-Apps/MetaInsight", "Github",target="_blank"), 
-                  "and run it locally through RStudio on their own machine if they want to make use of this function. 
-                  If you are not familiar with running ShinyApps in RStudio, please read this", tags$a(href="https://shiny.rstudio.com/tutorial/written-tutorial/lesson1/", "tutorial", target="_blank"), "from Shiny."),
+                  the Bayesian analysis is highly numerically intensive and using it on the app can cause the app to disconnect in some circumstances.  We have produced a",
+                  tags$a(href="https://github.com/CRSU-Apps/MetaInsight/wiki/Local-User-Guide", "guide",target="_blank"), 
+                  "to running MetaInsight locally through RStudio on the user's own machine if they want to make use of this function."),
                   fluidRow(
                     column(6,
                           p(tags$strong("Inconsistency test with notesplitting model for all studies")),
@@ -729,23 +699,30 @@ tabPanel("Load Data",
 )))))), width=9))),
 
 ###################################
-### Tab 5 - User Guide ###
+### Tab 4 - User Guide ###
 ###################################
 
 tabPanel("User Guide",
          h2 (tags$strong("User Guide")),
-         h4 (tags$strong("A complete User Guide for MetaInsight regular version", style = "cursive;
-                      color: #2196c4")),
-                            p("Please click the button below to download a copy of the MetaInsight User Guide."),
+         h4 (tags$strong("User Guide", style = "color: #2196c4")),
+                            p("Click the button below to download a pdf copy of the MetaInsight User Guide."),
+                            p(tags$strong("Please note:"), 
+                              "the user guide is based on version 3 of MetaInsight. Some elements of the app have been changed since the guide was originally produced."),
                             downloadButton("UG", "Download User Guide"),
                             br(),
                             br(),
-                            h4 (tags$strong("Cochrane training Webinar materials", style = "cursive;
-                      color: #2196c4")),
+         h4 (tags$strong("ESMARConf 2023 Tutorial", style = "color: #2196c4")),
+         p(tags$strong(" MetaInsight - an R Shiny web-app for conducting network meta-analysis")),
+         p("A tutorial for MetaInsight v4.0.0 produced for ESMARConf 2023"),
+         HTML('<iframe width="560" height="315" src="https://www.youtube.com/embed/g-RDnQ75Hv4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>'),
+         br(),
+         br(),
+         h4 (tags$strong("Cochrane Training Webinar", style = "color: #2196c4")),
          p(tags$strong("MetaInsight: Background, introduction, demonstration, limitations, and future plans")),
-         p("These videos were recorded live as part of the ",
+         p("These videos were recorded live in 2019 as part of the ",
            tags$a(href="https://training.cochrane.org/resource/metainsight-complex-review-support-unit-crsu-network-meta-analysis-nma-web-based-app", "Cochrane Training network meta-analysis learning live webinar series.",target="_blank"),
-           "They are intended for people who are interested in undertaking a network meta-analysis using MetaInsight."),
+           "They are intended for people who are interested in undertaking a network meta-analysis using MetaInsight.",
+           tags$strong("Please note:"), "these videos refer to a past version of MetaInsight and elements of the app have changed since the videos were originally recorded."),
          br(),
          HTML('<iframe width="560" height="315" src="https://www.youtube.com/embed/RR_tkICQv_s" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'),
          HTML('<iframe width="560" height="315" src="https://www.youtube.com/embed/b-fYoUdksRo" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'),
@@ -755,7 +732,7 @@ tabPanel("User Guide",
 
 
 ###################################
-### Tab 6 - trouble shooting ###
+### Tab 5 - Troublehshooting.   ###
 ###################################
 
 tabPanel(id="trouble", "Troubleshooting",
@@ -766,23 +743,8 @@ tags$iframe(style="height:1500px; width:100%; scrolling=yes",
             src="ts2.pdf")
 ),
 
-
-
-
-
-###################################
-### Tab 7 - Full update history ###
-###################################
-
-tabPanel(id="update", "Full update history",
-         tags$iframe(style="height:1500px; width:100%; scrolling=yes",
-                     src="fullupdatehistory4.pdf")
-),
-
-
-
 ##############################
-### Tab 8 - Privacy notice ###
+### Tab 6 - Privacy notice ###
 ##############################
 
 
