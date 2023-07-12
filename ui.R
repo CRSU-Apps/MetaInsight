@@ -9,19 +9,21 @@
 # remotes::install_github("audrey-b/BUGSnet@v1.0.4", upgrade = TRUE, build_vignettes = TRUE)
 # devtools::install_github("audrey-b/BUGSnet@v1.0.4", upgrade = TRUE, build_vignettes = TRUE)
 
-
 dashboardPage(
   dashboardHeader(disable = TRUE),
   dashboardSidebar(disable = TRUE),
-  dashboardBody(tags$head(tags$style(HTML('
-      .content-wrapper {
-        background-color: #fff;
-      }
-      .shiny-split-layout>div {
-      overflow: hidden;
-      }
-    '
-  ))),  #ensure white background and no horizontal scroll bars on ranking panel
+  dashboardBody(
+  tags$head(
+    # load custom stylesheet
+    # To ensure white background and no horizontal scroll bars on ranking panel
+    tags$link(rel = "stylesheet", type = "text/css", href = "app.css"),
+    includeHTML("www/favicon/favicon.html"),
+    tags$meta(name="description", content="A interactive web tool for network meta-analysis (NMA) that leverages established analysis routines"),
+    tags$meta(name="keywords", content="MetaInsight, NMA, Network, Meta, Analysis, App"),
+    tags$meta(property="og:title", content="Meta Insight: V4.1.0"),
+    tags$meta(property="og:description", content="An interactive web tool for network meta-analysis (NMA) that leverages established analysis routines"),
+    tags$meta(property="og:image", content="images/MetaInsightLogo.png")
+  ),
   navbarPage(id="meta",
                    "MetaInsight", 
                    header = singleton(tags$head(includeScript("google_analytics2.js"))),
@@ -71,6 +73,7 @@ dashboardPage(
             p("Click", tags$a(href = "https://github.com/CRSU-Apps/MetaInsight/wiki/Full-Update-History", "here", target="_blank"), "to view a full update history of MetaInsight"),
             p("The code for MetaInsight is available on", tags$a(href="https://github.com/CRSU-Apps/MetaInsight", "GitHub",target="_blank")),
             br(),
+
             HTML('<iframe width="560" height="315" src="https://www.youtube.com/embed/scbLwTY0kvc" title="MetaInsight Treatment Ranking Demo" 
                  frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>')
             )),
@@ -105,7 +108,6 @@ dashboardPage(
        tags$p("Please click ", tags$a(href="http://www.nihrcrsu.org", "here ", target="_blank"), "for more information about the UK NIHR Complex Reviews Support Unit (CRSU).")
      )),
                    
-              
 #########################
 ### Tab 2 - Load data ###
 #########################
@@ -550,11 +552,9 @@ tabPanel("Load Data",
                 helpText("Please note: if you change the selections on the sidebar, 
                           you will need to re-run the primary and/or sensitivity analysis from the 'Forest Plot' page."),
                 p("Please note: This may take more than 10 minutes depending on the number of treatment options. The node splitting option for
-                  the Bayesian analysis is highly numerically intensive and using it on the app can cause the app to disconnect in some circumstances.  
-                  We have produced a",
+                  the Bayesian analysis is highly numerically intensive and using it on the app can cause the app to disconnect in some circumstances.  We have produced a",
                   tags$a(href="https://github.com/CRSU-Apps/MetaInsight/wiki/Local-User-Guide", "guide",target="_blank"), 
                   "to running MetaInsight locally through RStudio on the user's own machine if they want to make use of this function."),
-                
                   fluidRow(
                     column(6,
                           p(tags$strong("Inconsistency test with notesplitting model for all studies")),
