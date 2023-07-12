@@ -47,7 +47,7 @@ dashboardPage(
                             #   zoom: 75%; /* Webkit browsers */
                             #   }
                             #   "), 
-    h2("MetaInsight V4.1.1",
+    h2("MetaInsight V4.2.0",
       #tags$sup("Beta", style="color:#6CC0ED"), 
       align= "left"),
     fluidRow(
@@ -59,7 +59,7 @@ dashboardPage(
       column(2),
       column(5, 
             p(tags$strong("Latest Updates:")),
-            p(tags$strong("** Minor update (11 July 2023 v4.1.1 **:")),
+            p(tags$strong("** Minor update (11 July 2023 v4.2.0 **:")),
             p(tags$ul(tags$li("A new video tutorial from ESMARConf2023 is available in the User Guide tab"))),
             p(tags$strong("** Major New Feature: Redesign of Bayesian Ranking Panel (10 February 2023 v4.0.0) **:")),
             p(tags$ul(tags$li("The Bayesian treatment ranking section has had a complete redesign including two newly developed plots 
