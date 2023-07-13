@@ -700,20 +700,10 @@ shinyServer(function(input, output, session) {
   
   ### 2d. Summary Forest Plot
   
-  axis_type <- reactive({
-    measure <- outcome_measure()
-    if (measure == "OR" || measure == "RR") {
-      # Risk Ratio
-      return("log")
-    } else {
-      # Every other outcome
-      return("linear")
-    }
-  })
   summary_forest_plots_server(id = '2d.summaryForestPlot',
                               all_data = freq_all,
                               filtered_data = freq_sub,
-                              axis_type = axis_type)
+                              outcome_type = outcome_measure)
 
 
   #####################
