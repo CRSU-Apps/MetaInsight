@@ -1,20 +1,7 @@
-#------------------------------------------
-#Project: NMA - Plot functions
-#Author: Sze Huey TAN
-#Supervisors: Alex, Nicola & Sylwia
-#Last Modified: 20 November 2013
-#------------------------------------------
 
 #--------------------------------------------------------------
-# Modified by Rhiannon Owen for Network Meta-Analysis Shiny App
-# July 2017
-#--------------------------------------------------------------
-
-
-
-#----------------------------------------------------------------------------
 # Functions for Summary Forest Plot Matrix & Table
-#----------------------------------------------------------------------------
+#--------------------------------------------------------------
 
 # Setup plot
 create_summary_forest_plot <- function(data_to_plot, plot_title, axis_type) {

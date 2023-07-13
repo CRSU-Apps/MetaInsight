@@ -9,10 +9,10 @@
 
 shinyServer(function(input, output, session) {
   # Create a definable reactive value to allow reloading of data
-  reload <- reactiveVal(F)
+  reload <- reactiveVal(FALSE)
   
   # Render function for file input dynamically to allow the button to be set to Null
-  default_file_input <- 
+  default_file_input <-
     renderUI({
       fileInput(inputId="data", label="", buttonLabel="Select", placeholder="No file selected")
     })
