@@ -4,6 +4,7 @@
 library(plyr)
 
 library(BUGSnet)
+library(combinat)
 library(cowplot)
 library(data.table)
 library(dplyr)
@@ -17,6 +18,7 @@ library(metafor)
 library(netmeta)
 library(patchwork)
 library(plotly)
+library(plotrix)
 library(shiny) 
 library(shinyalert)
 library(shinyAce)
@@ -28,18 +30,3 @@ library(shinyWidgets)
 library(stringr)
 library(rmarkdown)
 library(tidyr)
-
-
-load_library <- function(library_name) {
-  if(!require(library_name, character.only = TRUE)) {
-    install.packages(library_name)
-  }
-  require(library_name, character.only = TRUE)
-}
-
-
-#Call required library for pie plotting
-load_library('plotrix')
-
-#package required for function: sortres.matrix for mtcMatrix
-load_library("combinat")
