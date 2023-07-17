@@ -475,6 +475,7 @@ rankdata <- function(NMAdata, rankdirection, longdata) {
   Patients <- dplyr::rename(Patients, c("Treatment"="Category", "N"="x"))  # previously using plyr::rename where old/new names are other way round
   Patients$Treatment <- gsub("_", " ", Patients$Treatment) #remove underscores, otherwise next line won't work
   SUCRA <- SUCRA %>% dplyr::right_join(Patients, by = "Treatment")
+  
   # Node size #
   size.maxO <- 15
   size.maxA <- 10

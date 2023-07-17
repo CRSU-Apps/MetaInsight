@@ -853,13 +853,13 @@ shinyServer(function(input, output, session) {
   
   # Obtain Data needed for ranking #
   RankingData <- eventReactive(input$baye_do, {
-    obtain_rank_data(sub=TRUE, data(), input$metaoutcome, exclusions(), 
+    obtain_rank_data(data(), input$metaoutcome, 
                      treatment_list(), model(), input$rankopts)
   })
   
   RankingData_sub <- eventReactive(input$sub_do, {
-    obtain_rank_data(sub=FALSE, data(), input$metaoutcome, exclusions(), 
-                     treatment_list(), model_sub(), input$rankopts)
+    obtain_rank_data(data(), input$metaoutcome, treatment_list(),
+                     model_sub(), input$rankopts, exclusions())
   })
   
   # Network plots for ranking panel (Bayesian) (they have slightly different formatting to those on tab1) CRN
