@@ -305,6 +305,31 @@ load_data_page_server <- function(id, metaoutcome) {
                   name = "trt_panel",
                   suspendWhenHidden = FALSE)
     
+    ### Outcome selection
+    output$CONBI <- renderText({
+      paste("You have selected", "<font color=\"#ffd966\"><b>", metaoutcome(),"</b></font>", 
+            "outcome on the 'Home' page. The instructions for formatting",
+            "<font color=\"#ffd966\"><b>", metaoutcome(), "</b></font>", "outcomes are now displayed.")
+    })
+    
+    ### Data analysis tab
+    # Create a table which displays the raw data just uploaded by the user
+    output$tb <- renderTable({
+      if (is.null(data())) {
+        return()
+      }
+      return(data())
+    })
+    
+    ##### in the 'Upload long data' tab
+    output$downloadData <- create_raw_data_download_handler(metaoutcome, "MetaInsightdataLONG.csv", "Cont_long.csv", "Binary_long.csv")
+    output$downloadlabel <- create_raw_data_download_handler(metaoutcome, "treatmentlabels.txt", "defaultlabels_continuous.txt", "defaultlabels_binary.txt")
+    
+    ##### in the 'Upload wide data' tab
+    output$downloadDataWide <- create_raw_data_download_handler(metaoutcome, "MetaInsightdataWIDE.csv", "Cont_wide.csv", "Binary_wide.csv")
+    output$downloadlabel2 <- create_raw_data_download_handler(metaoutcome, "treatmentlabels.txt", "defaultlabels_continuous.txt", "defaultlabels_binary.txt")
+    
+    
     return(list(data = data, treatment_list = treatment_list))
   })
 }

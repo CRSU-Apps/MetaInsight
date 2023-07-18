@@ -19,12 +19,22 @@ shinyServer(function(input, output, session) {
     else {return(input$outcomebina)}
   })
   
+  
+  
+  ############################################
+  ############# Load data page ###############
+  ############################################
+  
   data_reactives <- load_data_page_server(id = 'load_data_page',
                                           metaoutcome = function() {
                                             return(input$metaoutcome)
                                           })
   data <- data_reactives$data
   treatment_list <- data_reactives$treatment_list
+  
+  #####
+  # Reactive functions used in various places, based on the data
+  #####
   
   # Make frequentist function (in fn_analysis.R) reactive - NVB
   freq_all <- reactive({
@@ -77,34 +87,6 @@ shinyServer(function(input, output, session) {
       #newvalue <- "history"
       updateNavbarPage(session,"meta", selected="Troubleshooting")
     })
-
-
-  
-  ############################################
-  ############# Load data page ###############
-  ############################################
-  
-  ### Outcome selection
-    output$CONBI <- renderText({
-      paste("You have selected", "<font color=\"#ffd966\"><b>" , input$metaoutcome,"</b></font>", 
-            "outcome on the 'Home' page. The instructions for formatting",
-            "<font color=\"#ffd966\"><b>" , input$metaoutcome,"</b></font>", "outcomes are now displayed.")
-    })
-    
-  ### Data analysis tab
-    # Create a table which displays the raw data just uploaded by the user
-    output$tb <- renderTable({       
-      if(is.null(data())){return()}
-      data()
-    })
-    
-  ##### in the 'upload long data' tab
-  output$downloadData <- create_raw_data_download_handler(input, "MetaInsightdataLONG.csv", "Cont_long.csv", "Binary_long.csv")
-  output$downloadlabel <- create_raw_data_download_handler(input, "treatmentlabels.txt", "defaultlabels_continuous.txt", "defaultlabels_binary.txt")
-  
-  ##### in the 'UPload wide data' tab
-  output$downloadDataWide <- create_raw_data_download_handler(input, "MetaInsightdataWIDE.csv", "Cont_wide.csv", "Binary_wide.csv")
-  output$downloadlabel2 <- create_raw_data_download_handler(input, "treatmentlabels.txt", "defaultlabels_continuous.txt", "defaultlabels_binary.txt")
 
   
   ############################################

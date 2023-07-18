@@ -58,19 +58,20 @@ write_to_pdf_or_png <- function(file, type, renderFunction) {
   
 #' Create a download handler for raw data
 #' 
-#' @param filenameName of file to which to download
-#' @param continuousFile File to download if continuous
-#' @param binaryFile File to download if binary
+#' @param metaoutcome function to get th outcome to decide which file to download
+#' @param filename Name of file to which to download
+#' @param continuous_file File to download if continuous
+#' @param binary_file File to download if binary
 #' @return The created download handler
-create_raw_data_download_handler <- function(input, filename, continuousFile, binaryFile) {
+create_raw_data_download_handler <- function(metaoutcome, filename, continuous_file, binary_file) {
   return(
     downloadHandler(
       filename = filename,
       content = function(file) {
-        if (input$metaoutcome == 'Continuous') {
-          file.copy(continuousFile, file)
+        if (metaoutcome() == 'Continuous') {
+          file.copy(continuous_file, file)
         } else {
-          file.copy(binaryFile, file)
+          file.copy(binary_file, file)
         }
       }
     )
