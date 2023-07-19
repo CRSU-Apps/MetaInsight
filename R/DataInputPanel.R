@@ -1,6 +1,6 @@
 data_input_panel_ui <- function(id) {
   ns <- NS(id)
-  sidebarPanel(
+  div(
     h4(tags$strong("Select a data file (.csv) to upload")),
     p(tags$strong("Files used before version 5.0 are no longer compatible. To use an older file, replace the numeric treatment IDs in the \"T\" column(s) with the treatment names.",
                   style = "color:red")),
@@ -13,7 +13,7 @@ data_input_panel_ui <- function(id) {
 
 data_input_panel_server <- function(id, metaoutcome) {
   moduleServer(id, function(input, output, session) {
-    ns <- NS(id)
+    ns <- session$ns
     
     # Create a definable reactive value to allow reloading of data
     reload <- reactiveVal(FALSE)
@@ -85,7 +85,7 @@ data_input_panel_server <- function(id, metaoutcome) {
                    output$reload_button_panel <- NULL
                  })
     
-    # if the data is changed load the new data (reset the labels) and show the reload button
+    # if the data is changed load the new data and show the reload button
     observeEvent(input$data,
                  {
                    reload(FALSE)

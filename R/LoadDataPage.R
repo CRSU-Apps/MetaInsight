@@ -7,11 +7,12 @@ load_data_page_ui <- function(id) {
                                 font-size: 20px;
                                 font-style: bold;
                                 background-color: #2196c4
-                                }")
-    )),
+                                }"))),
     br(),
     sidebarLayout(
-      data_input_panel_ui(id = ns('data_input_panel')),
+      sidebarPanel(
+        data_input_panel_ui(id = ns('data_input_panel'))
+      ),
       mainPanel(
         tabsetPanel(id = "instructions",
                     long_format_upload_panel_ui(id = ns('long_upload')),
@@ -69,10 +70,11 @@ load_data_page_server <- function(id, metaoutcome) {
       return(data.frame(Number = seq(1, length(treatment_names)), Label = treatment_names))
     })
     
+    # Replace all of the treatment names with an ID
     wrangled_data <- reactive({
       df <- isolate(data())
       treatent_ids <- treatment_list()
-      df$T <- treatent_ids$Number[match(unlist(df$T), treatent_ids$Label)]
+      df$T <- treatent_ids$Number[match(df$T, treatent_ids$Label)]
       return(df)
     })
     
