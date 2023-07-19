@@ -37,7 +37,6 @@ load_data_page_server <- function(id, metaoutcome) {
     
     data_reactives <- data_input_panel_server(id = 'data_input_panel', metaoutcome = metaoutcome)
     data <- data_reactives$data
-    treatment_list <- data_reactives$treatment_list
     
     ### Data analysis tab
     # Create a table which displays the raw data just uploaded by the user
@@ -51,6 +50,37 @@ load_data_page_server <- function(id, metaoutcome) {
     long_format_upload_panel_server(id = 'long_upload')
     wide_format_upload_panel_server(id = 'wide_upload')
     
-    return(list(data = data, treatment_list = treatment_list))
+    find_all <- function(data, field_name) {
+      if (field_name %in% colnames(data)) {
+        # Long format
+        return(unique(data[[field_name]]))
+      } else {
+        # Wide format
+        all <- c()
+        for (i in seq(6)) {
+          all <- c(all, data[[paste0(field_name, ".", i)]])
+        }
+        return(unique(all))
+      }
+    }
+    
+    treatment_list <- reactive({
+      treatment_names = find_all(data(), "T")
+      return(data.frame(Number = seq(1, length(treatment_names)), Label = treatment_names))
+    })
+    
+    wrangled_data <- reactive({
+      df <- isolate(data())
+      treatent_ids <- treatment_list()
+      df$T <- treatent_ids$Number[match(unlist(df$T), treatent_ids$Label)]
+      return(df)
+    })
+    
+    formatted_treatment_list <- reactive({
+      rows <- apply(treatment_list(), 1, function(row) {paste0(row[1], "\t", row[2])})
+      return(paste(c("Number\tLabel", rows), collapse="\n"))
+    })
+    
+    return(list(data = wrangled_data, treatment_list = formatted_treatment_list))
   })
 }

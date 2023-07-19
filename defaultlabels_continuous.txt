@@ -1,7 +1,0 @@
-Number	Label
-1	Placebo
-2	Orlistat
-3	Sibutramine
-4	Metformin
-5	Orli_Sibut
-6	Rimonbant

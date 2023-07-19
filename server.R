@@ -15,8 +15,11 @@ shinyServer(function(input, output, session) {
   
   # Define outcome measure (continuous or binary) - NVB
   outcome_measure <- reactive({
-    if (input$metaoutcome == "Continuous") {return(input$outcomeCont)}
-    else {return(input$outcomebina)}
+    if (input$metaoutcome == "Continuous") {
+      return(input$outcomeCont)
+    } else {
+      return(input$outcomebina)
+    }
   })
   
   
