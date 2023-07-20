@@ -79,6 +79,8 @@ load_data_page_server <- function(id, metaoutcome) {
       return(paste(c("Number\tLabel", rows), collapse="\n"))
     })
     
-    return(list(data = wrangled_data, treatment_list = formatted_treatment_list))
+    return(list(data = wrangled_data,
+                treatment_list = formatted_treatment_list,
+                treatment_df = treatment_list))
   })
 }

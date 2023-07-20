@@ -34,6 +34,7 @@ shinyServer(function(input, output, session) {
                                           })
   data <- data_reactives$data
   treatment_list <- data_reactives$treatment_list
+  treatment_df <- data_reactives$treatment_df
   
   #####
   # Reactive functions used in various places, based on the data
@@ -41,12 +42,12 @@ shinyServer(function(input, output, session) {
   
   # Make frequentist function (in fn_analysis.R) reactive - NVB
   freq_all <- reactive({
-    return(frequentist(sub = FALSE, data(), input$metaoutcome, treatment_list(), outcome_measure(), input$modelranfix, input$exclusionbox))
+    return(frequentist(sub = FALSE, data(), input$metaoutcome, treatment_df(), outcome_measure(), input$modelranfix, input$exclusionbox))
   })
   
   # Make frequentist function (in fn_analysis.R) reactive with excluded studies - NVB
   freq_sub <- reactive({
-    return(frequentist(sub = TRUE, data(), input$metaoutcome, treatment_list(), outcome_measure(), input$modelranfix, input$exclusionbox))
+    return(frequentist(sub = TRUE, data(), input$metaoutcome, treatment_df(), outcome_measure(), input$modelranfix, input$exclusionbox))
   })
   
   # Make bugsnetdata function (in fn_analysis.R) reactive - NVB
@@ -56,7 +57,7 @@ shinyServer(function(input, output, session) {
    
   # Make ref_alter function (in fn_analysis.R) reactive - NVB
   reference_alter <- reactive({
-    return(ref_alter(data(), input$metaoutcome, input$exclusionbox, treatment_list()))
+    return(ref_alter(data(), input$metaoutcome, input$exclusionbox, treatment_df()))
   })
 
   ############################################
@@ -140,17 +141,17 @@ shinyServer(function(input, output, session) {
     ### Get data for data table
     
 
-    filtertable <- function(){
-      label <- treatment_label(treatment_list())
+    filtertable <- function() {
+      label <- treatment_df()
       dt <- data()
       ntx <- nrow(label)
       dt$T <- factor(dt$T,
                      levels = c(1:ntx),
                      labels = as.character(label$Label))
-      dt
+      return(dt)
     }
 
-  colnames<- function(){
+  colnames <- function(){
     if (input$metaoutcome=="Continuous") {
       colnames <- c('StudyID', 'Author','Treatment','Number of participants in each arm',
                     'Mean value of the outcome in each arm', 'Standard deviation of the outcome in each arm')

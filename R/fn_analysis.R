@@ -5,9 +5,8 @@
 frequentist <- function(sub, data, metaoutcome, treatment_list, outcome_measure, modelranfix, excluded){
   data_wide <-  entry.df(data, metaoutcome) # Transform data to wide form
   if (sub == TRUE) {data_wide <- filter(data_wide, !Study %in% excluded)} # Subset of data when studies excluded
-  treat_list <- treatment_label(treatment_list)
   # Use the self-defined function, freq_wrap
-  return(freq_wrap(data_wide, treat_list, modelranfix, outcome_measure, metaoutcome, 
+  return(freq_wrap(data_wide, treatment_list, modelranfix, outcome_measure, metaoutcome, 
                    ref_alter(data, metaoutcome, excluded, treatment_list)$ref_sub))
 }
 
@@ -24,10 +23,9 @@ bugsnetdata <- function(data, metaoutcome, treatment_list){
 # Reference treatment if treatment 1 is removed from the network
 ref_alter <- function(data, metaoutcome, excluded, treatment_list){
   newData1 <- as.data.frame(data)
-  treat_list <- treatment_label(treatment_list)
-  lstx <- treat_list$Label
+  lstx <- treatment_list$Label
   ref_all <- as.character(lstx[1])
-  longsort2 <- dataform.df(newData1, treat_list, metaoutcome)
+  longsort2 <- dataform.df(newData1, treatment_list, metaoutcome)
   long_sort2_sub <- filter(longsort2, !Study %in% excluded)  # subgroup
   if (((lstx[1] %in% long_sort2_sub$T) ) == "TRUE") {
     ref_sub<- as.character(lstx[1])
