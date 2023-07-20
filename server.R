@@ -1181,9 +1181,9 @@ shinyServer(function(input, output, session) {
   })
   
   output$UG <- downloadHandler(
-    filename = "MetaInsightUserGBayv0.1.pdf",
+    filename = "MetaInsightUserGuide.pdf",
     content = function(file) {
-      file.copy("MetaInsightUserGBayv0_1.pdf", file)
+      file.copy("www/MetaInsightUserGuide.pdf", file)
     }
   )
   

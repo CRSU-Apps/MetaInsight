@@ -132,18 +132,19 @@ data_input_panel_server <- function(id, metaoutcome) {
       # if a reload is triggered show the reload the file input and data
       if (reload()) {
         output$file_input_panel <- default_file_input
-        return(defaultD())
+        df <- defaultD()
       } else if (is.null(file1)) {
         # if data is triggered without reload, only load the default data
-        return(defaultD())
+        df <- defaultD()
       } else {
-        return(read.table(file = file1$datapath,
-                          sep = ",",
-                          header = TRUE,
-                          stringsAsFactors = FALSE,
-                          quote = "\"",
-                          fileEncoding = 'UTF-8-BOM'))
+        df <- read.table(file = file1$datapath,
+                         sep = ",",
+                         header = TRUE,
+                         stringsAsFactors = FALSE,
+                         quote = "\"",
+                         fileEncoding = 'UTF-8-BOM')
       }
+      return(dplyr::mutate(df, across(where(is.character), stringr::str_trim)))
     })
     
     # Create the treatment list with the reference treatment being the first item in the data frame

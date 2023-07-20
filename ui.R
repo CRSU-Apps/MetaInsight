@@ -601,8 +601,8 @@ tabPanel(id="trouble", "Troubleshooting",
 #          tags$div(
 # includeHTML("troublesh.html")
 #          )
-tags$iframe(style="height:1500px; width:100%; scrolling=yes",
-            src="ts2.pdf")
+tags$iframe(style = "height:1500px; width:100%; scrolling=yes",
+            src = "trouble_shooting.pdf")
 ),
 
 ##############################
