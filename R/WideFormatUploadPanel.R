@@ -1,3 +1,8 @@
+
+#' Module UI for the wide format data upload instructions.
+#' 
+#' @param id ID of the module
+#' @return Tab panel containing data upload instructions and example data downloads
 wide_format_upload_panel_ui <- function(id) {
   ns <- NS(id)
   tabPanel("Wide format upload",
@@ -38,6 +43,10 @@ wide_format_upload_panel_ui <- function(id) {
   )
 }
 
+#' Module server for the wide format data upload instructions.
+#' 
+#' @param id ID of the module
+#' @param metaoutcome Reactive containing the outcome type selected
 wide_format_upload_panel_server <- function(id, metaoutcome) {
   moduleServer(id, function(input, output, session) {
     output$downloadData <- create_raw_data_download_handler(metaoutcome, "MetaInsightdataLONG.csv", "Cont_long.csv", "Binary_long.csv")

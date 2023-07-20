@@ -1,3 +1,8 @@
+
+#' Module ui for uploading data into the app.
+#' 
+#' @param id ID of the module
+#' @return Div containing data upload controls
 data_input_panel_ui <- function(id) {
   ns <- NS(id)
   div(
@@ -6,11 +11,78 @@ data_input_panel_ui <- function(id) {
                   style = "color:red")),
     p(tags$strong("Note: Excel files should be saved in 'csv (Comma delimited) (*.csv)' format. Default maximum file size is 5MB.")),
     uiOutput(outputId = ns("file_input_panel")),
+    selectizeInput(inputId = ns('reference_treatment'), label = 'Select Reference Treatment', choices = c()),
     uiOutput(outputId = ns("reload_button_panel")),
     div(class = "clearfix")
   )
 }
 
+#' Find all of the treatment names in the data, both for long and wide formats.
+#' 
+#' @param data Data frame in which to search for treatment names
+#' @return Vector of all treatment names
+find_all_treatments <- function(data) {
+  if ('T' %in% colnames(data)) {
+    # Long format
+    return(unique(data$T))
+  } else {
+    # Wide format
+    all <- c()
+    for (col in paste0('T.', seq(6))) {
+      if (col %in% colnames(data)) {
+        all <- c(all, data[[col]])
+      }
+    }
+    return(unique(all))
+  }
+}
+
+#' Create a copy of a vector with the given item as the first element.
+#' 
+#' @param vector Vector to reorder
+#' @param first_item The element to push to the front of the vector
+#' @return The reordered vector
+vector_with_item_first <- function(vector, first_item) {
+  if (!(first_item %in% vector)) {
+    return(vector)
+  }
+  return(c(first_item, vector[vector != first_item]))
+}
+
+potential_reference_treatments = c(
+  'control',
+  'usual_care',
+  'standard_care',
+  'placebo',
+  'no_contact'
+)
+
+#' Find the expected reference treatment from a vector.
+#' This is done by comparing treatment names to expected reference treatment names.
+#' 
+#' @param treatments vector containing all treatment names
+#' @return Name of the expected reference treatment if one is found, else NULL
+find_expected_reference_treatment <- function(treatments) {
+  expected_reference_treatments <- unlist(
+    lapply(potential_reference_treatments,
+           function(expected_ref) {
+             match(expected_ref, tolower(treatments))
+           }))
+  expected_reference_treatments <- expected_reference_treatments[!is.na(expected_reference_treatments)]
+  if (length(expected_reference_treatments) > 0) {
+    return(treatments[expected_reference_treatments[1]])
+  } else {
+    return(NULL)
+  }
+}
+
+#' Module server for uploading data into the app.
+#' 
+#' @param id ID of the module
+#' @param metaoutcome Reactive containing the outcome type selected
+#' @return List of reactives:
+#'   - 'data' is the uplodaded data
+#'   - 'treatment_list' is the data frame containing the treatment ID ('Number') and the treatment name ('Label')
 data_input_panel_server <- function(id, metaoutcome) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
@@ -72,6 +144,12 @@ data_input_panel_server <- function(id, metaoutcome) {
       }
     })
     
+    # Create the treatment list with the reference treatment being the first item in the data frame
+    treatment_list <- reactive({
+      treatment_names = vector_with_item_first(find_all_treatments(data()), input$reference_treatment)
+      return(data.frame(Number = seq(length(treatment_names)), Label = treatment_names))
+    })
+    
     
     #####
     # observer functions to trigger specific reactions
@@ -100,6 +178,14 @@ data_input_panel_server <- function(id, metaoutcome) {
                    output$reload_button_panel <- NULL
                  })
     
-    return(list(data = data))
+    # Reset the reference treatment when the data changes, by scanning through the uploaded data
+    observe({
+              treatments = unique(data()$T)
+              updateSelectInput(inputId = 'reference_treatment',
+                                choices = treatments,
+                                selected = find_expected_reference_treatment(treatments))
+            })
+    
+    return(list(data = data, treatment_list = treatment_list))
   })
 }
