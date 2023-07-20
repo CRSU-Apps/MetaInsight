@@ -33,7 +33,6 @@ shinyServer(function(input, output, session) {
                                             return(input$metaoutcome)
                                           })
   data <- data_reactives$data
-  treatment_list <- data_reactives$treatment_list
   treatment_df <- data_reactives$treatment_df
   
   #####
@@ -52,7 +51,7 @@ shinyServer(function(input, output, session) {
   
   # Make bugsnetdata function (in fn_analysis.R) reactive - NVB
   bugsnetdt <- reactive({
-    return(bugsnetdata(data(), input$metaoutcome, treatment_list()))
+    return(bugsnetdata(data(), input$metaoutcome, treatment_df()))
   })
    
   # Make ref_alter function (in fn_analysis.R) reactive - NVB
@@ -574,12 +573,12 @@ shinyServer(function(input, output, session) {
   # Bayesian analysis
   
   model <- eventReactive(input$baye_do, {
-    bayesian_model(sub = FALSE, data(), treatment_list(), input$metaoutcome, input$exclusionbox,
+    bayesian_model(sub = FALSE, data(), treatment_df(), input$metaoutcome, input$exclusionbox,
                    outcome_measure(), input$modelranfix, reference_alter())
   })
   
   model_sub <- eventReactive(input$sub_do, {
-    bayesian_model(sub = TRUE, data(), treatment_list(), input$metaoutcome, input$exclusionbox, 
+    bayesian_model(sub = TRUE, data(), treatment_df(), input$metaoutcome, input$exclusionbox, 
                    outcome_measure(), input$modelranfix, reference_alter())
   })
 
@@ -702,12 +701,12 @@ shinyServer(function(input, output, session) {
   # Obtain Data needed for ranking #
   RankingData <- eventReactive(input$baye_do, {
     obtain_rank_data(sub=TRUE, data(), input$metaoutcome, input$exclusionbox, 
-                     treatment_list(), model(), input$rankopts)
+                     treatment_df(), model(), input$rankopts)
   })
   
   RankingData_sub <- eventReactive(input$sub_do, {
     obtain_rank_data(sub=FALSE, data(), input$metaoutcome, input$exclusionbox, 
-                     treatment_list(), model_sub(), input$rankopts)
+                     treatment_df(), model_sub(), input$rankopts)
   })
   
   # Network plots for ranking panel (Bayesian) (they have slightly different formatting to those on tab1) CRN
@@ -997,7 +996,7 @@ shinyServer(function(input, output, session) {
   
   # Inconsistency test with notesplitting model for all studies
   model_nodesplit <- eventReactive(input$node, {
-    nodesplit(sub = FALSE, data(), treatment_list(), input$metaoutcome, outcome_measure(),
+    nodesplit(sub = FALSE, data(), treatment_df(), input$metaoutcome, outcome_measure(),
                     input$modelranfix, input$exclusionbox)
   })
 
@@ -1007,7 +1006,7 @@ shinyServer(function(input, output, session) {
 
   # Inconsistency test with notesplitting model with studies excluded
   model_nodesplit_sub <- eventReactive(input$node_sub, {
-    nodesplit(sub = TRUE, data(), treatment_list(), input$metaoutcome, outcome_measure(),
+    nodesplit(sub = TRUE, data(), treatment_df(), input$metaoutcome, outcome_measure(),
                     input$modelranfix, input$exclusionbox)
   })
 

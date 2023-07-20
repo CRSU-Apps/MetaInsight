@@ -14,9 +14,8 @@ frequentist <- function(sub, data, metaoutcome, treatment_list, outcome_measure,
 # Inputting the data in long form
 bugsnetdata <- function(data, metaoutcome, treatment_list){
   newData1 <- as.data.frame(data)
-  treat_list <- treatment_label(treatment_list)
-  treat_list$Label <- stringr::str_wrap(gsub("_", " ",treat_list$Label), width=10)  # better formatting (although does assume underscores have only been added due to the treatment label entry limitations) CRN
-  longsort2 <- dataform.df(newData1,treat_list,metaoutcome)    
+  treatment_list$Label <- stringr::str_wrap(gsub("_", " ",treatment_list$Label), width=10)  # better formatting (although does assume underscores have only been added due to the treatment label entry limitations) CRN
+  longsort2 <- dataform.df(newData1,treatment_list,metaoutcome)    
   return(longsort2)
 }
 

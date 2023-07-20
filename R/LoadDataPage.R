@@ -37,8 +37,7 @@ load_data_page_ui <- function(id) {
 #' @param metaoutcome Reactive containing the outcome type selected
 #' @return List of reactives:
 #'   - 'data' is the uploaded data, wrangled such that the treatments are specified by IDs instead of names
-#'   - 'treatment_list' is the string representation of the data frame containing the treatment ID ('Number')
-#'     and the treatment name ('Label'), separated by tabs
+#'   - 'treatment_df' is the data frame containing the treatment ID ('Number') and the treatment name ('Label')
 load_data_page_server <- function(id, metaoutcome) {
   moduleServer(id, function(input, output, session) {
     ns <- NS(id)
@@ -74,13 +73,7 @@ load_data_page_server <- function(id, metaoutcome) {
       return(df)
     })
     
-    formatted_treatment_list <- reactive({
-      rows <- apply(treatment_list(), 1, function(row) {paste0(row[1], "\t", row[2])})
-      return(paste(c("Number\tLabel", rows), collapse="\n"))
-    })
-    
     return(list(data = wrangled_data,
-                treatment_list = formatted_treatment_list,
                 treatment_df = treatment_list))
   })
 }
