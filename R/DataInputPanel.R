@@ -49,6 +49,8 @@ vector_with_item_first <- function(vector, first_item) {
   return(c(first_item, vector[vector != first_item]))
 }
 
+# Treatments are in priority order, such that or any study with multiple matching treatments,
+# the first in this vector will be used as the reference.
 potential_reference_treatments = c(
   'control',
   'usual_care',
