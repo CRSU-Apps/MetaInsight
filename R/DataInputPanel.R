@@ -33,7 +33,7 @@ find_all_treatments <- function(data) {
         all <- c(all, data[[col]])
       }
     }
-    return(unique(all))
+    return(unique(all[!is.na(all)]))
   }
 }
 
@@ -43,7 +43,7 @@ find_all_treatments <- function(data) {
 #' @param first_item The element to push to the front of the vector
 #' @return The reordered vector
 vector_with_item_first <- function(vector, first_item) {
-  if (!(first_item %in% vector)) {
+  if (is.null(first_item) || !(first_item %in% vector)) {
     return(vector)
   }
   return(c(first_item, vector[vector != first_item]))
@@ -120,9 +120,9 @@ data_input_panel_server <- function(id, metaoutcome) {
     # Load default data
     defaultD <- reactive({
       if (metaoutcome() == 'Continuous') {
-        defaultD <- read.csv("./Cont_long.csv")
+        defaultD <- read.csv("Cont_long.csv")
       } else {
-        defaultD <- read.csv("./Binary_long.csv")
+        defaultD <- read.csv("Binary_long.csv")
       }
     })
     
