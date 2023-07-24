@@ -63,6 +63,19 @@ test_that("find_expected_reference_treatment() returns first  matching treatment
   expect_equal(!!result, "Placebo")
 })
 
+test_that("Continuous data registered as initially not uploaded", {
+  testServer(data_input_panel_server, args = list(metaoutcome = function() { 'Continuous' }), {
+    expect_false(data_uploaded())
+  })
+})
+
+test_that("Continuous data registered as uploaded on upload", {
+  testServer(data_input_panel_server, args = list(metaoutcome = function() { 'Continuous' }), {
+    session$setInputs(data = data.frame(datapath = 'Cont_long.csv'))
+    expect_true(data_uploaded())
+  })
+})
+
 test_that("Treatments extracted from default continuous file", {
   testServer(data_input_panel_server, args = list(metaoutcome = function() { 'Continuous' }), {
     treatment_df <- data.frame(Number = seq(6),
@@ -108,6 +121,19 @@ test_that("Continuous data passed back to module parent", {
     expect_equal(length(session$returned), 2)
     expect_equal(session$returned$data(), data())
     expect_equal(session$returned$treatment_list(), treatment_list())
+  })
+})
+
+test_that("Binary data registered as initially not uploaded", {
+  testServer(data_input_panel_server, args = list(metaoutcome = function() { 'Binary' }), {
+    expect_false(data_uploaded())
+  })
+})
+
+test_that("Binary data registered as uploaded on upload", {
+  testServer(data_input_panel_server, args = list(metaoutcome = function() { 'Binary' }), {
+    session$setInputs(data = data.frame(datapath = 'Cont_long.csv'))
+    expect_true(data_uploaded())
   })
 })
 

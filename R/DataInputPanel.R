@@ -12,7 +12,17 @@ data_input_panel_ui <- function(id) {
     p(tags$strong("Note: Excel files should be saved in 'csv (Comma delimited) (*.csv)' format. Default maximum file size is 5MB.")),
     uiOutput(outputId = ns("file_input_panel")),
     selectizeInput(inputId = ns('reference_treatment'), label = 'Select Reference Treatment', choices = c()),
-    uiOutput(outputId = ns("reload_button_panel")),
+    conditionalPanel(
+      condition = 'output.data_uploaded == true',
+      ns = ns,
+      div(
+        style = "float:right",
+        actionButton(inputId = ns("reload_button"),
+                     label = "Delete Data",
+                     incon = icon("trash"),
+                     style = "color: #fff; background-color: #dc3545; border-color: #dc3545")
+      )
+    ),
     div(class = "clearfix")
   )
 }
@@ -102,16 +112,10 @@ data_input_panel_server <- function(id, metaoutcome) {
       )
     })
 
-    # Render function reload button dynamically to allow the button to be set to Null
-    default_reload_button_panel <- renderUI({
-      div(
-        style = "display:inline-block; float:right",
-        actionButton(inputId = ns("reload_button"),
-                     label = "Delete Data",
-                     incon = icon("trash"),
-                     style = "color: #fff; background-color: #dc3545; border-color: #dc3545")
-      )
-    })
+    # Logical to show reset button only when data uploaded
+    data_uploaded <- reactiveVal(FALSE)
+    output$data_uploaded <- reactive({data_uploaded()})
+    outputOptions(output, 'data_uploaded', suspendWhenHidden = FALSE)
 
     # Render the file input intially
     output$file_input_panel <- default_file_input
@@ -162,14 +166,14 @@ data_input_panel_server <- function(id, metaoutcome) {
                  {
                    reload(TRUE)
                    output$file_input_panel <- default_file_input
-                   output$reload_button_panel <- NULL
+                   data_uploaded(FALSE)
                  })
     
     # if the data is changed load the new data and show the reload button
     observeEvent(input$data,
                  {
                    reload(FALSE)
-                   output$reload_button_panel <- default_reload_button_panel
+                   data_uploaded(TRUE)
                  })
     
     # if the reload button is clicked, reload the appropriate default data and labels and hide the reload button
@@ -177,7 +181,7 @@ data_input_panel_server <- function(id, metaoutcome) {
                  {
                    reload(TRUE)
                    output$file_input_panel <- default_file_input
-                   output$reload_button_panel <- NULL
+                   data_uploaded(FALSE)
                  })
     
     # Reset the reference treatment when the data changes, by scanning through the uploaded data
