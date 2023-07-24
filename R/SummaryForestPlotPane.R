@@ -7,8 +7,7 @@
 #' @return The created column
 summary_forest_plot_ui <- function(id) {
   ns <- NS(id)
-  column(
-    6,
+  div(
     plotOutput(outputId = ns('summaryForestPlot')),
     radioButtons(inputId = ns('summaryForestPlotFormat'),
                  label = 'Document format',
