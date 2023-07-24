@@ -103,7 +103,7 @@ data_input_panel_server <- function(id, metaoutcome) {
     })
 
     # Render function reload button dynamically to allow the button to be set to Null
-    default_reload_button <- renderUI({
+    default_reload_button_panel <- renderUI({
       div(
         style = "display:inline-block; float:right",
         actionButton(inputId = ns("reload_button"),
@@ -115,7 +115,6 @@ data_input_panel_server <- function(id, metaoutcome) {
 
     # Render the file input intially
     output$file_input_panel <- default_file_input
-    
     
     # Load default data
     defaultD <- reactive({
@@ -170,7 +169,7 @@ data_input_panel_server <- function(id, metaoutcome) {
     observeEvent(input$data,
                  {
                    reload(FALSE)
-                   output$reload_button_panel <- default_reload_button
+                   output$reload_button_panel <- default_reload_button_panel
                  })
     
     # if the reload button is clicked, reload the appropriate default data and labels and hide the reload button
