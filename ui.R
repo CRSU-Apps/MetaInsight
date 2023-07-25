@@ -14,7 +14,8 @@ dashboardPage(
     tags$meta(name="keywords", content="MetaInsight, NMA, Network, Meta, Analysis, App"),
     tags$meta(property="og:title", content="Meta Insight: v5.0.1"),
     tags$meta(property="og:description", content="An interactive web tool for network meta-analysis (NMA) that leverages established analysis routines"),
-    tags$meta(property="og:image", content="https://raw.githubusercontent.com/CRSU-Apps/MetaInsight/main/www/images/MetaInsightLogo.png")
+    tags$meta(property="og:image", content="https://raw.githubusercontent.com/CRSU-Apps/MetaInsight/main/www/images/MetaInsightLogo.png"),
+    useShinyjs()
   ),
   navbarPage(id="meta",
                    "MetaInsight", 
@@ -270,14 +271,14 @@ load_data_page_ui(id = 'load_data_page'),
                      actionButton("sub_do", "Click here to run the sensitivity analysis")
               )),
             fixedRow(
-              column(6, align = "center",
-                     uiOutput("BayesianForestPlot"),
+              column(6, align = "center", 
                      fixedRow(
-                       p("Options to change limits of the x-axis:"),
+                       uiOutput("BayesianForestPlot"),
+                       tags$div(id="BayesianForestPlotText", helpText("Options to change limits of the x-axis:")),
                        column(6, align = 'center', numericInput('bayesmin', label="Minimum", value=0.1)),
                        column(6, align = 'center', numericInput('bayesmax', label="Maximum", value=5))
                      ),
-                     p("Model fit:"),
+                     tags$div(id="ModelFitLeft", helpText("Model fit:")),
                      tableOutput("dic"),
                      textOutput("text_gemtc"),
                      br(),
@@ -288,7 +289,7 @@ load_data_page_ui(id = 'load_data_page'),
               column(6, align = "center",
                      uiOutput("BayesianForestPlot_sub"),
                      fixedRow(
-                       p("Options to change limits of the x-axis:"),
+                       tags$div(id="BayesianForestPlotSubText", helpText("Options to change limits of the x-axis:")),
                        column(6, align = 'center', numericInput('bayesmin_sub', label="Minimum", value=0.1)),
                        column(6, align = 'center', numericInput('bayesmax_sub', label="Maximum", value=5))
                      ),
@@ -297,7 +298,7 @@ load_data_page_ui(id = 'load_data_page'),
                                  display:block; }"),
                      textOutput("ref_change_bay"),
                      br(),
-                     p("Model fit:"),
+                     tags$div(id="ModelFitSub", helpText("Model fit:")),
                      tableOutput("dic_sub"),
                      textOutput("text_gemtc_sub"),
                      br(),
@@ -308,30 +309,30 @@ load_data_page_ui(id = 'load_data_page'),
               tabPanel("3b. Comparison of all treatment pairs",
                       helpText("Please note: if you change the selections on the sidebar, 
                                you will need to re-run the primary and/or sensitivity analysis from the 'Forest Plot' page."),
-                      p(tags$strong("In contrast to the 'comparison of all treatment pairs' tab in the frequentist NMA results, 
+                      tags$div(id="ComparisonHelpText", helpText(tags$strong("In contrast to the 'comparison of all treatment pairs' tab in the frequentist NMA results, 
                                     this table only contains the estimates from the network meta analysis, 
                                     i.e. does not contain estimates from pairwise meta-analysis which only contains direct evidence. 
-                                    If you would like to obtain the pairwise meta-analysis results, please run 3d. Nodesplit model")),
+                                    If you would like to obtain the pairwise meta-analysis results, please run 3d. Nodesplit model"))),
               br(),
-              p(tags$strong("Treatment effects for all studies: comparison of all treatment pairs.")),
+              tags$div(id="ComparisonText", helpText(tags$strong("Treatment effects for all studies: comparison of all treatment pairs."))),
               tableOutput("baye_comparison"),
               downloadButton('downloadbaye_comparison'),
               br(),
               br(),
-              p(tags$strong("Treatment effects with studies excluded: comparison of all treatment pairs.")),
+              tags$div(id="ComparisonTextSub", helpText(tags$strong("Treatment effects with studies excluded: comparison of all treatment pairs."))),
               tableOutput("baye_comparison_sub"),
               downloadButton('downloadbaye_comparison_sub')
               ),
         tabPanel("3c. Ranking Panel",
-                helpText("Please note: if you change the selections on the sidebar, 
+                 tags$div(id="RankingText", helpText("Please note: if you change the selections on the sidebar, 
                          you will need to re-run the primary and/or sensitivity analysis from the 'Forest Plot' page.", 
                          tags$br(), 
                          tags$strong("Please note it may take up to 5 minutes to load the results.", style="color:#FF0000"),
                          tags$br(),
                          tags$strong("IMPORTANT: If you export and include the Litmus Rank-O-Gram or the Radial SUCRA plot in your work, please cite it as:", style="color:#4863A0"),
                          tags$a(href="https://doi.org/10.1016/j.jclinepi.2023.02.016", "Nevill CR, Cooper NJ, Sutton AJ, A multifaceted graphical display, including treatment ranking, was developed to aid interpretation of network meta-analysis, 
-                              Journal of Clinical Epidemiology (2023)")),
-                fluidRow(   
+                              Journal of Clinical Epidemiology (2023)"))),
+                fluidRow(id = "ranking_all",   
                     shinydashboard::box(title="Ranking panel for all studies", status='primary', solidHeader=TRUE, width=12, collapsible=TRUE,
                         splitLayout(cellWidths=c("30%","40%","30%"), cellArgs = list(style="height: 780px; padding: 16px; border: 2px solid gold; white-space: normal"),
                         fluidRow(align = "center", h4("Relative Effects"), shinycssloaders::withSpinner(plotOutput("gemtc2"), type=6),
@@ -365,7 +366,7 @@ load_data_page_ui(id = 'load_data_page'),
                                 downloadButton('download_network_rank')
                                 ))
                 )),
-                fluidRow(   
+                fluidRow(id = "ranking_sub",   
                     shinydashboard::box(title="Ranking panel with studies excluded", status='primary', solidHeader=TRUE, width=12, collapsible=TRUE,
                         splitLayout(cellWidths=c("30%","40%","30%"), cellArgs = list(style="height: 780px; padding: 16px; border: 2px solid gold; white-space: normal"),
                         fluidRow(align = "center", h4("Relative Effects"), shinycssloaders::withSpinner(plotOutput("gemtc_sub2"), type=6),
@@ -423,30 +424,30 @@ load_data_page_ui(id = 'load_data_page'),
                         you will need to re-run the primary and/or sensitivity analysis from the 'Forest Plot' page."),
                 fluidRow(
                   column(6,
-                        p(tags$strong("Results details for all studies")),
+                        tags$div(id="GelmanText1", helpText(tags$strong("Results details for all studies"))),
                         verbatimTextOutput("gemtc_results"),
-                        p(tags$strong("Gelman convergence assessment plot for all studies")),
+                        tags$div(id="GelmanText2", helpText(tags$strong("Gelman convergence assessment plot for all studies"))),
                         plotOutput("gemtc_gelman")
                   ),
                   column(6,
-                        p(tags$strong("Results details with studies excluded")),
+                        tags$div(id="GelmanTextSub1", helpText(tags$strong("Results details with studies excluded"))),
                         verbatimTextOutput("gemtc_results_sub"),
-                        p(tags$strong("Gelman convergence assessment plot with studies excluded")),
+                        tags$div(id="GelmanTextSub2", helpText(tags$strong("Gelman convergence assessment plot with studies excluded"))),
                         plotOutput("gemtc_gelman_sub"))
                   )),        
         tabPanel("3f. Deviance report",
-                helpText("Please note: if you change the selections on the sidebar, 
+                 helpText("Please note: if you change the selections on the sidebar, 
                          you will need to re-run the primary and/or sensitivity analysis from the 'Forest Plot' page."),
-          p(tags$strong("Deviance report for all studies and the sensitivity analysis")),
+                 tags$div(id="3fText", helpText(tags$strong("Deviance report"))),
           fluidRow(
            column(6,
-                  p(tags$strong("Residual deviance from NMA model and UME inconsistency model for all studies")),
+                  tags$div(id="DevianceText", helpText(tags$strong("Residual deviance from NMA model and UME inconsistency model for all studies"))),
                   plotlyOutput("dev_scat")),
            column(6,
-                  p(tags$strong("Residual deviance from NMA model and UME inconsistency model with studies excluded")),
+                  tags$div(id="DevianceSubText", helpText(tags$strong("Residual deviance from NMA model and UME inconsistency model with studies excluded"))),
                   plotlyOutput("dev_scat_sub")
            )),
-           p("This plot represents each data points' contribution to the residual deviance for the 
+          tags$div(id="DevianceHelpText", helpText("This plot represents each data points' contribution to the residual deviance for the 
           NMA with consistency (horizontal axis) and the unrelated mean effect (ume) inconsistency models 
           (vertical axis) along with the line of equality. The points on the equality line means there is no
           improvement in model fit when using the inconsistency model, suggesting that there is no evidence of inconsistency. 
@@ -454,39 +455,40 @@ load_data_page_ui(id = 'load_data_page'),
           better fit in the NMA consistency model and points below the equality line
           means they have a better fit in the ume inconsistency model. Please note that the unrelated mean effects model 
           may not handle multi-arm trials correctly. (Further reading: Dias S, Ades AE, Welton NJ, Jansen JP, Sutton AJ. Network meta-anlaysis for 
-            decision-making. Chapter 3 Model fit, model comparison and outlier detection. @2018 John Wiley & Sons Ltd.)"),
-                                                                                                     br(),
-                                                                                                     br(),
-                                                                                                     br(),
-                                                                                                     fluidRow(
-                                                                                                       column(6,
-                                                                                                              p(tags$strong("Per-arm residual deviance for all studies")),
-                                                                                                              plotlyOutput("dev1")),
-                                                                                                       column(6,
-                                                                                                              p(tags$strong("Per-arm residual deviance for sensitivity analysis")),
-                                                                                                              plotlyOutput("dev1_sub")
-                                                                                                       ),
-                                                                                                       br(),
-                                                                                                       p("This stem plot represents the posterior residual deviance per study arm. The total number of stems equals 
+            decision-making. Chapter 3 Model fit, model comparison and outlier detection. @2018 John Wiley & Sons Ltd.)")),
+         br(),
+         br(),
+         br(),
+         fluidRow(
+           column(6,
+                  tags$div(id="PerArmDevianceText", helpText(tags$strong("Per-arm residual deviance for all studies"))),
+                  plotlyOutput("dev1")),
+           column(6,
+                  tags$div(id="PerArmDevianceSubText", helpText(tags$strong("Per-arm residual deviance for sensitivity analysis"))),
+                  plotlyOutput("dev1_sub")
+           )),
+           br(),
+           tags$div(id="PerArmDevianceHelpText", helpText("This stem plot represents the posterior residual deviance per study arm. The total number of stems equals 
              the total number of data points in the network meta analysis. Going from left to right, the alternating symbols 
              on the stems indicate the different studies. Each stem corresponds to the residual deviance ($dev.ab) associated with each 
              arm in each study. The smaller residual deviance (the shorter stem), dev.ab, the better model fit for each 
              data point. You can identify which stem corresponds to which study arm by hovering on the stem symbols. 
              (Further reading: Dias S, Ades AE, Welton NJ, Jansen JP, Sutton AJ. Network meta-anlaysis for 
-             decision-making. Chapter 3 Model fit, model comparison and outlier detection. @2018 John Wiley & Sons Ltd.)"),
-                                                                                                       br(),
-                                                                                                       br(),
-                                                                                                       br(),
-                                                                                                       column(6,
-                                                                                                              p(tags$strong("Leverage plot for all studies")),
-                                                                                                              plotlyOutput("dev2")
-                                                                                                       ),
-                                                                                                       column(6,
-                                                                                                              p(tags$strong("Leverage plot for sensitivity analysis")),
-                                                                                                              plotlyOutput("dev2_sub"))
-                                                                                                     ),
-                                                                                                     br(),
-                                                                                                     p("This leverage plot shows the average leverage across the arms for each study ({sum($lev.ab)}/{number of arms} 
+             decision-making. Chapter 3 Model fit, model comparison and outlier detection. @2018 John Wiley & Sons Ltd.)")),
+           br(),
+           br(),
+           br(),
+           fluidRow(
+           column(6,
+                  tags$div(id="LeverageText", helpText(tags$strong("Leverage plot for all studies"))),
+                  plotlyOutput("dev2")
+           ),
+           column(6,
+                  tags$div(id="LeverageSubText", helpText(tags$strong("Leverage plot for sensitivity analysis"))),
+                  plotlyOutput("dev2_sub"))
+         ),
+         br(),
+         tags$div(id="LeverageHelpText", helpText("This leverage plot shows the average leverage across the arms for each study ({sum($lev.ab)}/{number of arms} 
           for each study) versus the square root of the average residual deviance across the arms for each study 
           (sqrt({sum($dev.ab)}/{number of arms}) for each study).  
              The leverage for each data point, is calculated as the posterior mean of the residual 
@@ -500,7 +502,7 @@ load_data_page_ui(id = 'load_data_page'),
              values. (Further reading: Dias S, Ades AE, Welton NJ, Jansen JP, Sutton AJ. Network meta-anlaysis for 
              decision-making. Chapter 3 Model fit, model comparison and outlier detection. @2018 John Wiley & Sons Ltd. 
              Spiegelhalter et al. (2002) Bayesian measures of model complexity and fit. J. R. Statist. Soc.B 64, Part4, 
-             pp.583-639)"),
+             pp.583-639)")),
                                                                                                      br(),
                                                                                                      br()
                                                                                             ),
@@ -508,12 +510,12 @@ load_data_page_ui(id = 'load_data_page'),
                                                                                                      helpText("Please note: if you change the selections on the sidebar, 
                                you will need to re-run the primary and/or sensitivity analysis from the 'Forest Plot' page."),
                tabsetPanel(
-        tabPanel("3g-1. Model codes",
+        tabPanel("3g-1. Model codes", id = "tab3g-1",
                 p(tags$strong("Model codes for analysis of all studies")),
                 downloadButton('download_code'),
                 verbatimTextOutput("code")
                 ),
-        tabPanel("3g-2. Initial values",
+        tabPanel("3g-2. Initial values", id = "tab3g-2",
                 p(tags$strong("Initial values")),
                 downloadButton('download_inits_1', "Download initial values for chain 1"),
                 downloadButton('download_inits_2', "Download initial values for chain 2"),
@@ -521,7 +523,7 @@ load_data_page_ui(id = 'load_data_page'),
                 downloadButton('download_inits_4', "Download initial values for chain 4"),
                 verbatimTextOutput("inits")
                 ),
-        tabPanel("3g-3. Download simulations",
+        tabPanel("3g-3. Download simulations", id = "tab3g-3",
                  p(tags$strong("Download simulated data")),
                  downloadButton('download_data1', "Download data from chain 1"),
                  br(),
@@ -531,7 +533,7 @@ load_data_page_ui(id = 'load_data_page'),
                  br(),
                  downloadButton('download_data4', "Download data from chain 4")
         ),
-        tabPanel("3g-4. Deviance details",
+        tabPanel("3g-4. Deviance details", id = "tab3g-4",
         fluidRow(
          column(6,
                 p(tags$strong("Deviance data for all studies")),
