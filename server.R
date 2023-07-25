@@ -104,7 +104,8 @@ shinyServer(function(input, output, session) {
     # if data is triggered without reload, only load the default data
     else if(is.null(file1)){return(defaultD())      }
     else
-      a <- read.table(file = file1$datapath, sep =",", header=TRUE, stringsAsFactors = FALSE, quote="\"", fileEncoding = 'UTF-8-BOM')
+      a <- read.table(file = file1$datapath, sep =",", header=TRUE, stringsAsFactors = FALSE, 
+                      quote="\"", fileEncoding = 'UTF-8-BOM')
   })
   
   # Make reactive treatment input list selecting correct input 
@@ -719,6 +720,158 @@ shinyServer(function(input, output, session) {
     bayesian_model(sub = TRUE, data(), treatment_list(), input$metaoutcome, input$exclusionbox, 
                    outcome_measure(), input$modelranfix, reference_alter())
   })
+  
+  # Hide the outdated Bayesian visualisations when the data is changed
+  observeEvent(data(), {
+    # Elements in tab 3a left column
+    shinyjs::hide("BayesianForestPlot")
+    shinyjs::hide("BayesianForestPlotText")
+    shinyjs::hide("bayesmin")
+    shinyjs::hide("bayesmax")
+    shinyjs::hide("ModelFitLeft")
+    shinyjs::hide("dic")
+    shinyjs::hide("text_gemtc")
+    shinyjs::hide("format2")
+    shinyjs::hide("downloadBaye_plot")
+    # Elements in tab 3a right column (sensitivity analysis)
+    shinyjs::hide("BayesianForestPlot_sub")
+    shinyjs::hide("BayesianForestPlotSubText")
+    shinyjs::hide("bayesmin_sub")
+    shinyjs::hide("bayesmax_sub")
+    shinyjs::hide("ref_change_bay")
+    shinyjs::hide("ModelFitSub")
+    shinyjs::hide("dic_sub")
+    shinyjs::hide("text_gemtc_sub")
+    shinyjs::hide("format4")
+    shinyjs::hide("downloadBaye_plot_sub")
+    # Elements in tab 3b 
+    shinyjs::hide("ComparisonHelpText")
+    shinyjs::hide("ComparisonText")
+    shinyjs::hide("baye_comparison")
+    shinyjs::hide("downloadbaye_comparison")
+    shinyjs::hide("ComparisonTextSub")
+    shinyjs::hide("baye_comparison_sub")
+    shinyjs::hide("downloadbaye_comparison_sub")
+    # Elements in tab 3c
+    shinyjs::hide("RankingText")
+    shinyjs::hide("ranking_all")
+    shinyjs::hide("ranking_sub")
+    # Elements in tab 3e
+    shinyjs::hide("GelmanText1")
+    shinyjs::hide("gemtc_results")
+    shinyjs::hide("GelmanText2")
+    shinyjs::hide("gemtc_gelman")
+    shinyjs::hide("GelmanTextSub1")
+    shinyjs::hide("gemtc_results_sub")
+    shinyjs::hide("GelmanTextSub2")
+    shinyjs::hide("gemtc_gelman_sub")
+    # Elements in tab 3f
+    shinyjs::hide("3fText")
+    shinyjs::hide("DevianceText")
+    shinyjs::hide("dev_scat")
+    shinyjs::hide("DevianceSubText")
+    shinyjs::hide("dev_scat_sub")
+    shinyjs::hide("DevianceHelpText")
+    shinyjs::hide("PerArmDevianceText")
+    shinyjs::hide("dev1")
+    shinyjs::hide("PerArmDevianceSubText")
+    shinyjs::hide("dev1_sub")
+    shinyjs::hide("PerArmDevianceHelpText")
+    shinyjs::hide("LeverageText")
+    shinyjs::hide("dev2")
+    shinyjs::hide("LeverageSubText")
+    shinyjs::hide("dev2_sub")
+    shinyjs::hide("LeverageHelpText")
+    # Elements in tab 3g
+    # shinyjs::hide("tab3g-1")
+    # shinyjs::hide("tab3g-2")
+    # shinyjs::hide("tab3g-3")
+    # shinyjs::hide("tab3g-4")
+  })
+  
+  # Show the Bayesian visualisations when the Bayesian model is run
+  observeEvent(model(), {
+    # Elements in tab 3a left column
+    shinyjs::show("BayesianForestPlot")
+    shinyjs::show("BayesianForestPlotText")
+    shinyjs::show("bayesmin")
+    shinyjs::show("bayesmax")
+    shinyjs::show("ModelFitLeft")
+    shinyjs::show("dic")
+    shinyjs::show("text_gemtc")
+    shinyjs::show("format2")
+    shinyjs::show("downloadBaye_plot")
+    # Elements in tab 3b 
+    shinyjs::show("ComparisonHelpText")
+    shinyjs::show("ComparisonText")
+    shinyjs::show("baye_comparison")
+    shinyjs::show("downloadbaye_comparison")
+    # Elements in tab 3c
+    shinyjs::show("RankingText")
+    shinyjs::show("ranking_all")
+    # Elements in tab 3e
+    shinyjs::show("GelmanText1")
+    shinyjs::show("gemtc_results")
+    shinyjs::show("GelmanText2")
+    shinyjs::show("gemtc_gelman")
+    # Elements in tab 3f
+    shinyjs::show("3fText")
+    shinyjs::show("DevianceText")
+    shinyjs::show("dev_scat")
+    shinyjs::show("DevianceHelpText")
+    shinyjs::show("PerArmDevianceText")
+    shinyjs::show("dev1")
+    shinyjs::show("PerArmDevianceHelpText")
+    shinyjs::show("LeverageText")
+    shinyjs::show("dev2")
+    shinyjs::show("LeverageHelpText")
+    # Elements in tab 3g
+    # shinyjs::show("tab3g-1")
+    # shinyjs::show("tab3g-2")
+    # shinyjs::show("tab3g-3")
+    # shinyjs::show("tab3g-4")
+  })
+  
+  # Show the Bayesian visualisations when the Bayesian sensitivity model is run
+  observeEvent(model_sub(), {
+    # Elements in tab 3b right column (sensitivity analysis)
+    shinyjs::show("BayesianForestPlot_sub")
+    shinyjs::show("BayesianForestPlotSubText")
+    shinyjs::show("bayesmin_sub")
+    shinyjs::show("bayesmax_sub")
+    shinyjs::show("ref_change_bay")
+    shinyjs::show("ModelFitSub")
+    shinyjs::show("dic_sub")
+    shinyjs::show("text_gemtc_sub")
+    shinyjs::show("format4")
+    shinyjs::show("downloadBaye_plot_sub")
+    # Elements in tab 3b
+    shinyjs::show("ComparisonHelpText")
+    shinyjs::show("ComparisonTextSub")
+    shinyjs::show("baye_comparison_sub")
+    shinyjs::show("downloadbaye_comparison_sub")
+    # Elements in tab 3c
+    shinyjs::show("RankingText")
+    shinyjs::show("ranking_sub")
+    # Elements in tab 3e
+    shinyjs::show("GelmanTextSub1")
+    shinyjs::show("gemtc_results_sub")
+    shinyjs::show("GelmanTextSub2")
+    shinyjs::show("gemtc_gelman_sub")
+    # Elements in tab 3f
+    shinyjs::show("3fText")
+    shinyjs::show("DevianceSubText")
+    shinyjs::show("dev_scat_sub")
+    shinyjs::show("DevianceHelpText")
+    shinyjs::show("PerArmDevianceSubText")
+    shinyjs::show("dev1_sub")
+    shinyjs::show("PerArmDevianceHelpText")
+    shinyjs::show("LeverageSubText")
+    shinyjs::show("dev2_sub")
+    shinyjs::show("LeverageHelpText")
+    # Elements in tab 3g
+    # shinyjs::show("tab3g-4")
+  })
 
   # 3a. Forest plot
 
@@ -728,6 +881,13 @@ shinyServer(function(input, output, session) {
     title(paste("All studies: 
               Bayesian", model()$a, "consistency model forest plot results"))
   })
+  
+  # Render
+  # DIC tabel for all studies
+  output$dic <- renderTable ({                  
+    model()$dic
+  }, digits=3, rownames=TRUE, colnames=FALSE
+  )
 
   # DIC tabel for all studies
   output$dic <- renderTable ({                  
