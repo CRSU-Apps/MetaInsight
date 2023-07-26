@@ -583,8 +583,9 @@ shinyServer(function(input, output, session) {
                    outcome_measure(), input$modelranfix, reference_alter())
   })
   
-  # Hide the outdated Bayesian visualisations when the data is changed
-  observeEvent(data(), {
+  # Hide the outdated Bayesian visualisations when the data is changed 
+  # or the inputs to the outcome, treatment ranking or model radio buttons are changed
+  observeEvent(c(data(), input$outcomeCont, input$outcomebina, input$rankopts, input$modelranfix), {
     # Elements in tab 3a left column
     shinyjs::hide("BayesianForestPlot")
     shinyjs::hide("BayesianForestPlotText")
@@ -673,6 +674,53 @@ shinyServer(function(input, output, session) {
     shinyjs::hide("dev_sub")
     shinyjs::hide("UMEText")
     shinyjs::hide("dev_ume")
+    shinyjs::hide("UMESubText")
+    shinyjs::hide("dev_ume_sub")
+  })
+  
+  # Hide the Bayesian visualisations when excluded studies change
+  observeEvent(input$exclusionbox, {
+    # Elements in tab 3b right column (sensitivity analysis)
+    shinyjs::hide("BayesianForestPlot_sub")
+    shinyjs::hide("BayesianForestPlotSubText")
+    shinyjs::hide("bayesmin_sub")
+    shinyjs::hide("bayesmax_sub")
+    shinyjs::hide("ref_change_bay")
+    shinyjs::hide("ModelFitSub")
+    shinyjs::hide("dic_sub")
+    shinyjs::hide("text_gemtc_sub")
+    shinyjs::hide("format4")
+    shinyjs::hide("downloadBaye_plot_sub")
+    # Elements in tab 3b
+    shinyjs::hide("ComparisonHelpText")
+    shinyjs::hide("ComparisonTextSub")
+    shinyjs::hide("baye_comparison_sub")
+    shinyjs::hide("downloadbaye_comparison_sub")
+    # Elements in tab 3c
+    shinyjs::hide("RankingText")
+    shinyjs::hide("ranking_sub")
+    # Elements in tab 3e
+    shinyjs::hide("GelmanTextSub1")
+    shinyjs::hide("gemtc_results_sub")
+    shinyjs::hide("GelmanTextSub2")
+    shinyjs::hide("gemtc_gelman_sub")
+    # Elements in tab 3d
+    shinyjs::hide("node_table_sub")
+    shinyjs::hide("downloadnode_sub")
+    # Elements in tab 3f
+    shinyjs::hide("3fText")
+    shinyjs::hide("DevianceSubText")
+    shinyjs::hide("dev_scat_sub")
+    shinyjs::hide("DevianceHelpText")
+    shinyjs::hide("PerArmDevianceSubText")
+    shinyjs::hide("dev1_sub")
+    shinyjs::hide("PerArmDevianceHelpText")
+    shinyjs::hide("LeverageSubText")
+    shinyjs::hide("dev2_sub")
+    shinyjs::hide("LeverageHelpText")
+    # Elements in tab 3g-4
+    shinyjs::hide("DevSubText")
+    shinyjs::hide("dev_sub")
     shinyjs::hide("UMESubText")
     shinyjs::hide("dev_ume_sub")
   })
