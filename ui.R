@@ -412,12 +412,10 @@ tabPanel("Load Data",
             fixedRow(
               column(6, align = "center",
                      p(tags$strong("Results for all studies")),
-                     p("Please click the button below to run Bayesian analysis for all studies, and after each time when you change the radiobutton selections."),
                      actionButton("baye_do", "Click here to run the main analysis for all studies")
               ),
               column(6, align = "center",
                      p(tags$strong("Results with studies excluded")),
-                     p("Please click the button below to run each time after you finish the selection of studies, or change the radiobutton selections."),
                      actionButton("sub_do", "Click here to run the sensitivity analysis")
               )),
             fixedRow(
@@ -457,8 +455,6 @@ tabPanel("Load Data",
                      downloadButton('downloadBaye_plot_sub')
                      ))),
               tabPanel("3b. Comparison of all treatment pairs",
-                      helpText("Please note: if you change the selections on the sidebar, 
-                               you will need to re-run the primary and/or sensitivity analysis from the 'Forest Plot' page."),
                       tags$div(id="ComparisonHelpText", helpText(tags$strong("In contrast to the 'comparison of all treatment pairs' tab in the frequentist NMA results, 
                                     this table only contains the estimates from the network meta analysis, 
                                     i.e. does not contain estimates from pairwise meta-analysis which only contains direct evidence. 
@@ -474,10 +470,8 @@ tabPanel("Load Data",
               downloadButton('downloadbaye_comparison_sub')
               ),
         tabPanel("3c. Ranking Panel",
-                 tags$div(id="RankingText", helpText("Please note: if you change the selections on the sidebar, 
-                         you will need to re-run the primary and/or sensitivity analysis from the 'Forest Plot' page.", 
-                         tags$br(), 
-                         tags$strong("Please note it may take up to 5 minutes to load the results.", style="color:#FF0000"),
+                 tags$div(id="RankingText", 
+                 helpText(tags$strong("Please note it may take up to 5 minutes to load the results.", style="color:#FF0000"),
                          tags$br(),
                          tags$strong("IMPORTANT: If you export and include the Litmus Rank-O-Gram or the Radial SUCRA plot in your work, please cite it as:", style="color:#4863A0"),
                          tags$a(href="https://doi.org/10.1016/j.jclinepi.2023.02.016", "Nevill CR, Cooper NJ, Sutton AJ, A multifaceted graphical display, including treatment ranking, was developed to aid interpretation of network meta-analysis, 
@@ -550,8 +544,6 @@ tabPanel("Load Data",
                         ))
         ))),
         tabPanel("3d. Nodesplit model",
-                helpText("Please note: if you change the selections on the sidebar, 
-                          you will need to re-run the primary and/or sensitivity analysis from the 'Forest Plot' page."),
                 p("Please note: This may take more than 10 minutes depending on the number of treatment options. The node splitting option for
                   the Bayesian analysis is highly numerically intensive and using it on the app can cause the app to disconnect in some circumstances.  We have produced a",
                   tags$a(href="https://github.com/CRSU-Apps/MetaInsight/wiki/Local-User-Guide", "guide",target="_blank"), 
@@ -570,8 +562,6 @@ tabPanel("Load Data",
                           downloadButton('downloadnode_sub')
                 ))),
         tabPanel("3e. Bayesian result details",
-                helpText("Please note: if you change the selections on the sidebar, 
-                        you will need to re-run the primary and/or sensitivity analysis from the 'Forest Plot' page."),
                 fluidRow(
                   column(6,
                         tags$div(id="GelmanText1", helpText(tags$strong("Results details for all studies"))),
@@ -586,8 +576,6 @@ tabPanel("Load Data",
                         plotOutput("gemtc_gelman_sub"))
                   )),        
         tabPanel("3f. Deviance report",
-                 helpText("Please note: if you change the selections on the sidebar, 
-                         you will need to re-run the primary and/or sensitivity analysis from the 'Forest Plot' page."),
                  tags$div(id="3fText", helpText(tags$strong("Deviance report"))),
           fluidRow(
            column(6,
@@ -657,8 +645,6 @@ tabPanel("Load Data",
                                                                                                      br()
                                                                                             ),
                                                                                             tabPanel("3g. Model details",
-                                                                                                     helpText("Please note: if you change the selections on the sidebar, 
-                               you will need to re-run the primary and/or sensitivity analysis from the 'Forest Plot' page."),
                tabsetPanel(
         tabPanel("3g-1. Model codes",
                 tags$div(id="CodesText", helpText(tags$strong("Model codes for analysis of all studies"))),
