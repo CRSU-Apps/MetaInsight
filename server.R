@@ -644,11 +644,32 @@ shinyServer(function(input, output, session) {
     shinyjs::hide("LeverageSubText")
     shinyjs::hide("dev2_sub")
     shinyjs::hide("LeverageHelpText")
-    # Elements in tab 3g
-    # shinyjs::hide("tab3g-1")
-    # shinyjs::hide("tab3g-2")
-    # shinyjs::hide("tab3g-3")
-    # shinyjs::hide("tab3g-4")
+    # Elements in tab 3g-1
+    shinyjs::hide("CodesText")
+    shinyjs::hide("download_code")
+    shinyjs::hide("code")
+    # Elements in tab 3g-2
+    shinyjs::hide("InitialValuesText")
+    shinyjs::hide("download_inits_1")
+    shinyjs::hide("download_inits_2")
+    shinyjs::hide("download_inits_3")
+    shinyjs::hide("download_inits_4")
+    shinyjs::hide("inits")
+    # Elements in tab 3g-3
+    shinyjs::hide("DownloadText")
+    shinyjs::hide("download_data1")
+    shinyjs::hide("download_data2")
+    shinyjs::hide("download_data3")
+    shinyjs::hide("download_data4")
+    # Elements in tab 3g-4
+    shinyjs::hide("DevText")
+    shinyjs::hide("dev")
+    shinyjs::hide("DevSubText")
+    shinyjs::hide("dev_sub")
+    shinyjs::hide("UMEText")
+    shinyjs::hide("dev_ume")
+    shinyjs::hide("UMESubText")
+    shinyjs::hide("dev_ume_sub")
   })
   
   # Show the Bayesian visualisations when the Bayesian model is run
@@ -687,11 +708,28 @@ shinyServer(function(input, output, session) {
     shinyjs::show("LeverageText")
     shinyjs::show("dev2")
     shinyjs::show("LeverageHelpText")
-    # Elements in tab 3g
-    # shinyjs::show("tab3g-1")
-    # shinyjs::show("tab3g-2")
-    # shinyjs::show("tab3g-3")
-    # shinyjs::show("tab3g-4")
+    # Elements in tab 3g-1
+    shinyjs::show("CodesText")
+    shinyjs::show("download_code")
+    shinyjs::show("code")
+    # Elements in tab 3g-2
+    shinyjs::show("InitialValuesText")
+    shinyjs::show("download_inits_1")
+    shinyjs::show("download_inits_2")
+    shinyjs::show("download_inits_3")
+    shinyjs::show("download_inits_4")
+    shinyjs::show("inits")
+    # Elements in tab 3g-3
+    shinyjs::show("DownloadText")
+    shinyjs::show("download_data1")
+    shinyjs::show("download_data2")
+    shinyjs::show("download_data3")
+    shinyjs::show("download_data4")
+    # Elements in tab 3g-4
+    shinyjs::show("DevText")
+    shinyjs::show("dev")
+    shinyjs::show("UMEText")
+    shinyjs::show("dev_ume")
   })
   
   # Show the Bayesian visualisations when the Bayesian sensitivity model is run
@@ -731,8 +769,11 @@ shinyServer(function(input, output, session) {
     shinyjs::show("LeverageSubText")
     shinyjs::show("dev2_sub")
     shinyjs::show("LeverageHelpText")
-    # Elements in tab 3g
-    # shinyjs::show("tab3g-4")
+    # Elements in tab 3g-4
+    shinyjs::show("DevSubText")
+    shinyjs::show("dev_sub")
+    shinyjs::show("UMESubText")
+    shinyjs::show("dev_ume_sub")
   })
 
   # 3a. Forest plot
