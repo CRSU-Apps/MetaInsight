@@ -660,21 +660,21 @@ tabPanel("Load Data",
                                                                                                      helpText("Please note: if you change the selections on the sidebar, 
                                you will need to re-run the primary and/or sensitivity analysis from the 'Forest Plot' page."),
                tabsetPanel(
-        tabPanel("3g-1. Model codes", id = "tab3g-1",
-                p(tags$strong("Model codes for analysis of all studies")),
+        tabPanel("3g-1. Model codes",
+                tags$div(id="CodesText", helpText(tags$strong("Model codes for analysis of all studies"))),
                 downloadButton('download_code'),
                 verbatimTextOutput("code")
                 ),
-        tabPanel("3g-2. Initial values", id = "tab3g-2",
-                p(tags$strong("Initial values")),
+        tabPanel("3g-2. Initial values",
+                tags$div(id="InitialValuesText", helpText(tags$strong("Initial values"))),
                 downloadButton('download_inits_1', "Download initial values for chain 1"),
                 downloadButton('download_inits_2', "Download initial values for chain 2"),
                 downloadButton('download_inits_3', "Download initial values for chain 3"),
                 downloadButton('download_inits_4', "Download initial values for chain 4"),
                 verbatimTextOutput("inits")
                 ),
-        tabPanel("3g-3. Download simulations", id = "tab3g-3",
-                 p(tags$strong("Download simulated data")),
+        tabPanel("3g-3. Download simulations", 
+                 tags$div(id="DownloadText", helpText(tags$strong("Download simulated data"))),
                  downloadButton('download_data1', "Download data from chain 1"),
                  br(),
                  downloadButton('download_data2', "Download data from chain 2"),
@@ -683,20 +683,32 @@ tabPanel("Load Data",
                  br(),
                  downloadButton('download_data4', "Download data from chain 4")
         ),
-        tabPanel("3g-4. Deviance details", id = "tab3g-4",
+        tabPanel("3g-4. Deviance details", 
         fluidRow(
          column(6,
-                p(tags$strong("Deviance data for all studies")),
-                p("NMA (consistency) model"),
+                tags$div(id="DevText", 
+                         helpText(
+                           tags$strong("Deviance data for all studies"),
+                           br(),
+                           "NMA (consistency) model"
+                           )),
                 verbatimTextOutput("dev")),
          column(6,
-                p(tags$strong("Deviance data for sensitivity analysis")),
-                p("NMA (consistency) model"),
+                tags$div(id="DevSubText", 
+                         helpText(
+                           tags$strong("Deviance data for sensitivity analysis"),
+                           br(),
+                           "NMA (consistency) model"
+                         )),
                verbatimTextOutput("dev_sub")
          )),
         fluidRow(
-               column(6, p("UME (inconsistency) model"), verbatimTextOutput("dev_ume")),
-               column(6, p("UME (inconsistency) model"), verbatimTextOutput("dev_ume_sub")
+               column(6, 
+                      tags$div(id="UMEText", helpText("UME (inconsistency) model")), 
+                      verbatimTextOutput("dev_ume")),
+               column(6, 
+                      tags$div(id="UMESubText", helpText("UME (inconsistency) model")), 
+                      verbatimTextOutput("dev_ume_sub")
                ))   
 )))))), width=9))),
 
