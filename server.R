@@ -756,6 +756,11 @@ shinyServer(function(input, output, session) {
     shinyjs::hide("RankingText")
     shinyjs::hide("ranking_all")
     shinyjs::hide("ranking_sub")
+    # Elements in tab 3d
+    shinyjs::hide("node_table")
+    shinyjs::hide("downloadnode")
+    shinyjs::hide("node_table_sub")
+    shinyjs::hide("downloadnode_sub")
     # Elements in tab 3e
     shinyjs::hide("GelmanText1")
     shinyjs::hide("gemtc_results")
@@ -912,6 +917,20 @@ shinyServer(function(input, output, session) {
     shinyjs::show("dev_sub")
     shinyjs::show("UMESubText")
     shinyjs::show("dev_ume_sub")
+  })
+  
+  # Show nodesplit model when run
+  observeEvent(model_nodesplit(), {
+    # Elements in tab 3d
+    shinyjs::show("node_table")
+    shinyjs::show("downloadnode")
+  })
+  
+  # Show nodesplit subgroup model when run
+  observeEvent(model_nodesplit_sub(), {
+    # Elements in tab 3d
+    shinyjs::show("node_table_sub")
+    shinyjs::show("downloadnode_sub")
   })
 
   # 3a. Forest plot
