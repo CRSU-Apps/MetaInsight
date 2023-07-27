@@ -417,15 +417,17 @@ tabPanel("Load Data",
                                     
                                     tags$b("MetaInsight Bayesian reactivity improvements in version x.x.x"),
                                     tags$p("Until now any Bayesian analysis remained on display in MetaInsight until the buttons were clicked to re-run the Bayesian analysis.
-                                      This meant that the results displayed may not have matched with the options selected in the sidebar or even the data that was being used in the frequentist section."),
+                                      This meant that the results displayed may not have matched with the options selected in the sidebar or even the dataset that had been uploaded."),
                                     tags$p("This has now been changed so that users of MetaInsight can now be confident that any results on display represent the current data they are using and the options selected in the sidebar."),
                                     tags$p(tags$b("Regular MetaInsight users will notice the following changes:")),
                                     tags$ul(
                                       tags$li("All Bayesian analysis will be cleared if the selections in the sidebar are changed (outcome, treatment ranking or model)"),
                                       tags$li("The Bayesian sensitivity analysis will be cleared if the selection of studies to be excluded is changed"),
                                       tags$li("All Bayesian analysis will be cleared if the underlying dataset being analysed is changed (i.e. in the load data tab or by changing between continous and binary outcomes in the home tab)"),
-                                      tags$li("The updated Bayesian analyses will be displayed after clicking the run analysis buttons (in tab 3a Forest plot for the main analysis or tab 3d for the Nodesplit model)")
-                                    )
+                                    ),
+                                    br(),
+                                    tags$p("As before, the Bayesian analyses will be displayed after clicking the run analysis buttons (in tab 3a Forest plot for the main analysis or tab 3d for the Nodesplit model)")
+                                    
                               
                      ),
                     helpText("Baysesian result using the gemtc package.", tags$br(), 
