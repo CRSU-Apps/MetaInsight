@@ -11,13 +11,13 @@ long_format_upload_panel_ui <- function(id) {
            p(tags$strong("MetaInsight allows data in either long format, or wide format. This tab provides instructions for long format data, where each row contains one treatment arm.
                           Instructions are as below.
                           Please note that MetaInsight is not compatible with studies containing multiple arms of the same treatment.")),
+           h4(tags$strong("Step 1:")),
            p(),
            conditionalPanel(condition= "input.metaoutcome=='Continuous'",
                             p("The long format data file should contain six columns. Headings of columns are case sensitive."), 
                             p(tags$ul(tags$li("The", tags$strong("first"), "column should be labelled", tags$strong("StudyID"), "and contain the study identifier, starting from 1, then 2, 3, 4... etc."))),
                             p(tags$ul(tags$li("The", tags$strong("second"), "column should be labelled", tags$strong("Study"), "and contain the name (e.g., author,year) of the study. The study name must be unique for each study."))),
-                            p(tags$ul(tags$li("The", tags$strong("third"), "column should be labelled", tags$strong("T"), "and contain the name of the treatment used in each arm of the study.", 
-                                              tags$strong("If applicable, your reference treatment (e.g. Placebo/Control)"), tags$strong(tags$u("needs to be the first study arm listed."))))),
+                            p(tags$ul(tags$li("The", tags$strong("third"), "column should be labelled", tags$strong("T"), "and contain the name of the treatment used in each arm of the study. Treatment names should only contain letters, numbers and underscores."))),
                             p(tags$ul(tags$li("The", tags$strong("fourth"), "column should be labelled", tags$strong("N"), "and contain the number of participants in each arm of the study."))),
                             p(tags$ul(tags$li("The", tags$strong("fifth"), "column should be labelled", tags$strong("Mean"), "and contain the mean value of the outcome in each arm of the study."))),
                             p(tags$ul(tags$li("The", tags$strong("sixth"), "column should be labelled", tags$strong("SD"), "and contain the standard deviation of the outcome in each arm of the study.")))), 
@@ -35,7 +35,10 @@ long_format_upload_panel_ui <- function(id) {
            p("The csv file that is used to produce the example dataset can be downloaded from here:"),
            downloadButton(outputId = ns("download_long_data"),
                           label = "Download the example dataset in long format"),
-           p(),
+           br(),
+           h4(tags$strong("Step 2:")),
+           p('Select the reference treatment in the drop-down box. By default, MetaInsight will select a treatment which matches common names for a standard reference treatment.'),
+           hr(),
            conditionalPanel(condition = "input.metaoutcome=='Continuous'", 
                             p(HTML(paste0("This default dataset for continuous outcome data is from Gray, LJ. et al. A systematic review and mixed treatment 
                                            comparison of pharmacological interventions for the treatment of obesity. Obesity reviews 13.6 (2012): 483-498.

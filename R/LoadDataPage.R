@@ -22,12 +22,30 @@ load_data_page_ui <- function(id) {
         tabsetPanel(id = "instructions",
                     long_format_upload_panel_ui(id = ns('long_upload')),
                     wide_format_upload_panel_ui(id = ns('wide_upload')),
-                    tabPanel("View Data", 
-                             p("Please double check if the total number of treatments matches the total number of treatment labels, 
-                                i.e. make sure each treatment code in the data has a corresponding treatment label, 
-                                and there is no additional treatment label which does not exist in the data."),
+                    tabPanel(title = "View Data",
                              uiOutput(outputId = ns("tb")))
         ))))
+}
+
+#' Find all of the treatment names in the data, both for long and wide formats.
+#' 
+#' @param data Data frame in which to search for treatment names
+#' @return Vector of all treatment names
+replace_treatment_ids <- function(data, treatent_ids) {
+  if ('T' %in% colnames(data)) {
+    # Long format
+    data$T <- treatent_ids$Number[match(data$T, treatent_ids$Label)]
+  } else {
+    # Wide format
+    for (col in paste0('T.', seq(6))) {
+      if (col %in% colnames(data)) {
+        data[[col]] <- treatent_ids$Number[match(data[[col]], treatent_ids$Label)]
+      } else {
+        break
+      }
+    }
+  }
+  return(data)
 }
 
 
@@ -40,8 +58,6 @@ load_data_page_ui <- function(id) {
 #'   - 'treatment_df' is the data frame containing the treatment ID ('Number') and the treatment name ('Label')
 load_data_page_server <- function(id, metaoutcome) {
   moduleServer(id, function(input, output, session) {
-    ns <- NS(id)
-    
     ### Outcome selection
     output$CONBI <- renderText({
       paste("You have selected", "<font color=\"#ffd966\"><b>", metaoutcome(),"</b></font>", 
@@ -67,10 +83,7 @@ load_data_page_server <- function(id, metaoutcome) {
     
     # Replace all of the treatment names with an ID
     wrangled_data <- reactive({
-      df <- isolate(data())
-      treatent_ids <- treatment_list()
-      df$T <- treatent_ids$Number[match(df$T, treatent_ids$Label)]
-      return(df)
+      return(replace_treatment_ids(isolate(data()), treatment_list()))
     })
     
     return(list(data = wrangled_data,

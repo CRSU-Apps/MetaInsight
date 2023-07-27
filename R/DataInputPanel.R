@@ -9,8 +9,8 @@ data_input_panel_ui <- function(id) {
     h4(tags$strong("Select a data file (.csv) to upload")),
     p(tags$strong("Files used before version 5.0 are no longer compatible. To use an older file, replace the numeric treatment IDs in the \"T\" column(s) with the treatment names.",
                   style = "color:red")),
-    p(tags$strong("Note: Excel files should be saved in 'csv (Comma delimited) (*.csv)' format. Default maximum file size is 5MB.")),
     uiOutput(outputId = ns("file_input_panel")),
+    p(tags$strong("Default maximum file size is 5MB.")),
     selectizeInput(inputId = ns('reference_treatment'), label = 'Select Reference Treatment', choices = c()),
     conditionalPanel(
       condition = 'output.data_uploaded == true',
@@ -37,13 +37,15 @@ find_all_treatments <- function(data) {
     return(unique(data$T))
   } else {
     # Wide format
-    all <- c()
+    all_treatments <- c()
     for (col in paste0('T.', seq(6))) {
       if (col %in% colnames(data)) {
-        all <- c(all, data[[col]])
+        all_treatments <- c(all_treatments, data[[col]])
+      } else {
+        break
       }
     }
-    return(unique(all[!is.na(all)]))
+    return(unique(all_treatments[!is.na(all_treatments)]))
   }
 }
 
@@ -59,8 +61,8 @@ vector_with_item_first <- function(vector, first_item) {
   return(c(first_item, vector[vector != first_item]))
 }
 
-# Treatments are in priority order, such that or any study with multiple matching treatments,
-# the first in this vector will be used as the reference.
+# Treatments are in priority order, such that for any study with multiple matching treatments,
+# the first in this vector will be used as the reference, until the user selects another.
 potential_reference_treatments = c(
   'control',
   'usual_care',
@@ -75,11 +77,7 @@ potential_reference_treatments = c(
 #' @param treatments vector containing all treatment names
 #' @return Name of the expected reference treatment if one is found, else NULL
 find_expected_reference_treatment <- function(treatments) {
-  expected_reference_treatments <- unlist(
-    lapply(potential_reference_treatments,
-           function(expected_ref) {
-             match(expected_ref, tolower(treatments))
-           }))
+  expected_reference_treatments <- match(potential_reference_treatments, tolower(treatments))
   expected_reference_treatments <- expected_reference_treatments[!is.na(expected_reference_treatments)]
   if (length(expected_reference_treatments) > 0) {
     return(treatments[expected_reference_treatments[1]])
@@ -108,7 +106,8 @@ data_input_panel_server <- function(id, metaoutcome) {
         inputId = ns("data"),
         label = "",
         buttonLabel = "Select",
-        placeholder = "No file selected"
+        placeholder = "No file selected",
+        accept = '.csv'
       )
     })
 
@@ -147,12 +146,17 @@ data_input_panel_server <- function(id, metaoutcome) {
                          quote = "\"",
                          fileEncoding = 'UTF-8-BOM')
       }
+      # Trim leading and trailing whitespace from all character elements in the data
       return(dplyr::mutate(df, across(where(is.character), stringr::str_trim)))
+    })
+    
+    all_treatments <- reactive({
+      return(find_all_treatments(data()))
     })
     
     # Create the treatment list with the reference treatment being the first item in the data frame
     treatment_list <- reactive({
-      treatment_names = vector_with_item_first(find_all_treatments(data()), input$reference_treatment)
+      treatment_names = vector_with_item_first(all_treatments(), input$reference_treatment)
       return(data.frame(Number = seq(length(treatment_names)), Label = treatment_names))
     })
     
@@ -186,7 +190,7 @@ data_input_panel_server <- function(id, metaoutcome) {
     
     # Reset the reference treatment when the data changes, by scanning through the uploaded data
     observe({
-              treatments = unique(data()$T)
+              treatments = all_treatments()
               updateSelectInput(inputId = 'reference_treatment',
                                 choices = treatments,
                                 selected = find_expected_reference_treatment(treatments))

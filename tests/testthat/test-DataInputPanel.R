@@ -23,7 +23,7 @@ test_that("find_all_treatments() finds all treatements for wide-format data", {
   expect_equal(!!treatments, c("Egg", "Flour", "Sugar", "Butter", "Cinnamon"))
 })
 
-test_that("vector_with_item_first() returns unchanged vector when first item not in vector", {
+test_that("vector_with_item_first() returns unchanged vector when intended first item not in vector", {
   vector <- c("Egg", "Flour", "Sugar", "Butter", "Cinnamon")
   
   result <- vector_with_item_first(vector, "Potato")
@@ -31,7 +31,15 @@ test_that("vector_with_item_first() returns unchanged vector when first item not
   expect_equal(!!result, !!vector)
 })
 
-test_that("vector_with_item_first() returns unchanged vector when first item not in vector", {
+test_that("vector_with_item_first() returns unchanged vector when intended first item already first in vector", {
+  vector <- c("Egg", "Flour", "Sugar", "Butter", "Cinnamon")
+  
+  result <- vector_with_item_first(vector, "Egg")
+  
+  expect_equal(!!result, !!vector)
+})
+
+test_that("vector_with_item_first() returns ordered vector when intended first item is in vector", {
   vector <- c("Egg", "Flour", "Sugar", "Butter", "Cinnamon")
   
   result <- vector_with_item_first(vector, "Sugar")
@@ -132,7 +140,7 @@ test_that("Binary data registered as initially not uploaded", {
 
 test_that("Binary data registered as uploaded on upload", {
   testServer(data_input_panel_server, args = list(metaoutcome = function() { 'Binary' }), {
-    session$setInputs(data = data.frame(datapath = 'Cont_long.csv'))
+    session$setInputs(data = data.frame(datapath = 'Binary_long.csv'))
     expect_true(data_uploaded())
   })
 })
