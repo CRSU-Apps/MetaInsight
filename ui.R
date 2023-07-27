@@ -415,7 +415,7 @@ tabPanel("Load Data",
                                     tooltip = tooltipOptions(title = "Click to show/hide more information"),
                                     right = TRUE,
                                     
-                                    tags$b("MetaInsight Bayesian reactivity improvements in version x.x.x"),
+                                    tags$b("MetaInsight Bayesian reactivity improvements in version 4.3.0"),
                                     tags$p("Until now any Bayesian analysis remained on display in MetaInsight until the buttons were clicked to re-run the Bayesian analysis.
                                       This meant that the results displayed may not have matched with the options selected in the sidebar or even the dataset that had been uploaded."),
                                     tags$p("This has now been changed so that users of MetaInsight can now be confident that any results on display represent the current data they are using and the options selected in the sidebar."),
