@@ -90,10 +90,12 @@ find_expected_reference_treatment <- function(treatments) {
 #' 
 #' @param id ID of the module
 #' @param metaoutcome Reactive containing the outcome type selected
+#' @param continuous_file Defaut data file for continuous outcomes. Defaults to 'Cont_long.csv'
+#' @param binary_file Defaut data file for binary outcomes. Defaults to 'Binary_long.csv'
 #' @return List of reactives:
 #'   - 'data' is the uplodaded data
 #'   - 'treatment_list' is the data frame containing the treatment ID ('Number') and the treatment name ('Label')
-data_input_panel_server <- function(id, metaoutcome) {
+data_input_panel_server <- function(id, metaoutcome, continuous_file = 'Cont_long.csv', binary_file = 'Binary_long.csv') {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
     
@@ -122,9 +124,9 @@ data_input_panel_server <- function(id, metaoutcome) {
     # Load default data
     defaultD <- reactive({
       if (metaoutcome() == 'Continuous') {
-        defaultD <- read.csv("Cont_long.csv")
+        defaultD <- read.csv(continuous_file)
       } else {
-        defaultD <- read.csv("Binary_long.csv")
+        defaultD <- read.csv(binary_file)
       }
     })
     

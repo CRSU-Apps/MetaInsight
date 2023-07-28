@@ -53,10 +53,11 @@ replace_treatment_ids <- function(data, treatent_ids) {
 #' 
 #' @param id ID of the module
 #' @param metaoutcome Reactive containing the outcome type selected
+#' @param data_input_panel_server_function function to create the data input panel server. Defaults to the standard implementation
 #' @return List of reactives:
 #'   - 'data' is the uploaded data, wrangled such that the treatments are specified by IDs instead of names
 #'   - 'treatment_df' is the data frame containing the treatment ID ('Number') and the treatment name ('Label')
-load_data_page_server <- function(id, metaoutcome) {
+load_data_page_server <- function(id, metaoutcome, data_input_panel_server_function = data_input_panel_server) {
   moduleServer(id, function(input, output, session) {
     ### Outcome selection
     output$CONBI <- renderText({
@@ -65,7 +66,7 @@ load_data_page_server <- function(id, metaoutcome) {
             "<font color=\"#ffd966\"><b>", metaoutcome(), "</b></font>", "outcomes are now displayed.")
     })
     
-    data_reactives <- data_input_panel_server(id = 'data_input_panel', metaoutcome = metaoutcome)
+    data_reactives <- data_input_panel_server_function(id = 'data_input_panel', metaoutcome = metaoutcome)
     data <- data_reactives$data
     treatment_list <- data_reactives$treatment_list
     
