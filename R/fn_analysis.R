@@ -2,9 +2,14 @@
 ############################################ Frequentist ############################################
 #####################################################################################################
 
-frequentist <- function(sub, data, metaoutcome, treatment_list, outcome_measure, modelranfix, excluded){
+frequentist <- function(data, metaoutcome, treatment_list, outcome_measure, modelranfix, excluded=c()){
   data_wide <-  entry.df(data, metaoutcome) # Transform data to wide form
-  if (sub == TRUE) {data_wide <- filter(data_wide, !Study %in% excluded)} # Subset of data when studies excluded
+  
+  # Subset of data when studies excluded
+  if (length(excluded) > 0) {
+    data_wide <- dplyr::filter(data_wide, !Study %in% excluded)
+  }
+  
   # Use the self-defined function, freq_wrap
   return(freq_wrap(data_wide, treatment_list, modelranfix, outcome_measure, metaoutcome, 
                    ref_alter(data, metaoutcome, excluded, treatment_list)$ref_sub))
@@ -467,6 +472,7 @@ rankdata <- function(NMAdata, rankdirection, longdata) {
   Patients <- dplyr::rename(Patients, c("Treatment"="Category", "N"="x"))  # previously using plyr::rename where old/new names are other way round
   Patients$Treatment <- gsub("_", " ", Patients$Treatment) #remove underscores, otherwise next line won't work
   SUCRA <- SUCRA %>% dplyr::right_join(Patients, by = "Treatment")
+  
   # Node size #
   size.maxO <- 15
   size.maxA <- 10
