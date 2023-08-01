@@ -9,9 +9,8 @@ data_input_panel_ui <- function(id) {
     h4(tags$strong("Select a data file (.csv) to upload")),
     p(tags$strong("Files used before version 5.0 are no longer compatible. To use an older file, replace the numeric treatment IDs in the \"T\" column(s) with the treatment names.",
                   style = "color:red")),
-    uiOutput(outputId = ns("file_input_panel")),
     p(tags$strong("Default maximum file size is 5MB.")),
-    selectizeInput(inputId = ns('reference_treatment'), label = 'Select Reference Treatment', choices = c()),
+    uiOutput(outputId = ns("file_input_panel")),
     conditionalPanel(
       condition = 'output.data_uploaded == true',
       ns = ns,
@@ -23,7 +22,8 @@ data_input_panel_ui <- function(id) {
                      style = "color: #fff; background-color: #dc3545; border-color: #dc3545")
       )
     ),
-    div(class = "clearfix")
+    div(class = "clearfix"),
+    selectizeInput(inputId = ns('reference_treatment'), label = 'Select Reference Treatment', choices = c())
   )
 }
 
