@@ -3,7 +3,7 @@
 #' 
 #' @param data Data frame to clean
 #' @return Cleaned data frame
-clean_data <- function(data) {
+CleanData <- function(data) {
   return(dplyr::mutate(data, across(where(is.character), stringr::str_squish)))
 }
 
@@ -11,7 +11,7 @@ clean_data <- function(data) {
 #' 
 #' @param data Data frame in which to search for treatment names
 #' @return Vector of all treatment names
-find_all_treatments <- function(data) {
+FindAllTreatments <- function(data) {
   if ('T' %in% colnames(data)) {
     # Long format
     return(unique(data$T))
@@ -34,7 +34,7 @@ find_all_treatments <- function(data) {
 #' @param vector Vector to reorder
 #' @param first_item The element to push to the front of the vector
 #' @return The reordered vector
-vector_with_item_first <- function(vector, first_item) {
+VectorWithItemFirst <- function(vector, first_item) {
   if (is.null(first_item) || !(first_item %in% vector)) {
     return(vector)
   }
@@ -46,8 +46,8 @@ vector_with_item_first <- function(vector, first_item) {
 #' @param all_treatments Vector of all treatment names
 #' @param reference_treatment Name of treatment to be assigned ID 1
 #' @return Data frame containing the treatment ID ('Number') and the treatment name ('Label')
-create_treatment_ids <- function(all_treatments, reference_treatment = all_treatments[1]) {
-  treatment_names = vector_with_item_first(all_treatments, reference_treatment)
+CreateTreatmentIds <- function(all_treatments, reference_treatment = all_treatments[1]) {
+  treatment_names = VectorWithItemFirst(all_treatments, reference_treatment)
   return(data.frame(Number = 1:length(treatment_names), Label = treatment_names))
 }
 
@@ -66,7 +66,7 @@ create_treatment_ids <- function(all_treatments, reference_treatment = all_treat
 #' 
 #' @param treatments vector containing all treatment names
 #' @return Name of the expected reference treatment if one is found, else NULL
-find_expected_reference_treatment <- function(treatments) {
+FindExpectedReferenceTreatment <- function(treatments) {
   expected_reference_treatments <- match(.potential_reference_treatments, tolower(treatments))
   expected_reference_treatments <- expected_reference_treatments[!is.na(expected_reference_treatments)]
   if (length(expected_reference_treatments) > 0) {
@@ -80,7 +80,7 @@ find_expected_reference_treatment <- function(treatments) {
 #' 
 #' @param data Data frame in which to search for treatment names
 #' @return Vector of all treatment names
-replace_treatment_ids <- function(data, treatent_ids) {
+ReplaceTreatmentIds <- function(data, treatent_ids) {
   if ('T' %in% colnames(data)) {
     # Long format
     data$T <- treatent_ids$Number[match(data$T, treatent_ids$Label)]
@@ -101,7 +101,7 @@ replace_treatment_ids <- function(data, treatent_ids) {
 #' 
 #' @param data Data frame in which to search for treatment names
 #' @return Vector of all treatment names
-add_study_ids <- function(data) {
+AddStudyIds <- function(data) {
   # Gather studies and assign IDs
   study_names <- unique(data$Study)
   study_df <- data.frame(id = seq(length(study_names)), name = study_names)
@@ -134,7 +134,7 @@ add_study_ids <- function(data) {
 #' @param data Data frame to reorder
 #' @param outcome_type Type of outcome for which to reorder, either 'Continuous' or 'Binary'
 #' @return Data frame with columns reordered
-reorder_columns <- function(data, outcome_type) {
+ReorderColumns <- function(data, outcome_type) {
   if (outcome_type == "Continuous") {
     expected_order <- .continuous_order
   } else if (outcome_type == "Binary") {
@@ -156,11 +156,11 @@ reorder_columns <- function(data, outcome_type) {
 #' @param treatment_ids Data frame containing treatment IDs and names in columns named 'Number' and 'Label' respectively
 #' @param outcome_type Type of outcome for which to reorder, either 'Continuous' or 'Binary'
 #' @return Data frame which is uasable by the rest of the app
-wrangle_upload_data_to_app_data <- function(data, treatment_ids, outcome_type) {
+WrangleUploadData <- function(data, treatment_ids, outcome_type) {
   new_df <- data %>%
-    replace_treatment_ids(treatment_ids) %>%
-    add_study_ids() %>%
-    reorder_columns(outcome_type)
+    ReplaceTreatmentIds(treatment_ids) %>%
+    AddStudyIds() %>%
+    ReorderColumns(outcome_type)
   
   return(new_df)
 }

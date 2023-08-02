@@ -90,16 +90,16 @@ data_input_panel_server <- function(id, metaoutcome, continuous_file = 'Cont_lon
                          fileEncoding = 'UTF-8-BOM')
       }
       
-      return(clean_data(df))
+      return(CleanData(df))
     })
     
     all_treatments <- reactive({
-      return(find_all_treatments(data()))
+      return(FindAllTreatments(data()))
     })
     
     # Create the treatment list with the reference treatment being the first item in the data frame
     treatment_list <- reactive({
-      return(create_treatment_ids(all_treatments(), input$reference_treatment))
+      return(CreateTreatmentIds(all_treatments(), input$reference_treatment))
     })
     
     
@@ -135,7 +135,7 @@ data_input_panel_server <- function(id, metaoutcome, continuous_file = 'Cont_lon
               treatments = all_treatments()
               updateSelectInput(inputId = 'reference_treatment',
                                 choices = treatments,
-                                selected = find_expected_reference_treatment(treatments))
+                                selected = FindExpectedReferenceTreatment(treatments))
             })
     
     return(list(data = data, treatment_list = treatment_list))

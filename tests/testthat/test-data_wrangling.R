@@ -1,15 +1,15 @@
 
-test_that("find_all_treatments() finds all treatements for long-format data", {
+test_that("FindAllTreatments() finds all treatements for long-format data", {
   data <- data.frame(Study = c("A", "A", "B", "B", "C", "C", "C"),
                      T = c("Egg", "Flour", "Egg", "Sugar", "Egg", "Butter", "Cinnamon"),
                      OtherText = c("A", "A", "B", "B", "C", "C", "C"))
   
-  treatments <- find_all_treatments(data)
+  treatments <- FindAllTreatments(data)
   
   expect_equal(!!treatments, c("Egg", "Flour", "Sugar", "Butter", "Cinnamon"))
 })
 
-test_that("find_all_treatments() finds all treatements for wide-format data", {
+test_that("FindAllTreatments() finds all treatements for wide-format data", {
   data <- data.frame(Study = c("A", "B", "C"),
                      T.1 = c("Egg", "Egg", "Egg"),
                      OtherText.1 = c("A", "B", "C"),
@@ -18,37 +18,37 @@ test_that("find_all_treatments() finds all treatements for wide-format data", {
                      T.3 = c(NA, NA, "Cinnamon"),
                      OtherText.3 = c(NA, NA, "C"))
   
-  treatments <- find_all_treatments(data)
+  treatments <- FindAllTreatments(data)
   
   expect_equal(!!treatments, c("Egg", "Flour", "Sugar", "Butter", "Cinnamon"))
 })
 
-test_that("vector_with_item_first() returns unchanged vector when intended first item not in vector", {
+test_that("VectorWithItemFirst() returns unchanged vector when intended first item not in vector", {
   vector <- c("Egg", "Flour", "Sugar", "Butter", "Cinnamon")
   
-  result <- vector_with_item_first(vector, "Potato")
+  result <- VectorWithItemFirst(vector, "Potato")
   
   expect_equal(!!result, !!vector)
 })
 
-test_that("vector_with_item_first() returns unchanged vector when intended first item already first in vector", {
+test_that("VectorWithItemFirst() returns unchanged vector when intended first item already first in vector", {
   vector <- c("Egg", "Flour", "Sugar", "Butter", "Cinnamon")
   
-  result <- vector_with_item_first(vector, "Egg")
+  result <- VectorWithItemFirst(vector, "Egg")
   
   expect_equal(!!result, !!vector)
 })
 
-test_that("vector_with_item_first() returns ordered vector when intended first item is in vector", {
+test_that("VectorWithItemFirst() returns ordered vector when intended first item is in vector", {
   vector <- c("Egg", "Flour", "Sugar", "Butter", "Cinnamon")
   
-  result <- vector_with_item_first(vector, "Sugar")
+  result <- VectorWithItemFirst(vector, "Sugar")
   
   expect_equal(!!result, c("Sugar", "Egg", "Flour", "Butter", "Cinnamon"))
 })
 
-test_that("create_treatment_ids() creates treatment list with firstreference treatment first", {
-  treatment_ids <- create_treatment_ids(c("Egg", "Flour", "Sugar", "Butter", "Cinnamon"), "Flour")
+test_that("CreateTreatmentIds() creates treatment list with reference treatment first", {
+  treatment_ids <- CreateTreatmentIds(c("Egg", "Flour", "Sugar", "Butter", "Cinnamon"), "Flour")
   
   expect_equal(
     !!treatment_ids,
@@ -59,60 +59,60 @@ test_that("create_treatment_ids() creates treatment list with firstreference tre
   )
 })
 
-test_that("find_expected_reference_treatment() returns NULL when no matches", {
+test_that("FindExpectedReferenceTreatment() returns NULL when no matches", {
   vector <- c("Egg", "Flour", "Sugar", "Butter", "Cinnamon")
   
-  result <- find_expected_reference_treatment(vector)
+  result <- FindExpectedReferenceTreatment(vector)
   
   expect_null(!!result)
 })
 
-test_that("find_expected_reference_treatment() returns treatment when single match", {
+test_that("FindExpectedReferenceTreatment() returns treatment when single match", {
   vector <- c("Egg", "Flour", "Sugar", "Butter", "Placebo", "Cinnamon")
   
-  result <- find_expected_reference_treatment(vector)
+  result <- FindExpectedReferenceTreatment(vector)
   
   expect_equal(!!result, "Placebo")
 })
 
-test_that("find_expected_reference_treatment() returns first matching treatment when multiple matches", {
+test_that("FindExpectedReferenceTreatment() returns first matching treatment when multiple matches", {
   vector <- c("Egg", "Flour", "No-Contact", "Sugar", "Butter", "Placebo", "Cinnamon")
   
-  result <- find_expected_reference_treatment(vector)
+  result <- FindExpectedReferenceTreatment(vector)
   
   expect_equal(!!result, "Placebo")
 })
 
-test_that("find_expected_reference_treatment() returns NULL when no matches", {
+test_that("FindExpectedReferenceTreatment() returns NULL when no matches", {
   vector <- c("Egg", "Flour", "Sugar", "Butter", "Cinnamon")
   
-  result <- find_expected_reference_treatment(vector)
+  result <- FindExpectedReferenceTreatment(vector)
   
   expect_null(!!result)
 })
 
-test_that("find_expected_reference_treatment() returns treatment when single match", {
+test_that("FindExpectedReferenceTreatment() returns treatment when single match", {
   vector <- c("Egg", "Flour", "Sugar", "Butter", "Placebo", "Cinnamon")
   
-  result <- find_expected_reference_treatment(vector)
+  result <- FindExpectedReferenceTreatment(vector)
   
   expect_equal(!!result, "Placebo")
 })
 
-test_that("find_expected_reference_treatment() returns first matching treatment when multiple matches", {
+test_that("FindExpectedReferenceTreatment() returns first matching treatment when multiple matches", {
   vector <- c("Egg", "Flour", "No-Contact", "Sugar", "Butter", "Placebo", "Cinnamon")
   
-  result <- find_expected_reference_treatment(vector)
+  result <- FindExpectedReferenceTreatment(vector)
   
   expect_equal(!!result, "Placebo")
 })
 
-test_that("replace_treatment_ids() updates treatment names to IDs for continuous long data", {
-  data <- clean_data(read.csv("Cont_long.csv"))
-  all_treatments <- find_all_treatments(data)
-  treatment_ids <- create_treatment_ids(all_treatments, all_treatments[1])
+test_that("ReplaceTreatmentIds() updates treatment names to IDs for continuous long data", {
+  data <- CleanData(read.csv("Cont_long.csv"))
+  all_treatments <- FindAllTreatments(data)
+  treatment_ids <- CreateTreatmentIds(all_treatments, all_treatments[1])
   
-  wrangled_data <- replace_treatment_ids(data, treatment_ids)
+  wrangled_data <- ReplaceTreatmentIds(data, treatment_ids)
   
   expect_equal(colnames(wrangled_data), colnames(data),
                label = format_vector_to_string(colnames(wrangled_data)),
@@ -126,12 +126,12 @@ test_that("replace_treatment_ids() updates treatment names to IDs for continuous
                data[, colnames(data) != "T"])
 })
 
-test_that("replace_treatment_ids() updates treatment names to IDs for continuous wide data", {
-  data <- clean_data(read.csv("Cont_wide.csv"))
-  all_treatments <- find_all_treatments(data)
-  treatment_ids <- create_treatment_ids(all_treatments, all_treatments[1])
+test_that("ReplaceTreatmentIds() updates treatment names to IDs for continuous wide data", {
+  data <- CleanData(read.csv("Cont_wide.csv"))
+  all_treatments <- FindAllTreatments(data)
+  treatment_ids <- CreateTreatmentIds(all_treatments, all_treatments[1])
   
-  wrangled_data <- replace_treatment_ids(data, treatment_ids)
+  wrangled_data <- ReplaceTreatmentIds(data, treatment_ids)
   
   expect_equal(colnames(wrangled_data), colnames(data),
                label = format_vector_to_string(colnames(wrangled_data)),
@@ -149,12 +149,12 @@ test_that("replace_treatment_ids() updates treatment names to IDs for continuous
                data[, !(colnames(data) %in% paste0("T.", 1:6))])
 })
 
-test_that("replace_treatment_ids() updates treatment names to IDs for binary long data", {
-  data <- clean_data(read.csv("Binary_long.csv"))
-  all_treatments <- find_all_treatments(data)
-  treatment_ids <- create_treatment_ids(all_treatments, all_treatments[1])
+test_that("ReplaceTreatmentIds() updates treatment names to IDs for binary long data", {
+  data <- CleanData(read.csv("Binary_long.csv"))
+  all_treatments <- FindAllTreatments(data)
+  treatment_ids <- CreateTreatmentIds(all_treatments, all_treatments[1])
   
-  wrangled_data <- replace_treatment_ids(data, treatment_ids)
+  wrangled_data <- ReplaceTreatmentIds(data, treatment_ids)
   
   expect_equal(colnames(wrangled_data), colnames(data),
                label = format_vector_to_string(colnames(wrangled_data)),
@@ -168,12 +168,12 @@ test_that("replace_treatment_ids() updates treatment names to IDs for binary lon
                data[, colnames(data) != "T"])
 })
 
-test_that("replace_treatment_ids() updates treatment names to IDs for binary wide data", {
-  data <- clean_data(read.csv("Binary_wide.csv"))
-  all_treatments <- find_all_treatments(data)
-  treatment_ids <- create_treatment_ids(all_treatments, all_treatments[1])
+test_that("ReplaceTreatmentIds() updates treatment names to IDs for binary wide data", {
+  data <- CleanData(read.csv("Binary_wide.csv"))
+  all_treatments <- FindAllTreatments(data)
+  treatment_ids <- CreateTreatmentIds(all_treatments, all_treatments[1])
   
-  wrangled_data <- replace_treatment_ids(data, treatment_ids)
+  wrangled_data <- ReplaceTreatmentIds(data, treatment_ids)
   
   expect_equal(colnames(wrangled_data), colnames(data),
                label = format_vector_to_string(colnames(wrangled_data)),
@@ -191,44 +191,10 @@ test_that("replace_treatment_ids() updates treatment names to IDs for binary wid
                data[, !(colnames(data) %in% paste0("T.", 1:6))])
 })
 
-test_that("add_study_ids() adds study IDs for continuous long data", {
-  data <- clean_data(read.csv("Cont_long.csv"))
+test_that("AddStudyIds() adds study IDs for continuous long data", {
+  data <- CleanData(read.csv("Cont_long.csv"))
   
-  wrangled_data <- add_study_ids(data)
-  
-  expect_equal(colnames(wrangled_data), c(colnames(data), "StudyID"),
-               label = format_vector_to_string(colnames(wrangled_data)),
-               expected.label = format_vector_to_string(colnames(data)))
-  
-  expect_equal(wrangled_data$StudyID, c(1, 1, 1, 2, 2, 2, 3, 3),
-               label = format_vector_to_string(wrangled_data$StudyID))
-  
-  # Other columns unchanged
-  expect_equal(wrangled_data[, colnames(wrangled_data) != "StudyID"],
-               data[, colnames(data) != "StudyID"])
-})
-
-test_that("add_study_ids() adds study IDs for continuous wide data", {
-  data <- clean_data(read.csv("Cont_wide.csv"))
-  
-  wrangled_data <- add_study_ids(data)
-  
-  expect_equal(colnames(wrangled_data), c(colnames(data), "StudyID"),
-               label = format_vector_to_string(colnames(wrangled_data)),
-               expected.label = format_vector_to_string(colnames(data)))
-  
-  expect_equal(wrangled_data$StudyID, c(1, 2, 3),
-               label = format_vector_to_string(wrangled_data$StudyID))
-  
-  # Other columns unchanged
-  expect_equal(wrangled_data[, colnames(wrangled_data) != "StudyID"],
-               data[, colnames(data) != "StudyID"])
-})
-
-test_that("add_study_ids() adds study IDs for binary long data", {
-  data <- clean_data(read.csv("Binary_long.csv"))
-  
-  wrangled_data <- add_study_ids(data)
+  wrangled_data <- AddStudyIds(data)
   
   expect_equal(colnames(wrangled_data), c(colnames(data), "StudyID"),
                label = format_vector_to_string(colnames(wrangled_data)),
@@ -242,10 +208,10 @@ test_that("add_study_ids() adds study IDs for binary long data", {
                data[, colnames(data) != "StudyID"])
 })
 
-test_that("add_study_ids() adds study IDs for binary wide data", {
-  data <- clean_data(read.csv("Binary_wide.csv"))
+test_that("AddStudyIds() adds study IDs for continuous wide data", {
+  data <- CleanData(read.csv("Cont_wide.csv"))
   
-  wrangled_data <- add_study_ids(data)
+  wrangled_data <- AddStudyIds(data)
   
   expect_equal(colnames(wrangled_data), c(colnames(data), "StudyID"),
                label = format_vector_to_string(colnames(wrangled_data)),
@@ -259,12 +225,46 @@ test_that("add_study_ids() adds study IDs for binary wide data", {
                data[, colnames(data) != "StudyID"])
 })
 
-test_that("reorder_columns() reorders columns for continuous long data", {
-  data <- clean_data(read.csv("Cont_long.csv"))
+test_that("AddStudyIds() adds study IDs for binary long data", {
+  data <- CleanData(read.csv("Binary_long.csv"))
+  
+  wrangled_data <- AddStudyIds(data)
+  
+  expect_equal(colnames(wrangled_data), c(colnames(data), "StudyID"),
+               label = format_vector_to_string(colnames(wrangled_data)),
+               expected.label = format_vector_to_string(colnames(data)))
+  
+  expect_equal(wrangled_data$StudyID, c(1, 1, 1, 2, 2, 2, 3, 3),
+               label = format_vector_to_string(wrangled_data$StudyID))
+  
+  # Other columns unchanged
+  expect_equal(wrangled_data[, colnames(wrangled_data) != "StudyID"],
+               data[, colnames(data) != "StudyID"])
+})
+
+test_that("AddStudyIds() adds study IDs for binary wide data", {
+  data <- CleanData(read.csv("Binary_wide.csv"))
+  
+  wrangled_data <- AddStudyIds(data)
+  
+  expect_equal(colnames(wrangled_data), c(colnames(data), "StudyID"),
+               label = format_vector_to_string(colnames(wrangled_data)),
+               expected.label = format_vector_to_string(colnames(data)))
+  
+  expect_equal(wrangled_data$StudyID, c(1, 2, 3),
+               label = format_vector_to_string(wrangled_data$StudyID))
+  
+  # Other columns unchanged
+  expect_equal(wrangled_data[, colnames(wrangled_data) != "StudyID"],
+               data[, colnames(data) != "StudyID"])
+})
+
+test_that("ReorderColumns() reorders columns for continuous long data", {
+  data <- CleanData(read.csv("Cont_long.csv"))
   
   wrangled_data <- data %>%
-    add_study_ids() %>%
-    reorder_columns("Continuous")
+    AddStudyIds() %>%
+    ReorderColumns("Continuous")
   
   expect_equal(colnames(wrangled_data), c("StudyID", "Study", "T", "N", "Mean", "SD"),
                label = format_vector_to_string(colnames(wrangled_data)))
@@ -275,12 +275,12 @@ test_that("reorder_columns() reorders columns for continuous long data", {
   }
 })
 
-test_that("reorder_columns() reorders columns for continuous wide data", {
-  data <- clean_data(read.csv("Cont_wide.csv"))
+test_that("ReorderColumns() reorders columns for continuous wide data", {
+  data <- CleanData(read.csv("Cont_wide.csv"))
   
   wrangled_data <- data %>%
-    add_study_ids() %>%
-    reorder_columns("Continuous")
+    AddStudyIds() %>%
+    ReorderColumns("Continuous")
   
   expected_columns <- c(
     "StudyID",
@@ -308,12 +308,12 @@ test_that("reorder_columns() reorders columns for continuous wide data", {
   }
 })
 
-test_that("reorder_columns() reorders columns for binary long data", {
-  data <- clean_data(read.csv("Binary_long.csv"))
+test_that("ReorderColumns() reorders columns for binary long data", {
+  data <- CleanData(read.csv("Binary_long.csv"))
   
   wrangled_data <- data %>%
-    add_study_ids() %>%
-    reorder_columns("Binary")
+    AddStudyIds() %>%
+    ReorderColumns("Binary")
   
   expect_equal(colnames(wrangled_data), c("StudyID", "Study", "T", "R", "N"),
                label = format_vector_to_string(colnames(wrangled_data)),
@@ -328,12 +328,12 @@ test_that("reorder_columns() reorders columns for binary long data", {
   }
 })
 
-test_that("reorder_columns() reorders columns for binary wide data", {
-  data <- clean_data(read.csv("Binary_wide.csv"))
+test_that("ReorderColumns() reorders columns for binary wide data", {
+  data <- CleanData(read.csv("Binary_wide.csv"))
   
   wrangled_data <- data %>%
-    add_study_ids() %>%
-    reorder_columns("Binary")
+    AddStudyIds() %>%
+    ReorderColumns("Binary")
   
   expected_columns <- c(
     "StudyID",
@@ -358,13 +358,13 @@ test_that("reorder_columns() reorders columns for binary wide data", {
   }
 })
 
-test_that("wrangle_upload_data_to_app_data() wrangles continuous long data to be usable in the rest of the app", {
-  data <- clean_data(read.csv("Cont_long.csv"))
+test_that("WrangleUploadData() wrangles continuous long data to be usable in the rest of the app", {
+  data <- CleanData(read.csv("Cont_long.csv"))
   treatment_ids <- data %>%
-    find_all_treatments() %>%
-    create_treatment_ids()
+    FindAllTreatments() %>%
+    CreateTreatmentIds()
   
-  wrangled_data <- wrangle_upload_data_to_app_data(data, treatment_ids, "Continuous")
+  wrangled_data <- WrangleUploadData(data, treatment_ids, "Continuous")
   
   expect_equal(colnames(wrangled_data), c("StudyID", "Study", "T", "N", "Mean", "SD"),
                label = format_vector_to_string(colnames(wrangled_data)))
@@ -381,13 +381,13 @@ test_that("wrangle_upload_data_to_app_data() wrangles continuous long data to be
   }
 })
 
-test_that("wrangle_upload_data_to_app_data() wrangles continuous wide data to be usable in the rest of the app", {
-  data <- clean_data(read.csv("Cont_wide.csv"))
+test_that("WrangleUploadData() wrangles continuous wide data to be usable in the rest of the app", {
+  data <- CleanData(read.csv("Cont_wide.csv"))
   treatment_ids <- data %>%
-    find_all_treatments() %>%
-    create_treatment_ids()
+    FindAllTreatments() %>%
+    CreateTreatmentIds()
   
-  wrangled_data <- wrangle_upload_data_to_app_data(data, treatment_ids, "Continuous")
+  wrangled_data <- WrangleUploadData(data, treatment_ids, "Continuous")
 
   expected_columns <- c(
     "StudyID",
@@ -423,13 +423,13 @@ test_that("wrangle_upload_data_to_app_data() wrangles continuous wide data to be
   }
 })
 
-test_that("wrangle_upload_data_to_app_data() wrangles binary long data to be usable in the rest of the app", {
-  data <- clean_data(read.csv("Binary_long.csv"))
+test_that("WrangleUploadData() wrangles binary long data to be usable in the rest of the app", {
+  data <- CleanData(read.csv("Binary_long.csv"))
   treatment_ids <- data %>%
-    find_all_treatments() %>%
-    create_treatment_ids()
+    FindAllTreatments() %>%
+    CreateTreatmentIds()
   
-  wrangled_data <- wrangle_upload_data_to_app_data(data, treatment_ids, "Binary")
+  wrangled_data <- WrangleUploadData(data, treatment_ids, "Binary")
   
   expect_equal(colnames(wrangled_data), c("StudyID", "Study", "T", "R", "N"),
                label = format_vector_to_string(colnames(wrangled_data)))
@@ -446,13 +446,13 @@ test_that("wrangle_upload_data_to_app_data() wrangles binary long data to be usa
   }
 })
 
-test_that("wrangle_upload_data_to_app_data() wrangles binary wide data to be usable in the rest of the app", {
-  data <- clean_data(read.csv("Binary_wide.csv"))
+test_that("WrangleUploadData() wrangles binary wide data to be usable in the rest of the app", {
+  data <- CleanData(read.csv("Binary_wide.csv"))
   treatment_ids <- data %>%
-    find_all_treatments() %>%
-    create_treatment_ids()
+    FindAllTreatments() %>%
+    CreateTreatmentIds()
   
-  wrangled_data <- wrangle_upload_data_to_app_data(data, treatment_ids, "Binary")
+  wrangled_data <- WrangleUploadData(data, treatment_ids, "Binary")
   
   expected_columns <- c(
     "StudyID",
