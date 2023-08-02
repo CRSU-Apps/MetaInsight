@@ -1,19 +1,17 @@
 
-test_that("Data wrangled from default continuous file", {
+test_that("Data wrangled from default continuous long file", {
   testServer(load_data_page_server, args = list(metaoutcome = function() { 'Continuous' }), {
-    expect_equal(colnames(wrangled_data()), colnames(data()),
-                 label = format_vector_to_string(colnames(wrangled_data())),
-                 expected.label = format_vector_to_string(colnames(data())))
+    expect_equal(colnames(wrangled_data()), c("StudyID", colnames(data())),
+                 label = format_vector_to_string(colnames(wrangled_data())))
     
+    expect_equal(wrangled_data()$StudyID, c(1, 1, 1, 2, 2, 2, 3, 3),
+                 label = format_vector_to_string(wrangled_data()$StudyID))
     expect_equal(wrangled_data()$T, c(1, 2, 3, 4, 1, 5, 1, 6),
                  label = format_vector_to_string(wrangled_data()$T))
     
     expect_equal(nrow(wrangled_data()), nrow(data()),
                  label = nrow(wrangled_data()),
                  expected.label = nrow(data()))
-    expect_equal(wrangled_data()$StudyID, data()$StudyID,
-                 label = format_vector_to_string(wrangled_data()$StudyID),
-                 expected.label = format_vector_to_string(data()$StudyID))
     expect_equal(wrangled_data()$Study, data()$Study,
                  label = format_vector_to_string(wrangled_data()$Study),
                  expected.label = format_vector_to_string(data()$Study))
@@ -29,15 +27,7 @@ test_that("Data wrangled from default continuous file", {
   })
 })
 
-test_that("Wrangled continuous long data passed back to module parent", {
-  testServer(load_data_page_server, args = list(metaoutcome = function() { 'Continuous' }), {
-    expect_equal(length(session$returned), 2)
-    expect_equal(session$returned$data(), wrangled_data())
-    expect_equal(session$returned$treatment_df(), treatment_list())
-  })
-})
-
-test_that("Continuous long data wrangled with treatment IDs", {
+test_that("Continuous wide data wrangled with treatment IDs", {
   testServer(
     load_data_page_server,
     args = list(
@@ -45,6 +35,8 @@ test_that("Continuous long data wrangled with treatment IDs", {
       data_input_panel_server_function = function(id, metaoutcome) { data_input_panel_server(id, metaoutcome, continuous_file = 'Cont_wide.csv') }
     ),
     {
+      expect_equal(wrangled_data()$StudyID, c(1, 2, 3),
+                   label = format_vector_to_string(wrangled_data()$StudyID))
       expect_equal(wrangled_data()$T.1, c(1, 2, 1),
                    label = format_vector_to_string(wrangled_data()$T.1))
       expect_equal(wrangled_data()$T.2, c(3, 1, 4),
@@ -55,9 +47,6 @@ test_that("Continuous long data wrangled with treatment IDs", {
       expect_equal(nrow(wrangled_data()), nrow(data()),
                    label = nrow(wrangled_data()),
                    expected.label = nrow(data()))
-      expect_equal(wrangled_data()$StudyID, data()$StudyID,
-                   label = format_vector_to_string(wrangled_data()$StudyID),
-                   expected.label = format_vector_to_string(data()$StudyID))
       expect_equal(wrangled_data()$Study, data()$Study,
                    label = format_vector_to_string(wrangled_data()$Study),
                    expected.label = format_vector_to_string(data()$Study))
@@ -92,21 +81,27 @@ test_that("Continuous long data wrangled with treatment IDs", {
   )
 })
 
-test_that("Data wrangled from default binary file", {
+test_that("Wrangled continuous long data passed back to module parent", {
+  testServer(load_data_page_server, args = list(metaoutcome = function() { 'Continuous' }), {
+    expect_equal(length(session$returned), 2)
+    expect_equal(session$returned$data(), wrangled_data())
+    expect_equal(session$returned$treatment_df(), treatment_list())
+  })
+})
+
+test_that("Data wrangled from default binary long file", {
   testServer(load_data_page_server, args = list(metaoutcome = function() { 'Binary' }), {
-    expect_equal(colnames(wrangled_data()), colnames(data()),
-                 label = format_vector_to_string(colnames(wrangled_data())),
-                 expected.label = format_vector_to_string(colnames(data())))
+    expect_equal(colnames(wrangled_data()), c("StudyID", colnames(data())),
+                 label = format_vector_to_string(colnames(wrangled_data())))
     
+    expect_equal(wrangled_data()$StudyID, c(1, 1, 1, 2, 2, 2, 3, 3),
+                 label = format_vector_to_string(wrangled_data()$StudyID))
     expect_equal(wrangled_data()$T, c(1, 2, 3, 4, 1, 5, 1, 6),
                  label = format_vector_to_string(wrangled_data()$T))
     
     expect_equal(nrow(wrangled_data()), nrow(data()),
                  label = nrow(wrangled_data()),
                  expected.label = nrow(data()))
-    expect_equal(wrangled_data()$StudyID, data()$StudyID,
-                 label = format_vector_to_string(wrangled_data()$StudyID),
-                 expected.label = format_vector_to_string(data()$StudyID))
     expect_equal(wrangled_data()$Study, data()$Study,
                  label = format_vector_to_string(wrangled_data()$Study),
                  expected.label = format_vector_to_string(data()$Study))
@@ -119,15 +114,7 @@ test_that("Data wrangled from default binary file", {
   })
 })
 
-test_that("Wrangled binary long data passed back to module parent", {
-  testServer(load_data_page_server, args = list(metaoutcome = function() { 'Binary' }), {
-    expect_equal(length(session$returned), 2)
-    expect_equal(session$returned$data(), wrangled_data())
-    expect_equal(session$returned$treatment_df(), treatment_list())
-  })
-})
-
-test_that("Binary long data wrangled with treatment IDs", {
+test_that("Binary wide data wrangled with treatment IDs", {
   testServer(
     load_data_page_server,
     args = list(
@@ -135,6 +122,8 @@ test_that("Binary long data wrangled with treatment IDs", {
       data_input_panel_server_function = function(id, metaoutcome) { data_input_panel_server(id, metaoutcome, binary_file = 'Binary_wide.csv') }
     ),
     {
+      expect_equal(wrangled_data()$StudyID, c(1, 2, 3),
+                   label = format_vector_to_string(wrangled_data()$StudyID))
       expect_equal(wrangled_data()$T.1, c(1, 2, 1),
                    label = format_vector_to_string(wrangled_data()$T.1))
       expect_equal(wrangled_data()$T.2, c(3, 1, 4),
@@ -145,9 +134,6 @@ test_that("Binary long data wrangled with treatment IDs", {
       expect_equal(nrow(wrangled_data()), nrow(data()),
                    label = nrow(wrangled_data()),
                    expected.label = nrow(data()))
-      expect_equal(wrangled_data()$StudyID, data()$StudyID,
-                   label = format_vector_to_string(wrangled_data()$StudyID),
-                   expected.label = format_vector_to_string(data()$StudyID))
       expect_equal(wrangled_data()$Study, data()$Study,
                    label = format_vector_to_string(wrangled_data()$Study),
                    expected.label = format_vector_to_string(data()$Study))
@@ -171,4 +157,12 @@ test_that("Binary long data wrangled with treatment IDs", {
                    expected.label = format_vector_to_string(data()$N.3))
     }
   )
+})
+
+test_that("Wrangled binary long data passed back to module parent", {
+  testServer(load_data_page_server, args = list(metaoutcome = function() { 'Binary' }), {
+    expect_equal(length(session$returned), 2)
+    expect_equal(session$returned$data(), wrangled_data())
+    expect_equal(session$returned$treatment_df(), treatment_list())
+  })
 })

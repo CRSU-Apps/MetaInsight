@@ -27,65 +27,6 @@ data_input_panel_ui <- function(id) {
   )
 }
 
-#' Find all of the treatment names in the data, both for long and wide formats.
-#' 
-#' @param data Data frame in which to search for treatment names
-#' @return Vector of all treatment names
-find_all_treatments <- function(data) {
-  if ('T' %in% colnames(data)) {
-    # Long format
-    return(unique(data$T))
-  } else {
-    # Wide format
-    all_treatments <- c()
-    for (col in paste0('T.', seq(6))) {
-      if (col %in% colnames(data)) {
-        all_treatments <- c(all_treatments, data[[col]])
-      } else {
-        break
-      }
-    }
-    return(unique(all_treatments[!is.na(all_treatments)]))
-  }
-}
-
-#' Create a copy of a vector with the given item as the first element.
-#' 
-#' @param vector Vector to reorder
-#' @param first_item The element to push to the front of the vector
-#' @return The reordered vector
-vector_with_item_first <- function(vector, first_item) {
-  if (is.null(first_item) || !(first_item %in% vector)) {
-    return(vector)
-  }
-  return(c(first_item, vector[vector != first_item]))
-}
-
-# Treatments are in priority order, such that for any study with multiple matching treatments,
-# the first in this vector will be used as the reference, until the user selects another.
-potential_reference_treatments = c(
-  'control',
-  'usual_care',
-  'standard_care',
-  'placebo',
-  'no_contact'
-)
-
-#' Find the expected reference treatment from a vector.
-#' This is done by comparing treatment names to expected reference treatment names.
-#' 
-#' @param treatments vector containing all treatment names
-#' @return Name of the expected reference treatment if one is found, else NULL
-find_expected_reference_treatment <- function(treatments) {
-  expected_reference_treatments <- match(potential_reference_treatments, tolower(treatments))
-  expected_reference_treatments <- expected_reference_treatments[!is.na(expected_reference_treatments)]
-  if (length(expected_reference_treatments) > 0) {
-    return(treatments[expected_reference_treatments[1]])
-  } else {
-    return(NULL)
-  }
-}
-
 #' Module server for uploading data into the app.
 #' 
 #' @param id ID of the module
@@ -148,8 +89,8 @@ data_input_panel_server <- function(id, metaoutcome, continuous_file = 'Cont_lon
                          quote = "\"",
                          fileEncoding = 'UTF-8-BOM')
       }
-      # Trim leading and trailing whitespace from all character elements in the data
-      return(dplyr::mutate(df, across(where(is.character), stringr::str_trim)))
+      
+      return(clean_data(df))
     })
     
     all_treatments <- reactive({
@@ -158,8 +99,7 @@ data_input_panel_server <- function(id, metaoutcome, continuous_file = 'Cont_lon
     
     # Create the treatment list with the reference treatment being the first item in the data frame
     treatment_list <- reactive({
-      treatment_names = vector_with_item_first(all_treatments(), input$reference_treatment)
-      return(data.frame(Number = seq(length(treatment_names)), Label = treatment_names))
+      return(create_treatment_ids(all_treatments(), input$reference_treatment))
     })
     
     

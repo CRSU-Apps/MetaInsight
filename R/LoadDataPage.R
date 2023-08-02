@@ -27,27 +27,6 @@ load_data_page_ui <- function(id) {
         ))))
 }
 
-#' Find all of the treatment names in the data, both for long and wide formats.
-#' 
-#' @param data Data frame in which to search for treatment names
-#' @return Vector of all treatment names
-replace_treatment_ids <- function(data, treatent_ids) {
-  if ('T' %in% colnames(data)) {
-    # Long format
-    data$T <- treatent_ids$Number[match(data$T, treatent_ids$Label)]
-  } else {
-    # Wide format
-    for (col in paste0('T.', seq(6))) {
-      if (col %in% colnames(data)) {
-        data[[col]] <- treatent_ids$Number[match(data[[col]], treatent_ids$Label)]
-      } else {
-        break
-      }
-    }
-  }
-  return(data)
-}
-
 
 #' Module server for the data upload tab.
 #' 
@@ -82,9 +61,8 @@ load_data_page_server <- function(id, metaoutcome, data_input_panel_server_funct
     long_format_upload_panel_server(id = 'long_upload')
     wide_format_upload_panel_server(id = 'wide_upload')
     
-    # Replace all of the treatment names with an ID
     wrangled_data <- reactive({
-      return(replace_treatment_ids(isolate(data()), treatment_list()))
+      return(wrangle_upload_data_to_app_data(isolate(data()), treatment_list(), metaoutcome()))
     })
     
     return(list(data = wrangled_data,
