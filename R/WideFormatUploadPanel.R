@@ -14,7 +14,6 @@ wide_format_upload_panel_ui <- function(id) {
            h4(tags$strong("Step 1:")),
            p("Your data needs to have exactly the same variable names as in the example data which can be downloaded from here:"),
            p("Headings of columns are case sensitive."),
-           p(tags$ul(tags$li(tags$strong("StudyID"), "contains study identifier, starting from 1, then 2, 3, 4... etc."))),
            p(tags$ul(tags$li(tags$strong("Study"), "contains name (e.g., author,year) of the study. The study name must be unique for each study."))),
            p(tags$ul(tags$li(tags$strong("T.1, T.2, ..., up to T.6"), "contains name of the treatment given for study arm 1, 2, ..., up to 6, respectively. Treatment names should only contain letters, numbers and underscores."))),
            conditionalPanel(condition= "input.metaoutcome=='Continuous'",
