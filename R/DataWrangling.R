@@ -102,12 +102,10 @@ ReplaceTreatmentIds <- function(data, treatent_ids) {
 #' @param data Data frame in which to search for treatment names
 #' @return Vector of all treatment names
 AddStudyIds <- function(data) {
-  # Gather studies and assign IDs
   study_names <- unique(data$Study)
-  study_df <- data.frame(id = seq(length(study_names)), name = study_names)
   
   # Add study IDs to data frame
-  data$StudyID <- study_df$id[match(data$Study, study_df$name)]
+  data$StudyID <- match(data$Study, study_names)
   
   return(data)
 }
