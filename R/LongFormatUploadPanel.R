@@ -13,22 +13,43 @@ long_format_upload_panel_ui <- function(id) {
                           Please note that MetaInsight is not compatible with studies containing multiple arms of the same treatment.")),
            h4(tags$strong("Step 1:")),
            p(),
-           conditionalPanel(condition= "input.metaoutcome=='Continuous'",
-                            p("The long format data file should contain six columns. Headings of columns are case sensitive."),
-                            p(tags$ul(tags$li("The", tags$strong("first"), "column should be labelled", tags$strong("Study"), "and contain the name (e.g., author,year) of the study. The study name must be unique for each study."))),
-                            p(tags$ul(tags$li("The", tags$strong("second"), "column should be labelled", tags$strong("T"), "and contain the name of the treatment used in each arm of the study. Treatment names should only contain letters, numbers and underscores."))),
-                            p(tags$ul(tags$li("The", tags$strong("third"), "column should be labelled", tags$strong("N"), "and contain the number of participants in each arm of the study."))),
-                            p(tags$ul(tags$li("The", tags$strong("fourth"), "column should be labelled", tags$strong("Mean"), "and contain the mean value of the outcome in each arm of the study."))),
-                            p(tags$ul(tags$li("The", tags$strong("fifth"), "column should be labelled", tags$strong("SD"), "and contain the standard deviation of the outcome in each arm of the study.")))), 
-           conditionalPanel(condition = "input.metaoutcome=='Binary'", 
-                            p("The long format data file should contain five columns. Headings of columns are case sensitive."), 
-                            p(tags$ul(tags$li("The", tags$strong("first"), "column should be labelled", tags$strong("Study"), "and contain the name (e.g., author,year) of the study. The study name must be unique for each study."))),
-                            p(tags$ul(tags$li("The", tags$strong("second"), "column should be labelled", tags$strong("T"), "and contain the name of the treatment used in each arm of the study. Treatment names should only contain letters, numbers and underscores.", 
-                                              tags$strong("If applicable, your reference treatment (e.g. Placebo/Control)"), tags$strong(tags$u("needs to be labelled as 1."))))),
-                            p(tags$ul(tags$li("The", tags$strong("third"), "column should be labelled", tags$strong("R"), 
-                                              "and contain the number of participants with the outcome of interest in each arm of the study."))),
-                            p(tags$ul(tags$li("The", tags$strong("fourth"), "column should be labelled", tags$strong("N"), "and contain the number of participants in each arm of the study."))),
-                            p("N.B. Continuity corrections will need to be applied to cells containing 0 values")),
+           conditionalPanel(
+             condition = "input.metaoutcome=='Continuous'",
+             p("The long format data file should contain the following columns:"),
+             tags$ul(
+               tags$li(tags$strong("Study"), " contains the name (e.g., author,year) of the study. The study name must be unique for each study.")
+             ),
+             tags$ul(
+               tags$li(tags$strong("T"), " contains the name of the treatment used in each arm of the study. Treatment names should only contain letters, numbers and underscores.")
+             ),
+             tags$ul(
+               tags$li(tags$strong("N"), " contains the number of participants in each arm of the study.")
+             ),
+             tags$ul(
+               tags$li(tags$strong("Mean"), " contains the mean value of the outcome in each arm of the study.")
+             ),
+             tags$ul(
+               tags$li(tags$strong("SD"), " contains the standard deviation of the outcome in each arm of the study.")
+             )
+           ), 
+           conditionalPanel(
+             condition = "input.metaoutcome=='Binary'",
+             p("The long format data file should contain five columns. Headings of columns are case sensitive."),
+             tags$ul(
+               tags$li(tags$strong("Study"), " contains the name (e.g., author,year) of the study. The study name must be unique for each study.")
+             ),
+             tags$ul(
+               tags$li(tags$strong("T"), " contains the name of the treatment used in each arm of the study. Treatment names should only contain letters, numbers and underscores.")
+             ),
+             tags$ul(
+               tags$li(tags$strong("R"), " contains the number of participants with the outcome of interest in each arm of the study.")
+             ),
+             tags$ul(
+               tags$li(tags$strong("N"), " contains the number of participants in each arm of the study.")
+             ),
+             p("N.B. Continuity corrections will need to be applied to cells containing 0 values")
+           ),
+           p(tags$strong("Headings of columns are case sensitive.")),
            p("An example of this structure can be seen in the", tags$strong("'View Data'"), "tab."),
            p("The csv file that is used to produce the example dataset can be downloaded from here:"),
            downloadButton(outputId = ns("download_long_data"),
