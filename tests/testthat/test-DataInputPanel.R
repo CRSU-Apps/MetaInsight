@@ -1,76 +1,4 @@
 
-test_that("find_all_treatments() finds all treatements for long-format data", {
-  data <- data.frame(Study = c("A", "A", "B", "B", "C", "C", "C"),
-                     T = c("Egg", "Flour", "Egg", "Sugar", "Egg", "Butter", "Cinnamon"),
-                     OtherText = c("A", "A", "B", "B", "C", "C", "C"))
-  
-  treatments <- find_all_treatments(data)
-  
-  expect_equal(!!treatments, c("Egg", "Flour", "Sugar", "Butter", "Cinnamon"))
-})
-
-test_that("find_all_treatments() finds all treatements for wide-format data", {
-  data <- data.frame(Study = c("A", "B", "C"),
-                     T.1 = c("Egg", "Egg", "Egg"),
-                     OtherText.1 = c("A", "B", "C"),
-                     T.2 = c("Flour", "Sugar", "Butter"),
-                     OtherText.2 = c("A", "B", "C"),
-                     T.3 = c(NA, NA, "Cinnamon"),
-                     OtherText.3 = c(NA, NA, "C"))
-  
-  treatments <- find_all_treatments(data)
-  
-  expect_equal(!!treatments, c("Egg", "Flour", "Sugar", "Butter", "Cinnamon"))
-})
-
-test_that("vector_with_item_first() returns unchanged vector when intended first item not in vector", {
-  vector <- c("Egg", "Flour", "Sugar", "Butter", "Cinnamon")
-  
-  result <- vector_with_item_first(vector, "Potato")
-  
-  expect_equal(!!result, !!vector)
-})
-
-test_that("vector_with_item_first() returns unchanged vector when intended first item already first in vector", {
-  vector <- c("Egg", "Flour", "Sugar", "Butter", "Cinnamon")
-  
-  result <- vector_with_item_first(vector, "Egg")
-  
-  expect_equal(!!result, !!vector)
-})
-
-test_that("vector_with_item_first() returns ordered vector when intended first item is in vector", {
-  vector <- c("Egg", "Flour", "Sugar", "Butter", "Cinnamon")
-  
-  result <- vector_with_item_first(vector, "Sugar")
-  
-  expect_equal(!!result, c("Sugar", "Egg", "Flour", "Butter", "Cinnamon"))
-})
-
-test_that("find_expected_reference_treatment() returns NULL when no matches", {
-  vector <- c("Egg", "Flour", "Sugar", "Butter", "Cinnamon")
-  
-  result <- find_expected_reference_treatment(vector)
-  
-  expect_null(!!result)
-})
-
-test_that("find_expected_reference_treatment() returns treatment when single match", {
-  vector <- c("Egg", "Flour", "Sugar", "Butter", "Placebo", "Cinnamon")
-  
-  result <- find_expected_reference_treatment(vector)
-  
-  expect_equal(!!result, "Placebo")
-})
-
-test_that("find_expected_reference_treatment() returns first  matching treatment when multiple matches", {
-  vector <- c("Egg", "Flour", "No-Contact", "Sugar", "Butter", "Placebo", "Cinnamon")
-  
-  result <- find_expected_reference_treatment(vector)
-  
-  expect_equal(!!result, "Placebo")
-})
-
 test_that("Continuous data registered as initially not uploaded", {
   testServer(data_input_panel_server, args = list(metaoutcome = function() { 'Continuous' }), {
     expect_false(data_uploaded())
@@ -105,12 +33,10 @@ test_that("Treatments reordered from default continuous file when reference sele
 
 test_that("Data extracted from default continuous file", {
   testServer(data_input_panel_server, args = list(metaoutcome = function() { 'Continuous' }), {
-    expect_equal(colnames(data()), c('StudyID', 'Study', 'T', 'N', 'Mean', 'SD'),
+    expect_equal(colnames(data()), c('Study', 'T', 'N', 'Mean', 'SD'),
                  label = format_vector_to_string(colnames(data())))
     expect_equal(nrow(data()), 8,
                  label = nrow(data()))
-    expect_equal(data()$StudyID, c(1, 1, 1, 2, 2, 2, 3, 3),
-                 label = format_vector_to_string(data()$StudyID))
     expect_equal(data()$Study, c('Constantine', 'Constantine', 'Constantine', 'Leo', 'Leo', 'Leo', 'Justinian', 'Justinian'),
                  label = format_vector_to_string(data()$Study))
     expect_equal(data()$T, c('the Great', 'the Younger', 'the Dung-named', 'the Little', 'the Great', 'the Butcher', 'the Great', 'the Slit-nosed'),
@@ -166,12 +92,10 @@ test_that("Treatments reordered from default binary file when reference selected
 
 test_that("Data extracted from default binary file", {
   testServer(data_input_panel_server, args = list(metaoutcome = function() { 'Binary' }), {
-    expect_equal(colnames(data()), c('StudyID', 'Study', 'T', 'R', 'N'),
+    expect_equal(colnames(data()), c('Study', 'T', 'R', 'N'),
                  label = format_vector_to_string(colnames(data())))
     expect_equal(nrow(data()), 8,
                  label = nrow(data()))
-    expect_equal(data()$StudyID, c(1, 1, 1, 2, 2, 2, 3, 3),
-                 label = format_vector_to_string(data()$StudyID))
     expect_equal(data()$Study, c('Constantine', 'Constantine', 'Constantine', 'Leo', 'Leo', 'Leo', 'Justinian', 'Justinian'),
                  label = format_vector_to_string(data()$Study))
     expect_equal(data()$T, c('the Great', 'the Younger', 'the Dung-named', 'the Little', 'the Great', 'the Butcher', 'the Great', 'the Slit-nosed'),
