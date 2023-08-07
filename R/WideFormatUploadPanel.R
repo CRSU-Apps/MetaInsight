@@ -12,6 +12,7 @@ wide_format_upload_panel_ui <- function(id) {
                           Instructions are as below.
                           Please note that MetaInsight is not compatible with studies containing multiple arms of the same treatment.")),
            h4(tags$strong("Step 1:")),
+           p("The wide format data file should contain the following columns:"),
            p(tags$ul(tags$li(tags$strong("Study"), "contains name (e.g., author,year) of the study. The study name must be unique for each study."))),
            p(tags$ul(tags$li(tags$strong("T.1, T.2, ..., up to T.6"), "contains name of the treatment given for study arm 1, 2, ..., up to 6, respectively. Treatment names should only contain letters, numbers and underscores."))),
            conditionalPanel(condition= "input.metaoutcome=='Continuous'",
