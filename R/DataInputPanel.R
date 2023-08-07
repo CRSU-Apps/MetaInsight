@@ -23,7 +23,12 @@ data_input_panel_ui <- function(id) {
       )
     ),
     div(class = "clearfix"),
-    selectizeInput(inputId = ns('reference_treatment'), label = 'Select Reference Treatment', choices = c())
+    selectizeInput(
+      inputId = ns('reference_treatment'),
+      label = 'Select Reference Treatment',
+      choices = c()
+    ),
+    data_upgrade_panel_ui(id = ns("data_upgrade_panel"))
   )
 }
 
@@ -39,6 +44,8 @@ data_input_panel_ui <- function(id) {
 data_input_panel_server <- function(id, metaoutcome, continuous_file = 'Cont_long.csv', binary_file = 'Binary_long.csv') {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
+    
+    data_upgrade_panel_server(id = "data_upgrade_panel")
     
     # Create a definable reactive value to allow reloading of data
     reload <- reactiveVal(FALSE)
