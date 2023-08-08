@@ -93,7 +93,7 @@ data_upgrade_panel_server <- function(id) {
       },
       content = function(file) {
         upgraded <- UpgradeData(data_to_upgrade(), treatments_df())
-        write.csv(file = file, x = upgraded, row.names = FALSE)
+        write.csv(file = file, x = upgraded, row.names = FALSE, quote = FALSE)
       }
     )
   })

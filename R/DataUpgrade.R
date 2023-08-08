@@ -5,7 +5,7 @@
 #' @param treatment_df Data frame with 'Number' column defining treatment IDs and 'Label' column defining treatment names
 #' @return Data frame in the new format with treatment names
 ReplaceTreatments <- function(old_data, treatment_df) {
-  upgraded <- old_data
+  upgraded <- CleanData(old_data)
   if ('T' %in% colnames(upgraded)) {
     # Long format
     upgraded$T <- treatment_df$Label[match(upgraded$T, treatment_df$Number)]
