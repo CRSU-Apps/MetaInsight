@@ -13,7 +13,7 @@ shinyServer(function(input, output, session) {
   # Reactive functions used in various places
   #####
   
-  # Define outcome measure (continuous or binary) - NVB
+  # Define outcome measure (continuous or binary) 
   outcome_measure <- reactive({
     if (input$metaoutcome == "Continuous") {
       return(input$outcomeCont)
@@ -38,24 +38,24 @@ shinyServer(function(input, output, session) {
   # Reactive functions used in various places, based on the data
   #####
   
-  # Make frequentist function (in fn_analysis.R) reactive - NVB
+  # Make frequentist function (in fn_analysis.R) reactive
   freq_all <- reactive({
     return(frequentist(data(), input$metaoutcome, treatment_df(), outcome_measure(), input$modelranfix))
   })
   
   exclusions <- debounce(reactive({input$exclusionbox}), 1500)
   
-  # Make frequentist function (in fn_analysis.R) reactive with excluded studies - NVB
+  # Make frequentist function (in fn_analysis.R) reactive with excluded studies
   freq_sub <- reactive({
     return(frequentist(data(), input$metaoutcome, treatment_df(), outcome_measure(), input$modelranfix, exclusions()))
   })
   
-  # Make bugsnetdata function (in fn_analysis.R) reactive - NVB
+  # Make bugsnetdata function (in fn_analysis.R) reactive
   bugsnetdt <- reactive({
     return(bugsnetdata(data(), input$metaoutcome, treatment_df()))
   })
    
-  # Make ref_alter function (in fn_analysis.R) reactive - NVB
+  # Make ref_alter function (in fn_analysis.R) reactive
   reference_alter <- reactive({
     return(ref_alter(data(), input$metaoutcome, exclusions(), treatment_df()))
   })
@@ -1211,7 +1211,8 @@ shinyServer(function(input, output, session) {
           metaoutcome = input$metaoutcome,
           modelranfix = input$modelranfix,
           outcome_measure = outcome_measure(),
-          ranking = input$rankopts
+          ranking = input$rankopts,
+          version = version
         ),
       )
       file.copy("qmd_output.html", file)

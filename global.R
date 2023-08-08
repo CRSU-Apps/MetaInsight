@@ -1,5 +1,7 @@
 ###### MetaInsight ######
 
+version <- "V4.2.0"
+
 # plyr is recommended to be loaded before dplyr for better performance
 library(plyr)
 

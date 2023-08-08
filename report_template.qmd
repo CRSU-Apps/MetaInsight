@@ -1,4 +1,9 @@
 ---
+title: MetaInsight Report `r params$version`
+date: now
+date-format: 'DD MMM YYYY HH:mm'
+language: 
+  title-block-published: "CREATED"
 format: 
   html: 
     toc: false
@@ -17,14 +22,13 @@ params:
   modelranfix: NA
   outcome_measure: NA
   ranking: NA
+  version: NA
 
 ---
 
 ```{r include = FALSE}
 library(gt)
 ```
-
-## MetaInsight Report {.tabset}
 
 ### User inputs and selections {.tabset}
 
