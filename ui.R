@@ -14,6 +14,7 @@ dashboardPage(
   dashboardSidebar(disable = TRUE),
   dashboardBody(
   tags$head(
+    shinyjs::useShinyjs(),
     # load custom stylesheet
     # To ensure white background and no horizontal scroll bars on ranking panel
     tags$link(rel = "stylesheet", type = "text/css", href = "app.css"),
