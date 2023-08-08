@@ -1,0 +1,30 @@
+---
+format: 
+  html: 
+    toc: false
+    anchor-sections: false
+    fig-cap-location: bottom
+    tbl-cap-location: top
+    number-sections: false
+    smooth-scroll: true
+    self-contained: true
+    output-file: "qmd_output.html"
+params:
+  metaoutcome: NA
+---
+
+## MetaInsight Report {.tabset}
+
+### User inputs and selections {.tabset}
+
+#### User selections
+
+```{r echo = FALSE}
+if (params$metaoutcome == "Continuous") {
+  outcome_type_txt <- "Continuous (mean difference)"
+} else {
+  outcome_type_txt <- "Binary (odds ratio)"
+}
+```
+
+**Outcome type:** `r outcome_type_txt`

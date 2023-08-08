@@ -562,7 +562,16 @@ load_data_page_ui(id = 'load_data_page'),
 )))))), width=9))),
 
 ###################################
-### Tab 4 - User Guide ###
+### Tab 4 - Download report     ###
+###################################
+
+tabPanel("Report",
+         p("Wait until MetaInsight has completed any analysis before clicking the generate report button"),
+         downloadButton("report", "Generate report")
+),
+
+###################################
+### Tab 5 - User Guide ###
 ###################################
 
 tabPanel("User Guide",
@@ -595,7 +604,7 @@ tabPanel("User Guide",
 
 
 ###################################
-### Tab 5 - Troublehshooting.   ###
+### Tab 6 - Troublehshooting.   ###
 ###################################
 
 tabPanel(id="trouble", "Troubleshooting",
@@ -607,7 +616,7 @@ tags$iframe(style = "height:1500px; width:100%; scrolling=yes",
 ),
 
 ##############################
-### Tab 6 - Privacy notice ###
+### Tab 7 - Privacy notice ###
 ##############################
 
 

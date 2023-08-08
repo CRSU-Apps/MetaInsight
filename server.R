@@ -1188,6 +1188,61 @@ shinyServer(function(input, output, session) {
     scat_plot(model_sub())$y
   })
   
+  ###################################
+  ### Tab 4 - Download report     ###
+  ###################################
+
+  #Create Quarto report
+  output$report <- downloadHandler(
+    filename = "MetaInsightReport.html",
+
+    content = function(file) {
+      
+      # Copy the report file to a temporary directory before processing it
+      # tempReport <- file.path(tempdir(), "report_template.qmd")
+      # file.copy("report_template.qmd", tempReport, overwrite = TRUE)
+
+      quarto::quarto_render(
+        input = "report_template.qmd",
+        execute_params = list(
+          metaoutcome = input$metaoutcome
+        ),
+      )
+      file.copy("qmd_output.html", file)
+    }
+  )
+  
+  # Reprod_ex is file that is downloaded
+  # qmd_output is temp file
+
+  #     
+  #     # Set up parameters to pass to Rmd document
+  #     params <- list(axis = list(freqmin = input$freqmin, freqmax = input$freqmax, 
+  #                                freqmin_sub = input$freqmin_sub, freqmax_sub = input$freqmax_sub),
+                     # bayes = list(model = model_report(), model_sub = model_sub_report(),
+                     #              bayesmax = input$bayesmax, bayesmin = input$bayesmin,
+                     #              bayesmax_sub = input$bayesmax_sub, bayesmin_sub = input$bayesmin_sub),
+                     # bugsnetdt = bugsnetdt(),
+                     # data = data(),
+                     # excluded = paste(input$exclusionbox, collapse = ", "),
+                     # exclusionbox = input$exclusionbox,
+                     # forest = list(ForestHeader = input$ForestHeader, ForestTitle = input$ForestTitle),
+                     # freq_all = freq_all(),
+                     # freq_sub = freq_sub(),
+                     # label = treatment_list(),
+                     # metaoutcome = input$metaoutcome,
+                     # model_nodesplit = nodesplit_report(),
+                     # model_nodesplit_sub = nodesplit_sub_report(),
+                     # modelranfix = input$modelranfix,
+                     # netgraph_label = list(label_all = input$label_all, label_excluded = input$label_excluded),
+                     # outcome_measure = outcome_measure(),
+                     # ranking = input$rankopts,
+                     # RankingData = RankingData(),
+                     # RankingData_sub = RankingData_sub(),
+                     # reference_alter = reference_alter()
+                     # )
+                   
+  
   output$UG <- downloadHandler(
     filename = "MetaInsightUserGuide.pdf",
     content = function(file) {
