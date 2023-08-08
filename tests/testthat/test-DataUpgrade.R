@@ -44,6 +44,21 @@ test_that("CreateTreatmentsDataFrame() parses string with duplicated and trailin
                label = format_vector_to_string(treatment_df$Label))
 })
 
+test_that("CreateTreatmentsDataFrame() replaces spaces with underscores", {
+  treatments_string <- "Egg,Flour,Sugar,Butter,Cinnamon, Baking Powder "
+  
+  treatment_df <- CreateTreatmentsDataFrame(treatments_string)
+  
+  expect_equal(colnames(treatment_df), c("Number", "Label"),
+               label = format_vector_to_string(colnames(treatment_df)))
+  expect_equal(nrow(treatment_df), 6,
+               label = nrow(treatment_df))
+  expect_equal(treatment_df$Number, 1:6,
+               label = format_vector_to_string(treatment_df$Number))
+  expect_equal(treatment_df$Label, c("Egg", "Flour", "Sugar", "Butter", "Cinnamon", "Baking_Powder"),
+               label = format_vector_to_string(treatment_df$Label))
+})
+
 test_that("UpgradeData() upgrades long-format data", {
   old_data <- data.frame(
     StudyID = c(1, 1, 2, 2, 3, 3, 3),

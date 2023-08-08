@@ -26,9 +26,9 @@ ReplaceTreatments <- function(old_data, treatment_df) {
 #' @param treatment_names_string String containing treatment names, separated by commas
 #' @return Data frame with 'Number' column defining treatment IDs and 'Label' column defining treatment names
 CreateTreatmentsDataFrame <- function(treatment_names_string) {
-  treatments = stringr::str_trim(
-    stringr::str_split(treatment_names_string, ",")[[1]]
-  )
+  treatments <- stringr::str_split(treatment_names_string, pattern = ",")[[1]] %>%
+    stringr::str_trim() %>%
+    stringr::str_replace_all(pattern = " ", replacement = "_")
   treatments <- treatments[treatments != ""]
   
   if (length(treatments) == 0) {

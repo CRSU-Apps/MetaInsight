@@ -19,7 +19,7 @@ data_upgrade_panel_ui <- function(id) {
       ),
       textInput(
         inputId = ns("treatment_names"),
-        label = "Type in the treatment names in order, separated by commas"
+        label = "Type in the treatment names in order, separated by commas. Eg. \"Placebo,Paracetamol,Ibuprofen\""
       ),
       span(
         textOutput(outputId = ns("treatment_validation")),
@@ -49,10 +49,6 @@ data_upgrade_panel_server <- function(id) {
           fileEncoding = 'UTF-8-BOM'
         )
       )
-    })
-    
-    treatments_df <- reactive({
-      return(CreateTreatmentsDataFrame(input$treatment_names))
     })
     
     treatments_df <- reactive({

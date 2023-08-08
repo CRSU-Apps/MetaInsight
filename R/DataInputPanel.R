@@ -7,8 +7,15 @@ data_input_panel_ui <- function(id) {
   ns <- NS(id)
   div(
     h4(tags$strong("Select a data file (.csv) to upload")),
-    p(tags$strong("Files used before version 5.0 are no longer compatible. To use an older file, replace the numeric treatment IDs in the \"T\" column(s) with the treatment names.",
-                  style = "color:red")),
+    p(
+      tags$strong(
+        "Files used before version 5.0 are no longer compatible.",
+        "To use an older file, use the data upgrade option at the bottom of this panel,",
+        "or remove the \"StudyID\" column and replace the numeric treatment IDs in the",
+        "\"T\" column(s) with the treatment names.",
+        style = "color:red"
+      )
+    ), 
     p(tags$strong("Default maximum file size is 5MB.")),
     uiOutput(outputId = ns("file_input_panel")),
     conditionalPanel(
