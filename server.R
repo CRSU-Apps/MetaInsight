@@ -1205,15 +1205,18 @@ shinyServer(function(input, output, session) {
       quarto::quarto_render(
         input = "report_template.qmd",
         execute_params = list(
-          metaoutcome = input$metaoutcome
+          data = data(),
+          excluded = input$exclusionbox,
+          label = treatment_df(),
+          metaoutcome = input$metaoutcome,
+          modelranfix = input$modelranfix,
+          outcome_measure = outcome_measure(),
+          ranking = input$rankopts
         ),
       )
       file.copy("qmd_output.html", file)
     }
   )
-  
-  # Reprod_ex is file that is downloaded
-  # qmd_output is temp file
 
   #     
   #     # Set up parameters to pass to Rmd document
@@ -1223,20 +1226,12 @@ shinyServer(function(input, output, session) {
                      #              bayesmax = input$bayesmax, bayesmin = input$bayesmin,
                      #              bayesmax_sub = input$bayesmax_sub, bayesmin_sub = input$bayesmin_sub),
                      # bugsnetdt = bugsnetdt(),
-                     # data = data(),
-                     # excluded = paste(input$exclusionbox, collapse = ", "),
-                     # exclusionbox = input$exclusionbox,
                      # forest = list(ForestHeader = input$ForestHeader, ForestTitle = input$ForestTitle),
                      # freq_all = freq_all(),
                      # freq_sub = freq_sub(),
-                     # label = treatment_list(),
-                     # metaoutcome = input$metaoutcome,
                      # model_nodesplit = nodesplit_report(),
                      # model_nodesplit_sub = nodesplit_sub_report(),
-                     # modelranfix = input$modelranfix,
                      # netgraph_label = list(label_all = input$label_all, label_excluded = input$label_excluded),
-                     # outcome_measure = outcome_measure(),
-                     # ranking = input$rankopts,
                      # RankingData = RankingData(),
                      # RankingData_sub = RankingData_sub(),
                      # reference_alter = reference_alter()
