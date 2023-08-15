@@ -1,6 +1,6 @@
 ###### MetaInsight ######
 
-version <- "V4.2.0"
+version <- "v5.0.0"
 
 # plyr is recommended to be loaded before dplyr for better performance
 library(plyr)
@@ -21,7 +21,6 @@ library(netmeta)
 library(patchwork)
 library(plotly)
 library(plotrix)
-library(quarto)
 library(shiny) 
 library(shinyalert)
 library(shinyAce)

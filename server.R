@@ -1192,53 +1192,54 @@ shinyServer(function(input, output, session) {
   ### Tab 4 - Download report     ###
   ###################################
 
-  #Create Quarto report
+  # Create Rmd report
   output$report <- downloadHandler(
+    
     filename = "MetaInsightReport.html",
-
     content = function(file) {
       
       # Copy the report file to a temporary directory before processing it
-      # tempReport <- file.path(tempdir(), "report_template.qmd")
-      # file.copy("report_template.qmd", tempReport, overwrite = TRUE)
-
-      quarto::quarto_render(
-        input = "report_template.qmd",
-        execute_params = list(
-          data = data(),
-          excluded = input$exclusionbox,
-          label = treatment_df(),
-          metaoutcome = input$metaoutcome,
-          modelranfix = input$modelranfix,
-          outcome_measure = outcome_measure(),
-          ranking = input$rankopts,
-          version = version
-        ),
+      tempReport <- file.path(tempdir(), "report.Rmd")
+      file.copy("report.Rmd", tempReport, overwrite = TRUE)
+      
+      # Set up parameters to pass to Rmd document
+      params <- list(colnames = colnames(),
+                     data = data(),
+                     filtertable = filtertable(),
+                     metaoutcome = input$metaoutcome,
+                     modelranfix = input$modelranfix,
+                     outcome_measure = outcome_measure(),
+                     ranking = input$rankopts,
+                     version = version)
+      
+      # params <- list(axis = list(freqmin = input$freqmin, freqmax = input$freqmax, 
+      #                            freqmin_sub = input$freqmin_sub, freqmax_sub = input$freqmax_sub),
+      #                bayes = list(model = model_report(), model_sub = model_sub_report(),
+      #                             bayesmax = input$bayesmax, bayesmin = input$bayesmin,
+      #                             bayesmax_sub = input$bayesmax_sub, bayesmin_sub = input$bayesmin_sub),
+      #                bugsnetdt = bugsnetdt(),
+      #                excluded = paste(input$exclusionbox, collapse = ", "),
+      #                exclusionbox = input$exclusionbox,
+      #                forest = list(ForestHeader = input$ForestHeader, ForestTitle = input$ForestTitle),
+      #                freq_all = freq_all(),
+      #                freq_sub = freq_sub(),
+      #                label = treatment_list(),
+      #                model_nodesplit = nodesplit_report(),
+      #                model_nodesplit_sub = nodesplit_sub_report(),
+      #                netgraph_label = list(label_all = input$label_all, label_excluded = input$label_excluded),
+      #                outcome_measure = outcome_measure(),
+      #                # RankingData = RankingData(),
+      #                # RankingData_sub = RankingData_sub(),
+      #                reference_alter = reference_alter())
+      
+      # Knit the document, passing in the `params` list, and eval it in a child of the global environment 
+      rmarkdown::render(tempReport, output_file = file,
+                        params = params,
+                        envir = new.env(parent = globalenv())
       )
-      file.copy("qmd_output.html", file)
     }
   )
-
-  #     
-  #     # Set up parameters to pass to Rmd document
-  #     params <- list(axis = list(freqmin = input$freqmin, freqmax = input$freqmax, 
-  #                                freqmin_sub = input$freqmin_sub, freqmax_sub = input$freqmax_sub),
-                     # bayes = list(model = model_report(), model_sub = model_sub_report(),
-                     #              bayesmax = input$bayesmax, bayesmin = input$bayesmin,
-                     #              bayesmax_sub = input$bayesmax_sub, bayesmin_sub = input$bayesmin_sub),
-                     # bugsnetdt = bugsnetdt(),
-                     # forest = list(ForestHeader = input$ForestHeader, ForestTitle = input$ForestTitle),
-                     # freq_all = freq_all(),
-                     # freq_sub = freq_sub(),
-                     # model_nodesplit = nodesplit_report(),
-                     # model_nodesplit_sub = nodesplit_sub_report(),
-                     # netgraph_label = list(label_all = input$label_all, label_excluded = input$label_excluded),
-                     # RankingData = RankingData(),
-                     # RankingData_sub = RankingData_sub(),
-                     # reference_alter = reference_alter()
-                     # )
-                   
-  
+          
   output$UG <- downloadHandler(
     filename = "MetaInsightUserGuide.pdf",
     content = function(file) {
