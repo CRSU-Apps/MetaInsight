@@ -54,11 +54,14 @@ dashboardPage(
       column(5, 
             p(tags$strong("Latest Updates:")),
             p(tags$strong("Major update (15 August 2023 v5.0.0):")),
-            p("MetaInsight has been changed to make it easier for users to upload their own datasets for analysis. 
+            p(tags$ul(
+            tags$li("MetaInsight has been changed to make it easier for users to upload their own datasets for analysis. 
               Study data and treatment labels can now be uploaded in a single file.
               See the 'load data' tab for more guidance and the option to upgrade data files used in previous versions of MetaInsight "),
+            tags$li("Summary forest plots are now available in frequentist analysis tab 2d")
+            )),
             p(tags$strong("Minor update (11 July 2023 v4.2.0):")),
-            p(tags$ul("A new video tutorial from ESMARConf2023 is available in the User Guide tab")),
+            p("A new video tutorial from ESMARConf2023 is available in the User Guide tab"),
             p("Click", tags$a(href = "https://github.com/CRSU-Apps/MetaInsight/wiki/Full-Update-History", "here", target="_blank"), "to view a full update history of MetaInsight"),
             p("The code for MetaInsight is available on", tags$a(href="https://github.com/CRSU-Apps/MetaInsight", "GitHub",target="_blank")),
             br(),
