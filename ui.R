@@ -23,7 +23,7 @@ dashboardPage(
     tags$meta(name="keywords", content="MetaInsight, NMA, Network, Meta, Analysis, App"),
     tags$meta(property="og:title", content="Meta Insight: V4.1.0"),
     tags$meta(property="og:description", content="An interactive web tool for network meta-analysis (NMA) that leverages established analysis routines"),
-    tags$meta(property="og:image", content="images/MetaInsightLogo.png")
+    tags$meta(property="og:image", content="https://raw.githubusercontent.com/CRSU-Apps/MetaInsight/main/www/images/MetaInsightLogo.png")
   ),
   navbarPage(id="meta",
                    "MetaInsight", 
@@ -80,7 +80,7 @@ dashboardPage(
             )),
     br(),
     p("Clareece Nevill, Naomi Bradbury, Yiqiao Xin, Rhiannon K Owen, Ryan Field, Nicola Cooper, and Alex Sutton", align= "left"),
-    p("For feedback/questions about this app please contact Professor Alex Sutton", tags$a(href="mailto:ajs22@leicester.ac.uk", "ajs22@leicester.ac.uk", align= "left"), ". If you encounter any errors with using the app, please check  
+    p("For feedback/questions about this app please email the CRSU team at apps@crsu.org.uk. If you encounter any errors with using the app, please check  
        the",  actionLink("tsp", "trouble shooting page"), "first before contacting us."),
     br(),
     p("If you use the app please cite it as:"),
@@ -106,7 +106,7 @@ dashboardPage(
        tags$p("The Complex Reviews Support Unit is funded by the National Institute for Health Research (NIHR) (project number 14/178/29).
        Development of this app is also funded by the NIHR Applied Research Collaboration East Midlands (ARC EM) and the Leicester NIHR Biomedical Research Centre (BRC).
        The views expressed are those of the author(s) and not necessarily those of the NIHR or the Department of Health and Social Care."),
-       tags$p("Please click ", tags$a(href="http://www.nihrcrsu.org", "here ", target="_blank"), "for more information about the UK NIHR Complex Reviews Support Unit (CRSU).")
+       tags$p("Please click ", tags$a(href="https://www.gla.ac.uk/research/az/evidencesynthesis/apps-materials-guidence/", "here ", target="_blank"), "for more information about the UK NIHR Complex Reviews Support Unit (CRSU).")
      )),
                    
 #########################
