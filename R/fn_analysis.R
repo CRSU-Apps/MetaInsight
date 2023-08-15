@@ -2,12 +2,16 @@
 ############################################ Frequentist ############################################
 #####################################################################################################
 
-frequentist <- function(sub, data, metaoutcome, treatment_list, outcome_measure, modelranfix, excluded){
+frequentist <- function(data, metaoutcome, treatment_list, outcome_measure, modelranfix, excluded=c()){
   data_wide <-  entry.df(data, metaoutcome) # Transform data to wide form
-  if (sub == TRUE) {data_wide <- filter(data_wide, !Study %in% excluded)} # Subset of data when studies excluded
-  treat_list <- treatment_label(treatment_list)
+  
+  # Subset of data when studies excluded
+  if (length(excluded) > 0) {
+    data_wide <- dplyr::filter(data_wide, !Study %in% excluded)
+  }
+  
   # Use the self-defined function, freq_wrap
-  return(freq_wrap(data_wide, treat_list, modelranfix, outcome_measure, metaoutcome, 
+  return(freq_wrap(data_wide, treatment_list, modelranfix, outcome_measure, metaoutcome, 
                    ref_alter(data, metaoutcome, excluded, treatment_list)$ref_sub))
 }
 
@@ -15,19 +19,17 @@ frequentist <- function(sub, data, metaoutcome, treatment_list, outcome_measure,
 # Inputting the data in long form
 bugsnetdata <- function(data, metaoutcome, treatment_list){
   newData1 <- as.data.frame(data)
-  treat_list <- treatment_label(treatment_list)
-  treat_list$Label <- stringr::str_wrap(gsub("_", " ",treat_list$Label), width=10)  # better formatting (although does assume underscores have only been added due to the treatment label entry limitations) CRN
-  longsort2 <- dataform.df(newData1,treat_list,metaoutcome)    
+  treatment_list$Label <- stringr::str_wrap(gsub("_", " ",treatment_list$Label), width=10)  # better formatting (although does assume underscores have only been added due to the treatment label entry limitations) CRN
+  longsort2 <- dataform.df(newData1,treatment_list,metaoutcome)    
   return(longsort2)
 }
 
 # Reference treatment if treatment 1 is removed from the network
 ref_alter <- function(data, metaoutcome, excluded, treatment_list){
   newData1 <- as.data.frame(data)
-  treat_list <- treatment_label(treatment_list)
-  lstx <- treat_list$Label
+  lstx <- treatment_list$Label
   ref_all <- as.character(lstx[1])
-  longsort2 <- dataform.df(newData1, treat_list, metaoutcome)
+  longsort2 <- dataform.df(newData1, treatment_list, metaoutcome)
   long_sort2_sub <- filter(longsort2, !Study %in% excluded)  # subgroup
   if (((lstx[1] %in% long_sort2_sub$T) ) == "TRUE") {
     ref_sub<- as.character(lstx[1])
@@ -470,6 +472,7 @@ rankdata <- function(NMAdata, rankdirection, longdata) {
   Patients <- dplyr::rename(Patients, c("Treatment"="Category", "N"="x"))  # previously using plyr::rename where old/new names are other way round
   Patients$Treatment <- gsub("_", " ", Patients$Treatment) #remove underscores, otherwise next line won't work
   SUCRA <- SUCRA %>% dplyr::right_join(Patients, by = "Treatment")
+  
   # Node size #
   size.maxO <- 15
   size.maxA <- 10

@@ -1,28 +1,20 @@
-###### Combined MEtaInsight ######
-
-#install.packages(c("dplyr","metafor", "netmeta","shiny", "shinyAce","rmarkdown", "knitr", "shinydashboard", "gemtc"
-#  , "shinyalert", "ggplot2", "plotly"))
-
-# install.packages("pkgbuild")
-# pkgbuild::has_build_tools()
-# install.packages(c("remotes", "knitr", "devtools"))
-# remotes::install_github("audrey-b/BUGSnet@v1.0.4", upgrade = TRUE, build_vignettes = TRUE)
-# devtools::install_github("audrey-b/BUGSnet@v1.0.4", upgrade = TRUE, build_vignettes = TRUE)
+###### MetaInsight ######
 
 dashboardPage(
   dashboardHeader(disable = TRUE),
   dashboardSidebar(disable = TRUE),
   dashboardBody(
   tags$head(
+    shinyjs::useShinyjs(),
     # load custom stylesheet
     # To ensure white background and no horizontal scroll bars on ranking panel
     tags$link(rel = "stylesheet", type = "text/css", href = "app.css"),
     includeHTML("www/favicon/favicon.html"),
     tags$meta(name="description", content="A interactive web tool for network meta-analysis (NMA) that leverages established analysis routines"),
     tags$meta(name="keywords", content="MetaInsight, NMA, Network, Meta, Analysis, App"),
-    tags$meta(property="og:title", content="Meta Insight: V4.1.0"),
+    tags$meta(property="og:title", content="Meta Insight: V5.0.0"),
     tags$meta(property="og:description", content="An interactive web tool for network meta-analysis (NMA) that leverages established analysis routines"),
-    tags$meta(property="og:image", content="images/MetaInsightLogo.png")
+    tags$meta(property="og:image", content="https://raw.githubusercontent.com/CRSU-Apps/MetaInsight/main/www/images/MetaInsightLogo.png")
   ),
   navbarPage(id="meta",
                    "MetaInsight", 
@@ -49,7 +41,7 @@ dashboardPage(
                             #   zoom: 75%; /* Webkit browsers */
                             #   }
                             #   "), 
-    h2("MetaInsight V4.2.0",
+    h2("MetaInsight V5.0.0",
       #tags$sup("Beta", style="color:#6CC0ED"), 
       align= "left"),
     fluidRow(
@@ -61,25 +53,22 @@ dashboardPage(
       column(2),
       column(5, 
             p(tags$strong("Latest Updates:")),
-            p(tags$strong("** Minor update (11 July 2023 v4.2.0 **:")),
-            p(tags$ul(tags$li("A new video tutorial from ESMARConf2023 is available in the User Guide tab"))),
-            p(tags$strong("** Major New Feature: Redesign of Bayesian Ranking Panel (10 February 2023 v4.0.0) **:")),
-            p(tags$ul(tags$li("The Bayesian treatment ranking section has had a complete redesign including two newly developed plots 
-                              and a multifaceted panel to interpret the results with other evidence.
-                              A short demo video of how to use the new panel is available below."),
-                      tags$li("The new feature is associated with the following peer-reviewed paper: ",
-                              tags$a(href="https://doi.org/10.1016/j.jclinepi.2023.02.016", "Nevill CR, Cooper NJ, Sutton AJ, A multifaceted graphical display, including treatment ranking, was developed to aid interpretation of network meta-analysis, 
-                              Journal of Clinical Epidemiology (2023)")))),
+            p(tags$strong("Major update (15 August 2023 v5.0.0):")),
+            p(tags$ul(
+            tags$li("MetaInsight has been changed to make it easier for users to upload their own datasets for analysis. 
+              Study data and treatment labels can now be uploaded in a single file.
+              See the 'load data' tab for more guidance and the option to upgrade data files used in previous versions of MetaInsight "),
+            tags$li("Summary forest plots are now available in frequentist analysis tab 2d")
+            )),
+            p(tags$strong("Minor update (11 July 2023 v4.2.0):")),
+            p("A new video tutorial from ESMARConf2023 is available in the User Guide tab"),
             p("Click", tags$a(href = "https://github.com/CRSU-Apps/MetaInsight/wiki/Full-Update-History", "here", target="_blank"), "to view a full update history of MetaInsight"),
             p("The code for MetaInsight is available on", tags$a(href="https://github.com/CRSU-Apps/MetaInsight", "GitHub",target="_blank")),
             br(),
-
-            HTML('<iframe width="560" height="315" src="https://www.youtube.com/embed/scbLwTY0kvc" title="MetaInsight Treatment Ranking Demo" 
-                 frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>')
-            )),
+      )),
     br(),
     p("Clareece Nevill, Naomi Bradbury, Yiqiao Xin, Rhiannon K Owen, Ryan Field, Nicola Cooper, and Alex Sutton", align= "left"),
-    p("For feedback/questions about this app please contact Professor Alex Sutton", tags$a(href="mailto:ajs22@leicester.ac.uk", "ajs22@leicester.ac.uk", align= "left"), ". If you encounter any errors with using the app, please check  
+    p("For feedback/questions about this app please email the CRSU team at apps@crsu.org.uk. If you encounter any errors with using the app, please check  
        the",  actionLink("tsp", "trouble shooting page"), "first before contacting us."),
     br(),
     p("If you use the app please cite it as:"),
@@ -105,7 +94,7 @@ dashboardPage(
        tags$p("The Complex Reviews Support Unit is funded by the National Institute for Health Research (NIHR) (project number 14/178/29).
        Development of this app is also funded by the NIHR Applied Research Collaboration East Midlands (ARC EM) and the Leicester NIHR Biomedical Research Centre (BRC).
        The views expressed are those of the author(s) and not necessarily those of the NIHR or the Department of Health and Social Care."),
-       tags$p("Please click ", tags$a(href="http://www.nihrcrsu.org", "here ", target="_blank"), "for more information about the UK NIHR Complex Reviews Support Unit (CRSU).")
+       tags$p("Please click ", tags$a(href="https://www.gla.ac.uk/research/az/evidencesynthesis/apps-materials-guidence/", "here ", target="_blank"), "for more information about the UK NIHR Complex Reviews Support Unit (CRSU).")
      )),
                    
 #########################
@@ -115,145 +104,7 @@ dashboardPage(
 # Within the load data tab let users select a file to upload, the upload happens in a sidebarPanel on
 # the left and the mainPanel will show the data once file uploaded.
 
-tabPanel("Load Data",
-   htmlOutput("CONBI"),
-   tags$head(tags$style("#CONBI{color: white;
-                           font-size: 20px;
-                           font-style: bold;
-                           background-color: #2196c4
-                           }"
-                            )),
-                            br(),
-                            sidebarLayout(
-                              sidebarPanel(
-                                h4(tags$strong("Step 1 - Please select a data file (.csv) to upload")),
-                                br(),
-                                p(tags$strong("Note: Excel files should be saved in 'csv (Comma delimited) (*.csv)' format. Default maximum file size is 5MB.")),
-                                uiOutput("file_input"),
-                                uiOutput("reload_button"),
-                                br(),
-                                tags$hr(),
-                                h4(tags$strong("Step 2 - Please copy and paste the treatment labels")),
-                                br(),
-                                p(tags$strong("Note: The first row must be 'Number' tabspace 'Label' as shown in the pre-loaded format, case sensitive.")),
-                                p(tags$strong("      Treatment names may only contain letters, digits, and underscore (_).")),
-                                p(tags$strong("Tabspace does not work when directly typing into the texbox. Please copy and paste from a text or Excel file, or copy and paste from one of the pre-loaded rows.")),
-                                br(),
-                                uiOutput("trt_panel"),
-                                div(style = "display:inline-block; float:right", actionButton("reload_labels", "Reload Default Labels", icon("arrows-rotate"), 
-                                                                                              style="color: #fff; background-color: #007bff; border-color: #007bff")),
-                                div(class = "clearfix")
-                              ),
-                              mainPanel(
-                                tabsetPanel(id="instructions",
-                                            tabPanel("Long format upload", 
-                                                     h2(tags$strong("Instructions for uploading long format data")),
-                                                     br(),
-                                                     p(tags$strong("MetaInsight allows data in either long format, or wide format. This tab provides instructions for long format data, where each row contains one treatment arm. 
-                          Please follow Steps 1 and 2 to upload the data file and enter the treatment labels. 
-                          Instructions are as below.
-                          Please note that MetaInsight is not compatible with studies containing multiple arms of the same treatment.")),
-            h4(tags$strong("Step 1:")),
-            p(),
-            conditionalPanel(condition= "input.metaoutcome=='Continuous'",
-              p("The long format data file should contain six columns. Headings of columns are case sensitive."), 
-              p(tags$ul(tags$li("The", tags$strong("first"), "column should be labelled", tags$strong("StudyID"), "and contain the study identifier, starting from 1, then 2, 3, 4... etc."))),
-              p(tags$ul(tags$li("The", tags$strong("second"), "column should be labelled", tags$strong("Study"), "and contain the name (e.g., author,year) of the study. The study name must be unique for each study."))),
-              p(tags$ul(tags$li("The", tags$strong("third"), "column should be labelled", tags$strong("T"), "and contain the numerical treatment code used in each arm of the study.", 
-                                tags$strong("If applicable, your reference treatment (e.g. Placebo/Control)"), tags$strong(tags$u("needs to be labelled as 1."))))),
-              p(tags$ul(tags$li("The", tags$strong("fourth"), "column should be labelled", tags$strong("N"), "and contain the number of participants in each arm of the study."))),
-              p(tags$ul(tags$li("The", tags$strong("fifth"), "column should be labelled", tags$strong("Mean"), "and contain the mean value of the outcome in each arm of the study."))),
-              p(tags$ul(tags$li("The", tags$strong("sixth"), "column should be labelled", tags$strong("SD"), "and contain the standard deviation of the outcome in each arm of the study.")))
-            ), 
-            conditionalPanel(condition = "input.metaoutcome=='Binary'", 
-              p("The long format data file should contain five columns. Headings of columns are case sensitive."), 
-              p(tags$ul(tags$li("The", tags$strong("first"), "column should be labelled", tags$strong("StudyID"), "and contain the study identifier, starting from 1, then 2, 3, 4... etc."))),
-              p(tags$ul(tags$li("The", tags$strong("second"), "column should be labelled", tags$strong("Study"), "and contain the name (e.g., author,year) of the study. The study name must be unique for each study."))),
-              p(tags$ul(tags$li("The", tags$strong("third"), "column should be labelled", tags$strong("T"), "and contain the numerical treatment code used in each arm of the study.", 
-                        tags$strong("If applicable, your reference treatment (e.g. Placebo/Control)"), tags$strong(tags$u("needs to be labelled as 1."))))),
-              p(tags$ul(tags$li("The", tags$strong("fourth"), "column should be labelled", tags$strong("R"), 
-                        "and contain the number of participants with the outcome of interest in each arm of the study."))),
-              p(tags$ul(tags$li("The", tags$strong("fifth"), "column should be labelled", tags$strong("N"), "and contain the number of participants in each arm of the study."))),
-              p("N.B. Continuity corrections will need to be applied to cells containing 0 values")               
-            ),
-            p("An example of this structure can be seen in the", tags$strong("'View Data'"), "tab."),
-            p("The csv file that is used to produce the example dataset can be downloaded from here:"),
-            downloadButton("downloadData", "Download the example dataset in long format"),
-            br(),
-            h4(tags$strong("Step 2:")),
-            p("Enter the labels to match with the numerical treatment codes in the data file. Labels should be short to allow for clear display on figures."),
-            p("Data can be copy and pasted from Excel or another tab separated file such as '.txt'"),
-            p("The default 'treatment labels' text file can be downloaded from here:"),
-            downloadButton("downloadlabel", "Download the example 'treatment labels' text file"),
-            br(),
-            p(),
-            conditionalPanel(condition = "input.metaoutcome=='Continuous'", 
-              p(HTML(paste0("This default dataset for continuous outcome data is from Gray, LJ. et al. A systematic review and mixed treatment 
-                comparison of pharmacological interventions for the treatment of obesity. Obesity reviews 13.6 (2012): 483-498.
-                The continuous outcome used is BMI loss (kg/m",tags$sup("2"),") 3 months from baseline.")))
-                                                     ),
-                                                     conditionalPanel(condition = "input.metaoutcome=='Binary'", 
-                                                                      p("This default dataset for binary outcome data is from Hasselblad, V. (1998), Meta-Analysis of Multi-Treatment Studies, 
-                Medical Decision Making, 18, 37-43.
-                The binary outcome used is smoking cessation.")
-            ),
-            br(),
-            p(tags$strong("Note: The default dataset, pre-loaded on the 'View Data' tab, and its pre-loaded treatment labels will be used for analysis if no file is selected or no treatment labels are pasted. The 'View Data' tab will automatically update once a file is successfully loaded."))
-            ),
-
-         tabPanel("Wide format upload",
-            h2(tags$strong("Instructions for uploading wide format data")),
-            br(),
-            p(tags$strong("MetaInsight allows data in either long format, or wide format. This tab provides instructions for wide format data, where each row contains all the treatment arms from one study. Please follow Steps 1 and 2 to upload the data file and enter the treatment labels. 
-                          Instructions are as below.
-                          Please note that MetaInsight is not compatible with studies containing multiple arms of the same treatment.")),
-            h4(tags$strong("Step 1:")),
-            downloadButton("downloadDataWide", "Download the example dataset in wide format"), # Button
-            br(),
-            p("Your data needs to have exactly the same variable names as in the example data which can be downloaded from here:"),
-            p("Headings of columns are case sensitive."),
-            p(tags$ul(tags$li(tags$strong("StudyID"), "contains study identifier, starting from 1, then 2, 3, 4... etc."))),
-            p(tags$ul(tags$li(tags$strong("Study"), "contains name (e.g., author,year) of the study. The study name must be unique for each study."))),
-            p(tags$ul(tags$li(tags$strong("T.1, T.2, ..., up to T.6"), "contains treatment given for study arm 1, 2, ..., up to 6, respectively given as a numerical code"))),
-            conditionalPanel(condition= "input.metaoutcome=='Continuous'",
-              p(tags$ul(tags$li(tags$strong("N.1, N.2, ..., up to N.6"), "contains number of participants in study arm 1, 2, ..., up to 6, respectively"))),
-              p(tags$ul(tags$li(tags$strong("Mean.1, Mean.2, ..., up to Mean.6"), "contains the mean value of the outcome in study arm 1, 2, ..., up to 6, respectively"))),
-              p(tags$ul(tags$li(tags$strong("SD.1, SD.2, ..., up to SD.6"), "contains standard deviation of the outcome in study arm 1, 2, ..., up to 6, respectively")))
-            ),
-            conditionalPanel(condition = "input.metaoutcome=='Binary'",
-              p(tags$ul(tags$li(tags$strong("R.1, R.2, ..., up to R.6"), "contains number of participants with the outcome of interest in study arm 1, 2, ..., up to 6, respectively"))),
-              p(tags$ul(tags$li(tags$strong("N.1, N.2, ..., up to N.6"), "contains number of participants in study arm 1, 2, ..., up to 6, respectively")))
-            ),
-            p(tags$strong("Note: If applicable, your reference treatment (e.g. Placebo/Control)", 
-                          tags$u("needs to be labelled as treatment 1"))),
-            p(tags$strong("The maximum number of arms for each trial allowed in the MetaInsight app is 6.")),
-            br(),
-            h4(tags$strong("Step 2:")),
-            p("Enter the labels to match with the numerical treatment codes in the data file. Labels should be short to allow for clear display on figures."),
-            p("Data can be copy and pasted from Excel or another tab separated file such as '.txt'"),
-            p("The default 'treatment labels' text file can be downloaded from here:"),
-            downloadButton("downloadlabel2", "Download the example 'treatment labels' text file"),
-            br(),
-            p(),
-            conditionalPanel(condition= "input.metaoutcome=='Continuous'",
-              p("This default dataset is from Gray, LJ. et al. A systematic review and mixed treatment 
-              comparison of pharmacological interventions for the treatment of obesity. Obesity reviews 13.6 (2012): 483-498.")
-                                                     ),
-                                                     conditionalPanel(condition = "input.metaoutcome=='Binary'",
-                                                                      p("This default dataset for binary outcome data is from Hasselblad, V. (1998), Meta-Analysis of Multi-Treatment Studies, 
-                Medical Decision Making, 18, 37-43.")
-                                                     ),
-                                                     br(),
-                                                     p(tags$strong("Note: The default dataset, pre-loaded on the 'View Data' tab, and its pre-loaded treatment labels 
-                          will be used for analysis if no file is selected or no treatment labels are pasted. The 'View Data'
-                          tab will automatically update once a file is successfully loaded."))
-                                            ),
-                                            tabPanel("View Data", 
-                                                     p("Please double check if the total number of treatments matches the total number of treatment labels, 
-                    i.e. make sure each treatment code in the data has a corresponding treatment label, 
-                    and there is no additional treatment label which does not exist in the data."),
-                                                     uiOutput("tb"))
-                                )))),
+load_data_page_ui(id = 'load_data_page'),
                    
                    #############################
                    ### Tab 3 - Data analysis ###
@@ -401,7 +252,8 @@ tabPanel("Load Data",
                                              tableOutput("Incon1"), downloadButton('downloadIncon', "Download"),
                                              helpText("Assessment of inconsistency with studies excluded"), 
                                              tableOutput("Incon2"), downloadButton('downloadIncon2', "Download")
-                                    ))),
+                                    ),
+                                    tabPanel("2d. Summary Forest Plot", summary_forest_plots_ui(id = '2d.summaryForestPlot')))),
                                   tabPanel("3. Bayesian network meta-analysis", tabsetPanel(id="tab",
             tabPanel("3a. Forest plot",
                     helpText("Baysesian result using the gemtc package.", tags$br(), 
@@ -717,6 +569,11 @@ tabPanel("User Guide",
          HTML('<iframe width="560" height="315" src="https://www.youtube.com/embed/g-RDnQ75Hv4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>'),
          br(),
          br(),
+         h4 (tags$strong("Treatment Ranking Demo", style = "color: #2196c4")),
+         p("A short demo video of how to use the Bayesian analysis ranking panel in tab 3c"),
+         HTML('<iframe width="560" height="315" src="https://www.youtube.com/embed/scbLwTY0kvc" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'),
+         br(),
+         br(),
          h4 (tags$strong("Cochrane Training Webinar", style = "color: #2196c4")),
          p(tags$strong("MetaInsight: Background, introduction, demonstration, limitations, and future plans")),
          p("These videos were recorded live in 2019 as part of the ",
@@ -739,8 +596,8 @@ tabPanel(id="trouble", "Troubleshooting",
 #          tags$div(
 # includeHTML("troublesh.html")
 #          )
-tags$iframe(style="height:1500px; width:100%; scrolling=yes",
-            src="ts2.pdf")
+tags$iframe(style = "height:1500px; width:100%; scrolling=yes",
+            src = "trouble_shooting.pdf")
 ),
 
 ##############################
@@ -753,7 +610,6 @@ tabPanel(id="privacy", "Privacy notice",
    tags$iframe(style="height:1500px; width:100%; scrolling=yes",
                src="gdpr.pdf")
 )
-
 )
 )
 )

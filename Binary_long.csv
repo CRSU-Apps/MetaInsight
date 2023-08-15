@@ -1,51 +1,51 @@
-StudyID,Study,T,R,N
-1,Cottraux,1,9,140
-1,Cottraux,3,23,140
-1,Cottraux,4,10,138
-2,Mothersill,2,11,78
-2,Mothersill,3,12,85
-2,Mothersill,4,29,170
-3,Reid,1,75,731
-3,Reid,3,363,714
-4,Slama,1,2,106
-4,Slama,3,9,205
-5,Jamrozik,1,58,549
-5,Jamrozik,3,237,1561
-6,Rabkin,1,0,33
-6,Rabkin,3,9,48
-7,Richmond,1,3,100
-7,Richmond,3,31,98
-8,Leung,1,1,31
-8,Leung,3,26,95
-9,Langford,1,6,39
-9,Langford,3,17,77
-10,Gritz,1,79,702
-10,Gritz,2,77,694
-11,Campbell,1,18,671
-11,Campbell,2,21,535
-12,Sanders,1,64,642
-12,Sanders,3,107,761
-13,Page,1,5,62
-13,Page,3,8,90
-14,Ford,1,20,234
-14,Ford,3,34,237
-15,Williams and Hall,1,0,20
-15,Williams and Hall,4,9,20
-16,Pallonen,1,8,116
-16,Pallonen,2,19,149
-17,Russel1,1,95,1107
-17,Russel1,3,143,1031
-18,Stewart and Rosser,1,15,187
-18,Stewart and Rosser,3,36,504
-19,Russel2,1,78,584
-19,Russel2,3,73,675
-20,Kendrick,1,69,1177
-20,Kendrick,3,54,888
-21,Decker and Evans,2,20,49
-21,Decker and Evans,3,16,43
-22,Mogielnicki,2,7,66
-22,Mogielnicki,4,32,127
-23,Hilleman,3,12,76
-23,Hilleman,4,20,74
-24,Gillams,3,9,55
-24,Gillams,4,3,26
+Study,T,R,N
+Cottraux,No_contact,9,140
+Cottraux,Individual_counselling,23,140
+Cottraux,Group_counselling,10,138
+Mothersill,Self_help,11,78
+Mothersill,Individual_counselling,12,85
+Mothersill,Group_counselling,29,170
+Reid,No_contact,75,731
+Reid,Individual_counselling,363,714
+Slama,No_contact,2,106
+Slama,Individual_counselling,9,205
+Jamrozik,No_contact,58,549
+Jamrozik,Individual_counselling,237,1561
+Rabkin,No_contact,0,33
+Rabkin,Individual_counselling,9,48
+Richmond,No_contact,3,100
+Richmond,Individual_counselling,31,98
+Leung,No_contact,1,31
+Leung,Individual_counselling,26,95
+Langford,No_contact,6,39
+Langford,Individual_counselling,17,77
+Gritz,No_contact,79,702
+Gritz,Self_help,77,694
+Campbell,No_contact,18,671
+Campbell,Self_help,21,535
+Sanders,No_contact,64,642
+Sanders,Individual_counselling,107,761
+Page,No_contact,5,62
+Page,Individual_counselling,8,90
+Ford,No_contact,20,234
+Ford,Individual_counselling,34,237
+Williams and Hall,No_contact,0,20
+Williams and Hall,Group_counselling,9,20
+Pallonen,No_contact,8,116
+Pallonen,Self_help,19,149
+Russel1,No_contact,95,1107
+Russel1,Individual_counselling,143,1031
+Stewart and Rosser,No_contact,15,187
+Stewart and Rosser,Individual_counselling,36,504
+Russel2,No_contact,78,584
+Russel2,Individual_counselling,73,675
+Kendrick,No_contact,69,1177
+Kendrick,Individual_counselling,54,888
+Decker and Evans,Self_help,20,49
+Decker and Evans,Individual_counselling,16,43
+Mogielnicki,Self_help,7,66
+Mogielnicki,Group_counselling,32,127
+Hilleman,Individual_counselling,12,76
+Hilleman,Group_counselling,20,74
+Gillams,Individual_counselling,9,55
+Gillams,Group_counselling,3,26

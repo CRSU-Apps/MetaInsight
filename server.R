@@ -8,71 +8,6 @@
 
 
 shinyServer(function(input, output, session) {
-  # Create a definable reactive value to allow reloading of data
-  reload <- reactiveVal(F)
-  
-  # Render function for file input dynamically to allow the button to be set to Null
-  default_file_input <- 
-    renderUI({
-      fileInput(inputId="data", label="", buttonLabel="Select", placeholder="No file selected")
-    })
-  
-  # Render function reload button dynamically to allow the button to be set to Null
-  default_reload_button <-
-    renderUI({
-      div(style = "display:inline-block; float:right", actionButton("reload_button", "Delete Data", icon("trash"), 
-                   style="color: #fff; background-color: #dc3545; border-color: #dc3545"))
-    })
-  
-  # Make the treatment panel reactive to allow switching between continous and binary more dynamic
-  default_trt_panel <- reactive({
-    # respond to reload
-    reload()
-    if (input$metaoutcome=='Continuous') {
-      return(
-        panel(
-          aceEditor(
-            "listCont",
-            value = paste0(
-              "Number\tLabel",
-              "\n1\tPlacebo",
-              "\n2\tOrlistat",
-              "\n3\tSibutramine",
-              "\n4\tMetformin",
-              "\n5\tOrli_Sibut",
-              "\n6\tRimonbant"),
-            mode = "r" ,
-            theme = "eclipse"
-          )
-        )
-      )
-    }
-    else{
-      return(
-        panel(
-          aceEditor(
-            "listbina",
-            value = paste0(
-              "Number\tLabel",
-              "\n1\tNo_contact",
-              "\n2\tSelf_help",
-              "\n3\tIndividual_counselling",
-              "\n4\tGroup_counselling"),
-            mode = "r",
-            theme = "eclipse"
-          )
-        )
-      )
-    }
-  })
-  
-  # Render the above treatment panel
-  output$trt_panel <- renderUI({
-    default_trt_panel()
-  })
-  
-  # Render the file input intially
-  output$file_input = default_file_input
   
   #####
   # Reactive functions used in various places
@@ -80,94 +15,50 @@ shinyServer(function(input, output, session) {
   
   # Define outcome measure (continuous or binary) - NVB
   outcome_measure <- reactive({
-    if (input$metaoutcome == "Continuous") {return(input$outcomeCont)}
-    else {return(input$outcomebina)}
-  })
-  
-  # Load default data
-  defaultD <- reactive({
-    if (input$metaoutcome=='Continuous') {
-      defaultD <- read.csv("./Cont_long.csv")
+    if (input$metaoutcome == "Continuous") {
+      return(input$outcomeCont)
     } else {
-      defaultD <- read.csv("./Binary_long.csv")
+      return(input$outcomebina)
     }
   })
   
-  # Make data reactive i.e. default or user uploaded
-  data <- reactive({ 
-    file1 <- input$data # Name the data file that was uploaded file1
-    # if a reload is triggered show the reload the file input and data
-    if(reload()){
-      output$file_input = default_file_input
-      return(defaultD())
-    }
-    # if data is triggered without reload, only load the default data
-    else if(is.null(file1)){return(defaultD())      }
-    else
-      a <- read.table(file = file1$datapath, sep =",", header=TRUE, stringsAsFactors = FALSE, quote="\"", fileEncoding = 'UTF-8-BOM')
-  })
   
-  # Make reactive treatment input list selecting correct input 
-  # depending on if outcome is continuous or binary - NVB
+  ############################################
+  ############# Load data page ###############
+  ############################################
   
-  treatment_list <- reactive({
-    if (input$metaoutcome == "Continuous") {return (input$listCont)}
-    else {return (input$listbina)}
-  })
+  data_reactives <- load_data_page_server(id = 'load_data_page',
+                                          metaoutcome = function() {
+                                            return(input$metaoutcome)
+                                          })
+  data <- data_reactives$data
+  treatment_df <- data_reactives$treatment_df
+  
+  #####
+  # Reactive functions used in various places, based on the data
+  #####
   
   # Make frequentist function (in fn_analysis.R) reactive - NVB
   freq_all <- reactive({
-    return(frequentist(sub = FALSE, data(), input$metaoutcome, treatment_list(), outcome_measure(), input$modelranfix, input$exclusionbox))
+    return(frequentist(data(), input$metaoutcome, treatment_df(), outcome_measure(), input$modelranfix))
   })
+  
+  exclusions <- debounce(reactive({input$exclusionbox}), 1500)
   
   # Make frequentist function (in fn_analysis.R) reactive with excluded studies - NVB
   freq_sub <- reactive({
-    return(frequentist(sub = TRUE, data(), input$metaoutcome, treatment_list(), outcome_measure(), input$modelranfix, input$exclusionbox))
+    return(frequentist(data(), input$metaoutcome, treatment_df(), outcome_measure(), input$modelranfix, exclusions()))
   })
   
   # Make bugsnetdata function (in fn_analysis.R) reactive - NVB
   bugsnetdt <- reactive({
-    return(bugsnetdata(data(), input$metaoutcome, treatment_list()))
+    return(bugsnetdata(data(), input$metaoutcome, treatment_df()))
   })
    
   # Make ref_alter function (in fn_analysis.R) reactive - NVB
   reference_alter <- reactive({
-    return(ref_alter(data(), input$metaoutcome, input$exclusionbox, treatment_list()))
+    return(ref_alter(data(), input$metaoutcome, exclusions(), treatment_df()))
   })
-  
-  #####
-  # observer functions to trigger specific reactions
-  #####
-  
-  # if the outcome is changed, reload the data and labels, reset the file input and hide the reload button
-  observeEvent(input$metaoutcome, {
-    reload(T)
-    output$file_input = default_file_input
-    output$reload_button = NULL
-  })
-  
-  # if the data is changed load the new data (reset the labels) and show the reload button
-  observeEvent(input$data, {
-    reload(F)
-    output$reload_button = default_reload_button
-  })
-  
-  # if the reload button is clicked, reload the appropriate default data and labels and hide the reload button
-  observeEvent(input$reload_button,{
-    reload(T)
-    output$file_input = default_file_input
-    output$reload_button = NULL
-  })
-  
-  # if the reload labels button is clicked reload the default labels
-  observeEvent(input$reload_labels, {
-    output$trt_panel <- renderUI({
-      default_trt_panel()
-    })
-  }, ignoreNULL = F)
-  
-  # Allow the treatment list to be rendered without the data tab being loaded.
-  outputOptions(output, "trt_panel", suspendWhenHidden = F)
 
   ############################################
   ######### Home page - linking pages ########
@@ -200,34 +91,6 @@ shinyServer(function(input, output, session) {
       #newvalue <- "history"
       updateNavbarPage(session,"meta", selected="Troubleshooting")
     })
-
-
-  
-  ############################################
-  ############# Load data page ###############
-  ############################################
-  
-  ### Outcome selection
-    output$CONBI <- renderText({
-      paste("You have selected", "<font color=\"#ffd966\"><b>" , input$metaoutcome,"</b></font>", 
-            "outcome on the 'Home' page. The instructions for formatting",
-            "<font color=\"#ffd966\"><b>" , input$metaoutcome,"</b></font>", "outcomes are now displayed.")
-    })
-    
-  ### Data analysis tab
-    # Create a table which displays the raw data just uploaded by the user
-    output$tb <- renderTable({       
-      if(is.null(data())){return()}
-      data()
-    })
-    
-  ##### in the 'upload long data' tab
-  output$downloadData <- create_raw_data_download_handler(input, "MetaInsightdataLONG.csv", "Cont_long.csv", "Binary_long.csv")
-  output$downloadlabel <- create_raw_data_download_handler(input, "treatmentlabels.txt", "defaultlabels_continuous.txt", "defaultlabels_binary.txt")
-  
-  ##### in the 'UPload wide data' tab
-  output$downloadDataWide <- create_raw_data_download_handler(input, "MetaInsightdataWIDE.csv", "Cont_wide.csv", "Binary_wide.csv")
-  output$downloadlabel2 <- create_raw_data_download_handler(input, "treatmentlabels.txt", "defaultlabels_continuous.txt", "defaultlabels_binary.txt")
 
   
   ############################################
@@ -278,17 +141,17 @@ shinyServer(function(input, output, session) {
     ### Get data for data table
     
 
-    filtertable <- function(){
-      label <- treatment_label(treatment_list())
+    filtertable <- function() {
+      label <- treatment_df()
       dt <- data()
       ntx <- nrow(label)
       dt$T <- factor(dt$T,
                      levels = c(1:ntx),
                      labels = as.character(label$Label))
-      dt
+      return(dt)
     }
 
-  colnames<- function(){
+  colnames <- function(){
     if (input$metaoutcome=="Continuous") {
       colnames <- c('StudyID', 'Author','Treatment','Number of participants in each arm',
                     'Mean value of the outcome in each arm', 'Standard deviation of the outcome in each arm')
@@ -334,7 +197,7 @@ shinyServer(function(input, output, session) {
   
   # Characteristics table with studies excluded
   output$sumtb_sub <- renderTable({
-    summary_table_plot(filter(bugsnetdt(), !Study %in% input$exclusionbox), input$metaoutcome)
+    summary_table_plot(filter(bugsnetdt(), !Study %in% exclusions()), input$metaoutcome)
   })
   
   # 1b. Study Results 
@@ -385,7 +248,7 @@ shinyServer(function(input, output, session) {
       make_netgraph(freq_sub(),input$label_excluded) 
     } else {
       # Number of trials by nodesize and line thickness
-      make_netplot(filter(bugsnetdt(), !Study %in% input$exclusionbox), input$label_excluded)
+      make_netplot(filter(bugsnetdt(), !Study %in% exclusions()), input$label_excluded)
     }
     title("Network plot with studies excluded")
   })
@@ -426,7 +289,7 @@ shinyServer(function(input, output, session) {
         if (input$networkstyle_sub == 'networkp1') {
           make_netgraph(freq_sub(), input$label_excluded)
         } else {
-          long_sort2_sub <- filter(bugsnetdt(), !Study %in% input$exclusionbox)  # subgroup
+          long_sort2_sub <- filter(bugsnetdt(), !Study %in% exclusions())  # subgroup
           data.rh <- data.prep(arm.data = long_sort2_sub, varname.t = "T", varname.s = "Study")
           net.plot(data.rh, node.scale = 3, edge.scale=1.5, node.lab.cex = input$label_excluded)
         }
@@ -457,9 +320,9 @@ shinyServer(function(input, output, session) {
   }
   
   
-  observeEvent(input$exclusionbox,{
+  observeEvent(exclusions(),{
     longsort2 <- bugsnetdt()
-    longsort2_sub <- filter(bugsnetdt(), !Study %in% input$exclusionbox)  # subgroup
+    longsort2_sub <- filter(bugsnetdt(), !Study %in% exclusions())  # subgroup
     sumtb_sub <- bugsnet_sumtb(longsort2_sub, input$metaoutcome)
     if (sumtb_sub$Value[6]=="FALSE") {
       disconnect()
@@ -614,7 +477,7 @@ shinyServer(function(input, output, session) {
   })
   
   output$FreqForestPlot_sub <- renderUI({
-    plotOutput("SFPUpdatingComp", height = BayesPixels(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% input$exclusionbox), input$metaoutcome)$Value[1]), title=TRUE), width = "630px")
+    plotOutput("SFPUpdatingComp", height = BayesPixels(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% exclusions()), input$metaoutcome)$Value[1]), title=TRUE), width = "630px")
   })
   
   output$downloadComp2 <- downloadHandler(
@@ -639,9 +502,9 @@ shinyServer(function(input, output, session) {
     },
     content = function(file) {
       if (input$format_freq4 == "PDF") {
-        pdf(file = file, width = 9, height=BayesInch(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% input$exclusionbox), input$metaoutcome)$Value[1])))
+        pdf(file = file, width = 9, height=BayesInch(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% exclusions()), input$metaoutcome)$Value[1])))
       } else {
-        png(file = file, width = 610, height = BayesPixels(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% input$exclusionbox), input$metaoutcome)$Value[1])))
+        png(file = file, width = 610, height = BayesPixels(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% exclusions()), input$metaoutcome)$Value[1])))
       }
       make_netComp(freq_sub(), input$modelranfix, reference_alter()$ref_sub, input$freqmin_sub, input$freqmax_sub)
       dev.off()
@@ -689,6 +552,13 @@ shinyServer(function(input, output, session) {
       write.csv(make_Incon(freq_sub(), input$modelranfix), file)
     }
   )
+  
+  ### 2d. Summary Forest Plot
+  
+  summary_forest_plots_server(id = '2d.summaryForestPlot',
+                              all_data = freq_all,
+                              filtered_data = freq_sub,
+                              outcome_type = outcome_measure)
 
 
   #####################
@@ -711,12 +581,12 @@ shinyServer(function(input, output, session) {
   # Bayesian analysis
   
   model <- eventReactive(input$baye_do, {
-    bayesian_model(sub = FALSE, data(), treatment_list(), input$metaoutcome, input$exclusionbox,
+    bayesian_model(sub = FALSE, data(), treatment_df(), input$metaoutcome, exclusions(),
                    outcome_measure(), input$modelranfix, reference_alter())
   })
   
   model_sub <- eventReactive(input$sub_do, {
-    bayesian_model(sub = TRUE, data(), treatment_list(), input$metaoutcome, input$exclusionbox, 
+    bayesian_model(sub = TRUE, data(), treatment_df(), input$metaoutcome, exclusions(), 
                    outcome_measure(), input$modelranfix, reference_alter())
   })
 
@@ -762,7 +632,7 @@ shinyServer(function(input, output, session) {
     plotOutput("gemtc", width="630px", height = BayesPixels(as.numeric(bugsnet_sumtb(bugsnetdt(), input$metaoutcome)$Value[1]), title=TRUE))
   })
   output$BayesianForestPlot_sub <- renderUI({
-    plotOutput("gemtc_sub", width="630px", height = BayesPixels(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% input$exclusionbox), input$metaoutcome)$Value[1]), title=TRUE))
+    plotOutput("gemtc_sub", width="630px", height = BayesPixels(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% exclusions()), input$metaoutcome)$Value[1]), title=TRUE))
   })
   
   output$downloadBaye_plot <- downloadHandler(
@@ -791,9 +661,9 @@ shinyServer(function(input, output, session) {
     },
     content = function(file) {
       if (input$format4 == "PDF") {
-        pdf(file = file, width = 9, height = BayesInch(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% input$exclusionbox), input$metaoutcome)$Value[1])))
+        pdf(file = file, width = 9, height = BayesInch(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% exclusions()), input$metaoutcome)$Value[1])))
       } else {
-        png(file = file, width = 610, height = BayesPixels(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% input$exclusionbox), input$metaoutcome)$Value[1])))
+        png(file = file, width = 610, height = BayesPixels(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% exclusions()), input$metaoutcome)$Value[1])))
       }
       if (input$metaoutcome == "Binary") {
         gemtc::forest(model_sub()$mtcRelEffects, digits = 3, xlim = c(log(input$bayesmin_sub), log(input$bayesmax_sub)))
@@ -838,13 +708,13 @@ shinyServer(function(input, output, session) {
   
   # Obtain Data needed for ranking #
   RankingData <- eventReactive(input$baye_do, {
-    obtain_rank_data(sub=TRUE, data(), input$metaoutcome, input$exclusionbox, 
-                     treatment_list(), model(), input$rankopts)
+    obtain_rank_data(data(), input$metaoutcome, 
+                     treatment_df(), model(), input$rankopts)
   })
   
   RankingData_sub <- eventReactive(input$sub_do, {
-    obtain_rank_data(sub=FALSE, data(), input$metaoutcome, input$exclusionbox, 
-                     treatment_list(), model_sub(), input$rankopts)
+    obtain_rank_data(data(), input$metaoutcome, treatment_df(),
+                     model_sub(), input$rankopts, exclusions())
   })
   
   # Network plots for ranking panel (Bayesian) (they have slightly different formatting to those on tab1) CRN
@@ -879,7 +749,7 @@ shinyServer(function(input, output, session) {
       make_netgraph_rank(freq_all_react_sub(), treat_order_sub())
     } else {
       # Number of trials by nodesize and line thickness
-      make_netplot(filter(bugsnetdt_react_sub(), !Study %in% input$exclusionbox), order=list(order=treat_order_sub()))
+      make_netplot(filter(bugsnetdt_react_sub(), !Study %in% exclusions()), order=list(order=treat_order_sub()))
     }
     title("Network plot with studies excluded")
   })
@@ -914,7 +784,7 @@ shinyServer(function(input, output, session) {
         if (input$networkstyle_rank_sub == 'networkp1') {
           make_netgraph_rank(freq_all_react_sub(), treat_order_sub())
         } else {
-          make_netplot(filter(bugsnetdt_react_sub(), !Study %in% input$exclusionbox), order = list(order=treat_order_sub())) 
+          make_netplot(filter(bugsnetdt_react_sub(), !Study %in% exclusions()), order = list(order=treat_order_sub())) 
         }
         title("Network plot with studies excluded")
       }
@@ -1134,8 +1004,8 @@ shinyServer(function(input, output, session) {
   
   # Inconsistency test with notesplitting model for all studies
   model_nodesplit <- eventReactive(input$node, {
-    nodesplit(sub = FALSE, data(), treatment_list(), input$metaoutcome, outcome_measure(),
-                    input$modelranfix, input$exclusionbox)
+    nodesplit(sub = FALSE, data(), treatment_df(), input$metaoutcome, outcome_measure(),
+                    input$modelranfix, exclusions())
   })
 
   output$node_table<- renderTable(colnames=TRUE, {
@@ -1144,8 +1014,8 @@ shinyServer(function(input, output, session) {
 
   # Inconsistency test with notesplitting model with studies excluded
   model_nodesplit_sub <- eventReactive(input$node_sub, {
-    nodesplit(sub = TRUE, data(), treatment_list(), input$metaoutcome, outcome_measure(),
-                    input$modelranfix, input$exclusionbox)
+    nodesplit(sub = TRUE, data(), treatment_df(), input$metaoutcome, outcome_measure(),
+                    input$modelranfix, exclusions())
   })
 
   output$node_table_sub<- renderTable(colnames=TRUE, {
@@ -1319,9 +1189,9 @@ shinyServer(function(input, output, session) {
   })
   
   output$UG <- downloadHandler(
-    filename = "MetaInsightUserGBayv0.1.pdf",
+    filename = "MetaInsightUserGuide.pdf",
     content = function(file) {
-      file.copy("MetaInsightUserGBayv0_1.pdf", file)
+      file.copy("www/MetaInsightUserGuide.pdf", file)
     }
   )
   
