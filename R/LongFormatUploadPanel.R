@@ -34,7 +34,7 @@ long_format_upload_panel_ui <- function(id) {
            ), 
            conditionalPanel(
              condition = "input.metaoutcome=='Binary'",
-             p("The long format data file should contain five columns. Headings of columns are case sensitive."),
+             p("The long format data file should contain the following columns:"),
              tags$ul(
                tags$li(tags$strong("Study"), " contains the name (e.g., author,year) of the study. The study name must be unique for each study.")
              ),
