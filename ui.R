@@ -12,7 +12,7 @@ dashboardPage(
     includeHTML("www/favicon/favicon.html"),
     tags$meta(name="description", content="A interactive web tool for network meta-analysis (NMA) that leverages established analysis routines"),
     tags$meta(name="keywords", content="MetaInsight, NMA, Network, Meta, Analysis, App"),
-    tags$meta(property="og:title", content="Meta Insight: V5.0.0"),
+    tags$meta(property="og:title", content= paste("Meta Insight: ",version)),
     tags$meta(property="og:description", content="An interactive web tool for network meta-analysis (NMA) that leverages established analysis routines"),
     tags$meta(property="og:image", content="https://raw.githubusercontent.com/CRSU-Apps/MetaInsight/main/www/images/MetaInsightLogo.png")
   ),
@@ -41,7 +41,8 @@ dashboardPage(
                             #   zoom: 75%; /* Webkit browsers */
                             #   }
                             #   "), 
-    h2("MetaInsight V5.0.0",
+
+    h2(paste("MetaInsight", version),
       #tags$sup("Beta", style="color:#6CC0ED"), 
       align= "left"),
     fluidRow(
@@ -551,7 +552,16 @@ load_data_page_ui(id = 'load_data_page'),
 )))))), width=9))),
 
 ###################################
-### Tab 4 - User Guide ###
+### Tab 4 - Download report     ###
+###################################
+
+tabPanel("Report",
+         p("Wait until MetaInsight has completed any analysis before clicking the generate report button"),
+         downloadButton("report", "Generate report")
+),
+
+###################################
+### Tab 5 - User Guide ###
 ###################################
 
 tabPanel("User Guide",
@@ -589,7 +599,7 @@ tabPanel("User Guide",
 
 
 ###################################
-### Tab 5 - Troublehshooting.   ###
+### Tab 6 - Troublehshooting.   ###
 ###################################
 
 tabPanel(id="trouble", "Troubleshooting",
@@ -601,7 +611,7 @@ tags$iframe(style = "height:1500px; width:100%; scrolling=yes",
 ),
 
 ##############################
-### Tab 6 - Privacy notice ###
+### Tab 7 - Privacy notice ###
 ##############################
 
 

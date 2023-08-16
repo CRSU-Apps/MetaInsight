@@ -1,0 +1,83 @@
+---
+title: MetaInsight Report `r params$version`
+date: now
+date-format: 'DD MMM YYYY HH:mm'
+language: 
+  title-block-published: "CREATED"
+format: 
+  html: 
+    toc: false
+    anchor-sections: false
+    fig-cap-location: bottom
+    tbl-cap-location: top
+    number-sections: false
+    smooth-scroll: true
+    self-contained: true
+    output-file: "qmd_output.html"
+params:
+  data: NA
+  excluded: NA
+  label: NA
+  metaoutcome: NA
+  modelranfix: NA
+  outcome_measure: NA
+  ranking: NA
+  version: NA
+
+---
+
+```{r include = FALSE}
+library(gt)
+```
+
+### User inputs and selections {.tabset}
+
+#### User selections
+
+```{r echo = FALSE}
+if (params$metaoutcome == "Continuous") {outcome_type_txt <- "Continuous (mean difference)"
+} else {outcome_type_txt <- "Binary (odds ratio)"}
+
+if (params$outcome_measure == "MD") {outcome_measure_txt <- "Mean difference"
+} else if (params$outcome_measure == "SMD") {outcome_measure_txt <- "Standardised mean difference"
+} else if (params$outcome_measure == "OR") {outcome_measure_txt <- "Odds ratio"
+} else if (params$outcome_measure == "RR") {outcome_measure_txt <- "Risk ratio"
+} else if (params$outcome_measure == "RD") {outcome_measure_txt <- "Risk difference"
+}
+
+if (params$ranking == "good") {ranking_txt <- "desirable"
+} else {ranking_txt <- "undesirable"}
+
+if (params$modelranfix == "random") {modelranfix_txt <- "Random effect"
+} else {modelranfix_txt <- "Fixed effect"}
+
+if (is.null(params$excluded)) {excluded_txt <- "None"
+} else {excluded_txt <- paste(params$excluded, collapse = ", ")}
+
+```
+
+**Outcome type:** `r outcome_type_txt`
+
+**Outcome measure:** `r outcome_measure_txt`
+
+For treatment rankings, smaller outcome values (e.g. smaller mean values for continuous data, or ORs less than 1 for binary data) are: **`r ranking_txt`**
+
+**Model:** `r modelranfix_txt`
+
+**Studies excluded from sensitivity analysis: ** `r excluded_txt` 
+
+#### Study data 
+
+```{r echo = FALSE}
+gt(params$data,
+   groupname_col = "group")
+```
+
+#### Treatment labels
+
+```{r echo = FALSE}
+gt(params$label,
+   groupname_col = "group")
+```
+
+
