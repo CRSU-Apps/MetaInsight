@@ -50,6 +50,6 @@ wide_format_upload_panel_ui <- function(id) {
 #' @param metaoutcome Reactive containing the outcome type selected
 wide_format_upload_panel_server <- function(id, metaoutcome) {
   moduleServer(id, function(input, output, session) {
-    output$downloadDataWide <- create_raw_data_download_handler(metaoutcome, "MetaInsightdataLONG.csv", "Cont_long.csv", "Binary_long.csv")
+    output$downloadDataWide <- create_raw_data_download_handler(metaoutcome, "MetaInsightdataWIDE.csv", "Cont_wide.csv", "Binary_wide.csv")
   })
 }
