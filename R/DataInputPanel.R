@@ -7,8 +7,15 @@ data_input_panel_ui <- function(id) {
   ns <- NS(id)
   div(
     h4(tags$strong("Select a data file (.csv) to upload")),
-    p(tags$strong("Files used before version 5.0 are no longer compatible. To use an older file, replace the numeric treatment IDs in the \"T\" column(s) with the treatment names.",
-                  style = "color:red")),
+    p(
+      tags$strong(
+        "Files used before version 5.0 are no longer compatible.",
+        "To use an older file, use the data upgrade option at the bottom of this panel,",
+        "or remove the \"StudyID\" column and replace the numeric treatment IDs in the",
+        "\"T\" column(s) with the treatment names.",
+        style = "color:red"
+      )
+    ), 
     p(tags$strong("Default maximum file size is 5MB.")),
     uiOutput(outputId = ns("file_input_panel")),
     conditionalPanel(
@@ -23,7 +30,12 @@ data_input_panel_ui <- function(id) {
       )
     ),
     div(class = "clearfix"),
-    selectizeInput(inputId = ns('reference_treatment'), label = 'Select Reference Treatment', choices = c())
+    selectizeInput(
+      inputId = ns('reference_treatment'),
+      label = 'Select Reference Treatment',
+      choices = c()
+    ),
+    data_upgrade_panel_ui(id = ns("data_upgrade_panel"))
   )
 }
 
@@ -39,6 +51,8 @@ data_input_panel_ui <- function(id) {
 data_input_panel_server <- function(id, metaoutcome, continuous_file = 'Cont_long.csv', binary_file = 'Binary_long.csv') {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
+    
+    data_upgrade_panel_server(id = "data_upgrade_panel")
     
     # Create a definable reactive value to allow reloading of data
     reload <- reactiveVal(FALSE)
