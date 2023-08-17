@@ -58,8 +58,8 @@ load_data_page_server <- function(id, metaoutcome, data_input_panel_server_funct
       return(data())
     })
     
-    long_format_upload_panel_server(id = 'long_upload')
-    wide_format_upload_panel_server(id = 'wide_upload')
+    long_format_upload_panel_server(id = 'long_upload', metaoutcome)
+    wide_format_upload_panel_server(id = 'wide_upload', metaoutcome)
     
     wrangled_data <- reactive({
       return(WrangleUploadData(isolate(data()), treatment_list(), metaoutcome()))
