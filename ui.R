@@ -12,7 +12,7 @@ dashboardPage(
     includeHTML("www/favicon/favicon.html"),
     tags$meta(name="description", content="A interactive web tool for network meta-analysis (NMA) that leverages established analysis routines"),
     tags$meta(name="keywords", content="MetaInsight, NMA, Network, Meta, Analysis, App"),
-    tags$meta(property="og:title", content="Meta Insight: V5.0.0"),
+    tags$meta(property="og:title", content="Meta Insight: v5.0.1"),
     tags$meta(property="og:description", content="An interactive web tool for network meta-analysis (NMA) that leverages established analysis routines"),
     tags$meta(property="og:image", content="https://raw.githubusercontent.com/CRSU-Apps/MetaInsight/main/www/images/MetaInsightLogo.png")
   ),
@@ -41,7 +41,7 @@ dashboardPage(
                             #   zoom: 75%; /* Webkit browsers */
                             #   }
                             #   "), 
-    h2("MetaInsight V5.0.0",
+    h2("MetaInsight v5.0.1",
       #tags$sup("Beta", style="color:#6CC0ED"), 
       align= "left"),
     fluidRow(
@@ -53,6 +53,8 @@ dashboardPage(
       column(2),
       column(5, 
             p(tags$strong("Latest Updates:")),
+            p(tags$strong("Patch (16 August 2023 v5.0.0):")),
+            p("Patch release to fix the 'download example dataset' buttons in the load data tab"),
             p(tags$strong("Major update (15 August 2023 v5.0.0):")),
             p(tags$ul(
             tags$li("MetaInsight has been changed to make it easier for users to upload their own datasets for analysis. 
@@ -60,8 +62,6 @@ dashboardPage(
               See the 'load data' tab for more guidance and the option to upgrade data files used in previous versions of MetaInsight "),
             tags$li("Summary forest plots are now available in frequentist analysis tab 2d")
             )),
-            p(tags$strong("Minor update (11 July 2023 v4.2.0):")),
-            p("A new video tutorial from ESMARConf2023 is available in the User Guide tab"),
             p("Click", tags$a(href = "https://github.com/CRSU-Apps/MetaInsight/wiki/Full-Update-History", "here", target="_blank"), "to view a full update history of MetaInsight"),
             p("The code for MetaInsight is available on", tags$a(href="https://github.com/CRSU-Apps/MetaInsight", "GitHub",target="_blank")),
             br(),
