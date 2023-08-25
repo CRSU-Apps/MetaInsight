@@ -59,8 +59,7 @@ dashboardPage(
             p(tags$ul(
             tags$li("MetaInsight has been changed to make it easier for users to upload their own datasets for analysis. 
               Study data and treatment labels can now be uploaded in a single file.
-              See the 'load data' tab for more guidance and the option to upgrade data files used in previous versions of MetaInsight "),
-            tags$li("Summary forest plots are now available in frequentist analysis tab 2d")
+              See the 'load data' tab for more guidance and the option to upgrade data files used in previous versions of MetaInsight ")
             )),
             p("Click", tags$a(href = "https://github.com/CRSU-Apps/MetaInsight/wiki/Full-Update-History", "here", target="_blank"), "to view a full update history of MetaInsight"),
             p("The code for MetaInsight is available on", tags$a(href="https://github.com/CRSU-Apps/MetaInsight", "GitHub",target="_blank")),
@@ -252,8 +251,7 @@ load_data_page_ui(id = 'load_data_page'),
                                              tableOutput("Incon1"), downloadButton('downloadIncon', "Download"),
                                              helpText("Assessment of inconsistency with studies excluded"), 
                                              tableOutput("Incon2"), downloadButton('downloadIncon2', "Download")
-                                    ),
-                                    tabPanel("2d. Summary Forest Plot", summary_forest_plots_ui(id = '2d.summaryForestPlot')))),
+                                    ))),
                                   tabPanel("3. Bayesian network meta-analysis", tabsetPanel(id="tab",
             tabPanel("3a. Forest plot",
                     helpText("Baysesian result using the gemtc package.", tags$br(), 
