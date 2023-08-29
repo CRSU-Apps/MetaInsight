@@ -1,4 +1,4 @@
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.8255673.svg)](https://doi.org/10.5281/zenodo.8255673)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.8255673.svg)](https://doi.org/10.5281/zenodo.8297567)
 
 # MetaInsight v5.1.0
 Network meta-analysis (NMA) has been increasingly adopted in evidence-based medicine to compare multiple interventions and address the questions such as ‘which intervention is the ‘best’ overall?’. Currently, NMA is primarily conducted in statistical packages such as WinBUGs, R and STATA, and the software coding can be difficult for non- statisticians and hinders the progress of carrying out systematic reviews containing NMA.
