@@ -41,7 +41,7 @@ dashboardPage(
                             #   zoom: 75%; /* Webkit browsers */
                             #   }
                             #   "), 
-    h2("MetaInsight v5.0.1",
+    h2("MetaInsight v5.1.0",
       #tags$sup("Beta", style="color:#6CC0ED"), 
       align= "left"),
     fluidRow(
@@ -53,8 +53,8 @@ dashboardPage(
       column(2),
       column(5, 
             p(tags$strong("Latest Updates:")),
-            p(tags$strong("Patch (16 August 2023 v5.0.0):")),
-            p("Patch release to fix the 'download example dataset' buttons in the load data tab"),
+            p(tags$strong("Patch (29 August 2023 v5.1.0):")),
+            p("Removed summary forest plot matrix due to unresolved bugs"),
             p(tags$strong("Major update (15 August 2023 v5.0.0):")),
             p(tags$ul(
             tags$li("MetaInsight has been changed to make it easier for users to upload their own datasets for analysis. 
@@ -66,7 +66,7 @@ dashboardPage(
             br(),
       )),
     br(),
-    p("Clareece Nevill, Naomi Bradbury, Yiqiao Xin, Rhiannon K Owen, Ryan Field, Nicola Cooper, and Alex Sutton", align= "left"),
+    p("Clareece Nevill, Naomi Bradbury, Yiqiao Xin, Rhiannon K Owen, Ryan Field, Janion Nevill, Nicola Cooper, and Alex Sutton", align= "left"),
     p("For feedback/questions about this app please email the CRSU team at apps@crsu.org.uk. If you encounter any errors with using the app, please check  
        the",  actionLink("tsp", "trouble shooting page"), "first before contacting us."),
     br(),
