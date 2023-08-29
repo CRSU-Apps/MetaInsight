@@ -552,13 +552,6 @@ shinyServer(function(input, output, session) {
       write.csv(make_Incon(freq_sub(), input$modelranfix), file)
     }
   )
-  
-  ### 2d. Summary Forest Plot
-  
-  summary_forest_plots_server(id = '2d.summaryForestPlot',
-                              all_data = freq_all,
-                              filtered_data = freq_sub,
-                              outcome_type = outcome_measure)
 
 
   #####################
