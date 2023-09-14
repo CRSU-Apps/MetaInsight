@@ -18,9 +18,11 @@ summary_forest_plots_ui <- function(id) {
 #' Create the server for the summary forest plots tab.
 #' 
 #' @param id ID of the module
-#' @param all_data Reactive value for accessing the frequentist analysis data for all studies
-#' @param filtered_data Reactive value for accessing the frequentist analysis data for the filtered subset of studies
-#' @param outcome_type Reactive value for accessing the type of outcome being measured
+#' @param all_data Reactive value for the frequentist analysis data for all studies
+#' @param filtered_data Reactive value for the frequentist analysis data for the filtered subset of studies
+#' @param outcome_type Reactive value for the type of outcome being measured
+#' @param desirability Reactive value for whether small values are "good" or "bad"
+#' @param model Reactive value for whether the model is "random" or "fixed" effects
 #' @return The created module server
 summary_forest_plots_server <- function(id, all_data, treatment_df, filtered_data, outcome_type, desirability, model) {
   moduleServer(id, function(input, output, session) {
@@ -33,10 +35,13 @@ summary_forest_plots_server <- function(id, all_data, treatment_df, filtered_dat
                                model = model,
                                plot_title = 'Summary Forest Plot',
                                download_file_name = 'summary_forest_plot')
-    # summary_forest_plot_server(id = 'freqSub',
-    #                            sfp_data = filtered_data,
-    #                            outcome_type = outcome_type,
-    #                            plot_title = 'Summary Forest Plot with Studies Excluded',
-    #                            download_file_name = 'summary_forest_plot_filtered')
+    summary_forest_plot_server(id = 'freqSub',
+                               sfp_data = filtered_data,
+                               treatment_df = treatment_df,
+                               outcome_type = outcome_type,
+                               desirability = desirability,
+                               model = model,
+                               plot_title = 'Summary Forest Plot with Studies Excluded',
+                               download_file_name = 'summary_forest_plot_filtered')
   })
 }

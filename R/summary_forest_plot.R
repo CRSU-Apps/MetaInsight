@@ -79,6 +79,8 @@
 #' @param plot_title Title of the plot
 #' @param outcome_type Type of outcome being plotted
 #' @param desirability "good" if the treatment effect is desirable, else "bad"
+#' @param model "random" or "fixed" effects model being plotted
+#' @return Summary forest matrix plot
 CreateSummaryForestPlot <- function(data_to_plot, treatment_df, plot_title, outcome_type, desirability, model) {
   lstx <- treatment_df$Label
   ntx <- length(lstx)
