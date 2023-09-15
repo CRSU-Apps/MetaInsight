@@ -279,11 +279,13 @@ multiplot <- function(stytitle, ntx, lstx, mtc, ma, bpredd=TRUE, plt.adj, ucex) 
     if (i%%(ntx+1) == 1) { 
       ## Diagonal
       if (i%%ntx!=0){
-        rect(par("usr")[1], par("usr")[3], par("usr")[2], par("usr")[4], col ="white")  
+        rect(par("usr")[1], par("usr")[3], par("usr")[2], par("usr")[4], col ="white")
+        text(xpos,2.0,lstx[i%%ntx], cex=ucex, adj=c(0.5,0.5),font=2)
         text(xpos+0.6,-0.1,sprintf("Rank=%.0f",mtc$rank[i%%ntx, 3]), cex=ucex*0.9, adj=0.5,font=1)
       }
       else { #last box
-        rect(par("usr")[1], par("usr")[3], par("usr")[2], par("usr")[4], col ="white")  
+        rect(par("usr")[1], par("usr")[3], par("usr")[2], par("usr")[4], col ="white")
+        text(xpos,2.0,lstx[ntx], cex=ucex, adj=c(0.5,0),font=2)   #NOTE difference here for lstx!!
         text(xpos+0.6,-0.1,sprintf("Rank=%.0f",mtc$rank[ntx,3]), cex=ucex*0.9, adj=0.5,font=1)
       }
       i.pt<- i.pt-1
