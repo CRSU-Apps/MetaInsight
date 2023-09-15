@@ -37,7 +37,8 @@ summary_forest_plot_server <- function(id, sfp_data, treatment_df, outcome_type,
                               plot_title = plot_title,
                               outcome_type = outcome_type(),
                               desirability = desirability(),
-                              model = model())
+                              model = model()
+      )
     })
     
     # Setup download button

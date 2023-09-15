@@ -80,8 +80,6 @@ CreateSummaryForestPlot <- function(data_to_plot, treatment_df, plot_title, outc
     ma,
     bpredd = TRUE,
     bkey = TRUE,
-    p.order = 1,
-    tx1 = 2,
     p.only = ntx
   )
 }
@@ -509,109 +507,9 @@ mtc.redu <-function(mtc, rmt, p.only, po) {
   return(newmtc)
 }
 
-#----------------------------------------------------------------------------
-sort.ord <- function(mtc, p.order, tx1) {
-  
-  #Define parameters for sorting use
-  mdrank <-mtc$rank[,3]
-  mnrank <-mtc$rank[,1]
-  pbest <-mtc$pbest[,1]
-  
-  if(p.order==1) { #sort by: median rank order (increasing)
-    sp.order <- "Interventions are displayed sorted by median rank."
-    #Parameters for sorting use in this case: mdrank; mnrank; pbest 
-    
-    if (tx1==1) {
-      # sort data but leave tx1 at the top
-      #sorting parameter for sorting by median rank in increasing order. Highest rank first
-      po <- c(1, (1+order(mdrank[-1], mnrank[-1], pbest[-1],decreasing = FALSE)))
-    }else if (tx1==2) {
-      # sort all results by median rank 
-      #sorting parameter for sorting by median rank in increasing order. Highest rank first
-      po <- order(mdrank, decreasing = FALSE)
-    }
-    
-  } else if(p.order==2) { #sort by: mean rank order (increasing)
-    
-    sp.order <- "Interventions are displayed sorted by mean rank."
-    #Parameters for sorting use in this case: mnrank; pbest 
-    
-    if (tx1==1) {
-      # sort data but leave tx1 at the top
-      #sorting parameter for sorting by mean rank in increasing order. Highest rank first
-      po <- c(1, (1+order(mnrank[-1], pbest[-1],decreasing = FALSE)))
-    }else if (tx1==2) {
-      # sort all results by median rank 
-      #sorting parameter for sorting by mean rank in increasing order. Highest rank first
-      po <- order(mnrank, pbest, decreasing = FALSE)
-    }
-    
-  } else if(p.order==3) { #sort by: SUCRA percentage (decreasing)
-    
-    sp.order <- "Interventions are displayed sorted by SUCRA percentages."
-    #Parameters for sorting use in this case: sucra.percent; mnrank
-    sucra.percent <-mtc$sucra
-    
-    if (tx1==1) {
-      # sort data but leave tx1 at the top
-      #sorting parameter for sorting by sucra in decreasing order. Highest first
-      po <- c(1, (1+order(sucra.percent[-1], mnrank[-1] ,decreasing = TRUE)))
-    }else if (tx1==2) {
-      # sort all results by sucra
-      #sorting parameter for sorting by sucra in decreasing order. Highest first
-      po <- order(sucra.percent, mnrank ,decreasing = TRUE)
-    }
-    
-    
-  } else if(p.order==4) { #sort by: pbest order (decreasing)
-    sp.order <- "Interventions are displayed sorted by probability best results."
-    #Parameters for sorting use in this case: pbest; mnrank 
-    
-    if (tx1==1) {
-      # sort data but leave tx1 at the top
-      #sorting parameter for sorting by pbest in decreasing order. Highest first
-      po <- c(1, (1+order(pbest[-1],mnrank[-1] ,decreasing = TRUE)))
-    }else if (tx1==2) {
-      # sort all results by pbest
-      #sorting parameter for sorting by pbest in decreasing order. Highest first
-      po <- order(pbest,mnrank ,decreasing = TRUE)
-    }
-    
-    
-  } else if(p.order==5) { #sort by: treatment relative effect vs trt 1 in list (should be usual care/placebo)
-    sp.order <- sprintf("Interventions are displayed sorted by magnitude of relative effect vs %s.", lstx[1])
-    
-    #Define parameter for sorting use, this is not shared by any of the above sorting order choices
-    txeff <-c(1, mtc$or[1:(ntx-1),3])
-    
-    if (tx1==1) {
-      # sort data but leave tx1 at the top
-      #sorting parameter 
-      po <- c(1, (1+order(txeff[-1] ,decreasing = TRUE)))
-    }else if (tx1==2) {
-      # sort all results by  treatment relative effect vs trt 1 in list
-      #sorting parameter. Largest relative effect first
-      po <- order(txeff ,decreasing = TRUE)
-    }
-  }
-  return(list(sp.order=sp.order, po=po))
-}
-
 #' Create
 #'
-mtcMatrixCont <- function(stytitle, ntx, lstx, mtc, ma, bpredd=TRUE, bkey=TRUE, p.order=0, tx1=1, p.only=ntx, ucex=1) {
-  
-  #matrix printing order
-  #p.order=0 #default - follow treatment list order
-  #1: median rank order (increasing); 2:mean rank order (increasing)
-  #3: SUCRA percentage (decreasing)
-  #4: pbest order (decreasing); 5:treatment relative effect vs trt 1 in list (should be usual care/placebo) (decreasing)
-  if (p.order<0 | p.order>5) stop("p.order must be an integer between 0 and 5 inclusive")
-  
-  #tx1 (Usual care/placebo) to be presented at the top or at its 'true' ranking position
-  #tx1=1 #default - at the top
-  #tx1=2: sorted position
-  if (tx1<1 | tx1>2) stop("tx1 must be either 1 or 2!")
+mtcMatrixCont <- function(stytitle, ntx, lstx, mtc, ma, bpredd=TRUE, bkey=TRUE, p.only=ntx, ucex=1) {
   
   #print only the first x interventions
   #p.only = ntx # default
@@ -623,47 +521,37 @@ mtcMatrixCont <- function(stytitle, ntx, lstx, mtc, ma, bpredd=TRUE, bkey=TRUE, 
   #plt.adj = 0 when graph key is to be removed
   # = 1 for only 2 lines of keys (i.e. when p.order=0)
   # = 2 for 3 lines of keys (i.e when p.order!=0 && p.only <ntx)
-  if (bkey==FALSE) { plt.adj <- 0 
-  }else { if (p.order==0) { plt.adj <- 1 } else { if(p.only<ntx) plt.adj <- 2 else plt.adj <- 1 }
+  if (bkey==FALSE) {
+    plt.adj <- 0 
+  } else if (p.only<ntx) {
+    plt.adj <- 2
+  } else {
+    plt.adj <- 1 
   }
   
-  if (p.order==0) {
-    multiplot(stytitle, ntx, lstx, mtc, ma, bpredd, plt.adj, ucex)
-    
-    sp.order <- "Interventions are displayed in the order that they were entered in the analysis."
+  sp.order <- "Interventions are displayed sorted by median rank."
+  po <- order(mtc$rank[,3], decreasing = FALSE)
+  mtso <- sortres.matrix(ntx, po)
+  rkgmo <- sortrkg.ord(ntx, po) 
+  st.ma <- ma.sortres(ma, mtc, mtso)
+  st.mtc <- mtc.sortres(mtc, mtso, rkgmo, po) 
+  st.lstx <- lstx[po]
+  
+  if (p.only==ntx) {
     sp.only <- ""
     key.ypos <- 1.3
     
-    #tx1 -NA-
-    #p.only NA
-    
+    multiplot(stytitle, ntx, st.lstx, st.mtc, st.ma, bpredd, plt.adj, ucex)
   } else {
+    sp.only <- sprintf("A total of %i interventions were compared in this NMA but only %i interventions were displayed in this plot.", ntx, p.only)
+    key.ypos <- 2.3
     
-    sort.vec <- sort.ord(mtc, p.order, tx1) 
-    sp.order <- sort.vec$sp.order
-    po <- sort.vec$po
-    mtso <- sortres.matrix(ntx, po)
-    rkgmo <- sortrkg.ord(ntx, po) 
-    st.ma <- ma.sortres(ma, mtc, mtso)
-    st.mtc <- mtc.sortres(mtc, mtso, rkgmo, po) 
-    st.lstx <- lstx[po]
-    
-    if (p.only==ntx) {
-      sp.only <- ""
-      key.ypos <- 1.3
-      
-      multiplot(stytitle, ntx, st.lstx, st.mtc, st.ma, bpredd, plt.adj, ucex)
-    } else {
-      sp.only <- sprintf("A total of %i interventions were compared in this NMA but only %i interventions were displayed in this plot.", ntx, p.only)
-      key.ypos <- 2.3
-      
-      #reduce the results matrices & vectors
-      mtred <- redu.matrix(ntx, po, p.only, mtso)
-      r.ma <- ma.redu(st.ma, mtred)
-      r.mtc <- mtc.redu(st.mtc, mtred, p.only, po)
-      r.lstx <- st.lstx[1:p.only]
-      multiplot(stytitle, p.only, r.lstx, r.mtc, r.ma, bpredd, plt.adj, ucex)
-    }
+    #reduce the results matrices & vectors
+    mtred <- redu.matrix(ntx, po, p.only, mtso)
+    r.ma <- ma.redu(st.ma, mtred)
+    r.mtc <- mtc.redu(st.mtc, mtred, p.only, po)
+    r.lstx <- st.lstx[1:p.only]
+    multiplot(stytitle, p.only, r.lstx, r.mtc, r.ma, bpredd, plt.adj, ucex)
   }
   
   if (bkey==TRUE) {
