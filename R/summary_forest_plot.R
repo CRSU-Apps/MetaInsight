@@ -24,7 +24,6 @@ CreateSummaryForestPlot <- function(data_to_plot, treatment_df, plot_title, outc
   mtc$lor <- matrix(0, nrow = sum(1:(ntx - 1)), ncol = 7)
   mtc$or <- matrix(0, nrow = sum(1:(ntx - 1)), ncol = 7)
   mtc$rank <- matrix(0, nrow = ntx, ncol = 4)
-  mtc$pbest <- matrix(0, nrow = ntx, ncol = 2)
   mtc$predint <- matrix(0, nrow = sum(1:(ntx - 1)), ncol = 4)
   mtc$rkgram <- matrix(0, nrow = ntx * ntx, ncol = 2)
   
@@ -84,13 +83,12 @@ CreateSummaryForestPlot <- function(data_to_plot, treatment_df, plot_title, outc
   )
 }
 
-
-
-
-#----------------------------------------------------------------------------
-# Functions for Summary Forest Plot Matrix & Table
-#----------------------------------------------------------------------------
-#MTC & MA estimates for Forest Matrix plot - used in for loop in multiplot function
+#' MTC & MA estimates for Forest Matrix plot - used in for loop in multiplot function.
+#'
+#' @param mtc Meta-analysis data for direct and indirect evidence
+#' @param pw 
+#' @param xpos 
+#' @param ucex 
 singleest <- function(mtc, pw, xpos=0, ucex) {
   
   #define pos to be the same
@@ -104,11 +102,17 @@ singleest <- function(mtc, pw, xpos=0, ucex) {
   if (!is.na(pw[2])) text(xpos,(ypos-2),sprintf("(%.2f to %.2f)",  pw[1], pw[3]),adj=0.5,cex=ucex+0.1,col="grey55")
 }
 
-
-#----------------------------------------------------------------------------
-#MTC & MA Forest plot for use in NMA SPF Matix plot
-
-#Function to draw two-tired error bars for summary relative estimates
+#' Function to draw two-tired error bars for summary relative estimates.
+#'
+#' @param offs 
+#' @param LL 
+#' @param OR 
+#' @param UL 
+#' @param ypos 
+#' @param ucol 
+#' @param ulwd 
+#' @param pcI 
+#' @param predbd 
 PrICrI<- function(offs, LL, OR, UL, ypos, ucol="black", ulwd=1, pcI=FALSE, predbd=c(NA,NA)) {
   if (pcI==TRUE) {   #show both CrI & PrI
     if (predbd[1]!=0 & predbd[2]!=0){
@@ -124,9 +128,14 @@ PrICrI<- function(offs, LL, OR, UL, ypos, ucol="black", ulwd=1, pcI=FALSE, predb
   points(OR+offs,(ypos),pch=15,cex=0.8*ulwd,col=ucol, adj=0.5)
 }
 
-#----------------------------------------------------------------------------
-#single plot for MTC & MA SFP in NMA SPF Matrix 
-#Call functions: (i) PrICrI 
+#' single plot for MTC & MA SFP in NMA SPF Matrix 
+#'
+#' @param mtc Meta-analysis data for direct and indirect evidence
+#' @param pw 
+#' @param bpredd 
+#' @param baxis 
+#' @param scaletype The outcome type being plotted. "HR" for hazard ratio, and "OR" for odds ratio will be plotted on a log scale, anything else will be plotted on a linear scale
+#' @param vec_xlim 
 singleSFP <- function(mtc, pw, bpredd=TRUE, baxis=TRUE, scaletype, vec_xlim) {
   
   ##define axis offset
@@ -151,25 +160,24 @@ singleSFP <- function(mtc, pw, bpredd=TRUE, baxis=TRUE, scaletype, vec_xlim) {
   
   #Add axis for last row
   if (baxis) {
-    
-    if (scaletype=="OR" | scaletype=="HR") { #Odd ratio (2) or Hazard Ratio (3) log scale
+    if (scaletype=="OR" | scaletype=="HR") { #Odd ratio or Hazard Ratio log scale
       vticks <- c(1/1024, 1/256,1/64,1/16,1/4,1,4,16,64,256, 1024)
       lnticks <- log(vticks)
       lblticks <- c("1/1024", "1/256","1/64","1/16","1/4","1","4","16","64","256", "1024")
       axis(1, at=lnticks, labels=lblticks, cex.axis=0.6, padj=-1.0, tck=-0.05)
-      
-    }else if (scaletype=="MD") { #continuous data scale
-      
+    } else { #continuous data scale
       axis(1, at = NULL, labels = TRUE, cex.axis=0.6,padj=-1.0, tck=-0.05)
     }
   }
 }
 
-
-#----------------------------------------------------------------------------
-#Function to draw graphs along diagonal - for NMA SPF Matrix
-#Comprise 4 graphs types:
-
+#' Function to draw graphs along diagonal - for NMA SPF Matrix
+#'
+#' @param ntx Number of treatments
+#' @param rkgram 
+#' @param cumu 
+#'
+#' @return
 rankogram <- function(ntx, rkgram, cumu=FALSE) {
   ori.ntx <- length(rkgram)/ntx
   xseq <- seq(0,1, length.out=(2*ntx+1))
@@ -178,8 +186,6 @@ rankogram <- function(ntx, rkgram, cumu=FALSE) {
   if (cumu==TRUE) rank.cumprob <- apply(rankmat, 2, cumsum)   #2:indicates column to all apply to
   
   for (i in 1:ntx){
-    #Note: x1 position different from pbestpie function
-    
     if (cumu==TRUE) par(fig=c(xseq[2*i-1],xseq[2*i+1],(1-xseq[2*i+1]),(1-xseq[2*i])), new=TRUE, mar=c(1.2,1.5,0,0.6))
     else par(fig=c(xseq[2*i-1],xseq[2*i+1],(1-xseq[2*i+1]),(1.01-xseq[2*i])), new=TRUE, mar=c(1.2,1.5,0,0.6))
     plot(1:ori.ntx,seq(-1,1,len=ori.ntx), type="n",  ylab="",xlab="", ylim=c(0,1), axes=F)
@@ -195,8 +201,11 @@ rankogram <- function(ntx, rkgram, cumu=FALSE) {
   }
 }
 
-#----------------------------------------------------------------------------
-#Function to create a vector indexing shading in mtcMultiplot
+#' Function to create a vector indexing shading in mtcMultiplot.
+#'
+#' @param ntx Number of treatments
+#'
+#' @return
 shading.vec <- function(ntx) {
   
   ordvec <- seq(1, ntx*ntx)
@@ -213,13 +222,22 @@ shading.vec <- function(ntx) {
 }
 
 
-#----------------------------------------------------------------------------
-#Call 5 functions above: (i)singleest (ii)singleSFP (iii) (iv)pbestpie (v) (vi)shading.vec
+#' Title
+#'
+#' @param stytitle 
+#' @param ntx 
+#' @param lstx 
+#' @param mtc 
+#' @param ma 
+#' @param bpredd 
+#' @param plt.adj 
+#' @param ucex 
+#'
+#' @return
 multiplot <- function(stytitle, ntx, lstx, mtc, ma, bpredd=TRUE, plt.adj, ucex) {
   
   #Start a matrix plot - define number of elements "squares" in Matrix
   tplot <- ntx*ntx
-  #dev.new(width=10, height=10)  
   
   if(plt.adj==0) { par(mfcol = c(ntx,ntx), oma = c(3.5, 0, 2, 0)) 
   } else if(plt.adj==1){ par(mfcol = c(ntx,ntx), oma = c(5, 0, 2, 0))
@@ -337,18 +355,14 @@ multiplot <- function(stytitle, ntx, lstx, mtc, ma, bpredd=TRUE, plt.adj, ucex) 
     if (plt.adj==0) mtext(straxis, side=1, outer=TRUE, line=2, cex=0.75)
     else mtext(straxis, side=1, outer=TRUE, line=1.5, cex=0.75)
   }
-  
-  #Include Heterogeneity estimates in the graph
-  #mtext(expression(paste("Heterogeneity, ", tau^2, "                ")), side=1, adj=1, outer=TRUE, line=2, cex=0.6)
-  #mtext(sprintf("Heterogeneity: between-study variance       \n = %.2f; 95%% CrI (%.3f to %.3f)                 ", (1/mtc$tau[3]), (1/mtc$tau[4]), (1/mtc$tau[2])), side=1, adj=1, outer=TRUE, line=2.5, cex=0.65)
-  
-} #end of function
+}
 
-#----------------------------------------------------------------------------
-#----------------------------------------------------------------------------
-#Plot function for mtcMatrixCont
-
-#Function to create the matrix sorting order - to be used for the MTC & MA numerical results (Upper triangle results)
+#' Function to create the matrix sorting order - to be used for the MTC & MA numerical results (Upper triangle results)
+#'
+#' @param ntx Number of treatments
+#' @param po Ranking order of treatments
+#'
+#' @return
 sortres.matrix <-function(ntx, po) {
   
   #Correctly create corresponding treatment code no.
@@ -368,12 +382,17 @@ sortres.matrix <-function(ntx, po) {
   #ordering sorted by t1(ref) followed by t2(comparator)
   mo <- order(mtnew[,2],mtnew[,3] ,decreasing = FALSE)
   #All columns to be sorted by mo order
-  mtorg <- mtnew[mo,]   #Matrix having some format ordering as the standarded WinsBUGS output
+  mtorg <- mtnew[mo,]   #Matrix having some format ordering as the standard WinsBUGS output
   
   return(mtorg)
 }
 
-#Function to create the rankgram matrix sorting order
+#' Function to create the rankgram matrix sorting order
+#'
+#' @param ntx Number of treatments
+#' @param po Ranking order of treatments
+#'
+#' @return
 sortrkg.ord <-function(ntx, po) {
   
   #Correctly create corresponding treatment code no.
@@ -391,10 +410,14 @@ sortrkg.ord <-function(ntx, po) {
   return(rkgmo)
 }
 
-#Function to update the PW MA results after changes to the tx rankings.
+#' Function to update the PW MA results after changes to the tx rankings.
+#'
+#' @param ma Meta-analysis data for direct evidence only
+#' @param mtc Meta-analysis data for direct and indirect evidence
+#' @param mtorg 
+#'
+#' @return
 ma.sortres <-function(ma, mtc, mtorg) {
-  #ma data frame contains: $lor; $or; $predint
-  
   #Re-calculate estimates after inverting the reference group, using mtorg[,4=inv]
   tmp.lor <- mtorg[,4]*(ma$lor[, 4:7])
   tmp.or <- mtorg[,4]*(ma$or[, 4:7])
@@ -420,18 +443,17 @@ ma.sortres <-function(ma, mtc, mtorg) {
   return(newma)
 }
 
-#Function to update the MTC results after changes to the tx rankings.
+#' Function to update the MTC results after changes to the tx rankings.
+#'
+#' @param mtc Meta-analysis data for direct and indirect evidence
+#' @param mtorg 
+#' @param rkgmo 
+#' @param po 
+#'
+#' @return
 mtc.sortres <-function(mtc, mtorg, rkgmo, po) {
-  #mtc data frame contains: $lor; $or; $predint; $rkgram (MATRIX)
-  #$rkgram (MATRIX)
-  #$rank; $pbest; $p2best; $p3best; $sucra (VECTOR, length(ntx))
-  #$tau (VECTOR, 1 row x 4element)
-  
   #~VECTORS~
   new.rank <- mtc$rank[po,]
-  new.pbest <- mtc$pbest[po,]
-  new.p2best <- mtc$p2best[po,]
-  new.p3best <- mtc$p3best[po,]
   if (exists("sucra", where=mtc)) new.sucra <- mtc$sucra[po] else new.sucra <- c(0)
   
   #~MATRIX~
@@ -454,11 +476,18 @@ mtc.sortres <-function(mtc, mtorg, rkgmo, po) {
   new.or <- tmp.or[mtord,]
   new.predint <- tmp.predint[mtord,]
   
-  newmtc <- list(lor=new.lor, or=new.or, predint=new.predint, rkgram=new.rkgram, rank=new.rank, pbest=new.pbest, p2best=new.p2best, p3best=new.p3best, sucra=new.sucra, tau=mtc$tau, type=mtc$type)
+  newmtc <- list(lor=new.lor, or=new.or, predint=new.predint, rkgram=new.rkgram, rank=new.rank, sucra=new.sucra, tau=mtc$tau, type=mtc$type)
   return(newmtc)
 }
 
-#Function to create the matrix reduction vector
+#' Function to create the matrix reduction vector
+#'
+#' @param ntx Number of treatments
+#' @param po Matrix containing ranking order of treatments
+#' @param p.only Number of treatments to plot
+#' @param mtorg 
+#'
+#' @return
 redu.matrix <- function(ntx, po, p.only, mtorg) {
   
   #Correctly create corresponding treatment code no.
@@ -472,10 +501,13 @@ redu.matrix <- function(ntx, po, p.only, mtorg) {
   return(rmt)
 }
 
-#Function to reduce the matix size based on user defined plotting range reduction
+#' Function to reduce the matrix size based on user defined plotting range reduction.
+#'
+#' @param ma Meta-analysis data for direct evidence only
+#' @param rmt 
+#'
+#' @return Reduced meta-analysis data
 ma.redu <-function(ma, rmt) {
-  #ma data frame contains: $lor; $or; $predint
-  
   new.lor <- ma$lor[!is.na(rmt),]
   new.or <-  ma$or[!is.na(rmt),]
   new.predint <-  ma$predint[!is.na(rmt),]
@@ -484,17 +516,17 @@ ma.redu <-function(ma, rmt) {
   return(newma)
 }
 
-#Function to reduce the matix size based on user defined plotting range reduction
+#' Function to reduce the matrix size based on user defined plotting range reduction.
+#'
+#' @param mtc Meta-analysis data for direct and indirect evidence
+#' @param rmt 
+#' @param p.only Number of treatments to plot
+#' @param po Matrix containing ranking order of treatments
+#'
+#' @return Reduced meta-analysis data
 mtc.redu <-function(mtc, rmt, p.only, po) {
-  #mtc data frame contains: $lor; $or; $predint; $rkgram (MATRIX)
-  #$rank; $pbest; $p2best; $p3best; $sucra (VECTOR, length(ntx))
-  #$tau (VECTOR, 1 row x 4element)
-  
   #~VECTORS~ inputed mtc===st.mtc # already sorted, just truncate directly
   new.rank <- mtc$rank[1:p.only,]
-  new.pbest <- mtc$pbest[1:p.only,]
-  new.p2best <- mtc$p2best[1:p.only,]
-  new.p3best <- mtc$p3best[1:p.only,]
   if (exists("sucra", where=mtc)) new.sucra <- mtc$sucra[1:p.only] 
   
   #~MATRIX~
@@ -503,30 +535,34 @@ mtc.redu <-function(mtc, rmt, p.only, po) {
   new.predint <-  mtc$predint[!is.na(rmt),]
   new.rkgram <- mtc$rkgram[1:(ntx*p.only),]
   
-  newmtc <- list(lor=new.lor, or=new.or, predint=new.predint, rkgram=new.rkgram, rank=new.rank, pbest=new.pbest, p2best=new.p2best, p3best=new.p3best, sucra=new.sucra, tau=mtc$tau, type=mtc$type)
+  newmtc <- list(lor=new.lor, or=new.or, predint=new.predint, rkgram=new.rkgram, rank=new.rank, sucra=new.sucra, tau=mtc$tau, type=mtc$type)
   return(newmtc)
 }
 
-#' Create
+#' Create summary forest matrix plot
 #'
-mtcMatrixCont <- function(stytitle, ntx, lstx, mtc, ma, bpredd=TRUE, bkey=TRUE, p.only=ntx, ucex=1) {
+#' @param stytitle Title of plot
+#' @param ntx Number of treatments
+#' @param lstx Vector of treatment names
+#' @param mtc Meta-analysis data for direct and indirect evidence
+#' @param ma Meta-analysis data for direct evidence only
+#' @param bpredd TRUE if confidence interval to be plotted as error bars
+#' @param bkey TRUE if key should be included in plot
+#' @param p.only Number of treatments to plot
+#' @param ucex Font size multiplier. Defaults to 1
+mtcMatrixCont <- function(stytitle, ntx, lstx, mtc, ma, bpredd = TRUE, bkey = TRUE, p.only = ntx, ucex = 1) {
+  if (p.only < 3) {
+    stop("Print selection must not be less than 3")
+  } else if (p.only > ntx) {
+    stop("Print selection cannot be more than the total number of interventions")
+  }
   
-  #print only the first x interventions
-  #p.only = ntx # default
-  #p.only = integer (3:ntx)
-  if (p.only<3) stop("Print selection must not be less than 3!")
-  if (p.only>ntx) stop("Print selection cannot be more than the total number of interventions!")
-  
-  #Parameter for adjusting the plot area for the matrix in the graph
-  #plt.adj = 0 when graph key is to be removed
-  # = 1 for only 2 lines of keys (i.e. when p.order=0)
-  # = 2 for 3 lines of keys (i.e when p.order!=0 && p.only <ntx)
-  if (bkey==FALSE) {
-    plt.adj <- 0 
-  } else if (p.only<ntx) {
+  if (!bkey) {
+    plt.adj <- 0
+  } else if (p.only < ntx) {
     plt.adj <- 2
   } else {
-    plt.adj <- 1 
+    plt.adj <- 1
   }
   
   sp.order <- "Interventions are displayed sorted by median rank."
@@ -565,5 +601,4 @@ mtcMatrixCont <- function(stytitle, ntx, lstx, mtc, ma, bpredd=TRUE, bkey=TRUE, 
     plot(0:19,seq(0,10,len=20), type="n",axes=F, ylab="",xlab="")
     text(-0.5, key.ypos, sprintf("Key:\n      %s\n      %s%s\n      %s", slgd, sp.order, srpinfo, sp.only), adj=0, cex=1) 
   }
-  
 }
