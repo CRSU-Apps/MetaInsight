@@ -72,13 +72,13 @@ CreateSummaryForestPlot <- function(data_to_plot, treatment_df, plot_title, outc
   
   prjtitle <- "Summary Forest Plot"
   mtcMatrixCont(
-    prjtitle, 
-    ntx, 
-    lstx, 
-    mtc, 
-    ma, 
-    bpredd = TRUE, 
-    bkey = TRUE, 
+    prjtitle,
+    ntx,
+    lstx,
+    mtc,
+    ma,
+    bpredd = TRUE,
+    bkey = TRUE,
     p.only = ntx
   )
 }
@@ -86,42 +86,44 @@ CreateSummaryForestPlot <- function(data_to_plot, treatment_df, plot_title, outc
 #' MTC & MA estimates for Forest Matrix plot - used in for loop in multiplot function.
 #'
 #' @param mtc Meta-analysis data for direct and indirect evidence
-#' @param pw 
-#' @param xpos 
-#' @param ucex 
+#' @param pw Meta-analysis data for direct (pairwise) evidence only
+#' @param xpos Position of text in X axis
+#' @param ucex Text size
 singleest <- function(mtc, pw, xpos = 0, ucex) {
   
   #define pos to be the same
   ypos <- 0
   
   #NMA
-  text(xpos, (ypos + 2), sprintf("%.2f", mtc[2]), adj = 0.5, cex = ucex + 0.1, col = "black")
-  text(xpos, (ypos + 1), sprintf("(%.2f to %.2f)", mtc[1], mtc[3]), adj = 0.5, cex = ucex + 0.1, col = "black")
+  text(xpos, (ypos + 2), sprintf("%.2f", mtc[2]), adj = 0.5, cex = ucex, col = "black")
+  text(xpos, (ypos + 1), sprintf("(%.2f to %.2f)", mtc[1], mtc[3]), adj = 0.5, cex = ucex, col = "black")
   #PW
-  text(xpos, (ypos - 1), sprintf("%.2f", pw[2]), adj = 0.5, cex = ucex + 0.1, col = "grey55")
+  text(xpos, (ypos - 1), sprintf("%.2f", pw[2]), adj = 0.5, cex = ucex, col = "grey55")
   if (!is.na(pw[2])) {
-    text(xpos, (ypos - 2), sprintf("(%.2f to %.2f)",  pw[1], pw[3]), adj = 0.5, cex = ucex + 0.1, col = "grey55")
+    text(xpos, (ypos - 2), sprintf("(%.2f to %.2f)",  pw[1], pw[3]), adj = 0.5, cex = ucex, col = "grey55")
   }
 }
 
 #' Function to draw two-tired error bars for summary relative estimates.
 #'
-#' @param offs 
-#' @param LL 
-#' @param OR 
-#' @param UL 
-#' @param ypos 
-#' @param ucol 
-#' @param ulwd 
-#' @param pcI 
-#' @param predbd 
+#' @param offs Axis offset
+#' @param LL Lower limit
+#' @param OR Point estimate
+#' @param UL Upper limit
+#' @param ypos Position of error bars in Y axis
+#' @param ucol Text colour. Defaults to black
+#' @param ulwd Line width. Defaults to 1
+#' @param pcI  TRUE if both credible interval and predictive interval to be plotted, otherwise only credible interval plotted. Defaults to FALSE
+#' @param predbd Predictive data
 PrICrI <- function(offs, LL, OR, UL, ypos, ucol = "black", ulwd = 1, pcI = FALSE, predbd = c(NA, NA)) {
   if (pcI) {   #show both CrI & PrI
     if (predbd[1] != 0 & predbd[2] != 0) {
       lines(c(predbd[1] + offs, predbd[2] + offs), c(ypos, ypos), lty = 1, lwd = ulwd, col = ucol)  		#pred dist interval
       lines(c(predbd[1] + offs, predbd[1] + offs), c(ypos - 0.2, ypos + 0.2), lty = 1, lwd = ulwd, col = ucol)  	#pred dist 25% line
       lines(c(predbd[2] + offs, predbd[2] + offs), c(ypos - 0.2, ypos + 0.2), lty = 1, lwd = ulwd, col = ucol)  	#pred dist 75% line
-    } else { lines(c(LL + offs, UL + offs), c(ypos, ypos), col = ucol, lty = 1, lwd = ulwd, adj = 0.5) }
+    } else {
+      lines(c(LL + offs, UL + offs), c(ypos, ypos), col = ucol, lty = 1, lwd = ulwd, adj = 0.5)
+    }
     lines(c(LL + offs, LL + offs), c(ypos - 0.4, ypos + 0.4), lty = 1, lwd = ulwd, col = ucol)  	#credible interval 25% line
     lines(c(UL + offs, UL + offs), c(ypos - 0.4, ypos + 0.4), lty = 1, lwd = ulwd, col = ucol)  	#credible interval 75% line
   } else {  ##!pcI == > show only CrI
@@ -130,15 +132,14 @@ PrICrI <- function(offs, LL, OR, UL, ypos, ucol = "black", ulwd = 1, pcI = FALSE
   points(OR + offs, ypos, pch = 15, cex = 0.8 * ulwd, col = ucol, adj = 0.5)
 }
 
-#' single plot for MTC & MA SFP in NMA SPF Matrix 
+#' Single plot for MTC & MA SFP in NMA SPF Matrix.
 #'
 #' @param mtc Meta-analysis data for direct and indirect evidence
-#' @param pw 
-#' @param bpredd 
-#' @param baxis 
+#' @param pw Meta-analysis data for direct (pairwise) evidence only
+#' @param bpredd TRUE if confidence interval to be plotted as error bars
+#' @param baxis TRUEW if asex to be drawn for forest plots
 #' @param scaletype The outcome type being plotted. "HR" for hazard ratio, and "OR" for odds ratio will be plotted on a log scale, anything else will be plotted on a linear scale
-#' @param vec_xlim 
-singleSFP <- function(mtc, pw, bpredd = TRUE, baxis = TRUE, scaletype, vec_xlim) {
+singleSFP <- function(mtc, pw, bpredd = TRUE, baxis = TRUE, scaletype) {
   
   ##define axis offset
   offs = 0
@@ -173,19 +174,19 @@ singleSFP <- function(mtc, pw, bpredd = TRUE, baxis = TRUE, scaletype, vec_xlim)
   }
 }
 
-#' Function to draw graphs along diagonal - for NMA SPF Matrix
+#' Function to draw graphs along diagonal - for NMA SPF Matrix.
 #'
 #' @param ntx Number of treatments
-#' @param rkgram 
-#' @param cumu 
-#'
-#' @return
+#' @param rkgram Vector containing rankogram data
+#' @param cumu True if to draw cumulative rankogram. Defaults to False
 rankogram <- function(ntx, rkgram, cumu = FALSE) {
   ori.ntx <- length(rkgram) / ntx
   xseq <- seq(0, 1, length.out = (2 * ntx + 1))
   rankmat <- array(rkgram, c(ori.ntx, ntx))
   
-  if (cumu) rank.cumprob <- apply(rankmat, 2, cumsum)   #2:indicates column to all apply to
+  if (cumu) {
+    rank.cumprob <- apply(rankmat, 2, cumsum)   #2:indicates column to all apply to
+  }
   
   for (i in 1:ntx) {
     if (cumu) {
@@ -213,41 +214,39 @@ rankogram <- function(ntx, rkgram, cumu = FALSE) {
 #'
 #' @param ntx Number of treatments
 #'
-#' @return
+#' @return the calculated shading vector
 shading.vec <- function(ntx) {
   ordvec <- seq(1, ntx * ntx)
   shgvec <- rep(0, ntx * ntx)
   
   #Odd Number interventions
-  shgvec[(ntx %% 2 != 0) & ordvec %% 2 != 0] <- 1 
+  shgvec[(ntx %% 2 != 0) & ordvec %% 2 != 0] <- 1
   
   #Even Number interventions
-  shgvec[(ntx %% 2 == 0) & ((ceiling(ordvec / ntx)) %% 2 == 0) & (ordvec %% 2 == 0)] <- 1 
-  shgvec[(ntx %% 2 == 0) & ((ceiling(ordvec / ntx)) %% 2 != 0) & (ordvec %% 2 != 0)] <- 1 
+  shgvec[(ntx %% 2 == 0) & ((ceiling(ordvec / ntx)) %% 2 == 0) & (ordvec %% 2 == 0)] <- 1
+  shgvec[(ntx %% 2 == 0) & ((ceiling(ordvec / ntx)) %% 2 != 0) & (ordvec %% 2 != 0)] <- 1
   
   return(shgvec)
 }
 
 
-#' Title
+#' Draw the elements of the summary forest matrix plot.
 #'
-#' @param stytitle 
-#' @param ntx 
-#' @param lstx 
-#' @param mtc 
-#' @param ma 
-#' @param bpredd 
-#' @param plt.adj 
-#' @param ucex 
-#'
-#' @return
+#' @param stytitle Title of plot
+#' @param ntx Number of treatments
+#' @param lstx Vector of treatment names
+#' @param mtc Meta-analysis data for direct and indirect evidence
+#' @param ma Meta-analysis data for direct evidence only
+#' @param bpredd TRUE if confidence interval to be plotted as error bars
+#' @param plt.adj Plot position adjustment
+#' @param ucex Text size
 multiplot <- function(stytitle, ntx, lstx, mtc, ma, bpredd = TRUE, plt.adj, ucex) {
   
   #Start a matrix plot - define number of elements "squares" in Matrix
   tplot <- ntx * ntx
   
   if (plt.adj == 0) {
-    par(mfcol = c(ntx, ntx), oma = c(3.5, 0, 2, 0)) 
+    par(mfcol = c(ntx, ntx), oma = c(3.5, 0, 2, 0))
   } else if (plt.adj == 1) {
     par(mfcol = c(ntx, ntx), oma = c(5, 0, 2, 0))
   } else if (plt.adj == 2) {
@@ -281,13 +280,13 @@ multiplot <- function(stytitle, ntx, lstx, mtc, ma, bpredd = TRUE, plt.adj, ucex
     if (!bpredd) {
       #Check the maximum required print range using lor range
       absside <- max(abs(ma$lor[, 5:7]), abs(mtc$lor[, 2:4]), na.rm = TRUE)
-      side.xl <- -1 * ceiling(absside) 
-      side.xu <- ceiling(absside) 
-    } else{
+      side.xl <- -1 * ceiling(absside)
+      side.xu <- ceiling(absside)
+    } else {
       #Check the maximum required print range using predictive interval range
       absside <- max(abs(ma$predint[, 5:7]), abs(mtc$predint[, 2:4]), na.rm = TRUE)
-      side.xl <- -1 * ceiling(absside) 
-      side.xu <- ceiling(absside) 
+      side.xl <- -1 * ceiling(absside)
+      side.xu <- ceiling(absside)
     }
   }
   
@@ -300,13 +299,13 @@ multiplot <- function(stytitle, ntx, lstx, mtc, ma, bpredd = TRUE, plt.adj, ucex
     
     #matrix cells alternate background shading
     if (shgvector[i] == 1) {
-      rect(par("usr")[1], par("usr")[3], par("usr")[2], par("usr")[4], col = "grey95") 
+      rect(par("usr")[1], par("usr")[3], par("usr")[2], par("usr")[4], col = "grey95")
     } else {
       rect(par("usr")[1], par("usr")[3], par("usr")[2], par("usr")[4], col = "white")
     }
     
     i.pt <- i.pt + 1
-    if (i %% (ntx + 1) == 1) { 
+    if (i %% (ntx + 1) == 1) {
       ## Diagonal
       if (i %% ntx != 0) {
         rect(par("usr")[1], par("usr")[3], par("usr")[2], par("usr")[4], col = "white")
@@ -319,7 +318,7 @@ multiplot <- function(stytitle, ntx, lstx, mtc, ma, bpredd = TRUE, plt.adj, ucex
       }
       i.pt <- i.pt - 1
       
-    } else if (i %% ntx == 0 | i %% ntx > i %/% ntx) { 
+    } else if (i %% ntx == 0 | i %% ntx > i %/% ntx) {
       ##Lower triangle
       axis <- (i %% ntx == 0)
       
@@ -330,15 +329,15 @@ multiplot <- function(stytitle, ntx, lstx, mtc, ma, bpredd = TRUE, plt.adj, ucex
         mtc.est <- c(mtc$lor[i.pt, 2], mtc$lor[i.pt, 3], mtc$lor[i.pt, 4], mtc$predint[i.pt, 2], mtc$predint[i.pt, 4])
         pw.est <- c(ma$lor[i.pt, 5], ma$lor[i.pt, 6], ma$lor[i.pt, 7], ma$predint[i.pt, 5], ma$predint[i.pt, 7])
       }
-      singleSFP(mtc.est, pw.est, bpredd, axis, mtc$type, vec_xlim = c(side.xl, side.xu))
+      singleSFP(mtc.est, pw.est, bpredd, axis, mtc$type)
     } else if (i %% ntx <= i %/% ntx) {
       ##Upper triangle
       i.pt <- i.pt - 1
-      i.tx <- ((i %% ntx) - 1) * ntx + (i %/% ntx + 1) - (sum(seq((i %% ntx)))) 
+      i.tx <- ((i %% ntx) - 1) * ntx + (i %/% ntx + 1) - (sum(seq((i %% ntx))))
       mtc.or <- c(mtc$or[i.tx, 2], mtc$or[i.tx, 3], mtc$or[i.tx, 4])
       pw.or <- c(ma$or[i.tx, 5], ma$or[i.tx, 6], ma$or[i.tx, 7])
       
-      singleest(mtc.or, pw.or, xpos, ucex)
+      singleest(mtc.or, pw.or, xpos, ucex + 0.1)
     }
     
     ##Draw a box around the mulitple plots
@@ -382,12 +381,12 @@ multiplot <- function(stytitle, ntx, lstx, mtc, ma, bpredd = TRUE, plt.adj, ucex
   }
 }
 
-#' Function to create the matrix sorting order - to be used for the MTC & MA numerical results (Upper triangle results)
+#' Function to create the matrix sorting order - to be used for the MTC & MA numerical results (Upper triangle results),
 #'
 #' @param ntx Number of treatments
 #' @param po Ranking order of treatments
 #'
-#' @return
+#' @return Sorting order matrix
 sortres.matrix <- function(ntx, po) {
   
   #Correctly create corresponding treatment code no.
@@ -412,12 +411,12 @@ sortres.matrix <- function(ntx, po) {
   return(mtorg)
 }
 
-#' Function to create the rankgram matrix sorting order
+#' Function to create the rankgram matrix sorting order.
 #'
 #' @param ntx Number of treatments
 #' @param po Ranking order of treatments
 #'
-#' @return
+#' @return Rankgram matrix sorting order
 sortrkg.ord <- function(ntx, po) {
   
   #Correctly create corresponding treatment code no.
@@ -428,20 +427,20 @@ sortrkg.ord <- function(ntx, po) {
   #create new 'ranked' rankogram combinations
   rkgnew <- array(c(1:(ntx * ntx), rep(st.txcode, each = ntx, len = ntx * ntx), rep(1:ntx, ntx, len = ntx * ntx)), c(ntx * ntx, 3))
   
-  rkgmio <- order(rkgnew[, 2], rkgnew[, 3], decreasing = FALSE) #intermediate ordering 
+  rkgmio <- order(rkgnew[, 2], rkgnew[, 3], decreasing = FALSE) #intermediate ordering
   rkgmtorg <- cbind(c(1:(ntx * ntx)), rkgnew[rkgmio, ])  #matrix from WinBUGS; col 1 for checking purpose only
   rkgmo <- order(rkgmtorg[, 2], decreasing = FALSE)
   
   return(rkgmo)
 }
 
-#' Function to update the PW MA results after changes to the tx rankings.
+#' Function to update the pairwise meta-analysis results after changes to the tx rankings.
 #'
 #' @param ma Meta-analysis data for direct evidence only
 #' @param mtc Meta-analysis data for direct and indirect evidence
-#' @param mtorg 
+#' @param mtorg Sorting order matrix
 #'
-#' @return
+#' @return Updated meta-analysis data
 ma.sortres <- function(ma, mtc, mtorg) {
   #Re-calculate estimates after inverting the reference group, using mtorg[, 4 = inv]
   tmp.lor <- mtorg[, 4] * (ma$lor[, 4:7])
@@ -471,11 +470,11 @@ ma.sortres <- function(ma, mtc, mtorg) {
 #' Function to update the MTC results after changes to the tx rankings.
 #'
 #' @param mtc Meta-analysis data for direct and indirect evidence
-#' @param mtorg 
-#' @param rkgmo 
-#' @param po 
+#' @param mtorg Sorting order matrix
+#' @param rkgmo Rankgram matrix sorting order
+#' @param po Matrix containing ranking order of treatments
 #'
-#' @return
+#' @return Updated meta-analysis data
 mtc.sortres <- function(mtc, mtorg, rkgmo, po) {
   #~VECTORS~
   new.rank <- mtc$rank[po, ]
@@ -509,14 +508,14 @@ mtc.sortres <- function(mtc, mtorg, rkgmo, po) {
   return(newmtc)
 }
 
-#' Function to create the matrix reduction vector
+#' Function to create the matrix reduction vector.
 #'
 #' @param ntx Number of treatments
 #' @param po Matrix containing ranking order of treatments
 #' @param p.only Number of treatments to plot
-#' @param mtorg 
+#' @param mtorg Sorting order matrix
 #'
-#' @return
+#' @return Matrix reduction vector
 redu.matrix <- function(ntx, po, p.only, mtorg) {
   
   #Correctly create corresponding treatment code no.
@@ -533,7 +532,7 @@ redu.matrix <- function(ntx, po, p.only, mtorg) {
 #' Function to reduce the matrix size based on user defined plotting range reduction.
 #'
 #' @param ma Meta-analysis data for direct evidence only
-#' @param rmt 
+#' @param rmt Matrix reduction vector
 #'
 #' @return Reduced meta-analysis data
 ma.redu <- function(ma, rmt) {
@@ -548,7 +547,7 @@ ma.redu <- function(ma, rmt) {
 #' Function to reduce the matrix size based on user defined plotting range reduction.
 #'
 #' @param mtc Meta-analysis data for direct and indirect evidence
-#' @param rmt 
+#' @param rmt Matrix reduction vector
 #' @param p.only Number of treatments to plot
 #' @param po Matrix containing ranking order of treatments
 #'
@@ -570,7 +569,7 @@ mtc.redu <- function(mtc, rmt, p.only, po) {
   return(newmtc)
 }
 
-#' Create summary forest matrix plot
+#' Create summary forest matrix plot.
 #'
 #' @param stytitle Title of plot
 #' @param ntx Number of treatments
@@ -599,9 +598,9 @@ mtcMatrixCont <- function(stytitle, ntx, lstx, mtc, ma, bpredd = TRUE, bkey = TR
   sp.order <- "Interventions are displayed sorted by median rank."
   po <- order(mtc$rank[, 3], decreasing = FALSE)
   mtso <- sortres.matrix(ntx, po)
-  rkgmo <- sortrkg.ord(ntx, po) 
+  rkgmo <- sortrkg.ord(ntx, po)
   st.ma <- ma.sortres(ma, mtc, mtso)
-  st.mtc <- mtc.sortres(mtc, mtso, rkgmo, po) 
+  st.mtc <- mtc.sortres(mtc, mtso, rkgmo, po)
   st.lstx <- lstx[po]
   
   if (p.only == ntx) {
@@ -633,6 +632,6 @@ mtcMatrixCont <- function(stytitle, ntx, lstx, mtc, ma, bpredd = TRUE, bkey = TR
     par(mfcol = c(ntx, 1), oma = c(0, 0, 2, 0), new = TRUE)
     par(mfg = c(ntx, 1), mar = c(0, 0, 0, 0))
     plot(0:19, seq(0, 10, len = 20), type = "n", axes = FALSE, ylab = "", xlab = "")
-    text(-0.5, key.ypos, sprintf("Key:\n      %s\n      %s%s\n      %s", slgd, sp.order, srpinfo, sp.only), adj = 0, cex = 1) 
+    text(-0.5, key.ypos, sprintf("Key:\n      %s\n      %s%s\n      %s", slgd, sp.order, srpinfo, sp.only), adj = 0, cex = 1)
   }
 }
