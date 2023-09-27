@@ -66,6 +66,9 @@ CreateSummaryForestPlot <- function(data_to_plot, treatment_df, plot_title, outc
       mtc$lor[count, 3] <- net1$TE.random[i, j]
       mtc$lor[count, 4] <- net1$upper.random[i, j]
       
+      mtc$predint[count, 2] <- net1$lower.predict[i, j]
+      mtc$predint[count, 4] <- net1$upper.predict[i, j]
+      
       count <- count + 1
     }
   }
@@ -104,48 +107,71 @@ singleest <- function(mtc, pw, xpos = 0, ucex) {
   }
 }
 
-#' Function to draw two-tired error bars for summary relative estimates.
+#' Function to draw two-tiered error bars for summary relative estimates.
 #'
 #' @param offs Axis offset
-#' @param LL Lower limit
-#' @param OR Point estimate
-#' @param UL Upper limit
+#' @param lower_confidence_limit Lower limit of confidence interval
+#' @param point_estimate Point estimate
+#' @param upper_confidence_limit Upper limit of confidence interval
 #' @param ypos Position of error bars in Y axis
 #' @param ucol Text colour. Defaults to black
 #' @param ulwd Line width. Defaults to 1
-#' @param pcI  TRUE if both credible interval and predictive interval to be plotted, otherwise only credible interval plotted. Defaults to FALSE
+#' @param pcI  TRUE if both confidence interval and predictive interval to be plotted, otherwise only confidence interval plotted. Defaults to FALSE
 #' @param predbd Predictive data
-PrICrI <- function(offs, LL, OR, UL, ypos, ucol = "black", ulwd = 1, pcI = FALSE, predbd = c(NA, NA)) {
-  if (pcI) {   #show both CrI & PrI
-    if (predbd[1] != 0 & predbd[2] != 0) {
-      lines(c(predbd[1] + offs, predbd[2] + offs), c(ypos, ypos), lty = 1, lwd = ulwd, col = ucol)  		#pred dist interval
-      lines(c(predbd[1] + offs, predbd[1] + offs), c(ypos - 0.2, ypos + 0.2), lty = 1, lwd = ulwd, col = ucol)  	#pred dist 25% line
-      lines(c(predbd[2] + offs, predbd[2] + offs), c(ypos - 0.2, ypos + 0.2), lty = 1, lwd = ulwd, col = ucol)  	#pred dist 75% line
-    } else {
-      lines(c(LL + offs, UL + offs), c(ypos, ypos), col = ucol, lty = 1, lwd = ulwd, adj = 0.5)
-    }
-    lines(c(LL + offs, LL + offs), c(ypos - 0.4, ypos + 0.4), lty = 1, lwd = ulwd, col = ucol)  	#credible interval 25% line
-    lines(c(UL + offs, UL + offs), c(ypos - 0.4, ypos + 0.4), lty = 1, lwd = ulwd, col = ucol)  	#credible interval 75% line
-  } else {  ##!pcI == > show only CrI
-    lines(c(LL + offs, UL + offs), c(ypos, ypos), col = ucol, lty = 1, lwd = ulwd, adj = 0.5)
+PrICrI <- function(offs, lower_confidence_limit, point_estimate, upper_confidence_limit, ypos, ucol = "black", ulwd = 1, pcI = FALSE, predbd = c(NA, NA)) {
+  # Show predictive interval
+  if (pcI & predbd[1] != 0 & predbd[2] != 0) {
+    # Predictive interval line
+    lines(c(predbd[1] + offs, predbd[2] + offs), c(ypos, ypos), lty = "dotted", lwd = ulwd, col = ucol)
+    # Predictive lower limit line
+    lines(c(predbd[1] + offs, predbd[1] + offs), c(ypos - 0.2, ypos + 0.2), lty = 1, lwd = ulwd, col = ucol)
+    # Predictive upper limit line
+    lines(c(predbd[2] + offs, predbd[2] + offs), c(ypos - 0.2, ypos + 0.2), lty = 1, lwd = ulwd, col = ucol)
   }
-  points(OR + offs, ypos, pch = 15, cex = 0.8 * ulwd, col = ucol, adj = 0.5)
+  
+  # Confidence interval line
+  lines(
+    c(lower_confidence_limit + offs, upper_confidence_limit + offs),
+    c(ypos, ypos),
+    col = ucol,
+    lty = 1,
+    lwd = ulwd,
+    adj = 0.5
+  )
+  # Confidence interval 2.5% line
+  lines(
+    c(lower_confidence_limit + offs, lower_confidence_limit + offs),
+    c(ypos - 0.4, ypos + 0.4),
+    lty = 1,
+    lwd = ulwd,
+    col = ucol
+  )
+  # Confidence interval 97.5% line
+  lines(
+    c(upper_confidence_limit + offs, upper_confidence_limit + offs),
+    c(ypos - 0.4, ypos + 0.4),
+    lty = 1,
+    lwd = ulwd,
+    col = ucol
+  )
+  
+  points(point_estimate + offs, ypos, pch = 15, cex = 0.8 * ulwd, col = ucol, adj = 0.5)
 }
 
 #' Single plot for MTC & MA SFP in NMA SPF Matrix.
 #'
 #' @param mtc Meta-analysis data for direct and indirect evidence
 #' @param pw Meta-analysis data for direct (pairwise) evidence only
-#' @param bpredd TRUE if confidence interval to be plotted as error bars
-#' @param baxis TRUEW if asex to be drawn for forest plots
-#' @param scaletype The outcome type being plotted. "HR" for hazard ratio, and "OR" for odds ratio will be plotted on a log scale, anything else will be plotted on a linear scale
+#' @param bpredd TRUE if predictive interval to be plotted as error bars
+#' @param baxis TRUE if axes to be drawn for forest plots
+#' @param scaletype The outcome type being plotted. "RR" for risk ratio, and "OR" for odds ratio will be plotted on a log scale, anything else will be plotted on a linear scale
 singleSFP <- function(mtc, pw, bpredd = TRUE, baxis = TRUE, scaletype) {
   
   ##define axis offset
   offs = 0
   
-  #Add reference line; log(1) = 0
-  lines(c(log(1) + offs, log(1) + offs), c(-3, 3), lty = 1, col = "grey80")
+  #Add reference line. This plots at 0 for continuous scales, and 1 for log scales
+  lines(c(offs, offs), c(-3, 3), lty = 1, col = "grey80")
   
   #define pos to be the same, so that the two SFP line are plotted at y = (-0.5 & 0.5)
   pos <- 1
@@ -163,7 +189,7 @@ singleSFP <- function(mtc, pw, bpredd = TRUE, baxis = TRUE, scaletype) {
   
   #Add axis for last row
   if (baxis) {
-    if (scaletype == "OR" | scaletype == "HR") { #Odd ratio or Hazard Ratio log scale
+    if (scaletype == "OR" | scaletype == "RR") { # Odds ratio or risk ratio log scale
       vticks <- c(1 / 1024, 1 / 256, 1 / 64, 1 / 16, 1 / 4, 1, 4, 16, 64, 256, 1024)
       lnticks <- log(vticks)
       lblticks <- c("1/1024", "1/256", "1/64", "1/16", "1/4", "1", "4", "16", "64", "256", "1024")
@@ -237,7 +263,7 @@ shading.vec <- function(ntx) {
 #' @param lstx Vector of treatment names
 #' @param mtc Meta-analysis data for direct and indirect evidence
 #' @param ma Meta-analysis data for direct evidence only
-#' @param bpredd TRUE if confidence interval to be plotted as error bars
+#' @param bpredd TRUE if predictive interval to be plotted as error bars
 #' @param plt.adj Plot position adjustment
 #' @param ucex Text size
 multiplot <- function(stytitle, ntx, lstx, mtc, ma, bpredd = TRUE, plt.adj, ucex) {
@@ -356,28 +382,28 @@ multiplot <- function(stytitle, ntx, lstx, mtc, ma, bpredd = TRUE, plt.adj, ucex
   
   #Insert the graph title and x-axis title
   title(main = stytitle, outer = TRUE, cex.main = 1.5)
-  if (!bpredd) {
-    if (mtc$type == "OR") {
-      mtext("Odds Ratio with 95% CI  (log scale)", side = 1, outer = TRUE, line = 2, cex = 0.75)
-    } else if (mtc$type == "MD") {
-      mtext("Mean difference with 95% CI", side = 1, outer = TRUE, line = 2, cex = 0.75)
-    } else if (mtc$type == "HR") {
-      mtext("Hazard Ratio with 95% CrI  (log scale)", side = 1, outer = TRUE, line = 2, cex = 0.75)
-    }
+  
+  label_elements <- c(" with 95% CI")
+  if (bpredd) {
+    label_elements <- c(label_elements, " & 95% PI")
+  }
+  
+  if (mtc$type == "OR") {
+    label_elements <- c("Odds Ratio", label_elements, " (Log scale)")
+  } else if (mtc$type == "RR") {
+    label_elements <- c("Risk Ratio", label_elements, " (Log scale)")
+  } else if (mtc$type == "RD") {
+    label_elements <- c("Risk Difference", label_elements)
+  } else if (mtc$type == "MD") {
+    label_elements <- c("Mean Difference", label_elements)
+  } else if (mtc$type == "SMD") {
+    label_elements <- c("Standardised Mean Difference", label_elements)
+  }
+  
+  if (plt.adj == 0) {
+    mtext(stringr::str_flatten(label_elements), side = 1, outer = TRUE, line = 2, cex = 0.75)
   } else {
-    if (mtc$type == "OR") {
-      straxis <- "Odds Ratio with 95% CI (log scale)"
-    } else if (mtc$type == "MD") {
-      straxis <- "Mean Difference with 95% CI & 95% PI"
-    } else if (mtc$type == "HR") {
-      straxis <- "Hazard Ratio with 95% CrI & 95% PI (log scale)"
-    }
-    
-    if (plt.adj == 0) {
-      mtext(straxis, side = 1, outer = TRUE, line = 2, cex = 0.75)
-    } else {
-      mtext(straxis, side = 1, outer = TRUE, line = 1.5, cex = 0.75)
-    }
+    mtext(stringr::str_flatten(label_elements), side = 1, outer = TRUE, line = 1.5, cex = 0.75)
   }
 }
 
@@ -447,7 +473,7 @@ ma.sortres <- function(ma, mtc, mtorg) {
   tmp.or <- mtorg[, 4] * (ma$or[, 4:7])
   tmp.predint <- mtorg[, 4] * (ma$predint[, 4:7])
   
-  #swap 25% & 75% estimates for those that we inverted the reference group
+  #swap 2.5% & 97.5% estimates for those that we inverted the reference group
   tmp.lor[(mtorg[, 4] == -1), c(1, 2, 3, 4)] <- tmp.lor[(mtorg[, 4] == -1), c(1, 4, 3, 2)]
   tmp.or[(mtorg[, 4] == -1), c(1, 2, 3, 4)] <- tmp.or[(mtorg[, 4] == -1), c(1, 4, 3, 2)]
   tmp.predint[(mtorg[, 4] == -1), c(1, 2, 3, 4)] <- tmp.predint[(mtorg[, 4] == -1), c(1, 4, 3, 2)]
@@ -492,7 +518,7 @@ mtc.sortres <- function(mtc, mtorg, rkgmo, po) {
   tmp.or <- mtorg[, 4] * (mtc$or[, 1:4])
   tmp.predint <- mtorg[, 4] * (mtc$predint[, 1:4])
   
-  #swap 25% & 75% estimates for those that we inverted the reference group
+  #swap 2.5% & 97.5% estimates for those that we inverted the reference group
   tmp.lor[(mtorg[, 4] == -1), c(1, 2, 3, 4)] <- tmp.lor[(mtorg[, 4] == -1), c(1, 4, 3, 2)]
   tmp.or[(mtorg[, 4] == -1), c(1, 2, 3, 4)] <- tmp.or[(mtorg[, 4] == -1), c(1, 4, 3, 2)]
   tmp.predint[(mtorg[, 4] == -1), c(1, 2, 3, 4)] <- tmp.predint[(mtorg[, 4] == -1), c(1, 4, 3, 2)]
@@ -576,7 +602,7 @@ mtc.redu <- function(mtc, rmt, p.only, po) {
 #' @param lstx Vector of treatment names
 #' @param mtc Meta-analysis data for direct and indirect evidence
 #' @param ma Meta-analysis data for direct evidence only
-#' @param bpredd TRUE if confidence interval to be plotted as error bars
+#' @param bpredd TRUE if predictive interval to be plotted as error bars
 #' @param bkey TRUE if key should be included in plot
 #' @param p.only Number of treatments to plot
 #' @param ucex Font size multiplier. Defaults to 1
@@ -595,7 +621,7 @@ mtcMatrixCont <- function(stytitle, ntx, lstx, mtc, ma, bpredd = TRUE, bkey = TR
     plt.adj <- 1
   }
   
-  sp.order <- "Interventions are displayed sorted by median rank."
+  sp.order <- "Interventions are displayed sorted by SUCRA value."
   po <- order(mtc$rank[, 3], decreasing = FALSE)
   mtso <- sortres.matrix(ntx, po)
   rkgmo <- sortrkg.ord(ntx, po)
@@ -627,7 +653,7 @@ mtcMatrixCont <- function(stytitle, ntx, lstx, mtc, ma, bpredd = TRUE, bkey = TR
       slgd <- "NMA results in black; Pairwise MA results in grey. 95% CI presented as error bars."
     }
     
-    srpinfo <- " Ranks shown along the diagonal are the median rank."
+    srpinfo <- " Ranks shown along the diagonal are the SUCRA values."
     
     par(mfcol = c(ntx, 1), oma = c(0, 0, 2, 0), new = TRUE)
     par(mfg = c(ntx, 1), mar = c(0, 0, 0, 0))

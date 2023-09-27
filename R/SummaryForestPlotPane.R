@@ -22,6 +22,7 @@ summary_forest_plot_ui <- function(id) {
 #' 
 #' @param id ID of the module
 #' @param sfp_data Reactive value for the frequentist analysis data for the set of studies to plot
+#' @param treatment_df Data frame containing the names and IDs of all treatments
 #' @param outcome_type Reactive value for the type of outcome being plotted
 #' @param desirability Reactive value for whether small values are "good" or "bad"
 #' @param model Reactive value for whether the model is "random" or "fixed" effects
