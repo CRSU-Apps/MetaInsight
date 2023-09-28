@@ -81,6 +81,7 @@ CreateSummaryForestPlot <- function(data_to_plot, treatment_df, plot_title, outc
     lstx,
     mtc,
     ma,
+    outcome_type,
     bpredd = TRUE,
     bkey = TRUE,
     p.only = ntx,
@@ -467,13 +468,24 @@ sortrkg.ord <- function(ntx, po) {
 #' @param ma Meta-analysis data for direct evidence only
 #' @param mtc Meta-analysis data for direct and indirect evidence
 #' @param mtorg Sorting order matrix
+#' @param outcome_type Type of outcome being plotted
 #'
 #' @return Updated meta-analysis data
-ma.sortres <- function(ma, mtc, mtorg) {
+ma.sortres <- function(ma, mtc, mtorg, outcome_type) {
   #Re-calculate estimates after inverting the reference group, using mtorg[, 4 = inv]
-  tmp.lor <- mtorg[, 4] * (ma$lor[, 4:7])
-  tmp.or <- mtorg[, 4] * (ma$or[, 4:7])
-  tmp.predint <- mtorg[, 4] * (ma$predint[, 4:7])
+  tmp.lor <- mtorg[, 4] * ma$lor[, 4:7]
+  tmp.predint <- mtorg[, 4] * ma$predint[, 4:7]
+  if (outcome_type == "RR" | outcome_type == "OR") {
+    tmp.or <- ma$or[, 4:7]
+    for (i in 1:nrow(tmp.or)) {
+      if (mtorg[i, 4] == 1) {
+        next
+      }
+      tmp.or[i, ] <- 1 / ma$or[i, 4:7]
+    }
+  } else {
+    tmp.or <- mtorg[, 4] * ma$or[, 4:7]
+  }
   
   #swap 2.5% & 97.5% estimates for those that we inverted the reference group
   tmp.lor[(mtorg[, 4] == -1), c(1, 2, 3, 4)] <- tmp.lor[(mtorg[, 4] == -1), c(1, 4, 3, 2)]
@@ -501,9 +513,10 @@ ma.sortres <- function(ma, mtc, mtorg) {
 #' @param mtorg Sorting order matrix
 #' @param rkgmo Rankgram matrix sorting order
 #' @param po Matrix containing ranking order of treatments
+#' @param outcome_type Type of outcome being plotted
 #'
 #' @return Updated meta-analysis data
-mtc.sortres <- function(mtc, mtorg, rkgmo, po) {
+mtc.sortres <- function(mtc, mtorg, rkgmo, po, outcome_type) {
   #~VECTORS~
   new.rank <- mtc$rank[po, ]
   if (exists("sucra", where = mtc)) {
@@ -516,9 +529,19 @@ mtc.sortres <- function(mtc, mtorg, rkgmo, po) {
   new.rkgram <- mtc$rkgram
   
   #Re-calculate estimates after inverting the reference group, using mtorg[, 4 = inv]
-  tmp.lor <- mtorg[, 4] * (mtc$lor[, 1:4])
-  tmp.or <- mtorg[, 4] * (mtc$or[, 1:4])
-  tmp.predint <- mtorg[, 4] * (mtc$predint[, 1:4])
+  tmp.lor <- mtorg[, 4] * mtc$lor[, 1:4]
+  tmp.predint <- mtorg[, 4] * mtc$predint[, 1:4]
+  if (outcome_type == "RR" | outcome_type == "OR") {
+    tmp.or <- mtc$or[, 1:4]
+    for (i in 1:nrow(tmp.or)) {
+      if (mtorg[i, 4] == 1) {
+        next
+      }
+      tmp.or[i, ] <- 1 / mtc$or[i, 1:4]
+    }
+  } else {
+    tmp.or <- mtorg[, 4] * mtc$or[, 1:4]
+  }
   
   #swap 2.5% & 97.5% estimates for those that we inverted the reference group
   tmp.lor[(mtorg[, 4] == -1), c(1, 2, 3, 4)] <- tmp.lor[(mtorg[, 4] == -1), c(1, 4, 3, 2)]
@@ -604,11 +627,12 @@ mtc.redu <- function(mtc, rmt, p.only, po) {
 #' @param lstx Vector of treatment names
 #' @param mtc Meta-analysis data for direct and indirect evidence
 #' @param ma Meta-analysis data for direct evidence only
+#' @param outcome_type Type of outcome being plotted
 #' @param bpredd TRUE if predictive interval to be plotted as error bars
 #' @param bkey TRUE if key should be included in plot
 #' @param p.only Number of treatments to plot
 #' @param ucex Font size multiplier. Defaults to 1
-mtcMatrixCont <- function(stytitle, ntx, lstx, mtc, ma, bpredd = TRUE, bkey = TRUE, p.only = ntx, ucex = 1) {
+mtcMatrixCont <- function(stytitle, ntx, lstx, mtc, ma, outcome_type, bpredd = TRUE, bkey = TRUE, p.only = ntx, ucex = 1) {
   if (p.only < 3) {
     stop("Print selection must not be less than 3")
   } else if (p.only > ntx) {
@@ -627,8 +651,8 @@ mtcMatrixCont <- function(stytitle, ntx, lstx, mtc, ma, bpredd = TRUE, bkey = TR
   po <- order(mtc$rank[, 3], decreasing = FALSE)
   mtso <- sortres.matrix(ntx, po)
   rkgmo <- sortrkg.ord(ntx, po)
-  st.ma <- ma.sortres(ma, mtc, mtso)
-  st.mtc <- mtc.sortres(mtc, mtso, rkgmo, po)
+  st.ma <- ma.sortres(ma, mtc, mtso, outcome_type)
+  st.mtc <- mtc.sortres(mtc, mtso, rkgmo, po, outcome_type)
   st.lstx <- lstx[po]
   
   if (p.only == ntx) {
