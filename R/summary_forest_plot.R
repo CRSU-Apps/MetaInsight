@@ -463,6 +463,38 @@ sortrkg.ord <- function(ntx, po) {
   return(rkgmo)
 }
 
+#' Conditiopnally invert the meta-analysis data based on the sorting order.
+#'
+#' @param meta_analysis Meta-analysis data for direct and indirect evidence
+#' @param mtorg Sorting order matrix
+#' @param outcome_type Type of outcome being plotted
+#' @param indices Indeices of the meta-analysis data to invert
+#'
+#' @return Inverted meta-analysis data
+InvertMetaAnalysis <- function(meta_analysis, mtorg, outcome_type, indices) {
+  #Re-calculate estimates after inverting the reference group, using mtorg[, 4 = inv]
+  tmp.lor <- mtorg[, 4] * meta_analysis$lor[, indices]
+  tmp.predint <- mtorg[, 4] * meta_analysis$predint[, indices]
+  if (outcome_type == "RR" | outcome_type == "OR") {
+    tmp.or <- meta_analysis$or[, indices]
+    for (i in 1:nrow(tmp.or)) {
+      if (mtorg[i, 4] == 1) {
+        next
+      }
+      tmp.or[i, ] <- 1 / meta_analysis$or[i, indices]
+    }
+  } else {
+    tmp.or <- mtorg[, 4] * meta_analysis$or[, indices]
+  }
+  
+  #swap 2.5% & 97.5% estimates for those that we inverted the reference group
+  tmp.lor[(mtorg[, 4] == -1), c(1, 2, 3, 4)] <- tmp.lor[(mtorg[, 4] == -1), c(1, 4, 3, 2)]
+  tmp.or[(mtorg[, 4] == -1), c(1, 2, 3, 4)] <- tmp.or[(mtorg[, 4] == -1), c(1, 4, 3, 2)]
+  tmp.predint[(mtorg[, 4] == -1), c(1, 2, 3, 4)] <- tmp.predint[(mtorg[, 4] == -1), c(1, 4, 3, 2)]
+  
+  return(list(lor = tmp.lor, or = tmp.or, predint = tmp.predint))
+}
+
 #' Function to update the pairwise meta-analysis results after changes to the tx rankings.
 #'
 #' @param ma Meta-analysis data for direct evidence only
@@ -472,25 +504,10 @@ sortrkg.ord <- function(ntx, po) {
 #'
 #' @return Updated meta-analysis data
 ma.sortres <- function(ma, mtc, mtorg, outcome_type) {
-  #Re-calculate estimates after inverting the reference group, using mtorg[, 4 = inv]
-  tmp.lor <- mtorg[, 4] * ma$lor[, 4:7]
-  tmp.predint <- mtorg[, 4] * ma$predint[, 4:7]
-  if (outcome_type == "RR" | outcome_type == "OR") {
-    tmp.or <- ma$or[, 4:7]
-    for (i in 1:nrow(tmp.or)) {
-      if (mtorg[i, 4] == 1) {
-        next
-      }
-      tmp.or[i, ] <- 1 / ma$or[i, 4:7]
-    }
-  } else {
-    tmp.or <- mtorg[, 4] * ma$or[, 4:7]
-  }
-  
-  #swap 2.5% & 97.5% estimates for those that we inverted the reference group
-  tmp.lor[(mtorg[, 4] == -1), c(1, 2, 3, 4)] <- tmp.lor[(mtorg[, 4] == -1), c(1, 4, 3, 2)]
-  tmp.or[(mtorg[, 4] == -1), c(1, 2, 3, 4)] <- tmp.or[(mtorg[, 4] == -1), c(1, 4, 3, 2)]
-  tmp.predint[(mtorg[, 4] == -1), c(1, 2, 3, 4)] <- tmp.predint[(mtorg[, 4] == -1), c(1, 4, 3, 2)]
+  tmp <- InvertMetaAnalysis(ma, mtorg, outcome_type, 4:7)
+  tmp.lor <- tmp$lor
+  tmp.or <- tmp$or
+  tmp.predint <- tmp$predint
   
   tmp.lor <- cbind(ma$lor[, 1:3], tmp.lor)
   tmp.or <- cbind(ma$or[, 1:3], tmp.or)
@@ -528,25 +545,10 @@ mtc.sortres <- function(mtc, mtorg, rkgmo, po, outcome_type) {
   #~MATRIX~
   new.rkgram <- mtc$rkgram
   
-  #Re-calculate estimates after inverting the reference group, using mtorg[, 4 = inv]
-  tmp.lor <- mtorg[, 4] * mtc$lor[, 1:4]
-  tmp.predint <- mtorg[, 4] * mtc$predint[, 1:4]
-  if (outcome_type == "RR" | outcome_type == "OR") {
-    tmp.or <- mtc$or[, 1:4]
-    for (i in 1:nrow(tmp.or)) {
-      if (mtorg[i, 4] == 1) {
-        next
-      }
-      tmp.or[i, ] <- 1 / mtc$or[i, 1:4]
-    }
-  } else {
-    tmp.or <- mtorg[, 4] * mtc$or[, 1:4]
-  }
-  
-  #swap 2.5% & 97.5% estimates for those that we inverted the reference group
-  tmp.lor[(mtorg[, 4] == -1), c(1, 2, 3, 4)] <- tmp.lor[(mtorg[, 4] == -1), c(1, 4, 3, 2)]
-  tmp.or[(mtorg[, 4] == -1), c(1, 2, 3, 4)] <- tmp.or[(mtorg[, 4] == -1), c(1, 4, 3, 2)]
-  tmp.predint[(mtorg[, 4] == -1), c(1, 2, 3, 4)] <- tmp.predint[(mtorg[, 4] == -1), c(1, 4, 3, 2)]
+  tmp <- InvertMetaAnalysis(mtc, mtorg, outcome_type, 1:4)
+  tmp.lor <- tmp$lor
+  tmp.or <- tmp$or
+  tmp.predint <- tmp$predint
   
   #find order of final matrix for plotting
   mtord <- order(mtorg[, 1])  #Note: does not give same results as mo!
