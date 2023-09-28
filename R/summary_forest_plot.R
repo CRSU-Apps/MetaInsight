@@ -50,17 +50,10 @@ CreateSummaryForestPlot <- function(data_to_plot, treatment_df, plot_title, outc
   count <- 1
   for (i in 1:(ntx - 1)) {
     for (j in (i + 1):ntx) {
-      ma$or[count, 5] <- exp(net1$lower.direct.random[i, j])
-      ma$or[count, 6] <- exp(net1$TE.direct.random[i, j])
-      ma$or[count, 7] <- exp(net1$upper.direct.random[i, j])
       
       ma$lor[count, 5] <- net1$lower.direct.random[i, j]
       ma$lor[count, 6] <- net1$TE.direct.random[i, j]
       ma$lor[count, 7] <- net1$upper.direct.random[i, j]
-      
-      mtc$or[count, 2] <- exp(net1$lower.random[i, j])
-      mtc$or[count, 3] <- exp(net1$TE.random[i, j])
-      mtc$or[count, 4] <- exp(net1$upper.random[i, j])
       
       mtc$lor[count, 2] <- net1$lower.random[i, j]
       mtc$lor[count, 3] <- net1$TE.random[i, j]
@@ -68,6 +61,24 @@ CreateSummaryForestPlot <- function(data_to_plot, treatment_df, plot_title, outc
       
       mtc$predint[count, 2] <- net1$lower.predict[i, j]
       mtc$predint[count, 4] <- net1$upper.predict[i, j]
+      
+      if (outcome_type == "RR" | outcome_type == "OR") {
+        ma$or[count, 5] <- exp(net1$lower.direct.random[i, j])
+        ma$or[count, 6] <- exp(net1$TE.direct.random[i, j])
+        ma$or[count, 7] <- exp(net1$upper.direct.random[i, j])
+        
+        mtc$or[count, 2] <- exp(net1$lower.random[i, j])
+        mtc$or[count, 3] <- exp(net1$TE.random[i, j])
+        mtc$or[count, 4] <- exp(net1$upper.random[i, j])
+      } else {
+        ma$or[count, 5] <- net1$lower.direct.random[i, j]
+        ma$or[count, 6] <- net1$TE.direct.random[i, j]
+        ma$or[count, 7] <- net1$upper.direct.random[i, j]
+        
+        mtc$or[count, 2] <- net1$lower.random[i, j]
+        mtc$or[count, 3] <- net1$TE.random[i, j]
+        mtc$or[count, 4] <- net1$upper.random[i, j]
+      }
       
       count <- count + 1
     }
