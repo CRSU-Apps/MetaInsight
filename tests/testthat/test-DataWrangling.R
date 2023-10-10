@@ -266,12 +266,24 @@ test_that("ReorderColumns() reorders columns for continuous long data", {
     AddStudyIds() %>%
     ReorderColumns("Continuous")
   
-  expect_equal(colnames(wrangled_data), c("StudyID", "Study", "T", "N", "Mean", "SD"),
+  retained_columns <- c(
+    "Study",
+    "T",
+    "N",
+    "Mean",
+    "SD"
+  )
+  
+  expected_columns <- c("StudyID", retained_columns)
+  
+  expect_equal(colnames(wrangled_data), expected_columns,
                label = format_vector_to_string(colnames(wrangled_data)))
   
   # Contents of columns unchanged
-  for (col in colnames(data)) {
-    expect_equal(wrangled_data[[col]], data[[col]])
+  for (col in retained_columns) {
+    expect_equal(wrangled_data[[col]], data[[col]],
+                 label = paste0("wrangled_data$", col),
+                 expected.label = paste0("data$", col))
   }
 })
 
@@ -282,8 +294,7 @@ test_that("ReorderColumns() reorders columns for continuous wide data", {
     AddStudyIds() %>%
     ReorderColumns("Continuous")
   
-  expected_columns <- c(
-    "StudyID",
+  retained_columns <- c(
     "Study",
     "T.1",
     "N.1",
@@ -299,12 +310,16 @@ test_that("ReorderColumns() reorders columns for continuous wide data", {
     "SD.3"
   )
   
+  expected_columns <- c("StudyID", retained_columns)
+  
   expect_equal(colnames(wrangled_data), expected_columns,
                label = format_vector_to_string(colnames(wrangled_data)))
   
   # Contents of columns unchanged
-  for (col in colnames(data)) {
-    expect_equal(wrangled_data[[col]], data[[col]])
+  for (col in retained_columns) {
+    expect_equal(wrangled_data[[col]], data[[col]],
+                 label = paste0("wrangled_data$", col),
+                 expected.label = paste0("data$", col))
   }
 })
 
@@ -315,16 +330,23 @@ test_that("ReorderColumns() reorders columns for binary long data", {
     AddStudyIds() %>%
     ReorderColumns("Binary")
   
-  expect_equal(colnames(wrangled_data), c("StudyID", "Study", "T", "R", "N"),
+  retained_columns <- c(
+    "Study",
+    "T",
+    "R",
+    "N"
+  )
+  expected_columns <- c("StudyID", retained_columns)
+  
+  expect_equal(colnames(wrangled_data), expected_columns,
                label = format_vector_to_string(colnames(wrangled_data)),
                expected.label = format_vector_to_string(colnames(data)))
   
-  expect_equal(wrangled_data$StudyID, c(1, 1, 1, 2, 2, 2, 3, 3),
-               label = format_vector_to_string(wrangled_data$StudyID))
-  
   # Contents of columns unchanged
-  for (col in colnames(data)) {
-    expect_equal(wrangled_data[[col]], data[[col]])
+  for (col in retained_columns) {
+    expect_equal(wrangled_data[[col]], data[[col]],
+                 label = paste0("wrangled_data$", col),
+                 expected.label = paste0("data$", col))
   }
 })
 
@@ -335,8 +357,7 @@ test_that("ReorderColumns() reorders columns for binary wide data", {
     AddStudyIds() %>%
     ReorderColumns("Binary")
   
-  expected_columns <- c(
-    "StudyID",
+  retained_columns <- c(
     "Study",
     "T.1",
     "R.1",
@@ -348,13 +369,108 @@ test_that("ReorderColumns() reorders columns for binary wide data", {
     "R.3",
     "N.3"
   )
+  expected_columns <- c("StudyID", retained_columns)
   
   expect_equal(colnames(wrangled_data), expected_columns,
                label = format_vector_to_string(colnames(wrangled_data)))
   
   # Contents of columns unchanged
-  for (col in colnames(data)) {
-    expect_equal(wrangled_data[[col]], data[[col]])
+  for (col in retained_columns) {
+    expect_equal(wrangled_data[[col]], data[[col]],
+                 label = paste0("wrangled_data$", col),
+                 expected.label = paste0("data$", col))
+  }
+})
+
+test_that("ReorderColumns() retains covariate columns for long data", {
+  data <- CleanData(read.csv("Cont_long.csv"))
+  
+  # Add covariate columns
+  covariate_column_name_1 <- paste0(.covariate_prefix, "uno")
+  covariate_column_name_2 <- paste0(.covariate_prefix, "zwei")
+  covariate_column_name_3 <- paste0(.covariate_prefix, "trois")
+  data[[covariate_column_name_1]] <- rep(1, nrow(data))
+  data[[covariate_column_name_2]] <- rep(2, nrow(data))
+  data[[covariate_column_name_3]] <- rep(3, nrow(data))
+  
+  # Add unused column
+  data$deleteme <- rep("deleteme", nrow(data))
+  
+  wrangled_data <- data %>%
+    AddStudyIds() %>%
+    ReorderColumns("Continuous")
+  
+  retained_columns <- c(
+    "Study",
+    "T",
+    "N",
+    "Mean",
+    "SD",
+    covariate_column_name_1,
+    covariate_column_name_2,
+    covariate_column_name_3
+  )
+  
+  expected_columns <- c("StudyID", retained_columns)
+  
+  expect_equal(colnames(wrangled_data), expected_columns,
+               label = format_vector_to_string(colnames(wrangled_data)))
+  
+  # Contents of columns unchanged
+  for (col in retained_columns) {
+    expect_equal(wrangled_data[[col]], data[[col]],
+                 label = paste0("wrangled_data$", col),
+                 expected.label = paste0("data$", col))
+  }
+})
+
+test_that("ReorderColumns() retains covariate columns for wide data", {
+  data <- CleanData(read.csv("Cont_wide.csv"))
+  
+  # Add covariate columns
+  covariate_column_name_1 <- paste0(.covariate_prefix, "uno")
+  covariate_column_name_2 <- paste0(.covariate_prefix, "zwei")
+  covariate_column_name_3 <- paste0(.covariate_prefix, "trois")
+  data[[covariate_column_name_1]] <- rep(1, nrow(data))
+  data[[covariate_column_name_2]] <- rep(2, nrow(data))
+  data[[covariate_column_name_3]] <- rep(3, nrow(data))
+  
+  # Add unused column
+  data$deleteme <- rep("deleteme", nrow(data))
+  
+  wrangled_data <- data %>%
+    AddStudyIds() %>%
+    ReorderColumns("Continuous")
+  
+  retained_columns <- c(
+    "Study",
+    "T.1",
+    "N.1",
+    "Mean.1",
+    "SD.1",
+    "T.2",
+    "N.2",
+    "Mean.2",
+    "SD.2",
+    "T.3",
+    "N.3",
+    "Mean.3",
+    "SD.3",
+    covariate_column_name_1,
+    covariate_column_name_2,
+    covariate_column_name_3
+  )
+  
+  expected_columns <- c("StudyID", retained_columns)
+  
+  expect_equal(colnames(wrangled_data), expected_columns,
+               label = format_vector_to_string(colnames(wrangled_data)))
+  
+  # Contents of columns unchanged
+  for (col in retained_columns) {
+    expect_equal(wrangled_data[[col]], data[[col]],
+                 label = paste0("wrangled_data$", col),
+                 expected.label = paste0("data$", col))
   }
 })
 
@@ -483,4 +599,95 @@ test_that("WrangleUploadData() wrangles binary wide data to be usable in the res
     }
     expect_equal(!!wrangled_data[[col]], !!data[[col]])
   }
+})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+test_that("FindCovariateNames() finds covariate columns for long data", {
+  data <- CleanData(read.csv("Cont_long.csv"))
+  
+  # Add covariate columns
+  covariate_column_name_1 <- paste0(.covariate_prefix, "uno")
+  covariate_column_name_2 <- paste0(.covariate_prefix, "zwei")
+  covariate_column_name_3 <- paste0(.covariate_prefix, "trois")
+  data[[covariate_column_name_1]] <- rep(1, nrow(data))
+  data[[covariate_column_name_2]] <- rep(2, nrow(data))
+  data[[covariate_column_name_3]] <- rep(3, nrow(data))
+  
+  # Add unused column
+  data$deleteme <- rep("deleteme", nrow(data))
+  
+  expected_columns <- c(
+    covariate_column_name_1,
+    covariate_column_name_2,
+    covariate_column_name_3
+  )
+  
+  expect_equal(!!FindCovariateNames(data), expected_columns)
+})
+
+test_that("FindCovariateNames() finds covariate columns for wide data", {
+  data <- CleanData(read.csv("Cont_wide.csv"))
+  
+  # Add covariate columns
+  covariate_column_name_1 <- paste0(.covariate_prefix, "uno")
+  covariate_column_name_2 <- paste0(.covariate_prefix, "zwei")
+  covariate_column_name_3 <- paste0(.covariate_prefix, "trois")
+  data[[covariate_column_name_1]] <- rep(1, nrow(data))
+  data[[covariate_column_name_2]] <- rep(2, nrow(data))
+  data[[covariate_column_name_3]] <- rep(3, nrow(data))
+  
+  # Add unused column
+  data$deleteme <- rep("deleteme", nrow(data))
+  
+  expected_columns <- c(
+    covariate_column_name_1,
+    covariate_column_name_2,
+    covariate_column_name_3
+  )
+  
+  expect_equal(!!FindCovariateNames(data), expected_columns)
+})
+
+test_that("GetFriendlyCovariateName() gets friendly covariate name", {
+  base_name <- "Mohandas Karamchand Ghandi"
+  covariate_column_name <- paste0(.covariate_prefix, base_name)
+  
+  expect_equal(!!GetFriendlyCovariateName(covariate_column_name), base_name)
 })
