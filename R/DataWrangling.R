@@ -7,25 +7,56 @@ CleanData <- function(data) {
   return(dplyr::mutate(data, across(where(is.character), stringr::str_squish)))
 }
 
+FindAllColumnNames <- function(long_form_name, wide_form_name = long_form_name, data) {
+  if (long_form_name %in% colnames(data)) {
+    # Long format
+    return(long_form_name)
+  } else {
+    # Wide format
+    treatment_names <- c()
+    index <- 1
+    col <- paste0(wide_form_name, index)
+    while (col %in% colnames(data)) {
+      treatment_names <- c(treatment_names, col)
+      index <- index + 1
+      col <- paste0(wide_form_name, index)
+    }
+    return(unique(treatment_names[!is.na(treatment_names)]))
+  }
+}
+
 #' Find all of the treatment names in the data, both for long and wide formats.
 #' 
 #' @param data Data frame in which to search for treatment names
 #' @return Vector of all treatment names
-FindAllTreatments <- function(data) {
-  if ('T' %in% colnames(data)) {
+FindAllTreatments <- function(data, treatment_columns = NA) {
+  if (is.na(treatment_columns)) {
+    treatment_columns <- FindAllColumnNames("T", "T.", data)
+  }
+  all_treatment_cells <- unname(unlist(data[treatment_columns]))
+  return(unique(all_treatment_cells[!is.na(all_treatment_cells)]))
+}
+
+#' Find all of the study names which include the given treatment names, both for long and wide formats.
+#' 
+#' @param data Data frame in which to search for study names
+#' @param treatments Vector of matching treatments
+#' @return Vector of all matchinf study names
+FindStudiesIncludingTreatments <- function(data, treatments) {
+  if ("T" %in% colnames(data)) {
     # Long format
-    return(unique(data$T))
+    return(unique(data$Study[data$T %in% treatments]))
   } else {
     # Wide format
-    all_treatments <- c()
-    for (col in paste0('T.', seq(6))) {
-      if (col %in% colnames(data)) {
-        all_treatments <- c(all_treatments, data[[col]])
-      } else {
-        break
-      }
+    studies <- c()
+    index <- 1
+    col <- paste0("T.", index)
+    while (col %in% colnames(data)) {
+      studies <- c(studies, data$Study[data[[col]] %in% treatments])
+      index <- index + 1
+      col <- paste0("T.", index)
     }
-    return(unique(all_treatments[!is.na(all_treatments)]))
+    return(unique(studies))
   }
 }
 
@@ -54,11 +85,11 @@ CreateTreatmentIds <- function(all_treatments, reference_treatment = all_treatme
 # Treatments are in priority order, such that for any study with multiple matching treatments,
 # the first in this vector will be used as the reference, until the user selects another.
 .potential_reference_treatments = c(
-  'control',
-  'usual_care',
-  'standard_care',
-  'placebo',
-  'no_contact'
+  "control",
+  "usual_care",
+  "standard_care",
+  "placebo",
+  "no_contact"
 )
 
 #' Find the expected reference treatment from a vector.
@@ -76,22 +107,23 @@ FindExpectedReferenceTreatment <- function(treatments) {
   }
 }
 
-#' Find all of the treatment names in the data, both for long and wide formats.
+#' Replace all of the treatment names in the data with IDs, both for long and wide formats.
 #' 
 #' @param data Data frame in which to search for treatment names
-#' @return Vector of all treatment names
+#' @param treatent_ids Data frame containing treatment names (Label) and IDs (Number)
+#' @return Data frame where the treatments are given as IDs, not names
 ReplaceTreatmentIds <- function(data, treatent_ids) {
-  if ('T' %in% colnames(data)) {
+  if ("T" %in% colnames(data)) {
     # Long format
     data$T <- treatent_ids$Number[match(data$T, treatent_ids$Label)]
   } else {
     # Wide format
-    for (col in paste0('T.', seq(6))) {
-      if (col %in% colnames(data)) {
-        data[[col]] <- treatent_ids$Number[match(data[[col]], treatent_ids$Label)]
-      } else {
-        break
-      }
+    index <- 1
+    col <- paste0("T.", index)
+    while (col %in% colnames(data)) {
+      data[[col]] <- treatent_ids$Number[match(data[[col]], treatent_ids$Label)]
+      index <- index + 1
+      col <- paste0("T.", index)
     }
   }
   return(data)
