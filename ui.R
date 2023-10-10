@@ -146,16 +146,13 @@ load_data_page_ui(id = 'load_data_page'),
                                 tags$style(HTML("
             .tabbable > .nav > li > a                  {background-color: white;  color:#2196c4}
             .tabbable > .nav > li > a[data-value='1. Data summary'] {background-color: #2196c4;  color:white; font-size: 18px}
-            .tabbable > .nav > li > a[data-value='1a. Study Results'] {background-color: white;}
-            .tabbable > .nav > li > a[data-value='1b. Network Plot'] {background-color: white;}
             .tabbable > .nav > li > a[data-value='2. Frequentist network meta-analysis'] {background-color: #2196c4;   color:white; font-size: 18px}
-            .tabbable > .nav > li > a[data-value='2a. Forest Plot'] {background-color: white}
-            .tabbable > .nav > li > a[data-value='2b. Comparison of all treatment pairs'] {background-color: white;}
-            .tabbable > .nav > li > a[data-value='2c. Inconsistency'] {background-color: white;}
             .tabbable > .nav > li > a[data-value='3. Bayesian network meta-analysis'] {background-color: #2196c4;   color:white; font-size: 18px}
+            .tabbable > .nav > li > a[data-value='4. Meta-regression'] {background-color: #2196c4;   color:white; font-size: 18px}
             .tabbable > .nav > li[class=active]    > a {font-weight:900;font-style: italic;text-decoration: underline }
             ")),
        tabsetPanel(
+         id = "main_tabs",
          tabPanel("1. Data summary", tabsetPanel(
            tabPanel("1a. Data Characteristics", 
                     p("This tab shows a summary of study characteristics."),
@@ -540,7 +537,9 @@ load_data_page_ui(id = 'load_data_page'),
                column(6, p("UME (inconsistency) model"), verbatimTextOutput("dev_ume")),
                column(6, p("UME (inconsistency) model"), verbatimTextOutput("dev_ume_sub")
                ))   
-)))))), width=9))),
+))))),
+MetaRegressionTabUi(id = "meta_regression", title = "4. Meta-regression")
+), width=9))),
 
 ###################################
 ### Tab 4 - User Guide ###
