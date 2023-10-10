@@ -601,56 +601,43 @@ test_that("WrangleUploadData() wrangles binary wide data to be usable in the res
   }
 })
 
-test_that("CleanTreatmentIds() does not change compliant treatment names", {
-  treatment_ids <- data.frame(
-    Number = 1:5,
-    Label = c("Flour", "Egg", "Sugar", "Butter", "Cinnamon"),
-    RawLabel = c("Flour", "Egg", "Sugar", "Butter", "Cinnamon")
-  )
-  expect_equal(!!CleanTreatmentIds(treatment_ids ), !!treatment_ids)
-})
 
-test_that("CleanTreatmentIds() replaces spaces in treatment names", {
-  treatment_ids <- data.frame(
-    Number = 1:5,
-    Label = c("100g Flour", "1 Egg", "50g Sugar", "75g Butter", "2g Cinnamon")
-  )
-  
-  expected_treatment_ids <- data.frame(
-    Number = 1:5,
-    Label = c("100g_Flour", "1_Egg", "50g_Sugar", "75g_Butter", "2g_Cinnamon"),
-    RawLabel = c("100g Flour", "1 Egg", "50g Sugar", "75g Butter", "2g Cinnamon")
-  )
-  expect_equal(!!CleanTreatmentIds(treatment_ids ), !!expected_treatment_ids)
-})
 
-test_that("CleanTreatmentIds() replaces special characters in treatment names", {
-  treatment_ids <- data.frame(
-    Number = 1:5,
-    Label = c("2*4=8", "lunch@8o'clock", "#R4Life", "I<3Shiny", ">o<")
-  )
-  
-  expected_treatment_ids <- data.frame(
-    Number = 1:5,
-    Label = c("2_4_8", "lunch_8o_clock", "_R4Life", "I_3Shiny", "_o_"),
-    RawLabel = c("2*4=8", "lunch@8o'clock", "#R4Life", "I<3Shiny", ">o<")
-  )
-  expect_equal(!!CleanTreatmentIds(treatment_ids ), !!expected_treatment_ids)
-})
 
-test_that("CleanTreatmentIds() replaces multiple sequential special characters in treatment names with single underscore", {
-  treatment_ids <- data.frame(
-    Number = 1:5,
-    Label = c("2 * 4 = 8", "^(*(oo)*)^ <- It's a pig", "you stupid *%£$@#!", "var <- value", ":,-)")
-  )
-  
-  expected_treatment_ids <- data.frame(
-    Number = 1:5,
-    Label = c("2_4_8", "_oo_It_s_a_pig", "you_stupid_", "var_value", "_"),
-    RawLabel = c("2 * 4 = 8", "^(*(oo)*)^ <- It's a pig", "you stupid *%£$@#!", "var <- value", ":,-)")
-  )
-  expect_equal(!!CleanTreatmentIds(treatment_ids ), !!expected_treatment_ids)
-})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 test_that("FindCovariateNames() finds covariate columns for long data", {
   data <- CleanData(read.csv("Cont_long.csv"))
@@ -703,240 +690,4 @@ test_that("GetFriendlyCovariateName() gets friendly covariate name", {
   covariate_column_name <- paste0(.covariate_prefix, base_name)
   
   expect_equal(!!GetFriendlyCovariateName(covariate_column_name), base_name)
-})
-
-test_that("RemoveCovariates() removes covariates for continuous long data", {
-  data <- read.csv("Cont_long_continuous_cov.csv") %>%
-    CleanData()
-  
-  column_names <- c(
-    "Study",
-    "T",
-    "N",
-    "Mean",
-    "SD"
-  )
-  
-  expect_equal(!!names(data), !!c(column_names, "covar.age"))
-  
-  data <- data %>%
-    RemoveCovariates()
-  
-  expect_equal(!!names(data), !!column_names)
-})
-
-test_that("RemoveCovariates() removes covariates for continuous wide data", {
-  data <- read.csv("Cont_wide_continuous_cov.csv") %>%
-    CleanData()
-  
-  column_names <- c(
-    "Study",
-    "T.1",
-    "N.1",
-    "Mean.1",
-    "SD.1",
-    "T.2",
-    "N.2",
-    "Mean.2",
-    "SD.2",
-    "T.3",
-    "N.3",
-    "Mean.3",
-    "SD.3"
-  )
-  
-  expect_equal(!!names(data), !!c(column_names, "covar.age"))
-  
-  data <- data %>%
-    RemoveCovariates()
-  
-  expect_equal(!!names(data), !!column_names)
-})
-
-test_that("RemoveCovariates() removes covariates for binary long data", {
-  data <- read.csv("Binary_long_continuous_cov.csv") %>%
-    CleanData()
-  
-  column_names <- c(
-    "Study",
-    "T",
-    "R",
-    "N"
-  )
-  
-  expect_equal(!!names(data), !!c(column_names, "covar.age"))
-  
-  data <- data %>%
-    RemoveCovariates()
-  
-  expect_equal(!!names(data), !!column_names)
-})
-
-test_that("RemoveCovariates() removes covariates for binary wide data", {
-  data <- read.csv("Binary_wide_continuous_cov.csv") %>%
-    CleanData()
-  
-  column_names <- c(
-    "Study",
-    "T.1",
-    "R.1",
-    "N.1",
-    "T.2",
-    "R.2",
-    "N.2",
-    "T.3",
-    "R.3",
-    "N.3"
-  )
-  
-  expect_equal(!!names(data), !!c(column_names, "covar.age"))
-  
-  data <- data %>%
-    RemoveCovariates()
-  
-  expect_equal(!!names(data), !!column_names)
-})
-
-test_that("RemoveCovariates() does nothing for continuous long data with no covariates", {
-  data <- read.csv("Cont_long.csv") %>%
-    CleanData()
-  
-  column_names <- c(
-    "Study",
-    "T",
-    "N",
-    "Mean",
-    "SD"
-  )
-  
-  data <- data %>%
-    RemoveCovariates()
-  
-  expect_equal(!!names(data), !!column_names)
-})
-
-test_that("RemoveCovariates() does nothing for continuous wide data with no covariates", {
-  data <- read.csv("Cont_wide.csv") %>%
-    CleanData()
-  
-  column_names <- c(
-    "Study",
-    "T.1",
-    "N.1",
-    "Mean.1",
-    "SD.1",
-    "T.2",
-    "N.2",
-    "Mean.2",
-    "SD.2",
-    "T.3",
-    "N.3",
-    "Mean.3",
-    "SD.3"
-  )
-  
-  data <- data %>%
-    RemoveCovariates()
-  
-  expect_equal(!!names(data), !!column_names)
-})
-
-test_that("RemoveCovariates() does nothing for binary long data with no covariates", {
-  data <- read.csv("Binary_long.csv") %>%
-    CleanData()
-  
-  column_names <- c(
-    "Study",
-    "T",
-    "R",
-    "N"
-  )
-  
-  data <- data %>%
-    RemoveCovariates()
-  
-  expect_equal(!!names(data), !!column_names)
-})
-
-test_that("RemoveCovariates() does nothing for binary wide data with no covariates", {
-  data <- read.csv("Binary_wide.csv") %>%
-    CleanData()
-  
-  column_names <- c(
-    "Study",
-    "T.1",
-    "R.1",
-    "N.1",
-    "T.2",
-    "R.2",
-    "N.2",
-    "T.3",
-    "R.3",
-    "N.3"
-  )
-  
-  data <- data %>%
-    RemoveCovariates()
-  
-  expect_equal(!!names(data), !!column_names)
-})
-
-test_that("FindDataShape() finds shape of continuous long data", {
-  data <- read.csv("Cont_long_continuous_cov.csv") %>%
-    CleanData()
-  
-  expect_equal(!!FindDataShape(data), "long")
-})
-
-test_that("FindDataShape() finds shape of continuous wide data", {
-  data <- read.csv("Cont_wide_continuous_cov.csv") %>%
-    CleanData()
-  
-  expect_equal(!!FindDataShape(data), "wide")
-})
-
-test_that("FindDataShape() finds shape of binary long data", {
-  data <- read.csv("Binary_long_continuous_cov.csv") %>%
-    CleanData()
-  
-  expect_equal(!!FindDataShape(data), "long")
-})
-
-test_that("FindDataShape() finds shape of binary wide data", {
-  data <- read.csv("Binary_wide_continuous_cov.csv") %>%
-    CleanData()
-  
-  expect_equal(!!FindDataShape(data), "wide")
-})
-
-test_that("WideToLong() correctly converts binary wide data with binary covariates", {
-  wide_data <- read.csv("Binary_wide_binary_cov.csv")
-  long_data <- WideToLong(wide_data, "Binary")
-  expected_data <- read.csv("Binary_long_binary_cov.csv")
-  
-  expect_equal(long_data, expected_data)
-})
-
-test_that("WideToLong() correctly converts binary wide data with continuous covariates", {
-  wide_data <- read.csv("Binary_wide_continuous_cov.csv")
-  long_data <- WideToLong(wide_data, "Binary")
-  expected_data <- read.csv("Binary_long_continuous_cov.csv")
-  
-  expect_equal(long_data, expected_data)
-})
-
-test_that("WideToLong() correctly converts continuous wide data with binary covariates", {
-  wide_data <- read.csv("Cont_wide_binary_cov.csv")
-  long_data <- WideToLong(wide_data, "Continuous")
-  expected_data <- read.csv("Cont_long_binary_cov.csv")
-  
-  expect_equal(long_data, expected_data)
-})
-
-test_that("WideToLong() correctly converts continuous wide data with continuous covariates", {
-  wide_data <- read.csv("Cont_wide_continuous_cov.csv")
-  long_data <- WideToLong(wide_data, "Continuous")
-  expected_data <- read.csv("Cont_long_continuous_cov.csv")
-  
-  expect_equal(long_data, expected_data)
 })

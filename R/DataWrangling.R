@@ -31,6 +31,39 @@
 .covariate_prefix_regex <- "^covar\\."
 
 
+#' Remove leading and trailing whitespace and collapse mutiple whictspace characters between words.
+# Treatments are in priority order, such that for any study with multiple matching treatments,
+# the first in this vector will be used as the reference, until the user selects another.
+.potential_reference_treatments = c(
+  'control',
+  'usual_care',
+  'standard_care',
+  'placebo',
+  'no_contact'
+)
+
+# Column ordering
+.common_order = c("StudyID", "Study")
+.continuous_specific_order = unlist(
+  lapply(
+    c("", paste0(".", 1:6)),
+    function(x) paste0(c("T", "N", "Mean", "SD"), x)
+  )
+)
+.binary_specific_order = unlist(
+  lapply(
+    c("", paste0(".", 1:6)),
+    function(x) paste0(c("T", "R", "N"), x)
+  )
+)
+
+.continuous_order <- c(.common_order, .continuous_specific_order)
+.binary_order <- c(.common_order, .binary_specific_order)
+
+.covariate_prefix <- "covar."
+.covariate_prefix_regex <- "^covar\\."
+
+
 #' Remove leading and trailing whitespace and collapse multiple whitespace characters between words.
 #' 
 #' @param data Data frame to clean
@@ -226,32 +259,10 @@ WrangleUploadData <- function(data, treatment_ids, outcome_type) {
   return(new_df)
 }
 
-#' Clean the treatment labels to replace all characters which are not a number, letter, or underscore, with an underscore.
-#' 
-#' @param treatment_ids Data frame containing treatment IDs and names in columns named 'Number' and 'Label' respectively
-#' @return Cleaned version of treatment_ids
-CleanTreatmentIds <- function(treatment_ids) {
-  new_treatment_ids <- treatment_ids
-  new_treatment_ids$RawLabel <- treatment_ids$Label
-  new_treatment_ids$Label <- treatment_ids$Label %>%
-    stringr::str_replace_all("(?![a-zA-Z0-9_]).", "_") %>%
-    stringr::str_replace_all("(_+)", "_")
-  
-  return(new_treatment_ids)
-}
-
-#' Find the names of all columns which contain a covariate.
-#'
-#' @param df Data frame in which to find covariate columns.
-#' @return Names of all covariate columns
 FindCovariateNames <- function(df) {
   return(names(dplyr::select(df, dplyr::matches(.covariate_prefix_regex))))
 }
 
-#' Convert a covariate column name to a display name.
-#'
-#' @param column_name Covariate column name to convert
-#' @return Friendly covariate name
 GetFriendlyCovariateName <- function(column_name) {
   return(stringr::str_replace(column_name, .covariate_prefix_regex, ""))
 }
