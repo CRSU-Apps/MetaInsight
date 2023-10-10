@@ -243,3 +243,11 @@ WrangleUploadData <- function(data, treatment_ids, outcome_type) {
   
   return(new_df)
 }
+
+FindCovariateNames <- function(df) {
+  return(names(dplyr::select(df, dplyr::matches(.covariate_prefix_regex))))
+}
+
+GetFriendlyCovariateName <- function(column_name) {
+  return(stringr::str_replace(column_name, .covariate_prefix_regex, ""))
+}
