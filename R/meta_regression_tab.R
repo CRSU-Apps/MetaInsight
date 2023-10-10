@@ -5,19 +5,12 @@ CreateTitle <- function(index) {
 MetaRegressionTabUi <- function(id, title) {
   ns <- NS(id)
   shiny::tabPanel(
-    title = title,
-    shiny::selectInput(
-      inputId = ns("covariate_box"),
-      label = "Select covariate",
-      choices = c()
-    ),
-    style = "class: 'main'"
+    title = title
   )
 }
 
 MetaRegressionTabServer <- function(id, all_data, sub_data) {
   shiny::moduleServer(id, function(input, output, session) {
-    # shiny::updateSelectInput(inputId = "covariate_box", choices = FindCovariateNames(all_data))
-    covariate = shiny::reactive({ input$covariate_box })
+    covariate = shiny::reactive({ FindCovariateNames(all_data())[1] })
   })
 }
