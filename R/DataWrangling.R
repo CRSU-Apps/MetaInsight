@@ -1,4 +1,36 @@
 
+# Treatments are in priority order, such that for any study with multiple matching treatments,
+# the first in this vector will be used as the reference, until the user selects another.
+.potential_reference_treatments = c(
+  'control',
+  'usual_care',
+  'standard_care',
+  'placebo',
+  'no_contact'
+)
+
+# Column ordering
+.common_order = c("StudyID", "Study")
+.continuous_specific_order = unlist(
+  lapply(
+    c("", paste0(".", 1:6)),
+    function(x) paste0(c("T", "N", "Mean", "SD"), x)
+  )
+)
+.binary_specific_order = unlist(
+  lapply(
+    c("", paste0(".", 1:6)),
+    function(x) paste0(c("T", "R", "N"), x)
+  )
+)
+
+.continuous_order <- c(.common_order, .continuous_specific_order)
+.binary_order <- c(.common_order, .binary_specific_order)
+
+.covariate_prefix <- "covar."
+.covariate_prefix_regex <- "^covar\\."
+
+
 #' Remove leading and trailing whitespace and collapse mutiple whictspace characters between words.
 #' 
 #' @param data Data frame to clean
@@ -18,12 +50,12 @@ FindAllTreatments <- function(data) {
   } else {
     # Wide format
     all_treatments <- c()
-    for (col in paste0('T.', seq(6))) {
-      if (col %in% colnames(data)) {
-        all_treatments <- c(all_treatments, data[[col]])
-      } else {
-        break
-      }
+    index <- 1
+    col <- paste0('T.', index)
+    while (col %in% colnames(data)) {
+      all_treatments <- c(all_treatments, data[[col]])
+      index <- index + 1
+      col <- paste0('T.', index)
     }
     return(unique(all_treatments[!is.na(all_treatments)]))
   }
@@ -51,16 +83,6 @@ CreateTreatmentIds <- function(all_treatments, reference_treatment = all_treatme
   return(data.frame(Number = 1:length(treatment_names), Label = treatment_names))
 }
 
-# Treatments are in priority order, such that for any study with multiple matching treatments,
-# the first in this vector will be used as the reference, until the user selects another.
-.potential_reference_treatments = c(
-  'control',
-  'usual_care',
-  'standard_care',
-  'placebo',
-  'no_contact'
-)
-
 #' Find the expected reference treatment from a vector.
 #' This is done by comparing treatment names to expected reference treatment names.
 #' 
@@ -76,22 +98,23 @@ FindExpectedReferenceTreatment <- function(treatments) {
   }
 }
 
-#' Find all of the treatment names in the data, both for long and wide formats.
+#' Replace all of the treatment names in the data with IDs, both for long and wide formats.
 #' 
 #' @param data Data frame in which to search for treatment names
-#' @return Vector of all treatment names
+#' @param treatent_ids Data frame containing treatment names (Label) and IDs (Number)
+#' @return Data frame where the treatments are given as IDs, not names
 ReplaceTreatmentIds <- function(data, treatent_ids) {
   if ('T' %in% colnames(data)) {
     # Long format
     data$T <- treatent_ids$Number[match(data$T, treatent_ids$Label)]
   } else {
     # Wide format
-    for (col in paste0('T.', seq(6))) {
-      if (col %in% colnames(data)) {
-        data[[col]] <- treatent_ids$Number[match(data[[col]], treatent_ids$Label)]
-      } else {
-        break
-      }
+    index <- 1
+    col <- paste0('T.', index)
+    while (col %in% colnames(data)) {
+      data[[col]] <- treatent_ids$Number[match(data[[col]], treatent_ids$Label)]
+      index <- index + 1
+      col <- paste0('T.', index)
     }
   }
   return(data)
@@ -109,23 +132,6 @@ AddStudyIds <- function(data) {
   
   return(data)
 }
-
-.common_order = c("StudyID", "Study")
-.continuous_specific_order = unlist(
-  lapply(
-    c("", paste0(".", 1:6)),
-    function(x) paste0(c("T", "N", "Mean", "SD"), x)
-  )
-)
-.binary_specific_order = unlist(
-  lapply(
-    c("", paste0(".", 1:6)),
-    function(x) paste0(c("T", "R", "N"), x)
-  )
-)
-
-.continuous_order <- c(.common_order, .continuous_specific_order)
-.binary_order <- c(.common_order, .binary_specific_order)
 
 #' Reorder data frame columns to the correct order, both for long and wide formats.
 #' 
@@ -145,6 +151,11 @@ ReorderColumns <- function(data, outcome_type) {
   reordering_indices <- match(expected_order, actual_order)
   reordering_indices <- reordering_indices[!is.na(reordering_indices)]
   
+  covariate_column_names <- FindCovariateNames(data)
+  covariate_column_indices <- match(covariate_column_names, names(data))
+  
+  reordering_indices <- c(reordering_indices, covariate_column_indices)
+  
   return(data[, reordering_indices])
 }
 
@@ -161,4 +172,12 @@ WrangleUploadData <- function(data, treatment_ids, outcome_type) {
     ReorderColumns(outcome_type)
   
   return(new_df)
+}
+
+FindCovariateNames <- function(df) {
+  return(names(dplyr::select(df, dplyr::matches(.covariate_prefix_regex))))
+}
+
+GetFriendlyCovariateName <- function(column_name) {
+  return(stringr::str_replace(column_name, .covariate_prefix_regex, ""))
 }
