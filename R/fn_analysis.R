@@ -57,7 +57,7 @@ RankingOrder <- function(outcome, is_default_data) {
 
 entry.df <- function(data, CONBI) {
   newData1 <- as.data.frame(data)
-  if (ncol(newData1)==6 | ncol(newData1)==5){
+  if (FindDataShape(newData1) == "long") {
     newData2<-newData1[order(newData1$StudyID, -newData1$T), ]
     newData2$number<- ave(as.numeric(newData2$StudyID),newData2$StudyID,FUN=seq_along)  # create counting variable for number of arms within each study.
     data_wide <- reshape(newData2, timevar = "number",idvar = c("Study", "StudyID"), direction = "wide") # reshape
@@ -306,7 +306,7 @@ progress.df <- function() {
 
 ### data transform
 dataform.df <- function(newData1, treat_list, CONBI) {
-  if (ncol(newData1)==6 | ncol(newData1)==5) {
+  if (FindDataShape(newData1) == "long") {
     long <- newData1
   } else {
     data_wide <-newData1
