@@ -39,12 +39,34 @@ CleanData <- function(data) {
   return(dplyr::mutate(data, across(where(is.character), stringr::str_squish)))
 }
 
+#' Create a copy of a data from which does not contain any covariate columns.
+#' 
+#' @param data Data from which to remove covariate columns
+#' @return Data without covariate columns
+RemoveCovariates <- function(data) {
+  covariate_column_names <- FindCovariateNames(data)
+  covariate_column_indices <- match(covariate_column_names, names(data))
+  return(data[, -covariate_column_indices])
+}
+
+#' Find which shape the data takes: either wide or long.
+#' 
+#' @param data Data for which to check shape
+#' @return Either "wide" or "long"
+FindDataShape <- function(data) {
+  if ('T' %in% colnames(data)) {
+    return("long")
+  } else {
+    return("wide")
+  }
+}
+
 #' Find all of the treatment names in the data, both for long and wide formats.
 #' 
 #' @param data Data frame in which to search for treatment names
 #' @return Vector of all treatment names
 FindAllTreatments <- function(data) {
-  if ('T' %in% colnames(data)) {
+  if (FindDataShape(data) == "long") {
     # Long format
     return(unique(data$T))
   } else {
@@ -104,7 +126,7 @@ FindExpectedReferenceTreatment <- function(treatments) {
 #' @param treatent_ids Data frame containing treatment names (Label) and IDs (Number)
 #' @return Data frame where the treatments are given as IDs, not names
 ReplaceTreatmentIds <- function(data, treatent_ids) {
-  if ('T' %in% colnames(data)) {
+  if (FindDataShape(data) == "long") {
     # Long format
     data$T <- treatent_ids$Number[match(data$T, treatent_ids$Label)]
   } else {
