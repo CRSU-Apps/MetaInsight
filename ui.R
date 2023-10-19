@@ -16,94 +16,17 @@ dashboardPage(
     tags$meta(property="og:description", content="An interactive web tool for network meta-analysis (NMA) that leverages established analysis routines"),
     tags$meta(property="og:image", content="https://raw.githubusercontent.com/CRSU-Apps/MetaInsight/main/www/images/MetaInsightLogo.png")
   ),
-  navbarPage(id="meta",
-                   "MetaInsight", 
-                   header = singleton(tags$head(includeScript("google_analytics2.js"))),
-                   tabPanel(id="home", "Home", 
-                            tags$head(tags$script('
-                                var dimension = [0, 0];
-                                $(document).on("shiny:connected", function(e) {
-                                    dimension[0] = window.innerWidth;
-                                    dimension[1] = window.innerHeight;
-                                    Shiny.onInputChange("dimension", dimension);
-                                });
-                                $(window).resize(function(e) {
-                                    dimension[0] = window.innerWidth;
-                                    dimension[1] = window.innerHeight;
-                                    Shiny.onInputChange("dimension", dimension);
-                                });
-                            ')),
-                            # tags$style(     # to make the Shiny interface to zoom out 75% as default on Browser when loading as it looks better.
-                            #   "
-                            #    body {
-                            #   -moz-transform: scale(0.75, 0.75); /* Moz-browsers */
-                            #   zoom: 0.75; /* Other non-webkit browsers */
-                            #   zoom: 75%; /* Webkit browsers */
-                            #   }
-                            #   "), 
-    h2("MetaInsight v5.1.0",
-      #tags$sup("Beta", style="color:#6CC0ED"), 
-      align= "left"),
-    fluidRow(
-      column(3, prettyRadioButtons("metaoutcome","Please select your outcome type:",
-                      c("Continuous (e.g. mean difference) " = "Continuous","Binary (e.g. Odds Ratio)" = "Binary"), 
-                      animation = "pulse", status = "info", width = '400px'),
-             br(), br(),
-            img(src='network2.jpg', width=500, height=400, align = "center")),
-      column(2),
-      column(5, 
-            p(tags$strong("Latest Updates:")),
-            p(tags$strong("Patch (29 August 2023 v5.1.0):")),
-            p("Removed summary forest plot matrix due to unresolved bugs"),
-            p(tags$strong("Major update (15 August 2023 v5.0.0):")),
-            p(tags$ul(
-            tags$li("MetaInsight has been changed to make it easier for users to upload their own datasets for analysis. 
-              Study data and treatment labels can now be uploaded in a single file.
-              See the 'load data' tab for more guidance and the option to upgrade data files used in previous versions of MetaInsight ")
-            )),
-            p("Click", tags$a(href = "https://github.com/CRSU-Apps/MetaInsight/wiki/Full-Update-History", "here", target="_blank"), "to view a full update history of MetaInsight"),
-            p("The code for MetaInsight is available on", tags$a(href="https://github.com/CRSU-Apps/MetaInsight", "GitHub",target="_blank")),
-            br(),
-      )),
-    br(),
-    p("Clareece Nevill, Naomi Bradbury, Yiqiao Xin, Rhiannon K Owen, Ryan Field, Janion Nevill, Nicola Cooper, and Alex Sutton", align= "left"),
-    p("For feedback/questions about this app please email the CRSU team at apps@crsu.org.uk. If you encounter any errors with using the app, please check  
-       the",  actionLink("tsp", "trouble shooting page"), "first before contacting us."),
-    br(),
-    p("If you use the app please cite it as:"),
-    p(tags$a(href=" https://doi.org/10.1002/jrsm.1373", "Owen, RK, Bradbury, N, Xin, Y, Cooper, N, Sutton, A. MetaInsight: An interactive web-based tool for analyzing, interrogating, 
-      and visualizing network meta-analyses using R-shiny and netmeta. Res Syn Meth. 2019; 10: 569-581.",align="left")),
-    br(),
-    p("App powered by Rshiny.All frequentist statistical calculations are performed using R package netmeta (Gerta Rücker, Guido Schwarzer, Ulrike Krahn and Jochem König 2017).", 
-      tags$a(href="http://CRAN.R-project.org/package=netmeta", "netmeta: Network Meta-Analysis using Frequentist Methods. R package version 0.9-8.",target="_blank"),
-      "All Bayesian statistical calculations are performed using R package gemtc (Gert van Valkenhoef, Joel Kuiper 2016)",
-      tags$a(href="https://cran.r-project.org/web/packages/gemtc/gemtc.pdf", "gemtc: Network Meta-Analysis Using Bayesian Methods R package version 0.8-2.",target="_blank"),
-      "and R package BUGSNET (Audrey Beliveau, Devon J. Boyne, Justin Slater, Darren Brenner & Paul Arora)",
-      tags$a(href="https://bugsnetsoftware.github.io/", "BUGSnet: Bayesian inference Using Gibbs Sampling to conduct NETwork meta-analysis version 1.0.3.",target="_blank")),
-    p("For users wishing to analyse large treatment networks or fit complex network meta-analysis models, please seek advice from technical experts."),
-    br(),
-    p("THE SOFTWARE IS PROVIDED AS IS, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
-      NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-      IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-      WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
-      OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."),
-     wellPanel(
-       img(src='CRSULogo.png', width = "100%"),
-       tags$strong("Funding and Support Acknowledgement:"),
-       tags$p("The Complex Reviews Support Unit is funded by the National Institute for Health Research (NIHR) (project number 14/178/29).
-       Development of this app is also funded by the NIHR Applied Research Collaboration East Midlands (ARC EM) and the Leicester NIHR Biomedical Research Centre (BRC).
-       The views expressed are those of the author(s) and not necessarily those of the NIHR or the Department of Health and Social Care."),
-       tags$p("Please click ", tags$a(href="https://www.gla.ac.uk/research/az/evidencesynthesis/apps-materials-guidence/", "here ", target="_blank"), "for more information about the UK NIHR Complex Reviews Support Unit (CRSU).")
-     )),
-                   
-#########################
-### Tab 2 - Load data ###
-#########################
-
-# Within the load data tab let users select a file to upload, the upload happens in a sidebarPanel on
-# the left and the mainPanel will show the data once file uploaded.
-
-tabPanel("Load Data", load_data_page_ui(id = 'load_data_page')),
+  navbarPage(
+    title = "MetaInsight", 
+    header = singleton(tags$head(includeScript("google_analytics2.js"))),
+    tabPanel(
+      title = "Home",
+      home_page_ui(id = "home")
+    ),
+    tabPanel(
+      title = "Load Data",
+      load_data_page_ui(id = 'load_data_page')
+    ),
                    
                    #############################
                    ### Tab 3 - Data analysis ###
@@ -121,10 +44,10 @@ tabPanel("Load Data", load_data_page_ui(id = 'load_data_page')),
                             br(),
                             sidebarLayout(
                               sidebarPanel(
-                                conditionalPanel(condition= "input.metaoutcome=='Continuous'",
+                                conditionalPanel(condition= "output.metaoutcome == 'Continuous'",
                                                  radioButtons("outcomeCont", "Outcome for continuous data:", c("Mean Difference (MD)" = "MD","Standardised Mean Difference (SMD)" = "SMD"))
                                 ),
-                                conditionalPanel(condition = "input.metaoutcome=='Binary'",
+                                conditionalPanel(condition = "output.metaoutcome == 'Binary'",
                                                  radioButtons("outcomebina", "Outcome for binary data:", c("Odds Ratio (OR)" = "OR","Risk Ratio (RR)" = "RR", "Risk Difference (RD)" = "RD"))
                                 ),               
                                 uiOutput("RankingPref"), 

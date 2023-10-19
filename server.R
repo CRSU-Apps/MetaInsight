@@ -14,23 +14,29 @@ shinyServer(function(input, output, session) {
   #####
   
   # Define outcome measure (continuous or binary) - NVB
+  metaoutcome <- home_page_server(id = "home")
   outcome_measure <- reactive({
-    if (input$metaoutcome == "Continuous") {
+    if (metaoutcome() == "Continuous") {
       return(input$outcomeCont)
     } else {
       return(input$outcomebina)
     }
   })
   
+  output$metaoutcome <- reactive({
+    metaoutcome()
+  })
+  shiny::outputOptions(output, 'metaoutcome', suspendWhenHidden = FALSE)
+  
   
   ############################################
   ############# Load data page ###############
   ############################################
   
-  data_reactives <- load_data_page_server(id = 'load_data_page',
-                                          metaoutcome = function() {
-                                            return(input$metaoutcome)
-                                          })
+  data_reactives <- load_data_page_server(
+    id = 'load_data_page',
+    metaoutcome = metaoutcome
+  )
   data <- data_reactives$data
   treatment_df <- data_reactives$treatment_df
   
@@ -40,24 +46,24 @@ shinyServer(function(input, output, session) {
   
   # Make frequentist function (in fn_analysis.R) reactive - NVB
   freq_all <- reactive({
-    return(frequentist(data(), input$metaoutcome, treatment_df(), outcome_measure(), input$modelranfix))
+    return(frequentist(data(), metaoutcome(), treatment_df(), outcome_measure(), input$modelranfix))
   })
   
   exclusions <- debounce(reactive({input$exclusionbox}), 1500)
   
   # Make frequentist function (in fn_analysis.R) reactive with excluded studies - NVB
   freq_sub <- reactive({
-    return(frequentist(data(), input$metaoutcome, treatment_df(), outcome_measure(), input$modelranfix, exclusions()))
+    return(frequentist(data(), metaoutcome(), treatment_df(), outcome_measure(), input$modelranfix, exclusions()))
   })
   
   # Make bugsnetdata function (in fn_analysis.R) reactive - NVB
   bugsnetdt <- reactive({
-    return(bugsnetdata(data(), input$metaoutcome, treatment_df()))
+    return(bugsnetdata(data(), metaoutcome(), treatment_df()))
   })
    
   # Make ref_alter function (in fn_analysis.R) reactive - NVB
   reference_alter <- reactive({
-    return(ref_alter(data(), input$metaoutcome, exclusions(), treatment_df()))
+    return(ref_alter(data(), metaoutcome(), exclusions(), treatment_df()))
   })
 
   ############################################
@@ -93,14 +99,14 @@ shinyServer(function(input, output, session) {
   ### Confirmation for continuous / binary data
   
   output$CONBI2 <- renderText({
-    paste("You have selected", "<font color=\"#ffd966\"><b>" , input$metaoutcome,"</b></font>", 
+    paste("You have selected", "<font color=\"#ffd966\"><b>" , metaoutcome(),"</b></font>", 
           "outcome on the 'Home' page. The analysis page for ",
-          "<font color=\"#ffd966\"><b>" , input$metaoutcome,"</b></font>", "outcomes are now displayed.")
+          "<font color=\"#ffd966\"><b>" , metaoutcome(),"</b></font>", "outcomes are now displayed.")
   })
   
   ### Ranking defaults
   choice <- reactive({
-    RankingOrder(input$metaoutcome,input$data)
+    RankingOrder(metaoutcome(), data())
   })
   
   output$RankingPref <- renderUI({
@@ -145,7 +151,7 @@ shinyServer(function(input, output, session) {
     }
 
   colnames <- function(){
-    if (input$metaoutcome=="Continuous") {
+    if (metaoutcome()=="Continuous") {
       colnames <- c('StudyID', 'Author','Treatment','Number of participants in each arm',
                     'Mean value of the outcome in each arm', 'Standard deviation of the outcome in each arm')
       
@@ -185,12 +191,12 @@ shinyServer(function(input, output, session) {
   
   # Characteristics table of all studies
   output$sumtb <- renderTable({
-    summary_table_plot(bugsnetdt(), input$metaoutcome)
+    summary_table_plot(bugsnetdt(), metaoutcome())
   })
   
   # Characteristics table with studies excluded
   output$sumtb_sub <- renderTable({
-    summary_table_plot(filter(bugsnetdt(), !Study %in% exclusions()), input$metaoutcome)
+    summary_table_plot(filter(bugsnetdt(), !Study %in% exclusions()), metaoutcome())
   })
   
   # 1b. Study Results 
@@ -316,7 +322,7 @@ shinyServer(function(input, output, session) {
   observeEvent(exclusions(),{
     longsort2 <- bugsnetdt()
     longsort2_sub <- filter(bugsnetdt(), !Study %in% exclusions())  # subgroup
-    sumtb_sub <- bugsnet_sumtb(longsort2_sub, input$metaoutcome)
+    sumtb_sub <- bugsnet_sumtb(longsort2_sub, metaoutcome())
     if (sumtb_sub$Value[6]=="FALSE") {
       disconnect()
     }})
@@ -410,8 +416,8 @@ shinyServer(function(input, output, session) {
   }
   
   observe({                              # forest min and max values different if continuous/binary
-    x <- input$metaoutcome
-    if (x=='Binary') {
+    x <- metaoutcome()
+    if (x =='Binary') {
       updateNumericInput(session = session, inputId = "freqmin", value=0.1)
       updateNumericInput(session = session, inputId = "freqmin_sub", value=0.1)
       updateNumericInput(session = session, inputId = "bayesmin", value=0.1)
@@ -466,11 +472,11 @@ shinyServer(function(input, output, session) {
   ### Interactive UI ###
   
   output$FreqForestPlot <- renderUI({
-    plotOutput("Comparison2", height = BayesPixels(as.numeric(bugsnet_sumtb(bugsnetdt(), input$metaoutcome)$Value[1]), title=TRUE), width = "630px")
+    plotOutput("Comparison2", height = BayesPixels(as.numeric(bugsnet_sumtb(bugsnetdt(), metaoutcome())$Value[1]), title=TRUE), width = "630px")
   })
   
   output$FreqForestPlot_sub <- renderUI({
-    plotOutput("SFPUpdatingComp", height = BayesPixels(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% exclusions()), input$metaoutcome)$Value[1]), title=TRUE), width = "630px")
+    plotOutput("SFPUpdatingComp", height = BayesPixels(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% exclusions()), metaoutcome())$Value[1]), title=TRUE), width = "630px")
   })
   
   output$downloadComp2 <- downloadHandler(
@@ -479,9 +485,9 @@ shinyServer(function(input, output, session) {
     },
     content = function(file) {
       if (input$format_freq3 == "PDF"){
-        pdf(file= file, width = 9, height = BayesInch(as.numeric(bugsnet_sumtb(bugsnetdt(), input$metaoutcome)$Value[1])))
+        pdf(file= file, width = 9, height = BayesInch(as.numeric(bugsnet_sumtb(bugsnetdt(), metaoutcome())$Value[1])))
       } else {
-        png(file = file, width = 610, height = BayesPixels(as.numeric(bugsnet_sumtb(bugsnetdt(), input$metaoutcome)$Value[1])))
+        png(file = file, width = 610, height = BayesPixels(as.numeric(bugsnet_sumtb(bugsnetdt(), metaoutcome())$Value[1])))
       }
       make_netComp(freq_all(), input$modelranfix, reference_alter()$ref_all, input$freqmin, input$freqmax)
       dev.off()
@@ -495,9 +501,9 @@ shinyServer(function(input, output, session) {
     },
     content = function(file) {
       if (input$format_freq4 == "PDF") {
-        pdf(file = file, width = 9, height=BayesInch(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% exclusions()), input$metaoutcome)$Value[1])))
+        pdf(file = file, width = 9, height=BayesInch(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% exclusions()), metaoutcome())$Value[1])))
       } else {
-        png(file = file, width = 610, height = BayesPixels(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% exclusions()), input$metaoutcome)$Value[1])))
+        png(file = file, width = 610, height = BayesPixels(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% exclusions()), metaoutcome())$Value[1])))
       }
       make_netComp(freq_sub(), input$modelranfix, reference_alter()$ref_sub, input$freqmin_sub, input$freqmax_sub)
       dev.off()
@@ -567,12 +573,12 @@ shinyServer(function(input, output, session) {
   # Bayesian analysis
   
   model <- eventReactive(input$baye_do, {
-    bayesian_model(sub = FALSE, data(), treatment_df(), input$metaoutcome, exclusions(),
+    bayesian_model(sub = FALSE, data(), treatment_df(), metaoutcome(), exclusions(),
                    outcome_measure(), input$modelranfix, reference_alter())
   })
   
   model_sub <- eventReactive(input$sub_do, {
-    bayesian_model(sub = TRUE, data(), treatment_df(), input$metaoutcome, exclusions(), 
+    bayesian_model(sub = TRUE, data(), treatment_df(), metaoutcome(), exclusions(), 
                    outcome_measure(), input$modelranfix, reference_alter())
   })
 
@@ -580,7 +586,7 @@ shinyServer(function(input, output, session) {
 
   # Forest plot for all studies
   output$gemtc <- renderPlot({    
-    make_Forest(model(), input$metaoutcome, input$bayesmin, input$bayesmax)
+    make_Forest(model(), metaoutcome(), input$bayesmin, input$bayesmax)
     title(paste("All studies: 
               Bayesian", model()$a, "consistency model forest plot results"))
   })
@@ -598,7 +604,7 @@ shinyServer(function(input, output, session) {
   
   # Forest plot with studies excluded
   output$gemtc_sub <- renderPlot({
-    make_Forest(model_sub(), input$metaoutcome, input$bayesmin_sub, input$bayesmax_sub)
+    make_Forest(model_sub(), metaoutcome(), input$bayesmin_sub, input$bayesmax_sub)
     title(paste("Results with studies excluded: 
               Bayesian", model_sub()$a,"consistency model forest plot results"))
   })
@@ -615,10 +621,10 @@ shinyServer(function(input, output, session) {
   
   # Interactive UI 
   output$BayesianForestPlot <- renderUI({
-    plotOutput("gemtc", width="630px", height = BayesPixels(as.numeric(bugsnet_sumtb(bugsnetdt(), input$metaoutcome)$Value[1]), title=TRUE))
+    plotOutput("gemtc", width="630px", height = BayesPixels(as.numeric(bugsnet_sumtb(bugsnetdt(), metaoutcome())$Value[1]), title=TRUE))
   })
   output$BayesianForestPlot_sub <- renderUI({
-    plotOutput("gemtc_sub", width="630px", height = BayesPixels(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% exclusions()), input$metaoutcome)$Value[1]), title=TRUE))
+    plotOutput("gemtc_sub", width="630px", height = BayesPixels(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% exclusions()), metaoutcome())$Value[1]), title=TRUE))
   })
   
   output$downloadBaye_plot <- downloadHandler(
@@ -627,14 +633,14 @@ shinyServer(function(input, output, session) {
     },
     content = function(file) {
       if (input$format2 == "PDF") {
-        pdf(file = file, width = 9, height = BayesInch(as.numeric(bugsnet_sumtb(bugsnetdt(), input$metaoutcome)$Value[1])))
+        pdf(file = file, width = 9, height = BayesInch(as.numeric(bugsnet_sumtb(bugsnetdt(), metaoutcome())$Value[1])))
       } else {
-        png(file = file, width = 610, height = BayesPixels(as.numeric(bugsnet_sumtb(bugsnetdt(), input$metaoutcome)$Value[1])))
+        png(file = file, width = 610, height = BayesPixels(as.numeric(bugsnet_sumtb(bugsnetdt(), metaoutcome())$Value[1])))
       }
-      if (input$metaoutcome == "Binary") {
+      if (metaoutcome() == "Binary") {
         gemtc::forest(model()$mtcRelEffects, digits = 3, xlim = c(log(input$bayesmin), log(input$bayesmax)))
       }
-      if (input$metaoutcome == "Continuous") {
+      if (metaoutcome() == "Continuous") {
         gemtc::forest(model()$mtcRelEffects, digits = 3, xlim = c(input$bayesmin, input$bayesmax))
       }
       dev.off()
@@ -647,14 +653,14 @@ shinyServer(function(input, output, session) {
     },
     content = function(file) {
       if (input$format4 == "PDF") {
-        pdf(file = file, width = 9, height = BayesInch(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% exclusions()), input$metaoutcome)$Value[1])))
+        pdf(file = file, width = 9, height = BayesInch(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% exclusions()), metaoutcome())$Value[1])))
       } else {
-        png(file = file, width = 610, height = BayesPixels(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% exclusions()), input$metaoutcome)$Value[1])))
+        png(file = file, width = 610, height = BayesPixels(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% exclusions()), metaoutcome())$Value[1])))
       }
-      if (input$metaoutcome == "Binary") {
+      if (metaoutcome() == "Binary") {
         gemtc::forest(model_sub()$mtcRelEffects, digits = 3, xlim = c(log(input$bayesmin_sub), log(input$bayesmax_sub)))
       }
-      if (input$metaoutcome == "Continuous") {
+      if (metaoutcome() == "Continuous") {
         gemtc::forest(model_sub()$mtcRelEffects, digits = 3, xlim = c(input$bayesmin_sub, input$bayesmax_sub))
       }
       dev.off()
@@ -666,27 +672,27 @@ shinyServer(function(input, output, session) {
 
   # Treatment effects for all studies
   output$baye_comparison <- renderTable ({
-    baye_comp(model(), input$metaoutcome, outcome_measure())
+    baye_comp(model(), metaoutcome(), outcome_measure())
   }, rownames=TRUE, colnames = TRUE
   )
   
   # Treatment effects with studies excluded
   output$baye_comparison_sub <- renderTable ({
-    baye_comp(model_sub(), input$metaoutcome, outcome_measure())
+    baye_comp(model_sub(), metaoutcome(), outcome_measure())
   }, rownames=TRUE, colnames = TRUE
   )
   
   output$downloadbaye_comparison <- downloadHandler(
     filename = 'baye_comparison.csv',
     content = function(file) {
-      write.csv(baye_comp(model(), input$metaoutcome, outcome_measure()), file)
+      write.csv(baye_comp(model(), metaoutcome(), outcome_measure()), file)
     }
   )
   
   output$downloadbaye_comparison_sub <- downloadHandler(
     filename = 'baye_comparison_sub.csv',
     content = function(file) {
-      write.csv(baye_comp(model_sub(), input$metaoutcome, outcome_measure()), file)
+      write.csv(baye_comp(model_sub(), metaoutcome(), outcome_measure()), file)
     }
   )
   
@@ -694,12 +700,12 @@ shinyServer(function(input, output, session) {
   
   # Obtain Data needed for ranking #
   RankingData <- eventReactive(input$baye_do, {
-    obtain_rank_data(data(), input$metaoutcome, 
+    obtain_rank_data(data(), metaoutcome(), 
                      treatment_df(), model(), input$rankopts)
   })
   
   RankingData_sub <- eventReactive(input$sub_do, {
-    obtain_rank_data(data(), input$metaoutcome, treatment_df(),
+    obtain_rank_data(data(), metaoutcome(), treatment_df(),
                      model_sub(), input$rankopts, exclusions())
   })
   
@@ -990,7 +996,7 @@ shinyServer(function(input, output, session) {
   
   # Inconsistency test with notesplitting model for all studies
   model_nodesplit <- eventReactive(input$node, {
-    nodesplit(sub = FALSE, data(), treatment_df(), input$metaoutcome, outcome_measure(),
+    nodesplit(sub = FALSE, data(), treatment_df(), metaoutcome(), outcome_measure(),
                     input$modelranfix, exclusions())
   })
 
@@ -1000,7 +1006,7 @@ shinyServer(function(input, output, session) {
 
   # Inconsistency test with notesplitting model with studies excluded
   model_nodesplit_sub <- eventReactive(input$node_sub, {
-    nodesplit(sub = TRUE, data(), treatment_df(), input$metaoutcome, outcome_measure(),
+    nodesplit(sub = TRUE, data(), treatment_df(), metaoutcome(), outcome_measure(),
                     input$modelranfix, exclusions())
   })
 
