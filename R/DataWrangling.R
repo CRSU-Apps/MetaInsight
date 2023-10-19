@@ -39,6 +39,30 @@ CleanData <- function(data) {
   return(dplyr::mutate(data, across(where(is.character), stringr::str_squish)))
 }
 
+#' Convert wide format to long format (including covariate columns)
+#' 
+#' @param wide_data Data frame of wide format
+#' @param ConBi Indicator whether outcome is binary or continuous
+#' @return Data frame in long format
+WideToLong <- function(wide_data, ConBi) {
+  # Specify columns that contain wide data
+  if (ConBi == "Continuous") {
+    change_cols <- wide_data %>%
+      select(starts_with(c("T","N","Mean","SD")))
+  } else {
+    change_cols <- wide_data %>%
+      select(starts_with(c("T","N","R")))
+  }
+  # Transform to long
+  long_data <- wide_data %>%
+                  tidyr::pivot_longer(cols = names(change_cols),
+                                      names_to = c(".value", "arm"),
+                                      names_pattern = "(.*).(.)",
+                                      values_drop_na = TRUE
+  )
+  return(long_data[,names(long_data)!="arm"])
+}
+
 #' Create a copy of a data from which does not contain any covariate columns.
 #' 
 #' @param data Data from which to remove covariate columns
