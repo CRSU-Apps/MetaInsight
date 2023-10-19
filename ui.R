@@ -103,7 +103,7 @@ dashboardPage(
 # Within the load data tab let users select a file to upload, the upload happens in a sidebarPanel on
 # the left and the mainPanel will show the data once file uploaded.
 
-load_data_page_ui(id = 'load_data_page'),
+tabPanel("Load Data", load_data_page_ui(id = 'load_data_page')),
                    
                    #############################
                    ### Tab 3 - Data analysis ###

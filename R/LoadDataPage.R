@@ -5,7 +5,7 @@
 #' @return Tab pane for the data upload page
 load_data_page_ui <- function(id) {
   ns <- NS(id)
-  tabPanel("Load Data",
+  div(
     htmlOutput(outputId = ns("CONBI")),
     tags$head(tags$style(paste0("#", ns("CONBI"), "{",
                                 "color: white;
@@ -24,7 +24,10 @@ load_data_page_ui <- function(id) {
                     wide_format_upload_panel_ui(id = ns('wide_upload')),
                     tabPanel(title = "View Data",
                              uiOutput(outputId = ns("tb")))
-        ))))
+        )
+      )
+    )
+  )
 }
 
 
