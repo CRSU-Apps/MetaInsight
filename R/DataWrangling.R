@@ -7,6 +7,42 @@ CleanData <- function(data) {
   return(dplyr::mutate(data, across(where(is.character), stringr::str_squish)))
 }
 
+#' Find which shape the data takes: either wide or long.
+#' 
+#' @param data Data for which to check shape
+#' @return Either "wide" or "long"
+FindDataShape <- function(data) {
+  if ('T' %in% colnames(data)) {
+    return("long")
+  } else {
+    return("wide")
+  }
+}
+
+#' Convert wide format to long format (including covariate columns)
+#' 
+#' @param wide_data Data frame of wide format
+#' @param ConBi Indicator whether outcome is binary or continuous
+#' @return Data frame in long format
+WideToLong <- function(wide_data, ConBi) {
+  # Specify columns that contain wide data
+  if (ConBi == "Continuous") {
+    change_cols <- wide_data %>%
+      select(starts_with(c("T","N","Mean","SD")))
+  } else {
+    change_cols <- wide_data %>%
+      select(starts_with(c("T","N","R")))
+  }
+  # Transform to long
+  long_data <- wide_data %>%
+                  tidyr::pivot_longer(cols = names(change_cols),
+                                      names_to = c(".value", "arm"),
+                                      names_pattern = "(.*).(.)",
+                                      values_drop_na = TRUE
+  )
+  return(long_data[,names(long_data)!="arm"])
+}
+
 #' Find all of the treatment names in the data, both for long and wide formats.
 #' 
 #' @param data Data frame in which to search for treatment names
@@ -161,4 +197,15 @@ WrangleUploadData <- function(data, treatment_ids, outcome_type) {
     ReorderColumns(outcome_type)
   
   return(new_df)
+}
+
+.covariate_prefix <- "covar."
+.covariate_prefix_regex <- "^covar\\."
+
+FindCovariateNames <- function(df) {
+  return(names(dplyr::select(df, dplyr::matches(.covariate_prefix_regex))))
+}
+
+GetFriendlyCovariateName <- function(column_name) {
+  return(stringr::str_replace(column_name, .covariate_prefix_regex, ""))
 }
