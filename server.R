@@ -84,13 +84,6 @@ shinyServer(function(input, output, session) {
       newvalue <- "history"
       updateNavbarPage(session,"meta", selected="Full update history")
     })
-    
-  ### View the trouble shooting page
-    
-    observeEvent(input$tsp, {
-      #newvalue <- "history"
-      updateNavbarPage(session,"meta", selected="Troubleshooting")
-    })
 
   
   ############################################
@@ -1181,11 +1174,6 @@ shinyServer(function(input, output, session) {
     scat_plot(model_sub())$y
   })
   
-  output$UG <- downloadHandler(
-    filename = "MetaInsightUserGuide.pdf",
-    content = function(file) {
-      file.copy("www/MetaInsightUserGuide.pdf", file)
-    }
-  )
+  user_guide_page_server(id = "user_guide")
   
 })

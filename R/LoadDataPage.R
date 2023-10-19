@@ -1,8 +1,8 @@
 
-#' Module UI for the data upload tab.
+#' Module UI for the data upload page.
 #' 
 #' @param id ID of the module
-#' @return Tab pane for the data upload page
+#' @return Divfor the data upload page
 load_data_page_ui <- function(id) {
   ns <- NS(id)
   div(
@@ -31,7 +31,7 @@ load_data_page_ui <- function(id) {
 }
 
 
-#' Module server for the data upload tab.
+#' Module server for the data upload page.
 #' 
 #' @param id ID of the module
 #' @param metaoutcome Reactive containing the outcome type selected
