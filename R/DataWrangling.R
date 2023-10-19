@@ -39,14 +39,26 @@ CleanData <- function(data) {
   return(dplyr::mutate(data, across(where(is.character), stringr::str_squish)))
 }
 
+#' Find which shape the data takes: either wide or long.
+#' 
+#' @param data Data for which to check shape
+#' @return Either "wide" or "long"
+FindDataShape <- function(data) {
+  if ('T' %in% colnames(data)) {
+    return("long")
+  } else {
+    return("wide")
+  }
+}
+
 #' Convert wide format to long format (including covariate columns)
 #' 
 #' @param wide_data Data frame of wide format
-#' @param outcome_type Indicator whether outcome is binary or continuous
+#' @param ConBi Indicator whether outcome is binary or continuous
 #' @return Data frame in long format
-WideToLong <- function(wide_data, outcome_type) {
+WideToLong <- function(wide_data, ConBi) {
   # Specify columns that contain wide data
-  if (outcome_type == "Continuous") {
+  if (ConBi == "Continuous") {
     change_cols <- wide_data %>%
       select(starts_with(c("T","N","Mean","SD")))
   } else {
@@ -61,33 +73,6 @@ WideToLong <- function(wide_data, outcome_type) {
                                       values_drop_na = TRUE
   )
   return(long_data[,names(long_data)!="arm"])
-}
-
-#' Create a copy of a data from which does not contain any covariate columns.
-#' 
-#' @param data Data from which to remove covariate columns
-#' @return Data without covariate columns
-RemoveCovariates <- function(data) {
-  covariate_column_names <- FindCovariateNames(data)
-  
-  if (length(covariate_column_names) == 0) {
-    return(data)
-  }
-  
-  covariate_column_indices <- match(covariate_column_names, names(data))
-  return(data[, -covariate_column_indices])
-}
-
-#' Find which shape the data takes: either wide or long.
-#' 
-#' @param data Data for which to check shape
-#' @return Either "wide" or "long"
-FindDataShape <- function(data) {
-  if ('T' %in% colnames(data)) {
-    return("long")
-  } else {
-    return("wide")
-  }
 }
 
 #' Find all of the treatment names in the data, both for long and wide formats.
@@ -225,18 +210,13 @@ WrangleUploadData <- function(data, treatment_ids, outcome_type) {
   return(new_df)
 }
 
-#' Find the names of all columns which contain a covariate.
-#'
-#' @param df Data frame in which to find covariate columns.
-#' @return Names of all covariate columns
+.covariate_prefix <- "covar."
+.covariate_prefix_regex <- "^covar\\."
+
 FindCovariateNames <- function(df) {
   return(names(dplyr::select(df, dplyr::matches(.covariate_prefix_regex))))
 }
 
-#' Convert a covariate column name to a display name.
-#'
-#' @param column_name Covariate column name to convert
-#' @return Friendly covariate name
 GetFriendlyCovariateName <- function(column_name) {
   return(stringr::str_replace(column_name, .covariate_prefix_regex, ""))
 }
