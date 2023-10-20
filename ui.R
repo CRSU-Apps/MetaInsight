@@ -152,7 +152,7 @@ load_data_page_ui(id = 'load_data_page'),
             .tabbable > .nav > li[class=active]    > a {font-weight:900;font-style: italic;text-decoration: underline }
             ")),
        tabsetPanel(
-         id = "main_tabs",
+         id = "analysis_tabs",
          tabPanel("1. Data summary", tabsetPanel(
            tabPanel("1a. Data Characteristics", 
                     p("This tab shows a summary of study characteristics."),
