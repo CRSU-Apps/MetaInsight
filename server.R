@@ -54,29 +54,21 @@ shinyServer(function(input, output, session) {
   user_guide_page_server(id = "user_guide")
   
   
-  meta_regression_tab_server(
+  has_covariates <- meta_regression_tab_server(
     id = "meta_regression",
     all_data = data
   )
 
 
-  shiny::observeEvent(
-    data(),
-    {
-      # Check if any covariates in data
-      if (length(FindCovariateNames(data())) == 0) {
-        shiny::hideTab(
-          inputId = "main_tabs",
-          target = "4. Meta-regression"
-        )
-      } else {
-        shiny::showTab(
-          inputId = "main_tabs",
-          target = "4. Meta-regression"
-        )
-      }
+  shiny::observe({
+    # Check if any covariates in data
+    if (has_covariates()) {
+      shiny::hideTab(inputId = "analysis_tabs", target = "4. Meta-regression")
+      shiny::updateTabsetPanel(inputId = "analysis_tabs", selected = "1. Data summary")
+    } else {
+      shiny::showTab(inputId = "analysis_tabs", target = "4. Meta-regression")
     }
-  )
+  })
   
   MetaRegressionTabServer(
     id = "meta_regression",
