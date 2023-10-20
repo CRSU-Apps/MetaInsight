@@ -211,12 +211,6 @@ load_data_page_ui(id = 'load_data_page'),
                      br(),
                      verbatimTextOutput("netconnect_sub"))
             )
-  ###### bugsnet new code ########         
-            #,
-            # tabPanel("1d. Covariates plot", 
-            #          p("this is from the TSD rheumatoid arthritis dataset, as the example data do not have covariates "),
-            #          plotOutput("covp"))
-  ###### finish ########
          )),
          tabPanel("2. Frequentist network meta-analysis", tabsetPanel(
             tabPanel("2a. Forest Plot",

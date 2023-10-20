@@ -28,11 +28,12 @@ shinyServer(function(input, output, session) {
   ############################################
   
   data_reactives <- load_data_page_server(id = 'load_data_page',
-                                          metaoutcome = function() {
-                                            return(input$metaoutcome)
-                                          })
+                                          metaoutcome = reactive({ input$metaoutcome })
+                                          )
   data <- data_reactives$data
   treatment_df <- data_reactives$treatment_df
+  
+  non_covariate_data <- reactive({ RemoveCovariates(data()) })
   
   #####
   # Reactive functions used in various places, based on the data
@@ -40,24 +41,24 @@ shinyServer(function(input, output, session) {
   
   # Make frequentist function (in fn_analysis.R) reactive - NVB
   freq_all <- reactive({
-    return(frequentist(data(), input$metaoutcome, treatment_df(), outcome_measure(), input$modelranfix))
+    return(frequentist(non_covariate_data(), input$metaoutcome, treatment_df(), outcome_measure(), input$modelranfix))
   })
   
   exclusions <- debounce(reactive({input$exclusionbox}), 1500)
   
   # Make frequentist function (in fn_analysis.R) reactive with excluded studies - NVB
   freq_sub <- reactive({
-    return(frequentist(data(), input$metaoutcome, treatment_df(), outcome_measure(), input$modelranfix, exclusions()))
+    return(frequentist(non_covariate_data(), input$metaoutcome, treatment_df(), outcome_measure(), input$modelranfix, exclusions()))
   })
   
   # Make bugsnetdata function (in fn_analysis.R) reactive - NVB
   bugsnetdt <- reactive({
-    return(bugsnetdata(data(), input$metaoutcome, treatment_df()))
+    return(bugsnetdata(non_covariate_data(), input$metaoutcome, treatment_df()))
   })
    
   # Make ref_alter function (in fn_analysis.R) reactive - NVB
   reference_alter <- reactive({
-    return(ref_alter(data(), input$metaoutcome, exclusions(), treatment_df()))
+    return(ref_alter(non_covariate_data(), input$metaoutcome, exclusions(), treatment_df()))
   })
 
   ############################################
@@ -123,15 +124,15 @@ shinyServer(function(input, output, session) {
   ### Get studies for check box input
 
     output$Choicesexcl <- renderUI({
-      newData <- data()
+      newData <- non_covariate_data()
       newData1 <- as.data.frame(newData)
-      if (ncol(newData1)==6 ||ncol(newData1)==5 ){        # long format data contain exactly 6 columns for continuous and 5 for binary. wide format will contain at least 2+4*2=10 columns.
+      if (FindDataShape(newData1) == "long") {
         newData2<-newData1[order(newData1$StudyID, -newData1$T), ]
         newData2$number<- ave(as.numeric(newData2$StudyID),newData2$StudyID,FUN=seq_along)    # create counting variable for number of arms within each study.
         data_wide <- reshape(newData2, timevar = "number",idvar = c("Study", "StudyID"), direction = "wide")     # reshape
       }
       else {
-        data_wide<- newData1
+        data_wide <- newData1
       }
       checkboxGroupInput("exclusionbox",
                          label = NULL,
@@ -143,7 +144,7 @@ shinyServer(function(input, output, session) {
 
     filtertable <- function() {
       label <- treatment_df()
-      dt <- data()
+      dt <- non_covariate_data()
       ntx <- nrow(label)
       dt$T <- factor(dt$T,
                      levels = c(1:ntx),
@@ -329,76 +330,6 @@ shinyServer(function(input, output, session) {
     }})
   
   
-  bugsnettry<-function(){
-    newData<-read.csv("./Binary_wide_cov.csv")
-    treat_list <- read.csv("./defaultlabels_baye_reg.txt", sep = "\t")
-    newData1 <- as.data.frame(newData)
-    num_cov<-1
-    CONBI <- 'Binary'
-    dataform_reg.df <- function(newData1, treat_list, CONBI, num_cov) {
-      if (ncol(newData1)== 6+num_cov | ncol(newData1)==5+num_cov) {
-        long <- newData1
-      } else {
-        data_wide <-newData1
-        a<- ifelse(CONBI=='Continuous', 4, 3)
-        numbertreat=(ncol(newData1)-2-num_cov)/a
-        if (numbertreat < 6) {
-          for (k in (numbertreat+1):6) {
-            if (CONBI=='Continuous') {
-              data_wide[c(paste0("T.",k),paste0("N.",k),paste0("Mean.",k),paste0("SD.",k))]<-NA
-            } else {
-              data_wide[c(paste0("T.",k),paste0("R.",k),paste0("N.",k))]<-NA
-            }
-          }
-        }
-        else {
-          data_wide<-newData1
-        }
-        long_pre <- reshape(data_wide, direction = "long",
-                            varying = 4:ncol(data_wide), 
-                            times=c(".1", ".2", ".3", ".4", ".5", ".6"), sep=".", idvar= c(1:(2+num_cov)))
-        long_pre<-subset(long_pre, select=-time)
-        long <- long_pre[!is.na(long_pre$T), ]
-      }
-      long_sort<-long[order(long$StudyID, -long$T), ]
-      if (CONBI=='Continuous') {
-        long_sort$se<-long_sort$SD/sqrt(long_sort$N)
-      }
-      lstx <- treat_list$Label
-      treat_list2<-data.frame(treat_list)
-      ntx <- nrow(treat_list)
-      colnames(treat_list2)[1] <- "T"
-      long_sort2<-merge(long_sort, treat_list2, by=c("T"))
-      long_sort2<-subset(long_sort2, select=-T)
-      names(long_sort2)[names(long_sort2) == 'Label'] <- 'T'
-      return(long_sort2)
-    }
-    long_sort2<-dataform_reg.df(newData1,treat_list,"Binary", 1)
-    data.rh<-data.prep(arm.data=long_sort2, varname.t = "T", varname.s="Study")
-    p<-data.plot(data = data.rh,
-                 covariate = "DiseaseDuration",  # make this to be 
-                 #half.length = "age_SD", #comment this line out to remove error bars
-                 by = "treatment", # this is not variable name. only two options to selection: "treatment" or "study" (to plot characteristics by study)
-                 #fill.str = "age_type",  #comment this line out to remove colors
-                 avg.hline=TRUE) #add overall average line?
-    
-    ##Network characteristic summary tables
-    network.char <- net.tab(data = data.rh,
-                            outcome = "R",
-                            N = "N",
-                            type.outcome = "binomial",
-                            time = NULL)
-    tb<-network.char$network
-    list(p=p, tb=tb)
-  }
-  
-  
-  
-  output$covp <- renderPlot({
-    bugsnettry()$p
-  })
-  
-  
   
   
   ################## finish ##############
@@ -574,12 +505,12 @@ shinyServer(function(input, output, session) {
   # Bayesian analysis
   
   model <- eventReactive(input$baye_do, {
-    bayesian_model(sub = FALSE, data(), treatment_df(), input$metaoutcome, exclusions(),
+    bayesian_model(sub = FALSE, non_covariate_data(), treatment_df(), input$metaoutcome, exclusions(),
                    outcome_measure(), input$modelranfix, reference_alter())
   })
   
   model_sub <- eventReactive(input$sub_do, {
-    bayesian_model(sub = TRUE, data(), treatment_df(), input$metaoutcome, exclusions(), 
+    bayesian_model(sub = TRUE, non_covariate_data(), treatment_df(), input$metaoutcome, exclusions(), 
                    outcome_measure(), input$modelranfix, reference_alter())
   })
 
@@ -701,12 +632,12 @@ shinyServer(function(input, output, session) {
   
   # Obtain Data needed for ranking #
   RankingData <- eventReactive(input$baye_do, {
-    obtain_rank_data(data(), input$metaoutcome, 
+    obtain_rank_data(non_covariate_data(), input$metaoutcome, 
                      treatment_df(), model(), input$rankopts)
   })
   
   RankingData_sub <- eventReactive(input$sub_do, {
-    obtain_rank_data(data(), input$metaoutcome, treatment_df(),
+    obtain_rank_data(non_covariate_data(), input$metaoutcome, treatment_df(),
                      model_sub(), input$rankopts, exclusions())
   })
   
@@ -997,7 +928,7 @@ shinyServer(function(input, output, session) {
   
   # Inconsistency test with notesplitting model for all studies
   model_nodesplit <- eventReactive(input$node, {
-    nodesplit(sub = FALSE, data(), treatment_df(), input$metaoutcome, outcome_measure(),
+    nodesplit(sub = FALSE, non_covariate_data(), treatment_df(), input$metaoutcome, outcome_measure(),
                     input$modelranfix, exclusions())
   })
 
@@ -1007,7 +938,7 @@ shinyServer(function(input, output, session) {
 
   # Inconsistency test with notesplitting model with studies excluded
   model_nodesplit_sub <- eventReactive(input$node_sub, {
-    nodesplit(sub = TRUE, data(), treatment_df(), input$metaoutcome, outcome_measure(),
+    nodesplit(sub = TRUE, non_covariate_data(), treatment_df(), input$metaoutcome, outcome_measure(),
                     input$modelranfix, exclusions())
   })
 
