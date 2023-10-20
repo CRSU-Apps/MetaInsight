@@ -746,6 +746,90 @@ test_that("RemoveCovariates() removes covariates for binary wide data", {
   expect_equal(!!names(data), !!column_names)
 })
 
+test_that("RemoveCovariates() does nothing for continuous long data with no covariates", {
+  data <- read.csv("Cont_long.csv") %>%
+    CleanData()
+  
+  column_names <- c(
+    "Study",
+    "T",
+    "N",
+    "Mean",
+    "SD"
+  )
+  
+  data <- data %>%
+    RemoveCovariates()
+  
+  expect_equal(!!names(data), !!column_names)
+})
+
+test_that("RemoveCovariates() does nothing for continuous wide data with no covariates", {
+  data <- read.csv("Cont_wide.csv") %>%
+    CleanData()
+  
+  column_names <- c(
+    "Study",
+    "T.1",
+    "N.1",
+    "Mean.1",
+    "SD.1",
+    "T.2",
+    "N.2",
+    "Mean.2",
+    "SD.2",
+    "T.3",
+    "N.3",
+    "Mean.3",
+    "SD.3"
+  )
+  
+  data <- data %>%
+    RemoveCovariates()
+  
+  expect_equal(!!names(data), !!column_names)
+})
+
+test_that("RemoveCovariates() does nothing for binary long data with no covariates", {
+  data <- read.csv("Binary_long.csv") %>%
+    CleanData()
+  
+  column_names <- c(
+    "Study",
+    "T",
+    "R",
+    "N"
+  )
+  
+  data <- data %>%
+    RemoveCovariates()
+  
+  expect_equal(!!names(data), !!column_names)
+})
+
+test_that("RemoveCovariates() does nothing for binary wide data with no covariates", {
+  data <- read.csv("Binary_wide.csv") %>%
+    CleanData()
+  
+  column_names <- c(
+    "Study",
+    "T.1",
+    "R.1",
+    "N.1",
+    "T.2",
+    "R.2",
+    "N.2",
+    "T.3",
+    "R.3",
+    "N.3"
+  )
+  
+  data <- data %>%
+    RemoveCovariates()
+  
+  expect_equal(!!names(data), !!column_names)
+})
+
 test_that("FindDataShape() finds shape of continuous long data", {
   data <- read.csv("Cont_long_cov.csv") %>%
     CleanData()
