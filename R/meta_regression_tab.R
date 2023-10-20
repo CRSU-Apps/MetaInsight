@@ -9,8 +9,10 @@ MetaRegressionTabUi <- function(id, title) {
   )
 }
 
-MetaRegressionTabServer <- function(id, all_data, sub_data) {
+MetaRegressionTabServer <- function(id, all_data) {
   shiny::moduleServer(id, function(input, output, session) {
-    covariate = shiny::reactive({ FindCovariateNames(all_data())[1] })
+    covariate = shiny::reactive({
+      FindCovariateNames(all_data())[1]
+    })
   })
 }
