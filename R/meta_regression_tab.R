@@ -25,6 +25,7 @@ meta_regression_tab_ui <- function(id) {
 #'
 #' @param id ID of the module
 #' @param all_data Study data including covariate columns, in wide or long format
+#' @return Reactive returning TRUE if a covariate is available, else FALSE
 meta_regression_tab_server <- function(id, all_data) {
   shiny::moduleServer(id, function(input, output, session) {
     
@@ -39,5 +40,7 @@ meta_regression_tab_server <- function(id, all_data) {
     output$subtitle <- shiny::renderText({
       return(glue::glue("Covariate: {covariate_name()}"))
     })
+    
+    return(reactive({ is.na(covariate_title()) }))
   })
 }
