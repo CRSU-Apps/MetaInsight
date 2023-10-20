@@ -8,7 +8,9 @@ load_covariate_tab_ui <- function(id) {
     p("Holding text"),
     verbatimTextOutput(ns("text")),
     plotOutput(ns("covariate_plot")),
-    p("The covariate is the same for all treatment arms across a study.")
+    p("The covariate is the same for all treatment arms across a study."),
+    radioButtons('format_covariate_plot', 'Document format', c('PDF', 'PNG'), inline = TRUE),
+    downloadButton('downloadCovariateSummary')
   )
 }
 
@@ -52,6 +54,30 @@ load_covariate_tab_server <- function(id) {
 
       make_covariate_plot(BUGSnet_data, covariate)
     })
+    
+    output$downloadCovariateSummary <- downloadHandler(
+      filename = "1d_Covariate_Summary", # New naming convention
+      content = function(file) {
+        draw_covariate_summary <- function() {
+          
+          # Hard-code BUGSnet data prep of diabetes.sim data (will be an input to module when data upload sorted)
+          BUGSnet_data <- BUGSnet::data.prep(arm.data = BUGSnet::diabetes.sim,
+                                             varname.t = "Treatment",
+                                             varname.s = "Study")
+          
+          # Hard-coded covariate - will become an input to module
+          covariate <- "age"
+          
+          make_covariate_plot(BUGSnet_data, covariate)
+          
+        }
+        write_to_pdf_or_png(
+          file,
+          input$format_covariate_plot,
+          draw_covariate_summary
+        )
+      }
+    )
     
   })
 }
