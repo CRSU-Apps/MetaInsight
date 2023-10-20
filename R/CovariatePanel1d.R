@@ -1,20 +1,22 @@
-#' Module UI for the covariate plot tab.
+#' Module UI for the covariate summary plot tab.
 #' 
 #' @param id ID of the module
-#' @return Tab 1d Covariate plot
+#' @return Tab 1d Covariate summary
 load_covariate_tab_ui <- function(id) {
   ns <- NS(id)
-  tabPanel("1d. Covariate plot",
+  tabPanel("1d. Covariate summary",
     p("Holding text"),
     verbatimTextOutput(ns("text")),
-    plotOutput(ns("covariate_plot"))
+    plotOutput(ns("covariate_plot")),
+    p("The covariate is the same for all treatment arms across a study.")
   )
 }
 
-
-#' Module server for the covariate plot tab.
+#' Module server for the covariate summary plot tab.
 #'
 #' @param id ID of the module
+#' @param data Study data in BUGSnet format - to be added
+#' @param covariate Covariate name - to be added
 #' @return Covariate plot from BUGSnet::data.plot
 #' 
 load_covariate_tab_server <- function(id) {
@@ -25,6 +27,7 @@ load_covariate_tab_server <- function(id) {
       "foo"
     })
     
+    # Create covariate plot
     output$covariate_plot <- renderPlot({
 
       # Hard-code BUGSnet data prep of diabetes.sim data (to be generalised when data upload sorted)
@@ -39,11 +42,15 @@ load_covariate_tab_server <- function(id) {
       # https://rdrr.io/github/audrey-b/BUGSnet/man/data.plot.html
       return(BUGSnet::data.plot(BUGSnet_data_prep,
                                 covariate = covariate, # Covariate name is automatically used for y-axis label
-                                half.length = "age_SD", # Error bars - ? needs a second covariate
-                                by = "study", # Grouping by treatment is also an option
-                                text.size = 16
+                                # half.length = "age_SD", # Error bars - needs a second covariate, possible future addition
+                                by = "treatment", 
+                                text.size = 16 # May need to be reactive - test with different size datasets
                                 )
       )
     })
+    
+    
+    
+    
   })
 }
