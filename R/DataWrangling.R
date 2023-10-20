@@ -196,10 +196,18 @@ WrangleUploadData <- function(data, treatment_ids, outcome_type) {
   return(new_df)
 }
 
+#' Find the names of all columns which contain a covariate.
+#'
+#' @param df Data frame in which to find covariate columns.
+#' @return Names of all covariate columns
 FindCovariateNames <- function(df) {
   return(names(dplyr::select(df, dplyr::matches(.covariate_prefix_regex))))
 }
 
+#' Convert a covariate column name to a display name.
+#'
+#' @param column_name Covariate column name to convert
+#' @return Friendly covariate name
 GetFriendlyCovariateName <- function(column_name) {
   return(stringr::str_replace(column_name, .covariate_prefix_regex, ""))
 }
