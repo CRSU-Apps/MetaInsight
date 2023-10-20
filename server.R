@@ -1055,8 +1055,7 @@ shinyServer(function(input, output, session) {
   
   MetaRegressionTabServer(
     id = "meta_regression",
-    all_data = data,
-    sub_data = data
+    all_data = data
   )
   
     
