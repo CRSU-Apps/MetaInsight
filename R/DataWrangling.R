@@ -78,6 +78,11 @@ CleanData <- function(data) {
 #' @return Data without covariate columns
 RemoveCovariates <- function(data) {
   covariate_column_names <- FindCovariateNames(data)
+  
+  if (length(covariate_column_names) == 0) {
+    return(data)
+  }
+  
   covariate_column_indices <- match(covariate_column_names, names(data))
   return(data[, -covariate_column_indices])
 }
