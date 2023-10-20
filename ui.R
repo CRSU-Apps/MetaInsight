@@ -538,7 +538,10 @@ load_data_page_ui(id = 'load_data_page'),
                column(6, p("UME (inconsistency) model"), verbatimTextOutput("dev_ume_sub")
                ))   
 ))))),
-MetaRegressionTabUi(id = "meta_regression", title = "4. Meta-regression")
+tabPanel(
+  title = "4. Meta-regression",
+  meta_regression_tab_ui(id = "meta_regression")
+)
 ), width=9))),
 
 ###################################
