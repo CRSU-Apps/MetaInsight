@@ -73,7 +73,7 @@ data_input_panel_server <- function(id, metaoutcome, continuous_file = 'Cont_lon
     output$data_uploaded <- reactive({data_uploaded()})
     outputOptions(output, 'data_uploaded', suspendWhenHidden = FALSE)
 
-    # Render the file input intially
+    # Render the file input initially
     output$file_input_panel <- default_file_input
     
     # Load default data
