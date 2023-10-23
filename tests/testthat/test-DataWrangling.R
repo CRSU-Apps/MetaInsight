@@ -655,7 +655,7 @@ test_that("GetFriendlyCovariateName() gets friendly covariate name", {
 })
 
 test_that("RemoveCovariates() removes covariates for continuous long data", {
-  data <- read.csv("Cont_long_cov.csv") %>%
+  data <- read.csv("Cont_long_continuous_cov.csv") %>%
     CleanData()
   
   column_names <- c(
@@ -675,7 +675,7 @@ test_that("RemoveCovariates() removes covariates for continuous long data", {
 })
 
 test_that("RemoveCovariates() removes covariates for continuous wide data", {
-  data <- read.csv("Cont_wide_cov.csv") %>%
+  data <- read.csv("Cont_wide_continuous_cov.csv") %>%
     CleanData()
   
   column_names <- c(
@@ -703,7 +703,7 @@ test_that("RemoveCovariates() removes covariates for continuous wide data", {
 })
 
 test_that("RemoveCovariates() removes covariates for binary long data", {
-  data <- read.csv("Binary_long_cov.csv") %>%
+  data <- read.csv("Binary_long_continuous_cov.csv") %>%
     CleanData()
   
   column_names <- c(
@@ -722,7 +722,7 @@ test_that("RemoveCovariates() removes covariates for binary long data", {
 })
 
 test_that("RemoveCovariates() removes covariates for binary wide data", {
-  data <- read.csv("Binary_wide_cov.csv") %>%
+  data <- read.csv("Binary_wide_continuous_cov.csv") %>%
     CleanData()
   
   column_names <- c(
@@ -831,28 +831,28 @@ test_that("RemoveCovariates() does nothing for binary wide data with no covariat
 })
 
 test_that("FindDataShape() finds shape of continuous long data", {
-  data <- read.csv("Cont_long_cov.csv") %>%
+  data <- read.csv("Cont_long_continuous_cov.csv") %>%
     CleanData()
   
   expect_equal(!!FindDataShape(data), "long")
 })
 
 test_that("FindDataShape() finds shape of continuous wide data", {
-  data <- read.csv("Cont_wide_cov.csv") %>%
+  data <- read.csv("Cont_wide_continuous_cov.csv") %>%
     CleanData()
   
   expect_equal(!!FindDataShape(data), "wide")
 })
 
 test_that("FindDataShape() finds shape of binary long data", {
-  data <- read.csv("Binary_long_cov.csv") %>%
+  data <- read.csv("Binary_long_continuous_cov.csv") %>%
     CleanData()
   
   expect_equal(!!FindDataShape(data), "long")
 })
 
 test_that("FindDataShape() finds shape of binary wide data", {
-  data <- read.csv("Binary_wide_cov.csv") %>%
+  data <- read.csv("Binary_wide_continuous_cov.csv") %>%
     CleanData()
   
   expect_equal(!!FindDataShape(data), "wide")
