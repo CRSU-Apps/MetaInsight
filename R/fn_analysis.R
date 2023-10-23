@@ -44,13 +44,11 @@ ref_alter <- function(data, metaoutcome, excluded, treatment_list){
 #####################################
 
 RankingOrder <- function(outcome, is_default_data) {
-  file1 <- data
   if (outcome == "Binary" & is_default_data) {
-    choice <- "bad"
+    return("bad")
   } else {
-    choice <- "good"
+    return("good")
   }
-  return(choice)
 }
 
 ##########################

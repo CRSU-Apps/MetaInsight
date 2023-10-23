@@ -45,8 +45,15 @@ data_analysis_page_ui <- function(id) {
               "Risk Difference (RD)" = "RD"
             )
           )
-        ),               
-        uiOutput(outputId = ns("RankingPref")), 
+        ),
+        radioButtons(
+          inputId = ns('rankopts'),
+          label = 'For treatment rankings, smaller outcome values (e.g. smaller mean values for continuous data, or ORs less than 1 for binary data) are:',
+          choices = c(
+            "Desirable" = "good",
+            "Undesirable" = "bad"
+          )
+        ),
         radioButtons(
           inputId = ns("modelranfix"),
           label = "Model:",
@@ -1037,17 +1044,9 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, m
       RankingOrder(metaoutcome(), is_default_data())
     })
     
-    output$RankingPref <- renderUI({
+    observe({
       choice2 <- choice()
-      radioButtons(
-        inputId = ns('rankopts'),
-        label = 'For treatment rankings, smaller outcome values (e.g. smaller mean values for continuous data, or ORs less than 1 for binary data) are:',
-        choices = c(
-          "Desirable" = "good",
-          "Undesirable" = "bad"
-        ),
-        selected = choice2
-      )
+      shiny::updateRadioButtons(inputId = "rankopts", selected = choice2)
     })
     
     
