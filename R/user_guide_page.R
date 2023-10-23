@@ -13,7 +13,7 @@ user_guide_page_ui <- function(id) {
       tags$strong("Please note:"), 
       "the user guide is based on version 3 of MetaInsight. Some elements of the app have been changed since the guide was originally produced."
     ),
-    downloadButton(outputId = ns("UG"), "Download User Guide"),
+    downloadButton(outputId = ns("UG"), label = "Download User Guide"),
     br(),
     br(),
     h4(tags$strong("ESMARConf 2023 Tutorial", style = "color: #2196c4")),
@@ -22,7 +22,7 @@ user_guide_page_ui <- function(id) {
     HTML('<iframe width="560" height="315" src="https://www.youtube.com/embed/g-RDnQ75Hv4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>'),
     br(),
     br(),
-    h4 (tags$strong("Treatment Ranking Demo", style = "color: #2196c4")),
+    h4(tags$strong("Treatment Ranking Demo", style = "color: #2196c4")),
     p("A short demo video of how to use the Bayesian analysis ranking panel in tab 3c"),
     HTML('<iframe width="560" height="315" src="https://www.youtube.com/embed/scbLwTY0kvc" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'),
     br(),
