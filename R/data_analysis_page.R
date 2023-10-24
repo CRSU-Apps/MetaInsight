@@ -56,91 +56,7 @@ data_analysis_page_ui <- function(id) {
           ),
           tabPanel(
             title = "2. Frequentist network meta-analysis",
-            tabsetPanel(
-              tabPanel(
-                title = "2a. Forest Plot",
-                column(
-                  width = 6,
-                  uiOutput(outputId = ns("FreqForestPlot")),
-                  fixedRow(
-                    p("Options to change limits of the x-axis:"),
-                    column(
-                      width = 6,
-                      align = 'center',
-                      numericInput(inputId = ns('freqmin'), label = "Minimum", value = 0.1)
-                    ),
-                    column(
-                      width = 6,
-                      align = 'center',
-                      numericInput(inputId = ns('freqmax'), label = "Maximum", value = 5)
-                    )
-                  ),
-                  textOutput(outputId = ns("textcomp")),
-                  textOutput(outputId = ns("ref4")),
-                  radioButtons(
-                    inputId = ns('format_freq3'),
-                    label = 'Document format',
-                    choices = c('PDF', 'PNG'),
-                    inline = TRUE
-                  ),
-                  downloadButton(outputId = ns('downloadComp2'))
-                ),
-                column(
-                  width = 6,
-                  uiOutput(outputId = ns("FreqForestPlot_sub")),
-                  fixedRow(
-                    p("Options to change limits of the x-axis:"),
-                    column(
-                      width = 6,
-                      align = 'center',
-                      numericInput(inputId = ns('freqmin_sub'), label = "Minimum", value = 0.1)
-                    ),
-                    column(
-                      width = 6,
-                      align = 'center',
-                      numericInput(inputId = ns('freqmax_sub'), label = "Maximum", value = 5)
-                    )
-                  ),
-
-                  tags$style(
-                    "#ref_change {
-                     background-color: #ffd966;
-                      display:block;
-                    }"
-                  ),
-                  textOutput(outputId = ns("ref_change")),
-                  br(),
-                  textOutput(outputId = ns("text5")),
-                  textOutput(outputId = ns("ref3")),
-                  radioButtons(
-                    inputId = ns('format_freq4'),
-                    label = 'Document format',
-                    choices = c('PDF', 'PNG'),
-                    inline = TRUE
-                  ),
-                  downloadButton(outputId = ns('downloadComp'))
-                )
-              ),
-              tabPanel(
-                title = "2b. Comparison of all treatment pairs",
-                helpText("Treatments are ranked from best to worst along the leading diagonal. Above the leading diagonal are estimates from pairwise meta-analyses, below the leading diagonal are estimates from network meta-analyses"),
-                helpText("Relative treatment effects in ranked order for all studies"),
-                tableOutput(outputId = ns("rankChartStatic")),
-                downloadButton(outputId = ns('downloadRank'), label = "Download"),
-                helpText("Relative treatment effects in ranked order with studies excluded"),
-                tableOutput(outputId = ns("rankChartUpdating")),
-                downloadButton(outputId = ns('downloadRankUpdate'), label = "Download")
-              ),
-              tabPanel(
-                title = "2c. Inconsistency",
-                helpText("Assessment of inconsistency for all studies"),
-                tableOutput(outputId = ns("Incon1")),
-                downloadButton(outputId = ns('downloadIncon'), label = "Download"),
-                helpText("Assessment of inconsistency with studies excluded"),
-                tableOutput(outputId = ns("Incon2")),
-                downloadButton(outputId = ns('downloadIncon2'), label = "Download")
-              )
-            )
+            frequentist_analysis_panel_ui(id = ns("frequentist_analysis"))
           ),
           tabPanel(
             title = "3. Bayesian network meta-analysis",
@@ -921,121 +837,18 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, m
     ######################
     ### 2. Frequentist ###
     ######################
-
-    # 2a. Forest Plot
-
-    make_refText = function(ref) {
-      y <- paste("All outcomes are versus the reference treatment:", ref)
-      return(y)
-    }
-
-    observe({                              # forest min and max values different if continuous/binary
-      x <- metaoutcome()
-      if (x =='Binary') {
-        updateNumericInput(session = session, inputId = "freqmin", value=0.1)
-        updateNumericInput(session = session, inputId = "freqmin_sub", value=0.1)
-        updateNumericInput(session = session, inputId = "bayesmin", value=0.1)
-        updateNumericInput(session = session, inputId = "bayesmin_sub", value=0.1)
-        updateNumericInput(session = session, inputId = "freqmax", value=5)
-        updateNumericInput(session = session, inputId = "freqmax_sub", value=5)
-        updateNumericInput(session = session, inputId = "bayesmax", value=5)
-        updateNumericInput(session = session, inputId = "bayesmax_sub", value=5)
-      } else {
-        updateNumericInput(session = session, inputId = "freqmin", value=-10)
-        updateNumericInput(session = session, inputId = "freqmin_sub", value=-10)
-        updateNumericInput(session = session, inputId = "bayesmin", value=-10)
-        updateNumericInput(session = session, inputId = "bayesmin_sub", value=-10)
-        updateNumericInput(session = session, inputId = "freqmax", value=10)
-        updateNumericInput(session = session, inputId = "freqmax_sub", value=10)
-        updateNumericInput(session = session, inputId = "bayesmax", value=10)
-        updateNumericInput(session = session, inputId = "bayesmax_sub", value=10)
-      }
-    })
-
-    # Forest plot for all studies
-    output$Comparison2<- renderPlot({
-      make_netComp(freq_all(), model_effects(), reference_alter()$ref_all, input$freqmin, input$freqmax)
-      title("Results for all studies")
-    })
-
-    # Text output displayed under forest plot
-    output$textcomp<- renderText({
-      texttau(freq_all(), outcome_measure(), model_effects())
-    })
-
-    output$ref4 <- renderText({
-      make_refText(reference_alter()$ref_all)
-    })
-
-
-    # Forest plot with studies excluded
-    output$SFPUpdatingComp <- renderPlot({
-      make_netComp(freq_sub(), model_effects(), reference_alter()$ref_sub, input$freqmin_sub, input$freqmax_sub)
-      title("Results with studies excluded")
-    })
-
-    # Text output displayed under forest plot
-    output$text5<- renderText({
-      texttau(freq_sub(), outcome_measure(), model_effects())
-    })
-
-    output$ref3 <- renderText({
-      make_refText(reference_alter()$ref_sub)
-    })
-
-    ### Interactive UI ###
-
-    output$FreqForestPlot <- renderUI({
-      plotOutput(
-        outputId = ns("Comparison2"),
-        height = BayesPixels(
-          as.numeric(bugsnet_sumtb(bugsnetdt(), metaoutcome())$Value[1]),
-          title = TRUE
-        ),
-        width = "630px"
-      )
-    })
-
-    output$FreqForestPlot_sub <- renderUI({
-      plotOutput(
-        outputId = ns("SFPUpdatingComp"),
-        height = BayesPixels(
-          as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% exclusions()), metaoutcome())$Value[1]),
-          title = TRUE
-        ),
-        width = "630px"
-      )
-    })
-
-    output$downloadComp2 <- downloadHandler(
-      filename = function() {
-        paste0('All_studies.', input$format_freq3)
-      },
-      content = function(file) {
-        if (input$format_freq3 == "PDF"){
-          pdf(file= file, width = 9, height = BayesInch(as.numeric(bugsnet_sumtb(bugsnetdt(), metaoutcome())$Value[1])))
-        } else {
-          png(file = file, width = 610, height = BayesPixels(as.numeric(bugsnet_sumtb(bugsnetdt(), metaoutcome())$Value[1])))
-        }
-        make_netComp(freq_all(), model_effects(), reference_alter()$ref_all, input$freqmin, input$freqmax)
-        dev.off()
-      },
-      contentType = "image/pdf"
-    )
-
-    output$downloadComp<- downloadHandler(
-      filename = function() {
-        paste0('Excluded_studies.', input$format_freq4)
-      },
-      content = function(file) {
-        if (input$format_freq4 == "PDF") {
-          pdf(file = file, width = 9, height=BayesInch(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% exclusions()), metaoutcome())$Value[1])))
-        } else {
-          png(file = file, width = 610, height = BayesPixels(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% exclusions()), metaoutcome())$Value[1])))
-        }
-        make_netComp(freq_sub(), model_effects(), reference_alter()$ref_sub, input$freqmin_sub, input$freqmax_sub)
-        dev.off()
-      }
+    
+    frequentist_analysis_panel_server(
+      id = "frequentist_analysis",
+      metaoutcome = metaoutcome,
+      outcome_measure = outcome_measure,
+      model_effects = model_effects,
+      exclusions = exclusions,
+      rank_option = rank_option,
+      freq_all = freq_all,
+      freq_sub = freq_sub,
+      bugsnetdt = bugsnetdt,
+      reference_alter = reference_alter
     )
 
     ### 2b. Comparison and rank table
