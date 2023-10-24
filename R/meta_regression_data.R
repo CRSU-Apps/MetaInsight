@@ -31,7 +31,7 @@
 #' @param data Data frame containing all study data.
 #' @param covariate_title Name of the covariate column.
 #'
-#' @return "binary" if covariate has only 2 numeric values,
+#' @return "binary" if covariate has only 0 & 1 as numeric values,
 #' "continuous" if covariate has more than 2 numeric values
 InferCovariateType <- function(data, covariate_title) {
   covariate_data <- data[[covariate_title]]
