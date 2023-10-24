@@ -44,15 +44,19 @@ meta_regression_tab_ui <- function(id) {
 meta_regression_tab_server <- function(id, all_data) {
   shiny::moduleServer(id, function(input, output, session) {
     
-    covariate_title <- shiny::reactive({
+    covariate_title <- reactive({
       FindCovariateNames(all_data())[1]
     })
     
-    covariate_name <- shiny::reactive({
+    covariate_name <- reactive({
       GetFriendlyCovariateName(covariate_title())
     })
     
-    output$subtitle <- shiny::renderText({
+    covariate_type <- reactive({
+      input$covariate_type_selection
+    })
+    
+    output$subtitle <- renderText({
       return(glue::glue("Covariate: {covariate_name()}"))
     })
     
