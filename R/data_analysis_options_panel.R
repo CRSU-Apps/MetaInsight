@@ -50,9 +50,11 @@ data_analysis_options_panel_ui <- function(id) {
     h3("Select studies to exclude:"),
     p("Tips: you can use the data table to help find the study that you want to exclude."),
     actionButton(inputId = ns("datatablebutton"), label = "Open the data table"),
-    br(),
-    br(),
-    uiOutput(outputId = ns("Choicesexcl")), 
+    checkboxGroupInput(
+      inputId = ns("exclusionbox"),
+      label = "",
+      choices = c()
+    ),
     h5("NB: If a whole treatment is removed from the analysis the NMA will return an error message. To overcome this, please remove the treatment from the data.")
   )
 }
@@ -78,8 +80,6 @@ data_analysis_options_panel_ui <- function(id) {
 #'   "OR" for odds ratio, "RR" for risk ratio, or "RD" for risk difference
 data_analysis_options_server <- function(id, data, is_default_data, metaoutcome, OpenDataTable) {
   moduleServer(id, function(input, output, session) {
-    ns <- session$ns
-    
     continuous_outcome <- reactive({
       input$outcomeCont
     })
@@ -115,7 +115,7 @@ data_analysis_options_server <- function(id, data, is_default_data, metaoutcome,
     
     ### Get studies for check box input
     
-    output$Choicesexcl <- renderUI({
+    observe({
       newData <- data()
       newData1 <- as.data.frame(newData)
       # long format data contain exactly 6 columns for continuous and 5 for binary. wide format will contain at least 2+4*2=10 columns.
@@ -132,11 +132,8 @@ data_analysis_options_server <- function(id, data, is_default_data, metaoutcome,
       } else {
         data_wide <- newData1
       }
-      checkboxGroupInput(
-        inputId = ns("exclusionbox"),
-        label = NULL,
-        choices = as.character(data_wide$Study)
-      )
+      
+      shiny::updateCheckboxGroupInput(inputId = "exclusionbox", choices = data_wide$Study)
     })
     
     model_effects <- reactive({
