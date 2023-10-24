@@ -42,11 +42,11 @@ CleanData <- function(data) {
 #' Convert wide format to long format (including covariate columns)
 #' 
 #' @param wide_data Data frame of wide format
-#' @param ConBi Indicator whether outcome is binary or continuous
+#' @param outcome_type Indicator whether outcome is binary or continuous
 #' @return Data frame in long format
-WideToLong <- function(wide_data, ConBi) {
+WideToLong <- function(wide_data, outcome_type) {
   # Specify columns that contain wide data
-  if (ConBi == "Continuous") {
+  if (outcome_type == "Continuous") {
     change_cols <- wide_data %>%
       select(starts_with(c("T","N","Mean","SD")))
   } else {
