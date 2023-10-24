@@ -148,9 +148,12 @@ data_summary_panel_ui <- function(id) {
 #' 
 #' @param id ID of the module
 #' @param data Reactive containing data to analyse
-#' @param is_default_data Reactive containing TRUE if data is an example dataset, loaded by default
-#' @param treatment_df Reactive containing data frame containing treatment IDs (Number) and names (Label)
 #' @param metaoutcome Reactive containing meta analysis outcome: "continuous" or "binary"
+#' @param outcome_measure Reactive containing meta analysis outcome measure: "MD", "SMD", "OR, "RR", or "RD"
+#' @param exclusions Reactive containing names of studies excluded from the sensitivity analysis
+#' @param bugsnetdt Reactive containing bugsnet meta-analysis
+#' @param freq_sub Reactive containing frequentist meta-analysis
+#' @param freq_all Reactive containing frequentist meta-analysis for the sensitivity analysis
 data_summary_panel_server <- function(id, metaoutcome, outcome_measure, exclusions, bugsnetdt, freq_sub, freq_all) {
   moduleServer(id, function(input, output, session) {
     
