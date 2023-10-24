@@ -4,18 +4,20 @@
 #' Function for formatting standard app user data into a {gemtc} 'network' object
 #' 
 #' @param data Uploaded data from the user (or in-built datasets)
-#' @param ConBi Indicator of whether data is binary or continuous
+#' @param outcome_type Indicator of whether data is binary or continuous
+#' @param covariate Chosen covariate name as per uploaded data
+#' @param cov_friendly Friendly version of chosen covariate
 #' @return
 
-CreateGemtcObject <- function(data, ConBi){
+CreateGemtcObject <- function(data, outcome_type, covariate, cov_friendly){
   # ensure data is in long format
   if (FindDataShape(data) == "wide") {
-    long_data <- WideToLong(data, ConBi)
+    long_data <- WideToLong(data, outcome_type)
   } else {
     long_data <- data
   }
   # specify arm level data
-  if (ConBi == "Continuous") {
+  if (outcome_type == "Continuous") {
     armData <- data.frame(study=long_data$Study,
                           treatment=long_data$T,
                           mean=long_data$Mean,
@@ -29,8 +31,8 @@ CreateGemtcObject <- function(data, ConBi){
   }
   # specify study level data
   studyData <- unique(data.frame(study=long_data$Study,
-                                 covariate_name = long_data[,FindCovariateNames(long_data)[1]]))
-  names(studyData)[2] <- GetFriendlyCovariateName(FindCovariateNames(long_data)[1])
+                                 cov_name = long_data[,covariate]))
+  names(studyData)[2] <- cov_friendly
   
   return(mtc.network(data.ab=armData,studies=studyData))
 }
