@@ -60,7 +60,7 @@ test_that("Covariate presence status passed back to module parent when not avail
   )
 })
 
-test_that("ovariate presence status passed back to module parent when available", {
+test_that("Covariate presence status passed back to module parent when available", {
   df <- read.csv("Cont_long_continuous_cov.csv") %>%
     CleanData()
   testServer(
