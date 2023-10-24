@@ -979,6 +979,10 @@ data_analysis_page_ui <- function(id) {
 #' Module server for the data analysis page.
 #' 
 #' @param id ID of the module
+#' @param data Reactive containing data to analyse
+#' @param is_default_data Reactive containing TRUE if data is an example dataset, loaded by default
+#' @param treatment_df Reactive containing data frame containing treatment IDs (Number) and names (Label)
+#' @param metaoutcome Reactive containing meta analysis outcome: "continuous" or "binary"
 data_analysis_page_server <- function(id, data, is_default_data, treatment_df, metaoutcome) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
