@@ -36,8 +36,8 @@
 InferCovariateType <- function(data, covariate_title) {
   covariate_data <- data[[covariate_title]]
   
-  if (is.character(covariate_data)) {
-    stop("One or more covariate values are defined as text.")
+  if (!is.numeric(covariate_data)) {
+    stop("One or more covariate values are non-numerical.")
   }
   
   covariate_values <- list()
@@ -62,14 +62,6 @@ InferCovariateType <- function(data, covariate_title) {
     message = "Some studies contain inconsistent covariate values:"
   )
   
-  .ThrowErrorForMatchingStudies(
-    values = covariate_values,
-    condition = function(study_values) {
-      any(!is.numeric(study_values))
-    },
-    message = "Some studies contain non-numerical covariate values:"
-  )
-
   unique_items <- unique(covariate_data)
   if (length(unique_items) == 1) {
     stop("Cannot analyse covariate with no variation.")
