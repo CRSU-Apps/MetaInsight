@@ -53,10 +53,12 @@ frequentist_analysis_panel_ui <- function(id) {
           ),
 
           tags$style(
-            "#ref_change {
-             background-color: #ffd966;
-              display:block;
-            }"
+            glue::glue(
+              "#{ns(\"ref_change\")} {{
+               background-color: #ffd966;
+                display:block;
+              }}"
+            )
           ),
           textOutput(outputId = ns("ref_change")),
           br(),
@@ -129,27 +131,20 @@ frequentist_analysis_panel_server <- function(
       y <- paste("All outcomes are versus the reference treatment:", ref)
       return(y)
     }
-
-    observe({                              # forest min and max values different if continuous/binary
+    
+    # forest min and max values different if continuous/binary
+    observe({
       x <- metaoutcome()
       if (x =='Binary') {
-        updateNumericInput(session = session, inputId = "freqmin", value=0.1)
-        updateNumericInput(session = session, inputId = "freqmin_sub", value=0.1)
-        updateNumericInput(session = session, inputId = "bayesmin", value=0.1)
-        updateNumericInput(session = session, inputId = "bayesmin_sub", value=0.1)
-        updateNumericInput(session = session, inputId = "freqmax", value=5)
-        updateNumericInput(session = session, inputId = "freqmax_sub", value=5)
-        updateNumericInput(session = session, inputId = "bayesmax", value=5)
-        updateNumericInput(session = session, inputId = "bayesmax_sub", value=5)
+        updateNumericInput(inputId = "freqmin", value=0.1)
+        updateNumericInput(inputId = "freqmin_sub", value=0.1)
+        updateNumericInput(inputId = "freqmax", value=5)
+        updateNumericInput(inputId = "freqmax_sub", value=5)
       } else {
-        updateNumericInput(session = session, inputId = "freqmin", value=-10)
-        updateNumericInput(session = session, inputId = "freqmin_sub", value=-10)
-        updateNumericInput(session = session, inputId = "bayesmin", value=-10)
-        updateNumericInput(session = session, inputId = "bayesmin_sub", value=-10)
-        updateNumericInput(session = session, inputId = "freqmax", value=10)
-        updateNumericInput(session = session, inputId = "freqmax_sub", value=10)
-        updateNumericInput(session = session, inputId = "bayesmax", value=10)
-        updateNumericInput(session = session, inputId = "bayesmax_sub", value=10)
+        updateNumericInput(inputId = "freqmin", value=-10)
+        updateNumericInput(inputId = "freqmin_sub", value=-10)
+        updateNumericInput(inputId = "freqmax", value=10)
+        updateNumericInput(inputId = "freqmax_sub", value=10)
       }
     })
 
@@ -238,6 +233,12 @@ frequentist_analysis_panel_server <- function(
         dev.off()
       }
     )
+    
+    output$ref_change <- renderText({
+      if (identical(reference_alter()$ref_sub, reference_alter()$ref_all)=="FALSE") {
+        paste("Please note that the reference treatment for sensitivity analysis has now been changed to:", reference_alter()$ref_sub, ". This is because the treatment labelled 1 has been removed from the network of sensitivity analysis." )
+      }
+    })
 
     ### 2b. Comparison and rank table
 
