@@ -6,15 +6,17 @@
 data_analysis_page_ui <- function(id) {
   ns <- NS(id)
   div(
-    htmlOutput("CONBI2"),
+    htmlOutput(ns("CONBI2")),
     tags$head(
       tags$style(
-        "#CONBI2{
-          color: white;
-          font-size: 20px;
-          font-style: bold;
-          background-color: #2196c4;
-        }"
+        glue::glue(
+          "#{ns(\"CONBI2\")} {{
+            color: white;
+            font-size: 20px;
+            font-style: bold;
+            background-color: #2196c4;
+          }}"
+        )
       )
     ),
     br(),
