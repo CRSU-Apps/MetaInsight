@@ -107,7 +107,7 @@ frequentist_analysis_panel_ui <- function(id) {
 #' @param freq_sub Reactive containing frequentist meta-analysis
 #' @param bugsnetdt Reactive containing bugsnet meta-analysis
 #' @param reference_alter Reactive containing the name of the reference treatment for the sensitivity
-#' analysis accounting for if the chosen reference treatment has been excluded
+#'  analysis accounting for if the chosen reference treatment has been excluded
 frequentist_analysis_panel_server <- function(
     id,
     metaoutcome,
@@ -119,7 +119,7 @@ frequentist_analysis_panel_server <- function(
     freq_sub,
     bugsnetdt,
     reference_alter
-  ) {
+    ) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
 

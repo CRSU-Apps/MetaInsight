@@ -851,48 +851,6 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, m
       reference_alter = reference_alter
     )
 
-    ### 2b. Comparison and rank table
-
-    output$rankChartStatic<- renderTable(colnames=FALSE,{
-      make_netrank(freq_all(), model_effects(), rank_option())
-    })
-    output$rankChartUpdating<- renderTable(colnames=FALSE,{
-      make_netrank(freq_sub(), model_effects(), rank_option())
-    })
-
-    output$downloadRank <- downloadHandler(
-      filename = 'Rank.csv',
-      content = function(file) {
-        write.csv(make_netrank(freq_all(), model_effects(), rank_option()), file)
-      }
-    )
-
-    output$downloadRankUpdate <- downloadHandler(
-      filename = 'RankUpdate.csv',
-      content = function(file) {
-        write.csv(make_netrank(freq_sub(), model_effects(), rank_option()), file)
-      }
-    )
-
-    ### 2c. Inconsistency
-
-    output$Incon1 <- renderTable(colnames=TRUE, make_Incon(freq_all(), model_effects()))
-    output$Incon2 <- renderTable(colnames=TRUE, make_Incon(freq_sub(), model_effects()))
-
-    output$downloadIncon <- downloadHandler(
-      filename = 'Inconsistency.csv',
-      content = function(file) {
-        write.csv(make_Incon(freq_all(), model_effects()), file)
-      }
-    )
-
-    output$downloadIncon2 <- downloadHandler(
-      filename = 'Inconsistency_sub.csv',
-      content = function(file) {
-        write.csv(make_Incon(freq_sub(), model_effects()), file)
-      }
-    )
-
 
     #####################
     #### 3. Bayesian ####
