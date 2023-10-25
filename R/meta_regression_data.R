@@ -61,7 +61,7 @@ InferCovariateType <- function(data, covariate_title) {
   .ThrowErrorForMatchingStudies(
     values = covariate_values,
     condition = function(study_values) {
-      any(!is.numeric(study_values))
+      any(!is.numeric(study_values)) && any(is.na(suppressWarnings(as.numeric(study_values))))
     },
     message = "Some studies contain non-numerical covariate values:"
   )
