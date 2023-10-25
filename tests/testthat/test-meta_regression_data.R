@@ -39,7 +39,7 @@ test_that("InferCovariateType() throws error when long data has non-numerical co
   )
   expect_error(
     object = InferCovariateType(df, "covar.bananas"),
-    regexp = "One or more covariate values are defined as text\\."
+    regexp = "One or more covariate values are non-numerical\\."
   )
 })
 
@@ -50,7 +50,7 @@ test_that("InferCovariateType() throws error when wide data has non-numerical co
   )
   expect_error(
     object = InferCovariateType(df, "covar.bananas"),
-    regexp = "One or more covariate values are defined as text\\."
+    regexp = "One or more covariate values are non-numerical\\."
   )
 })
 
