@@ -36,6 +36,10 @@
 InferCovariateType <- function(data, covariate_title) {
   covariate_data <- data[[covariate_title]]
   
+  if (is.character(covariate_data)) {
+    stop("One or more covariate values are defined as text.")
+  }
+  
   covariate_values <- list()
   for (study in unique(data$Study)) {
     study_covariate_values <- unique(covariate_data[data$Study == study])
@@ -61,7 +65,7 @@ InferCovariateType <- function(data, covariate_title) {
   .ThrowErrorForMatchingStudies(
     values = covariate_values,
     condition = function(study_values) {
-      any(!is.numeric(study_values)) && any(is.na(suppressWarnings(as.numeric(study_values))))
+      any(!is.numeric(study_values))
     },
     message = "Some studies contain non-numerical covariate values:"
   )
