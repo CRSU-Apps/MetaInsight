@@ -12,7 +12,7 @@ test_that("Covariate title NA when not available", {
 })
 
 test_that("Covariate title extracted from data when available", {
-  df <- read.csv("Cont_long_cov.csv") %>%
+  df <- read.csv("Cont_long_continuous_cov.csv") %>%
     CleanData()
   testServer(
     meta_regression_tab_server,
@@ -35,7 +35,7 @@ test_that("Covariate name NA when not available", {
 })
 
 test_that("Covariate name extracted from data when available", {
-  df <- read.csv("Cont_long_cov.csv") %>%
+  df <- read.csv("Cont_long_continuous_cov.csv") %>%
     CleanData()
   testServer(
     meta_regression_tab_server,
@@ -60,8 +60,8 @@ test_that("Covariate presence status passed back to module parent when not avail
   )
 })
 
-test_that("ovariate presence status passed back to module parent when available", {
-  df <- read.csv("Cont_long_cov.csv") %>%
+test_that("Covariate presence status passed back to module parent when available", {
+  df <- read.csv("Cont_long_continuous_cov.csv") %>%
     CleanData()
   testServer(
     meta_regression_tab_server,

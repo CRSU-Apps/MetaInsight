@@ -16,6 +16,21 @@ meta_regression_tab_ui <- function(id) {
       div(
         h3(textOutput(outputId = ns("subtitle"))),
         style = "display: inline-block;"
+      ),
+      div(
+        textOutput(outputId = ns("error_message_box")),
+        style = "color: red; font-style: italic; font-weight: bold;"
+      ),
+      conditionalPanel(
+        condition = "!output.error_message",
+        {
+          selectInput(
+            inputId = ns("covariate_type_selection"),
+            label = "Covariate Type",
+            choices = c("binary", "continuous")
+          )
+          # Meta-regression UI should be placed here
+        }
       )
     )
   )
@@ -29,16 +44,39 @@ meta_regression_tab_ui <- function(id) {
 meta_regression_tab_server <- function(id, all_data) {
   shiny::moduleServer(id, function(input, output, session) {
     
-    covariate_title <- shiny::reactive({
+    covariate_title <- reactive({
       FindCovariateNames(all_data())[1]
     })
     
-    covariate_name <- shiny::reactive({
+    covariate_name <- reactive({
       GetFriendlyCovariateName(covariate_title())
     })
     
-    output$subtitle <- shiny::renderText({
+    covariate_type <- reactive({
+      input$covariate_type_selection
+    })
+    
+    output$subtitle <- renderText({
       return(glue::glue("Covariate: {covariate_name()}"))
+    })
+    
+    error_message <- reactiveVal("")
+    output$error_message <- reactive({ error_message() })
+    outputOptions(x = output, name = "error_message", suspendWhenHidden = FALSE)
+    
+    output$error_message_box <- renderText({ error_message() })
+    
+    observe({
+      tryCatch(
+        {
+          inferred_type <- InferCovariateType(all_data(), covariate_title())
+          shiny::updateSelectInput(inputId = "covariate_type_selection", selected = inferred_type)
+          error_message("")
+        },
+        error = function(exptn) {
+          error_message(exptn$message)
+        }
+      )
     })
     
     return(reactive({ is.na(covariate_title()) }))
