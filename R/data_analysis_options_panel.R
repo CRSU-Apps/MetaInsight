@@ -116,24 +116,10 @@ data_analysis_options_server <- function(id, data, is_default_data, metaoutcome,
     ### Get studies for check box input
     
     observe({
-      newData <- data()
-      newData1 <- as.data.frame(newData)
-      # long format data contain exactly 6 columns for continuous and 5 for binary. wide format will contain at least 2+4*2=10 columns.
-      if (ncol(newData1) == 6 || ncol(newData1) == 5) {
-        newData2 <- newData1[order(newData1$StudyID, -newData1$T), ]
-        # create counting variable for number of arms within each study.
-        newData2$number<- ave(as.numeric(newData2$StudyID), newData2$StudyID, FUN = seq_along)
-        data_wide <- reshape(
-          data = newData2,
-          timevar = "number",
-          idvar = c("Study", "StudyID"),
-          direction = "wide"
-        )
-      } else {
-        data_wide <- newData1
-      }
-      
-      shiny::updateCheckboxGroupInput(inputId = "exclusionbox", choices = data_wide$Study)
+      shiny::updateCheckboxGroupInput(
+        inputId = "exclusionbox",
+        choices = unique(data()$Study)
+      )
     })
     
     model_effects <- reactive({
