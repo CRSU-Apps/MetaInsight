@@ -51,7 +51,7 @@ WideToLong <- function(wide_data, outcome_type) {
       select(starts_with(c("T","N","Mean","SD")))
   } else {
     change_cols <- wide_data %>%
-      select(starts_with(c("T","N","R")))
+      select(starts_with(c("T","R","N")))
   }
   # Transform to long
   long_data <- wide_data %>%
@@ -60,7 +60,8 @@ WideToLong <- function(wide_data, outcome_type) {
                                       names_pattern = "(.*).(.)",
                                       values_drop_na = TRUE
   )
-  return(long_data[,names(long_data)!="arm"])
+  long_data <- long_data %>% dplyr::relocate(FindCovariateNames(long_data), .after = last_col())
+  return(as.data.frame(long_data[,names(long_data)!="arm"]))
 }
 
 #' Create a copy of a data from which does not contain any covariate columns.
