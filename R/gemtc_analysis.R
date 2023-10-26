@@ -1,15 +1,15 @@
 # User-written functions to wrap up functionality related to running models with {gemtc} #
 
 
-#' Function for formatting standard app user data into a {gemtc} 'network' object
+#' Function for formatting standard app user data ready for start of {gemtc} chain of commands
 #' 
 #' @param data Uploaded data from the user (or in-built datasets)
 #' @param outcome_type Indicator of whether data is binary or continuous
 #' @param covariate Chosen covariate name as per uploaded data
 #' @param cov_friendly Friendly version of chosen covariate
-#' @return
+#' @return list containing two dataframes: 1 of core data, another for covariate data
 
-CreateGemtcObject <- function(data, outcome_type, covariate, cov_friendly){
+PrepDataGemtc <- function(data, outcome_type, covariate, cov_friendly){
   # ensure data is in long format
   if (FindDataShape(data) == "wide") {
     long_data <- WideToLong(data, outcome_type)
@@ -33,6 +33,7 @@ CreateGemtcObject <- function(data, outcome_type, covariate, cov_friendly){
   studyData <- unique(data.frame(study=long_data$Study,
                                  cov_name = long_data[,covariate]))
   names(studyData)[2] <- cov_friendly
+  rownames(studyData) <- NULL
   
-  return(mtc.network(data.ab=armData,studies=studyData))
+  return(list(armData=armData,studyData=studyData))
 }
