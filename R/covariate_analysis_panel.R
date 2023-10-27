@@ -77,8 +77,6 @@ covariate_analysis_panel_server <- function(id, all_data) {
     output$error_message_box <- renderText({ error_message() })
     
     inferred_type <- reactiveVal()
-    output$inferred_type <- reactive({ inferred_type() })
-    outputOptions(x = output, name = "inferred_type", suspendWhenHidden = FALSE)
     
     observe({
       tryCatch(
@@ -101,5 +99,8 @@ covariate_analysis_panel_server <- function(id, all_data) {
     
     output$valid_covariate <- reactive({ error_message() == "" })
     outputOptions(x = output, name = "valid_covariate", suspendWhenHidden = FALSE)
+    
+    output$inferred_type <- reactive({ inferred_type() })
+    outputOptions(x = output, name = "inferred_type", suspendWhenHidden = FALSE)
   })
 }
