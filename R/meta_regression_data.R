@@ -21,8 +21,8 @@
   }
 }
 
-#' Infer the type of the covariate from the data in the column. In error cases, this
-#' function will throw exceptions:
+#' Validate the covariate and infer the type of the covariate from the data in the column.
+#'  In error cases, this function will throw exceptions:
 #' - If the data has any NAs
 #' - If the data has any non-numeric values
 #' - If every study has the same covariate value
@@ -33,7 +33,7 @@
 #'
 #' @return "binary" if covariate has only 0 & 1 as numeric values,
 #' "continuous" if covariate has more than 2 numeric values
-InferCovariateType <- function(data, covariate_title) {
+ValidateAndInferCovariateType <- function(data, covariate_title) {
   covariate_data <- data[[covariate_title]]
   
   if (!is.numeric(covariate_data)) {
