@@ -7,14 +7,22 @@ covariate_analysis_panel_ui <- function(id) {
   div(
     fluidPage(
       div(
-        h2("Meta-Regression"),
-        style = "display: inline-block;"
+        h2(textOutput(outputId = ns("subtitle"))),
+        style = "display: inline-block; vertical-align: top"
       ),
       div(
         style = "display: inline-block; padding-right: 20pt;"
       ),
       div(
-        h3(textOutput(outputId = ns("subtitle"))),
+        conditionalPanel(
+          condition = "output.valid_covariate",
+          ns = ns,
+          selectInput(
+            inputId = ns("covariate_type_selection"),
+            label = "",
+            choices = c("binary", "continuous")
+          )
+        ),
         style = "display: inline-block;"
       ),
       div(
@@ -22,16 +30,9 @@ covariate_analysis_panel_ui <- function(id) {
         style = "color: red; font-style: italic; font-weight: bold;"
       ),
       conditionalPanel(
-        condition = "!output.error_message",
+        condition = "output.valid_covariate",
         ns = ns,
-        {
-          selectInput(
-            inputId = ns("covariate_type_selection"),
-            label = "Covariate Type",
-            choices = c("binary", "continuous")
-          )
-          # Meta-regression UI should be placed here
-        }
+        # Meta-regression UI should be placed here
       )
     )
   )
@@ -61,15 +62,12 @@ covariate_analysis_panel_server <- function(id, all_data) {
     })
     
     error_message <- reactiveVal("")
-    output$error_message <- reactive({ error_message() })
-    outputOptions(x = output, name = "error_message", suspendWhenHidden = FALSE)
-    
     output$error_message_box <- renderText({ error_message() })
     
     observe({
       tryCatch(
         {
-          inferred_type <- InferCovariateType(all_data(), covariate_title())
+          inferred_type <- ValidateAndInferCovariateType(all_data(), covariate_title())
           shiny::updateSelectInput(inputId = "covariate_type_selection", selected = inferred_type)
           error_message("")
         },
@@ -78,5 +76,8 @@ covariate_analysis_panel_server <- function(id, all_data) {
         }
       )
     })
+    
+    output$valid_covariate <- reactive({ error_message() == "" })
+    outputOptions(x = output, name = "valid_covariate", suspendWhenHidden = FALSE)
   })
 }
