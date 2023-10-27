@@ -51,22 +51,10 @@ meta_regression_tab_ui <- function(id) {
 meta_regression_tab_server <- function(id, all_data) {
   shiny::moduleServer(id, function(input, output, session) {
     
-    has_covariates <- reactive({
+    output$has_covariates <- reactive({
       length(FindCovariateNames(all_data())) > 0
     })
-    
-    output$has_covariates <- has_covariates
     shiny::outputOptions(x = output, name = "has_covariates", suspendWhenHidden = FALSE)
-    
-    # Hide covariate analysis tab i
-    shiny::observe({
-      if (has_covariates()) {
-        shiny::hideTab(inputId = "regression_tabs", target = "4c. Covariate Analysis")
-        shiny::updateTabsetPanel(inputId = "regression_tabs", selected = "4a. Summary")
-      } else {
-        shiny::showTab(inputId = "regression_tabs", target = "4c. Covariate Analysis")
-      }
-    })
   
     covariate_analysis_panel_server(id = "covariate_analysis", all_data = all_data)
   })
