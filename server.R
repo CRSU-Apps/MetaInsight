@@ -1112,21 +1112,10 @@ shinyServer(function(input, output, session) {
     scat_plot(model_sub())$y
   })
   
-  has_covariates <- meta_regression_tab_server(
+  meta_regression_tab_server(
     id = "meta_regression",
     all_data = data
   )
-
-
-  shiny::observe({
-    # Check if any covariates in data
-    if (has_covariates()) {
-      shiny::hideTab(inputId = "analysis_tabs", target = "4. Meta-regression")
-      shiny::updateTabsetPanel(inputId = "analysis_tabs", selected = "1. Data summary")
-    } else {
-      shiny::showTab(inputId = "analysis_tabs", target = "4. Meta-regression")
-    }
-  })
   
   output$UG <- downloadHandler(
     filename = "MetaInsightUserGuide.pdf",

@@ -21,8 +21,8 @@
   }
 }
 
-#' Infer the type of the covariate from the data in the column. In error cases, this
-#' function will throw exceptions:
+#' Validate the covariate and infer the type of the covariate from the data in the column.
+#'  In error cases, this function will throw exceptions:
 #' - If the data has any NAs
 #' - If the data has any non-numeric values
 #' - If every study has the same covariate value
@@ -33,7 +33,7 @@
 #'
 #' @return "binary" if covariate has only 0 & 1 as numeric values,
 #' "continuous" if covariate has more than 2 numeric values
-InferCovariateType <- function(data, covariate_title) {
+ValidateAndInferCovariateType <- function(data, covariate_title) {
   covariate_data <- data[[covariate_title]]
   
   if (!is.numeric(covariate_data)) {
@@ -42,16 +42,15 @@ InferCovariateType <- function(data, covariate_title) {
   
   covariate_values <- list()
   for (study in unique(data$Study)) {
-    study_covariate_values <- unique(covariate_data[data$Study == study])
-    covariate_values[[study]] <- study_covariate_values[!is.na(study_covariate_values)]
+    covariate_values[[study]] <- unique(covariate_data[data$Study == study])
   }
   
   .ThrowErrorForMatchingStudies(
     values = covariate_values,
     condition = function(study_values) {
-      length(study_values) == 0
+      any(is.na(study_values))
     },
-    message = "Some studies do not define covariate values:"
+    message = "Some studies do not define covariate values for all arms:"
   )
   
   .ThrowErrorForMatchingStudies(
@@ -59,7 +58,7 @@ InferCovariateType <- function(data, covariate_title) {
     condition = function(study_values) {
       length(study_values) > 1
     },
-    message = "Some studies contain inconsistent covariate values:"
+    message = "Some studies contain inconsistent covariate values between arms:"
   )
   
   unique_items <- unique(covariate_data)
