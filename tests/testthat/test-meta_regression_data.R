@@ -6,18 +6,28 @@ test_that("ValidateAndInferCovariateType() throws error when long data has multi
   )
   expect_error(
     object = ValidateAndInferCovariateType(df, "covar.bananas"),
-    regexp = "Some studies contain inconsistent covariate values: Jeff et al, Frank"
+    regexp = "Some studies contain inconsistent covariate values between arms: Jeff et al, Frank"
   )
 })
 
 test_that("ValidateAndInferCovariateType() throws error when long data has missing covariate values", {
   df <- data.frame(
     Study = c("Jeff et al", "Jeff et al", "Steve and Al", "Steve and Al", "Frank", "Frank"),
-    covar.bananas = c(11, 43, NA, NA, NA, NA)
+    covar.bananas = c(11, 11, NA, NA, NA, NA)
   )
   expect_error(
     object = ValidateAndInferCovariateType(df, "covar.bananas"),
-    regexp = "Some studies do not define covariate values: Steve and Al, Frank"
+    regexp = "Some studies do not define covariate values for all arms: Steve and Al, Frank"
+  )
+})
+test_that("ValidateAndInferCovariateType() throws error when long data has missing covariate values for only some arms", {
+  df <- data.frame(
+    Study = c("Jeff et al", "Jeff et al", "Steve and Al", "Steve and Al", "Frank", "Frank"),
+    covar.bananas = c(11, NA, 1, NA, 45, 45)
+  )
+  expect_error(
+    object = ValidateAndInferCovariateType(df, "covar.bananas"),
+    regexp = "Some studies do not define covariate values for all arms: Jeff et al, Steve and Al"
   )
 })
 
@@ -28,7 +38,7 @@ test_that("ValidateAndInferCovariateType() throws error when wide data has missi
   )
   expect_error(
     object = ValidateAndInferCovariateType(df, "covar.bananas"),
-    regexp = "Some studies do not define covariate values: Steve and Al, Frank"
+    regexp = "Some studies do not define covariate values for all arms: Steve and Al, Frank"
   )
 })
 
