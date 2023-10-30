@@ -42,16 +42,15 @@ ValidateAndInferCovariateType <- function(data, covariate_title) {
   
   covariate_values <- list()
   for (study in unique(data$Study)) {
-    study_covariate_values <- unique(covariate_data[data$Study == study])
-    covariate_values[[study]] <- study_covariate_values[!is.na(study_covariate_values)]
+    covariate_values[[study]] <- unique(covariate_data[data$Study == study])
   }
   
   .ThrowErrorForMatchingStudies(
     values = covariate_values,
     condition = function(study_values) {
-      length(study_values) == 0
+      any(is.na(study_values))
     },
-    message = "Some studies do not define covariate values:"
+    message = "Some studies do not define covariate values for all arms:"
   )
   
   .ThrowErrorForMatchingStudies(
@@ -59,7 +58,7 @@ ValidateAndInferCovariateType <- function(data, covariate_title) {
     condition = function(study_values) {
       length(study_values) > 1
     },
-    message = "Some studies contain inconsistent covariate values:"
+    message = "Some studies contain inconsistent covariate values between arms:"
   )
   
   unique_items <- unique(covariate_data)
