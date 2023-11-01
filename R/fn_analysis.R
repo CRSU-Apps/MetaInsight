@@ -347,9 +347,30 @@ dataform.df <- function(newData1, treat_list, CONBI) {
 
 ### Bayesian analysis
 
+
+#' Bayesian analysis
+#'
+#' @param data Data frame in long format, with 'se' instead of 'SD' and 'N' when the outcome is continuous.
+#' @param treat_list Data frame consisting of the treatment IDs ('Number') and the treatment names ('Label').
+#' @param model "random" or "fixed"
+#' @param outcome One of "SMD", "RD", "MD", "OR". Anything else is interpreted as RR.
+#' @param CONBI "Continuous". Anything else is interpreted as binomial.
+#' @param ref Reference treatment
+#' @return List:
+#'  - 'mtcResults' = Output from gemtc::mtc.run
+#'  - 'lstx' = Vector of treatment names
+#'  - 'ntx' = Number of treatments
+#'  - 'treat_list2' = Same as @param treat_list (TM: Not sure why this is here)
+#'  - 'mtcRelEffects' = Output from gemtc::relative.effect
+#'  - 'sumresults' = summary(mtcRelEffects)
+#'  - 'a' = "fixed effect" or "random effect"
+#'  - 'mtcNetwork' = Output from gemtc::mtc.network
+#'  - 'dic' = Named vector, of the statistics 'Dbar', 'pD', 'DIC', and 'data points'
+#'  - 'model' = Same as @param model
+#'  - 'outcome' = Same as @param outcome
 baye <- function(data,treat_list, model, outcome, CONBI, ref) {
   if (outcome=="SMD" | outcome=="RD") {
-  } 
+  } # Nothing returned when either of these is the outcome type. (TM: Function never called in these cases?)
   else {
     progress <- shiny::Progress$new()   # Adding progress bars
     on.exit(progress$close())
@@ -361,6 +382,7 @@ baye <- function(data,treat_list, model, outcome, CONBI, ref) {
                             mean=data$Mean,
                             std.err=data$se)
     }
+    # If CONBI is not "continuous" then it is interpreted as binomial
     else {
       armData <- data.frame(study=data$Study,
                             treatment=data$T,
@@ -375,7 +397,7 @@ baye <- function(data,treat_list, model, outcome, CONBI, ref) {
     } 
     else  {
       like <- "binom"
-      link <- ifelse (outcome == "OR","logit", "log")
+      link <- ifelse (outcome == "OR","logit", "log") # If outcome is not "OR" for a binomial model then it must be "RR", because "RD" has already been excluded
     }
     mtcModel <- mtc.model(network=mtcNetwork,
                           type = "consistency",
@@ -391,24 +413,33 @@ baye <- function(data,treat_list, model, outcome, CONBI, ref) {
     sumresults<-summary(mtcRelEffects)
     a<- paste(model,"effect",sep=" ")   #Create text for random/fixed effect
     cat(mtcResults$model$code, file="codes.txt", fill=FALSE, labels=NULL, append=FALSE)  # write the code into a file for download
-    lstx <- treat_list$Label
-    ntx <- nrow(treat_list)
+    lstx <- treat_list$Label # Treatment names
+    ntx <- nrow(treat_list) # Number of treatments
     sumoverall<-summary(mtcResults)
-    dic<-as.data.frame(sumoverall$DIC)
+    dic<-as.data.frame(sumoverall$DIC) # The statistics 'Dbar', 'pD', 'DIC', and 'data points'
     list(mtcResults=mtcResults,lstx=lstx,ntx=ntx,treat_list2=treat_list2,mtcRelEffects=mtcRelEffects,
          sumresults=sumresults, a=a, mtcNetwork=mtcNetwork, dic=dic, model=model, outcome=outcome)
   }}
 
 
+
 ### 3a. tau of gemtc
 
+
+#' Create text with the point estimate and 95% CrI of between-trial SD of treatment effects
+#'
+#' @param results Output from the 'baye' function. These are the list elements that are relevant:
+#'  - 'mtcResults' = Output from gemtc::mtc.run
+#'  - 'sumresults' = summary(mtcRelEffects)
+#'  - 'a' = "fixed effect" or "random effect"
+#' @param outcome One of "SMD", "RD", "MD", "OR". Anything else is interpreted as RR. (TM: Probably don't need this, as it's included as @param results$outcome)
+#' @return Text with the point estimate and 95% CrI of between-trial SD of treatment effects (all 0 if fixed effects)
 gemtctau <- function(results,outcome) {
   sumresults<-results$sumresults
   if (results$a=="random effect") {   #SD and its 2.5% and 97.5%
-    ntx <- nrow(sumresults$summaries$statistics)
-    sd_mean<- round(sumresults$summaries$statistics[ntx,1], digits = 2)
-    sd_lowCI<-round(sumresults$summaries$quantiles[ntx,1], digits = 2)
-    sd_highCI<-round(sumresults$summaries$quantiles[ntx,5], digits=2)
+    sd_mean<- round(sumresults$summaries$statistics["sd.d", "Mean"], digits = 2)
+    sd_lowCI<-round(sumresults$summaries$quantiles["sd.d", "2.5%"], digits = 2)
+    sd_highCI<-round(sumresults$summaries$quantiles["sd.d", "97.5%"], digits=2)
   }
   else {
     sd_mean =0
@@ -434,7 +465,34 @@ gemtctau <- function(results,outcome) {
 
 ### 3c. Ranking results 
 
-# Collecting data #
+
+#' Get SUCRA data
+#'
+#' @param NMAdata Output from 'baye' function.
+#' @param rankdirection "good" or "bad" (referring to smaller outcome values).
+#' @param longdata Output from 'dataform.df' function. This should be the same dataset that was passed as the 'data' argument to baye(), which resulted in @param NMAdata.
+#'        (TM: Suggested improvement: baye() should output its 'data' argument, then @param longdata becomes superfluous, and there is no possibility of a mismatch between @param NMAdata and @param longdata.)
+#' @return List:
+#' - 'SUCRA' = Data frame of SUCRA data.
+#'     - 'Treatment'
+#'     - 'SUCRA' = Sucra percentages.
+#'     - 'N' = Total number of patients in 'Treatment' arms (summed over all studies).
+#'     - 'SizeO' = Size of points (relative to 'N') in original SUCRA plot.
+#'     - 'SizeA' = Size of points (relative to 'N') in alternative SUCRA plot.
+#' - 'Colour' = Data frame of colours.
+#'     - 'SUCRA' = Possible SUCRA values.
+#'     - 'colour' = Colour values corresponding to 'SUCRA'.
+#' - 'Cumulative' = Data frame of cumulative ranking probabilities, in long format.
+#'     - 'Treatment'
+#'     - 'Rank'
+#'     - 'Cumulative_Probability'
+#'     - 'SUCRA'
+#' - 'Probabilities' = Data frame of ranking probabilities.
+#'     - 'Treatment'
+#'     - 'Rank 1' = Probability 'Treatment' is ranked first.
+#'     - ...
+#'     - 'Rank n_t' = Probability 'Treatment' is ranked last (n_t = number of treatments).
+#' - 'BUGSnetData' = Output from BUGSnet::data.prep with arguments from @param longdata.
 rankdata <- function(NMAdata, rankdirection, longdata) {
   # data frame of colours
   colour_dat = data.frame(SUCRA = seq(0, 100, by = 0.1)) 
