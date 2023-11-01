@@ -136,7 +136,7 @@ data_summary_panel_ui <- function(id) {
           br(),
           br(),
           br(),
-          verbatimTextOutput("netconnect_sub")
+          verbatimTextOutput(outputId = ns("netconnect_sub"))
         )
       )
     )
