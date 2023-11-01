@@ -10,7 +10,7 @@ meta_regression_tab_ui <- function(id) {
         id = "regression_tabs",
         tabPanel(
           title = "4a. Summary",
-          # Add a new module here for the summary panel
+          metaregression_summary_panel_ui(id = "metaregression_summary_panel")
         ),
         tabPanel(
           title = "4b. Baseline Risk Analysis"
@@ -51,11 +51,13 @@ meta_regression_tab_ui <- function(id) {
 meta_regression_tab_server <- function(id, all_data) {
   shiny::moduleServer(id, function(input, output, session) {
     
+    metaregression_summary_panel_server(id = "metaregression_summary_panel")
+  
     output$has_covariates <- reactive({
       length(FindCovariateNames(all_data())) > 0
     })
     shiny::outputOptions(x = output, name = "has_covariates", suspendWhenHidden = FALSE)
-  
+    
     covariate_analysis_panel_server(id = "covariate_analysis", all_data = all_data)
   })
 }

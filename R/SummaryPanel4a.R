@@ -1,14 +1,14 @@
 #' Module UI for the covariate summary plot tab.
 #' 
 #' @param id ID of the module
-#' @return Tab 1d Covariate summary
-load_covariate_tab_ui <- function(id) {
+#' @return Tab 4a Summary
+metaregression_summary_panel_ui <- function(id) {
   ns <- NS(id)
-  tabPanel("1d. Covariate summary",
+  fluidPage(
     p("Holding text"),
     verbatimTextOutput(ns("text")),
     plotOutput(ns("covariate_plot")),
-    p("The covariate is the same for all treatment arms across a study."),
+    p("The covariate value is the same for all treatment arms across a study."),
     radioButtons('format_covariate_plot', 'Document format', c('PDF', 'PNG'), inline = TRUE),
     downloadButton('downloadCovariateSummary')
   )
@@ -21,7 +21,7 @@ load_covariate_tab_ui <- function(id) {
 #' @param covariate Covariate name - to be added
 #' @return Covariate plot from BUGSnet::data.plot
 #' 
-load_covariate_tab_server <- function(id) {
+metaregression_summary_panel_server <- function(id) {
   moduleServer(id, function(input, output, session) {
     
     # Testing text 
