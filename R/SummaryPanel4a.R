@@ -5,7 +5,6 @@
 metaregression_summary_panel_ui <- function(id) {
   ns <- NS(id)
   fluidPage(
-    verbatimTextOutput(ns("text")), # Testing text - to be removed
     plotOutput(ns("covariate_plot")),
     p("The covariate value is the same for all treatment arms across a study."),
     radioButtons('format_covariate_plot', 'Document format', c('PDF', 'PNG'), inline = TRUE),
@@ -21,11 +20,6 @@ metaregression_summary_panel_ui <- function(id) {
 #' 
 metaregression_summary_panel_server <- function(id, all_data) {
   moduleServer(id, function(input, output, session) {
-    
-    # Testing text 
-    output$text <- renderPrint({
-      "foo"
-    })
     
     #' Create the covariate summary plot 
     #' https://rdrr.io/github/audrey-b/BUGSnet/man/data.plot.html
@@ -51,7 +45,7 @@ metaregression_summary_panel_server <- function(id, all_data) {
                                  covariate.label = y_axis_label,
                                  # half.length = "age_SD", # Error bars - needs a second covariate, possible future addition
                                  by = "treatment",
-                                 text.size = 16) # May need to be reactive - test with different size data
+                                 text.size = 16) 
              )
     }
 
@@ -62,29 +56,23 @@ metaregression_summary_panel_server <- function(id, all_data) {
       
     })
 
-    # output$downloadCovariateSummary <- downloadHandler(
-    #   filename = "1d_Covariate_Summary", # New naming convention
-    #   content = function(file) {
-    #     draw_covariate_summary <- function() {
-    # 
-    #       # Hard-code BUGSnet data prep of diabetes.sim data (will be an input to module when data upload sorted)
-    #       BUGSnet_data <- BUGSnet::data.prep(arm.data = BUGSnet::diabetes.sim,
-    #                                          varname.t = "Treatment",
-    #                                          varname.s = "Study")
-    # 
-    #       # Hard-coded covariate - will become an input to module
-    #       covariate <- "age"
-    # 
-    #       make_covariate_plot(BUGSnet_data, covariate)
-    # 
-    #     }
-    #     write_to_pdf_or_png(
-    #       file,
-    #       input$format_covariate_plot,
-    #       draw_covariate_summary
-    #     )
-    #   }
-    # )
+    output$downloadCovariateSummary <- downloadHandler(
+      filename = function() {
+        paste0('4a_Summary.', input$format_covariate_plot)
+      },
+      content = function(file) {
+        draw_covariate_summary <- function() {
+
+          make_covariate_plot(all_data)
+
+        }
+        write_to_pdf_or_png(
+          file,
+          input$format_covariate_plot,
+          draw_covariate_summary
+        )
+      }
+    )
     
   })
 }

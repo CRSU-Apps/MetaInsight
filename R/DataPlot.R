@@ -130,5 +130,5 @@ DataPlot <- function(
       facet_grid(. ~ trt,  space="free_x", scales="free_x")
     
   }
-  p
+  p 
 }
