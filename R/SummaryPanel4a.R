@@ -5,7 +5,7 @@
 metaregression_summary_panel_ui <- function(id) {
   ns <- NS(id)
   fluidPage(
-    verbatimTextOutput(ns("text")),
+    verbatimTextOutput(ns("text")), # Testing text - to be removed
     plotOutput(ns("covariate_plot")),
     p("The covariate value is the same for all treatment arms across a study."),
     radioButtons('format_covariate_plot', 'Document format', c('PDF', 'PNG'), inline = TRUE),
@@ -17,7 +17,7 @@ metaregression_summary_panel_ui <- function(id) {
 #'
 #' @param id ID of the module
 #' @param all_data Study data including covariate columns, in wide or long format
-#' @param covariate_name Covariate name - to be added
+#' @param covariate_title Covariate name - to be added
 #' @return Covariate plot from BUGSnet::data.plot
 #' 
 metaregression_summary_panel_server <- function(id, all_data) {
@@ -48,8 +48,9 @@ metaregression_summary_panel_server <- function(id, all_data) {
                                               varname.t = "T",
                                               varname.s = "Study")
 
-      # Hard-coded covariate - will become an input to module
-      covariate <- "covar.test"
+      # Find covariate name
+      covariate <- FindCovariateNames(all_data())[1]
+
 
       make_covariate_plot(BUGSnet_data, covariate)
     })
