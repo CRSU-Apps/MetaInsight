@@ -17,7 +17,6 @@ metaregression_summary_panel_ui <- function(id) {
 #'
 #' @param id ID of the module
 #' @param all_data Study data including covariate columns, in wide or long format
-#' @param covariate_title Covariate name - to be added
 #' @return Covariate plot from BUGSnet::data.plot
 #' 
 metaregression_summary_panel_server <- function(id, all_data) {
@@ -28,31 +27,39 @@ metaregression_summary_panel_server <- function(id, all_data) {
       "foo"
     })
     
-    # BUGSnet data.plot used for covariate summary
-    # https://rdrr.io/github/audrey-b/BUGSnet/man/data.plot.html
-    make_covariate_plot <- function(BUGSnet_data, covariate) {
-
-      return(BUGSnet::data.plot(BUGSnet_data,
-                                covariate = covariate, # Covariate name is automatically used for y-axis label
-                                # half.length = "age_SD", # Error bars - needs a second covariate, possible future addition
-                                by = "treatment",
-                                text.size = 16) # May need to be reactive - test with different size datasets
+    #' Create the covariate summary plot 
+    #' https://rdrr.io/github/audrey-b/BUGSnet/man/data.plot.html
+    #'
+    #' @param all_data Study data including covariate columns, in wide or long format
+    #' @return BUGSnet::data.prep plot
+    
+    make_covariate_plot <- function(all_data) {
+      
+      # BUGSnet data prep to convert all_data to format required for data.plot
+      BUGSnet_data <- BUGSnet::data.prep(arm.data = all_data(),
+                                         varname.t = "T",
+                                         varname.s = "Study")
+      
+      # Find covariate name
+      covariate <- FindCovariateNames(all_data())[1]
+      
+      # Covariate label 
+      y_axis_label <- GetFriendlyCovariateName(covariate)
+      
+      return(DataPlot(BUGSnet_data,
+                                 covariate = covariate,
+                                 covariate.label = y_axis_label,
+                                 # half.length = "age_SD", # Error bars - needs a second covariate, possible future addition
+                                 by = "treatment",
+                                 text.size = 16) # May need to be reactive - test with different size data
              )
     }
 
     # Render covariate summary plot
     output$covariate_plot <- renderPlot({
 
-      # BUGSnet data prep to convert all_data to format required for data.plot
-      BUGSnet_data <- BUGSnet::data.prep(arm.data = all_data(),
-                                              varname.t = "T",
-                                              varname.s = "Study")
-
-      # Find covariate name
-      covariate <- FindCovariateNames(all_data())[1]
-
-
-      make_covariate_plot(BUGSnet_data, covariate)
+      make_covariate_plot(all_data)
+      
     })
 
     # output$downloadCovariateSummary <- downloadHandler(
