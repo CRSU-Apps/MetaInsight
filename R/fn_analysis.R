@@ -43,15 +43,12 @@ ref_alter <- function(data, metaoutcome, excluded, treatment_list){
 # Function for choosing default ordering in example datasets #
 #####################################
 
-RankingOrder <- function(outcome,data) {
-  file1 <- data
-  if (outcome=="Binary" & is.null(file1)==TRUE) {
-    choice <- "bad"
+RankingOrder <- function(outcome, is_default_data) {
+  if (outcome == "Binary" & is_default_data) {
+    return("bad")
+  } else {
+    return("good")
   }
-  else {
-    choice <- "good"
-  }
-  return(choice)
 }
 
 ##########################

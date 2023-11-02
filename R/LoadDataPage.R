@@ -1,11 +1,11 @@
 
-#' Module UI for the data upload tab.
+#' Module UI for the data upload page.
 #' 
 #' @param id ID of the module
-#' @return Tab pane for the data upload page
+#' @return Div for the data upload page
 load_data_page_ui <- function(id) {
   ns <- NS(id)
-  tabPanel("Load Data",
+  div(
     htmlOutput(outputId = ns("CONBI")),
     tags$head(tags$style(paste0("#", ns("CONBI"), "{",
                                 "color: white;
@@ -24,17 +24,21 @@ load_data_page_ui <- function(id) {
                     wide_format_upload_panel_ui(id = ns('wide_upload')),
                     tabPanel(title = "View Data",
                              uiOutput(outputId = ns("tb")))
-        ))))
+        )
+      )
+    )
+  )
 }
 
 
-#' Module server for the data upload tab.
+#' Module server for the data upload page.
 #' 
 #' @param id ID of the module
 #' @param metaoutcome Reactive containing the outcome type selected
 #' @param data_input_panel_server_function function to create the data input panel server. Defaults to the standard implementation
 #' @return List of reactives:
 #'   - 'data' is the uploaded data, wrangled such that the treatments are specified by IDs instead of names
+#'   - 'is_default_data' is TRUE if data is an example data set, else FALSE if data has been uploaded
 #'   - 'treatment_df' is the data frame containing the treatment ID ('Number') and the treatment name ('Label')
 load_data_page_server <- function(id, metaoutcome, data_input_panel_server_function = data_input_panel_server) {
   moduleServer(id, function(input, output, session) {
@@ -47,6 +51,7 @@ load_data_page_server <- function(id, metaoutcome, data_input_panel_server_funct
     
     data_reactives <- data_input_panel_server_function(id = 'data_input_panel', metaoutcome = metaoutcome)
     data <- data_reactives$data
+    is_default_data <- data_reactives$is_default_data
     treatment_list <- data_reactives$treatment_list
     
     ### Data analysis tab
@@ -66,6 +71,7 @@ load_data_page_server <- function(id, metaoutcome, data_input_panel_server_funct
     })
     
     return(list(data = wrangled_data,
+                is_default_data = is_default_data,
                 treatment_df = treatment_list))
   })
 }

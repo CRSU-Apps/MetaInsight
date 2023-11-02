@@ -43,10 +43,11 @@ data_input_panel_ui <- function(id) {
 #' 
 #' @param id ID of the module
 #' @param metaoutcome Reactive containing the outcome type selected
-#' @param continuous_file Defaut data file for continuous outcomes. Defaults to 'Cont_long.csv'
-#' @param binary_file Defaut data file for binary outcomes. Defaults to 'Binary_long.csv'
+#' @param continuous_file Default data file for continuous outcomes. Defaults to 'Cont_long.csv'
+#' @param binary_file Default data file for binary outcomes. Defaults to 'Binary_long.csv'
 #' @return List of reactives:
-#'   - 'data' is the uplodaded data
+#'   - 'data' is the uplodaded data or the default data
+#'   - 'is_default_data' is TRUE if data is an example data set, else FALSE if data has been uploaded
 #'   - 'treatment_list' is the data frame containing the treatment ID ('Number') and the treatment name ('Label')
 data_input_panel_server <- function(id, metaoutcome, continuous_file = 'Cont_long.csv', binary_file = 'Binary_long.csv') {
   moduleServer(id, function(input, output, session) {
@@ -152,6 +153,16 @@ data_input_panel_server <- function(id, metaoutcome, continuous_file = 'Cont_lon
                                 selected = FindExpectedReferenceTreatment(treatments))
             })
     
-    return(list(data = data, treatment_list = treatment_list))
+    is_default_data <- reactive({
+      return(!data_uploaded())
+    })
+    
+    return(
+      list(
+        data = data,
+        is_default_data = is_default_data,
+        treatment_list = treatment_list
+      )
+    )
   })
 }
