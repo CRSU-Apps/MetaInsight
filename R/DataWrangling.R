@@ -93,10 +93,10 @@ WideToLong <- function(wide_data, outcome_type) {
   # Specify columns that contain wide data
   if (outcome_type == "Continuous") {
     change_cols <- wide_data %>%
-      select(starts_with(c("T", "N", "Mean", "SD")))
+      dplyr::select(tidyselect::starts_with(c("T", "N", "Mean", "SD")))
   } else {
     change_cols <- wide_data %>%
-      select(starts_with(c("T", "R", "N")))
+      dplyr::select(tidyselect::starts_with(c("T", "R", "N")))
   }
   # Transform to long
   long_data <- wide_data %>%
