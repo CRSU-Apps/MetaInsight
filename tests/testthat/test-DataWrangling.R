@@ -858,18 +858,34 @@ test_that("FindDataShape() finds shape of binary wide data", {
   expect_equal(!!FindDataShape(data), "wide")
 })
 
-test_that("WideToLong() correctly converts binary wide data with covariates", {
-  wide_data <- read.csv("Binary_wide_cov.csv")
+test_that("WideToLong() correctly converts binary wide data with binary covariates", {
+  wide_data <- read.csv("Binary_wide_binary_cov.csv")
   long_data <- WideToLong(wide_data, "Binary")
-  expected_data <- read.csv("Binary_long_cov.csv")
+  expected_data <- read.csv("Binary_long_binary_cov.csv")
   
   expect_equal(long_data, expected_data)
 })
 
-test_that("WideToLong() correctly converts continuous wide data with covariates", {
-  wide_data <- read.csv("Cont_wide_cov.csv")
+test_that("WideToLong() correctly converts binary wide data with continuous covariates", {
+  wide_data <- read.csv("Binary_wide_continuous_cov.csv")
+  long_data <- WideToLong(wide_data, "Binary")
+  expected_data <- read.csv("Binary_long_continuous_cov.csv")
+  
+  expect_equal(long_data, expected_data)
+})
+
+test_that("WideToLong() correctly converts continuous wide data with binary covariates", {
+  wide_data <- read.csv("Cont_wide_binary_cov.csv")
   long_data <- WideToLong(wide_data, "Continuous")
-  expected_data <- read.csv("Cont_long_cov.csv")
+  expected_data <- read.csv("Cont_long_binary_cov.csv")
+  
+  expect_equal(long_data, expected_data)
+})
+
+test_that("WideToLong() correctly converts continuous wide data with continuous covariates", {
+  wide_data <- read.csv("Cont_wide_continuous_cov.csv")
+  long_data <- WideToLong(wide_data, "Continuous")
+  expected_data <- read.csv("Cont_long_continuous_cov.csv")
   
   expect_equal(long_data, expected_data)
 })
