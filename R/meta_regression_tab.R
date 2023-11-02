@@ -51,7 +51,7 @@ meta_regression_tab_ui <- function(id) {
 meta_regression_tab_server <- function(id, all_data) {
   shiny::moduleServer(id, function(input, output, session) {
     
-    metaregression_summary_panel_server(id = "metaregression_summary_panel")
+    metaregression_summary_panel_server(id = "metaregression_summary_panel", all_data = all_data)
   
     output$has_covariates <- reactive({
       length(FindCovariateNames(all_data())) > 0
