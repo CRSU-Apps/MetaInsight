@@ -10,7 +10,7 @@ meta_regression_tab_ui <- function(id) {
         id = "regression_tabs",
         tabPanel(
           title = "4a. Summary",
-          metaregression_summary_panel_ui(id = "metaregression_summary_panel")
+          metaregression_summary_panel_ui(id = ns("metaregression_summary_panel"))
         ),
         tabPanel(
           title = "4b. Baseline Risk Analysis"

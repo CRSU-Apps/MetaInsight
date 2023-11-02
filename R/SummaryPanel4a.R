@@ -36,11 +36,11 @@ metaregression_summary_panel_server <- function(id) {
       return(BUGSnet::data.plot(BUGSnet_data,
                                 covariate = covariate, # Covariate name is automatically used for y-axis label
                                 # half.length = "age_SD", # Error bars - needs a second covariate, possible future addition
-                                by = "treatment", 
+                                by = "treatment",
                                 text.size = 16) # May need to be reactive - test with different size datasets
              )
     }
-    
+
     # Render covariate summary plot
     output$covariate_plot <- renderPlot({
 
@@ -54,22 +54,22 @@ metaregression_summary_panel_server <- function(id) {
 
       make_covariate_plot(BUGSnet_data, covariate)
     })
-    
+
     output$downloadCovariateSummary <- downloadHandler(
       filename = "1d_Covariate_Summary", # New naming convention
       content = function(file) {
         draw_covariate_summary <- function() {
-          
+
           # Hard-code BUGSnet data prep of diabetes.sim data (will be an input to module when data upload sorted)
           BUGSnet_data <- BUGSnet::data.prep(arm.data = BUGSnet::diabetes.sim,
                                              varname.t = "Treatment",
                                              varname.s = "Study")
-          
+
           # Hard-coded covariate - will become an input to module
           covariate <- "age"
-          
+
           make_covariate_plot(BUGSnet_data, covariate)
-          
+
         }
         write_to_pdf_or_png(
           file,
