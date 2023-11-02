@@ -1,4 +1,4 @@
-StudyID,Study,DiseaseDuration,T.1,T.2,R.1,N.1,R.2,N.2
+StudyID,Study,covar.DiseaseDuration,T.1,T.2,R.1,N.1,R.2,N.2
 1,RAPID1,6.15,1,2,15,199,146,393
 2,RAPID2,5.85,1,2,4,127,80,246
 3,Kim2007,6.85,1,3,9,63,28,65
