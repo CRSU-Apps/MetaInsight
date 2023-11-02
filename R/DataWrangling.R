@@ -39,18 +39,6 @@ CleanData <- function(data) {
   return(dplyr::mutate(data, across(where(is.character), stringr::str_squish)))
 }
 
-#' Find which shape the data takes: either wide or long.
-#' 
-#' @param data Data for which to check shape
-#' @return Either "wide" or "long"
-FindDataShape <- function(data) {
-  if ('T' %in% colnames(data)) {
-    return("long")
-  } else {
-    return("wide")
-  }
-}
-
 #' Convert wide format to long format (including covariate columns)
 #' 
 #' @param wide_data Data frame of wide format
@@ -74,6 +62,33 @@ WideToLong <- function(wide_data, outcome_type) {
   )
   long_data <- long_data %>% dplyr::relocate(FindCovariateNames(long_data), .after = last_col())
   return(as.data.frame(long_data))
+}
+
+#' Create a copy of a data from which does not contain any covariate columns.
+#' 
+#' @param data Data from which to remove covariate columns
+#' @return Data without covariate columns
+RemoveCovariates <- function(data) {
+  covariate_column_names <- FindCovariateNames(data)
+  
+  if (length(covariate_column_names) == 0) {
+    return(data)
+  }
+  
+  covariate_column_indices <- match(covariate_column_names, names(data))
+  return(data[, -covariate_column_indices])
+}
+
+#' Find which shape the data takes: either wide or long.
+#' 
+#' @param data Data for which to check shape
+#' @return Either "wide" or "long"
+FindDataShape <- function(data) {
+  if ('T' %in% colnames(data)) {
+    return("long")
+  } else {
+    return("wide")
+  }
 }
 
 #' Find all of the treatment names in the data, both for long and wide formats.
@@ -209,4 +224,20 @@ WrangleUploadData <- function(data, treatment_ids, outcome_type) {
     ReorderColumns(outcome_type)
   
   return(new_df)
+}
+
+#' Find the names of all columns which contain a covariate.
+#'
+#' @param df Data frame in which to find covariate columns.
+#' @return Names of all covariate columns
+FindCovariateNames <- function(df) {
+  return(names(dplyr::select(df, dplyr::matches(.covariate_prefix_regex))))
+}
+
+#' Convert a covariate column name to a display name.
+#'
+#' @param column_name Covariate column name to convert
+#' @return Friendly covariate name
+GetFriendlyCovariateName <- function(column_name) {
+  return(stringr::str_replace(column_name, .covariate_prefix_regex, ""))
 }

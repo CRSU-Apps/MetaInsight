@@ -85,13 +85,9 @@ data_analysis_page_ui <- function(id) {
           HTML("
             .tabbable > .nav > li > a                  {background-color: white;  color:#2196c4}
             .tabbable > .nav > li > a[data-value='1. Data summary'] {background-color: #2196c4;  color:white; font-size: 18px}
-            .tabbable > .nav > li > a[data-value='1a. Study Results'] {background-color: white;}
-            .tabbable > .nav > li > a[data-value='1b. Network Plot'] {background-color: white;}
             .tabbable > .nav > li > a[data-value='2. Frequentist network meta-analysis'] {background-color: #2196c4;   color:white; font-size: 18px}
-            .tabbable > .nav > li > a[data-value='2a. Forest Plot'] {background-color: white}
-            .tabbable > .nav > li > a[data-value='2b. Comparison of all treatment pairs'] {background-color: white;}
-            .tabbable > .nav > li > a[data-value='2c. Inconsistency'] {background-color: white;}
             .tabbable > .nav > li > a[data-value='3. Bayesian network meta-analysis'] {background-color: #2196c4;   color:white; font-size: 18px}
+            .tabbable > .nav > li > a[data-value='4. Meta-regression'] {background-color: #2196c4;   color:white; font-size: 18px}
             .tabbable > .nav > li[class=active]    > a {font-weight:900;font-style: italic;text-decoration: underline }
             "
           )
@@ -968,6 +964,10 @@ data_analysis_page_ui <- function(id) {
                 )
               )
             )
+          ),
+          tabPanel(
+            title = "4. Meta-regression",
+            meta_regression_tab_ui(id = ns("meta_regression"))
           )
         )
       )
@@ -986,6 +986,8 @@ data_analysis_page_ui <- function(id) {
 data_analysis_page_server <- function(id, data, is_default_data, treatment_df, metaoutcome) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
+    
+    non_covariate_data <- reactive({ RemoveCovariates(data()) })
     
     outcome_measure <- reactive({
       if (metaoutcome() == "Continuous") {
@@ -1006,24 +1008,24 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, m
     
     # Make frequentist function (in fn_analysis.R) reactive - NVB
     freq_all <- reactive({
-      return(frequentist(data(), metaoutcome(), treatment_df(), outcome_measure(), input$modelranfix))
+      return(frequentist(non_covariate_data(), metaoutcome(), treatment_df(), outcome_measure(), input$modelranfix))
     })
     
     exclusions <- debounce(reactive({input$exclusionbox}), 1500)
     
     # Make frequentist function (in fn_analysis.R) reactive with excluded studies - NVB
     freq_sub <- reactive({
-      return(frequentist(data(), metaoutcome(), treatment_df(), outcome_measure(), input$modelranfix, exclusions()))
+      return(frequentist(non_covariate_data(), metaoutcome(), treatment_df(), outcome_measure(), input$modelranfix, exclusions()))
     })
     
     # Make bugsnetdata function (in fn_analysis.R) reactive - NVB
     bugsnetdt <- reactive({
-      return(bugsnetdata(data(), metaoutcome(), treatment_df()))
+      return(bugsnetdata(non_covariate_data(), metaoutcome(), treatment_df()))
     })
     
     # Make ref_alter function (in fn_analysis.R) reactive - NVB
     reference_alter <- reactive({
-      return(ref_alter(data(), metaoutcome(), exclusions(), treatment_df()))
+      return(ref_alter(non_covariate_data(), metaoutcome(), exclusions(), treatment_df()))
     })
     
     ############################################
@@ -1058,9 +1060,9 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, m
     ### Get studies for check box input
     
     output$Choicesexcl <- renderUI({
-      newData <- data()
+      newData <- non_covariate_data()
       newData1 <- as.data.frame(newData)
-      if (ncol(newData1)==6 ||ncol(newData1)==5 ){        # long format data contain exactly 6 columns for continuous and 5 for binary. wide format will contain at least 2+4*2=10 columns.
+      if (FindDataShape(newData1) == "long") {
         newData2<-newData1[order(newData1$StudyID, -newData1$T), ]
         newData2$number<- ave(as.numeric(newData2$StudyID),newData2$StudyID,FUN=seq_along)    # create counting variable for number of arms within each study.
         data_wide <- reshape(newData2, timevar = "number",idvar = c("Study", "StudyID"), direction = "wide")     # reshape
@@ -1080,7 +1082,7 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, m
     
     filtertable <- function() {
       label <- treatment_df()
-      dt <- data()
+      dt <- non_covariate_data()
       ntx <- nrow(label)
       dt$T <- factor(dt$T,
                      levels = c(1:ntx),
@@ -1525,12 +1527,12 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, m
     # Bayesian analysis
     
     model <- eventReactive(input$baye_do, {
-      bayesian_model(sub = FALSE, data(), treatment_df(), metaoutcome(), exclusions(),
+      bayesian_model(sub = FALSE, non_covariate_data(), treatment_df(), metaoutcome(), exclusions(),
                      outcome_measure(), input$modelranfix, reference_alter())
     })
     
     model_sub <- eventReactive(input$sub_do, {
-      bayesian_model(sub = TRUE, data(), treatment_df(), metaoutcome(), exclusions(), 
+      bayesian_model(sub = TRUE, non_covariate_data(), treatment_df(), metaoutcome(), exclusions(), 
                      outcome_measure(), input$modelranfix, reference_alter())
     })
     
@@ -1663,12 +1665,12 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, m
     
     # Obtain Data needed for ranking #
     RankingData <- eventReactive(input$baye_do, {
-      obtain_rank_data(data(), metaoutcome(), 
+      obtain_rank_data(non_covariate_data(), metaoutcome(), 
                        treatment_df(), model(), input$rankopts)
     })
     
     RankingData_sub <- eventReactive(input$sub_do, {
-      obtain_rank_data(data(), metaoutcome(), treatment_df(),
+      obtain_rank_data(non_covariate_data(), metaoutcome(), treatment_df(),
                        model_sub(), input$rankopts, exclusions())
     })
     
@@ -1959,7 +1961,7 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, m
     
     # Inconsistency test with notesplitting model for all studies
     model_nodesplit <- eventReactive(input$node, {
-      nodesplit(sub = FALSE, data(), treatment_df(), metaoutcome(), outcome_measure(),
+      nodesplit(sub = FALSE, non_covariate_data(), treatment_df(), metaoutcome(), outcome_measure(),
                 input$modelranfix, exclusions())
     })
     
@@ -1969,7 +1971,7 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, m
     
     # Inconsistency test with notesplitting model with studies excluded
     model_nodesplit_sub <- eventReactive(input$node_sub, {
-      nodesplit(sub = TRUE, data(), treatment_df(), metaoutcome(), outcome_measure(),
+      nodesplit(sub = TRUE, non_covariate_data(), treatment_df(), metaoutcome(), outcome_measure(),
                 input$modelranfix, exclusions())
     })
     
@@ -2142,5 +2144,12 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, m
     output$dev_ume_sub<- renderPrint({
       scat_plot(model_sub())$y
     })
+    
+    # 4 Meta-regression
+    
+    meta_regression_tab_server(
+      id = "meta_regression",
+      all_data = data
+    )
   })
 }
