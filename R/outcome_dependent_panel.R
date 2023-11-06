@@ -1,4 +1,4 @@
-#' Create the meta-regression panel.
+#' Create the outcome-dependent UI.
 #'
 #' @param id ID of the module
 #' @param inner_ui_expression Expression for the UI function for this item.
