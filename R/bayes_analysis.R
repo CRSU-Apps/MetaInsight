@@ -3,8 +3,8 @@
 #' @param data Data frame in long format, with 'se' instead of 'SD' and 'N' when the outcome is continuous.
 #' @param treat_list Data frame consisting of the treatment IDs ('Number') and the treatment names ('Label').
 #' @param model "random" or "fixed"
-#' @param outcome One of "SMD", "RD", "MD", "OR". Anything else is interpreted as RR.
-#' @param CONBI "Continuous". Anything else is interpreted as binomial.
+#' @param outcome One of "MD", "OR" or "RR".
+#' @param CONBI "Continuous" or "Binary".
 #' @param ref Reference treatment
 #' @return List:
 #'  - 'mtcResults' = Output from gemtc::mtc.run
@@ -15,13 +15,11 @@
 #'  - 'sumresults' = summary(mtcRelEffects)
 #'  - 'a' = "fixed effect" or "random effect"
 #'  - 'mtcNetwork' = Output from gemtc::mtc.network
-#'  - 'dic' = Named vector, of the statistics 'Dbar', 'pD', 'DIC', and 'data points'
+#'  - 'dic' = Data frame containing the statistics 'Dbar', 'pD', 'DIC', and 'data points'
 #'  - 'model' = Same as @param model
 #'  - 'outcome' = Same as @param outcome
 baye <- function(data,treat_list, model, outcome, CONBI, ref) {
-  if (outcome=="SMD" | outcome=="RD") {
-  } # Nothing returned when either of these is the outcome type. (TM: Function never called in these cases?)
-  else {
+  if (outcome %in% c('OR', 'RR', 'MD')) {
     progress <- shiny::Progress$new()   # Adding progress bars
     on.exit(progress$close())
     progress$set(message="Updating.This may take up to 10 minutes", value=0)
@@ -31,9 +29,7 @@ baye <- function(data,treat_list, model, outcome, CONBI, ref) {
                             treatment=data$T,
                             mean=data$Mean,
                             std.err=data$se)
-    }
-    # If CONBI is not "continuous" then it is interpreted as binomial
-    else {
+    } else if(CONBI=="Binary") {
       armData <- data.frame(study=data$Study,
                             treatment=data$T,
                             responders=data$R,
@@ -47,7 +43,7 @@ baye <- function(data,treat_list, model, outcome, CONBI, ref) {
     } 
     else  {
       like <- "binom"
-      link <- ifelse (outcome == "OR","logit", "log") # If outcome is not "OR" for a binomial model then it must be "RR", because "RD" has already been excluded
+      link <- ifelse (outcome == "OR","logit", ifelse(outcome == "RR", "log", stop()))
     }
     mtcModel <- mtc.model(network=mtcNetwork,
                           type = "consistency",
