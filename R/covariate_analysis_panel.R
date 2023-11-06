@@ -1,7 +1,7 @@
 #' Create the covariate analysis panel.
 #'
 #' @param id ID of the module
-#' @return Div containing the module
+#' @return Div containing the module UI
 covariate_analysis_panel_ui <- function(id) {
   ns <- NS(id)
   div(
