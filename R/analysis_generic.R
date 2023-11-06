@@ -1,5 +1,5 @@
-# # Inputting the data in long form
 # Inputting the data in long form
+# (Essentially a wrapper for dataform.df, which converts data into long format, adds the variable 'se' in the continuous case, and does some formatting.)
 bugsnetdata <- function(data, metaoutcome, treatment_list){
   newData1 <- as.data.frame(data)
   treatment_list$Label <- stringr::str_wrap(gsub("_", " ",treatment_list$Label), width=10)  # better formatting (although does assume underscores have only been added due to the treatment label entry limitations) CRN
