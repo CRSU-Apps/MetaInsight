@@ -14,11 +14,9 @@ meta_regression_tab_ui <- function(id) {
         ),
         tabPanel(
           title = "4b. Baseline Risk Analysis",
-          outcome_dependent_ui(
+          informed_conditional_panel_ui(
             id = ns("baseline_risk_analysis_outer"),
-            inner_ui_expression = {
-              baseline_risk_analysis_panel_ui(id = ns("baseline_risk_analysis"))
-            }
+            inner_ui_expression = { baseline_risk_analysis_panel_ui(id = ns("baseline_risk_analysis")) }
           )
         ),
         tabPanel(
@@ -41,11 +39,9 @@ meta_regression_tab_ui <- function(id) {
           conditionalPanel(
             condition = "output.has_covariates",
             ns = ns,
-            outcome_dependent_ui(
+            informed_conditional_panel_ui(
               id = ns("covariate_analysis_outer"),
-              inner_ui_expression = {
-                covariate_analysis_panel_ui(id = ns("covariate_analysis"))
-              }
+              inner_ui_expression = { covariate_analysis_panel_ui(id = ns("covariate_analysis")) }
             )
           )
         )
@@ -67,27 +63,43 @@ meta_regression_tab_server <- function(id, all_data, outcome_measure) {
     })
     shiny::outputOptions(x = output, name = "has_covariates", suspendWhenHidden = FALSE)
     
+    basline_risk_outcomes <- c("MD", "OR")
     # Baseline risk analysis
-    outcome_dependent_server(
+    informed_conditional_panel_server(
       id = "baseline_risk_analysis_outer",
-      outcome_measure = outcome_measure,
-      supported_measures = c("MD", "OR"),
       inner_server_expression = {
         baseline_risk_analysis_panel_server(
           id = "baseline_risk_analysis"
         )
+      },
+      condition = reactive({
+        outcome_measure() %in% basline_risk_outcomes
+      }),
+      error_message_text_expression = {
+        paste0(
+          "Outcome measure is not supported for this analysis. Supported types are: ",
+          paste0(basline_risk_outcomes, collapse = ", ")
+        )
       }
     )
     
+    covariate_outcomes <- c("MD", "OR", "RR")
     # Covariate analysis
-    outcome_dependent_server(
+    informed_conditional_panel_server(
       id = "covariate_analysis_outer",
-      outcome_measure = outcome_measure,
-      supported_measures = c("MD", "OR", "RR"),
       inner_server_expression = {
         covariate_analysis_panel_server(
           id = "covariate_analysis",
           all_data = all_data
+        )
+      },
+      condition = reactive({
+        outcome_measure() %in% covariate_outcomes
+      }),
+      error_message_text_expression = {
+        paste0(
+          "Outcome measure is not supported for this analysis. Supported types are: ",
+          paste0(covariate_outcomes, collapse = ", ")
         )
       }
     )
