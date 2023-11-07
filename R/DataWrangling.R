@@ -31,7 +31,7 @@
 .covariate_prefix_regex <- "^covar\\."
 
 
-#' Remove leading and trailing whitespace and collapse mutiple whictspace characters between words.
+#' Remove leading and trailing whitespace and collapse multiple whitespace characters between words.
 #' 
 #' @param data Data frame to clean
 #' @return Cleaned data frame
@@ -131,7 +131,7 @@ VectorWithItemFirst <- function(vector, first_item) {
 #' @param reference_treatment Name of treatment to be assigned ID 1
 #' @return Data frame containing the treatment ID ('Number') and the treatment name ('Label')
 CreateTreatmentIds <- function(all_treatments, reference_treatment = all_treatments[1]) {
-  treatment_names = VectorWithItemFirst(all_treatments, reference_treatment)
+  treatment_names <- VectorWithItemFirst(all_treatments, reference_treatment)
   return(data.frame(Number = 1:length(treatment_names), Label = treatment_names))
 }
 
@@ -191,9 +191,9 @@ AddStudyIds <- function(data) {
 #' @param outcome_type Type of outcome for which to reorder, either 'Continuous' or 'Binary'
 #' @return Data frame with columns reordered
 ReorderColumns <- function(data, outcome_type) {
-  if (outcome_type == "Continuous") {
+  if (tolower(outcome_type) == "continuous") {
     expected_order <- .continuous_order
-  } else if (outcome_type == "Binary") {
+  } else if (tolower(outcome_type) == "binary") {
     expected_order <- .binary_order
   } else {
     stop(paste0("Outcome type ", outcome_type, " not recognised. Use either 'Continuous' or 'Binary'"))
@@ -224,6 +224,20 @@ WrangleUploadData <- function(data, treatment_ids, outcome_type) {
     ReorderColumns(outcome_type)
   
   return(new_df)
+}
+
+#' Clean the treatment labels to replace all characters which are not a number, letter, or underscore, with an underscore.
+#' 
+#' @param treatment_ids Data frame containing treatment IDs and names in columns named 'Number' and 'Label' respectively
+#' @return Cleaned version of treatment_ids
+CleanTreatmentIds <- function(treatment_ids) {
+  new_treatment_ids <- treatment_ids
+  new_treatment_ids$RawLabel <- treatment_ids$Label
+  new_treatment_ids$Label <- treatment_ids$Label %>%
+    stringr::str_replace_all("(?![a-zA-Z0-9_]).", "_") %>%
+    stringr::str_replace_all("(_+)", "_")
+  
+  return(new_treatment_ids)
 }
 
 #' Find the names of all columns which contain a covariate.
