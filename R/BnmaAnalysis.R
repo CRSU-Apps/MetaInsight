@@ -29,14 +29,21 @@ FormatForBnma <- function(BRdata, dataFormat, outcomeType, ref){
 
 #' Fits the baseline risk meta-regression model in BNMA
 #'
-#' @param BRdata A list of data in the format produced by the 'FormatForBnma' function
-#' @param outcomeType "Continuous" or "Binomial"
-#' @param effectsType "fixed" or "random"
-#' @param covParameters "common", "exchangable", or "independent"
-#' @return Output from bnma::network.run
-BaselineRiskRegression <- function(BRdata, outcomeType, effectsType, covParameters){
+#' @param BRdata A list of data in the format produced by the 'FormatForBnma' function.
+#' @param outcomeType "Continuous" or "Binomial".
+#' @param effectsType "fixed" or "random".
+#' @param covParameters "common", "exchangable", or "independent".
+#' @param seeds Vector of seeds, which also determines the number of chains. Defaults to 123:125.
+#' @return Output from bnma::network.run.
+BaselineRiskRegression <- function(BRdata, outcomeType, effectsType, covParameters, seeds=123:125){
+  #Put the seeds in the required format
+  rng_inits <- list()
+  for(i in 1:length(seeds)){
+    rng_inits[[i]] <- list(.RNG.name = "base::Wichmann-Hill", .RNG.seed = seeds[i])
+  }
+  
   if(outcomeType == "Binomial"){
-    BRnetwork <- with(BRdata, bnma::network.data(Outcomes = ArmLevel$Outcomes,
+    network <- with(BRdata, bnma::network.data(Outcomes = ArmLevel$Outcomes,
                                                  Study = ArmLevel$Study,
                                                  Treat = ArmLevel$Treat,
                                                  N = ArmLevel$N,                                          
@@ -47,7 +54,7 @@ BaselineRiskRegression <- function(BRdata, outcomeType, effectsType, covParamete
                                                  baseline.risk = "independent"))
   }
   if(outcomeType == "Continuous"){
-    BRnetwork <- with(BRdata, bnma::network.data(Outcomes = ArmLevel$Outcomes,
+    network <- with(BRdata, bnma::network.data(Outcomes = ArmLevel$Outcomes,
                                                  Study = ArmLevel$Study,                                           
                                                  Treat = ArmLevel$Treat,
                                                  response = "normal",
@@ -57,5 +64,8 @@ BaselineRiskRegression <- function(BRdata, outcomeType, effectsType, covParamete
                                                  baseline = covParameters,
                                                  baseline.risk = "independent"))
   }
-  return(network.run(BRnetwork, n.run=10000))
+  return(bnma::network.run(network,
+                           n.run=10000,
+                           RNG.inits=rng_inits,
+                           n.chains=length(seeds)))
 }
