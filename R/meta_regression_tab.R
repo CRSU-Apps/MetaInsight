@@ -34,6 +34,39 @@ meta_regression_tab_ui <- function(id) {
   )
 }
 
+#' Build the text to inform the user that the outcome measure is not supported.
+#'
+#' @param supported_measures Vector of outcome measure which are supported.
+#'
+#' @return Built text.
+.BuildUnsupportedOutcomeMeasureErrorMessageText <- function(supported_measures) {
+  return(
+    paste0(
+      "Outcome measure is not supported for this analysis. Supported types are: ",
+      paste0(supported_measures, collapse = ", ")
+    )
+  )
+}
+
+#' Build a div containing bold, italic red text informing the user that no covariate data has been loaded.
+#'
+#' @return Built div.
+.BuildMissingCovariateErrorMessageUi <- function() {
+  return(
+    div(
+      h3(
+        "No covariate data. To add covariate data, add a column titled",
+        code("covar.*"),
+        "where the",
+        code("*"),
+        "is replaced by the covariate name. eg. ",
+        code("covar.age")
+      ),
+      style = "color: red; font-style: italic; font-weight: bold;"
+    )
+  )
+}
+
 #' Create the meta-regression server.
 #'
 #' @param id ID of the module
@@ -43,64 +76,41 @@ meta_regression_tab_server <- function(id, all_data, outcome_measure) {
   shiny::moduleServer(id, function(input, output, session) {
     
     basline_risk_outcomes <- c("MD", "OR")
+    baseline_risk_supported = reactive({ outcome_measure() %in% basline_risk_outcomes })
     # Baseline risk analysis
     informed_conditional_panel_server(
       id = "baseline_risk_outcome_dependent",
+      condition = baseline_risk_supported,
+      error_message_text_expression = { .BuildUnsupportedOutcomeMeasureErrorMessageText(basline_risk_outcomes) },
       inner_server_expression = {
         baseline_risk_analysis_panel_server(
           id = "baseline_risk_analysis"
         )
-      },
-      condition = reactive({
-        outcome_measure() %in% basline_risk_outcomes
-      }),
-      error_message_text_expression = {
-        paste0(
-          "Outcome measure is not supported for this analysis. Supported types are: ",
-          paste0(basline_risk_outcomes, collapse = ", ")
-        )
       }
     )
     
+    covariate_data_present = reactive({ length(FindCovariateNames(all_data())) > 0 })
     covariate_outcomes <- c("MD", "OR", "RR")
+    covariate_supported = reactive({ outcome_measure() %in% covariate_outcomes })
     # Covariate analysis
     informed_conditional_panel_server(
       id = "covariate_presence_dependent",
+      condition = covariate_data_present,
+      error_message_ui_expression = { .BuildMissingCovariateErrorMessageUi() },
       inner_server_expression = {
+        
         informed_conditional_panel_server(
           id = "covariate_outcome_dependent",
+          condition = covariate_supported,
+          error_message_text_expression = { .BuildUnsupportedOutcomeMeasureErrorMessageText(covariate_outcomes) },
           inner_server_expression = {
             covariate_analysis_panel_server(
               id = "covariate_analysis",
               all_data = all_data
             )
-          },
-          condition = reactive({
-            outcome_measure() %in% covariate_outcomes
-          }),
-          error_message_text_expression = {
-            paste0(
-              "Outcome measure is not supported for this analysis. Supported types are: ",
-              paste0(covariate_outcomes, collapse = ", ")
-            )
           }
         )
-      },
-      condition = reactive({
-        length(FindCovariateNames(all_data())) > 0
-      }),
-      error_message_ui_expression = {
-        div(
-          h3(
-            "No covariate data. To add covariate data, add a column titled",
-            code("covar.*"),
-            "where the",
-            code("*"),
-            "is replaced by the covariate name. eg. ",
-            code("covar.age")
-          ),
-          style = "color: red; font-style: italic; font-weight: bold;"
-        )
+        
       }
     )
   })
