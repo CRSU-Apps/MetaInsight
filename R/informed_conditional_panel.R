@@ -34,10 +34,10 @@ informed_conditional_panel_ui <- function(id, inner_ui_expression) {
 #' @param inner_server_expression Expression for the server function for this item.
 informed_conditional_panel_server <- function(
     id,
-    inner_server_expression,
     condition,
     error_message_text_expression = NULL,
-    error_message_ui_expression = NULL) {
+    error_message_ui_expression = NULL,
+    inner_server_expression) {
   shiny::moduleServer(id, function(input, output, session) {
     
     if (is.null(error_message_text_expression) == is.null(error_message_ui_expression)) {
