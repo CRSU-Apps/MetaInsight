@@ -86,7 +86,7 @@ test_that("Wrangled continuous long data passed back to module parent", {
     expect_equal(length(session$returned), 3)
     expect_equal(session$returned$data(), wrangled_data())
     expect_equal(session$returned$is_default_data(), is_default_data())
-    expect_equal(session$returned$treatment_df(), treatment_list())
+    expect_equal(session$returned$treatment_df(), wrangled_treatment_list())
   })
 })
 
@@ -165,6 +165,6 @@ test_that("Wrangled binary long data passed back to module parent", {
     expect_equal(length(session$returned), 3)
     expect_equal(session$returned$data(), wrangled_data())
     expect_equal(session$returned$is_default_data(), is_default_data())
-    expect_equal(session$returned$treatment_df(), treatment_list())
+    expect_equal(session$returned$treatment_df(), wrangled_treatment_list())
   })
 })
