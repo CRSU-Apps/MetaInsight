@@ -48,10 +48,10 @@ meta_regression_tab_ui <- function(id) {
 #'
 #' @param id ID of the module
 #' @param all_data Study data including covariate columns, in wide or long format
-meta_regression_tab_server <- function(id, all_data) {
+meta_regression_tab_server <- function(id, all_data, metaoutcome) {
   shiny::moduleServer(id, function(input, output, session) {
     
-    metaregression_summary_panel_server(id = "metaregression_summary_panel", all_data = all_data)
+    metaregression_summary_panel_server(id = "metaregression_summary_panel", all_data = all_data, metaoutcome = metaoutcome)
   
     output$has_covariates <- reactive({
       length(FindCovariateNames(all_data())) > 0
