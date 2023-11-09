@@ -31,8 +31,8 @@ ref_alter <- function(data, metaoutcome, excluded, treatment_list){
   ref_all <- as.character(lstx[1])
   longsort2 <- dataform.df(newData1, treatment_list, metaoutcome)
   long_sort2_sub <- filter(longsort2, !Study %in% excluded)  # subgroup
-  if (((lstx[1] %in% long_sort2_sub$T) ) == "TRUE") {
-    ref_sub<- as.character(lstx[1])
+  if (lstx[1] %in% long_sort2_sub$T) {
+    ref_sub <- as.character(lstx[1])
   } else {
     ref_sub <- as.character(long_sort2_sub$T[1])
   }
