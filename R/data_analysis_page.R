@@ -180,8 +180,8 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, m
       outcome_measure = outcome_measure,
       exclusions = exclusions,
       bugsnetdt = bugsnetdt,
-      freq_sub = freq_sub,
-      freq_all = freq_all
+      freq_all = freq_all,
+      freq_sub = freq_sub
     )
 
 

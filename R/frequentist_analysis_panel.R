@@ -100,13 +100,13 @@ frequentist_analysis_panel_ui <- function(id) {
 #' Module server for the frequentist analysis panel.
 #' 
 #' @param id ID of the module
-#' @param metaoutcome Reactive containing meta analysis outcome: "continuous" or "binary"
+#' @param metaoutcome Reactive containing meta analysis outcome: "Continuous" or "Binary"
 #' @param outcome_measure Reactive containing meta analysis outcome measure: "MD", "SMD", "OR, "RR", or "RD"
 #' @param model_effects Reactive containing model effects: either "random" or "fixed"
 #' @param exclusions Reactive containing names of studies excluded from the sensitivity analysis
 #' @param rank_option Reactive containing ranking option: "good" or "bad" depending on whether small values are desirable or not
-#' @param freq_all Reactive containing frequentist meta-analysis for the sensitivity analysis
-#' @param freq_sub Reactive containing frequentist meta-analysis
+#' @param freq_all Reactive containing frequentist meta-analysis
+#' @param freq_sub Reactive containing frequentist meta-analysis for the sensitivity analysis
 #' @param bugsnetdt Reactive containing bugsnet meta-analysis
 #' @param reference_alter Reactive containing the name of the reference treatment for the sensitivity
 #'  analysis accounting for if the chosen reference treatment has been excluded
