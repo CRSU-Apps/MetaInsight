@@ -155,16 +155,16 @@ FindExpectedReferenceTreatment <- function(treatments) {
 #' @param data Data frame in which to search for treatment names
 #' @param treatent_ids Data frame containing treatment names (Label) and IDs (Number)
 #' @return Data frame where the treatments are given as IDs, not names
-ReplaceTreatmentIds <- function(data, treatent_ids) {
+ReplaceTreatmentIds <- function(data, treatment_ids) {
   if (FindDataShape(data) == "long") {
     # Long format
-    data$T <- treatent_ids$Number[match(data$T, treatent_ids$Label)]
+    data$T <- treatment_ids$Number[match(data$T, treatment_ids$Label)]
   } else {
     # Wide format
     index <- 1
     col <- paste0('T.', index)
     while (col %in% colnames(data)) {
-      data[[col]] <- treatent_ids$Number[match(data[[col]], treatent_ids$Label)]
+      data[[col]] <- treatment_ids$Number[match(data[[col]], treatment_ids$Label)]
       index <- index + 1
       col <- paste0('T.', index)
     }

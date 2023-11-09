@@ -103,7 +103,7 @@ CreateGemtcModel <- function(data, model_type, outcome, regressor_type, ref_choi
 #' @param ref_choice The choice of reference treatment as selected by user
 #' @return An object of class mtc.result which can be used for further output functions such as summary() or plots
 RunCovariateModel <- function(data, treatment_ids, outcome_type, outcome, covariate, cov_friendly, model_type, regressor_type, ref_choice) {
-  prepped_data <- PrepDataGemtc(data, outcome_type, covariate, cov_friendly)
+  prepped_data <- PrepDataGemtc(data, treatment_ids, outcome_type, covariate, cov_friendly)
   gemtc_model <- CreateGemtcModel(prepped_data, model_type, outcome, regressor_type, ref_choice)
   model_output <- gemtc::mtc.run(gemtc_model)
   
