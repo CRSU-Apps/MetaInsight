@@ -601,6 +601,57 @@ test_that("WrangleUploadData() wrangles binary wide data to be usable in the res
   }
 })
 
+test_that("CleanTreatmentIds() does not change compliant treatment names", {
+  treatment_ids <- data.frame(
+    Number = 1:5,
+    Label = c("Flour", "Egg", "Sugar", "Butter", "Cinnamon"),
+    RawLabel = c("Flour", "Egg", "Sugar", "Butter", "Cinnamon")
+  )
+  expect_equal(!!CleanTreatmentIds(treatment_ids ), !!treatment_ids)
+})
+
+test_that("CleanTreatmentIds() replaces spaces in treatment names", {
+  treatment_ids <- data.frame(
+    Number = 1:5,
+    Label = c("100g Flour", "1 Egg", "50g Sugar", "75g Butter", "2g Cinnamon")
+  )
+  
+  expected_treatment_ids <- data.frame(
+    Number = 1:5,
+    Label = c("100g_Flour", "1_Egg", "50g_Sugar", "75g_Butter", "2g_Cinnamon"),
+    RawLabel = c("100g Flour", "1 Egg", "50g Sugar", "75g Butter", "2g Cinnamon")
+  )
+  expect_equal(!!CleanTreatmentIds(treatment_ids ), !!expected_treatment_ids)
+})
+
+test_that("CleanTreatmentIds() replaces special characters in treatment names", {
+  treatment_ids <- data.frame(
+    Number = 1:5,
+    Label = c("2*4=8", "lunch@8o'clock", "#R4Life", "I<3Shiny", ">o<")
+  )
+  
+  expected_treatment_ids <- data.frame(
+    Number = 1:5,
+    Label = c("2_4_8", "lunch_8o_clock", "_R4Life", "I_3Shiny", "_o_"),
+    RawLabel = c("2*4=8", "lunch@8o'clock", "#R4Life", "I<3Shiny", ">o<")
+  )
+  expect_equal(!!CleanTreatmentIds(treatment_ids ), !!expected_treatment_ids)
+})
+
+test_that("CleanTreatmentIds() replaces multiple sequential special characters in treatment names with single underscore", {
+  treatment_ids <- data.frame(
+    Number = 1:5,
+    Label = c("2 * 4 = 8", "^(*(oo)*)^ <- It's a pig", "you stupid *%£$@#!", "var <- value", ":,-)")
+  )
+  
+  expected_treatment_ids <- data.frame(
+    Number = 1:5,
+    Label = c("2_4_8", "_oo_It_s_a_pig", "you_stupid_", "var_value", "_"),
+    RawLabel = c("2 * 4 = 8", "^(*(oo)*)^ <- It's a pig", "you stupid *%£$@#!", "var <- value", ":,-)")
+  )
+  expect_equal(!!CleanTreatmentIds(treatment_ids ), !!expected_treatment_ids)
+})
+
 test_that("FindCovariateNames() finds covariate columns for long data", {
   data <- CleanData(read.csv("Cont_long.csv"))
   
