@@ -10,7 +10,6 @@
 shinyServer(function(input, output, session) {
   
   ### GDPR
-      ))
   
   google_analytics_header_server(id = "analytics")
 
