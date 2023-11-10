@@ -64,6 +64,32 @@ WideToLong <- function(wide_data, outcome_type) {
   return(as.data.frame(long_data))
 }
 
+#' Convert long format to wide format (including covariate columns)
+#' 
+#' @param long_data Data frame of long format
+#' @param outcome_type Indicator whether outcome is binary or continuous
+#' @return Data frame in wide format
+LongToWide <- function(long_data, outcome_type) {
+  # Specify columns that contain wide data
+  if (outcome_type == "Continuous") {
+    change_cols <- long_data %>%
+      dplyr::select(c("T", "N", "Mean", "SD"))
+  } else {
+    change_cols <- long_data %>%
+      dplyr::select(c("T", "R", "N"))
+  }
+  # Add arms
+  long_data <- long_data %>% dplyr::group_by(Study) %>% dplyr::mutate(arm = dplyr::row_number())
+  # Transform to long
+  wide_data <- long_data %>%
+    tidyr::pivot_wider(id_cols = c("Study", FindCovariateNames(long_data)),
+                       names_from = c("arm"),
+                       values_from = names(change_cols),
+                       names_sep = "."
+    )
+  return(as.data.frame(wide_data))
+}
+
 #' Create a copy of a data from which does not contain any covariate columns.
 #' 
 #' @param data Data from which to remove covariate columns

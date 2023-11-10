@@ -940,3 +940,43 @@ test_that("WideToLong() correctly converts continuous wide data with continuous 
   
   expect_equal(long_data, expected_data)
 })
+
+test_that("LongToWide() correctly converts binary wide data with binary covariates", {
+  long_data <- read.csv("Binary_long_binary_cov.csv")
+  wide_data <- LongToWide(long_data, "Binary") %>% 
+    dplyr::relocate(sort(names(.)))
+  expected_data <- read.csv("Binary_wide_binary_cov.csv") %>% 
+    dplyr::relocate(sort(names(.)))
+  
+  expect_equal(wide_data, expected_data)
+})
+
+test_that("LongToWide() correctly converts binary wide data with continuous covariates", {
+  long_data <- read.csv("Binary_long_continuous_cov.csv")
+  wide_data <- LongToWide(long_data, "Binary") %>% 
+    dplyr::relocate(sort(names(.)))
+  expected_data <- read.csv("Binary_wide_continuous_cov.csv") %>% 
+    dplyr::relocate(sort(names(.)))
+  
+  expect_equal(wide_data, expected_data)
+})
+
+test_that("LongToWide() correctly converts continuous wide data with binary covariates", {
+  long_data <- read.csv("Cont_long_binary_cov.csv")
+  wide_data <- LongToWide(long_data, "Continuous") %>% 
+    dplyr::relocate(sort(names(.)))
+  expected_data <- read.csv("Cont_wide_binary_cov.csv") %>% 
+    dplyr::relocate(sort(names(.)))
+  
+  expect_equal(wide_data, expected_data)
+})
+
+test_that("LongToWide() correctly converts continuous wide data with continuous covariates", {
+  long_data <- read.csv("Cont_long_continuous_cov.csv")
+  wide_data <- LongToWide(long_data, "Continuous") %>% 
+    dplyr::relocate(sort(names(.)))
+  expected_data <- read.csv("Cont_wide_continuous_cov.csv") %>% 
+    dplyr::relocate(sort(names(.)))
+  
+  expect_equal(wide_data, expected_data)
+})
