@@ -39,18 +39,6 @@ CleanData <- function(data) {
   return(dplyr::mutate(data, across(where(is.character), stringr::str_squish)))
 }
 
-#' Find which shape the data takes: either wide or long.
-#' 
-#' @param data Data for which to check shape
-#' @return Either "wide" or "long"
-FindDataShape <- function(data) {
-  if ('T' %in% colnames(data)) {
-    return("long")
-  } else {
-    return("wide")
-  }
-}
-
 #' Convert wide format to long format (including covariate columns)
 #' 
 #' @param wide_data Data frame of wide format
@@ -89,6 +77,18 @@ RemoveCovariates <- function(data) {
   
   covariate_column_indices <- match(covariate_column_names, names(data))
   return(data[, -covariate_column_indices])
+}
+
+#' Find which shape the data takes: either wide or long.
+#' 
+#' @param data Data for which to check shape
+#' @return Either "wide" or "long"
+FindDataShape <- function(data) {
+  if ('T' %in% colnames(data)) {
+    return("long")
+  } else {
+    return("wide")
+  }
 }
 
 #' Find all of the treatment names in the data, both for long and wide formats.
