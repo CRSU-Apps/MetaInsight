@@ -109,6 +109,59 @@ WideToLong <- function(wide_data, outcome_type) {
   return(as.data.frame(long_data))
 }
 
+#' Convert long format to wide format (including covariate columns)
+#' 
+#' @param long_data Data frame of long format
+#' @param outcome_type Indicator whether outcome is binary or continuous
+#' @return Data frame in wide format
+LongToWide <- function(long_data, outcome_type) {
+  # Specify columns that contain wide data
+  if (outcome_type == "Continuous") {
+    change_cols <- long_data %>%
+      dplyr::select(c("T", "N", "Mean", "SD"))
+  } else {
+    change_cols <- long_data %>%
+      dplyr::select(c("T", "R", "N"))
+  }
+  # Add arms
+  long_data <- long_data %>% dplyr::group_by(Study) %>% dplyr::mutate(arm = dplyr::row_number())
+  # Transform to long
+  wide_data <- long_data %>%
+    tidyr::pivot_wider(id_cols = c("Study", FindCovariateNames(long_data)),
+                       names_from = c("arm"),
+                       values_from = names(change_cols),
+                       names_sep = "."
+    )
+  return(as.data.frame(wide_data))
+}
+
+#' Create a copy of a data from which does not contain any covariate columns.
+#' 
+#' @param data Data from which to remove covariate columns
+#' @return Data without covariate columns
+RemoveCovariates <- function(data) {
+  covariate_column_names <- FindCovariateNames(data)
+  
+  if (length(covariate_column_names) == 0) {
+    return(data)
+  }
+  
+  covariate_column_indices <- match(covariate_column_names, names(data))
+  return(data[, -covariate_column_indices])
+}
+
+#' Find which shape the data takes: either wide or long.
+#' 
+#' @param data Data for which to check shape
+#' @return Either "wide" or "long"
+FindDataShape <- function(data) {
+  if ('T' %in% colnames(data)) {
+    return("long")
+  } else {
+    return("wide")
+  }
+}
+
 #' Find all of the treatment names in the data, both for long and wide formats.
 #' 
 #' @param data Data frame in which to search for treatment names
