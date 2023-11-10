@@ -76,6 +76,21 @@ WideToLong <- function(wide_data, outcome_type) {
   return(as.data.frame(long_data))
 }
 
+#' Create a copy of a data from which does not contain any covariate columns.
+#' 
+#' @param data Data from which to remove covariate columns
+#' @return Data without covariate columns
+RemoveCovariates <- function(data) {
+  covariate_column_names <- FindCovariateNames(data)
+  
+  if (length(covariate_column_names) == 0) {
+    return(data)
+  }
+  
+  covariate_column_indices <- match(covariate_column_names, names(data))
+  return(data[, -covariate_column_indices])
+}
+
 #' Find all of the treatment names in the data, both for long and wide formats.
 #' 
 #' @param data Data frame in which to search for treatment names
