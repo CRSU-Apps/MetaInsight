@@ -40,13 +40,9 @@ data_analysis_page_ui <- function(id) {
           HTML("
             .tabbable > .nav > li > a                  {background-color: white;  color:#2196c4}
             .tabbable > .nav > li > a[data-value='1. Data summary'] {background-color: #2196c4;  color:white; font-size: 18px}
-            .tabbable > .nav > li > a[data-value='1a. Study Results'] {background-color: white;}
-            .tabbable > .nav > li > a[data-value='1b. Network Plot'] {background-color: white;}
             .tabbable > .nav > li > a[data-value='2. Frequentist network meta-analysis'] {background-color: #2196c4;   color:white; font-size: 18px}
-            .tabbable > .nav > li > a[data-value='2a. Forest Plot'] {background-color: white}
-            .tabbable > .nav > li > a[data-value='2b. Comparison of all treatment pairs'] {background-color: white;}
-            .tabbable > .nav > li > a[data-value='2c. Inconsistency'] {background-color: white;}
             .tabbable > .nav > li > a[data-value='3. Bayesian network meta-analysis'] {background-color: #2196c4;   color:white; font-size: 18px}
+            .tabbable > .nav > li > a[data-value='4. Meta-regression'] {background-color: #2196c4;   color:white; font-size: 18px}
             .tabbable > .nav > li[class=active]    > a {font-weight:900;font-style: italic;text-decoration: underline }
             "
           )
@@ -63,6 +59,10 @@ data_analysis_page_ui <- function(id) {
           tabPanel(
             title = "3. Bayesian network meta-analysis",
             bayesian_analysis_panel_ui(id = ns("bayesian_analysis"))
+          ),
+          tabPanel(
+            title = "4. Meta-regression",
+            meta_regression_tab_ui(id = ns("meta_regression"))
           )
         )
       )
@@ -82,6 +82,7 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, m
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
     
+    non_covariate_data <- reactive({ RemoveCovariates(data()) })
     
     OpenDataTable <- function() {
       updateCollapse(session, "collapse", open = "Data table (Click to open / hide this panel)")
@@ -109,22 +110,22 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, m
 
     # Make frequentist function (in fn_analysis.R) reactive - NVB
     freq_all <- reactive({
-      return(frequentist(data(), metaoutcome(), treatment_df(), outcome_measure(), model_effects()))
+      return(frequentist(non_covariate_data(), metaoutcome(), treatment_df(), outcome_measure(), model_effects()))
     })
 
     # Make frequentist function (in fn_analysis.R) reactive with excluded studies - NVB
     freq_sub <- reactive({
-      return(frequentist(data(), metaoutcome(), treatment_df(), outcome_measure(), model_effects(), exclusions()))
+      return(frequentist(non_covariate_data(), metaoutcome(), treatment_df(), outcome_measure(), model_effects(), exclusions()))
     })
 
     # Make bugsnetdata function (in fn_analysis.R) reactive - NVB
     bugsnetdt <- reactive({
-      return(bugsnetdata(data(), metaoutcome(), treatment_df()))
+      return(bugsnetdata(non_covariate_data(), metaoutcome(), treatment_df()))
     })
 
     # Make ref_alter function (in fn_analysis.R) reactive - NVB
     reference_alter <- reactive({
-      return(ref_alter(data(), metaoutcome(), exclusions(), treatment_df()))
+      return(ref_alter(non_covariate_data(), metaoutcome(), exclusions(), treatment_df()))
     })
 
     ### Confirmation for continuous / binary data
@@ -223,6 +224,15 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, m
       freq_sub = freq_sub,
       bugsnetdt = bugsnetdt,
       reference_alter = reference_alter
+    )
+    
+    ############################
+    #### 4. Meta-regression ####
+    ############################
+    meta_regression_tab_server(
+      id = "meta_regression",
+      all_data = data,
+      outcome_measure = outcome_measure
     )
   })
 }
