@@ -141,7 +141,7 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, m
     
     filtertable <- function() {
       label <- treatment_df()
-      dt <- data()
+      dt <- non_covariate_data()
       ntx <- nrow(label)
       dt$T <- factor(dt$T,
                      levels = c(1:ntx),

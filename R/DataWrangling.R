@@ -32,56 +32,11 @@
 
 
 #' Remove leading and trailing whitespace and collapse multiple whitespace characters between words.
-# Treatments are in priority order, such that for any study with multiple matching treatments,
-# the first in this vector will be used as the reference, until the user selects another.
-.potential_reference_treatments = c(
-  'control',
-  'usual_care',
-  'standard_care',
-  'placebo',
-  'no_contact'
-)
-
-# Column ordering
-.common_order = c("StudyID", "Study")
-.continuous_specific_order = unlist(
-  lapply(
-    c("", paste0(".", 1:6)),
-    function(x) paste0(c("T", "N", "Mean", "SD"), x)
-  )
-)
-.binary_specific_order = unlist(
-  lapply(
-    c("", paste0(".", 1:6)),
-    function(x) paste0(c("T", "R", "N"), x)
-  )
-)
-
-.continuous_order <- c(.common_order, .continuous_specific_order)
-.binary_order <- c(.common_order, .binary_specific_order)
-
-.covariate_prefix <- "covar."
-.covariate_prefix_regex <- "^covar\\."
-
-
-#' Remove leading and trailing whitespace and collapse multiple whitespace characters between words.
 #' 
 #' @param data Data frame to clean
 #' @return Cleaned data frame
 CleanData <- function(data) {
   return(dplyr::mutate(data, across(where(is.character), stringr::str_squish)))
-}
-
-#' Find which shape the data takes: either wide or long.
-#' 
-#' @param data Data for which to check shape
-#' @return Either "wide" or "long"
-FindDataShape <- function(data) {
-  if ('T' %in% colnames(data)) {
-    return("long")
-  } else {
-    return("wide")
-  }
 }
 
 #' Convert wide format to long format (including covariate columns)

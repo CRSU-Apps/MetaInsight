@@ -9,62 +9,6 @@
 
 shinyServer(function(input, output, session) {
   
-  #####
-  # Reactive functions used in various places
-  #####
-  
-  # Define outcome measure (continuous or binary) - NVB
-  outcome_measure <- reactive({
-    if (input$metaoutcome == "Continuous") {
-      return(input$outcomeCont)
-    } else {
-      return(input$outcomebina)
-    }
-  })
-  
-  
-  ############################################
-  ############# Load data page ###############
-  ############################################
-  
-  data_reactives <- load_data_page_server(id = 'load_data_page',
-                                          metaoutcome = reactive({ input$metaoutcome })
-                                          )
-  data <- data_reactives$data
-  treatment_df <- data_reactives$treatment_df
-  
-  non_covariate_data <- reactive({ RemoveCovariates(data()) })
-  
-  #####
-  # Reactive functions used in various places, based on the data
-  #####
-  
-  # Make frequentist function (in fn_analysis.R) reactive - NVB
-  freq_all <- reactive({
-    return(frequentist(non_covariate_data(), input$metaoutcome, treatment_df(), outcome_measure(), input$modelranfix))
-  })
-  
-  exclusions <- debounce(reactive({input$exclusionbox}), 1500)
-  
-  # Make frequentist function (in fn_analysis.R) reactive with excluded studies - NVB
-  freq_sub <- reactive({
-    return(frequentist(non_covariate_data(), input$metaoutcome, treatment_df(), outcome_measure(), input$modelranfix, exclusions()))
-  })
-  
-  # Make bugsnetdata function (in fn_analysis.R) reactive - NVB
-  bugsnetdt <- reactive({
-    return(bugsnetdata(non_covariate_data(), input$metaoutcome, treatment_df()))
-  })
-   
-  # Make ref_alter function (in fn_analysis.R) reactive - NVB
-  reference_alter <- reactive({
-    return(ref_alter(non_covariate_data(), input$metaoutcome, exclusions(), treatment_df()))
-  })
-
-  ############################################
-  ######### Home page - linking pages ########
-  ############################################
-  
   ### GDPR
   
     observeEvent(input$history_click, {
@@ -442,7 +386,6 @@ shinyServer(function(input, output, session) {
   )
   
   user_guide_page_server(id = "user_guide")
-  
   meta_regression_tab_server(
     id = "meta_regression",
     all_data = data
