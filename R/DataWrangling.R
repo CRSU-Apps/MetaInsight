@@ -87,16 +87,18 @@ FindDataShape <- function(data) {
 #' Convert wide format to long format (including covariate columns)
 #' 
 #' @param wide_data Data frame of wide format
-#' @param outcome_type Indicator whether outcome is binary or continuous
+#' @param outcome_type Indicator whether outcome is 'Binary' or 'Continuous'
 #' @return Data frame in long format
 WideToLong <- function(wide_data, outcome_type) {
   # Specify columns that contain wide data
   if (outcome_type == "Continuous") {
     change_cols <- wide_data %>%
       dplyr::select(tidyselect::starts_with(c("T", "N", "Mean", "SD")))
-  } else {
+  } else if (outcome_type == "Binary") {
     change_cols <- wide_data %>%
       dplyr::select(tidyselect::starts_with(c("T", "R", "N")))
+  } else {
+    paste0("outcome_type needs to be 'Binary' or 'Continuous'")
   }
   # Transform to long
   long_data <- wide_data %>%
@@ -112,16 +114,18 @@ WideToLong <- function(wide_data, outcome_type) {
 #' Convert long format to wide format (including covariate columns)
 #' 
 #' @param long_data Data frame of long format
-#' @param outcome_type Indicator whether outcome is binary or continuous
+#' @param outcome_type Indicator whether outcome is 'Binary' or 'Continuous'
 #' @return Data frame in wide format
 LongToWide <- function(long_data, outcome_type) {
   # Specify columns that contain wide data
   if (outcome_type == "Continuous") {
     change_cols <- long_data %>%
       dplyr::select(c("T", "N", "Mean", "SD"))
-  } else {
+  } else if (outcome_type == "Binary") {
     change_cols <- long_data %>%
       dplyr::select(c("T", "R", "N"))
+  } else {
+    paste0("outcome_type needs to be 'Binary' or 'Continuous")
   }
   # Add arms
   long_data <- long_data %>% dplyr::group_by(Study) %>% dplyr::mutate(arm = dplyr::row_number())

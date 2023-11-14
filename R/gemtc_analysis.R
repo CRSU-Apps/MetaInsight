@@ -5,7 +5,7 @@
 #' 
 #' @param data Uploaded data post-processing
 #' @param treatment_ids Data frame containing treatment IDs and names in columns named 'Number' and 'Label' respectively
-#' @param outcome_type Indicator of whether data is binary or continuous
+#' @param outcome_type Indicator of whether data is 'Binary' or 'Continuous'
 #' @param covariate Chosen covariate name as per uploaded data
 #' @param cov_friendly Friendly name of chosen covariate
 #' @return list containing two dataframes: armData containing the core data; studyData containing covariate data
@@ -94,7 +94,7 @@ CreateGemtcModel <- function(data, model_type, outcome, regressor_type, ref_choi
 #' 
 #' @param data Uploaded data post-processing
 #' @param treatment_ids Data frame containing treatment IDs and names in columns named 'Number' and 'Label' respectively
-#' @param outcome_type Indicator of whether data is binary or continuous
+#' @param outcome_type Indicator of whether data is 'Binary' or 'Continuous'
 #' @param outcome Type of outcome measure ('OR', 'RR', or 'MD')
 #' @param covariate Chosen covariate name as per uploaded data
 #' @param cov_friendly Friendly name of chosen covariate
