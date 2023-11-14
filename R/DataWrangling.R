@@ -125,7 +125,7 @@ LongToWide <- function(long_data, outcome_type) {
     change_cols <- long_data %>%
       dplyr::select(c("T", "R", "N"))
   } else {
-    paste0("outcome_type needs to be 'Binary' or 'Continuous")
+    paste0("outcome_type needs to be 'Binary' or 'Continuous'")
   }
   # Add arms
   long_data <- long_data %>% dplyr::group_by(Study) %>% dplyr::mutate(arm = dplyr::row_number())
