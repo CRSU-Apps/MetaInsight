@@ -13,24 +13,7 @@ bayesian_analysis_panel_ui <- function(id) {
       ),
       tabPanel(
         title = "3b. Comparison of all treatment pairs",
-        helpText("Please note: if you change the selections on the sidebar, you will need to re-run the primary and/or sensitivity analysis from the 'Forest Plot' page."),
-        p(
-          tags$strong(
-            "In contrast to the 'comparison of all treatment pairs' tab in the frequentist NMA results,
-            this table only contains the estimates from the network meta analysis,
-            i.e. does not contain estimates from pairwise meta-analysis which only contains direct evidence.
-            If you would like to obtain the pairwise meta-analysis results, please run 3d. Nodesplit model"
-          )
-        ),
-        br(),
-        p(tags$strong("Treatment effects for all studies: comparison of all treatment pairs.")),
-        tableOutput(outputId = ns("baye_comparison")),
-        downloadButton(outputId = ns('downloadbaye_comparison')),
-        br(),
-        br(),
-        p(tags$strong("Treatment effects with studies excluded: comparison of all treatment pairs.")),
-        tableOutput(outputId = ns("baye_comparison_sub")),
-        downloadButton(outputId = ns('downloadbaye_comparison_sub'))
+        bayesian_treatment_comparisons_page_ui(id = ns("treatment_comparisons"))
       ),
       tabPanel(
         title = "3c. Ranking Panel",
@@ -602,6 +585,7 @@ bayesian_analysis_panel_server <- function(
       }
     })
     
+    # 3a. Forest plots
     forest_plots_reactives <- bayesian_forest_plots_page_server(
       id = "forest_plots",
       data = data,
@@ -621,31 +605,12 @@ bayesian_analysis_panel_server <- function(
 
 
     # 3b. Comparison of all treatment pairs
-
-    # Treatment effects for all studies
-    output$baye_comparison <- renderTable ({
-      baye_comp(model(), metaoutcome(), outcome_measure())
-    }, rownames=TRUE, colnames = TRUE
-    )
-
-    # Treatment effects with studies excluded
-    output$baye_comparison_sub <- renderTable ({
-      baye_comp(model_sub(), metaoutcome(), outcome_measure())
-    }, rownames=TRUE, colnames = TRUE
-    )
-
-    output$downloadbaye_comparison <- downloadHandler(
-      filename = 'baye_comparison.csv',
-      content = function(file) {
-        write.csv(baye_comp(model(), metaoutcome(), outcome_measure()), file)
-      }
-    )
-
-    output$downloadbaye_comparison_sub <- downloadHandler(
-      filename = 'baye_comparison_sub.csv',
-      content = function(file) {
-        write.csv(baye_comp(model_sub(), metaoutcome(), outcome_measure()), file)
-      }
+    bayesian_treatment_comparisons_page_server(
+      id = "treatment_comparisons",
+      model = model,
+      model_sub = model_sub,
+      metaoutcome = metaoutcome,
+      outcome_measure = outcome_measure
     )
 
     # 3c. Ranking Panel

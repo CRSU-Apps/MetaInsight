@@ -129,6 +129,8 @@ bayesian_forest_plots_page_ui <- function(id) {
 #' @param bugsnetdt Reactive containing bugsnet meta-analysis
 #' @param reference_alter Reactive containing the name of the reference treatment for the sensitivity
 #'  analysis accounting for if the chosen reference treatment has been excluded
+#'
+#' @return List of reactives: "model" contains the full bayesian meta-analysis, "model_sub" contains the bayesian meta-analysis with studies excluded
 bayesian_forest_plots_page_server <- function(
     id,
     data,
@@ -184,7 +186,7 @@ bayesian_forest_plots_page_server <- function(
       }
     })
 
-    # 3a. Forest plot
+    # Forest plot
 
     # Forest plot for all studies
     output$gemtc <- renderPlot({
