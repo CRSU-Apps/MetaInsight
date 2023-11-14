@@ -42,16 +42,18 @@ CleanData <- function(data) {
 #' Convert wide format to long format (including covariate columns)
 #' 
 #' @param wide_data Data frame of wide format
-#' @param outcome_type Indicator whether outcome is binary or continuous
+#' @param outcome_type Indicator whether outcome is 'Binary' or 'Continuous'
 #' @return Data frame in long format
 WideToLong <- function(wide_data, outcome_type) {
   # Specify columns that contain wide data
   if (outcome_type == "Continuous") {
     change_cols <- wide_data %>%
       dplyr::select(tidyselect::starts_with(c("T", "N", "Mean", "SD")))
-  } else {
+  } else if (outcome_type == "Binary") {
     change_cols <- wide_data %>%
       dplyr::select(tidyselect::starts_with(c("T", "R", "N")))
+  } else {
+    paste0("outcome_type needs to be 'Binary' or 'Continuous'")
   }
   # Transform to long
   long_data <- wide_data %>%
@@ -62,6 +64,34 @@ WideToLong <- function(wide_data, outcome_type) {
   )
   long_data <- long_data %>% dplyr::relocate(FindCovariateNames(long_data), .after = last_col())
   return(as.data.frame(long_data))
+}
+
+#' Convert long format to wide format (including covariate columns)
+#' 
+#' @param long_data Data frame of long format
+#' @param outcome_type Indicator whether outcome is 'Binary' or 'Continuous'
+#' @return Data frame in wide format
+LongToWide <- function(long_data, outcome_type) {
+  # Specify columns that contain wide data
+  if (outcome_type == "Continuous") {
+    change_cols <- long_data %>%
+      dplyr::select(c("T", "N", "Mean", "SD"))
+  } else if (outcome_type == "Binary") {
+    change_cols <- long_data %>%
+      dplyr::select(c("T", "R", "N"))
+  } else {
+    paste0("outcome_type needs to be 'Binary' or 'Continuous'")
+  }
+  # Add arms
+  long_data <- long_data %>% dplyr::group_by(Study) %>% dplyr::mutate(arm = dplyr::row_number())
+  # Transform to long
+  wide_data <- long_data %>%
+    tidyr::pivot_wider(id_cols = c("Study", FindCovariateNames(long_data)),
+                       names_from = c("arm"),
+                       values_from = names(change_cols),
+                       names_sep = "."
+    )
+  return(as.data.frame(wide_data))
 }
 
 #' Create a copy of a data from which does not contain any covariate columns.
@@ -155,16 +185,16 @@ FindExpectedReferenceTreatment <- function(treatments) {
 #' @param data Data frame in which to search for treatment names
 #' @param treatent_ids Data frame containing treatment names (Label) and IDs (Number)
 #' @return Data frame where the treatments are given as IDs, not names
-ReplaceTreatmentIds <- function(data, treatent_ids) {
+ReplaceTreatmentIds <- function(data, treatment_ids) {
   if (FindDataShape(data) == "long") {
     # Long format
-    data$T <- treatent_ids$Number[match(data$T, treatent_ids$Label)]
+    data$T <- treatment_ids$Number[match(data$T, treatment_ids$Label)]
   } else {
     # Wide format
     index <- 1
     col <- paste0('T.', index)
     while (col %in% colnames(data)) {
-      data[[col]] <- treatent_ids$Number[match(data[[col]], treatent_ids$Label)]
+      data[[col]] <- treatment_ids$Number[match(data[[col]], treatment_ids$Label)]
       index <- index + 1
       col <- paste0('T.', index)
     }

@@ -3,12 +3,13 @@
 
 #' Function for formatting standard app user data ready for start of {gemtc} chain of commands
 #' 
-#' @param data Uploaded data from the user (or in-built datasets)
-#' @param outcome_type Indicator of whether data is binary or continuous
+#' @param data Uploaded data post-processing
+#' @param treatment_ids Data frame containing treatment IDs and names in columns named 'Number' and 'Label' respectively
+#' @param outcome_type Indicator of whether data is 'Binary' or 'Continuous'
 #' @param covariate Chosen covariate name as per uploaded data
 #' @param cov_friendly Friendly name of chosen covariate
 #' @return list containing two dataframes: armData containing the core data; studyData containing covariate data
-PrepDataGemtc <- function(data, outcome_type, covariate, cov_friendly){
+PrepDataGemtc <- function(data, treatment_ids, outcome_type, covariate, cov_friendly){
   # ensure data is in long format
   if (FindDataShape(data) == "wide") {
     long_data <- WideToLong(data, outcome_type)
@@ -18,15 +19,17 @@ PrepDataGemtc <- function(data, outcome_type, covariate, cov_friendly){
   # specify arm level data
   if (outcome_type == "Continuous") {
     armData <- data.frame(study = long_data$Study,
-                          treatment = long_data$T,
+                          treatment = treatment_ids$Label[match(long_data$T, treatment_ids$Number)],
                           mean = long_data$Mean,
                           std.dev = long_data$SD,
                           sampleSize = long_data$N)
-  } else {
+  } else if (outcome_type == "Binary") {
     armData <- data.frame(study = long_data$Study,
-                          treatment = long_data$T,
+                          treatment = treatment_ids$Label[match(long_data$T, treatment_ids$Number)],
                           responders = long_data$R,
                           sampleSize = long_data$N)
+  } else {
+    paste0("Outcome_type has to be 'Continuous' or 'Binary'")
   }
   # specify study level data
   studyData <- unique(data.frame(study = long_data$Study,
@@ -37,14 +40,15 @@ PrepDataGemtc <- function(data, outcome_type, covariate, cov_friendly){
   return(list(armData = armData, studyData = studyData))
 }
 
-#' Function to wrap up {gemtc} commands for running a covariate model
+#' Function for setting up covariate {gemtc} model object
 #' 
 #' @param data list containing armData and studyData (as created by PrepDataGemtc)
 #' @param model_type Whether the model is 'fixed' or 'random'
+#' @param outcome Type of outcome measure ('OR', 'RR', or 'MD')
 #' @param regressor_type Type of regression coefficient, either "shared", "unrelated", or "exchangeable"
 #' @param ref_choice The choice of reference treatment as selected by user
-#' @return An object of class mtc.result which can be used for further output functions such as summary() or plots
-RunCovariateRegression <- function(data, model_type, regressor_type, ref_choice) {
+#' @return An object of class mtc.model 
+CreateGemtcModel <- function(data, model_type, outcome, regressor_type, ref_choice) {
   # Create 'network' object
   network_object <- gemtc::mtc.network(data.ab = data$armData,
                                        studies = data$studyData)
@@ -54,8 +58,23 @@ RunCovariateRegression <- function(data, model_type, regressor_type, ref_choice)
                     control=ref_choice)
   # Create 'model' object
   set.seed(145) # needs to be set before mtc.model
+  if (outcome == "MD") {
+    like <- "normal"
+    link <- "identity"
+  } else if (outcome %in% c('OR', 'RR')) {
+    like <- "binom"
+    if (outcome == "OR") {
+      link <- "logit"
+    } else if (outcome == "RR") {
+      link <- "log"
+    } 
+  } else {
+    paste0("Outcome can only be OR, RR, or MD")
+  }
   model_object <- gemtc::mtc.model(network_object,
                                    type = "regression",
+                                   likelihood=like,
+                                   link = link,
                                    linearModel = model_type,
                                    regressor = regressor)
   # Settings for JAGS seeds and generator types for reproducible results (code taken from mtc.model manual)
@@ -67,8 +86,26 @@ RunCovariateRegression <- function(data, model_type, regressor_type, ref_choice)
     list(.RNG.name = "base::Mersenne-Twister", .RNG.seed = seeds[4])),
     SIMPLIFY = FALSE)
   
-  # Run model
-  model_output <- gemtc::mtc.run(model_object)
+  return(model_object)
+}
+
+
+#' Function for running covariate model
+#' 
+#' @param data Uploaded data post-processing
+#' @param treatment_ids Data frame containing treatment IDs and names in columns named 'Number' and 'Label' respectively
+#' @param outcome_type Indicator of whether data is 'Binary' or 'Continuous'
+#' @param outcome Type of outcome measure ('OR', 'RR', or 'MD')
+#' @param covariate Chosen covariate name as per uploaded data
+#' @param cov_friendly Friendly name of chosen covariate
+#' @param model_type Whether the model is 'fixed' or 'random'
+#' @param regressor_type Type of regression coefficient, either "shared", "unrelated", or "exchangeable"
+#' @param ref_choice The choice of reference treatment as selected by user
+#' @return An object of class mtc.result which can be used for further output functions such as summary() or plots
+RunCovariateModel <- function(data, treatment_ids, outcome_type, outcome, covariate, cov_friendly, model_type, regressor_type, ref_choice) {
+  prepped_data <- PrepDataGemtc(data, treatment_ids, outcome_type, covariate, cov_friendly)
+  gemtc_model <- CreateGemtcModel(prepped_data, model_type, outcome, regressor_type, ref_choice)
+  model_output <- gemtc::mtc.run(gemtc_model)
   
   return(model_output)
 }
