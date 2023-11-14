@@ -52,8 +52,9 @@ test_that("Data extracted from default continuous file", {
 
 test_that("Continuous data passed back to module parent", {
   testServer(data_input_panel_server, args = list(metaoutcome = function() { 'Continuous' }), {
-    expect_equal(length(session$returned), 2)
+    expect_equal(length(session$returned), 3)
     expect_equal(session$returned$data(), data())
+    expect_equal(session$returned$is_default_data(), is_default_data())
     expect_equal(session$returned$treatment_list(), treatment_list())
   })
 })
@@ -109,8 +110,9 @@ test_that("Data extracted from default binary file", {
 
 test_that("Binary data passed back to module parent", {
   testServer(data_input_panel_server, args = list(metaoutcome = function() { 'Binary' }), {
-    expect_equal(length(session$returned), 2)
+    expect_equal(length(session$returned), 3)
     expect_equal(session$returned$data(), data())
+    expect_equal(session$returned$is_default_data(), is_default_data())
     expect_equal(session$returned$treatment_list(), treatment_list())
   })
 })
