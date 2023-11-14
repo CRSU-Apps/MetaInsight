@@ -41,7 +41,7 @@ FindAllTreatments <- function(data, treatment_columns = NA) {
 #' 
 #' @param data Data frame in which to search for study names
 #' @param treatments Vector of matching treatments
-#' @return Vector of all matchinf study names
+#' @return Vector of all matching study names
 FindStudiesIncludingTreatments <- function(data, treatments) {
   if ("T" %in% colnames(data)) {
     # Long format

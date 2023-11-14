@@ -1,5 +1,5 @@
 
-#' Module UI for the data analysis options panel
+#' Module UI for the study exclusion panel
 #' 
 #' @param id ID of the module
 #' @return Div for the panel
@@ -16,7 +16,7 @@ study_exclusions_panel_ui <- function(id) {
 }
 
 
-#' Module server for the data analysis options panel
+#' Module server for the study exclusion panel
 #' 
 #' @param id ID of the module
 #' @param data Reactive containing data to analyse
@@ -34,14 +34,7 @@ study_exclusions_panel_server <- function(id, data, treatment_df) {
       unique(data()$Study)
     })
     
-    # Create check boxes for studies in data
-    observe({
-      priority = 2
-      shiny::updateCheckboxGroupInput(
-        inputId = "exclusionbox",
-        choices = all_studies()
-      )
-    })
+    ### Primary subnetwork
     
     initial_connected_data <- reactive({
       indices <- 1:length(data()$Study)
@@ -56,14 +49,7 @@ study_exclusions_panel_server <- function(id, data, treatment_df) {
       all_studies()[!all_studies() %in% initial_connected_data()$Study]
     })
     
-    
-    
-    
-    
-    ######
-    ### This is incorrect because once the study is identified as being disconnected by the filtering,
-    ### it is checked, then it's only noted as filtered out and no longer identified as needing to be disabled
-    #######
+    ### Filtered subnetwork
     
     filtered_data <- reactive({
       data()[!data()$Study %in% all_exclusions(), ]
@@ -72,9 +58,6 @@ study_exclusions_panel_server <- function(id, data, treatment_df) {
     filtered_studies <- reactive({
       unique(filtered_data()$Study)
     })
-    
-    
-    
     
     filtered_connected_data <- reactive({
       indices <- 1:length(filtered_data()$Study)
@@ -90,46 +73,54 @@ study_exclusions_panel_server <- function(id, data, treatment_df) {
       filtered_studies()[!filtered_studies() %in% filtered_connected_data()$Study]
     })
     
+    ### Event handlers
     
+    # Create check boxes for studies in data
+    observe({
+      priority = 1003
+      shiny::updateCheckboxGroupInput(
+        inputId = "exclusionbox",
+        choices = all_studies()
+      )
+    })
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    # Disable check boxes for disconnected studies
+    # Select check boxes for disconnected studies
     observe(
-      priority = 1,
+      priority = 1002,
       {
-        shinyjs::enable(id = "exclusionbox")
-        
-        print(initial_subnetwork_exclusions())
-        print(filtered_subnetwork_exclusions())
-        print("---")
-        
         disconnected_indices <- which(all_studies() %in% initial_subnetwork_exclusions() | all_studies() %in% filtered_subnetwork_exclusions())
         selected = unique(c(input$exclusionbox, all_studies()[disconnected_indices]))
         shiny::updateCheckboxGroupInput(inputId = "exclusionbox", selected = selected)
-        
+      }
+    )
+    
+    # Disable check boxes for disconnected studies
+    observeEvent(
+      priority = 1001,
+      eventExpr = {
+        all_exclusions()
+      },
+      handlerExpr = {
+        shinyjs::enable(id = "exclusionbox")
+
+        filtered_treatments <- FindAllTreatments(filtered_data())
+
         lapply(
-          disconnected_indices,
-          function(index) {
+          all_studies(),
+          function(study) {
+
+            study_treatments <- FindAllTreatments(data()[data()$Study == study, ])
+
+            if (any(study_treatments %in% filtered_treatments)) {
+              return()
+            }
+
+            index <- match(study, all_studies())
+
             subElement <- glue::glue("#{session$ns('exclusionbox')} .checkbox:nth-child({index}) label")
-            # This delay shouldn't be needed, but the checkboxes aren't disabled without it
-            # shinyjs::delay(
-            #   ms = 0,
-              shinyjs::disable(selector = subElement)
-            # )
+            shinyjs::disable(selector = subElement)
           }
         )
-        print("------")
       }
     )
     
