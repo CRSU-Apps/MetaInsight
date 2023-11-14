@@ -90,6 +90,7 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, m
     analysis_options_reactives <- data_analysis_options_server(
       id = "analysis_options",
       data = data,
+      treatment_df = treatment_df,
       is_default_data = is_default_data,
       metaoutcome = metaoutcome,
       OpenDataTable = OpenDataTable
@@ -134,10 +135,10 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, m
             "outcome on the 'Home' page. The analysis page for ",
             "<font color=\"#ffd966\"><b>" , metaoutcome(),"</b></font>", "outcomes are now displayed.")
     })
-    
+
     ### Get data for data table
-    
-    
+
+
     filtertable <- function() {
       label <- treatment_df()
       dt <- data()
@@ -166,10 +167,10 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, m
       position = 'top', clear = FALSE, stateSave = TRUE)
 
     ))
-    
-    
-    
-    
+
+
+
+
     #######################
     ### 1. Data Summary ###
     #######################
@@ -189,7 +190,7 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, m
     ######################
     ### 2. Frequentist ###
     ######################
-    
+
     frequentist_analysis_panel_server(
       id = "frequentist_analysis",
       metaoutcome = metaoutcome,
@@ -207,7 +208,7 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, m
     #####################
     #### 3. Bayesian ####
     #####################
-    
+
     bayesian_analysis_panel_server(
       id = "bayesian_analysis",
       data = data,

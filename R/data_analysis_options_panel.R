@@ -47,14 +47,9 @@ data_analysis_options_panel_ui <- function(id) {
         "Fixed effect (FE)" = "fixed"
       )
     ),
-    h3("Select studies to exclude:"),
+    study_exclusions_panel_ui(id = ns("exclusions")),
     p("Tips: you can use the data table to help find the study that you want to exclude."),
     actionButton(inputId = ns("datatablebutton"), label = "Open the data table"),
-    checkboxGroupInput(
-      inputId = ns("exclusionbox"),
-      label = "",
-      choices = c()
-    ),
     h5("NB: If a whole treatment is removed from the analysis the NMA will return an error message. To overcome this, please remove the treatment from the data.")
   )
 }
@@ -64,6 +59,7 @@ data_analysis_options_panel_ui <- function(id) {
 #' 
 #' @param id ID of the module
 #' @param data Reactive containing data to analyse
+#' @param treatment_df Reactive containing data frame containing treatment IDs (Number) and names (Label)
 #' @param is_default_data Reactive containing TRUE if data is an example dataset, loaded by default
 #' @param metaoutcome Reactive containing meta analysis outcome: "continuous" or "binary"
 #' @param OpenDataTable Function to open the data table
@@ -78,7 +74,7 @@ data_analysis_options_panel_ui <- function(id) {
 #'   "MD" for mean difference, or "SMD" for standardised mean difference
 #' - "binary_outcome" contains acronym of the binary outcome:
 #'   "OR" for odds ratio, "RR" for risk ratio, or "RD" for risk difference
-data_analysis_options_server <- function(id, data, is_default_data, metaoutcome, OpenDataTable) {
+data_analysis_options_server <- function(id, data, treatment_df, is_default_data, metaoutcome, OpenDataTable) {
   moduleServer(id, function(input, output, session) {
     continuous_outcome <- reactive({
       input$outcomeCont
@@ -101,8 +97,6 @@ data_analysis_options_server <- function(id, data, is_default_data, metaoutcome,
     })
     shiny::outputOptions(output, "metaoutcome", suspendWhenHidden = FALSE)
     
-    exclusions <- debounce(reactive({input$exclusionbox}), 1500)
-    
     ### Ranking defaults
     choice <- reactive({
       RankingOrder(metaoutcome(), is_default_data())
@@ -113,14 +107,11 @@ data_analysis_options_server <- function(id, data, is_default_data, metaoutcome,
       shiny::updateRadioButtons(inputId = "rankopts", selected = choice2)
     })
     
-    ### Get studies for check box input
-    
-    observe({
-      shiny::updateCheckboxGroupInput(
-        inputId = "exclusionbox",
-        choices = unique(data()$Study)
-      )
-    })
+    exclusions <- study_exclusions_panel_server(
+      id = "exclusions",
+      data = data,
+      treatment_df = treatment_df
+    )
     
     model_effects <- reactive({
       input$modelranfix

@@ -193,17 +193,17 @@ data_summary_panel_server <- function(id, metaoutcome, outcome_measure, exclusio
 
     # 1c. Network Plot
 
-    # Network plot of all studies
-    output$netGraphStatic1 <- renderPlot({
-      if (input$networkstyle=='networkp1') {
-        # Number of trials on line
-        make_netgraph(freq_all(),input$label_all)
-      } else {
-        # Number of trials by nodesize and line thickness
-        make_netplot(bugsnetdt(), input$label_all)
-      }
-      title("Network plot of all studies")
-    })
+    # # Network plot of all studies
+    # output$netGraphStatic1 <- renderPlot({
+    #   if (input$networkstyle=='networkp1') {
+    #     # Number of trials on line
+    #     make_netgraph(freq_all(),input$label_all)
+    #   } else {
+    #     # Number of trials by nodesize and line thickness
+    #     make_netplot(bugsnetdt(), input$label_all)
+    #   }
+    #   title("Network plot of all studies")
+    # })
 
     # Network connectivity all studies
     output$netconnect <- renderPrint ({
