@@ -32,4 +32,4 @@ library(stringr)
 library(rmarkdown)
 library(tidyr)
 
-R.utils::sourceDirectory(path = "R")
+R.utils::sourceDirectory(path = "R", modifiedOnly = FALSE)
