@@ -129,6 +129,28 @@ ReplaceTreatmentIds <- function(data, treatent_ids) {
   return(data)
 }
 
+#' Replace all of the treatment IDs in the data with names, both for long and wide formats.
+#' 
+#' @param data Data frame in which to search for treatment IDs.
+#' @param treatent_ids Data frame containing treatment names (Label) and IDs (Number).
+#' @return Data frame where the treatments are given as names, not IDs.
+ReinstateTreatmentIds <- function(data, treatent_ids) {
+  if ("T" %in% colnames(data)) {
+    # Long format
+    data$T <- treatent_ids$Label[match(data$T, treatent_ids$Number)]
+  } else {
+    # Wide format
+    index <- 1
+    col <- paste0("T.", index)
+    while (col %in% colnames(data)) {
+      data[[col]] <- treatent_ids$Label[match(data[[col]], treatent_ids$Number)]
+      index <- index + 1
+      col <- paste0("T.", index)
+    }
+  }
+  return(data)
+}
+
 #' Add a new column in the data for study IDs, both for long and wide formats.
 #' 
 #' @param data Data frame in which to search for treatment names

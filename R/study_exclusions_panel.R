@@ -1,8 +1,8 @@
 
-#' Module UI for the study exclusion panel
+#' Module UI for the study exclusion panel.
 #' 
-#' @param id ID of the module
-#' @return Div for the panel
+#' @param id ID of the module.
+#' @return Div for the panel.
 study_exclusions_panel_ui <- function(id) {
   ns <- NS(id)
   div(
@@ -16,13 +16,18 @@ study_exclusions_panel_ui <- function(id) {
 }
 
 
-#' Module server for the study exclusion panel
+#' Module server for the study exclusion panel.
 #' 
-#' @param id ID of the module
-#' @param data Reactive containing data to analyse
-#' @param treatment_df Reactive containing data frame containing treatment IDs (Number) and names (Label)
+#' @param id ID of the module.
+#' @param data Reactive containing data to analyse.
+#' @param treatment_df Reactive containing data frame containing treatment IDs (Number) and names (Label).
 #' 
-#' @return Vector of names of studies being excluded from the sensitivity analysis
+#' @return List of reactives:
+#' - "exclusions" is a vector of names of studies being excluded from the sensitivity analysis.
+#' - "initial_connected_data" is a data frame containing only the studies which form a connected network, containing the reference treatment.
+#' - "initial_connected_treatment_list" is a data frame containing the updated treatment IDs for the connected data.
+#' - "filtered_connected_data" is a data frame containing only the filtered studies which form a connected network, containing the reference treatment.
+#' - "filtered_connected_treatment_list" is a data frame containing the updated treatment IDs for the connected filtered data.
 study_exclusions_panel_server <- function(id, data, treatment_df) {
   moduleServer(id, function(input, output, session) {
     all_exclusions <- debounce(
@@ -124,6 +129,40 @@ study_exclusions_panel_server <- function(id, data, treatment_df) {
       }
     )
     
-    return(all_exclusions)
+    initial_connected_dewrangled_data <- reactive({
+      ReinstateTreatmentIds(initial_connected_data(), treatment_df())
+    })
+    
+    initial_connected_treatment_list <- reactive({
+      treatments <- FindAllTreatments(initial_connected_dewrangled_data())
+      return(CreateTreatmentIds(treatments))
+    })
+    
+    initial_connected_wrangled_data <- reactive({
+      ReplaceTreatmentIds(initial_connected_dewrangled_data(), initial_connected_treatment_list())
+    })
+    
+    filtered_connected_dewrangled_data <- reactive({
+      ReinstateTreatmentIds(filtered_connected_data(), treatment_df())
+    })
+    
+    filtered_connected_treatment_list <- reactive({
+      treatments <- FindAllTreatments(filtered_connected_dewrangled_data())
+      return(CreateTreatmentIds(treatments))
+    })
+    
+    filtered_connected_wrangled_data <- reactive({
+      ReplaceTreatmentIds(filtered_connected_dewrangled_data(), filtered_connected_treatment_list())
+    })
+    
+    return(
+      list(
+        exclusions = all_exclusions,
+        initial_connected_data = initial_connected_wrangled_data,
+        initial_connected_treatment_list = initial_connected_treatment_list,
+        filtered_connected_data = filtered_connected_wrangled_data,
+        filtered_connected_treatment_list = filtered_connected_treatment_list
+      )
+    )
   })
 }

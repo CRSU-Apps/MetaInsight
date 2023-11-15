@@ -2,41 +2,65 @@
 ############################################ Frequentist ############################################
 #####################################################################################################
 
-frequentist <- function(data, metaoutcome, treatment_list, outcome_measure, modelranfix, excluded=c()){
+#' Create a frequentist meta-analysis object.
+#'
+#' @param data Data frame to analyse.
+#' @param reference The ID of the reference treatment.
+#' @param metaoutcome Outcome being analysed: "Continuous" or "Binary".
+#' @param treatment_list Data frame of treatment names ("Label") to IDs ("Number").
+#' @param outcome_measure The outcome measure to be analysed. "MD" for mean difference, "SMD" for standardised mean difference,
+#' "OR" for odds ratio, "RR" for risk ratio, or "RD" for risk difference.
+#' @param modelranfix Effects of the model: "random" or "fixed".
+#'
+#' @return
+frequentist <- function(data, reference, metaoutcome, treatment_list, outcome_measure, modelranfix){
   data_wide <-  entry.df(data, metaoutcome) # Transform data to wide form
   
-  # Subset of data when studies excluded
-  if (length(excluded) > 0) {
-    data_wide <- dplyr::filter(data_wide, !Study %in% excluded)
-  }
-  
   # Use the self-defined function, freq_wrap
-  return(freq_wrap(data_wide, treatment_list, modelranfix, outcome_measure, metaoutcome, 
-                   ref_alter(data, metaoutcome, excluded, treatment_list)$ref_sub))
+  return(
+    freq_wrap(
+      data_wide,
+      treatment_list,
+      modelranfix,
+      outcome_measure,
+      metaoutcome, 
+      reference
+    )
+  )
 }
 
-# # Inputting the data in long form
-# Inputting the data in long form
+
+#' Format the data for BUGSNet.
+#'
+#' @param data Data for studies.
+#' @param metaoutcome Outcome being analysed. Eiether "Continuous" or "Binary".
+#' @param treatment_list Data frame of treatment names ("Label") and IDs ("Number") for studies.
+#'
+#' @return Formatted data.
 bugsnetdata <- function(data, metaoutcome, treatment_list){
   newData1 <- as.data.frame(data)
-  treatment_list$Label <- stringr::str_wrap(gsub("_", " ",treatment_list$Label), width=10)  # better formatting (although does assume underscores have only been added due to the treatment label entry limitations) CRN
-  longsort2 <- dataform.df(newData1,treatment_list,metaoutcome)    
+  # better formatting (although does assume underscores have only been added due to the treatment label entry limitations) CRN
+  treatment_list$Label <- stringr::str_wrap(gsub("_", " ", treatment_list$Label), width = 10)
+  longsort2 <- dataform.df(newData1, treatment_list, metaoutcome)
   return(longsort2)
 }
 
-# Reference treatment if treatment 1 is removed from the network
-ref_alter <- function(data, metaoutcome, excluded, treatment_list){
-  newData1 <- as.data.frame(data)
-  lstx <- treatment_list$Label
-  ref_all <- as.character(lstx[1])
-  longsort2 <- dataform.df(newData1, treatment_list, metaoutcome)
-  long_sort2_sub <- filter(longsort2, !Study %in% excluded)  # subgroup
-  if (lstx[1] %in% long_sort2_sub$T) {
-    ref_sub <- as.character(lstx[1])
-  } else {
-    ref_sub <- as.character(long_sort2_sub$T[1])
-  }
-  return(list(ref_all=ref_all, ref_sub=ref_sub))
+
+#' Calculate the reference treatments for the full data and the sensitivity analysis.
+#'
+#' @param treatment_list Data frame of treatment names ("Label") and IDs ("Number") for all studies.
+#' @param treatment_list_sub  Data frame of treatment names ("Label") and IDs ("Number") for all sensitivity analysis studies.
+#'
+#' @return List of
+#' - "ref_all" is the reference tretament for the whole data set.
+#' - "ref_sub" is the reference tretament for the sensitivity analysis data set.
+ref_alter <- function(treatment_list, treatment_list_sub) {
+  return(
+    list(
+      ref_all = treatment_list$Label[1],
+      ref_sub = treatment_list_sub$Label[1]
+    )
+  )
 }
 
 ####################################

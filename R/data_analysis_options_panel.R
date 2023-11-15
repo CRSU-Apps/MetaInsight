@@ -69,6 +69,10 @@ data_analysis_options_panel_ui <- function(id) {
 #'   This will be related to the outcome in "metaoutcome"
 #' - "model_effects" contains "random" or "fixed"
 #' - "exclusions" contains vector of names of studies being excluded from the sensitivity analysis
+#' - "initial_connected_data" is a data frame containing only the studies which form a connected network, containing the reference treatment.
+#' - "initial_connected_treatment_list" is a data frame containing the updated treatment IDs for the connected data.
+#' - "filtered_connected_data" is a data frame containing only the filtered studies which form a connected network, containing the reference treatment.
+#' - "filtered_connected_treatment_list" is a data frame containing the updated treatment IDs for the connected filtered data.
 #' - "rank_option" contains "good" or "bad" for whether a small value is desirable or not
 #' - "continuous_outcome" contains acronym of the continuous outcome:
 #'   "MD" for mean difference, or "SMD" for standardised mean difference
@@ -107,7 +111,7 @@ data_analysis_options_server <- function(id, data, treatment_df, is_default_data
       shiny::updateRadioButtons(inputId = "rankopts", selected = choice2)
     })
     
-    exclusions <- study_exclusions_panel_server(
+    exclusions_reactives <- study_exclusions_panel_server(
       id = "exclusions",
       data = data,
       treatment_df = treatment_df
@@ -132,7 +136,11 @@ data_analysis_options_server <- function(id, data, treatment_df, is_default_data
       list(
         outcome_measure = outcome_measure,
         model_effects = model_effects,
-        exclusions = exclusions,
+        exclusions = exclusions_reactives$exclusions,
+        initial_connected_data = exclusions_reactives$initial_connected_data,
+        initial_connected_treatment_list = exclusions_reactives$initial_connected_treatment_list,
+        filtered_connected_data = exclusions_reactives$filtered_connected_data,
+        filtered_connected_treatment_list = exclusions_reactives$filtered_connected_treatment_list,
         rank_option = rank_option,
         continuous_outcome = continuous_outcome,
         binary_outcome = binary_outcome

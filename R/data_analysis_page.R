@@ -100,6 +100,10 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, m
     outcome_measure = analysis_options_reactives$outcome_measure
     model_effects = analysis_options_reactives$model_effects
     exclusions = analysis_options_reactives$exclusions
+    initial_connected_data = analysis_options_reactives$initial_connected_data
+    initial_connected_treatment_list = analysis_options_reactives$initial_connected_treatment_list
+    filtered_connected_data = analysis_options_reactives$filtered_connected_data
+    filtered_connected_treatment_list = analysis_options_reactives$filtered_connected_treatment_list
     rank_option = analysis_options_reactives$rank_option
     continuous_outcome = analysis_options_reactives$continuous_outcome
     binary_outcome = analysis_options_reactives$binary_outcome
@@ -107,25 +111,25 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, m
     #####
     # Reactive functions used in various places, based on the data
     #####
+    
+    # Make ref_alter function (in fn_analysis.R) reactive - NVB
+    reference_alter <- reactive({
+      return(ref_alter(initial_connected_treatment_list(), filtered_connected_treatment_list()))
+    })
 
     # Make frequentist function (in fn_analysis.R) reactive - NVB
     freq_all <- reactive({
-      return(frequentist(data(), metaoutcome(), treatment_df(), outcome_measure(), model_effects()))
+      return(frequentist(initial_connected_data(), reference_alter()$ref_sub, metaoutcome(), initial_connected_treatment_list(), outcome_measure(), model_effects()))
     })
 
     # Make frequentist function (in fn_analysis.R) reactive with excluded studies - NVB
     freq_sub <- reactive({
-      return(frequentist(data(), metaoutcome(), treatment_df(), outcome_measure(), model_effects(), exclusions()))
+      return(frequentist(filtered_connected_data(), reference_alter()$ref_sub, metaoutcome(), filtered_connected_treatment_list(), outcome_measure(), model_effects()))
     })
 
     # Make bugsnetdata function (in fn_analysis.R) reactive - NVB
     bugsnetdt <- reactive({
-      return(bugsnetdata(data(), metaoutcome(), treatment_df()))
-    })
-
-    # Make ref_alter function (in fn_analysis.R) reactive - NVB
-    reference_alter <- reactive({
-      return(ref_alter(data(), metaoutcome(), exclusions(), treatment_df()))
+      return(bugsnetdata(initial_connected_data(), metaoutcome(), initial_connected_treatment_list()))
     })
 
     ### Confirmation for continuous / binary data
