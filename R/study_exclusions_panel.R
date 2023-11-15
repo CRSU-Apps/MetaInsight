@@ -21,13 +21,14 @@ study_exclusions_panel_ui <- function(id) {
 #' @param id ID of the module.
 #' @param data Reactive containing data to analyse.
 #' @param treatment_df Reactive containing data frame containing treatment IDs (Number) and names (Label).
+#' @param reference_treatment Reactive containing the ID of the selected reference treatment.
 #' 
 #' @return List of reactives:
 #' - "initial_connected_data" is a data frame containing only the studies which form a connected network, containing the reference treatment.
 #' - "initial_connected_treatment_list" is a data frame containing the updated treatment IDs for the connected data.
 #' - "filtered_connected_data" is a data frame containing only the filtered studies which form a connected network, containing the reference treatment.
 #' - "filtered_connected_treatment_list" is a data frame containing the updated treatment IDs for the connected filtered data.
-study_exclusions_panel_server <- function(id, data, treatment_df) {
+study_exclusions_panel_server <- function(id, data, treatment_df, reference_treatment) {
   moduleServer(id, function(input, output, session) {
     all_exclusions <- debounce(
       reactive({ input$exclusionbox }),
@@ -42,7 +43,7 @@ study_exclusions_panel_server <- function(id, data, treatment_df) {
     
     initial_connected_data <- reactive({
       indices <- 1:length(data()$Study)
-      subnetworks <- IdentifySubNetworks(data(), treatment_df())
+      subnetworks <- IdentifySubNetworks(data(), treatment_df(), reference_treatment())
       primary_network <- subnetworks$subnet_1
       
       connected_indices <- indices[data()$Study %in% primary_network$studies]
@@ -68,6 +69,10 @@ study_exclusions_panel_server <- function(id, data, treatment_df) {
       
       subnetworks <- IdentifySubNetworks(filtered_data(), treatment_df())
       primary_network <- subnetworks$subnet_1
+      
+      if (length(primary_network$studies) == 0) {
+        primary_network <- subnetworks$subnet_2
+      }
       
       connected_indices <- indices[filtered_data()$Study %in% primary_network$studies]
       return(filtered_data()[connected_indices, ])
@@ -134,7 +139,7 @@ study_exclusions_panel_server <- function(id, data, treatment_df) {
     
     initial_connected_treatment_list <- reactive({
       treatments <- FindAllTreatments(initial_connected_dewrangled_data())
-      return(CreateTreatmentIds(treatments))
+      return(CreateTreatmentIds(treatments, reference_treatment = reference_treatment()))
     })
     
     initial_connected_wrangled_data <- reactive({
@@ -147,7 +152,7 @@ study_exclusions_panel_server <- function(id, data, treatment_df) {
     
     filtered_connected_treatment_list <- reactive({
       treatments <- FindAllTreatments(filtered_connected_dewrangled_data())
-      return(CreateTreatmentIds(treatments))
+      return(CreateTreatmentIds(treatments, reference_treatment = reference_treatment()))
     })
     
     filtered_connected_wrangled_data <- reactive({

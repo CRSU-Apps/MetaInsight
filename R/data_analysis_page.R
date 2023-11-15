@@ -77,8 +77,9 @@ data_analysis_page_ui <- function(id) {
 #' @param data Reactive containing data to analyse
 #' @param is_default_data Reactive containing TRUE if data is an example dataset, loaded by default
 #' @param treatment_df Reactive containing data frame containing treatment IDs (Number) and names (Label)
+#' @param reference_treatment Reactive containing the ID of the selected reference treatment
 #' @param metaoutcome Reactive containing meta analysis outcome: "continuous" or "binary"
-data_analysis_page_server <- function(id, data, is_default_data, treatment_df, metaoutcome) {
+data_analysis_page_server <- function(id, data, is_default_data, treatment_df, reference_treatment, metaoutcome) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
     
@@ -91,6 +92,7 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, m
       id = "analysis_options",
       data = data,
       treatment_df = treatment_df,
+      reference_treatment = reference_treatment,
       is_default_data = is_default_data,
       metaoutcome = metaoutcome,
       OpenDataTable = OpenDataTable

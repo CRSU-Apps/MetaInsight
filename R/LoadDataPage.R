@@ -19,11 +19,14 @@ load_data_page_ui <- function(id) {
         data_input_panel_ui(id = ns('data_input_panel'))
       ),
       mainPanel(
-        tabsetPanel(id = "instructions",
-                    long_format_upload_panel_ui(id = ns('long_upload')),
-                    wide_format_upload_panel_ui(id = ns('wide_upload')),
-                    tabPanel(title = "View Data",
-                             uiOutput(outputId = ns("tb")))
+        tabsetPanel(
+          id = "instructions",
+          long_format_upload_panel_ui(id = ns('long_upload')),
+          wide_format_upload_panel_ui(id = ns('wide_upload')),
+          tabPanel(
+            title = "View Data",
+            uiOutput(outputId = ns("tb"))
+          )
         )
       )
     )
@@ -40,19 +43,23 @@ load_data_page_ui <- function(id) {
 #'   - 'data' is the uploaded data, wrangled such that the treatments are specified by IDs instead of names
 #'   - 'is_default_data' is TRUE if data is an example data set, else FALSE if data has been uploaded
 #'   - 'treatment_df' is the data frame containing the treatment ID ('Number') and the treatment name ('Label')
+#'   - 'reference_treatment' is the selected reference treatment
 load_data_page_server <- function(id, metaoutcome, data_input_panel_server_function = data_input_panel_server) {
   moduleServer(id, function(input, output, session) {
     ### Outcome selection
     output$CONBI <- renderText({
-      paste("You have selected", "<font color=\"#ffd966\"><b>", metaoutcome(),"</b></font>", 
-            "outcome on the 'Home' page. The instructions for formatting",
-            "<font color=\"#ffd966\"><b>", metaoutcome(), "</b></font>", "outcomes are now displayed.")
+      paste(
+        "You have selected", "<font color=\"#ffd966\"><b>", metaoutcome(),"</b></font>", 
+        "outcome on the 'Home' page. The instructions for formatting",
+        "<font color=\"#ffd966\"><b>", metaoutcome(), "</b></font>", "outcomes are now displayed."
+      )
     })
     
     data_reactives <- data_input_panel_server_function(id = 'data_input_panel', metaoutcome = metaoutcome)
     data <- data_reactives$data
     is_default_data <- data_reactives$is_default_data
     treatment_list <- data_reactives$treatment_list
+    reference_treatment <- data_reactives$reference_treatment
     
     ### Data analysis tab
     # Create a table which displays the raw data just uploaded by the user
@@ -70,8 +77,13 @@ load_data_page_server <- function(id, metaoutcome, data_input_panel_server_funct
       return(WrangleUploadData(isolate(data()), treatment_list(), metaoutcome()))
     })
     
-    return(list(data = wrangled_data,
-                is_default_data = is_default_data,
-                treatment_df = treatment_list))
+    return(
+      list(
+        data = wrangled_data,
+        is_default_data = is_default_data,
+        treatment_df = treatment_list,
+        reference_treatment = reference_treatment
+      )
+    )
   })
 }

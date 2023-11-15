@@ -42,12 +42,14 @@ shinyServer(function(input, output, session) {
   data <- data_reactives$data
   is_default_data = data_reactives$is_default_data
   treatment_df <- data_reactives$treatment_df
+  reference_treatment <- data_reactives$reference_treatment
   
   data_analysis_page_server(
     id = "data_analysis",
     data = data,
     is_default_data = is_default_data,
     treatment_df = treatment_df,
+    reference_treatment = reference_treatment,
     metaoutcome = metaoutcome
   )
   

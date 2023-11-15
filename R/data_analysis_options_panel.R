@@ -60,6 +60,7 @@ data_analysis_options_panel_ui <- function(id) {
 #' @param id ID of the module
 #' @param data Reactive containing data to analyse
 #' @param treatment_df Reactive containing data frame containing treatment IDs (Number) and names (Label)
+#' @param reference_treatment Reactive containing the ID of the selected reference treatment
 #' @param is_default_data Reactive containing TRUE if data is an example dataset, loaded by default
 #' @param metaoutcome Reactive containing meta analysis outcome: "continuous" or "binary"
 #' @param OpenDataTable Function to open the data table
@@ -77,7 +78,7 @@ data_analysis_options_panel_ui <- function(id) {
 #'   "MD" for mean difference, or "SMD" for standardised mean difference
 #' - "binary_outcome" contains acronym of the binary outcome:
 #'   "OR" for odds ratio, "RR" for risk ratio, or "RD" for risk difference
-data_analysis_options_server <- function(id, data, treatment_df, is_default_data, metaoutcome, OpenDataTable) {
+data_analysis_options_server <- function(id, data, treatment_df, reference_treatment, is_default_data, metaoutcome, OpenDataTable) {
   moduleServer(id, function(input, output, session) {
     continuous_outcome <- reactive({
       input$outcomeCont
@@ -113,7 +114,8 @@ data_analysis_options_server <- function(id, data, treatment_df, is_default_data
     exclusions_reactives <- study_exclusions_panel_server(
       id = "exclusions",
       data = data,
-      treatment_df = treatment_df
+      treatment_df = treatment_df,
+      reference_treatment = reference_treatment
     )
     
     model_effects <- reactive({

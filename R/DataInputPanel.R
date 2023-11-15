@@ -23,10 +23,12 @@ data_input_panel_ui <- function(id) {
       ns = ns,
       div(
         style = "float:right",
-        actionButton(inputId = ns("reload_button"),
-                     label = "Delete Data",
-                     incon = icon("trash"),
-                     style = "color: #fff; background-color: #dc3545; border-color: #dc3545")
+        actionButton(
+          inputId = ns("reload_button"),
+          label = "Delete Data",
+          incon = icon("trash"),
+          style = "color: #fff; background-color: #dc3545; border-color: #dc3545"
+        )
       )
     ),
     div(class = "clearfix"),
@@ -49,6 +51,7 @@ data_input_panel_ui <- function(id) {
 #'   - 'data' is the uplodaded data or the default data
 #'   - 'is_default_data' is TRUE if data is an example data set, else FALSE if data has been uploaded
 #'   - 'treatment_list' is the data frame containing the treatment ID ('Number') and the treatment name ('Label')
+#'   - 'reference_treatment' is the selected reference treatment
 data_input_panel_server <- function(id, metaoutcome, continuous_file = 'Cont_long.csv', binary_file = 'Binary_long.csv') {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
@@ -97,12 +100,14 @@ data_input_panel_server <- function(id, metaoutcome, continuous_file = 'Cont_lon
         # if data is triggered without reload, only load the default data
         df <- defaultD()
       } else {
-        df <- read.table(file = file1$datapath,
-                         sep = ",",
-                         header = TRUE,
-                         stringsAsFactors = FALSE,
-                         quote = "\"",
-                         fileEncoding = 'UTF-8-BOM')
+        df <- read.table(
+          file = file1$datapath,
+          sep = ",",
+          header = TRUE,
+          stringsAsFactors = FALSE,
+          quote = "\"",
+          fileEncoding = 'UTF-8-BOM'
+        )
       }
       
       return(CleanData(df))
@@ -146,12 +151,17 @@ data_input_panel_server <- function(id, metaoutcome, continuous_file = 'Cont_lon
                  })
     
     # Reset the reference treatment when the data changes, by scanning through the uploaded data
-    observe({
-              treatments = all_treatments()
-              updateSelectInput(inputId = 'reference_treatment',
-                                choices = treatments,
-                                selected = FindExpectedReferenceTreatment(treatments))
-            })
+    observe(
+      priority = 10000,
+      {
+        treatments = all_treatments()
+        updateSelectInput(
+          inputId = 'reference_treatment',
+          choices = treatments,
+          selected = FindExpectedReferenceTreatment(treatments)
+        )
+      }
+    )
     
     is_default_data <- reactive({
       return(!data_uploaded())
@@ -161,7 +171,8 @@ data_input_panel_server <- function(id, metaoutcome, continuous_file = 'Cont_lon
       list(
         data = data,
         is_default_data = is_default_data,
-        treatment_list = treatment_list
+        treatment_list = treatment_list,
+        reference_treatment = reactive({ input$reference_treatment })
       )
     )
   })
