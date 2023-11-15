@@ -23,7 +23,6 @@ study_exclusions_panel_ui <- function(id) {
 #' @param treatment_df Reactive containing data frame containing treatment IDs (Number) and names (Label).
 #' 
 #' @return List of reactives:
-#' - "exclusions" is a vector of names of studies being excluded from the sensitivity analysis.
 #' - "initial_connected_data" is a data frame containing only the studies which form a connected network, containing the reference treatment.
 #' - "initial_connected_treatment_list" is a data frame containing the updated treatment IDs for the connected data.
 #' - "filtered_connected_data" is a data frame containing only the filtered studies which form a connected network, containing the reference treatment.
@@ -157,7 +156,6 @@ study_exclusions_panel_server <- function(id, data, treatment_df) {
     
     return(
       list(
-        exclusions = all_exclusions,
         initial_connected_data = initial_connected_wrangled_data,
         initial_connected_treatment_list = initial_connected_treatment_list,
         filtered_connected_data = filtered_connected_wrangled_data,

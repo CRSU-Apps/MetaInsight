@@ -150,11 +150,11 @@ data_summary_panel_ui <- function(id) {
 #' @param data Reactive containing data to analyse
 #' @param metaoutcome Reactive containing meta analysis outcome: "Continuous" or "Binary"
 #' @param outcome_measure Reactive containing meta analysis outcome measure: "MD", "SMD", "OR, "RR", or "RD"
-#' @param exclusions Reactive containing names of studies excluded from the sensitivity analysis
 #' @param bugsnetdt Reactive containing bugsnet meta-analysis
+#' @param bugsnetdt_sub Reactive containing bugsnet meta-analysis for the sensitivity analysis
 #' @param freq_all Reactive containing frequentist meta-analysis
 #' @param freq_sub Reactive containing frequentist meta-analysis for the sensitivity analysis
-data_summary_panel_server <- function(id, metaoutcome, outcome_measure, exclusions, bugsnetdt, freq_all, freq_sub) {
+data_summary_panel_server <- function(id, metaoutcome, outcome_measure, bugsnetdt, bugsnetdt_sub, freq_all, freq_sub) {
   moduleServer(id, function(input, output, session) {
     
     # 1a. Data Characteristics
@@ -166,7 +166,7 @@ data_summary_panel_server <- function(id, metaoutcome, outcome_measure, exclusio
 
     # Characteristics table with studies excluded
     output$sumtb_sub <- renderTable({
-      summary_table_plot(filter(bugsnetdt(), !Study %in% exclusions()), metaoutcome())
+      summary_table_plot(bugsnetdt_sub(), metaoutcome())
     })
 
     # 1b. Study Results
@@ -212,12 +212,12 @@ data_summary_panel_server <- function(id, metaoutcome, outcome_measure, exclusio
 
     # Network plot with studies excluded
     output$netGraphUpdating <- renderPlot({
-      if (input$networkstyle_sub=='networkp1') {
+      if (input$networkstyle_sub == 'networkp1') {
         # Number of trials on line
-        make_netgraph(freq_sub(),input$label_excluded)
+        make_netgraph(freq_sub(), input$label_excluded)
       } else {
         # Number of trials by nodesize and line thickness
-        make_netplot(filter(bugsnetdt(), !Study %in% exclusions()), input$label_excluded)
+        make_netplot(bugsnetdt_sub(), input$label_excluded)
       }
       title("Network plot with studies excluded")
     })
@@ -258,7 +258,7 @@ data_summary_panel_server <- function(id, metaoutcome, outcome_measure, exclusio
           if (input$networkstyle_sub == 'networkp1') {
             make_netgraph(freq_sub(), input$label_excluded)
           } else {
-            long_sort2_sub <- filter(bugsnetdt(), !Study %in% exclusions())  # subgroup
+            long_sort2_sub <- bugsnetdt_sub()
             data.rh <- data.prep(arm.data = long_sort2_sub, varname.t = "T", varname.s = "Study")
             net.plot(data.rh, node.scale = 3, edge.scale=1.5, node.lab.cex = input$label_excluded)
           }
@@ -292,14 +292,14 @@ data_summary_panel_server <- function(id, metaoutcome, outcome_measure, exclusio
       )
     }
 
-    # Notify user if sensitvity analysis produces a disconnected network
-    observeEvent(exclusions(),{
-      longsort2 <- bugsnetdt()
-      longsort2_sub <- filter(bugsnetdt(), !Study %in% exclusions())  # subgroup
-      sumtb_sub <- bugsnet_sumtb(longsort2_sub, metaoutcome())
-      if (sumtb_sub$Value[6] == "FALSE") {
-        disconnect()
-      }
-    })
+    # # Notify user if sensitvity analysis produces a disconnected network
+    # observeEvent(exclusions(),{
+    #   longsort2 <- bugsnetdt()
+    #   longsort2_sub <- filter(bugsnetdt(), !Study %in% exclusions())  # subgroup
+    #   sumtb_sub <- bugsnet_sumtb(longsort2_sub, metaoutcome())
+    #   if (sumtb_sub$Value[6] == "FALSE") {
+    #     disconnect()
+    #   }
+    # })
   })
 }

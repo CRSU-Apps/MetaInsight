@@ -4,43 +4,54 @@
 # File created by NVB
 #####
 
-# Bayesian analysis
-bayesian_model <- function(sub, data, treatment_list, metaoutcome, exclusionbox, 
-                           outcome_measure, modelranfix, reference_alter) {
-  newData1 <- as.data.frame(data)
-  longsort2 <- dataform.df(newData1, treatment_list, metaoutcome) 
-  if (sub == TRUE) {
-    longsort2 <- filter(longsort2, !Study %in% exclusionbox)
-    return(baye(longsort2, treatment_list, modelranfix, outcome_measure ,metaoutcome, 
-                reference_alter$ref_sub))
-  } else {
-    return(baye(longsort2, treatment_list, modelranfix, outcome_measure ,metaoutcome, 
-                reference_alter$ref_all))
-  }
-}
 
-# Function to create data regarding rank results - CRN
-obtain_rank_data <- function(data, metaoutcome, treatment_list, bayesmodel, rankdir, excluded = c()) {
+#' Create a bayesian meta-analysis object.
+#'
+#' @param data Data frame to analyse.
+#' @param treatment_list 
+#' @param metaoutcome 
+#' @param outcome_measure 
+#' @param modelranfix 
+#' @param reference ID of reference treatment.
+#'
+#' @return Calculated bayesian meta-analysis.
+bayesian_model <- function(data, treatment_list, metaoutcome, 
+                           outcome_measure, modelranfix, reference) {
   newData1 <- as.data.frame(data)
   longsort2 <- dataform.df(newData1, treatment_list, metaoutcome)
-  if (length(excluded > 0)) {
-    # Subset of data when studies excluded
-    longsort2 <- dplyr::filter(longsort2, !Study %in% excluded)
-  }
+  return(baye(longsort2, treatment_list, modelranfix, outcome_measure ,metaoutcome, reference))
+}
+
+#' Function to create data regarding rank results - CRN
+#'
+#' @param data 
+#' @param metaoutcome 
+#' @param treatment_list 
+#' @param bayesmodel 
+#' @param rankdir 
+#'
+#' @return
+obtain_rank_data <- function(data, metaoutcome, treatment_list, bayesmodel, rankdir) {
+  newData1 <- as.data.frame(data)
+  longsort2 <- dataform.df(newData1, treatment_list, metaoutcome)
   # Use the self-defined function, rankdata in fn.analysis.R
-  return(rankdata(NMAdata=bayesmodel$mtcResults, rankdirection=rankdir, 
-           longdata=longsort2))
+  return(rankdata(NMAdata = bayesmodel$mtcResults, rankdirection = rankdir, longdata = longsort2))
 }
 
 # Nodesplit model
 
-nodesplit <- function(sub, data, treatment_list, metaoutcome, outcome_measure, modelranfix, exclusionbox) {
+#' Create the node-split model.
+#'
+#' @param data 
+#' @param treatment_list 
+#' @param metaoutcome 
+#' @param outcome_measure 
+#' @param modelranfix 
+#'
+#' @return
+nodesplit <- function(data, treatment_list, metaoutcome, outcome_measure, modelranfix) {
   newData1 <- as.data.frame(data)
-  if (sub == FALSE) {
-    longsort2 <- dataform.df(newData1, treatment_list, metaoutcome)
-  } else {
-    longsort2 <- filter(dataform.df(newData1, treatment_list, metaoutcome), !Study %in% exclusionbox )
-  }
+  longsort2 <- dataform.df(newData1, treatment_list, metaoutcome)
   bayenode(longsort2, treatment_list, modelranfix, outcome_measure, metaoutcome)
 }
 

@@ -99,7 +99,6 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, m
 
     outcome_measure = analysis_options_reactives$outcome_measure
     model_effects = analysis_options_reactives$model_effects
-    exclusions = analysis_options_reactives$exclusions
     initial_connected_data = analysis_options_reactives$initial_connected_data
     initial_connected_treatment_list = analysis_options_reactives$initial_connected_treatment_list
     filtered_connected_data = analysis_options_reactives$filtered_connected_data
@@ -126,10 +125,14 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, m
     freq_sub <- reactive({
       return(frequentist(filtered_connected_data(), reference_alter()$ref_sub, metaoutcome(), filtered_connected_treatment_list(), outcome_measure(), model_effects()))
     })
-
+    
     # Make bugsnetdata function (in fn_analysis.R) reactive - NVB
     bugsnetdt <- reactive({
       return(bugsnetdata(initial_connected_data(), metaoutcome(), initial_connected_treatment_list()))
+    })
+    
+    bugsnetdt_sub <- reactive({
+      return(bugsnetdata(filtered_connected_data(), metaoutcome(), filtered_connected_treatment_list()))
     })
 
     ### Confirmation for continuous / binary data
@@ -183,8 +186,8 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, m
       id = "data_summary",
       metaoutcome = metaoutcome,
       outcome_measure = outcome_measure,
-      exclusions = exclusions,
       bugsnetdt = bugsnetdt,
+      bugsnetdt_sub = bugsnetdt_sub,
       freq_all = freq_all,
       freq_sub = freq_sub
     )
@@ -200,11 +203,11 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, m
       metaoutcome = metaoutcome,
       outcome_measure = outcome_measure,
       model_effects = model_effects,
-      exclusions = exclusions,
       rank_option = rank_option,
       freq_all = freq_all,
       freq_sub = freq_sub,
       bugsnetdt = bugsnetdt,
+      bugsnetdt_sub = bugsnetdt_sub,
       reference_alter = reference_alter
     )
 
@@ -215,18 +218,20 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, m
 
     bayesian_analysis_panel_server(
       id = "bayesian_analysis",
-      data = data,
-      treatment_df = treatment_df,
+      data = initial_connected_data,
+      data_sub = filtered_connected_data,
+      treatment_df = initial_connected_treatment_list,
+      treatment_df_sub = filtered_connected_treatment_list,
       metaoutcome = metaoutcome,
       outcome_measure = outcome_measure,
       continuous_outcome = continuous_outcome,
       binary_outcome = binary_outcome,
       model_effects = model_effects,
-      exclusions = exclusions,
       rank_option = rank_option,
       freq_all = freq_all,
       freq_sub = freq_sub,
       bugsnetdt = bugsnetdt,
+      bugsnetdt_sub = bugsnetdt_sub,
       reference_alter = reference_alter
     )
   })

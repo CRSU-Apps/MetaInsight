@@ -659,7 +659,9 @@ bayesian_analysis_panel_ui <- function(id) {
 #' 
 #' @param id ID of the module
 #' @param data Reactive containing data to analyse
+#' @param data_sub Reactive containing data to analyse for the sensitivity analysis
 #' @param treatment_df Reactive containing data frame containing treatment IDs (Number) and names (Label)
+#' @param treatment_df_sub Reactive containing data frame containing treatment IDs (Number) and names (Label) for the sensitivity analysis
 #' @param metaoutcome Reactive containing meta analysis outcome: "Continuous" or "Binary"
 #' @param outcome_measure Reactive containing meta analysis outcome measure: "MD", "SMD", "OR, "RR", or "RD"
 #' @param continuous_outcome Reactive containing acronym of the continuous outcome:
@@ -667,27 +669,29 @@ bayesian_analysis_panel_ui <- function(id) {
 #' @param binary_outcome Reactive containing acronym of the binary outcome:
 #'   "OR" for odds ratio, "RR" for risk ratio, or "RD" for risk difference
 #' @param model_effects Reactive containing model effects: either "random" or "fixed"
-#' @param exclusions Reactive containing names of studies excluded from the sensitivity analysis
 #' @param rank_option Reactive containing ranking option: "good" or "bad" depending on whether small values are desirable or not
 #' @param freq_all Reactive containing frequentist meta-analysis
 #' @param freq_sub Reactive containing frequentist meta-analysis for the sensitivity analysis
 #' @param bugsnetdt Reactive containing bugsnet meta-analysis
+#' @param bugsnetdt_sub Reactive containing bugsnet meta-analysiss for the sensitivity analysis
 #' @param reference_alter Reactive containing the name of the reference treatment for the sensitivity
 #'  analysis accounting for if the chosen reference treatment has been excluded
 bayesian_analysis_panel_server <- function(
     id,
     data,
+    data_sub,
     treatment_df,
+    treatment_df_sub,
     metaoutcome,
     outcome_measure,
     continuous_outcome,
     binary_outcome,
     model_effects,
-    exclusions,
     rank_option,
     freq_all,
     freq_sub,
     bugsnetdt,
+    bugsnetdt_sub,
     reference_alter
     ) {
   moduleServer(id, function(input, output, session) {
@@ -707,13 +711,11 @@ bayesian_analysis_panel_server <- function(
     # Bayesian analysis
 
     model <- eventReactive(input$baye_do, {
-      bayesian_model(sub = FALSE, data(), treatment_df(), metaoutcome(), exclusions(),
-                     outcome_measure(), model_effects(), reference_alter())
+      bayesian_model(data(), treatment_df(), metaoutcome(), outcome_measure(), model_effects(), reference_alter()$ref_all)
     })
 
     model_sub <- eventReactive(input$sub_do, {
-      bayesian_model(sub = TRUE, data(), treatment_df(), metaoutcome(), exclusions(),
-                     outcome_measure(), model_effects(), reference_alter())
+      bayesian_model(data_sub(), treatment_df_sub(), metaoutcome(), outcome_measure(), model_effects(), reference_alter()$ref_sub)
     })
     
     # forest min and max values different if continuous/binary
@@ -784,7 +786,10 @@ bayesian_analysis_panel_server <- function(
       plotOutput(
         outputId = ns("gemtc_sub"),
         width="630px",
-        height = BayesPixels(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% exclusions()), metaoutcome())$Value[1]), title=TRUE)
+        height = BayesPixels(
+          as.numeric(bugsnet_sumtb(bugsnetdt_sub(), metaoutcome())$Value[1]),
+          title = TRUE
+        )
       )
     })
 
@@ -814,9 +819,9 @@ bayesian_analysis_panel_server <- function(
       },
       content = function(file) {
         if (input$format4 == "PDF") {
-          pdf(file = file, width = 9, height = BayesInch(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% exclusions()), metaoutcome())$Value[1])))
+          pdf(file = file, width = 9, height = BayesInch(as.numeric(bugsnet_sumtb(bugsnetdt_sub(), metaoutcome())$Value[1])))
         } else {
-          png(file = file, width = 610, height = BayesPixels(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% exclusions()), metaoutcome())$Value[1])))
+          png(file = file, width = 610, height = BayesPixels(as.numeric(bugsnet_sumtb(bugsnetdt_sub(), metaoutcome())$Value[1])))
         }
         if (metaoutcome() == "Binary") {
           gemtc::forest(model_sub()$mtcRelEffects, digits = 3, xlim = c(log(input$bayesmin_sub), log(input$bayesmax_sub)))
@@ -867,48 +872,55 @@ bayesian_analysis_panel_server <- function(
 
     # Obtain Data needed for ranking #
     RankingData <- eventReactive(input$baye_do, {
-      obtain_rank_data(data(), metaoutcome(),
-                       treatment_df(), model(), rank_option())
+      obtain_rank_data(data(), metaoutcome(), treatment_df(), model(), rank_option())
     })
 
     RankingData_sub <- eventReactive(input$sub_do, {
-      obtain_rank_data(data(), metaoutcome(), treatment_df(),
-                       model_sub(), rank_option(), exclusions())
+      obtain_rank_data(data_sub(), metaoutcome(), treatment_df_sub(), model_sub(), rank_option())
     })
 
     # Network plots for ranking panel (Bayesian) (they have slightly different formatting to those on tab1) CRN
-    treat_order <- reactive(RankingData()$SUCRA[order(RankingData()$SUCRA$SUCRA),1]) # obtain treatments ordered by SUCRA #
+    treat_order <- reactive({
+      RankingData()$SUCRA[order(RankingData()$SUCRA$SUCRA),1]
+    }) # obtain treatments ordered by SUCRA #
+    
     freq_all_react <- eventReactive(input$baye_do, {  # these two lines are needed in case someone jumped to Bayesian page without running frequentist section, but am aware this can cause frequentist analysis to run twice (CRN)
       freq_all()
     })
+    
     bugsnetdt_react <- eventReactive(input$baye_do, {
       bugsnetdt()
     })
+    
     output$netGraphStatic1_rank <- renderPlot({
-      if (input$networkstyle_rank=='networkp1') {
+      if (input$networkstyle_rank == 'networkp1') {
         # Number of trials on line
         make_netgraph_rank(freq_all_react(), treat_order())
       } else {
         # Number of trials by nodesize and line thickness
-        make_netplot(bugsnetdt_react(), order=list(order=treat_order()))
+        make_netplot(bugsnetdt_react(), order = list(order = treat_order()))
       }
       title("Network plot of all studies")
     })
+    
     # Repeat for excluded studies
     treat_order_sub <- reactive(RankingData_sub()$SUCRA[order(RankingData_sub()$SUCRA$SUCRA),1])
+    
     freq_all_react_sub <- eventReactive(input$sub_do, {
       freq_sub()
     })
+    
     bugsnetdt_react_sub <- eventReactive(input$sub_do, {
-      bugsnetdt()
+      bugsnetdt_sub()
     })
+    
     output$netGraphStatic1_rank_sub <- renderPlot({
       if (input$networkstyle_rank_sub=='networkp1') {
         # Number of trials on line
         make_netgraph_rank(freq_all_react_sub(), treat_order_sub())
       } else {
         # Number of trials by nodesize and line thickness
-        make_netplot(filter(bugsnetdt_react_sub(), !Study %in% exclusions()), order=list(order=treat_order_sub()))
+        make_netplot(bugsnetdt_react_sub(), order = list(order = treat_order_sub()))
       }
       title("Network plot with studies excluded")
     })
@@ -943,7 +955,7 @@ bayesian_analysis_panel_server <- function(
           if (input$networkstyle_rank_sub == 'networkp1') {
             make_netgraph_rank(freq_all_react_sub(), treat_order_sub())
           } else {
-            make_netplot(filter(bugsnetdt_react_sub(), !Study %in% exclusions()), order = list(order=treat_order_sub()))
+            make_netplot(bugsnetdt_react_sub(), order = list(order = treat_order_sub()))
           }
           title("Network plot with studies excluded")
         }
@@ -1163,21 +1175,19 @@ bayesian_analysis_panel_server <- function(
 
     # Inconsistency test with notesplitting model for all studies
     model_nodesplit <- eventReactive(input$node, {
-      nodesplit(sub = FALSE, data(), treatment_df(), metaoutcome(), outcome_measure(),
-                model_effects(), exclusions())
+      nodesplit(data(), treatment_df(), metaoutcome(), outcome_measure(), model_effects())
     })
 
-    output$node_table<- renderTable(colnames=TRUE, {
+    output$node_table<- renderTable(colnames = TRUE, {
       model_nodesplit()
     })
 
     # Inconsistency test with notesplitting model with studies excluded
     model_nodesplit_sub <- eventReactive(input$node_sub, {
-      nodesplit(sub = TRUE, data(), treatment_df(), metaoutcome(), outcome_measure(),
-                model_effects(), exclusions())
+      nodesplit(data_sub(), treatment_df_sub(), metaoutcome(), outcome_measure(),  model_effects())
     })
 
-    output$node_table_sub<- renderTable(colnames=TRUE, {
+    output$node_table_sub<- renderTable(colnames = TRUE, {
       model_nodesplit_sub()
     })
 
