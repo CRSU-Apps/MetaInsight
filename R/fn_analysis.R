@@ -158,18 +158,18 @@ freq.df <- function(model,outcome,dataf,lstx, ref) {
 ### WRAPPING function: function for Wrapping the frequentist data format and analysis
 ###********************###
 
-freq_wrap <- function(data, treat_list,model,outcome, CONBI, ref) {
+freq_wrap <- function(data, treat_list, model, outcome, CONBI, ref) {
   progress <- shiny::Progress$new()   # Adding progress bars
   on.exit(progress$close())
-  progress$set(message="Updating", value=0)
-  d0<- contrastform.df(data,outcome, CONBI)    # transform data to contrast form
+  progress$set(message="Updating", value = 0)
+  d0<- contrastform.df(data, outcome, CONBI)    # transform data to contrast form
   lstx <- treat_list$Label      #obtain treatment labels
   ntx <- length(lstx)     #count treatment numbers
   d1<-labelmatching.df(d0, ntx, treat_list) #matching treatment labels to treatment code
-  progress$inc(0.6, detail="Updating")
-  net1<-freq.df(model,outcome,d1,lstx,ref) # NMA of all studies
-  progress$inc(0.4, detail="Rendering results")
-  return (list(net1=net1,lstx=lstx, ntx=ntx,d0=d0,d1=d1))
+  progress$inc(0.6, detail = "Updating")
+  net1<-freq.df(model, outcome, d1, lstx, ref) # NMA of all studies
+  progress$inc(0.4, detail = "Rendering results")
+  return (list(net1 = net1, lstx = lstx, ntx = ntx, d0 = d0, d1 = d1))
 }
 
 
