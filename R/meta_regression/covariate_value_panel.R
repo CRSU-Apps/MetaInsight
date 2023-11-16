@@ -18,23 +18,23 @@ covariate_value_panel_ui <- function(id) {
       condition = "output.covariate_type == 'Continuous'",
       ns = ns,
       .CreateInlineBlock(
-        sliderInput(
-          inputId = ns("slider"),
-          label = NULL,
-          min = 0,
-          max = 1,
-          value = 0
-        ),
-        style = "vertical-align: bottom; padding-right: 10pt;"
-      ),
-      .CreateInlineBlock(
         numericInput(
           inputId = ns("numeric"),
           label = NULL,
-          min = 0,
-          max = 1,
+          min = -.Machine$double.xmax,
+          max = .Machine$double.xmax,
           value = 0,
           width = "100pt"
+        )
+      ),
+      .CreateInlineBlock(
+        conditionalPanel(
+          condition = "output.extrapolated",
+          ns = ns,
+          div(
+            "Covariate value outside data range",
+            style = "color: red; font-style: italic; font-weight: bold; padding-left: 10pt"
+          )
         )
       )
     ),
@@ -57,9 +57,40 @@ covariate_value_panel_ui <- function(id) {
 #' Create the covariate value panel server.
 #'
 #' @param id ID of the module.
+#' @param covariate_data Reactive containing vector of all copvariate values.
+#' @param default_covariate_value Reactive containing the default covariate value.
 #' @param covariate_type Reactive containing the type of the covariate: either "Continuous" or "Binary".
-covariate_value_panel_server <- function(id, covariate_type) {
+covariate_value_panel_server <- function(id, covariate_type, covariate_data, default_covariate_value) {
   shiny::moduleServer(id, function(input, output, session) {
+    
+    min_value <- reactive({
+      if (is.null(covariate_data())) {
+        return(NULL)
+      }
+      return(min(covariate_data()))
+    })
+    
+    max_value <- reactive({
+      if (is.null(covariate_data())) {
+        return(NULL)
+      }
+      return(max(covariate_data()))
+    })
+    
+    # Update the numeric input to the centre of the range, or the default value,
+    # and the step to be a reasonable size of roughly 100 steps
+    observe({
+      range <- max_value() - min_value()
+      log_val <- round(log10(range))
+      step <- 10 ** (log_val - 2)
+      if (is.null(default_covariate_value())) {
+        value <- (min_value() + max_value()) / 2
+      } else {
+        value <- default_covariate_value()
+      }
+      
+      shiny::updateNumericInput(inputId = "numeric", value = value, step = step)
+    })
     
     covariate_value <- reactiveVal(0)
     
@@ -67,15 +98,6 @@ covariate_value_panel_server <- function(id, covariate_type) {
     observe({
       if (!is.null(covariate_type()) && covariate_type() == "Continuous") {
         covariate_value(input$numeric)
-        shiny::updateSliderInput(inputId = "slider", value = input$numeric)
-      }
-    })
-    
-    # Update value and numeric input when slider changes
-    observe({
-      if (!is.null(covariate_type()) && covariate_type() == "Continuous") {
-        covariate_value(input$slider)
-        shiny::updateNumericInput(inputId = "numeric", value = input$slider)
       }
     })
     
@@ -88,7 +110,10 @@ covariate_value_panel_server <- function(id, covariate_type) {
     
     output$covariate_type <- reactive({ covariate_type() })
     outputOptions(x = output, name = "covariate_type", suspendWhenHidden = FALSE)
+    
+    output$extrapolated <- reactive({ covariate_value() < min_value() || covariate_value() > max_value() })
+    outputOptions(x = output, name = "extrapolated", suspendWhenHidden = FALSE)
   
-    return(reactive({ covariate_value }))
+    return(reactive({ covariate_value() }))
   })
 }

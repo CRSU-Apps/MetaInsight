@@ -39,10 +39,7 @@ covariate_analysis_panel_ui <- function(id) {
         textOutput(outputId = ns("error_message_box")),
         style = "display: inline-block; color: red; font-style: italic; font-weight: bold; padding-right: 20pt;"
       ),
-      # div(
-        covariate_value_panel_ui(id = ns("covariate_value")),
-      #   style = "display: inline-block;"
-      # ),
+      covariate_value_panel_ui(id = ns("covariate_value")),
       conditionalPanel(
         condition = "output.valid_covariate",
         ns = ns,
@@ -106,9 +103,15 @@ covariate_analysis_panel_server <- function(id, all_data) {
     output$inferred_type <- reactive({ inferred_type() })
     outputOptions(x = output, name = "inferred_type", suspendWhenHidden = FALSE)
     
+    default_covariate_value <- reactiveVal()
+    
     covariate_value = covariate_value_panel_server(
       id = "covariate_value",
-      covariate_type = reactive({ input$covariate_type_selection })
+      covariate_type = reactive({ input$covariate_type_selection }),
+      covariate_data = reactive({ all_data()[[covariate_title()]] }),
+      default_covariate_value = default_covariate_value
     )
+    
+    # Meta-regression server should be placed here, populating the default_covariate_value
   })
 }
