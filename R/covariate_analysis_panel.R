@@ -8,10 +8,7 @@ covariate_analysis_panel_ui <- function(id) {
     fluidPage(
       div(
         h2(textOutput(outputId = ns("subtitle"))),
-        style = "display: inline-block; vertical-align: top"
-      ),
-      div(
-        style = "display: inline-block; padding-right: 20pt;"
+        style = "display: inline-block; vertical-align: top; padding-right: 20pt;"
       ),
       div(
         conditionalPanel(
@@ -20,14 +17,15 @@ covariate_analysis_panel_ui <- function(id) {
           selectInput(
             inputId = ns("covariate_type_selection"),
             label = "",
-            choices = c("binary", "continuous")
+            choices = c("Binary", "Continuous"),
+            width = "120px"
           )
         ),
         style = "display: inline-block;"
       ),
       div(
         conditionalPanel(
-          condition = "output.inferred_type == 'continuous'",
+          condition = "output.inferred_type == 'Continuous'",
           ns = ns,
           div(
             tags$i(class = "fa-solid fa-circle-info"),
@@ -39,8 +37,12 @@ covariate_analysis_panel_ui <- function(id) {
       ),
       div(
         textOutput(outputId = ns("error_message_box")),
-        style = "color: red; font-style: italic; font-weight: bold;"
+        style = "display: inline-block; color: red; font-style: italic; font-weight: bold; padding-right: 20pt;"
       ),
+      # div(
+        covariate_value_panel_ui(id = ns("covariate_value")),
+      #   style = "display: inline-block;"
+      # ),
       conditionalPanel(
         condition = "output.valid_covariate",
         ns = ns,
@@ -84,7 +86,7 @@ covariate_analysis_panel_server <- function(id, all_data) {
           inferred_type <- ValidateAndInferCovariateType(all_data(), covariate_title())
           shiny::updateSelectInput(inputId = "covariate_type_selection", selected = inferred_type)
           inferred_type(inferred_type)
-          if (inferred_type == "continuous") {
+          if (inferred_type == "Continuous") {
             shinyjs::disable(id = "covariate_type_selection")
           } else {
             shinyjs::enable(id = "covariate_type_selection")
@@ -92,6 +94,7 @@ covariate_analysis_panel_server <- function(id, all_data) {
           error_message("")
         },
         error = function(exptn) {
+          inferred_type(NULL)
           error_message(exptn$message)
         }
       )
@@ -102,5 +105,7 @@ covariate_analysis_panel_server <- function(id, all_data) {
     
     output$inferred_type <- reactive({ inferred_type() })
     outputOptions(x = output, name = "inferred_type", suspendWhenHidden = FALSE)
+    
+    covariate_value_panel_server(id = "covariate_value", covariate_type = reactive({ input$covariate_type_selection }))
   })
 }
