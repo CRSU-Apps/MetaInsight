@@ -25,7 +25,7 @@ covariate_value_panel_ui <- function(id) {
           max = 1,
           value = 0
         ),
-        style = "padding-right: 10pt;"
+        style = "vertical-align: bottom; padding-right: 10pt;"
       ),
       .CreateInlineBlock(
         numericInput(
@@ -34,21 +34,23 @@ covariate_value_panel_ui <- function(id) {
           min = 0,
           max = 1,
           value = 0,
-          width = "100px"
-        ),
-        style = ""#"vertical-align: top;"
+          width = "100pt"
+        )
       )
     ),
     conditionalPanel(
       condition = "output.covariate_type == 'Binary'",
       ns = ns,
-      .CreateInlineBlock("0", style = "padding-right: 10pt;"),
-      shinyWidgets::materialSwitch(
-        inputId = ns("toggle"),
-        inline = TRUE
-      ),
-      .CreateInlineBlock("1")
-    )
+      div(
+        .CreateInlineBlock("0", style = "padding-right: 10pt;"),
+        shinyWidgets::materialSwitch(
+          inputId = ns("toggle"),
+          inline = TRUE
+        ),
+        .CreateInlineBlock("1")
+      )
+    ),
+    style = "vertical-align: 50%;"
   )
 }
 

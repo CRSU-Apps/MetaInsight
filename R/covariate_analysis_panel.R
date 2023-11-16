@@ -18,7 +18,7 @@ covariate_analysis_panel_ui <- function(id) {
             inputId = ns("covariate_type_selection"),
             label = "",
             choices = c("Binary", "Continuous"),
-            width = "120px"
+            width = "120pt"
           )
         ),
         style = "display: inline-block;"
