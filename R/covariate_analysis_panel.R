@@ -44,7 +44,12 @@ covariate_analysis_panel_ui <- function(id) {
       conditionalPanel(
         condition = "output.valid_covariate",
         ns = ns,
-        # Meta-regression UI should be placed here
+        tabsetPanel(
+          tabPanel(
+            title = "4c-1. Forest plot",
+            covariate_forest_plots_page_ui(id = ns("forest_plots"))
+          )
+        )
       )
     )
   )
@@ -54,7 +59,26 @@ covariate_analysis_panel_ui <- function(id) {
 #'
 #' @param id ID of the module
 #' @param all_data Study data including covariate columns, in wide or long format
-covariate_analysis_panel_server <- function(id, all_data) {
+#' @param treatment_df Reactive containing data frame containing treatment IDs (Number) and names (Label)
+#' @param metaoutcome Reactive containing meta analysis outcome: "Continuous" or "Binary"
+#' @param outcome_measure Reactive containing meta analysis outcome measure: "MD", "SMD", "OR, "RR", or "RD"
+#' @param model_effects Reactive containing model effects: either "random" or "fixed"
+#' @param continuous_outcome Reactive containing acronym of the continuous outcome:
+#'   "MD" for mean difference, or "SMD" for standardised mean difference
+#' @param binary_outcome Reactive containing acronym of the binary outcome:
+#'   "OR" for odds ratio, "RR" for risk ratio, or "RD" for risk difference
+#' @param bugsnetdt Reactive containing bugsnet meta-analysis
+covariate_analysis_panel_server <- function(
+    id, 
+    all_data,
+    treatment_df,
+    metaoutcome,
+    outcome_measure,
+    model_effects,
+    continuous_outcome,
+    binary_outcome,
+    bugsnetdt
+    ) {
   shiny::moduleServer(id, function(input, output, session) {
     
     covariate_title <- reactive({
@@ -102,5 +126,23 @@ covariate_analysis_panel_server <- function(id, all_data) {
     
     output$inferred_type <- reactive({ inferred_type() })
     outputOptions(x = output, name = "inferred_type", suspendWhenHidden = FALSE)
+    
+    # 4c-1 Forest plots
+    forest_plots_reactives <- covariate_forest_plots_page_server(
+      id = "forest_plots",
+      data = all_data,
+      treatment_df = treatment_df,
+      metaoutcome = metaoutcome,
+      outcome_measure = outcome_measure,
+      covariate = covariate_title,
+      cov_friendly = covariate_name,
+      model_effects = model_effects,
+      continuous_outcome = continuous_outcome,
+      binary_outcome = binary_outcome,
+      bugsnetdt = bugsnetdt
+    )
+    
+    model_output <- forest_plots_reactives$model_output
+    
   })
 }

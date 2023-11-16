@@ -39,15 +39,15 @@ bayesian_forest_plot_plus_stats_ui <- function(id) {
 #' Module server for the bayesian forest plot and associated statistics.
 #' 
 #' @param id ID of the module
-#' @param model Containing the full bayesian meta-analysis
-#' @param all_or_sub Whether the model is relating to the 'Full' analysis, or 'Sub' analysis
+#' @param model_output Containing the full bayesian meta-analysis with associated outputs
+#' @param analysis_type Whether the analysis is a base analysis ('Full'), sensitivity analysis ('Sub') or a regression analysis ('Regression')
 #' @param metaoutcome Reactive containing meta analysis outcome: "Continuous" or "Binary"
 #' @param outcome_measure Reactive containing meta analysis outcome measure: "MD", "SMD", "OR, "RR", or "RD"
 #' @param bugsnetdt Reactive containing bugsnet meta-analysis
 bayesian_forest_plot_plus_stats_server <- function(
     id,
-    model,
-    all_or_sub,
+    model_output,
+    analysis_type,
     metaoutcome,
     outcome_measure,
     bugsnetdt
@@ -71,23 +71,25 @@ bayesian_forest_plot_plus_stats_server <- function(
 
     # Forest plot for all studies
     output$gemtc <- renderPlot({
-      make_Forest(model(), metaoutcome(), input$bayesmin, input$bayesmax)
-      title(paste(ifelse(all_or_sub == "Full","All studies:", "Results with studies excluded:"),
+      make_Forest(model_output(), metaoutcome(), input$bayesmin, input$bayesmax)
+      title(paste(ifelse(analysis_type == "Full", "All studies:", 
+                         ifelse(analysis_type == "Sub", "Results with studies excluded:",
+                                "Regression analysis:")),
                   "
                   Bayesian",
-                  model()$a, 
+                  model_output()$a, 
                   "consistency model forest plot results"))
     })
 
     # DIC table for all studies
     output$dic <- renderTable ({
-      model()$dic
+      model_output()$dic
     }, digits=3, rownames=TRUE, colnames=FALSE
     )
 
     # Tau all studies
     output$text_gemtc <-renderText({
-      gemtctau(model(), outcome_measure())
+      gemtctau(model_output(), outcome_measure())
     })
 
     # Interactive UI
@@ -104,7 +106,9 @@ bayesian_forest_plot_plus_stats_server <- function(
 
     output$downloadBaye_plot <- downloadHandler(
       filename = function() {
-        paste0(ifelse(all_or_sub == "Full", 'All_studies.', 'Excluded_studies.'),
+        paste0(ifelse(analysis_type == "Full", 'All_studies.', 
+                      ifelse(analysis_type == "Sub", 'Excluded_studies.',
+                             'Regression_analysis.')),
                input$format2)
       },
       content = function(file) {
@@ -114,10 +118,10 @@ bayesian_forest_plot_plus_stats_server <- function(
           png(file = file, width = 610, height = BayesPixels(as.numeric(bugsnet_sumtb(bugsnetdt(), metaoutcome())$Value[1])))
         }
         if (metaoutcome() == "Binary") {
-          gemtc::forest(model()$mtcRelEffects, digits = 3, xlim = c(log(input$bayesmin), log(input$bayesmax)))
+          gemtc::forest(model_output()$mtcRelEffects, digits = 3, xlim = c(log(input$bayesmin), log(input$bayesmax)))
         }
         if (metaoutcome() == "Continuous") {
-          gemtc::forest(model()$mtcRelEffects, digits = 3, xlim = c(input$bayesmin, input$bayesmax))
+          gemtc::forest(model_output()$mtcRelEffects, digits = 3, xlim = c(input$bayesmin, input$bayesmax))
         }
         dev.off()
       }

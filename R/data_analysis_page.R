@@ -232,7 +232,13 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, m
     meta_regression_tab_server(
       id = "meta_regression",
       all_data = data,
-      outcome_measure = outcome_measure
+      treatment_df = treatment_df,
+      metaoutcome = metaoutcome,
+      outcome_measure = outcome_measure,
+      model_effects = model_effects,
+      continuous_outcome = continuous_outcome,
+      binary_outcome = binary_outcome,
+      bugsnetdt = bugsnetdt
     )
   })
 }
