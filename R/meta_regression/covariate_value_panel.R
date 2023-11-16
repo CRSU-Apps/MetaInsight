@@ -63,6 +63,7 @@ covariate_value_panel_server <- function(id, covariate_type) {
     
     covariate_value <- reactiveVal(0)
     
+    # Update value and slider when numeric input changes
     observe({
       if (!is.null(covariate_type()) && covariate_type() == "Continuous") {
         covariate_value(input$numeric)
@@ -70,6 +71,7 @@ covariate_value_panel_server <- function(id, covariate_type) {
       }
     })
     
+    # Update value and numeric input when slider changes
     observe({
       if (!is.null(covariate_type()) && covariate_type() == "Continuous") {
         covariate_value(input$slider)
@@ -77,6 +79,7 @@ covariate_value_panel_server <- function(id, covariate_type) {
       }
     })
     
+    # Update value when toggle input changes
     observe({
       if (!is.null(covariate_type()) && covariate_type() == "Binary") {
         covariate_value(ifelse(input$toggle, 1, 0))
@@ -85,7 +88,7 @@ covariate_value_panel_server <- function(id, covariate_type) {
     
     output$covariate_type <- reactive({ covariate_type() })
     outputOptions(x = output, name = "covariate_type", suspendWhenHidden = FALSE)
-  })
   
-  return(reactive({ covariate_value }))
+    return(reactive({ covariate_value }))
+  })
 }

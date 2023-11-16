@@ -106,6 +106,9 @@ covariate_analysis_panel_server <- function(id, all_data) {
     output$inferred_type <- reactive({ inferred_type() })
     outputOptions(x = output, name = "inferred_type", suspendWhenHidden = FALSE)
     
-    covariate_value_panel_server(id = "covariate_value", covariate_type = reactive({ input$covariate_type_selection }))
+    covariate_value = covariate_value_panel_server(
+      id = "covariate_value",
+      covariate_type = reactive({ input$covariate_type_selection })
+    )
   })
 }
