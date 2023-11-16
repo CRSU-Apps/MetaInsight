@@ -109,7 +109,7 @@ test_that("FormatForBnma() gives correct data for long continuous", {
 
 
 
-test_that("BaselineRiskRegression() assigns model type, covariate type, reference treatment, and RNGs correctly", {
+test_that("BaselineRiskNetwork() assigns model type, covariate type and reference treatment correctly", {
   
   data <- list(ArmLevel = data.frame(
     Study = c(rep("Constantine", 3), rep("Leo", 3), rep("Justinian", 2)),
@@ -119,25 +119,20 @@ test_that("BaselineRiskRegression() assigns model type, covariate type, referenc
   )
   data$Treat.order <- VectorWithItemFirst(vector = unique(data$ArmLevel$Treat), first_item = "the_Great")
   
-  bnma_model <- BaselineRiskRegression(br_data = data,
-                                       outcome_type = "Binary",
-                                       effects_type = "random",
-                                       cov_parameters = "independent")
+  bnma_network <- BaselineRiskNetwork(br_data = data,
+                                      outcome_type = "Binary",
+                                      effects_type = "random",
+                                      cov_parameters = "independent")
   
-  expect_equal(bnma_model$network$response, "binomial")
-  expect_equal(bnma_model$network$type, "random")
-  expect_equal(bnma_model$network$baseline, "independent")
-  expect_equal(as.character(bnma_model$network$Treat.order[1]), "the_Great")
-  expect_equal(bnma_model$inits[[1]]$.RNG.name, "base::Wichmann-Hill")
-  expect_equal(bnma_model$inits[[2]]$.RNG.name, "base::Wichmann-Hill")
-  expect_equal(bnma_model$inits[[3]]$.RNG.name, "base::Wichmann-Hill")
-  expect_equal(bnma_model$inits[[4]]$.RNG.name, "base::Wichmann-Hill")
-  
+  expect_equal(bnma_network$response, "binomial")
+  expect_equal(bnma_network$type, "random")
+  expect_equal(bnma_network$baseline, "independent")
+  expect_equal(as.character(bnma_network$Treat.order[1]), "the_Great")
 })
 
 
 
-test_that("BaselineRiskRegression() has correct model settings for Binary outcome", {
+test_that("BaselineRiskNetwork() has correct model settings for Binary outcome", {
   
   data <- list(ArmLevel = data.frame(
       Study = c(rep("Constantine", 3), rep("Leo", 3), rep("Justinian", 2)),
@@ -146,17 +141,17 @@ test_that("BaselineRiskRegression() has correct model settings for Binary outcom
       N = 100:107))
   data$Treat.order <- VectorWithItemFirst(vector = unique(data$ArmLevel$Treat), first_item = "the_Great")
   
-  bnma_model <- BaselineRiskRegression(br_data = data,
-                                       outcome_type = "Binary",
-                                       effects_type = "random",
-                                       cov_parameters = "independent")
+  bnma_network <- BaselineRiskNetwork(br_data = data,
+                                      outcome_type = "Binary",
+                                      effects_type = "random",
+                                      cov_parameters = "independent")
   
-  expect_equal(bnma_model$network$response, "binomial")
+  expect_equal(bnma_network$response, "binomial")
 })
 
 
 
-test_that("BaselineRiskRegression() has correct model settings for Continuous outcome", {
+test_that("BaselineRiskNetwork() has correct model settings for Continuous outcome", {
   
   data <- list(ArmLevel = data.frame(
       Study = c(rep("Constantine", 3), rep("Leo", 3), rep("Justinian", 2)),
@@ -166,17 +161,17 @@ test_that("BaselineRiskRegression() has correct model settings for Continuous ou
       N = 30:37))
   data$Treat.order <- VectorWithItemFirst(vector = unique(data$ArmLevel$Treat), first_item = "the_Great")
 
-  bnma_model <- BaselineRiskRegression(br_data = data,
-                                       outcome_type = "Continuous",
-                                       effects_type = "fixed",
-                                       cov_parameters = "exchangeable")
+  bnma_network <- BaselineRiskNetwork(br_data = data,
+                                      outcome_type = "Continuous",
+                                      effects_type = "fixed",
+                                      cov_parameters = "exchangeable")
     
-  expect_equal(bnma_model$network$response, "normal")
+  expect_equal(bnma_network$response, "normal")
 })
 
 
 
-test_that("BaselineRiskRegression() gives reproducible output", {
+test_that("BaselineRiskRegression() sets RNGs correctly and gives reproducible output", {
   
   data <- read.csv("Binary_wide_continuous_cov.csv")
   treatment_ids <- CreateTreatmentIds(FindAllTreatments(data))
@@ -188,17 +183,21 @@ test_that("BaselineRiskRegression() gives reproducible output", {
                             outcome_type = "Binary",
                             ref = "the_Great")
   
-  result_1 <- BaselineRiskRegression(br_data = br_data,
+  bnma_network <- BaselineRiskNetwork(br_data = br_data,
                                      outcome_type = "Binary",
                                      effects_type = "random",
-                                     cov_parameters = "exchangeable",
-                                     seed = 97531)
-  result_2 <- BaselineRiskRegression(br_data = br_data,
-                                     outcome_type = "Binary",
-                                     effects_type = "random",
-                                     cov_parameters = "exchangeable",
+                                     cov_parameters = "exchangeable")
+  
+  result_1 <- BaselineRiskRegression(br_network = bnma_network,
                                      seed = 97531)
   
+  result_2 <- BaselineRiskRegression(br_network = bnma_network,
+                                     seed = 97531)
+  
+  expect_equal(result_1$inits[[1]]$.RNG.name, "base::Wichmann-Hill")
+  expect_equal(result_1$inits[[2]]$.RNG.name, "base::Wichmann-Hill")
+  expect_equal(result_1$inits[[3]]$.RNG.name, "base::Wichmann-Hill")
+  expect_equal(result_1$inits[[4]]$.RNG.name, "base::Wichmann-Hill")
   expect_equal(result_1$samples[1], result_2$samples[1])
   expect_equal(result_1$samples[2], result_2$samples[2])
   expect_equal(result_1$samples[3], result_2$samples[3])

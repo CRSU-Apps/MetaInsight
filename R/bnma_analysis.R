@@ -36,26 +36,14 @@ FormatForBnma <- function(br_data, treatment_ids, outcome_type, ref){
 
 
 
-
-#' Fits the baseline risk meta-regression model in BNMA
+#' Creates the baseline risk meta-regression network in BNMA
 #'
-#' @param br_data A list of data in the format produced by the 'FormatForBnma' function.
+#' @param br_data A list of data in the format produced by FormatForBnma().
 #' @param outcome_type "Continuous" or "Binary".
 #' @param effects_type "fixed" or "random".
 #' @param cov_parameters "common", "exchangable", or "independent".
-#' @param seed Seed. Defaults to 123.
-#' @return Output from bnma::network.run.
-BaselineRiskRegression <- function(br_data, outcome_type, effects_type, cov_parameters, seed=123){
-  #Select random seeds for the four chains based on 'seed'
-  set.seed(seed)
-  seeds <- sample.int(4, n = .Machine$integer.max)
-
-  #Put the seeds in the required format for passing to bnma::network.run
-  rng_inits <- list()
-  for(i in 1:length(seeds)){
-    rng_inits[[i]] <- list(.RNG.name = "base::Wichmann-Hill", .RNG.seed = seeds[i])
-  }
-
+#' @return Output from bnma::network.data.
+BaselineRiskNetwork <- function(br_data, outcome_type, effects_type, cov_parameters){
   if(outcome_type == "Binary"){
     network <- with(br_data, bnma::network.data(Outcomes = ArmLevel$Outcomes,
                                                 Study = ArmLevel$Study,
@@ -78,7 +66,28 @@ BaselineRiskRegression <- function(br_data, outcome_type, effects_type, cov_para
                                                 baseline = cov_parameters,
                                                 baseline.risk = "independent"))
   }
-  return(bnma::network.run(network,
+  return(network)
+}
+
+
+
+#' Fits the baseline risk meta-regression model in BNMA
+#'
+#' @param br_network Network created from BaselineRiskNetwork().
+#' @param seed Seed. Defaults to 123.
+#' @return Output from bnma::network.run.
+BaselineRiskRegression <- function(br_network, seed=123){
+  #Select random seeds for the four chains based on 'seed'
+  set.seed(seed)
+  seeds <- sample.int(4, n = .Machine$integer.max)
+
+  #Put the seeds in the required format for passing to bnma::network.run
+  rng_inits <- list()
+  for(i in 1:length(seeds)){
+    rng_inits[[i]] <- list(.RNG.name = "base::Wichmann-Hill", .RNG.seed = seeds[i])
+  }
+
+  return(bnma::network.run(br_network,
                            n.run=10000,
                            RNG.inits=rng_inits,
                            n.chains=length(seeds)))
