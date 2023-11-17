@@ -57,7 +57,7 @@ covariate_value_panel_ui <- function(id) {
 #' Create the covariate value panel server.
 #'
 #' @param id ID of the module.
-#' @param covariate_data Reactive containing vector of all copvariate values.
+#' @param covariate_data Reactive containing vector of all covariate values.
 #' @param default_covariate_value Reactive containing the default covariate value.
 #' @param covariate_type Reactive containing the type of the covariate: either "Continuous" or "Binary".
 covariate_value_panel_server <- function(id, covariate_type, covariate_data, default_covariate_value) {
