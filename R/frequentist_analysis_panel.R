@@ -108,8 +108,8 @@ frequentist_analysis_panel_ui <- function(id) {
 #' @param freq_sub Reactive containing frequentist meta-analysis for the sensitivity analysis
 #' @param bugsnetdt Reactive containing bugsnet meta-analysis
 #' @param bugsnetdt_sub Reactive containing bugsnet meta-analysis for the sensitivity analysis
-#' @param reference_alter Reactive containing the name of the reference treatment for the sensitivity
-#'  analysis accounting for if the chosen reference treatment has been excluded
+#' @param reference_treatment Reactive containing the name of the reference treatment for the full data set
+#' @param filtered_reference_treatment Reactive containing the name of the reference treatment for the sensitivity analysis
 frequentist_analysis_panel_server <- function(
     id,
     metaoutcome,
@@ -120,7 +120,8 @@ frequentist_analysis_panel_server <- function(
     freq_sub,
     bugsnetdt,
     bugsnetdt_sub,
-    reference_alter
+    reference_treatment,
+    filtered_reference_treatment
     ) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
@@ -150,7 +151,7 @@ frequentist_analysis_panel_server <- function(
 
     # Forest plot for all studies
     output$Comparison2<- renderPlot({
-      make_netComp(freq_all(), model_effects(), reference_alter()$ref_all, input$freqmin, input$freqmax)
+      make_netComp(freq_all(), model_effects(), reference_treatment(), input$freqmin, input$freqmax)
       title("Results for all studies")
     })
 
@@ -160,13 +161,13 @@ frequentist_analysis_panel_server <- function(
     })
 
     output$ref4 <- renderText({
-      make_refText(reference_alter()$ref_all)
+      make_refText(reference_treatment())
     })
 
 
     # Forest plot with studies excluded
     output$SFPUpdatingComp <- renderPlot({
-      make_netComp(freq_sub(), model_effects(), reference_alter()$ref_sub, input$freqmin_sub, input$freqmax_sub)
+      make_netComp(freq_sub(), model_effects(), filtered_reference_treatment(), input$freqmin_sub, input$freqmax_sub)
       title("Results with studies excluded")
     })
 
@@ -176,7 +177,7 @@ frequentist_analysis_panel_server <- function(
     })
 
     output$ref3 <- renderText({
-      make_refText(reference_alter()$ref_sub)
+      make_refText(filtered_reference_treatment())
     })
 
     ### Interactive UI ###
@@ -213,7 +214,7 @@ frequentist_analysis_panel_server <- function(
         } else {
           png(file = file, width = 610, height = BayesPixels(as.numeric(bugsnet_sumtb(bugsnetdt(), metaoutcome())$Value[1])))
         }
-        make_netComp(freq_all(), model_effects(), reference_alter()$ref_all, input$freqmin, input$freqmax)
+        make_netComp(freq_all(), model_effects(), reference_treatment(), input$freqmin, input$freqmax)
         dev.off()
       },
       contentType = "image/pdf"
@@ -229,14 +230,14 @@ frequentist_analysis_panel_server <- function(
         } else {
           png(file = file, width = 610, height = BayesPixels(as.numeric(bugsnet_sumtb(bugsnetdt_sub(), metaoutcome())$Value[1])))
         }
-        make_netComp(freq_sub(), model_effects(), reference_alter()$ref_sub, input$freqmin_sub, input$freqmax_sub)
+        make_netComp(freq_sub(), model_effects(), filtered_reference_treatment(), input$freqmin_sub, input$freqmax_sub)
         dev.off()
       }
     )
     
     output$ref_change <- renderText({
-      if (identical(reference_alter()$ref_sub, reference_alter()$ref_all)=="FALSE") {
-        paste("Please note that the reference treatment for sensitivity analysis has now been changed to:", reference_alter()$ref_sub, ". This is because the treatment labelled 1 has been removed from the network of sensitivity analysis." )
+      if (identical(filtered_reference_treatment(), reference_treatment())=="FALSE") {
+        paste("Please note that the reference treatment for sensitivity analysis has now been changed to:", filtered_reference_treatment(), ". This is because the treatment labelled 1 has been removed from the network of sensitivity analysis." )
       }
     })
 

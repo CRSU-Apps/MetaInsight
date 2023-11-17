@@ -45,24 +45,6 @@ bugsnetdata <- function(data, metaoutcome, treatment_list){
   return(longsort2)
 }
 
-
-#' Calculate the reference treatments for the full data and the sensitivity analysis.
-#'
-#' @param treatment_list Data frame of treatment names ("Label") and IDs ("Number") for all studies.
-#' @param treatment_list_sub  Data frame of treatment names ("Label") and IDs ("Number") for all sensitivity analysis studies.
-#'
-#' @return List of
-#' - "ref_all" is the reference tretament for the whole data set.
-#' - "ref_sub" is the reference tretament for the sensitivity analysis data set.
-ref_alter <- function(treatment_list, treatment_list_sub) {
-  return(
-    list(
-      ref_all = treatment_list$Label[1],
-      ref_sub = treatment_list_sub$Label[1]
-    )
-  )
-}
-
 ####################################
 # Function for choosing default ordering in example datasets #
 #####################################

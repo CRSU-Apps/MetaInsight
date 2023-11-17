@@ -674,8 +674,8 @@ bayesian_analysis_panel_ui <- function(id) {
 #' @param freq_sub Reactive containing frequentist meta-analysis for the sensitivity analysis
 #' @param bugsnetdt Reactive containing bugsnet meta-analysis
 #' @param bugsnetdt_sub Reactive containing bugsnet meta-analysiss for the sensitivity analysis
-#' @param reference_alter Reactive containing the name of the reference treatment for the sensitivity
-#'  analysis accounting for if the chosen reference treatment has been excluded
+#' @param reference_treatment Reactive containing the name of the reference treatment for the full data set
+#' @param filtered_reference_treatment Reactive containing the name of the reference treatment for the sensitivity analysis
 bayesian_analysis_panel_server <- function(
     id,
     data,
@@ -692,7 +692,8 @@ bayesian_analysis_panel_server <- function(
     freq_sub,
     bugsnetdt,
     bugsnetdt_sub,
-    reference_alter
+    reference_treatment,
+    filtered_reference_treatment
     ) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
@@ -711,11 +712,11 @@ bayesian_analysis_panel_server <- function(
     # Bayesian analysis
 
     model <- eventReactive(input$baye_do, {
-      bayesian_model(data(), treatment_df(), metaoutcome(), outcome_measure(), model_effects(), reference_alter()$ref_all)
+      bayesian_model(data(), treatment_df(), metaoutcome(), outcome_measure(), model_effects(), reference_treatment())
     })
 
     model_sub <- eventReactive(input$sub_do, {
-      bayesian_model(data_sub(), treatment_df_sub(), metaoutcome(), outcome_measure(), model_effects(), reference_alter()$ref_sub)
+      bayesian_model(data_sub(), treatment_df_sub(), metaoutcome(), outcome_measure(), model_effects(), filtered_reference_treatment())
     })
     
     # forest min and max values different if continuous/binary
@@ -834,8 +835,8 @@ bayesian_analysis_panel_server <- function(
     )
     
     output$ref_change_bay <- renderText({
-      if (identical(reference_alter()$ref_sub, reference_alter()$ref_all)=="FALSE") {
-        paste("Please note that the reference treatment for sensitivity analysis has now been changed to:", reference_alter()$ref_sub, ". This is because the treatment labelled 1 has been removed from the network of sensitivity analysis." )
+      if (identical(filtered_reference_treatment(), reference_treatment())=="FALSE") {
+        paste("Please note that the reference treatment for sensitivity analysis has now been changed to:", filtered_reference_treatment(), ". This is because the treatment labelled 1 has been removed from the network of sensitivity analysis." )
       }
     })
 

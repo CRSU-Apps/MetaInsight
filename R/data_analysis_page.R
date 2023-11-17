@@ -113,19 +113,18 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, r
     # Reactive functions used in various places, based on the data
     #####
     
-    # Make ref_alter function (in fn_analysis.R) reactive - NVB
-    reference_alter <- reactive({
-      return(ref_alter(initial_connected_treatment_list(), filtered_connected_treatment_list()))
+    filtered_reference_treatment <- reactive({
+      filtered_connected_treatment_list()$Label[1]
     })
 
     # Make frequentist function (in fn_analysis.R) reactive - NVB
     freq_all <- reactive({
-      return(frequentist(initial_connected_data(), reference_alter()$ref_all, metaoutcome(), initial_connected_treatment_list(), outcome_measure(), model_effects()))
+      return(frequentist(initial_connected_data(), reference_treatment(), metaoutcome(), initial_connected_treatment_list(), outcome_measure(), model_effects()))
     })
 
     # Make frequentist function (in fn_analysis.R) reactive with excluded studies - NVB
     freq_sub <- reactive({
-      return(frequentist(filtered_connected_data(), reference_alter()$ref_sub, metaoutcome(), filtered_connected_treatment_list(), outcome_measure(), model_effects()))
+      return(frequentist(filtered_connected_data(), filtered_reference_treatment(), metaoutcome(), filtered_connected_treatment_list(), outcome_measure(), model_effects()))
     })
     
     # Make bugsnetdata function (in fn_analysis.R) reactive - NVB
@@ -210,7 +209,8 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, r
       freq_sub = freq_sub,
       bugsnetdt = bugsnetdt,
       bugsnetdt_sub = bugsnetdt_sub,
-      reference_alter = reference_alter
+      reference_treatment = reference_treatment,
+      filtered_reference_treatment = filtered_reference_treatment
     )
 
 
@@ -234,7 +234,8 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, r
       freq_sub = freq_sub,
       bugsnetdt = bugsnetdt,
       bugsnetdt_sub = bugsnetdt_sub,
-      reference_alter = reference_alter
+      reference_treatment = reference_treatment,
+      filtered_reference_treatment = filtered_reference_treatment
     )
   })
 }
