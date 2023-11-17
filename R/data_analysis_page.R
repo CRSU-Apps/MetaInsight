@@ -120,7 +120,7 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, r
 
     # Make frequentist function (in fn_analysis.R) reactive - NVB
     freq_all <- reactive({
-      return(frequentist(initial_connected_data(), reference_alter()$ref_sub, metaoutcome(), initial_connected_treatment_list(), outcome_measure(), model_effects()))
+      return(frequentist(initial_connected_data(), reference_alter()$ref_all, metaoutcome(), initial_connected_treatment_list(), outcome_measure(), model_effects()))
     })
 
     # Make frequentist function (in fn_analysis.R) reactive with excluded studies - NVB

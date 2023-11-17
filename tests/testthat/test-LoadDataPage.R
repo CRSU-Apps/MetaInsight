@@ -83,10 +83,11 @@ test_that("Continuous wide data wrangled with treatment IDs", {
 
 test_that("Wrangled continuous long data passed back to module parent", {
   testServer(load_data_page_server, args = list(metaoutcome = function() { 'Continuous' }), {
-    expect_equal(length(session$returned), 3)
+    expect_equal(length(session$returned),4)
     expect_equal(session$returned$data(), wrangled_data())
     expect_equal(session$returned$is_default_data(), is_default_data())
     expect_equal(session$returned$treatment_df(), treatment_list())
+    expect_equal(session$returned$reference_treatment(), reference_treatment())
   })
 })
 
@@ -162,9 +163,10 @@ test_that("Binary wide data wrangled with treatment IDs", {
 
 test_that("Wrangled binary long data passed back to module parent", {
   testServer(load_data_page_server, args = list(metaoutcome = function() { 'Binary' }), {
-    expect_equal(length(session$returned), 3)
+    expect_equal(length(session$returned), 4)
     expect_equal(session$returned$data(), wrangled_data())
     expect_equal(session$returned$is_default_data(), is_default_data())
     expect_equal(session$returned$treatment_df(), treatment_list())
+    expect_equal(session$returned$reference_treatment(), reference_treatment())
   })
 })

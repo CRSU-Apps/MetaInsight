@@ -136,7 +136,7 @@ test_that("IdentifySubNetworks() orders subnetworks with reference treatment for
   treatment_df <- CreateTreatmentIds(FindAllTreatments(data))
   data <- ReplaceTreatmentIds(data, treatment_df)
   
-  subnets <- IdentifySubNetworks(data, treatment_df, 5)
+  subnets <- IdentifySubNetworks(data, treatment_df, "E")
   
   expect_equal(length(subnets), 3)
   expect_equal(!!names(subnets), c("subnet_1", "subnet_2", "subnet_3"))
@@ -156,7 +156,7 @@ test_that("IdentifySubNetworks() orders subnetworks with reference treatment for
   treatment_df <- CreateTreatmentIds(FindAllTreatments(data))
   data <- ReplaceTreatmentIds(data, treatment_df)
   
-  subnets <- IdentifySubNetworks(data, treatment_df, 3)
+  subnets <- IdentifySubNetworks(data, treatment_df, "E")
   
   expect_equal(length(subnets), 3)
   expect_equal(!!names(subnets), c("subnet_1", "subnet_2", "subnet_3"))
@@ -176,7 +176,7 @@ test_that("IdentifySubNetworks() orders subnetworks with reference treatment for
   treatment_df <- CreateTreatmentIds(FindAllTreatments(data))
   data <- ReplaceTreatmentIds(data, treatment_df)
   
-  subnets <- IdentifySubNetworks(data, treatment_df, 5)
+  subnets <- IdentifySubNetworks(data, treatment_df, "E")
   
   expect_equal(length(subnets), 3)
   expect_equal(!!names(subnets), c("subnet_1", "subnet_2", "subnet_3"))
@@ -196,7 +196,7 @@ test_that("IdentifySubNetworks() orders subnetworks with reference treatment for
   treatment_df <- CreateTreatmentIds(FindAllTreatments(data))
   data <- ReplaceTreatmentIds(data, treatment_df)
   
-  subnets <- IdentifySubNetworks(data, treatment_df, 3)
+  subnets <- IdentifySubNetworks(data, treatment_df, "E")
   
   expect_equal(length(subnets), 3)
   expect_equal(!!names(subnets), c("subnet_1", "subnet_2", "subnet_3"))
@@ -216,7 +216,7 @@ test_that("IdentifySubNetworks() uses default ordering for invalid reference tre
   treatment_df <- CreateTreatmentIds(FindAllTreatments(data))
   data <- ReplaceTreatmentIds(data, treatment_df)
   
-  subnets <- expect_warning(IdentifySubNetworks(data, treatment_df, -1))
+  subnets <- expect_warning(IdentifySubNetworks(data, treatment_df, "Omlette"))
   
   expect_equal(length(subnets), 3)
   expect_equal(!!names(subnets), c("subnet_1", "subnet_2", "subnet_3"))
@@ -236,7 +236,7 @@ test_that("IdentifySubNetworks() uses default ordering for invalid reference tre
   treatment_df <- CreateTreatmentIds(FindAllTreatments(data))
   data <- ReplaceTreatmentIds(data, treatment_df)
   
-  subnets <- expect_warning(IdentifySubNetworks(data, treatment_df, -1))
+  subnets <- expect_warning(IdentifySubNetworks(data, treatment_df, "Omlette"))
   
   expect_equal(length(subnets), 3)
   expect_equal(!!names(subnets), c("subnet_1", "subnet_2", "subnet_3"))
@@ -256,7 +256,7 @@ test_that("IdentifySubNetworks() uses default ordering for invalid reference tre
   treatment_df <- CreateTreatmentIds(FindAllTreatments(data))
   data <- ReplaceTreatmentIds(data, treatment_df)
   
-  subnets <- expect_warning(IdentifySubNetworks(data, treatment_df, -1))
+  subnets <- expect_warning(IdentifySubNetworks(data, treatment_df, "Omlette"))
   
   expect_equal(length(subnets), 3)
   expect_equal(!!names(subnets), c("subnet_1", "subnet_2", "subnet_3"))
@@ -276,7 +276,7 @@ test_that("IdentifySubNetworks() uses default ordering for invalid reference tre
   treatment_df <- CreateTreatmentIds(FindAllTreatments(data))
   data <- ReplaceTreatmentIds(data, treatment_df)
   
-  subnets <- expect_warning(IdentifySubNetworks(data, treatment_df, -1))
+  subnets <- expect_warning(IdentifySubNetworks(data, treatment_df, "Omlette"))
   
   expect_equal(length(subnets), 3)
   expect_equal(!!names(subnets), c("subnet_1", "subnet_2", "subnet_3"))

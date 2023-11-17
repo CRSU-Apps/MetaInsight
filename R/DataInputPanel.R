@@ -167,12 +167,16 @@ data_input_panel_server <- function(id, metaoutcome, continuous_file = 'Cont_lon
       return(!data_uploaded())
     })
     
+    reference_treatment = reactive({
+      input$reference_treatment
+    })
+    
     return(
       list(
         data = data,
         is_default_data = is_default_data,
         treatment_list = treatment_list,
-        reference_treatment = reactive({ input$reference_treatment })
+        reference_treatment = reference_treatment
       )
     )
   })
