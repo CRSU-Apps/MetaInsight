@@ -173,18 +173,16 @@ test_that("BaselineRiskNetwork() has correct model settings for Continuous outco
 
 test_that("BaselineRiskRegression() sets RNGs correctly and gives reproducible output", {
   
-  data <- read.csv("Binary_wide_continuous_cov.csv")
-  treatment_ids <- CreateTreatmentIds(FindAllTreatments(data))
-  data <- WrangleUploadData(data, treatment_ids, "Binary")
-  wrangled_treatment_list <- CleanTreatmentIds(treatment_ids)
+  data <- list(ArmLevel = data.frame(
+    Study = c(rep("Constantine", 3), rep("Leo", 3), rep("Justinian", 2)),
+    Treat = c("the_Great", "the_Younger", "the_Dung_named", "the_Little", "the_Great", "the_Butcher", "the_Great", "the_Slit_nosed"),
+    Outcomes = c(-1, -2.1, -3.2, -4.3, -1.4, -5.5, -1.6, -7.7),
+    SD = c(11.1, 12.2, 13.3, 14.4, 15.5, 16.6, 17.7, 18.8),
+    N = 30:37))
+  data$Treat.order <- VectorWithItemFirst(vector = unique(data$ArmLevel$Treat), first_item = "the_Great")
   
-  br_data <- FormatForBnma(br_data = data,
-                            treatment_ids = wrangled_treatment_list,
-                            outcome_type = "Binary",
-                            ref = "the_Great")
-  
-  bnma_network <- BaselineRiskNetwork(br_data = br_data,
-                                     outcome_type = "Binary",
+  bnma_network <- BaselineRiskNetwork(br_data = data,
+                                     outcome_type = "Continuous",
                                      effects_type = "random",
                                      cov_parameters = "exchangeable")
   
