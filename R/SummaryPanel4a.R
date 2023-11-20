@@ -5,6 +5,7 @@
 metaregression_summary_panel_ui <- function(id) {
   ns <- NS(id)
   fluidPage(
+    uiOutput(ns("toggle_covariate_baseline")),
     plotOutput(outputId = ns('covariate_plot')),
     p('The covariate value is the same for all treatment arms across a study.'),
     verbatimTextOutput(ns("test")),
@@ -24,6 +25,18 @@ metaregression_summary_panel_ui <- function(id) {
 #' 
 metaregression_summary_panel_server <- function(id, all_data, metaoutcome) {
   moduleServer(id, function(input, output, session) {
+    
+    # Toggle between covariate and baseline risk, only when there is a covariate
+    output$toggle_covariate_baseline <- renderUI({
+      # If there is a covariate (i.e. the covariate name is not NA)
+      if(!is.na(FindCovariateNames(all_data())[1])) {
+        shinyWidgets::radioGroupButtons(
+              inputId = session$ns("covariate_baseline_toggle"),
+              choices = c("Covariate", "Baseline risk"),
+              status = "primary"
+        )
+      }
+    })
     
     #' Create the covariate summary plot 
     #' https://rdrr.io/github/audrey-b/BUGSnet/man/data.plot.html
@@ -72,8 +85,8 @@ metaregression_summary_panel_server <- function(id, all_data, metaoutcome) {
       
     })
     
-    output$test <- renderPrint ({ FindCovariateNames(all_data())[1] })
-    # output$test <- renderPrint ({ all_data()["Mean"] })
+    # output$test <- renderPrint ({ FindCovariateNames(all_data())[1] })
+    output$test <- renderPrint ({(!is.na(FindCovariateNames(all_data())[1])) })
     
 
     output$downloadCovariateSummary <- downloadHandler(
