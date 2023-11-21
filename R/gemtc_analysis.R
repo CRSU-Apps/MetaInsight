@@ -120,11 +120,16 @@ RunCovariateModel <- function(data, treatment_ids, outcome_type, outcome, covari
 #'  a = text output stating whether fixed or random effects;
 #'  sumresults = summary output of relative effects
 #'  dic = data frame of model fit statistics
+#'  cov_value_sentence = text output stating the value for which the covariate has been set to for producing output
 CovariateModelOutput <- function(model, cov_value = NULL) {
   
   # Set default covariate value if unsupplied
   if (is.null(cov_value) == TRUE) {
-    cov_value <- model$model$regressor$center
+    if (model$model$regressor$type == "continuous") {
+      cov_value <- model$model$regressor$center # center value
+    } else if (model$model$regressor$type == "binary") {
+      cov_value <- 0 # base group
+    }
   }
   
   # Relative Effects raw data
@@ -139,11 +144,15 @@ CovariateModelOutput <- function(model, cov_value = NULL) {
   # Table of Model fit stats
   fit_stats <- as.data.frame(summary$DIC)
   
+  # Summary sentence of where covariate value has been set for results
+  cov_value_sentence <- paste0("Value for covariate ", model$model$regressor$variable, " set at ", cov_value)
+  
   # naming conventions to match current Bayesian functions
   return(list(
     mtcRelEffects = rel_eff,
     a = model_text,
     sumresults = summary,
-    dic = fit_stats)
+    dic = fit_stats,
+    cov_value_sentence = cov_value_sentence)
   )
 }

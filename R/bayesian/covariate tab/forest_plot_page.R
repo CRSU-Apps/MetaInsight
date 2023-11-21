@@ -19,7 +19,21 @@ covariate_forest_plots_page_ui <- function(id) {
       align = "center",
       p(tags$strong("Results for all studies")),
       p("Please choose your regressor type, then click the button below to run meta-regression analysis (and each time you subsequently change any options)."),
-      selectInput(inputId = ns("select_regressor"), label = "Choose type of regression covariate", choices = c("shared", "unrelated", "exchangeable")),
+      fluidRow(
+        div(selectInput(inputId = ns("select_regressor"), 
+                  label = "Choose type of regression coefficient", 
+                  choices = c("shared", "unrelated", "exchangeable")),
+          style = "display: inline-block;"),
+        div(
+          shinyWidgets::dropMenu(shinyWidgets::dropdownButton(
+            size = 'xs', status = "info", icon=icon('info')), align = 'left',
+            p(tags$strong("Types of regressors")),
+            p(tags$u("Shared:"), " Coefficient is the same for all treatment comparisons"),
+            p(tags$u("Unrelated:"), " Coefficient is different for each treatment comparison"),
+            p(tags$u("Exchangeable:"), " Coefficient is different for each treatment comparison but all come from a shared distribution")),
+            style = "display:inline-block; vertical-align: top;"
+        )
+      ),
       actionButton(inputId = ns("baye_do"), label = "Click here to run the main analysis for all studies")
     ),
     fixedRow(

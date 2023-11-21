@@ -94,14 +94,15 @@ bayesian_forest_plot_plus_stats_server <- function(
 
     # Interactive UI
     output$BayesianForestPlot <- renderUI({
-      plotOutput(
+      shinycssloaders::withSpinner(
+        plotOutput(
         outputId = ns("gemtc"),
         width="630px",
         height = BayesPixels(
           as.numeric(bugsnet_sumtb(bugsnetdt(), metaoutcome())$Value[1]),
           title = TRUE
         )
-      )
+      ), type = 6)
     })
 
     output$downloadBaye_plot <- downloadHandler(
@@ -122,6 +123,9 @@ bayesian_forest_plot_plus_stats_server <- function(
         }
         if (metaoutcome() == "Continuous") {
           gemtc::forest(model_output()$mtcRelEffects, digits = 3, xlim = c(input$bayesmin, input$bayesmax))
+        }
+        if (analysis_type == "Regression") {
+          mtext(model_output()$cov_value_sentence, side = 1, adj = 0)
         }
         dev.off()
       }
