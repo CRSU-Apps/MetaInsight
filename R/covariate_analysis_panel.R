@@ -11,35 +11,51 @@ covariate_analysis_panel_ui <- function(id) {
         style = "display: inline-block; vertical-align: top; padding-right: 20pt;"
       ),
       div(
+        # Type selection if the covariate data is valid
         conditionalPanel(
           condition = "output.valid_covariate",
           ns = ns,
-          selectInput(
-            inputId = ns("covariate_type_selection"),
-            label = "",
-            choices = c("Binary", "Continuous"),
-            width = "120pt"
+          div(
+            selectInput(
+              inputId = ns("covariate_type_selection"),
+              label = "",
+              choices = c("Binary", "Continuous"),
+              width = "120pt"
+            ),
+            style = "display: inline-block;"
+          ),
+          div(
+            # If binary data is poorly coded, then it will be identified as continuous.
+            # Show a warning to the user when data is identified as continuous to inform them.
+            conditionalPanel(
+              condition = "output.inferred_type == 'Continuous'",
+              ns = ns,
+              div(
+                tags$i(class = "fa-solid fa-circle-info"),
+                title = "If the data is intended to be binary, the only allowed values are 0, 1, and NA",
+                style = "color: orange;"
+              )
+            ),
+            style = "display: inline-block; vertical-align: 50%"
+          ),
+          div(
+            covariate_value_panel_ui(id = ns("covariate_value")),
+            style = "display: inline-block; vertical-align: 65%"
           )
         ),
         style = "display: inline-block;"
       ),
-      div(
-        conditionalPanel(
-          condition = "output.inferred_type == 'Continuous'",
-          ns = ns,
-          div(
-            tags$i(class = "fa-solid fa-circle-info"),
-            title = "If your data is binary, the only allowed values are 0, 1, and NA",
-            style = "color: red;"
-          )
+      # Show error message if invalid data
+      conditionalPanel(
+        condition = "!output.valid_covariate",
+        ns = ns,
+        div(
+          textOutput(outputId = ns("error_message_box")),
+          style = "display: inline-block; color: red; font-style: italic; font-weight: bold; padding-right: 20pt;"
         ),
-        style = "display: inline-block; vertical-align: 50%;"
+        style = "vertical-align: 65%"
       ),
-      div(
-        textOutput(outputId = ns("error_message_box")),
-        style = "display: inline-block; color: red; font-style: italic; font-weight: bold; padding-right: 20pt;"
-      ),
-      covariate_value_panel_ui(id = ns("covariate_value")),
+      # Meta-rgeression UI
       conditionalPanel(
         condition = "output.valid_covariate",
         ns = ns,
@@ -77,6 +93,7 @@ covariate_analysis_panel_server <- function(id, all_data) {
     
     inferred_type <- reactiveVal()
     
+    # Try to infer the type of the covariate, and display an error to the user if the data is bad
     observe({
       tryCatch(
         {
@@ -103,6 +120,7 @@ covariate_analysis_panel_server <- function(id, all_data) {
     output$inferred_type <- reactive({ inferred_type() })
     outputOptions(x = output, name = "inferred_type", suspendWhenHidden = FALSE)
     
+    # Default covariate value to be populated by the covariate analysis
     default_covariate_value <- reactiveVal()
     
     covariate_value = covariate_value_panel_server(

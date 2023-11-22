@@ -13,7 +13,8 @@
 #' @return Div containing the module UI.
 covariate_value_panel_ui <- function(id) {
   ns <- NS(id)
-  .CreateInlineBlock(
+  div(
+    # Continuous value input & warning if extrapolating outside of data range
     conditionalPanel(
       condition = "output.covariate_type == 'Continuous'",
       ns = ns,
@@ -33,11 +34,12 @@ covariate_value_panel_ui <- function(id) {
           ns = ns,
           div(
             "Covariate value outside data range",
-            style = "color: red; font-style: italic; font-weight: bold; padding-left: 10pt"
+            style = "color: orange; font-style: italic; font-weight: bold; padding-left: 10pt"
           )
         )
       )
     ),
+    # Binary value input
     conditionalPanel(
       condition = "output.covariate_type == 'Binary'",
       ns = ns,
@@ -49,8 +51,7 @@ covariate_value_panel_ui <- function(id) {
         ),
         .CreateInlineBlock("1")
       )
-    ),
-    style = "vertical-align: 50%;"
+    )
   )
 }
 
@@ -63,6 +64,7 @@ covariate_value_panel_ui <- function(id) {
 covariate_value_panel_server <- function(id, covariate_type, covariate_data, default_covariate_value) {
   shiny::moduleServer(id, function(input, output, session) {
     
+    # Minimum covariate value in the data
     min_value <- reactive({
       if (is.null(covariate_data())) {
         return(NULL)
@@ -70,6 +72,7 @@ covariate_value_panel_server <- function(id, covariate_type, covariate_data, def
       return(min(covariate_data()))
     })
     
+    # Maximum covariate value in the data
     max_value <- reactive({
       if (is.null(covariate_data())) {
         return(NULL)
@@ -94,7 +97,7 @@ covariate_value_panel_server <- function(id, covariate_type, covariate_data, def
     
     covariate_value <- reactiveVal(0)
     
-    # Update value and slider when numeric input changes
+    # Update value when numeric input changes
     observe({
       if (!is.null(covariate_type()) && covariate_type() == "Continuous") {
         covariate_value(input$numeric)
@@ -108,9 +111,11 @@ covariate_value_panel_server <- function(id, covariate_type, covariate_data, def
       }
     })
     
+    # Update the client code to display the correct value input for the covariate type
     output$covariate_type <- reactive({ covariate_type() })
     outputOptions(x = output, name = "covariate_type", suspendWhenHidden = FALSE)
     
+    # Update the client code to inform the user when the covariate value is outside the range of the data
     output$extrapolated <- reactive({ covariate_value() < min_value() || covariate_value() > max_value() })
     outputOptions(x = output, name = "extrapolated", suspendWhenHidden = FALSE)
   
