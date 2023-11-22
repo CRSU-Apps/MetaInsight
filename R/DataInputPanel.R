@@ -74,7 +74,7 @@ data_input_panel_server <- function(id, metaoutcome, continuous_file = 'Cont_lon
 
     # Logical to show reset button only when data uploaded
     data_uploaded <- reactiveVal(FALSE)
-    output$data_uploaded <- reactive({data_uploaded()})
+    output$data_uploaded <- reactive({ data_uploaded() })
     outputOptions(output, 'data_uploaded', suspendWhenHidden = FALSE)
 
     # Render the file input intially
@@ -110,6 +110,7 @@ data_input_panel_server <- function(id, metaoutcome, continuous_file = 'Cont_lon
         )
       }
       
+      
       return(CleanData(df))
     })
     
@@ -128,15 +129,19 @@ data_input_panel_server <- function(id, metaoutcome, continuous_file = 'Cont_lon
     #####
     
     # if the outcome is changed, reload the data and labels, reset the file input and hide the reload button
-    observeEvent(metaoutcome(),
-                 {
-                   reload(TRUE)
-                   output$file_input_panel <- default_file_input
-                   data_uploaded(FALSE)
-                 })
+    observeEvent(
+      metaoutcome(),
+      {
+        reload(TRUE)
+        output$file_input_panel <- default_file_input
+        data_uploaded(FALSE)
+      },
+      ignoreInit = TRUE
+      )
     
     # if the data is changed load the new data and show the reload button
-    observeEvent(input$data,
+    observeEvent(
+      input$data,
                  {
                    reload(FALSE)
                    data_uploaded(TRUE)

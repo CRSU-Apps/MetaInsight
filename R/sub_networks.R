@@ -57,6 +57,10 @@ IdentifySubNetworks <- function(data, treatment_df, reference_treatment_name = N
   for (membership_index in unique(membership)) {
     subnet_treatments <- treatment_df$Number[membership == membership_index]
     subnet_studies <- FindStudiesIncludingTreatments(data, subnet_treatments)
+    
+    if (length(subnet_studies) == 0) {
+      next
+    }
 
     # Subnetwork name and index are defined by the reference treatment.
     # The reference treatment will always be in the first subnetwork

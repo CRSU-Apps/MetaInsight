@@ -73,6 +73,7 @@ data_analysis_options_panel_ui <- function(id) {
 #' - "initial_connected_treatment_list" is a data frame containing the updated treatment IDs for the connected data.
 #' - "filtered_connected_data" is a data frame containing only the filtered studies which form a connected network, containing the reference treatment.
 #' - "filtered_connected_treatment_list" is a data frame containing the updated treatment IDs for the connected filtered data.
+#' - "filtered_reference_treatment" is the name of the reference treatment for the sensitivity analysis.
 #' - "rank_option" contains "good" or "bad" for whether a small value is desirable or not
 #' - "continuous_outcome" contains acronym of the continuous outcome:
 #'   "MD" for mean difference, or "SMD" for standardised mean difference
@@ -141,6 +142,7 @@ data_analysis_options_server <- function(id, data, treatment_df, reference_treat
         initial_connected_treatment_list = exclusions_reactives$initial_connected_treatment_list,
         filtered_connected_data = exclusions_reactives$filtered_connected_data,
         filtered_connected_treatment_list = exclusions_reactives$filtered_connected_treatment_list,
+        filtered_reference_treatment = exclusions_reactives$filtered_reference_treatment,
         rank_option = rank_option,
         continuous_outcome = continuous_outcome,
         binary_outcome = binary_outcome

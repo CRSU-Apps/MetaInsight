@@ -28,6 +28,7 @@ study_exclusions_panel_ui <- function(id) {
 #' - "initial_connected_treatment_list" is a data frame containing the updated treatment IDs for the connected data.
 #' - "filtered_connected_data" is a data frame containing only the filtered studies which form a connected network, containing the reference treatment.
 #' - "filtered_connected_treatment_list" is a data frame containing the updated treatment IDs for the connected filtered data.
+#' - "filtered_reference_treatment" is the name of the reference treatment for the sensitivity analysis.
 study_exclusions_panel_server <- function(id, data, treatment_df, reference_treatment) {
   moduleServer(id, function(input, output, session) {
     all_exclusions <- debounce(
@@ -41,9 +42,16 @@ study_exclusions_panel_server <- function(id, data, treatment_df, reference_trea
     
     ### Primary subnetwork
     
+    initial_subnetworks <- reactive({
+      if (is.null(reference_treatment()) || reference_treatment() == "" || !(reference_treatment() %in% treatment_df()$Label)) {
+        return(NULL)
+      }
+      return(IdentifySubNetworks(data(), treatment_df(), reference_treatment()))
+    })
+    
     initial_connected_data <- reactive({
       indices <- 1:length(data()$Study)
-      subnetworks <- IdentifySubNetworks(data(), treatment_df(), reference_treatment())
+      subnetworks <- initial_subnetworks()
       primary_network <- subnetworks$subnet_1
       
       connected_indices <- indices[data()$Study %in% primary_network$studies]
@@ -64,10 +72,14 @@ study_exclusions_panel_server <- function(id, data, treatment_df, reference_trea
       unique(filtered_data()$Study)
     })
     
+    filtered_subnetworks <- reactive({
+      IdentifySubNetworks(filtered_data(), treatment_df())
+    })
+    
     filtered_connected_data <- reactive({
       indices <- 1:length(filtered_data()$Study)
       
-      subnetworks <- IdentifySubNetworks(filtered_data(), treatment_df())
+      subnetworks <- filtered_subnetworks()
       primary_network <- subnetworks$subnet_1
       
       if (length(primary_network$studies) == 0) {
@@ -82,7 +94,42 @@ study_exclusions_panel_server <- function(id, data, treatment_df, reference_trea
       filtered_studies()[!filtered_studies() %in% filtered_connected_data()$Study]
     })
     
+    
+    filtered_reference_treatment <- reactive({
+      filtered_connected_treatment_list()$Label[1]
+    })
+    
     ### Event handlers
+    
+    # Inform the user that the uploaded data is disconnected
+    observeEvent(
+      initial_subnetworks(),
+      {
+        if (length(initial_subnetworks()) > 1) {
+          shiny::showModal(
+            modalDialog(
+              title = "Disconnected Network",
+              p(glue::glue("The uploaded data comprises a disconnected network. Only the subnetwork containing the reference treatment ({reference_treatment()}) will be displayed"))
+            )
+          )
+        }
+      }
+    )
+    
+    # Inform the user that the sensitivity analysis data is disconnected
+    observeEvent(
+      all_exclusions(),
+      {
+        if (length(filtered_subnetwork_exclusions()) > 0) {
+          shiny::showModal(
+            modalDialog(
+              title = "Disconnected Network",
+              p(glue::glue("The filtered data comprises a disconnected network. Only the subnetwork containing the reference treatment ({filtered_reference_treatment()}) will be displayed"))
+            )
+          )
+        }
+      }
+    )
     
     # Create check boxes for studies in data
     observe({
@@ -164,7 +211,8 @@ study_exclusions_panel_server <- function(id, data, treatment_df, reference_trea
         initial_connected_data = initial_connected_wrangled_data,
         initial_connected_treatment_list = initial_connected_treatment_list,
         filtered_connected_data = filtered_connected_wrangled_data,
-        filtered_connected_treatment_list = filtered_connected_treatment_list
+        filtered_connected_treatment_list = filtered_connected_treatment_list,
+        filtered_reference_treatment = filtered_reference_treatment
       )
     )
   })

@@ -105,6 +105,7 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, r
     initial_connected_treatment_list = analysis_options_reactives$initial_connected_treatment_list
     filtered_connected_data = analysis_options_reactives$filtered_connected_data
     filtered_connected_treatment_list = analysis_options_reactives$filtered_connected_treatment_list
+    filtered_reference_treatment = analysis_options_reactives$filtered_reference_treatment
     rank_option = analysis_options_reactives$rank_option
     continuous_outcome = analysis_options_reactives$continuous_outcome
     binary_outcome = analysis_options_reactives$binary_outcome
@@ -112,10 +113,6 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, r
     #####
     # Reactive functions used in various places, based on the data
     #####
-    
-    filtered_reference_treatment <- reactive({
-      filtered_connected_treatment_list()$Label[1]
-    })
 
     # Make frequentist function (in fn_analysis.R) reactive - NVB
     freq_all <- reactive({
