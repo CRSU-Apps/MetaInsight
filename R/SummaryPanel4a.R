@@ -5,6 +5,7 @@
 metaregression_summary_panel_ui <- function(id) {
   ns <- NS(id)
   fluidPage(
+    h4("Summary Characteristic Plot"),
     uiOutput(ns("toggle_covariate_baseline")),
     plotOutput(outputId = ns('covariate_plot')),
     p('The covariate value is the same for all treatment arms across a study.'),
@@ -31,7 +32,7 @@ metaregression_summary_panel_server <- function(id, all_data, metaoutcome) {
       # If there is a covariate (i.e. the covariate name is not NA)
       if(!is.na(FindCovariateNames(all_data())[1])) {
         shinyWidgets::radioGroupButtons(
-              inputId = session$ns("covariate_baseline_toggle"),
+              inputId = session$ns("toggle_covariate_baseline"),
               choices = c("Covariate", "Baseline risk"),
               status = "primary"
         )
@@ -51,23 +52,33 @@ metaregression_summary_panel_server <- function(id, all_data, metaoutcome) {
                                          varname.t = 'T',
                                          varname.s = 'Study')
       
+      # If there is no covariate or baseline risk is selected by the toggle
+      if (is.na(FindCovariateNames(all_data())[1]) || input$toggle_covariate_baseline == "Baseline risk") {
+        
+        # Baseline risk for continuous outcomes
+        if (metaoutcome() == "Continuous") {
+          # The covariate is the mean column - needs to be the mean value for the reference treatment
+          covariate <- colnames(all_data())[4]
+          y_axis_label <- "Baseline risk"
+        }
+      
+        # Baseline risk for binary outcomes
+        else if (metaoutcome() == "Binary") {
+          # The covariate needs to be calculated for the reference treatment
+          covariate <- colnames(all_data())[4]
+          y_axis_label <- "Baseline risk"
+        }
+      }
+      
       # If there is a covariate (i.e. the covariate name is not NA)
-      if (!is.na(FindCovariateNames(all_data())[1])) {
+      else if (!is.na(FindCovariateNames(all_data())[1])) {
         
         # Use FindCovariateName function to find the covariate column
         covariate <- FindCovariateNames(all_data())[1]
         
         # Use GetFriendlyCovariateName function to label the y-axis
         y_axis_label <- GetFriendlyCovariateName(covariate)
-        
       }
-      
-      # # Baseline risk for continuous outcomes
-      # else if (metaoutcome() == "Continuous") {
-      #   # The covariate is the mean column for the reference treatment
-      #   covariate <- ?
-      #   y_axis_label <- "Baseline risk"
-      # }
 
       return(DataPlot(BUGSnet_data,
                                  covariate = covariate,
@@ -86,7 +97,7 @@ metaregression_summary_panel_server <- function(id, all_data, metaoutcome) {
     })
     
     # output$test <- renderPrint ({ FindCovariateNames(all_data())[1] })
-    output$test <- renderPrint ({(!is.na(FindCovariateNames(all_data())[1])) })
+    output$test <- renderPrint ({ (is.na(FindCovariateNames(all_data())[1]) || input$toggle_covariate_baseline == "Baseline risk") })
     
 
     output$downloadCovariateSummary <- downloadHandler(
