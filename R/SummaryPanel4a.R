@@ -80,7 +80,7 @@ metaregression_summary_panel_server <- function(id, all_data, metaoutcome) {
         y_axis_label <- GetFriendlyCovariateName(covariate)
       }
 
-      return(DataPlot(BUGSnet_data,
+      return(BUGSnet::data.plot(BUGSnet_data,
                                  covariate = covariate,
                                  covariate.label = y_axis_label,
                                  # half.length = "age_SD", # Error bars - needs a second covariate, possible future addition
