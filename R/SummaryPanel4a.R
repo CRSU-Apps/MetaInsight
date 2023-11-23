@@ -90,10 +90,13 @@ metaregression_summary_panel_server <- function(id, all_data, metaoutcome) {
     }
     
     # Render covariate summary plot
-    output$covariate_plot <- renderPlot({
-
-      make_covariate_plot(all_data)
-      
+    observe({
+      output$covariate_plot <- renderPlot({
+  
+        make_covariate_plot(all_data)
+        
+      }, width = calculate_plot_pixel(nrow(all_data()))
+      )
     })
     
     # output$test <- renderPrint ({ FindCovariateNames(all_data())[1] })
