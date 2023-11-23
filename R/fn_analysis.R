@@ -159,7 +159,7 @@ groupforest.df <- function(d1, ntx, lstx, outcome, HeaderSize, TitleSize) {
                              xlab = paste("Observed ",outcome), efac=0.5)
   }
   text(fplot$xlim[1], gaps, pos=4, font = 4, text_label, cex=HeaderSize)
-  title("Individual study results (for all studies) grouped by treatment comparison", cex.main=TitleSize)
+  title("Individual study results (with studies excluded) grouped by treatment comparison", cex.main=TitleSize)
   list(fplot=fplot,size=size)
 }
 
