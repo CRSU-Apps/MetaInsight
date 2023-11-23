@@ -55,7 +55,7 @@ covariate_analysis_panel_ui <- function(id) {
         ),
         style = "vertical-align: 65%"
       ),
-      # Meta-rgeression UI
+      # Meta-regression UI
       conditionalPanel(
         condition = "output.valid_covariate",
         ns = ns,
