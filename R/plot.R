@@ -69,7 +69,7 @@ make_Incon <- function(freq, modelranfix) {
 }
 
 # 3a Forest plot 
-make_Forest <- function(model, metaoutcome, bayesmin, bayesmax) {
+CreateForestPlot <- function(model, metaoutcome, bayesmin, bayesmax) {
   if (metaoutcome=="Binary") {
     return(gemtc::forest(model$mtcRelEffects, digits=3, xlim=c(log(bayesmin), log(bayesmax))))
   } else if (metaoutcome=="Continuous") {

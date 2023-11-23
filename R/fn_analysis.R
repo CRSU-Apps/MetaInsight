@@ -402,7 +402,7 @@ baye <- function(data,treat_list, model, outcome, CONBI, ref) {
 
 ### 3a. tau of gemtc
 
-gemtctau <- function(results,outcome) {
+CreateTauSentence <- function(results,outcome) {
   sumresults<-results$sumresults
   if (results$a=="random effect") {   #SD and its 2.5% and 97.5%
     ntx <- nrow(sumresults$summaries$statistics)

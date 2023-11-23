@@ -54,10 +54,6 @@ covariate_forest_plots_page_ui <- function(id) {
 #' @param covariate Chosen covariate name as per uploaded data
 #' @param cov_friendly Friendly name of chosen covariate
 #' @param model_effects Reactive containing model effects: either "random" or "fixed"
-#' @param continuous_outcome Reactive containing acronym of the continuous outcome:
-#'   "MD" for mean difference, or "SMD" for standardised mean difference
-#' @param binary_outcome Reactive containing acronym of the binary outcome:
-#'   "OR" for odds ratio, "RR" for risk ratio, or "RD" for risk difference
 #' @param bugsnetdt Reactive containing bugsnet meta-analysis
 #'
 #' @return List of reactives: "model_output" contains meta-regression model outputs
@@ -70,21 +66,19 @@ covariate_forest_plots_page_server <- function(
     covariate,
     cov_friendly,
     model_effects,
-    continuous_outcome,
-    binary_outcome,
     bugsnetdt
     ) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
 
-    ### SMD warning alert
+    ### SMD & RD warning alert
 
     observeEvent(list(input$baye_do), {
-      if (continuous_outcome()=="SMD") {
-        showNotification("Please note: standardised mean difference currently cannot be analysed in Bayesian analysis", type = "error", duration = NULL)
+      if (outcome_measure()=="SMD") {
+        showNotification("Please note: standardised mean difference currently cannot be analysed within Bayesian analysis in MetaInsight", type = "error", duration = NULL)
       }
-      else if (binary_outcome()=="RD") {
-        showNotification("Please note: Risk difference currently cannot be analysed in Bayesian analysis", type = "error", duration = NULL)
+      else if (outcome_measure()=="RD") {
+        showNotification("Please note: Risk difference currently cannot be analysed within Bayesian analysis in MetaInsight", type = "error", duration = NULL)
       }
     })
 

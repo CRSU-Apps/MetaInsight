@@ -44,8 +44,6 @@ test_that("Covariate name extracted from data when available", {
                 metaoutcome = reactive("Continuous"),
                 outcome_measure = reactive("MD"),
                 model_effects = reactive("random"),
-                continuous_outcome = reactive("MD"),
-                binary_outcome = reactive("OR"),
                 bugsnetdt = reactive(NULL)),
     {
       expect_equal(covariate_name(), "age")

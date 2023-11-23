@@ -63,10 +63,6 @@ covariate_analysis_panel_ui <- function(id) {
 #' @param metaoutcome Reactive containing meta analysis outcome: "Continuous" or "Binary"
 #' @param outcome_measure Reactive containing meta analysis outcome measure: "MD", "SMD", "OR, "RR", or "RD"
 #' @param model_effects Reactive containing model effects: either "random" or "fixed"
-#' @param continuous_outcome Reactive containing acronym of the continuous outcome:
-#'   "MD" for mean difference, or "SMD" for standardised mean difference
-#' @param binary_outcome Reactive containing acronym of the binary outcome:
-#'   "OR" for odds ratio, "RR" for risk ratio, or "RD" for risk difference
 #' @param bugsnetdt Reactive containing bugsnet meta-analysis
 covariate_analysis_panel_server <- function(
     id, 
@@ -75,8 +71,6 @@ covariate_analysis_panel_server <- function(
     metaoutcome,
     outcome_measure,
     model_effects,
-    continuous_outcome,
-    binary_outcome,
     bugsnetdt
     ) {
   shiny::moduleServer(id, function(input, output, session) {
@@ -137,8 +131,6 @@ covariate_analysis_panel_server <- function(
       covariate = covariate_title,
       cov_friendly = covariate_name,
       model_effects = model_effects,
-      continuous_outcome = continuous_outcome,
-      binary_outcome = binary_outcome,
       bugsnetdt = bugsnetdt
     )
     

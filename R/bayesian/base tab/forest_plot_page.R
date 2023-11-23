@@ -61,10 +61,6 @@ bayesian_forest_plots_page_ui <- function(id) {
 #' @param treatment_df Reactive containing data frame containing treatment IDs (Number) and names (Label)
 #' @param metaoutcome Reactive containing meta analysis outcome: "Continuous" or "Binary"
 #' @param outcome_measure Reactive containing meta analysis outcome measure: "MD", "SMD", "OR, "RR", or "RD"
-#' @param continuous_outcome Reactive containing acronym of the continuous outcome:
-#'   "MD" for mean difference, or "SMD" for standardised mean difference
-#' @param binary_outcome Reactive containing acronym of the binary outcome:
-#'   "OR" for odds ratio, "RR" for risk ratio, or "RD" for risk difference
 #' @param model_effects Reactive containing model effects: either "random" or "fixed"
 #' @param exclusions Reactive containing names of studies excluded from the sensitivity analysis
 #' @param bugsnetdt Reactive containing bugsnet meta-analysis
@@ -78,8 +74,6 @@ bayesian_forest_plots_page_server <- function(
     treatment_df,
     metaoutcome,
     outcome_measure,
-    continuous_outcome,
-    binary_outcome,
     model_effects,
     exclusions,
     bugsnetdt,
@@ -88,14 +82,14 @@ bayesian_forest_plots_page_server <- function(
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
 
-    ### SMD warning alert
+    ### SMD & RD warning alert
 
     observeEvent(list(input$baye_do, input$sub_do), {
-      if (continuous_outcome()=="SMD") {
-        showNotification("Please note: standardised mean difference currently cannot be analysed in Bayesian analysis", type = "error", duration = NULL)
+      if (outcome_measure()=="SMD") {
+        showNotification("Please note: standardised mean difference currently cannot be analysed within Bayesian analysis in MetaInsight", type = "error", duration = NULL)
       }
-      else if (binary_outcome()=="RD") {
-        showNotification("Please note: Risk difference currently cannot be analysed in Bayesian analysis", type = "error", duration = NULL)
+      else if (outcome_measure()=="RD") {
+        showNotification("Please note: Risk difference currently cannot be analysed within Bayesian analysis in MetaInsight", type = "error", duration = NULL)
       }
     })
 
