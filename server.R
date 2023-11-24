@@ -11,26 +11,7 @@ shinyServer(function(input, output, session) {
   
   ### GDPR
   
-  google_analytics_header_server(id = "analytics")
-
-  ### View the full update history
-  
-  showModal(
-    modalDialog(
-      title = "Important message",
-      easyClose = FALSE,
-      p(
-        tags$strong("In accordance with Data Protection legislation, we would like to inform you of the following before you use our website:"),
-        "We collect your usage data within the MetaInsight app to perform analytics of usage and improve our app. By clicking",
-        tags$i(tags$u("I consent")),
-        "below, you consent to the use of data by us through Google Analytics. For details of policy, please check the 'Privacy notice' tab within the app, and ",
-        tags$a(href="https://policies.google.com/privacy?hl=en", "Google Privacy & Terms.",target="_blank")
-      ),
-      br(),
-      modalButton("I consent"),
-      footer = NULL
-    )
-  )
+  google_analytics_header_server(id = "analytics", google_analytics_id = "365218243")
   
   #####
   # Reactive functions used in various places

@@ -10,7 +10,7 @@ google_analytics_header_ui <- function(id) {
   )
 }
 
-google_analytics_header_server <- function(id) {
+google_analytics_header_server <- function(id, google_analytics_id) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
     
@@ -71,7 +71,19 @@ google_analytics_header_server <- function(id) {
     output$analytics_script <- renderUI({
       cookie_value <- gdpr_cookie_value()
       if (!is.null(cookie_value) && as.logical(cookie_value)) {
-        return(tags$head(singleton(includeScript("google_analytics2.js"))))
+        return(
+          tags$head(
+            singleton(
+              tags$script(
+                stringr::str_replace(
+                  readr::read_file("google_analytics2.js"),
+                  "<<GOOGLE_ANALYTICS_ID>>",
+                  google_analytics_id
+                )
+              )
+            )
+          )
+        )
       }
       return(NULL)
     })

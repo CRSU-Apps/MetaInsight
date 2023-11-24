@@ -18,8 +18,7 @@ dashboardPage(
       google_analytics_header_ui(id = "analytics")
     ),
     navbarPage(
-      title = "MetaInsight", 
-      header = singleton(tags$head(includeScript("google_analytics2.js"))),
+      title = "MetaInsight",
       tabPanel(
         title = "Home",
         home_page_ui(id = "home")
