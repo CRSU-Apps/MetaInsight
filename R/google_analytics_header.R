@@ -29,8 +29,8 @@ google_analytics_header_server <- function(id, google_analytics_id) {
               title = "GDPR Notice",
               easyClose = FALSE,
               p(
-                tags$strong("In accordance with Data Protection legislation, we would like to inform you of the following before you use our website:"),
-                "We collect your usage data within the MetaInsight app to perform analytics of usage and improve our app. By clicking",
+                tags$strong("In accordance with Data Protection legislation, we would like to inform you of the following before you use our app:"),
+                "We collect your usage data within this app to perform analytics of usage and improve our app. By clicking",
                 tags$i(tags$u("I consent")),
                 "below, you consent to the use of data by us through Google Analytics."
               ),
