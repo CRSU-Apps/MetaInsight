@@ -57,13 +57,14 @@ bayesian_forest_plot_plus_stats_server <- function(
     
     # forest min and max values different if continuous/binary
     observe({
-      x <- metaoutcome()
-      if (x == 'Binary') {
+      if (outcome_measure() %in% c("OR", "RR")) {
         updateNumericInput(inputId = "axis_min", value = 0.1, step = 0.1)
-        updateNumericInput(inputId = "axis_max", value=5)
-      } else if (x == 'Continuous') {
-        updateNumericInput(inputId = "axis_min", value=-10, step = 1)
-        updateNumericInput(inputId = "axis_max", value=10)
+        updateNumericInput(inputId = "axis_max", value = 5)
+      } else if (outcome_measure() %in% c("SMD", "MD", "RD")) {
+        updateNumericInput(inputId = "axis_min", value = -10, step = 1)
+        updateNumericInput(inputId = "axis_max", value = 10)
+      } else {
+        paste0("outcome_measure needs to me 'OR', 'RR', 'RD', 'MD', or 'SMD'")
       }
     })
 

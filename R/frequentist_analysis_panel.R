@@ -17,7 +17,7 @@ frequentist_analysis_panel_ui <- function(id) {
             column(
               width = 6,
               align = 'center',
-              numericInput(inputId = ns('freqmin'), label = "Minimum", value = 0.1)
+              numericInput(inputId = ns('freqmin'), label = "Minimum", value = 0.1, step = 0.1)
             ),
             column(
               width = 6,
@@ -43,7 +43,7 @@ frequentist_analysis_panel_ui <- function(id) {
             column(
               width = 6,
               align = 'center',
-              numericInput(inputId = ns('freqmin_sub'), label = "Minimum", value = 0.1)
+              numericInput(inputId = ns('freqmin_sub'), label = "Minimum", value = 0.1, step = 0.1)
             ),
             column(
               width = 6,
@@ -134,17 +134,18 @@ frequentist_analysis_panel_server <- function(
     
     # forest min and max values different if continuous/binary
     observe({
-      x <- metaoutcome()
-      if (x =='Binary') {
-        updateNumericInput(inputId = "freqmin", value=0.1)
-        updateNumericInput(inputId = "freqmin_sub", value=0.1)
-        updateNumericInput(inputId = "freqmax", value=5)
-        updateNumericInput(inputId = "freqmax_sub", value=5)
+      if (outcome_measure() %in% c('OR', 'RR')) {
+        updateNumericInput(inputId = "freqmin", value = 0.1, step = 0.1)
+        updateNumericInput(inputId = "freqmin_sub", value = 0.1, step = 0.1)
+        updateNumericInput(inputId = "freqmax", value = 5)
+        updateNumericInput(inputId = "freqmax_sub", value = 5)
+      } else if (outcome_measure() %in% c('MD', 'SMD', 'RD')) {
+        updateNumericInput(inputId = "freqmin", value = -10, step = 1)
+        updateNumericInput(inputId = "freqmin_sub", value = -10, step = 1)
+        updateNumericInput(inputId = "freqmax", value = 10)
+        updateNumericInput(inputId = "freqmax_sub", value = 10)
       } else {
-        updateNumericInput(inputId = "freqmin", value=-10)
-        updateNumericInput(inputId = "freqmin_sub", value=-10)
-        updateNumericInput(inputId = "freqmax", value=10)
-        updateNumericInput(inputId = "freqmax_sub", value=10)
+        paste0("outcome_measure needs to be 'OR', 'RR', 'RD', 'MD', or 'SMD'")
       }
     })
 
