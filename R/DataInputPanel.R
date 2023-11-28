@@ -87,7 +87,7 @@ data_input_panel_server <- function(id, metaoutcome, continuous_file = 'Cont_lon
     })
     
     # Make data reactive i.e. default or user uploaded
-    data <- reactive({ 
+    data <- reactive({
       file1 <- input$data # Name the data file that was uploaded file1
       # if a reload is triggered show the reload the file input and data
       if (reload()) {
