@@ -12,7 +12,7 @@
 })(window,document,'script',
   'https://www.google-analytics.com/analytics.js','ga');
 
-ga('create', 'UA-135597033-7', 'auto');
+ga('create', '<<GOOGLE_ANALYTICS_ID>>', 'auto');
 ga('send', 'pageview');
 
 // Event Tracking Code
