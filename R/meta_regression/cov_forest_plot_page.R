@@ -71,17 +71,6 @@ covariate_forest_plots_page_server <- function(
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
 
-    ### SMD & RD warning alert
-
-    observeEvent(list(input$baye_do), {
-      if (outcome_measure()=="SMD") {
-        showNotification("Please note: standardised mean difference currently cannot be analysed within Bayesian analysis in MetaInsight", type = "error", duration = NULL)
-      }
-      else if (outcome_measure()=="RD") {
-        showNotification("Please note: Risk difference currently cannot be analysed within Bayesian analysis in MetaInsight", type = "error", duration = NULL)
-      }
-    })
-
     # Bayesian analysis
 
     model <- eventReactive(input$baye_do, {

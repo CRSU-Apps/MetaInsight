@@ -59,10 +59,10 @@ bayesian_forest_plot_plus_stats_server <- function(
     observe({
       x <- metaoutcome()
       if (x == 'Binary') {
-        updateNumericInput(inputId = "axis_min", value=0.1)
+        updateNumericInput(inputId = "axis_min", value = 0.1, step = 0.1)
         updateNumericInput(inputId = "axis_max", value=5)
       } else if (x == 'Continuous') {
-        updateNumericInput(inputId = "axis_min", value=-10)
+        updateNumericInput(inputId = "axis_min", value=-10, step = 1)
         updateNumericInput(inputId = "axis_max", value=10)
       }
     })
