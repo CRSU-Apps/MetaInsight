@@ -16,8 +16,8 @@ bayesian_analysis_panel_ui <- function(id) {
         bayesian_treatment_comparisons_page_ui(id = ns("treatment_comparisons"))
       ),
       tabPanel(
-        title = "3c. Ranking Panel",
-        ranking_panel_ui(id = ns("ranking"))
+        title = "3c. Ranking",
+        ranking_page_ui(id = ns("ranking"))
       ),
       tabPanel(
         title = "3d. Nodesplit model",
@@ -307,7 +307,7 @@ bayesian_analysis_panel_server <- function(
     )
 
     # 3c. Ranking Panel
-    ranking_panel_server(
+    ranking_page_server(
       id = "ranking",
       model = model,
       model_sub = model_sub,
