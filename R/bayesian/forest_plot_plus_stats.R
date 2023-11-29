@@ -12,12 +12,12 @@ bayesian_forest_plot_plus_stats_ui <- function(id) {
       column(
         width = 6,
         align = 'center',
-        numericInput(inputId = ns('axis_min'), label = "Minimum", value = 0.1, step = 0.1)
+        numericInput(inputId = ns('axis_min'), label = "Minimum", value = 0, step = 0.1)
       ),
       column(
         width = 6,
         align = 'center',
-        numericInput(inputId = ns('axis_max'), label = "Maximum", value = 5)
+        numericInput(inputId = ns('axis_max'), label = "Maximum", value = 5, step = 1)
       )
     ),
     p("Model fit:"),
@@ -64,7 +64,7 @@ bayesian_forest_plot_plus_stats_server <- function(
         updateNumericInput(inputId = "axis_min", value = -10, step = 1)
         updateNumericInput(inputId = "axis_max", value = 10)
       } else {
-        paste0("outcome_measure needs to me 'OR', 'RR', 'RD', 'MD', or 'SMD'")
+        stop("outcome_measure needs to me 'OR', 'RR', 'RD', 'MD', or 'SMD'")
       }
     })
 

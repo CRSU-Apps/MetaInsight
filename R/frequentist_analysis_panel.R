@@ -17,12 +17,12 @@ frequentist_analysis_panel_ui <- function(id) {
             column(
               width = 6,
               align = 'center',
-              numericInput(inputId = ns('freqmin'), label = "Minimum", value = 0.1, step = 0.1)
+              numericInput(inputId = ns('freqmin'), label = "Minimum", value = 0, step = 0.1)
             ),
             column(
               width = 6,
               align = 'center',
-              numericInput(inputId = ns('freqmax'), label = "Maximum", value = 5)
+              numericInput(inputId = ns('freqmax'), label = "Maximum", value = 5, step = 1)
             )
           ),
           textOutput(outputId = ns("textcomp")),
@@ -43,12 +43,12 @@ frequentist_analysis_panel_ui <- function(id) {
             column(
               width = 6,
               align = 'center',
-              numericInput(inputId = ns('freqmin_sub'), label = "Minimum", value = 0.1, step = 0.1)
+              numericInput(inputId = ns('freqmin_sub'), label = "Minimum", value = 0, step = 0.1)
             ),
             column(
               width = 6,
               align = 'center',
-              numericInput(inputId = ns('freqmax_sub'), label = "Maximum", value = 5)
+              numericInput(inputId = ns('freqmax_sub'), label = "Maximum", value = 5, step = 1)
             )
           ),
 
