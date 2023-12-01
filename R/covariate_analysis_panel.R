@@ -155,24 +155,17 @@ covariate_analysis_panel_server <- function(
       cov_friendly = covariate_name,
       model_effects = model_effects
     )
-    # obtain covariate default value
-    default_cov<- reactive(FindCovariateDefault(model_reactive()))
-
-    
-    
-    # Default covariate value to be populated by the covariate analysis
+    # empty covariate default value
     default_covariate_value <- reactiveVal()
-    
+
     covariate_value = covariate_value_panel_server(
       id = "covariate_value",
       covariate_type = reactive({ input$covariate_type_selection }),
       covariate_data = reactive({ all_data()[[covariate_title()]] }),
       default_covariate_value = default_covariate_value
     )
-    
-    # Meta-regression server should be placed here, populating the default_covariate_value
     # obtain gemtc output types to be used in rest of page
-    model_output <- reactive(CovariateModelOutput(model = model_reactive(), cov_value = default_cov()))   # once have input, put here
+    model_output <- reactive(CovariateModelOutput(model = model_reactive(), cov_value = covariate_value()))
     # Create forest plot and associated statistics
     bayesian_forest_plot_plus_stats_server(
       id = "cov_forest_plots",
