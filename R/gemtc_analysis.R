@@ -121,16 +121,7 @@ RunCovariateModel <- function(data, treatment_ids, outcome_type, outcome, covari
 #'  sumresults = summary output of relative effects
 #'  dic = data frame of model fit statistics
 #'  cov_value_sentence = text output stating the value for which the covariate has been set to for producing output
-CovariateModelOutput <- function(model, cov_value = NULL) {
-  
-  # Set default covariate value if unsupplied
-  if (is.null(cov_value) == TRUE) {
-    if (model$model$regressor$type == "continuous") {
-      cov_value <- model$model$regressor$center # center value
-    } else if (model$model$regressor$type == "binary") {
-      cov_value <- 0 # base group
-    }
-  }
+CovariateModelOutput <- function(model, cov_value) {
   
   # Relative Effects raw data
   rel_eff <- gemtc::relative.effect(model, as.character(model$model$regressor$control), covariate = cov_value)
@@ -155,4 +146,19 @@ CovariateModelOutput <- function(model, cov_value = NULL) {
     dic = fit_stats,
     cov_value_sentence = cov_value_sentence)
   )
+}
+
+#' Function to find default covariate value of regression model
+#' @param model meta-regression model object (from gemtc)
+#' 
+#' @return default value
+FindCovariateDefault <- function(model) {
+  if (model$model$regressor$type == "continuous") {
+    cov_value <- model$model$regressor$center # center value
+  } else if (model$model$regressor$type == "binary") {
+    cov_value <- 0 # base group
+  } else {
+    stop("regressor type needs to be 'continuous' or 'binary'")
+  }
+  return(cov_value)
 }

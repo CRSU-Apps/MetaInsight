@@ -1,9 +1,9 @@
 
-#' Module UI for the covariate forest plots page.
+#' Module UI for the running model part of covariate forest plots page.
 #' 
 #' @param id ID of the module.
 #' @return Div for the page.
-covariate_forest_plots_page_ui <- function(id) {
+covariate_run_model_ui <- function(id) {
   ns <- NS(id)
   div(
     helpText(
@@ -35,16 +35,12 @@ covariate_forest_plots_page_ui <- function(id) {
         )
       ),
       actionButton(inputId = ns("baye_do"), label = "Click here to run the main analysis for all studies")
-    ),
-    fixedRow(
-      align = "center",
-      bayesian_forest_plot_plus_stats_ui(id = ns("all_data"))
     )
   )
 }
 
 
-#' Module server for the covariate forest plots page.
+#' Module server for running the covariate model.
 #' 
 #' @param id ID of the module
 #' @param data Reactive containing data to analyse
@@ -54,10 +50,9 @@ covariate_forest_plots_page_ui <- function(id) {
 #' @param covariate Chosen covariate name as per uploaded data
 #' @param cov_friendly Friendly name of chosen covariate
 #' @param model_effects Reactive containing model effects: either "random" or "fixed"
-#' @param bugsnetdt Reactive containing bugsnet meta-analysis
 #'
 #' @return List of reactives: "model_output" contains meta-regression model outputs
-covariate_forest_plots_page_server <- function(
+covariate_run_model_server <- function(
     id,
     data,
     treatment_df,
@@ -65,8 +60,7 @@ covariate_forest_plots_page_server <- function(
     outcome_measure,
     covariate,
     cov_friendly,
-    model_effects,
-    bugsnetdt
+    model_effects
     ) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
@@ -80,25 +74,9 @@ covariate_forest_plots_page_server <- function(
                         ref_choice = treatment_df()$Label[match(1, treatment_df()$Number)])
     })
     
-    model_output <- reactive(CovariateModelOutput(model = model(), cov_value = NULL))   # once have input, put here
-
-    
-    # Create forest plot and associated statistics
-    
-    bayesian_forest_plot_plus_stats_server(
-      id = "all_data",
-      model_output = model_output,
-      analysis_type = "Regression",
-      metaoutcome = metaoutcome,
-      outcome_measure = outcome_measure,
-      bugsnetdt = bugsnetdt
-    )
     
     
-    return(
-      list(
-        model_output = model_output
-      )
-    )
+    
+    return(model)
   })
 }

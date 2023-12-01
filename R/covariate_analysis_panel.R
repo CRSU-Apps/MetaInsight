@@ -47,7 +47,11 @@ covariate_analysis_panel_ui <- function(id) {
         tabsetPanel(
           tabPanel(
             title = "4c-1. Forest plot",
-            covariate_forest_plots_page_ui(id = ns("forest_plots"))
+            covariate_run_model_ui(id = ns("cov_model")),
+            fixedRow(
+              align = "center",
+              bayesian_forest_plot_plus_stats_ui(id = ns("cov_forest_plots"))
+            )
           )
         )
       )
@@ -122,19 +126,30 @@ covariate_analysis_panel_server <- function(
     outputOptions(x = output, name = "inferred_type", suspendWhenHidden = FALSE)
     
     # 4c-1 Forest plots
-    forest_plots_reactives <- covariate_forest_plots_page_server(
-      id = "forest_plots",
+    # run model
+    model_reactive <- covariate_run_model_server(
+      id = "cov_model",
       data = all_data,
       treatment_df = treatment_df,
       metaoutcome = metaoutcome,
       outcome_measure = outcome_measure,
       covariate = covariate_title,
       cov_friendly = covariate_name,
-      model_effects = model_effects,
+      model_effects = model_effects
+    )
+    # obtain covariate default value
+    default_cov<- reactive(FindCovariateDefault(model_reactive()))
+    # obtain gemtc output types to be used in rest of page
+    model_output <- reactive(CovariateModelOutput(model = model_reactive(), cov_value = default_cov()))   # once have input, put here
+    # Create forest plot and associated statistics
+    bayesian_forest_plot_plus_stats_server(
+      id = "cov_forest_plots",
+      model_output = model_output,
+      analysis_type = "Regression",
+      metaoutcome = metaoutcome,
+      outcome_measure = outcome_measure,
       bugsnetdt = bugsnetdt
     )
-    
-    model_output <- forest_plots_reactives$model_output
     
   })
 }
