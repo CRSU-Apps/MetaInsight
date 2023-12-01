@@ -12,9 +12,20 @@ CreateRegressionPlot <- function(model, comparators, reference, include_ghosts =
     plot <- .PlotRegressionLines(plot, model, reference, ghosts, extrapolate, ghosted = TRUE)
   }
   
+  confidence <- .GetRegressionConfidenceRegion(model, reference, comparators)
+  plot <- plot +
+    geom_ribbon(
+      data = confidence,
+      mapping = aes(
+        x = covariate_value,
+        ymin = y_min,
+        ymax = y_max,
+        fill = Treatment
+      ),
+      show.legend = FALSE,
+    )
   plot <- .PlotContributionCircles(plot, model, reference, comparators, contribution_multiplier)
   plot <- .PlotRegressionLines(plot, model, reference, comparators, extrapolate)
-  
   
   return(plot)
 }
@@ -32,7 +43,7 @@ CreateRegressionPlot <- function(model, comparators, reference, include_ghosts =
       legend.position = c(.99, .02),
       legend.justification = c("right", "bottom"),
       legend.margin = margin(6, 6, 6, 6),
-      legend.box.background = element_rect(colour = "black", linewidth = 0.5, fill = "#ffffffbb"),
+      legend.box.background = element_rect(colour = "black", linewidth = 0.5, fill = "#ffffffaa"),
       legend.box.just = c("right", "bottom")
     ) +
     xlab("Covariate Value") +
@@ -41,6 +52,8 @@ CreateRegressionPlot <- function(model, comparators, reference, include_ghosts =
   # Ensure that enough colours are always provided, by cycling the given colours
   colours <- c("red", "orange", "yellow", "green", "cyan", "blue", "magenta")
   colours <- rep(colours, ceiling(length(comparators) / length(colours)))[1:length(comparators)]
+  fills <- c("#ff000030", "#ffaa0030", "#ffff0030", "#00ff0030", "#00ffff30", "#0000ff30", "#ff00ff30")
+  fills <- rep(fills, ceiling(length(comparators) / length(fills)))[1:length(comparators)]
   
   # Set the colours
   if (include_ghosts) {
@@ -48,7 +61,8 @@ CreateRegressionPlot <- function(model, comparators, reference, include_ghosts =
   }
   
   plot <- plot +
-    scale_colour_manual(values = colours)
+    scale_colour_manual(values = colours) +
+    scale_fill_manual(values = fills, guide = "none")
   
   return(plot)
 }
@@ -254,6 +268,42 @@ CreateRegressionPlot <- function(model, comparators, reference, include_ghosts =
   )
   
   return(contribution_df[contribution_df$Treatment %in% comparator, ])
+}
+
+.GetRegressionConfidenceRegion <- function(model, reference, comparator, divisions = 10) {
+  
+  treatments <- c()
+  covariate_values <- c()
+  y_mins <- c()
+  y_maxs <- c()
+  
+  for (treatment in c("the_Butcher", "the_Dung_named", "the_Great", "the_Slit_nosed", "the_Younger")) {
+    start_x <- .GetRegressionStartX(model, reference, treatment)
+    end_x <- .GetRegressionEndX(model, reference, treatment)
+    intersect <- .GetRegressionIntersect(model, reference, treatment)
+    gradient <- .GetRegressionGradient(model, reference, treatment)
+    for (covariate_value in seq(from = start_x, to = end_x, by = (end_x - start_x) / divisions)) {
+      treatments <- c(treatments, treatment)
+      covariate_values <- c(covariate_values, covariate_value)
+      y_mins <- c(
+        y_mins,
+        intersect + (gradient * covariate_value) - (0.04 * ((covariate_value - 5) ^ 2) + 1)
+      )
+      y_maxs <- c(
+        y_maxs,
+        intersect + (gradient * covariate_value) + 0.04 * ((covariate_value - 5) ^ 2) + 1
+      )
+    }
+  }
+  
+  confidence_df <- data.frame(
+    Treatment = treatments,
+    covariate_value = covariate_values,
+    y_min = y_mins,
+    y_max = y_maxs
+  )
+  
+  return(confidence_df[confidence_df$Treatment %in% comparator, ])
 }
 
 
