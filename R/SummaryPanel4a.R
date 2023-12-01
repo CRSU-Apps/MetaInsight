@@ -7,8 +7,12 @@ metaregression_summary_panel_ui <- function(id) {
   fluidPage(
     h4("Summary Characteristic Plot"),
     uiOutput(ns("toggle_covariate_baseline")),
+    # div(
+    #   plotOutput(outputId = ns('covariate_plot')),
+    #   style = "transform: rotate(90deg)"
+    # ),
     plotOutput(outputId = ns('covariate_plot')),
-    p('The covariate value is the same for all treatment arms across a study.'),
+    textOutput(outputId = ns('covariate_info')),
     verbatimTextOutput(ns("test")),
     radioButtons(inputId = ns('format_covariate_plot'), 
                  label = 'Document format', 
@@ -55,18 +59,19 @@ metaregression_summary_panel_server <- function(id, all_data, metaoutcome) {
       # If there is no covariate or baseline risk is selected by the toggle
       if (is.na(FindCovariateNames(all_data())[1]) || input$toggle_covariate_baseline == "Baseline risk") {
         
+        y_axis_label <- "Baseline risk"
+        caption_setting <- "baseline risk" # Text to add to caption
+        
         # Baseline risk for continuous outcomes
         if (metaoutcome() == "Continuous") {
           # The covariate is the mean column - needs to be the mean value for the reference treatment
           covariate <- colnames(all_data())[4]
-          y_axis_label <- "Baseline risk"
         }
       
         # Baseline risk for binary outcomes
         else if (metaoutcome() == "Binary") {
           # The covariate needs to be calculated for the reference treatment
           covariate <- colnames(all_data())[4]
-          y_axis_label <- "Baseline risk"
         }
       }
       
@@ -78,15 +83,24 @@ metaregression_summary_panel_server <- function(id, all_data, metaoutcome) {
         
         # Use GetFriendlyCovariateName function to label the y-axis
         y_axis_label <- GetFriendlyCovariateName(covariate)
+        
+        caption_setting <- "covariate" # Text to add to caption
       }
 
-      return(BUGSnet::data.plot(BUGSnet_data,
+      plot <- BUGSnet::data.plot(BUGSnet_data,
                                  covariate = covariate,
                                  covariate.label = y_axis_label,
                                  # half.length = "age_SD", # Error bars - needs a second covariate, possible future addition
                                  by = 'treatment',
                                  text.size = 16) 
-             )
+      
+      # Add caption text under plot
+      plot <- plot + 
+        labs(caption = paste('The', caption_setting, 'value is the same for all treatment arms across a study.')) +
+        theme(plot.caption = element_text(hjust = 0)) # Left aligned
+      
+      return(plot)
+             
     }
     
     # Render covariate summary plot
