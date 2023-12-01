@@ -1,19 +1,19 @@
 
 test_that("Continuous data registered as initially not uploaded", {
-  testServer(data_input_panel_server, args = list(metaoutcome = function() { 'Continuous' }), {
+  testServer(data_input_panel_server, args = list(metaoutcome = reactive({ 'Continuous' })), {
     expect_false(data_uploaded())
   })
 })
 
 test_that("Continuous data registered as uploaded on upload", {
-  testServer(data_input_panel_server, args = list(metaoutcome = function() { 'Continuous' }), {
+  testServer(data_input_panel_server, args = list(metaoutcome = reactive({ 'Continuous' })), {
     session$setInputs(data = data.frame(datapath = 'Cont_long.csv'))
     expect_true(data_uploaded())
   })
 })
 
 test_that("Treatments extracted from default continuous file", {
-  testServer(data_input_panel_server, args = list(metaoutcome = function() { 'Continuous' }), {
+  testServer(data_input_panel_server, args = list(metaoutcome = reactive({ 'Continuous' })), {
     treatment_df <- data.frame(Number = seq(6),
                                Label = c('the Great','the Younger','the Dung-named','the Little','the Butcher','the Slit-nosed'))
     
@@ -22,7 +22,7 @@ test_that("Treatments extracted from default continuous file", {
 })
 
 test_that("Treatments reordered from default continuous file when reference selected", {
-  testServer(data_input_panel_server, args = list(metaoutcome = function() { 'Continuous' }), {
+  testServer(data_input_panel_server, args = list(metaoutcome = reactive({ 'Continuous' })), {
     session$setInputs(reference_treatment = 'the Dung-named')
     treatment_df <- data.frame(Number = seq(6),
                                Label = c('the Dung-named','the Great','the Younger','the Little','the Butcher','the Slit-nosed'))
@@ -32,7 +32,7 @@ test_that("Treatments reordered from default continuous file when reference sele
 })
 
 test_that("Data extracted from default continuous file", {
-  testServer(data_input_panel_server, args = list(metaoutcome = function() { 'Continuous' }), {
+  testServer(data_input_panel_server, args = list(metaoutcome = reactive({ 'Continuous' })), {
     expect_equal(colnames(data()), c('Study', 'T', 'N', 'Mean', 'SD'),
                  label = format_vector_to_string(colnames(data())))
     expect_equal(nrow(data()), 8,
@@ -51,7 +51,7 @@ test_that("Data extracted from default continuous file", {
 })
 
 test_that("Continuous data passed back to module parent", {
-  testServer(data_input_panel_server, args = list(metaoutcome = function() { 'Continuous' }), {
+  testServer(data_input_panel_server, args = list(metaoutcome = reactive({ 'Continuous' })), {
     expect_equal(length(session$returned), 3)
     expect_equal(session$returned$data(), data())
     expect_equal(session$returned$is_default_data(), is_default_data())
@@ -60,20 +60,20 @@ test_that("Continuous data passed back to module parent", {
 })
 
 test_that("Binary data registered as initially not uploaded", {
-  testServer(data_input_panel_server, args = list(metaoutcome = function() { 'Binary' }), {
+  testServer(data_input_panel_server, args = list(metaoutcome = reactive({ 'Binary' })), {
     expect_false(data_uploaded())
   })
 })
 
 test_that("Binary data registered as uploaded on upload", {
-  testServer(data_input_panel_server, args = list(metaoutcome = function() { 'Binary' }), {
+  testServer(data_input_panel_server, args = list(metaoutcome = reactive({ 'Binary' })), {
     session$setInputs(data = data.frame(datapath = 'Binary_long.csv'))
     expect_true(data_uploaded())
   })
 })
 
 test_that("Treatments extracted from default binary file", {
-  testServer(data_input_panel_server, args = list(metaoutcome = function() { 'Binary' }), {
+  testServer(data_input_panel_server, args = list(metaoutcome = reactive({ 'Binary' })), {
     treatment_df <- data.frame(Number = seq(6),
                                Label = c('the Great','the Younger','the Dung-named','the Little','the Butcher','the Slit-nosed'))
     
@@ -82,7 +82,7 @@ test_that("Treatments extracted from default binary file", {
 })
 
 test_that("Treatments reordered from default binary file when reference selected", {
-  testServer(data_input_panel_server, args = list(metaoutcome = function() { 'Binary' }), {
+  testServer(data_input_panel_server, args = list(metaoutcome = reactive({ 'Binary' })), {
     session$setInputs(reference_treatment = 'the Dung-named')
     treatment_df <- data.frame(Number = seq(6),
                                Label = c('the Dung-named','the Great','the Younger','the Little','the Butcher','the Slit-nosed'))
@@ -92,7 +92,7 @@ test_that("Treatments reordered from default binary file when reference selected
 })
 
 test_that("Data extracted from default binary file", {
-  testServer(data_input_panel_server, args = list(metaoutcome = function() { 'Binary' }), {
+  testServer(data_input_panel_server, args = list(metaoutcome = reactive({ 'Binary' })), {
     expect_equal(colnames(data()), c('Study', 'T', 'R', 'N'),
                  label = format_vector_to_string(colnames(data())))
     expect_equal(nrow(data()), 8,
@@ -109,7 +109,7 @@ test_that("Data extracted from default binary file", {
 })
 
 test_that("Binary data passed back to module parent", {
-  testServer(data_input_panel_server, args = list(metaoutcome = function() { 'Binary' }), {
+  testServer(data_input_panel_server, args = list(metaoutcome = reactive({ 'Binary' })), {
     expect_equal(length(session$returned), 3)
     expect_equal(session$returned$data(), data())
     expect_equal(session$returned$is_default_data(), is_default_data())

@@ -4,7 +4,7 @@ test_that("Covariate title NA when not available", {
     CleanData()
   testServer(
     covariate_analysis_panel_server,
-    args = list(all_data = function() { df }),
+    args = list(all_data = reactive({ df })),
     {
       expect_true(is.na(covariate_title()))
     }
@@ -16,7 +16,7 @@ test_that("Covariate title extracted from data when available", {
     CleanData()
   testServer(
     covariate_analysis_panel_server,
-    args = list(all_data = function() { df }),
+    args = list(all_data = reactive({ df })),
     {
       expect_equal(covariate_title(), "covar.age")
     }
@@ -27,7 +27,7 @@ test_that("Covariate name NA when not available", {
     CleanData()
   testServer(
     covariate_analysis_panel_server,
-    args = list(all_data = function() { df }),
+    args = list(all_data = reactive({ df })),
     {
       expect_true(is.na(covariate_name()))
     }

@@ -8,39 +8,54 @@ covariate_analysis_panel_ui <- function(id) {
     fluidPage(
       div(
         h2(textOutput(outputId = ns("subtitle"))),
-        style = "display: inline-block; vertical-align: top"
+        style = "display: inline-block; vertical-align: top; padding-right: 20pt;"
       ),
       div(
-        style = "display: inline-block; padding-right: 20pt;"
-      ),
-      div(
+        # Type selection if the covariate data is valid
         conditionalPanel(
           condition = "output.valid_covariate",
           ns = ns,
-          selectInput(
-            inputId = ns("covariate_type_selection"),
-            label = "",
-            choices = c("binary", "continuous")
+          div(
+            selectInput(
+              inputId = ns("covariate_type_selection"),
+              label = "",
+              choices = c("Binary", "Continuous"),
+              width = "120pt"
+            ),
+            style = "display: inline-block;"
+          ),
+          div(
+            # If binary data is poorly coded, then it will be identified as continuous.
+            # Show a warning to the user when data is identified as continuous to inform them.
+            conditionalPanel(
+              condition = "output.inferred_type == 'Continuous'",
+              ns = ns,
+              div(
+                tags$i(class = "fa-solid fa-circle-info"),
+                title = "If the data is intended to be binary, the only allowed values are 0, 1, and NA",
+                style = "color: orange;"
+              )
+            ),
+            style = "display: inline-block; vertical-align: 50%"
+          ),
+          div(
+            covariate_value_panel_ui(id = ns("covariate_value")),
+            style = "display: inline-block; vertical-align: 65%"
           )
         ),
         style = "display: inline-block;"
       ),
-      div(
-        conditionalPanel(
-          condition = "output.inferred_type == 'continuous'",
-          ns = ns,
-          div(
-            tags$i(class = "fa-solid fa-circle-info"),
-            title = "If your data is binary, the only allowed values are 0, 1, and NA",
-            style = "color: red;"
-          )
+      # Show error message if invalid data
+      conditionalPanel(
+        condition = "!output.valid_covariate",
+        ns = ns,
+        div(
+          textOutput(outputId = ns("error_message_box")),
+          style = "display: inline-block; color: red; font-style: italic; font-weight: bold; padding-right: 20pt;"
         ),
-        style = "display: inline-block; vertical-align: 50%;"
+        style = "vertical-align: 65%"
       ),
-      div(
-        textOutput(outputId = ns("error_message_box")),
-        style = "color: red; font-style: italic; font-weight: bold;"
-      ),
+      # Meta-regression UI
       conditionalPanel(
         condition = "output.valid_covariate",
         ns = ns,
@@ -100,13 +115,14 @@ covariate_analysis_panel_server <- function(
     
     inferred_type <- reactiveVal()
     
+    # Try to infer the type of the covariate, and display an error to the user if the data is bad
     observe({
       tryCatch(
         {
           inferred_type <- ValidateAndInferCovariateType(all_data(), covariate_title())
           shiny::updateSelectInput(inputId = "covariate_type_selection", selected = inferred_type)
           inferred_type(inferred_type)
-          if (inferred_type == "continuous") {
+          if (inferred_type == "Continuous") {
             shinyjs::disable(id = "covariate_type_selection")
           } else {
             shinyjs::enable(id = "covariate_type_selection")
@@ -114,6 +130,7 @@ covariate_analysis_panel_server <- function(
           error_message("")
         },
         error = function(exptn) {
+          inferred_type(NULL)
           error_message(exptn$message)
         }
       )
@@ -121,6 +138,7 @@ covariate_analysis_panel_server <- function(
     
     output$valid_covariate <- reactive({ error_message() == "" })
     outputOptions(x = output, name = "valid_covariate", suspendWhenHidden = FALSE)
+    
     
     output$inferred_type <- reactive({ inferred_type() })
     outputOptions(x = output, name = "inferred_type", suspendWhenHidden = FALSE)
@@ -139,6 +157,20 @@ covariate_analysis_panel_server <- function(
     )
     # obtain covariate default value
     default_cov<- reactive(FindCovariateDefault(model_reactive()))
+
+    
+    
+    # Default covariate value to be populated by the covariate analysis
+    default_covariate_value <- reactiveVal()
+    
+    covariate_value = covariate_value_panel_server(
+      id = "covariate_value",
+      covariate_type = reactive({ input$covariate_type_selection }),
+      covariate_data = reactive({ all_data()[[covariate_title()]] }),
+      default_covariate_value = default_covariate_value
+    )
+    
+    # Meta-regression server should be placed here, populating the default_covariate_value
     # obtain gemtc output types to be used in rest of page
     model_output <- reactive(CovariateModelOutput(model = model_reactive(), cov_value = default_cov()))   # once have input, put here
     # Create forest plot and associated statistics
@@ -150,6 +182,5 @@ covariate_analysis_panel_server <- function(
       outcome_measure = outcome_measure,
       bugsnetdt = bugsnetdt
     )
-    
   })
 }

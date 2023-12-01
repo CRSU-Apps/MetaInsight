@@ -71,10 +71,12 @@ informed_conditional_panel_server <- function(
     output$supported <- condition
     shiny::outputOptions(x = output, name = "supported", suspendWhenHidden = FALSE)
     
-    eval({
-      substitute({
-        inner_server_expression
+    return(
+      eval({
+        substitute({
+          inner_server_expression
+        })
       })
-    })
+    )
   })
 }

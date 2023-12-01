@@ -614,22 +614,23 @@ bayesian_analysis_panel_server <- function(
     # 3c. Ranking Panel
 
     # Obtain Data needed for ranking #
-    RankingData <- eventReactive(input$baye_do, {
+    RankingData <- eventReactive(model(), {
       obtain_rank_data(data(), metaoutcome(),
                        treatment_df(), model(), rank_option())
     })
 
-    RankingData_sub <- eventReactive(input$sub_do, {
+    RankingData_sub <- eventReactive(model_sub(), {
       obtain_rank_data(data(), metaoutcome(), treatment_df(),
                        model_sub(), rank_option(), exclusions())
     })
 
     # Network plots for ranking panel (Bayesian) (they have slightly different formatting to those on tab1) CRN
     treat_order <- reactive(RankingData()$SUCRA[order(RankingData()$SUCRA$SUCRA),1]) # obtain treatments ordered by SUCRA #
-    freq_all_react <- eventReactive(input$baye_do, {  # these two lines are needed in case someone jumped to Bayesian page without running frequentist section, but am aware this can cause frequentist analysis to run twice (CRN)
+    freq_all_react <- eventReactive(model(), {
+      # These two lines are needed in case someone jumped to Bayesian page without running frequentist section, but am aware this can cause frequentist analysis to run twice (CRN)
       freq_all()
     })
-    bugsnetdt_react <- eventReactive(input$baye_do, {
+    bugsnetdt_react <- eventReactive(model(), {
       bugsnetdt()
     })
     output$netGraphStatic1_rank <- renderPlot({
@@ -644,10 +645,10 @@ bayesian_analysis_panel_server <- function(
     })
     # Repeat for excluded studies
     treat_order_sub <- reactive(RankingData_sub()$SUCRA[order(RankingData_sub()$SUCRA$SUCRA),1])
-    freq_all_react_sub <- eventReactive(input$sub_do, {
+    freq_all_react_sub <- eventReactive(model_sub(), {
       freq_sub()
     })
-    bugsnetdt_react_sub <- eventReactive(input$sub_do, {
+    bugsnetdt_react_sub <- eventReactive(model_sub(), {
       bugsnetdt()
     })
     output$netGraphStatic1_rank_sub <- renderPlot({
@@ -968,7 +969,7 @@ bayesian_analysis_panel_server <- function(
     # 3f. Deviance report
 
     # Residual deviance from NMA model and UME inconsistency model for all studies
-    umeplot <- eventReactive(input$baye_do, {
+    umeplot <- eventReactive(model(), {
       scat_plot(model())$p
     })
 
@@ -977,7 +978,7 @@ bayesian_analysis_panel_server <- function(
     })
 
     # Residual deviance from NMA model and UME inconsistency model with studies excluded
-    umeplot_sub <- eventReactive(input$sub_do, {
+    umeplot_sub <- eventReactive(model_sub(), {
       scat_plot(model_sub())$p
     })
 
