@@ -1,4 +1,4 @@
-CreateRegressionPlot <- function(model, comparators, reference, include_ghosts = FALSE, extrapolate = FALSE, contribution_multiplier = 1.0) {
+CreateRegressionPlot <- function(model, reference, comparators, include_ghosts = FALSE, include_extrapolation = FALSE, contribution_multiplier = 1.0, include_confidence = FALSE) {
   
   # Set up basic plot
   plot <- .SetupMainPlot(reference, comparators, include_ghosts)
@@ -9,23 +9,14 @@ CreateRegressionPlot <- function(model, comparators, reference, include_ghosts =
     ghosts <-  all_comparators[!all_comparators %in% comparators]
     
     plot <- .PlotContributionCircles(plot, model, reference, ghosts, contribution_multiplier, ghosted = TRUE)
-    plot <- .PlotRegressionLines(plot, model, reference, ghosts, extrapolate, ghosted = TRUE)
+    plot <- .PlotRegressionLines(plot, model, reference, ghosts, include_extrapolation, ghosted = TRUE)
   }
   
-  confidence <- .GetRegressionConfidenceRegion(model, reference, comparators)
-  plot <- plot +
-    geom_ribbon(
-      data = confidence,
-      mapping = aes(
-        x = covariate_value,
-        ymin = y_min,
-        ymax = y_max,
-        fill = Treatment
-      ),
-      show.legend = FALSE,
-    )
+  if (include_confidence) {
+    plot <- .PlotConfidenceRegions(plot, model, reference, comparators)
+  }
   plot <- .PlotContributionCircles(plot, model, reference, comparators, contribution_multiplier)
-  plot <- .PlotRegressionLines(plot, model, reference, comparators, extrapolate)
+  plot <- .PlotRegressionLines(plot, model, reference, comparators, include_extrapolation)
   
   return(plot)
 }
@@ -63,6 +54,23 @@ CreateRegressionPlot <- function(model, comparators, reference, include_ghosts =
   plot <- plot +
     scale_colour_manual(values = colours) +
     scale_fill_manual(values = fills, guide = "none")
+  
+  return(plot)
+}
+
+.PlotConfidenceRegions <- function(plot, model, reference, comparators) {
+  confidence <- .GetRegressionConfidenceRegion(model, reference, comparators)
+  plot <- plot +
+    geom_ribbon(
+      data = confidence,
+      mapping = aes(
+        x = covariate_value,
+        ymin = y_min,
+        ymax = y_max,
+        fill = Treatment
+      ),
+      show.legend = FALSE,
+    )
   
   return(plot)
 }
@@ -328,7 +336,15 @@ tasty <- function() {
   model <- RunCovariateModel(data, wrangled_treatment_list, "Binary", 'OR', "covar.age", "age", 'random', 'unrelated', "the_Little")
   
   # plot <- CreateRegressionPlot(model, c("the_Great", "the_Younger"), "the_Little", include_ghosts = TRUE)
-  plot <- CreateRegressionPlot(model, c("the_Butcher", "the_Dung_named"), "the_Little", include_ghosts = TRUE, contribution_multiplier = 5.0, extrapolate = TRUE)
+  plot <- CreateRegressionPlot(
+    model = model,
+    reference = "the_Little",
+    comparators = c("the_Butcher", "the_Dung_named"),
+    include_ghosts = TRUE,
+    contribution_multiplier = 5.0,
+    include_extrapolation = TRUE,
+    include_confidence = TRUE
+  )
   
   return(plot)
 }
