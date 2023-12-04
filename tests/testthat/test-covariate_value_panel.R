@@ -6,8 +6,7 @@ test_that("Covariate value taken from numeric input when continuous", {
     covariate_value_panel_server,
     args = list(
       covariate_type = reactive({ "Continuous" }),
-      covariate_data = reactive({ df$covar.age }),
-      default_covariate_value = reactive({ 91 })
+      covariate_data = reactive({ df$covar.age })
     ),
     {
       session$setInputs(numeric = 14)
@@ -28,8 +27,7 @@ test_that("Covariate value taken from numeric input when binary", {
     covariate_value_panel_server,
     args = list(
       covariate_type = reactive({ "Binary" }),
-      covariate_data = reactive({ df$covar.handedness }),
-      default_covariate_value = reactive({ 91 })
+      covariate_data = reactive({ df$covar.handedness })
     ),
     {
       session$setInputs(toggle = TRUE)

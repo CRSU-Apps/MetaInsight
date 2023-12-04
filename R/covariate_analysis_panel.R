@@ -155,14 +155,11 @@ covariate_analysis_panel_server <- function(
       cov_friendly = covariate_name,
       model_effects = model_effects
     )
-    # empty covariate default value
-    default_covariate_value <- reactiveVal()
 
     covariate_value = covariate_value_panel_server(
       id = "covariate_value",
       covariate_type = reactive({ input$covariate_type_selection }),
-      covariate_data = reactive({ all_data()[[covariate_title()]] }),
-      default_covariate_value = default_covariate_value
+      covariate_data = reactive({ all_data()[[covariate_title()]] })
     )
     # obtain gemtc output types to be used in rest of page
     model_output <- reactive(CovariateModelOutput(model = model_reactive(), cov_value = covariate_value()))
