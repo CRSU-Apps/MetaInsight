@@ -1,27 +1,59 @@
-CreateRegressionPlot <- function(model, reference, comparators, include_ghosts = FALSE, include_extrapolation = FALSE, contribution_multiplier = 1.0, include_confidence = FALSE) {
+#' Create a covariate regression plot where multiple comparisons can be plotted, and the contributions from each study are shown as circles.
+#'
+#' @param model GEMTC model result object.
+#' @param reference Name of reference treatment.
+#' @param comparators Vector of names of comparison treatments to plot in colour.
+#' @param contribution_type Type of contribution, used to calculate sizes for the study contribution circles.
+#' @param include_ghosts TRUE if all other comparator studies should be plotted in grey in the background of the plot. Defaults to FALSE.
+#' @param include_extrapolation TRUE if regression lines should be extrapolated beyond the range of the given data. These will appear as dashed lines.
+#' Defaults to FALSE.
+#' @param include_confidence TRUE if the confidence regions should be plotted for the specified comparators. These will be partially transparent regions.
+#' Defaults to FALSE.
+#' @param confidence_opacity The opacity of the confidence regions. Can be any value between 0 and 1, inclusive. Defaults to 0.2.
+#' @param contribution_multiplier Factor by which to scale the sizes of the study contribution circles. Defaults to 1.0.
+#'
+#' @return Created ggplot2 object.
+CreateRegressionPlot <- function(
+    model,
+    reference,
+    comparators,
+    contribution_type,
+    include_ghosts = FALSE,
+    include_extrapolation = FALSE,
+    include_confidence = FALSE,
+    confidence_opacity = 0.2,
+    contribution_multiplier = 1.0) {
   
   # Set up basic plot
-  plot <- .SetupMainPlot(reference, comparators, include_ghosts)
+  plot <- .SetupMainPlot(reference, comparators, include_ghosts, confidence_opacity)
   
   # Plot the ghost regression lines for the comparators
   if (include_ghosts) {
-    all_comparators <- .GetComparators(model, reference)
+    all_comparators <- .FindAllComparators(model, reference)
     ghosts <-  all_comparators[!all_comparators %in% comparators]
     
-    plot <- .PlotContributionCircles(plot, model, reference, ghosts, contribution_multiplier, ghosted = TRUE)
+    plot <- .PlotContributionCircles(plot, model, reference, ghosts, contribution_type, contribution_multiplier, ghosted = TRUE)
     plot <- .PlotRegressionLines(plot, model, reference, ghosts, include_extrapolation, ghosted = TRUE)
   }
   
   if (include_confidence) {
     plot <- .PlotConfidenceRegions(plot, model, reference, comparators)
   }
-  plot <- .PlotContributionCircles(plot, model, reference, comparators, contribution_multiplier)
+  plot <- .PlotContributionCircles(plot, model, reference, comparators, contribution_type, contribution_multiplier)
   plot <- .PlotRegressionLines(plot, model, reference, comparators, include_extrapolation)
   
   return(plot)
 }
 
-.SetupMainPlot <- function(reference, comparators, include_ghosts) {
+#' Setup the main components of the plot panel.
+#'
+#' @param reference Name of the reference treatment.
+#' @param comparators Vector of names of comparison treatments to plot.
+#' @param include_ghosts TRUE if all otherc omparator studies should be plotted in grey in the background of the plot. Defaults to FALSE.
+#' @param confidence_opacity The opacity of the confidence regions. Can be any value between 0 and 1, inclusive. Defaults to 0.2.
+#'
+#' @return Created ggplot2 object.
+.SetupMainPlot <- function(reference, comparators, include_ghosts, confidence_opacity) {
   # Set up basic plot
   plot <- ggplot() +
     theme_minimal() +
@@ -41,9 +73,15 @@ CreateRegressionPlot <- function(model, reference, comparators, include_ghosts =
     ylab(glue::glue("Relative Effect vs {reference}"))
   
   # Ensure that enough colours are always provided, by cycling the given colours
-  colours <- c("red", "orange", "yellow", "green", "cyan", "blue", "magenta")
-  colours <- rep(colours, ceiling(length(comparators) / length(colours)))[1:length(comparators)]
-  fills <- c("#ff000030", "#ffaa0030", "#ffff0030", "#00ff0030", "#00ffff30", "#0000ff30", "#ff00ff30")
+  base_colours <- c("#ff0000", "#ffaa00", "#ffff00", "#00ff00", "#00ffff", "#0000ff", "#ff00ff")
+  colours <- rep(base_colours, ceiling(length(comparators) / length(colours)))[1:length(comparators)]
+  
+  opacity_hex = format(
+    as.hexmode(as.integer(confidence_opacity * 255)),
+    width = 2
+  )
+  fills <- paste0(base_colours, opacity_hex)
+  # fills <- c("#ff000030", "#ffaa0030", "#ffff0030", "#00ff0030", "#00ffff30", "#0000ff30", "#ff00ff30")
   fills <- rep(fills, ceiling(length(comparators) / length(fills)))[1:length(comparators)]
   
   # Set the colours
@@ -58,8 +96,16 @@ CreateRegressionPlot <- function(model, reference, comparators, include_ghosts =
   return(plot)
 }
 
+#' Plot the confidence regions on the plot.
+#'
+#' @param plot object to which to add elements.
+#' @param model GEMTC model result object.
+#' @param reference Name of reference treatment.
+#' @param comparators Vector of names of comparison treatments to plot.
+#'
+#' @return The modified ggplot2 object.
 .PlotConfidenceRegions <- function(plot, model, reference, comparators) {
-  confidence <- .GetRegressionConfidenceRegion(model, reference, comparators)
+  confidence <- .FindRegressionConfidenceRegion(model, reference, comparators)
   plot <- plot +
     geom_ribbon(
       data = confidence,
@@ -74,11 +120,20 @@ CreateRegressionPlot <- function(model, reference, comparators, include_ghosts =
   
   return(plot)
 }
-  
-.PlotContributionCircles <- function(plot, model, reference, comparators, contribution_multiplier, ghosted = FALSE) {
-  
-  # Cirtcles for coontributions
-  contributions = .GetRegressionContributions(model, reference, comparators)
+
+#' Plot the contribution circles on the plot.
+#'
+#' @param plot object to which to add elements.
+#' @param model GEMTC model result object.
+#' @param reference Name of reference treatment.
+#' @param comparators Vector of names of comparison treatments to plot.
+#' @param contribution_type Type of contribution, used to calculate sizes for the study contribution circles.
+#' @param contribution_multiplier Factor by which to scale the sizes of the study contribution circles. Defaults to 1.0.
+#' @param ghosted TRUE if studies should be plotted in grey. Defaults to FALSE.
+#'
+#' @return The modified ggplot2 object.
+.PlotContributionCircles <- function(plot, model, reference, comparators, contribution_type, contribution_multiplier, ghosted = FALSE) {
+  contributions = .FindRegressionContributions(model, reference, comparators, contribution_type)
   
   if (ghosted) {
     contributions$Treatment <- rep("Other", length(contributions$Treatment))
@@ -101,14 +156,25 @@ CreateRegressionPlot <- function(model, reference, comparators, include_ghosts =
   return(plot)
 }
 
+#' Plot the regression lines on the plot.
+#'
+#' @param plot object to which to add elements.
+#' @param model GEMTC model result object.
+#' @param reference Name of reference treatment.
+#' @param comparators Vector of names of comparison treatments to plot.
+#' @param extrapolate TRUE if regression lines should be extrapolated beyond the range of the data. These will be plotted as dashed lines.
+#' Defaults to FALSE.
+#' @param ghosted TRUE if studies should be plotted in grey. Defaults to FALSE.
+#'
+#' @return The modified ggplot2 object.
 .PlotRegressionLines <- function(plot, model, reference, comparators, extrapolate, ghosted = FALSE) {
   # Create data frame
   lines = data.frame(
     Treatment = comparators,
-    intersect = .GetRegressionIntersect(model, reference, comparators),
-    slope = .GetRegressionGradient(model, reference, comparators),
-    start_x = .GetRegressionStartX(model, reference, comparators),
-    end_x = .GetRegressionEndX(model, reference, comparators)
+    intersect = .FindRegressionIntersect(model, reference, comparators),
+    slope = .FindRegressionGradient(model, reference, comparators),
+    start_x = .FindRegressionStartX(model, reference, comparators),
+    end_x = .FindRegressionEndX(model, reference, comparators)
   )
   
   if (ghosted) {
@@ -138,9 +204,9 @@ CreateRegressionPlot <- function(model, reference, comparators, include_ghosts =
       data = lines,
       mapping = aes(
         x = start_x,
-        y = .GetRegressionY(start_x, intersect, slope),
+        y = intersect + slope * start_x,
         xend = end_x,
-        yend = .GetRegressionY(end_x, intersect, slope),
+        yend = intersect + slope * end_x,
         color = Treatment
       ),
       linewidth = 1.2,
@@ -150,27 +216,25 @@ CreateRegressionPlot <- function(model, reference, comparators, include_ghosts =
   return(plot)
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-.GetComparators <- function(model, reference) {
+#' Find the names of all possible comparators in the model.
+#'
+#' @param model GEMTC model result object.
+#' @param reference Name of reference treatment.
+#'
+#' @return Vector containing all treatments other than the reference treatment.
+.FindAllComparators <- function(model, reference) {
   treatments <- model$model$network$treatments$description
   return(treatments[treatments != reference])
 }
 
-.GetRegressionIntersect <- function(model, reference, comparator) {
+#' Find the relative effect at a covariate value of zero.
+#'
+#' @param model GEMTC model result object.
+#' @param reference Name of reference treatment.
+#' @param comparator Name of comparison treatment for which to find intersect.
+#'
+#' @return The relative effect axis intersect.
+.FindRegressionIntersect <- function(model, reference, comparator) {
   intersects <- data.frame(
     treatment = c(
       "the_Butcher",
@@ -185,7 +249,14 @@ CreateRegressionPlot <- function(model, reference, comparators, include_ghosts =
   return(intersects$value[intersects$treatment %in% comparator])
 }
 
-.GetRegressionGradient <- function(model, reference, comparator) {
+#' Find the relative effect vs covariate value gradient.
+#'
+#' @param model GEMTC model result object.
+#' @param reference Name of reference treatment.
+#' @param comparator Name of comparison treatment for which to find gradient.
+#'
+#' @return The relative effect vs covariate value gradient.
+.FindRegressionGradient <- function(model, reference, comparator) {
   gradients <- data.frame(
     treatment = c(
       "the_Butcher",
@@ -200,7 +271,14 @@ CreateRegressionPlot <- function(model, reference, comparators, include_ghosts =
   return(gradients$value[gradients$treatment %in% comparator])
 }
 
-.GetRegressionStartX <- function(model, reference, comparator) {
+#' Find the lowest covariate value given by a study comparing the reference and comparator treatments.
+#'
+#' @param model GEMTC model result object.
+#' @param reference Name of reference treatment.
+#' @param comparator Name of comparison treatment for which to find lowest covariate value.
+#'
+#' @return The lowest covariate value of a relevant study.
+.FindRegressionStartX <- function(model, reference, comparator) {
   intersects <- data.frame(
     treatment = c(
       "the_Butcher",
@@ -215,7 +293,14 @@ CreateRegressionPlot <- function(model, reference, comparators, include_ghosts =
   return(intersects$value[intersects$treatment %in% comparator])
 }
 
-.GetRegressionEndX <- function(model, reference, comparator) {
+#' Find the highest covariate value given by a study comparing the reference and comparator treatments.
+#'
+#' @param model GEMTC model result object.
+#' @param reference Name of reference treatment.
+#' @param comparator Name of comparison treatment for which to find highest covariate value.
+#'
+#' @return The highest covariate value of a relevant study.
+.FindRegressionEndX <- function(model, reference, comparator) {
   intersects <- data.frame(
     treatment = c(
       "the_Butcher",
@@ -230,11 +315,19 @@ CreateRegressionPlot <- function(model, reference, comparators, include_ghosts =
   return(intersects$value[intersects$treatment %in% comparator])
 }
 
-.GetRegressionY <- function(x, intersept, slope) {
-  return(intersept + slope * x)
-}
-
-.GetRegressionContributions <- function(model, reference, comparator) {
+#' Find the contributions to the regression analysis.
+#'
+#' @param model GEMTC model result object.
+#' @param reference Name of reference treatment.
+#' @param comparator Name of comparison treatment for which to find the contributions.
+#' @param contribution_type Type of contribution to find.
+#'
+#' @return Data frame containing contribution details. Each row represents a study contributing to a given treatment. Columns are:
+#' - Treatment: The treatment for which this contribution relates.
+#' - covariate_value: Value of the covariate for this study.
+#' - relative_effect Relative effect for this study.
+#' - contribution: Size of contribution for this study.
+.FindRegressionContributions <- function(model, reference, comparator, contribution_type) {
   
   treatments <- c()
   covariate_values <- c()
@@ -278,7 +371,19 @@ CreateRegressionPlot <- function(model, reference, comparators, include_ghosts =
   return(contribution_df[contribution_df$Treatment %in% comparator, ])
 }
 
-.GetRegressionConfidenceRegion <- function(model, reference, comparator, divisions = 10) {
+#' Find the confidence regions for the regression analysis.
+#'
+#' @param model GEMTC model result object.
+#' @param reference Name of reference treatment.
+#' @param comparator Name of comparison treatment for which to find the contributions.
+#' @param divisions The number of divisions the confidence region should be drawn in. Defaults to 10.
+#'
+#' @return Data frame containing contribution details. Each row represents a confidence interval at a specific covariate value, for a given treatment. Columns are:
+#' - Treatment: The treatment for which this confidence interval relates.
+#' - covariate_value: Value of the covariate for this interval
+#' - y_min Relative effect of the lower end of this interval
+#' - y_max: Relative effect of the upper end of this interval
+.FindRegressionConfidenceRegion <- function(model, reference, comparator, divisions = 10) {
   
   treatments <- c()
   covariate_values <- c()
@@ -286,10 +391,10 @@ CreateRegressionPlot <- function(model, reference, comparators, include_ghosts =
   y_maxs <- c()
   
   for (treatment in c("the_Butcher", "the_Dung_named", "the_Great", "the_Slit_nosed", "the_Younger")) {
-    start_x <- .GetRegressionStartX(model, reference, treatment)
-    end_x <- .GetRegressionEndX(model, reference, treatment)
-    intersect <- .GetRegressionIntersect(model, reference, treatment)
-    gradient <- .GetRegressionGradient(model, reference, treatment)
+    start_x <- .FindRegressionStartX(model, reference, treatment)
+    end_x <- .FindRegressionEndX(model, reference, treatment)
+    intersect <- .FindRegressionIntersect(model, reference, treatment)
+    gradient <- .FindRegressionGradient(model, reference, treatment)
     for (covariate_value in seq(from = start_x, to = end_x, by = (end_x - start_x) / divisions)) {
       treatments <- c(treatments, treatment)
       covariate_values <- c(covariate_values, covariate_value)
@@ -314,40 +419,28 @@ CreateRegressionPlot <- function(model, reference, comparators, include_ghosts =
   return(confidence_df[confidence_df$Treatment %in% comparator, ])
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-tasty <- function() {
-  data <- read.csv("tests/testthat/Binary_wide_continuous_cov.csv")
+#' Example for the meta-regression main plot.
+#'
+#' @return Created ggplot2 object.
+.MetaRegressionPlotExample <- function() {
+  data <- read.csv("tests/testthat/Cont_long_continuous_cov.csv")
   treatment_ids <- CreateTreatmentIds(FindAllTreatments(data))
-  data <- WrangleUploadData(data, treatment_ids, "Binary")
+  data <- WrangleUploadData(data, treatment_ids, "Continuous")
   wrangled_treatment_list <- CleanTreatmentIds(treatment_ids)
   
-  model <- RunCovariateModel(data, wrangled_treatment_list, "Binary", 'OR', "covar.age", "age", 'random', 'unrelated', "the_Little")
+  model <- RunCovariateModel(data, wrangled_treatment_list, "Continuous", 'MD', "covar.age", "age", 'random', 'unrelated', "the_Little")
   
-  # plot <- CreateRegressionPlot(model, c("the_Great", "the_Younger"), "the_Little", include_ghosts = TRUE)
   plot <- CreateRegressionPlot(
     model = model,
     reference = "the_Little",
     comparators = c("the_Butcher", "the_Dung_named"),
+    contribution_type = "percentage",
     include_ghosts = TRUE,
-    contribution_multiplier = 5.0,
     include_extrapolation = TRUE,
-    include_confidence = TRUE
+    include_confidence = TRUE,
+    confidence_opacity = 0.2,
+    contribution_multiplier = 5.0
   )
   
   return(plot)
 }
-
-
-
