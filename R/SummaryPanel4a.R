@@ -61,17 +61,33 @@ metaregression_summary_panel_server <- function(id, all_data, metaoutcome) {
         # Baseline risk for continuous outcomes
         if (metaoutcome() == "Continuous") {
            
-          # Add a baseline column that is the mean value of the reference arm for the study, 
-          # or NA if there is no reference arm
+          # Add baseline column that is the mean value and baseline.sd column that is the sd value 
+          # of the reference arm for the study, or NA if there is no reference arm
           mutated_data <- all_data() %>% 
             dplyr::group_by(Study) %>%
             dplyr::mutate(
-              # Reference treatment is always numbered 1 internally
+              # Reference arm is always numbered 1 internally
               baseline = ifelse(is.null(Mean[T == 1]), NA, Mean[T == 1])
+            ) %>%
+            dplyr::mutate(
+              baseline_SD = ifelse(is.null(Mean[T == 1]), NA, SD[T == 1])
             )
           
           # Convert tibble from dplyr to df
           BUGSnet_df <- as.data.frame(mutated_data)
+          
+          # BUGSnet data prep to convert data to format required for data.plot
+          BUGSnet_data <- BUGSnet::data.prep(arm.data = BUGSnet_df,
+                                             varname.t = 'T',
+                                             varname.s = 'Study')
+          
+          # Create plot
+          plot <- BUGSnet::data.plot(BUGSnet_data,
+                                     covariate = covariate,
+                                     covariate.label = y_axis_label,
+                                     half.length = "baseline_SD", 
+                                     by = 'treatment',
+                                     text.size = 16) 
         }
       
         # Baseline risk for binary outcomes
@@ -91,19 +107,19 @@ metaregression_summary_panel_server <- function(id, all_data, metaoutcome) {
         y_axis_label <- GetFriendlyCovariateName(covariate)
         
         caption_setting <- "covariate" # Text to add to caption
+        
+        # BUGSnet data prep to convert data to format required for data.plot
+        BUGSnet_data <- BUGSnet::data.prep(arm.data = all_data(),
+                                           varname.t = 'T',
+                                           varname.s = 'Study')
+        
+        plot <- BUGSnet::data.plot(BUGSnet_data,
+                                   covariate = covariate,
+                                   covariate.label = y_axis_label,
+                                   # half.length = "age_SD", # Error bars - needs a second covariate, possible future addition
+                                   by = 'treatment',
+                                   text.size = 16) 
       }
-      
-      # BUGSnet data prep to convert data to format required for data.plot
-      BUGSnet_data <- BUGSnet::data.prep(arm.data = BUGSnet_df,
-                                         varname.t = 'T',
-                                         varname.s = 'Study')
-
-      plot <- BUGSnet::data.plot(BUGSnet_data,
-                                 covariate = covariate,
-                                 covariate.label = y_axis_label,
-                                 # half.length = "age_SD", # Error bars - needs a second covariate, possible future addition
-                                 by = 'treatment',
-                                 text.size = 16) 
       
       # Add caption text under plot
       plot <- plot + 
@@ -124,7 +140,19 @@ metaregression_summary_panel_server <- function(id, all_data, metaoutcome) {
       )
     })
     
-    output$test <- renderPrint ({ all_data() })
+    test_data <- as.data.frame(reactive({
+      all_data() %>% 
+        dplyr::group_by(Study) %>%
+        dplyr::mutate(
+          # Reference arm is always numbered 1 internally
+          baseline = ifelse(is.null(Mean[T == 1]), NA, Mean[T == 1])
+        ) %>%
+        dplyr::mutate(
+          baseline_SD = ifelse(is.null(Mean[T == 1]), NA, SD[T == 1])
+        )
+    }))
+    
+    output$test <- renderPrint ({ test_data() })
     # output$test <- renderPrint ({ (is.na(FindCovariateNames(all_data())[1]) || input$toggle_covariate_baseline == "Baseline risk") })
     
 
