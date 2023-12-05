@@ -51,21 +51,27 @@ metaregression_summary_panel_server <- function(id, all_data, metaoutcome) {
     
     make_covariate_plot <- function(all_data) {
       
-      # BUGSnet data prep to convert all_data to format required for data.plot
-      BUGSnet_data <- BUGSnet::data.prep(arm.data = all_data(),
-                                         varname.t = 'T',
-                                         varname.s = 'Study')
-      
       # If there is no covariate or baseline risk is selected by the toggle
       if (is.na(FindCovariateNames(all_data())[1]) || input$toggle_covariate_baseline == "Baseline risk") {
         
         y_axis_label <- "Baseline risk"
         caption_setting <- "baseline risk" # Text to add to caption
+        covariate <- "baseline" # Column of df selected for plot
         
         # Baseline risk for continuous outcomes
         if (metaoutcome() == "Continuous") {
-          # The covariate is the mean column - needs to be the mean value for the reference treatment
-          covariate <- colnames(all_data())[4]
+           
+          # Add a baseline column that is the mean value of the reference arm for the study, 
+          # or NA if there is no reference arm
+          mutated_data <- all_data() %>% 
+            dplyr::group_by(Study) %>%
+            dplyr::mutate(
+              # Reference treatment is always numbered 1 internally
+              baseline = ifelse(is.null(Mean[T == 1]), NA, Mean[T == 1])
+            )
+          
+          # Convert tibble from dplyr to df
+          BUGSnet_df <- as.data.frame(mutated_data)
         }
       
         # Baseline risk for binary outcomes
@@ -86,6 +92,11 @@ metaregression_summary_panel_server <- function(id, all_data, metaoutcome) {
         
         caption_setting <- "covariate" # Text to add to caption
       }
+      
+      # BUGSnet data prep to convert data to format required for data.plot
+      BUGSnet_data <- BUGSnet::data.prep(arm.data = BUGSnet_df,
+                                         varname.t = 'T',
+                                         varname.s = 'Study')
 
       plot <- BUGSnet::data.plot(BUGSnet_data,
                                  covariate = covariate,
@@ -113,8 +124,8 @@ metaregression_summary_panel_server <- function(id, all_data, metaoutcome) {
       )
     })
     
-    # output$test <- renderPrint ({ FindCovariateNames(all_data())[1] })
-    output$test <- renderPrint ({ (is.na(FindCovariateNames(all_data())[1]) || input$toggle_covariate_baseline == "Baseline risk") })
+    output$test <- renderPrint ({ all_data() })
+    # output$test <- renderPrint ({ (is.na(FindCovariateNames(all_data())[1]) || input$toggle_covariate_baseline == "Baseline risk") })
     
 
     output$downloadCovariateSummary <- downloadHandler(
