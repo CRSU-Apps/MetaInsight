@@ -22,15 +22,15 @@ covariate_run_model_ui <- function(id) {
       fluidRow(
         div(selectInput(inputId = ns("select_regressor"), 
                   label = "Choose type of regression coefficient", 
-                  choices = c("shared", "unrelated", "exchangeable")),
+                  choices = c("shared", "exchangeable", "unrelated")),
           style = "display: inline-block;"),
         div(
           shinyWidgets::dropMenu(shinyWidgets::dropdownButton(
             size = 'xs', status = "info", icon=icon('info')), align = 'left',
             p(tags$strong("Types of regressors")),
             p(tags$u("Shared:"), " Coefficient is the same for all treatment comparisons"),
-            p(tags$u("Unrelated:"), " Coefficient is different for each treatment comparison"),
-            p(tags$u("Exchangeable:"), " Coefficient is different for each treatment comparison but all come from a shared distribution")),
+            p(tags$u("Exchangeable:"), " Coefficient is different for each treatment comparison but all come from a shared distribution"),
+            p(tags$u("Unrelated:"), " Coefficient is different for each treatment comparison")),
             style = "display:inline-block; vertical-align: top;"
         )
       ),
