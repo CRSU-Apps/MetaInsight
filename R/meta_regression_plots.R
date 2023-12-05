@@ -10,6 +10,7 @@
 #' @param include_confidence TRUE if the confidence regions should be plotted for the specified comparators. These will be partially transparent regions.
 #' Defaults to FALSE.
 #' @param confidence_opacity The opacity of the confidence regions. Can be any value between 0 and 1, inclusive. Defaults to 0.2.
+#' @param include_contribution TRUE if study contribution should be displayed as circles. Defaults to TRUE.
 #' @param contribution_multiplier Factor by which to scale the sizes of the study contribution circles. Defaults to 1.0.
 #'
 #' @return Created ggplot2 object.
@@ -22,6 +23,7 @@ CreateRegressionPlot <- function(
     include_extrapolation = FALSE,
     include_confidence = FALSE,
     confidence_opacity = 0.2,
+    include_contributions = TRUE,
     contribution_multiplier = 1.0) {
   
   comparators <- sort(comparators)
@@ -35,7 +37,9 @@ CreateRegressionPlot <- function(
   if (include_ghosts) {
     ghosts <-  all_comparators[!all_comparators %in% comparators]
     
-    plot <- .PlotContributionCircles(plot, model, reference, ghosts, contribution_type, contribution_multiplier, ghosted = TRUE)
+    if (include_contributions) {
+      plot <- .PlotContributionCircles(plot, model, reference, ghosts, contribution_type, contribution_multiplier, ghosted = TRUE)
+    }
     plot <- .PlotRegressionLines(plot, model, reference, ghosts, include_extrapolation, ghosted = TRUE)
   }
   
@@ -43,7 +47,9 @@ CreateRegressionPlot <- function(
     if (include_confidence) {
       plot <- .PlotConfidenceRegions(plot, model, reference, comparators)
     }
-    plot <- .PlotContributionCircles(plot, model, reference, comparators, contribution_type, contribution_multiplier)
+    if (include_contributions) {
+      plot <- .PlotContributionCircles(plot, model, reference, comparators, contribution_type, contribution_multiplier)
+    }
     plot <- .PlotRegressionLines(plot, model, reference, comparators, include_extrapolation)
   }
   
