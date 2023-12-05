@@ -58,10 +58,9 @@ covariate_value_panel_ui <- function(id) {
 #' Create the covariate value panel server.
 #'
 #' @param id ID of the module.
-#' @param covariate_data Reactive containing vector of all covariate values.
-#' @param default_covariate_value Reactive containing the default covariate value.
 #' @param covariate_type Reactive containing the type of the covariate: either "Continuous" or "Binary".
-covariate_value_panel_server <- function(id, covariate_type, covariate_data, default_covariate_value) {
+#' @param covariate_data Reactive containing vector of all covariate values.
+covariate_value_panel_server <- function(id, covariate_type, covariate_data) {
   shiny::moduleServer(id, function(input, output, session) {
     
     # Minimum covariate value in the data
@@ -86,12 +85,7 @@ covariate_value_panel_server <- function(id, covariate_type, covariate_data, def
       range <- max_value() - min_value()
       log_val <- round(log10(range))
       step <- 10 ** (log_val - 2)
-      if (is.null(default_covariate_value())) {
-        value <- (min_value() + max_value()) / 2
-      } else {
-        value <- default_covariate_value()
-      }
-      
+      value <- (min_value() + max_value()) / 2
       shiny::updateNumericInput(inputId = "numeric", value = value, step = step)
     })
     

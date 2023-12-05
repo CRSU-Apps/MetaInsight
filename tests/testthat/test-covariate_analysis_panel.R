@@ -39,7 +39,12 @@ test_that("Covariate name extracted from data when available", {
     CleanData()
   testServer(
     covariate_analysis_panel_server,
-    args = list(all_data = reactive({ df })),
+    args = list(all_data = function() { df },
+                treatment_df = reactive(NULL),
+                metaoutcome = reactive("Continuous"),
+                outcome_measure = reactive("MD"),
+                model_effects = reactive("random"),
+                bugsnetdt = reactive(NULL)),
     {
       expect_equal(covariate_name(), "age")
       expect_equal(output$subtitle, "Covariate: age")

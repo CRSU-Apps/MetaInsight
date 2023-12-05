@@ -71,8 +71,20 @@ meta_regression_tab_ui <- function(id) {
 #'
 #' @param id ID of the module
 #' @param all_data Study data including covariate columns, in wide or long format
-#' @param outcome_measure Reactive containing the outcome measure of the analysis.
-meta_regression_tab_server <- function(id, all_data, outcome_measure) {
+#' @param treatment_df Reactive containing data frame containing treatment IDs (Number) and names (Label)
+#' @param metaoutcome Reactive containing meta analysis outcome: "Continuous" or "Binary"
+#' @param outcome_measure Reactive containing meta analysis outcome measure: "MD", "SMD", "OR, "RR", or "RD"
+#' @param model_effects Reactive containing model effects: either "random" or "fixed"
+#' @param bugsnetdt Reactive containing bugsnet meta-analysis
+meta_regression_tab_server <- function(
+    id, 
+    all_data,
+    treatment_df,
+    metaoutcome,
+    outcome_measure,
+    model_effects,
+    bugsnetdt
+    ) {
   shiny::moduleServer(id, function(input, output, session) {
     
     basline_risk_outcomes <- c("MD", "OR")
@@ -106,7 +118,12 @@ meta_regression_tab_server <- function(id, all_data, outcome_measure) {
           inner_server_expression = {
             covariate_analysis_panel_server(
               id = "covariate_analysis",
-              all_data = all_data
+              all_data = all_data,
+              treatment_df = treatment_df,
+              metaoutcome = metaoutcome,
+              outcome_measure = outcome_measure,
+              model_effects = model_effects,
+              bugsnetdt = bugsnetdt
             )
           }
         )

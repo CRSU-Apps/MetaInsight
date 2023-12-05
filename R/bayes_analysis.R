@@ -80,7 +80,7 @@ baye <- function(data,treat_list, model, outcome, CONBI, ref) {
 #'  - 'a' = "fixed effect" or "random effect"
 #' @param outcome One of "SMD", "RD", "MD", "OR". Anything else is interpreted as RR. (TM: Probably don't need this, as it's included as @param results$outcome)
 #' @return Text with the point estimate and 95% CrI of between-trial SD of treatment effects (all 0 if fixed effects)
-gemtctau <- function(results,outcome) {
+CreateTauSentence <- function(results,outcome) {
   sumresults<-results$sumresults
   if (results$a=="random effect") {   #SD and its 2.5% and 97.5%
     sd_mean<- round(sumresults$summaries$statistics["sd.d", "Mean"], digits = 2)

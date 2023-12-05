@@ -109,3 +109,56 @@ RunCovariateModel <- function(data, treatment_ids, outcome_type, outcome, covari
   
   return(model_output)
 }
+
+
+#' Function to collate all the model output to be used in other existing functions
+#' 
+#' @param model Completed model object after running RunCovariateRegression()
+#' @param cov_value Value of covariate for which to give output (default value the mean of study covariates)
+#' @return List of gemtc related output:
+#'  mtcRelEffects = data relating to presenting relative effects;
+#'  a = text output stating whether fixed or random effects;
+#'  sumresults = summary output of relative effects
+#'  dic = data frame of model fit statistics
+#'  cov_value_sentence = text output stating the value for which the covariate has been set to for producing output
+CovariateModelOutput <- function(model, cov_value) {
+  
+  # Relative Effects raw data
+  rel_eff <- gemtc::relative.effect(model, as.character(model$model$regressor$control), covariate = cov_value)
+  
+  # Create text for random/fixed effect
+  model_text <- paste(model$model$linearModel,"effect",sep=" ")
+  
+  # Summary of model
+  summary <- summary(model)
+  
+  # Table of Model fit stats
+  fit_stats <- as.data.frame(summary$DIC)
+  
+  # Summary sentence of where covariate value has been set for results
+  cov_value_sentence <- paste0("Value for covariate ", model$model$regressor$variable, " set at ", cov_value)
+  
+  # naming conventions to match current Bayesian functions
+  return(list(
+    mtcRelEffects = rel_eff,
+    a = model_text,
+    sumresults = summary,
+    dic = fit_stats,
+    cov_value_sentence = cov_value_sentence)
+  )
+}
+
+#' Function to find default covariate value of regression model
+#' @param model meta-regression model object (from gemtc)
+#' 
+#' @return default value
+FindCovariateDefault <- function(model) {
+  if (model$model$regressor$type == "continuous") {
+    cov_value <- model$model$regressor$center # center value
+  } else if (model$model$regressor$type == "binary") {
+    cov_value <- 0 # base group
+  } else {
+    stop("regressor type needs to be 'continuous' or 'binary'")
+  }
+  return(cov_value)
+}

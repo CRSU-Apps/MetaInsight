@@ -592,8 +592,6 @@ bayesian_analysis_panel_server <- function(
       treatment_df = treatment_df,
       metaoutcome = metaoutcome,
       outcome_measure = outcome_measure,
-      continuous_outcome = continuous_outcome,
-      binary_outcome = binary_outcome,
       model_effects = model_effects,
       exclusions = exclusions,
       bugsnetdt = bugsnetdt,

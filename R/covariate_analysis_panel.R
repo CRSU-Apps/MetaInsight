@@ -59,7 +59,16 @@ covariate_analysis_panel_ui <- function(id) {
       conditionalPanel(
         condition = "output.valid_covariate",
         ns = ns,
-        # Meta-regression UI should be placed here
+        tabsetPanel(
+          tabPanel(
+            title = "4c-1. Forest plot",
+            covariate_run_model_ui(id = ns("cov_model")),
+            fixedRow(
+              align = "center",
+              bayesian_forest_plot_plus_stats_ui(id = ns("cov_forest_plots"))
+            )
+          )
+        )
       )
     )
   )
@@ -69,7 +78,20 @@ covariate_analysis_panel_ui <- function(id) {
 #'
 #' @param id ID of the module
 #' @param all_data Study data including covariate columns, in wide or long format
-covariate_analysis_panel_server <- function(id, all_data) {
+#' @param treatment_df Reactive containing data frame containing treatment IDs (Number) and names (Label)
+#' @param metaoutcome Reactive containing meta analysis outcome: "Continuous" or "Binary"
+#' @param outcome_measure Reactive containing meta analysis outcome measure: "MD", "SMD", "OR, "RR", or "RD"
+#' @param model_effects Reactive containing model effects: either "random" or "fixed"
+#' @param bugsnetdt Reactive containing bugsnet meta-analysis
+covariate_analysis_panel_server <- function(
+    id, 
+    all_data,
+    treatment_df,
+    metaoutcome,
+    outcome_measure,
+    model_effects,
+    bugsnetdt
+    ) {
   shiny::moduleServer(id, function(input, output, session) {
     
     covariate_title <- reactive({
@@ -117,19 +139,38 @@ covariate_analysis_panel_server <- function(id, all_data) {
     output$valid_covariate <- reactive({ error_message() == "" })
     outputOptions(x = output, name = "valid_covariate", suspendWhenHidden = FALSE)
     
+    
     output$inferred_type <- reactive({ inferred_type() })
     outputOptions(x = output, name = "inferred_type", suspendWhenHidden = FALSE)
     
-    # Default covariate value to be populated by the covariate analysis
-    default_covariate_value <- reactiveVal()
-    
+    # 4c-1 Forest plots
+    # run model
+    model_reactive <- covariate_run_model_server(
+      id = "cov_model",
+      data = all_data,
+      treatment_df = treatment_df,
+      metaoutcome = metaoutcome,
+      outcome_measure = outcome_measure,
+      covariate = covariate_title,
+      cov_friendly = covariate_name,
+      model_effects = model_effects
+    )
+
     covariate_value = covariate_value_panel_server(
       id = "covariate_value",
       covariate_type = reactive({ input$covariate_type_selection }),
-      covariate_data = reactive({ all_data()[[covariate_title()]] }),
-      default_covariate_value = default_covariate_value
+      covariate_data = reactive({ all_data()[[covariate_title()]] })
     )
-    
-    # Meta-regression server should be placed here, populating the default_covariate_value
+    # obtain gemtc output types to be used in rest of page
+    model_output <- reactive(CovariateModelOutput(model = model_reactive(), cov_value = covariate_value()))
+    # Create forest plot and associated statistics
+    bayesian_forest_plot_plus_stats_server(
+      id = "cov_forest_plots",
+      model_output = model_output,
+      analysis_type = "Regression",
+      metaoutcome = metaoutcome,
+      outcome_measure = outcome_measure,
+      bugsnetdt = bugsnetdt
+    )
   })
 }

@@ -42,71 +42,12 @@ bayesian_forest_plots_page_ui <- function(id) {
       column(
         width = 6,
         align = "center",
-        uiOutput(outputId = ns("BayesianForestPlot")),
-        fixedRow(
-          p("Options to change limits of the x-axis:"),
-          column(
-            width = 6,
-            align = 'center',
-            numericInput(inputId = ns('bayesmin'), label = "Minimum", value = 0.1)
-          ),
-          column(
-            width = 6,
-            align = 'center',
-            numericInput(inputId = ns('bayesmax'), label = "Maximum", value = 5)
-          )
-        ),
-        p("Model fit:"),
-        tableOutput(outputId = ns("dic")),
-        textOutput(outputId = ns("text_gemtc")),
-        br(),
-        br(),
-        radioButtons(
-          inputId = ns('format2'),
-          label = 'Document format',
-          choices = c('PDF', 'PNG'),
-          inline = TRUE
-        ),
-        downloadButton(outputId = ns('downloadBaye_plot'))
+        bayesian_forest_plot_plus_stats_ui(id = ns("all_data"))
       ),
       column(
         width = 6,
         align = "center",
-        uiOutput(outputId = ns("BayesianForestPlot_sub")),
-        fixedRow(
-          p("Options to change limits of the x-axis:"),
-          column(
-            width = 6,
-            align = 'center',
-            numericInput(inputId = ns('bayesmin_sub'), label = "Minimum", value = 0.1)
-          ),
-          column(
-            width = 6,
-            align = 'center',
-            numericInput(inputId = ns('bayesmax_sub'), label = "Maximum", value = 5)
-          )
-        ),
-        tags$style(
-          glue::glue(
-            "#{ns(\"ref_change_bay\")} {{
-              background-color: #ffd966;
-              display:block;
-            }}"
-          )
-        ),
-        textOutput(outputId = ns("ref_change_bay")),
-        p("Model fit:"),
-        tableOutput(outputId = ns("dic_sub")),
-        textOutput(outputId = ns("text_gemtc_sub")),
-        br(),
-        br(),
-        radioButtons(
-          inputId = ns('format4'),
-          label = 'Document format',
-          choices = c('PDF', 'PNG'),
-          inline = TRUE
-        ),
-        downloadButton(outputId = ns('downloadBaye_plot_sub'))
+        bayesian_forest_plot_plus_stats_ui(id = ns("sub_data"))
       )
     )
   )
@@ -120,10 +61,6 @@ bayesian_forest_plots_page_ui <- function(id) {
 #' @param treatment_df Reactive containing data frame containing treatment IDs (Number) and names (Label)
 #' @param metaoutcome Reactive containing meta analysis outcome: "Continuous" or "Binary"
 #' @param outcome_measure Reactive containing meta analysis outcome measure: "MD", "SMD", "OR, "RR", or "RD"
-#' @param continuous_outcome Reactive containing acronym of the continuous outcome:
-#'   "MD" for mean difference, or "SMD" for standardised mean difference
-#' @param binary_outcome Reactive containing acronym of the binary outcome:
-#'   "OR" for odds ratio, "RR" for risk ratio, or "RD" for risk difference
 #' @param model_effects Reactive containing model effects: either "random" or "fixed"
 #' @param exclusions Reactive containing names of studies excluded from the sensitivity analysis
 #' @param bugsnetdt Reactive containing bugsnet meta-analysis
@@ -137,8 +74,6 @@ bayesian_forest_plots_page_server <- function(
     treatment_df,
     metaoutcome,
     outcome_measure,
-    continuous_outcome,
-    binary_outcome,
     model_effects,
     exclusions,
     bugsnetdt,
@@ -147,14 +82,14 @@ bayesian_forest_plots_page_server <- function(
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
 
-    ### SMD warning alert
+    ### SMD & RD warning alert
 
     observeEvent(list(input$baye_do, input$sub_do), {
-      if (continuous_outcome()=="SMD") {
-        showNotification("Please note: standardised mean difference currently cannot be analysed in Bayesian analysis", type = "error", duration = NULL)
+      if (outcome_measure()=="SMD") {
+        showNotification("Please note: standardised mean difference currently cannot be analysed within Bayesian analysis in MetaInsight", type = "error", duration = NULL)
       }
-      else if (binary_outcome()=="RD") {
-        showNotification("Please note: Risk difference currently cannot be analysed in Bayesian analysis", type = "error", duration = NULL)
+      else if (outcome_measure()=="RD") {
+        showNotification("Please note: Risk difference currently cannot be analysed within Bayesian analysis in MetaInsight", type = "error", duration = NULL)
       }
     })
 
@@ -170,118 +105,27 @@ bayesian_forest_plots_page_server <- function(
                      outcome_measure(), model_effects(), reference_alter())
     })
     
-    # forest min and max values different if continuous/binary
-    observe({
-      x <- metaoutcome()
-      if (x =='Binary') {
-        updateNumericInput(inputId = "bayesmin", value=0.1)
-        updateNumericInput(inputId = "bayesmin_sub", value=0.1)
-        updateNumericInput(inputId = "bayesmax", value=5)
-        updateNumericInput(inputId = "bayesmax_sub", value=5)
-      } else {
-        updateNumericInput(inputId = "bayesmin", value=-10)
-        updateNumericInput(inputId = "bayesmin_sub", value=-10)
-        updateNumericInput(inputId = "bayesmax", value=10)
-        updateNumericInput(inputId = "bayesmax_sub", value=10)
-      }
-    })
-
-    # Forest plot
-
-    # Forest plot for all studies
-    output$gemtc <- renderPlot({
-      make_Forest(model(), metaoutcome(), input$bayesmin, input$bayesmax)
-      title(paste("All studies:
-              Bayesian", model()$a, "consistency model forest plot results"))
-    })
-
-    # DIC table for all studies
-    output$dic <- renderTable ({
-      model()$dic
-    }, digits=3, rownames=TRUE, colnames=FALSE
-    )
-
-    # Tau all studies
-    output$text_gemtc <-renderText({
-      gemtctau(model(), outcome_measure())
-    })
-
-    # Forest plot with studies excluded
-    output$gemtc_sub <- renderPlot({
-      make_Forest(model_sub(), metaoutcome(), input$bayesmin_sub, input$bayesmax_sub)
-      title(paste("Results with studies excluded:
-              Bayesian", model_sub()$a,"consistency model forest plot results"))
-    })
-
-    # DIC table with studies excluded
-    output$dic_sub <- renderTable ({
-      model_sub()$dic
-    }, digits=3, rownames=TRUE, colnames=FALSE)
-
-    # Tau with studies excluded
-    output$text_gemtc_sub <-renderText({
-      gemtctau(model_sub(), outcome_measure())
-    })
-
-    # Interactive UI
-    output$BayesianForestPlot <- renderUI({
-      plotOutput(
-        outputId = ns("gemtc"),
-        width="630px",
-        height = BayesPixels(
-          as.numeric(bugsnet_sumtb(bugsnetdt(), metaoutcome())$Value[1]),
-          title = TRUE
-        )
-      )
-    })
-    output$BayesianForestPlot_sub <- renderUI({
-      plotOutput(
-        outputId = ns("gemtc_sub"),
-        width="630px",
-        height = BayesPixels(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% exclusions()), metaoutcome())$Value[1]), title=TRUE)
-      )
-    })
-
-    output$downloadBaye_plot <- downloadHandler(
-      filename = function() {
-        paste0('All_studies.', input$format2)
-      },
-      content = function(file) {
-        if (input$format2 == "PDF") {
-          pdf(file = file, width = 9, height = BayesInch(as.numeric(bugsnet_sumtb(bugsnetdt(), metaoutcome())$Value[1])))
-        } else {
-          png(file = file, width = 610, height = BayesPixels(as.numeric(bugsnet_sumtb(bugsnetdt(), metaoutcome())$Value[1])))
-        }
-        if (metaoutcome() == "Binary") {
-          gemtc::forest(model()$mtcRelEffects, digits = 3, xlim = c(log(input$bayesmin), log(input$bayesmax)))
-        }
-        if (metaoutcome() == "Continuous") {
-          gemtc::forest(model()$mtcRelEffects, digits = 3, xlim = c(input$bayesmin, input$bayesmax))
-        }
-        dev.off()
-      }
-    )
-
-    output$downloadBaye_plot_sub <- downloadHandler(
-      filename = function() {
-        paste0('Excluded_studies.', input$format4)
-      },
-      content = function(file) {
-        if (input$format4 == "PDF") {
-          pdf(file = file, width = 9, height = BayesInch(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% exclusions()), metaoutcome())$Value[1])))
-        } else {
-          png(file = file, width = 610, height = BayesPixels(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% exclusions()), metaoutcome())$Value[1])))
-        }
-        if (metaoutcome() == "Binary") {
-          gemtc::forest(model_sub()$mtcRelEffects, digits = 3, xlim = c(log(input$bayesmin_sub), log(input$bayesmax_sub)))
-        }
-        if (metaoutcome() == "Continuous") {
-          gemtc::forest(model_sub()$mtcRelEffects, digits = 3, xlim = c(input$bayesmin_sub, input$bayesmax_sub))
-        }
-        dev.off()
-      }
+    # Create forest plot and associated statistics
+    
+    bayesian_forest_plot_plus_stats_server(
+      id = "all_data",
+      model_output = model,
+      analysis_type = "Full",
+      metaoutcome = metaoutcome,
+      outcome_measure = outcome_measure,
+      bugsnetdt = bugsnetdt
     )
     
+    bayesian_forest_plot_plus_stats_server(
+      id = "sub_data",
+      model_output = model_sub,
+      analysis_type = "Sub",
+      metaoutcome = metaoutcome,
+      outcome_measure = outcome_measure,
+      bugsnetdt = bugsnetdt
+    )
+    
+
     output$ref_change_bay <- renderText({
       if (identical(reference_alter()$ref_sub, reference_alter()$ref_all)=="FALSE") {
         paste("Please note that the reference treatment for sensitivity analysis has now been changed to:", reference_alter()$ref_sub, ". This is because the treatment labelled 1 has been removed from the network of sensitivity analysis." )

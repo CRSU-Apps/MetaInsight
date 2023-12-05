@@ -167,7 +167,7 @@ test_that("CreateGemtcModel() has correct model settings for MD outcome", {
   
 })
 
-test_that("RunCovariateModel() gives reproducible output", {
+test_that("RunCovariateModel() gives reproducible output. Follow on: FindCovariateDefault() & CovariateModelOutput() gives correct output", {
   
   data <- read.csv("Binary_wide_continuous_cov.csv")
   treatment_ids <- CreateTreatmentIds(FindAllTreatments(data))
@@ -181,5 +181,15 @@ test_that("RunCovariateModel() gives reproducible output", {
   expect_equal(result_1$samples[2], result_2$samples[2])
   expect_equal(result_1$samples[3], result_2$samples[3])
   expect_equal(result_1$samples[4], result_2$samples[4])
+  
+  default <- FindCovariateDefault(result_1)
+  
+  expect_equal(default, 98)
+  
+  output_1 <- CovariateModelOutput(result_1, cov_value = default)
+  
+  expect_equal(length(output_1), 5)
+  expect_equal(output_1$a, "random effect")
+  expect_equal(output_1$cov_value_sentence, "Value for covariate age set at 98")
   
 })
