@@ -24,23 +24,28 @@ CreateRegressionPlot <- function(
     confidence_opacity = 0.2,
     contribution_multiplier = 1.0) {
   
+  comparators <- sort(comparators)
+  
+  all_comparators <- .FindAllComparators(model, reference)
+  
   # Set up basic plot
-  plot <- .SetupMainPlot(reference, comparators, include_ghosts, confidence_opacity)
+  plot <- .SetupMainPlot(reference, comparators, include_ghosts && length(comparators) < length(all_comparators), confidence_opacity)
   
   # Plot the ghost regression lines for the comparators
   if (include_ghosts) {
-    all_comparators <- .FindAllComparators(model, reference)
     ghosts <-  all_comparators[!all_comparators %in% comparators]
     
     plot <- .PlotContributionCircles(plot, model, reference, ghosts, contribution_type, contribution_multiplier, ghosted = TRUE)
     plot <- .PlotRegressionLines(plot, model, reference, ghosts, include_extrapolation, ghosted = TRUE)
   }
   
-  if (include_confidence) {
-    plot <- .PlotConfidenceRegions(plot, model, reference, comparators)
+  if (length(comparators) > 0) {
+    if (include_confidence) {
+      plot <- .PlotConfidenceRegions(plot, model, reference, comparators)
+    }
+    plot <- .PlotContributionCircles(plot, model, reference, comparators, contribution_type, contribution_multiplier)
+    plot <- .PlotRegressionLines(plot, model, reference, comparators, include_extrapolation)
   }
-  plot <- .PlotContributionCircles(plot, model, reference, comparators, contribution_type, contribution_multiplier)
-  plot <- .PlotRegressionLines(plot, model, reference, comparators, include_extrapolation)
   
   return(plot)
 }
@@ -73,7 +78,8 @@ CreateRegressionPlot <- function(
     ylab(glue::glue("Relative Effect vs {reference}"))
   
   # Ensure that enough colours are always provided, by cycling the given colours
-  base_colours <- c("#ff0000", "#ffaa00", "#ffff00", "#00ff00", "#00ffff", "#0000ff", "#ff00ff")
+  base_colours <- c("#bb0000", "#bba000", "#00bb00", "#00bbbb", "#0000bb", "#bb00bb",
+                    "#ff5555", "#ffa000", "#44ff44", "#55ffff", "#7744ff", "#ff00ff")
   colours <- rep(base_colours, ceiling(length(comparators) / length(colours)))[1:length(comparators)]
   
   opacity_hex = format(
@@ -81,7 +87,6 @@ CreateRegressionPlot <- function(
     width = 2
   )
   fills <- paste0(base_colours, opacity_hex)
-  # fills <- c("#ff000030", "#ffaa0030", "#ffff0030", "#00ff0030", "#00ffff30", "#0000ff30", "#ff00ff30")
   fills <- rep(fills, ceiling(length(comparators) / length(fills)))[1:length(comparators)]
   
   # Set the colours
