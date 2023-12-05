@@ -61,7 +61,8 @@ metaregression_summary_panel_server <- function(id, all_data, metaoutcome) {
         # Baseline risk for continuous outcomes
         if (metaoutcome() == "Continuous") {
            
-          # Add baseline column that is the mean value and baseline.sd column that is the sd value 
+          # Add baseline column that is the mean value and 
+          # baseline.sd column that is 1.96 * SD / sqrt(N)
           # of the reference arm for the study, or NA if there is no reference arm
           mutated_data <- all_data() %>% 
             dplyr::group_by(Study) %>%
@@ -70,7 +71,7 @@ metaregression_summary_panel_server <- function(id, all_data, metaoutcome) {
               baseline = ifelse(is.null(Mean[T == 1]), NA, Mean[T == 1])
             ) %>%
             dplyr::mutate(
-              baseline_SD = ifelse(is.null(Mean[T == 1]), NA, SD[T == 1])
+              baseline_SD = ifelse(is.null(Mean[T == 1]), NA, (1.96 * SD[T == 1]) / sqrt(N[T == 1]))
             )
           
           # Convert tibble from dplyr to df
@@ -85,9 +86,14 @@ metaregression_summary_panel_server <- function(id, all_data, metaoutcome) {
           plot <- BUGSnet::data.plot(BUGSnet_data,
                                      covariate = covariate,
                                      covariate.label = y_axis_label,
-                                     half.length = "baseline_SD", 
+                                     half.length = "baseline_SD", # Check this is the required calculation in plot code
                                      by = 'treatment',
                                      text.size = 16) 
+          
+          # Add caption text under plot
+          plot <- plot +
+            labs(caption = paste('The', caption_setting, 'value is the same for all treatment arms across a study. Error bars: mean +/- 1.96 * SD / sqrt(N)')) +
+            theme(plot.caption = element_text(hjust = 0)) # Left aligned
         }
       
         # Baseline risk for binary outcomes
@@ -119,12 +125,12 @@ metaregression_summary_panel_server <- function(id, all_data, metaoutcome) {
                                    # half.length = "age_SD", # Error bars - needs a second covariate, possible future addition
                                    by = 'treatment',
                                    text.size = 16) 
+        
+        # Add caption text under plot
+        plot <- plot +
+          labs(caption = paste('The', caption_setting, 'value is the same for all treatment arms across a study.')) +
+          theme(plot.caption = element_text(hjust = 0)) # Left aligned
       }
-      
-      # Add caption text under plot
-      plot <- plot + 
-        labs(caption = paste('The', caption_setting, 'value is the same for all treatment arms across a study.')) +
-        theme(plot.caption = element_text(hjust = 0)) # Left aligned
       
       return(plot)
              
@@ -148,7 +154,7 @@ metaregression_summary_panel_server <- function(id, all_data, metaoutcome) {
           baseline = ifelse(is.null(Mean[T == 1]), NA, Mean[T == 1])
         ) %>%
         dplyr::mutate(
-          baseline_SD = ifelse(is.null(Mean[T == 1]), NA, SD[T == 1])
+          baseline_SD = ifelse(is.null(Mean[T == 1]), NA, (1.96 * SD[T == 1]) / sqrt(N[T == 1]))
         )
     }))
     
