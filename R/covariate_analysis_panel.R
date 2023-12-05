@@ -67,6 +67,10 @@ covariate_analysis_panel_ui <- function(id) {
               align = "center",
               bayesian_forest_plot_plus_stats_ui(id = ns("cov_forest_plots"))
             )
+          ),
+          tabPanel(
+            title = "4c-2. Comparison of all treatment pairs",
+            covariate_treatment_comparisons_page_ui(id = ns("cov_treatment_comparisons"))
           )
         )
       )
@@ -161,8 +165,10 @@ covariate_analysis_panel_server <- function(
       covariate_type = reactive({ input$covariate_type_selection }),
       covariate_data = reactive({ all_data()[[covariate_title()]] })
     )
+    
     # obtain gemtc output types to be used in rest of page
     model_output <- reactive(CovariateModelOutput(model = model_reactive(), cov_value = covariate_value()))
+    
     # Create forest plot and associated statistics
     bayesian_forest_plot_plus_stats_server(
       id = "cov_forest_plots",
@@ -171,6 +177,13 @@ covariate_analysis_panel_server <- function(
       metaoutcome = metaoutcome,
       outcome_measure = outcome_measure,
       bugsnetdt = bugsnetdt
+    )
+    
+    # 4c-2 Treatment comparisons
+    covariate_treatment_comparisons_page_server(
+      id = "cov_treatment_comparisons",
+      model = model_output,
+      outcome_measure = outcome_measure
     )
   })
 }

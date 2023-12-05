@@ -12,6 +12,7 @@
 #'  - 'ntx' = Number of treatments
 #'  - 'treat_list2' = Same as @param treat_list (TM: Not sure why this is here)
 #'  - 'mtcRelEffects' = Output from gemtc::relative.effect
+#'  - 'rel_eff_tbl = Output from gemtc::relative.effect.table
 #'  - 'sumresults' = summary(mtcRelEffects)
 #'  - 'a' = "fixed effect" or "random effect"
 #'  - 'mtcNetwork' = Output from gemtc::mtc.network
@@ -55,6 +56,7 @@ baye <- function(data,treat_list, model, outcome, CONBI, ref) {
     mtcResults <- mtc.run(mtcModel)   # Run gemtc model object for analysis
     progress$inc(0.4, detail="Rendering results")
     mtcRelEffects <- relative.effect(mtcResults,t1=ref)  #Set reference treatment
+    rel_eff_tbl <- relative.effect.table(mtcResults) 
     #mtcRelEffects <- relative.effect(mtcResults,t1=treat_list2[1,2])  #Set reference treatment
     sumresults<-summary(mtcRelEffects)
     a<- paste(model,"effect",sep=" ")   #Create text for random/fixed effect
@@ -64,7 +66,7 @@ baye <- function(data,treat_list, model, outcome, CONBI, ref) {
     sumoverall<-summary(mtcResults)
     dic<-as.data.frame(sumoverall$DIC) # The statistics 'Dbar', 'pD', 'DIC', and 'data points'
     list(mtcResults=mtcResults,lstx=lstx,ntx=ntx,treat_list2=treat_list2,mtcRelEffects=mtcRelEffects,
-         sumresults=sumresults, a=a, mtcNetwork=mtcNetwork, dic=dic, model=model, outcome=outcome)
+         rel_eff_tbl=rel_eff_tbl, sumresults=sumresults, a=a, mtcNetwork=mtcNetwork, dic=dic, model=model, outcome=outcome)
   }}
 
 

@@ -117,6 +117,7 @@ RunCovariateModel <- function(data, treatment_ids, outcome_type, outcome, covari
 #' @param cov_value Value of covariate for which to give output (default value the mean of study covariates)
 #' @return List of gemtc related output:
 #'  mtcRelEffects = data relating to presenting relative effects;
+#'  rel_eff_tbl = table of relative effects for each comparison;
 #'  a = text output stating whether fixed or random effects;
 #'  sumresults = summary output of relative effects
 #'  dic = data frame of model fit statistics
@@ -125,6 +126,9 @@ CovariateModelOutput <- function(model, cov_value) {
   
   # Relative Effects raw data
   rel_eff <- gemtc::relative.effect(model, as.character(model$model$regressor$control), covariate = cov_value)
+  
+  # Relative Effects table of all comparisons
+  rel_eff_tbl <- gemtc::relative.effect.table(model, covariate = cov_value)
   
   # Create text for random/fixed effect
   model_text <- paste(model$model$linearModel,"effect",sep=" ")
@@ -141,6 +145,7 @@ CovariateModelOutput <- function(model, cov_value) {
   # naming conventions to match current Bayesian functions
   return(list(
     mtcRelEffects = rel_eff,
+    rel_eff_tbl = rel_eff_tbl,
     a = model_text,
     sumresults = summary,
     dic = fit_stats,

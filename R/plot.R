@@ -78,12 +78,14 @@ CreateForestPlot <- function(model, metaoutcome, bayesmin, bayesmax) {
 }
 
 # 3b Comparison of all treatment pairs
-baye_comp <- function(model, metaoutcome, outcome_measure){
-  tbl <- relative.effect.table(model$mtcResults)
-  if ((metaoutcome == "Binary") & (outcome_measure != "RD")) {
-    tbl<-exp(tbl)
-  } 
-  return(as.data.frame(round(tbl, digits=2)))
+baye_comp <- function(model, outcome_measure){
+  if (outcome_measure %in% c('OR', 'RR')) {
+    return(as.data.frame(round(exp(model$rel_eff_tbl), digits = 2)))
+  } else if (outcome_measure %in% c('RD', 'MD', 'SMD')) {
+    return(as.data.frame(round(model$rel_eff_tbl, digits = 2)))
+  } else {
+    stop("outcome_measure has to be 'OR', 'RR', 'RD', 'MD', or 'SMD'.")
+  }
 }
 
 # 3c Ranking Panel redesign by CRN
