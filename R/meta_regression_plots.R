@@ -1,6 +1,7 @@
 #' Create a covariate regression plot where multiple comparisons can be plotted, and the contributions from each study are shown as circles.
 #'
 #' @param model GEMTC model result object.
+#' @param treatment_df Reactive containing data frame containing treatment IDs (Number), sanitised names (Label), and original names (RawLabel).
 #' @param reference Name of reference treatment.
 #' @param comparators Vector of names of comparison treatments to plot in colour.
 #' @param contribution_type Type of contribution, used to calculate sizes for the study contribution circles.
@@ -16,6 +17,7 @@
 #' @return Created ggplot2 object.
 CreateRegressionPlot <- function(
     model,
+    treatment_df,
     reference,
     comparators,
     contribution_type,
@@ -31,26 +33,31 @@ CreateRegressionPlot <- function(
   all_comparators <- .FindAllComparators(model, reference)
   
   # Set up basic plot
-  plot <- .SetupMainPlot(reference, comparators, include_ghosts && length(comparators) < length(all_comparators), confidence_opacity)
+  plot <- .SetupMainPlot(
+    reference = treatment_df$RawLabel[treatment_df$Label == reference],
+    comparators = comparators,
+    include_ghosts = include_ghosts && length(comparators) < length(all_comparators),
+    confidence_opacity = confidence_opacity
+  )
   
   # Plot the ghost regression lines for the comparators
   if (include_ghosts) {
     ghosts <-  all_comparators[!all_comparators %in% comparators]
     
     if (include_contributions) {
-      plot <- .PlotContributionCircles(plot, model, reference, ghosts, contribution_type, contribution_multiplier, ghosted = TRUE)
+      plot <- .PlotContributionCircles(plot, model, treatment_df, reference, ghosts, contribution_type, contribution_multiplier, ghosted = TRUE)
     }
-    plot <- .PlotRegressionLines(plot, model, reference, ghosts, include_extrapolation, ghosted = TRUE)
+    plot <- .PlotRegressionLines(plot, model, treatment_df, reference, ghosts, include_extrapolation, ghosted = TRUE)
   }
   
   if (length(comparators) > 0) {
     if (include_confidence) {
-      plot <- .PlotConfidenceRegions(plot, model, reference, comparators)
+      plot <- .PlotConfidenceRegions(plot, model, treatment_df, reference, comparators)
     }
     if (include_contributions) {
-      plot <- .PlotContributionCircles(plot, model, reference, comparators, contribution_type, contribution_multiplier)
+      plot <- .PlotContributionCircles(plot, model, treatment_df, reference, comparators, contribution_type, contribution_multiplier)
     }
-    plot <- .PlotRegressionLines(plot, model, reference, comparators, include_extrapolation)
+    plot <- .PlotRegressionLines(plot, model, treatment_df, reference, comparators, include_extrapolation)
   }
   
   return(plot)
@@ -111,12 +118,16 @@ CreateRegressionPlot <- function(
 #'
 #' @param plot object to which to add elements.
 #' @param model GEMTC model result object.
+#' @param treatment_df Reactive containing data frame containing treatment IDs (Number), sanitised names (Label), and original names (RawLabel).
 #' @param reference Name of reference treatment.
 #' @param comparators Vector of names of comparison treatments to plot.
 #'
 #' @return The modified ggplot2 object.
-.PlotConfidenceRegions <- function(plot, model, reference, comparators) {
+.PlotConfidenceRegions <- function(plot, model, treatment_df, reference, comparators) {
   confidence <- .FindRegressionConfidenceRegion(model, reference, comparators)
+  
+  confidence$Treatment <- sapply(confidence$Treatment, function(treatment) { treatment_df$RawLabel[treatment_df$Label == treatment] })
+  
   plot <- plot +
     geom_ribbon(
       data = confidence,
@@ -136,6 +147,7 @@ CreateRegressionPlot <- function(
 #'
 #' @param plot object to which to add elements.
 #' @param model GEMTC model result object.
+#' @param treatment_df Reactive containing data frame containing treatment IDs (Number), sanitised names (Label), and original names (RawLabel).
 #' @param reference Name of reference treatment.
 #' @param comparators Vector of names of comparison treatments to plot.
 #' @param contribution_type Type of contribution, used to calculate sizes for the study contribution circles.
@@ -143,8 +155,10 @@ CreateRegressionPlot <- function(
 #' @param ghosted TRUE if studies should be plotted in grey. Defaults to FALSE.
 #'
 #' @return The modified ggplot2 object.
-.PlotContributionCircles <- function(plot, model, reference, comparators, contribution_type, contribution_multiplier, ghosted = FALSE) {
+.PlotContributionCircles <- function(plot, model, treatment_df, reference, comparators, contribution_type, contribution_multiplier, ghosted = FALSE) {
   contributions = .FindRegressionContributions(model, reference, comparators, contribution_type)
+  
+  contributions$Treatment <- sapply(contributions$Treatment, function(treatment) { treatment_df$RawLabel[treatment_df$Label == treatment] })
   
   if (ghosted) {
     contributions$Treatment <- rep("Other", length(contributions$Treatment))
@@ -171,6 +185,7 @@ CreateRegressionPlot <- function(
 #'
 #' @param plot object to which to add elements.
 #' @param model GEMTC model result object.
+#' @param treatment_df Reactive containing data frame containing treatment IDs (Number), sanitised names (Label), and original names (RawLabel).
 #' @param reference Name of reference treatment.
 #' @param comparators Vector of names of comparison treatments to plot.
 #' @param extrapolate TRUE if regression lines should be extrapolated beyond the range of the data. These will be plotted as dashed lines.
@@ -178,10 +193,10 @@ CreateRegressionPlot <- function(
 #' @param ghosted TRUE if studies should be plotted in grey. Defaults to FALSE.
 #'
 #' @return The modified ggplot2 object.
-.PlotRegressionLines <- function(plot, model, reference, comparators, extrapolate, ghosted = FALSE) {
+.PlotRegressionLines <- function(plot, model, treatment_df, reference, comparators, extrapolate, ghosted = FALSE) {
   # Create data frame
   lines = data.frame(
-    Treatment = comparators,
+    Treatment = sapply(comparators, function(comparator) { treatment_df$RawLabel[treatment_df$Label == comparator] }),
     intersect = .FindRegressionIntersect(model, reference, comparators),
     slope = .FindRegressionGradient(model, reference, comparators),
     start_x = .FindRegressionStartX(model, reference, comparators),
@@ -443,6 +458,7 @@ CreateRegressionPlot <- function(
   
   plot <- CreateRegressionPlot(
     model = model,
+    treatment_df = wrangled_treatment_list,
     reference = "the_Little",
     comparators = c("the_Butcher", "the_Dung_named"),
     contribution_type = "percentage",
