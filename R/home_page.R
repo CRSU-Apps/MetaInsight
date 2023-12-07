@@ -21,7 +21,7 @@ home_page_ui <- function(id) {
                                 });
                             ')
     ),
-    h2("MetaInsight v5.1.0", align= "left"),
+    h2("MetaInsight v5.1.1", align= "left"),
     fluidRow(
       column(
         width = 3,
@@ -44,8 +44,8 @@ home_page_ui <- function(id) {
       column(
         width = 5, 
         p(tags$strong("Latest Updates:")),
-        p(tags$strong("Patch (29 August 2023 v5.1.0):")),
-        p("Removed summary forest plot matrix due to unresolved bugs"),
+        p(tags$strong("Patch (07 December 2023 v5.1.1):")),
+        p("Fixed minor bugs"),
         p(tags$strong("Major update (15 August 2023 v5.0.0):")),
         p(tags$ul(
           tags$li("MetaInsight has been changed to make it easier for users to upload their own datasets for analysis. 
@@ -65,7 +65,7 @@ home_page_ui <- function(id) {
     ),
     br(),
     p(
-      "Clareece Nevill, Naomi Bradbury, Yiqiao Xin, Rhiannon K Owen, Ryan Field, Janion Nevill, Nicola Cooper, and Alex Sutton",
+      "Naomi Bradbury, Ryan Field, Tom Morris, Clareece Nevill, Janion Nevill, Yiqiao Xin, Rhiannon K Owen, Nicola Cooper, and Alex Sutton",
       align = "left"
     ),
     p(
