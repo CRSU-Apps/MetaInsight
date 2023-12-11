@@ -8,27 +8,31 @@ message: >-
   netmeta. Res Syn Meth. 2019; 10: 569-581.
 type: software
 authors:
-  - family-names: Nevill
-    given-names: Clareece R
-    affiliation: University of Leicester
-    orcid: 'https://orcid.org/0000-0001-8305-2516'
   - family-names: Bradbury
     given-names: Naomi
     affiliation: University of Leicester
     orcid: 'https://orcid.org/0000-0002-8934-6301'
+  - family-names: Field
+    given-names: Ryan
+    affiliation: University of Glasgow
+    orcid: 'https://orcid.org/0000-0002-4424-9890'
+  - family-names: Morris
+    given-names: Tom
+    affilitation: University of Leicester
+    orcid: 'https://orcid.org/0000-0003-3996-802X'
+  - family-names: Nevill
+    given-names: Clareece R
+    affiliation: University of Leicester
+    orcid: 'https://orcid.org/0000-0001-8305-2516'
+  - family-names: Nevill
+    given-names: Janion
+    affiliation: University of Leicester
   - family-names: Xin
     given-names: Yiqiao 
     orcid: 'https://orcid.org/0000-0001-5856-3103'
   - family-names: Owen
     given-names: Rhiannon K
     orcid: 'https://orcid.org/0000-0001-5977-376X'
-  - family-names: Field
-    given-names: Ryan
-    affiliation: University of Glasgow
-    orcid: 'https://orcid.org/0000-0002-4424-9890'
-  - family-names: Nevill
-    given-names: Janion
-    affiliation: University of Leicester
   - family-names: Cooper
     given-names: Nicola J
     affiliation: University of Leicester
@@ -48,5 +52,5 @@ keywords:
   - MetaInsight
   - RShiny
 license: GPL-3.0-or-later
-version: 5.1.0
-date-released: '2023-08-29'
+version: 5.1.1
+date-released: '2023-12-07'
