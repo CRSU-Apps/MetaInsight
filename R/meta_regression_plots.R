@@ -5,7 +5,7 @@
 #' @param reference Name of reference treatment.
 #' @param comparators Vector of names of comparison treatments to plot in colour.
 #' @param covariate_value The value of the covariate to plot as a vertical line. NULL if not to be plotted.
-#' @param contribution_type Type of contribution, used to calculate sizes for the study contribution circles.
+#' @param contribution_type Name of the type of contribution, used to calculate sizes for the study contribution circles.
 #' @param include_ghosts TRUE if all other comparator studies should be plotted in grey in the background of the plot. Defaults to FALSE.
 #' @param include_extrapolation TRUE if regression lines should be extrapolated beyond the range of the given data. These will appear as dashed lines.
 #' Defaults to FALSE.
@@ -13,7 +13,7 @@
 #' Defaults to FALSE.
 #' @param confidence_opacity The opacity of the confidence regions. Can be any value between 0 and 1, inclusive. Defaults to 0.2.
 #' @param include_contribution TRUE if study contribution should be displayed as circles. Defaults to TRUE.
-#' @param contribution_multiplier Factor by which to scale the sizes of the study contribution circles. Defaults to 1.0.
+#' @param contribution_multiplier Multiplication factor by which to scale the sizes of the study contribution circles. Defaults to 1.0.
 #'
 #' @return Created ggplot2 object.
 CreateMainRegressionPlot <- function(
@@ -62,6 +62,7 @@ CreateMainRegressionPlot <- function(
     plot <- .PlotRegressionLines(plot, model, treatment_df, reference, comparators, include_extrapolation)
   }
   
+  # Plot a vertical line at the covariate value if a non-null value is provided
   if (!is.null(covariate_value)) {
     plot <- plot +
       geom_vline(
@@ -77,7 +78,7 @@ CreateMainRegressionPlot <- function(
 #'
 #' @param reference Name of the reference treatment.
 #' @param comparators Vector of names of comparison treatments to plot.
-#' @param include_ghosts TRUE if all otherc omparator studies should be plotted in grey in the background of the plot. Defaults to FALSE.
+#' @param include_ghosts TRUE if all other comparator studies should be plotted in grey in the background of the plot. Defaults to FALSE.
 #' @param confidence_opacity The opacity of the confidence regions. Can be any value between 0 and 1, inclusive. Defaults to 0.2.
 #'
 #' @return Created ggplot2 object.
@@ -158,13 +159,13 @@ CreateMainRegressionPlot <- function(
 
 #' Plot the contribution circles for direct evidence on the plot.
 #'
-#' @param plot object to which to add elements.
+#' @param plot ggplot2 object to which to add elements.
 #' @param model GEMTC model result object.
 #' @param treatment_df Reactive containing data frame containing treatment IDs (Number), sanitised names (Label), and original names (RawLabel).
 #' @param reference Name of reference treatment.
 #' @param comparators Vector of names of comparison treatments to plot.
-#' @param contribution_type Type of contribution, used to calculate sizes for the study contribution circles.
-#' @param contribution_multiplier Factor by which to scale the sizes of the study contribution circles. Defaults to 1.0.
+#' @param contribution_type Name of the type of contribution, used to calculate sizes for the study contribution circles.
+#' @param contribution_multiplier Multiplication factor by which to scale the sizes of the study contribution circles. Defaults to 1.0.
 #' @param ghosted TRUE if studies should be plotted in grey. Defaults to FALSE.
 #'
 #' @return The modified ggplot2 object.
@@ -196,7 +197,7 @@ CreateMainRegressionPlot <- function(
 
 #' Plot the regression lines on the plot.
 #'
-#' @param plot object to which to add elements.
+#' @param plot ggplot2 object to which to add elements.
 #' @param model GEMTC model result object.
 #' @param treatment_df Reactive containing data frame containing treatment IDs (Number), sanitised names (Label), and original names (RawLabel).
 #' @param reference Name of reference treatment.
@@ -359,7 +360,7 @@ CreateMainRegressionPlot <- function(
 #' @param model GEMTC model result object.
 #' @param reference Name of reference treatment.
 #' @param comparator Name of comparison treatment for which to find the contributions.
-#' @param contribution_type Type of contribution to find.
+#' @param contribution_type Name of the type of contribution to find.
 #'
 #' @return Data frame containing contribution details. Each row represents a study contributing to a given treatment. Columns are:
 #' - Treatment: The treatment for which this contribution relates.
