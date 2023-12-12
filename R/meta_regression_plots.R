@@ -15,11 +15,12 @@
 #' @param contribution_multiplier Factor by which to scale the sizes of the study contribution circles. Defaults to 1.0.
 #'
 #' @return Created ggplot2 object.
-CreateRegressionPlot <- function(
+CreateMainRegressionPlot <- function(
     model,
     treatment_df,
     reference,
     comparators,
+    covariate_value,
     contribution_type,
     include_ghosts = FALSE,
     include_extrapolation = FALSE,
@@ -33,7 +34,7 @@ CreateRegressionPlot <- function(
   all_comparators <- .FindAllComparators(model, reference)
   
   # Set up basic plot
-  plot <- .SetupMainPlot(
+  plot <- .SetupMainRegressionPlot(
     reference = treatment_df$RawLabel[treatment_df$Label == reference],
     comparators = comparators,
     include_ghosts = include_ghosts && length(comparators) < length(all_comparators),
@@ -45,7 +46,7 @@ CreateRegressionPlot <- function(
     ghosts <-  all_comparators[!all_comparators %in% comparators]
     
     if (include_contributions) {
-      plot <- .PlotContributionCircles(plot, model, treatment_df, reference, ghosts, contribution_type, contribution_multiplier, ghosted = TRUE)
+      plot <- .PlotDirectContributionCircles(plot, model, treatment_df, reference, ghosts, contribution_type, contribution_multiplier, ghosted = TRUE)
     }
     plot <- .PlotRegressionLines(plot, model, treatment_df, reference, ghosts, include_extrapolation, ghosted = TRUE)
   }
@@ -55,9 +56,17 @@ CreateRegressionPlot <- function(
       plot <- .PlotConfidenceRegions(plot, model, treatment_df, reference, comparators)
     }
     if (include_contributions) {
-      plot <- .PlotContributionCircles(plot, model, treatment_df, reference, comparators, contribution_type, contribution_multiplier)
+      plot <- .PlotDirectContributionCircles(plot, model, treatment_df, reference, comparators, contribution_type, contribution_multiplier)
     }
     plot <- .PlotRegressionLines(plot, model, treatment_df, reference, comparators, include_extrapolation)
+  }
+  
+  if (!is.null(covariate_value)) {
+    plot <- plot +
+      geom_vline(
+        xintercept = covariate_value,
+        color = "black"
+      )
   }
   
   return(plot)
@@ -71,15 +80,18 @@ CreateRegressionPlot <- function(
 #' @param confidence_opacity The opacity of the confidence regions. Can be any value between 0 and 1, inclusive. Defaults to 0.2.
 #'
 #' @return Created ggplot2 object.
-.SetupMainPlot <- function(reference, comparators, include_ghosts, confidence_opacity) {
+.SetupMainRegressionPlot <- function(reference, comparators, include_ghosts, confidence_opacity) {
   # Set up basic plot
   plot <- ggplot() +
     theme_minimal() +
     theme(
       panel.grid.major = element_blank(),
       panel.grid.minor = element_blank(),
-      axis.line = element_blank(),
       panel.border = element_rect(colour = "#777777", fill = NA, linewidth = 2),
+      
+      axis.line = element_blank(),
+      axis.text = element_text(size = 12),
+      axis.title = element_text(size = 14),
       
       legend.position = c(.99, .02),
       legend.justification = c("right", "bottom"),
@@ -143,7 +155,7 @@ CreateRegressionPlot <- function(
   return(plot)
 }
 
-#' Plot the contribution circles on the plot.
+#' Plot the contribution circles for direct evidence on the plot.
 #'
 #' @param plot object to which to add elements.
 #' @param model GEMTC model result object.
@@ -155,8 +167,8 @@ CreateRegressionPlot <- function(
 #' @param ghosted TRUE if studies should be plotted in grey. Defaults to FALSE.
 #'
 #' @return The modified ggplot2 object.
-.PlotContributionCircles <- function(plot, model, treatment_df, reference, comparators, contribution_type, contribution_multiplier, ghosted = FALSE) {
-  contributions = .FindRegressionContributions(model, reference, comparators, contribution_type)
+.PlotDirectContributionCircles <- function(plot, model, treatment_df, reference, comparators, contribution_type, contribution_multiplier, ghosted = FALSE) {
+  contributions = .FindDirectRegressionContributions(model, reference, comparators, contribution_type)
   
   contributions$Treatment <- sapply(contributions$Treatment, function(treatment) { treatment_df$RawLabel[treatment_df$Label == treatment] })
   
@@ -353,7 +365,7 @@ CreateRegressionPlot <- function(
 #' - covariate_value: Value of the covariate for this study.
 #' - relative_effect Relative effect for this study.
 #' - contribution: Size of contribution for this study.
-.FindRegressionContributions <- function(model, reference, comparator, contribution_type) {
+.FindDirectRegressionContributions <- function(model, reference, comparator, contribution_type) {
   
   treatments <- c()
   covariate_values <- c()
@@ -448,7 +460,7 @@ CreateRegressionPlot <- function(
 #' Example for the meta-regression main plot.
 #'
 #' @return Created ggplot2 object.
-.MetaRegressionPlotExample <- function() {
+.MetaRegressionMainPlotExample <- function() {
   data <- read.csv("tests/testthat/Cont_long_continuous_cov.csv")
   treatment_ids <- CreateTreatmentIds(FindAllTreatments(data))
   data <- WrangleUploadData(data, treatment_ids, "Continuous")
@@ -456,11 +468,12 @@ CreateRegressionPlot <- function(
   
   model <- RunCovariateModel(data, wrangled_treatment_list, "Continuous", 'MD', "covar.age", "age", 'random', 'unrelated', "the_Little")
   
-  plot <- CreateRegressionPlot(
+  plot <- CreateMainRegressionPlot(
     model = model,
     treatment_df = wrangled_treatment_list,
     reference = "the_Little",
     comparators = c("the_Butcher", "the_Dung_named"),
+    covariate_value = 4.2,
     contribution_type = "percentage",
     include_ghosts = TRUE,
     include_extrapolation = TRUE,
