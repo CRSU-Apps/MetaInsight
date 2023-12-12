@@ -4,7 +4,7 @@
 #' @param treatment_df Reactive containing data frame containing treatment IDs (Number), sanitised names (Label), and original names (RawLabel).
 #' @param reference Name of reference treatment.
 #' @param comparators Vector of names of comparison treatments to plot in colour.
-#' @param covariate_value The value of the covariate to plot as a vertical line. NULL if not to be plotted.
+#' @param covariate_value Numerical value of the covariate to plot as a vertical line. NULL if not to be plotted.
 #' @param contribution_type Name of the type of contribution, used to calculate sizes for the study contribution circles.
 #' @param include_ghosts TRUE if all other comparator studies should be plotted in grey in the background of the plot. Defaults to FALSE.
 #' @param include_extrapolation TRUE if regression lines should be extrapolated beyond the range of the given data. These will appear as dashed lines.
