@@ -1,3 +1,4 @@
+
 #' Create a covariate regression plot where multiple comparisons can be plotted, and the contributions from each study are shown as circles.
 #'
 #' @param model GEMTC model result object.
@@ -14,6 +15,12 @@
 #' @param confidence_opacity The opacity of the confidence regions. Can be any value between 0 and 1, inclusive. Defaults to 0.2.
 #' @param include_contribution TRUE if study contribution should be displayed as circles. Defaults to TRUE.
 #' @param contribution_multiplier Multiplication factor by which to scale the sizes of the study contribution circles. Defaults to 1.0.
+#' @param legend_position String informing the position of the legend. Acceptable values are:
+#' - "BR" - Bottom-right of the plot area
+#' - "BL" - Bottom-left of the plot area
+#' - "TR" - Top-right of the plot area
+#' - "TL" - Top-left of the plot area
+#' Defaultsa to "BR"
 #'
 #' @return Created ggplot2 object.
 CreateMainRegressionPlot <- function(
@@ -28,7 +35,8 @@ CreateMainRegressionPlot <- function(
     include_confidence = FALSE,
     confidence_opacity = 0.2,
     include_contributions = TRUE,
-    contribution_multiplier = 1.0) {
+    contribution_multiplier = 1.0,
+    legend_position = "BR") {
   
   comparators <- sort(comparators)
   
@@ -39,7 +47,8 @@ CreateMainRegressionPlot <- function(
     reference = treatment_df$RawLabel[treatment_df$Label == reference],
     comparators = comparators,
     include_ghosts = include_ghosts && length(comparators) < length(all_comparators),
-    confidence_opacity = confidence_opacity
+    confidence_opacity = confidence_opacity,
+    legend_position = legend_position
   )
   
   # Plot the ghost regression lines for the comparators
@@ -78,11 +87,16 @@ CreateMainRegressionPlot <- function(
 #'
 #' @param reference Name of the reference treatment.
 #' @param comparators Vector of names of comparison treatments to plot.
-#' @param include_ghosts TRUE if all other comparator studies should be plotted in grey in the background of the plot. Defaults to FALSE.
+#' @param include_ghosts TRUE if all otherc omparator studies should be plotted in grey in the background of the plot. Defaults to FALSE.
 #' @param confidence_opacity The opacity of the confidence regions. Can be any value between 0 and 1, inclusive. Defaults to 0.2.
+#' @param legend_position String informing the position of the legend. Acceptable values are:
+#' - "BR" - Bottom-right of the plot area
+#' - "BL" - Bottom-left of the plot area
+#' - "TR" - Top-right of the plot area
+#' - "TL" - Top-left of the plot area
 #'
 #' @return Created ggplot2 object.
-.SetupMainRegressionPlot <- function(reference, comparators, include_ghosts, confidence_opacity) {
+.SetupMainRegressionPlot <- function(reference, comparators, include_ghosts, confidence_opacity, legend_position) {
   # Set up basic plot
   plot <- ggplot() +
     theme_minimal() +
@@ -95,11 +109,18 @@ CreateMainRegressionPlot <- function(
       axis.text = element_text(size = 12),
       axis.title = element_text(size = 14),
       
-      legend.position = c(.99, .02),
-      legend.justification = c("right", "bottom"),
+      legend.position = c(
+        ifelse(grepl("L", legend_position), .01, .99),
+        ifelse(grepl("B", legend_position), .02, .99)
+      ),
+      legend.justification = c(
+        ifelse(grepl("L", legend_position), "left", "right"),
+        ifelse(grepl("B", legend_position), "bottom", "top")
+      ),
+      
       legend.margin = margin(6, 6, 6, 6),
       legend.box.background = element_rect(colour = "black", linewidth = 0.5, fill = "#ffffffaa"),
-      legend.box.just = c("right", "bottom")
+      legend.text = element_text(size = 12)
     ) +
     xlab("Covariate Value") +
     ylab(glue::glue("Relative Effect vs {reference}"))
