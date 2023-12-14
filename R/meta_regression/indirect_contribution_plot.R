@@ -75,18 +75,12 @@ CreateIndirectContributionPlot <- function(
     ) +
     ylab("Indirect\nEvidence")
   
-  # Ensure that enough colours are always provided, by cycling the given colours
-  base_colours <- c("#bb0000", "#bba000", "#00bb00", "#00bbbb", "#0000bb", "#bb00bb",
-                    "#ff5555", "#ffa000", "#44ff44", "#55ffff", "#7744ff", "#ff00ff")
-  colours <- rep(base_colours, ceiling(length(comparators) / length(colours)))[1:length(comparators)]
-  
-  # Set the colours
-  if (include_ghosts) {
-    colours <- c("#eeeeee", colours)
-  }
-  
-  plot <- plot +
-    scale_colour_manual(values = colours)
+  plot <- SetupRegressionPlotColours(
+    plot = plot,
+    comparators = comparators,
+    include_ghosts = include_ghosts,
+    include_confidence = FALSE
+  )
   
   return(plot)
 }

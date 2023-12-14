@@ -87,7 +87,7 @@ CreateMainRegressionPlot <- function(
 #'
 #' @param reference Name of the reference treatment.
 #' @param comparators Vector of names of comparison treatments to plot.
-#' @param include_ghosts TRUE if all otherc omparator studies should be plotted in grey in the background of the plot. Defaults to FALSE.
+#' @param include_ghosts TRUE if all other comparator studies should be plotted in grey in the background of the plot. Defaults to FALSE.
 #' @param confidence_opacity The opacity of the confidence regions. Can be any value between 0 and 1, inclusive. Defaults to 0.2.
 #' @param legend_position String informing the position of the legend. Acceptable values are:
 #' - "BR" - Bottom-right of the plot area
@@ -125,26 +125,13 @@ CreateMainRegressionPlot <- function(
     xlab("Covariate Value") +
     ylab(glue::glue("Relative Effect vs {reference}"))
   
-  # Ensure that enough colours are always provided, by cycling the given colours
-  base_colours <- c("#bb0000", "#bba000", "#00bb00", "#00bbbb", "#0000bb", "#bb00bb",
-                    "#ff5555", "#ffa000", "#44ff44", "#55ffff", "#7744ff", "#ff00ff")
-  colours <- rep(base_colours, ceiling(length(comparators) / length(colours)))[1:length(comparators)]
-  
-  opacity_hex = format(
-    as.hexmode(as.integer(confidence_opacity * 255)),
-    width = 2
+  plot <- SetupRegressionPlotColours(
+    plot = plot,
+    comparators = comparators,
+    include_ghosts = include_ghosts,
+    include_confidence = TRUE,
+    confidence_opacity = confidence_opacity
   )
-  fills <- paste0(base_colours, opacity_hex)
-  fills <- rep(fills, ceiling(length(comparators) / length(fills)))[1:length(comparators)]
-  
-  # Set the colours
-  if (include_ghosts) {
-    colours <- c("#eeeeee", colours)
-  }
-  
-  plot <- plot +
-    scale_colour_manual(values = colours) +
-    scale_fill_manual(values = fills, guide = "none")
   
   return(plot)
 }
