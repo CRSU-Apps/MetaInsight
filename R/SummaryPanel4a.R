@@ -26,6 +26,7 @@ metaregression_summary_panel_ui <- function(id) {
 #'
 #' @param id ID of the module
 #' @param all_data Study data including covariate columns, in wide or long format
+#' @param metaoutcome Reactive containing meta analysis outcome: "Continuous" or "Binary"
 #' @return Covariate plot from BUGSnet::data.plot
 #' 
 metaregression_summary_panel_server <- function(id, all_data, metaoutcome) {
@@ -47,6 +48,7 @@ metaregression_summary_panel_server <- function(id, all_data, metaoutcome) {
     #' https://rdrr.io/github/audrey-b/BUGSnet/man/data.plot.html
     #'
     #' @param all_data Study data including covariate columns, in wide or long format
+    #' @param metaoutcome Reactive containing meta analysis outcome: "Continuous" or "Binary"
     #' @return BUGSnet::data.prep plot
     
     make_covariate_plot <- function(all_data) {
@@ -74,7 +76,7 @@ metaregression_summary_panel_server <- function(id, all_data, metaoutcome) {
               baseline_SD = ifelse(is.null(Mean[T == 1]), NA, (1.96 * SD[T == 1]) / sqrt(N[T == 1]))
             )
           
-          # Convert tibble from dplyr to df
+          # Convert tibble created by dplyr to df
           BUGSnet_df <- as.data.frame(mutated_data)
           
           # BUGSnet data prep to convert data to format required for data.plot
@@ -92,8 +94,12 @@ metaregression_summary_panel_server <- function(id, all_data, metaoutcome) {
           
           # Add caption text under plot
           plot <- plot +
-            labs(caption = paste('The', caption_setting, 'value is the same for all treatment arms across a study. Error bars: mean +/- 1.96 * SD / sqrt(N)')) +
-            theme(plot.caption = element_text(hjust = 0)) # Left aligned
+            # Short lines because the line lengths are not reactive to plot width and I haven't found a fix 
+            labs(caption = paste('The plotted', caption_setting, 'value is the same for all treatment arms across a study 
+                                 and represents the', caption_setting, 'value in the reference treatment arm. 
+                                 Studies without a reference treatment arm are not plotted. 
+                                 Error bars: mean +/- 1.96 * SD / sqrt(N)')) +
+            theme(plot.caption = element_text(hjust = 1)) # Right aligned
         }
       
         # Baseline risk for binary outcomes
@@ -122,14 +128,16 @@ metaregression_summary_panel_server <- function(id, all_data, metaoutcome) {
         plot <- BUGSnet::data.plot(BUGSnet_data,
                                    covariate = covariate,
                                    covariate.label = y_axis_label,
-                                   # half.length = "age_SD", # Error bars - needs a second covariate, possible future addition
                                    by = 'treatment',
                                    text.size = 16) 
         
         # Add caption text under plot
         plot <- plot +
-          labs(caption = paste('The', caption_setting, 'value is the same for all treatment arms across a study.')) +
-          theme(plot.caption = element_text(hjust = 0)) # Left aligned
+          # Short lines because the line lengths are not reactive to plot width and I haven't found a fix 
+          labs(caption = paste('The plotted', caption_setting, 'value is the same for all treatment arms across a study 
+                               and represents the', caption_setting, 'value in the reference treatment arm.
+                               Values for studies without a reference treatment arm are not plotted.')) +
+          theme(plot.caption = element_text(hjust = 1)) # Right aligned
       }
       
       return(plot)

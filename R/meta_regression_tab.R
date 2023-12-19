@@ -48,6 +48,8 @@ meta_regression_tab_ui <- function(id) {
 #'
 #' @param id ID of the module
 #' @param all_data Study data including covariate columns, in wide or long format
+#' @param metaoutcome Reactive containing meta analysis outcome: "Continuous" or "Binary"
+
 meta_regression_tab_server <- function(id, all_data, metaoutcome) {
   shiny::moduleServer(id, function(input, output, session) {
     
