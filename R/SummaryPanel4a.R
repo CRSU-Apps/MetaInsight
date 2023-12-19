@@ -73,40 +73,52 @@ metaregression_summary_panel_server <- function(id, all_data, metaoutcome) {
               baseline = ifelse(is.null(Mean[T == 1]), NA, Mean[T == 1])
             ) %>%
             dplyr::mutate(
-              baseline_SD = ifelse(is.null(Mean[T == 1]), NA, (1.96 * SD[T == 1]) / sqrt(N[T == 1]))
+              baseline_error = ifelse(is.null(Mean[T == 1]), NA, (1.96 * SD[T == 1]) / sqrt(N[T == 1]))
             )
+        } else if (metaoutcome() == "Binary") {
+          # Baseline risk for binary outcomes
           
-          # Convert tibble created by dplyr to df
-          BUGSnet_df <- as.data.frame(mutated_data)
+          logit <- function(p) { log(p/(1-p)) }
           
-          # BUGSnet data prep to convert data to format required for data.plot
-          BUGSnet_data <- BUGSnet::data.prep(arm.data = BUGSnet_df,
-                                             varname.t = 'T',
-                                             varname.s = 'Study')
-          
-          # Create plot
-          plot <- BUGSnet::data.plot(BUGSnet_data,
-                                     covariate = covariate,
-                                     covariate.label = y_axis_label,
-                                     half.length = "baseline_SD", # Check this is the required calculation in plot code
-                                     by = 'treatment',
-                                     text.size = 16) 
-          
-          # Add caption text under plot
-          plot <- plot +
-            # Short lines because the line lengths are not reactive to plot width and I haven't found a fix 
-            labs(caption = paste('The plotted', caption_setting, 'value is the same for all treatment arms across a study 
-                                 and represents the', caption_setting, 'value in the reference treatment arm. 
-                                 Studies without a reference treatment arm are not plotted. 
-                                 Error bars: mean +/- 1.96 * SD / sqrt(N)')) +
-            theme(plot.caption = element_text(hjust = 1)) # Right aligned
+          # Add baseline column that is R/N 
+          # baseline.sd column that is 1.96 * se
+          # of the reference arm for the study, or NA if there is no reference arm
+          mutated_data <- all_data() %>% 
+            dplyr::group_by(Study) %>%
+            dplyr::mutate(
+              # Reference arm is always numbered 1 internally
+              baseline = ifelse(is.null(R[T == 1]), NA, logit(((R+1)[T == 1] / N[T == 1])))
+            ) %>%
+            dplyr::mutate(
+              baseline_error = ifelse(is.null(R[T == 1]), NA, 
+                                      logit((R+1)[T == 1] / N[T == 1]) - 1.96 * sqrt( 1 / (N[T == 1] * ((R+1)[T == 1] / N[T == 1]) * (1 - (R+1)[T == 1] / N[T == 1]))))
+            )
         }
-      
-        # Baseline risk for binary outcomes
-        else if (metaoutcome() == "Binary") {
-          # The covariate needs to be calculated for the reference treatment
-          covariate <- colnames(all_data())[4]
-        }
+          
+        # Convert tibble created by dplyr to df
+        BUGSnet_df <- as.data.frame(mutated_data)
+        
+        # BUGSnet data prep to convert data to format required for data.plot
+        BUGSnet_data <- BUGSnet::data.prep(arm.data = BUGSnet_df,
+                                           varname.t = 'T',
+                                           varname.s = 'Study')
+        
+        # Create plot
+        plot <- BUGSnet::data.plot(BUGSnet_data,
+                                   covariate = covariate,
+                                   covariate.label = y_axis_label,
+                                   half.length = "baseline_error",
+                                   by = 'treatment',
+                                   text.size = 16) 
+        
+        # Add caption text under plot
+        plot <- plot +
+          # Short lines because the line lengths are not reactive to plot width and I haven't found a fix 
+          labs(caption = paste('The plotted', caption_setting, 'value is the same for all treatment arms across a study 
+                               and represents the', caption_setting, 'value in the reference treatment arm. 
+                               Studies without a reference treatment arm are not plotted. 
+                               Error bars: mean +/- 1.96 * SD / sqrt(N)')) +
+          theme(plot.caption = element_text(hjust = 1)) # Right aligned
       }
       
       # If there is a covariate (i.e. the covariate name is not NA)
@@ -155,14 +167,17 @@ metaregression_summary_panel_server <- function(id, all_data, metaoutcome) {
     })
     
     test_data <- as.data.frame(reactive({
-      all_data() %>% 
+      logit <- function(p){log(p/(1-p))}
+      
+      all_data() %>%
         dplyr::group_by(Study) %>%
         dplyr::mutate(
           # Reference arm is always numbered 1 internally
-          baseline = ifelse(is.null(Mean[T == 1]), NA, Mean[T == 1])
+          baseline = ifelse(is.null(R[T == 1]), NA, logit(((R+1)[T == 1] / N[T == 1])))
         ) %>%
         dplyr::mutate(
-          baseline_SD = ifelse(is.null(Mean[T == 1]), NA, (1.96 * SD[T == 1]) / sqrt(N[T == 1]))
+          baseline_error = ifelse(is.null(R[T == 1]), NA, 
+                                  abs(logit((R+1)[T == 1] / N[T == 1]) - 1.96 * sqrt( 1 / (N[T == 1] * ((R+1)[T == 1] / N[T == 1]) * (1 - (R+1)[T == 1] / N[T == 1])))))
         )
     }))
     
