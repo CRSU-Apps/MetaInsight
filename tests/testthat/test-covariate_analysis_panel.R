@@ -39,7 +39,7 @@ test_that("Covariate name extracted from data when available", {
     CleanData()
   testServer(
     covariate_analysis_panel_server,
-    args = list(all_data = function() { df },
+    args = list(all_data = reactive({ df }),
                 treatment_df = reactive(NULL),
                 metaoutcome = reactive("Continuous"),
                 outcome_measure = reactive("MD"),

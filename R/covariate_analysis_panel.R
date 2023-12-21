@@ -36,7 +36,7 @@ covariate_analysis_panel_ui <- function(id) {
                 style = "color: orange;"
               )
             ),
-            style = "display: inline-block; vertical-align: 50%"
+            style = "display: inline-block; vertical-align: 65%"
           ),
           div(
             covariate_value_panel_ui(id = ns("covariate_value")),
@@ -67,6 +67,10 @@ covariate_analysis_panel_ui <- function(id) {
               align = "center",
               bayesian_forest_plot_plus_stats_ui(id = ns("cov_forest_plots"))
             )
+          ),
+          tabPanel(
+            title = "4c-2. Regression plot",
+            regression_plot_panel_ui(id = ns("regression_plot"))
           )
         )
       )
@@ -78,7 +82,8 @@ covariate_analysis_panel_ui <- function(id) {
 #'
 #' @param id ID of the module
 #' @param all_data Study data including covariate columns, in wide or long format
-#' @param treatment_df Reactive containing data frame containing treatment IDs (Number) and names (Label)
+#' @param treatment_df Reactive containing data frame containing treatment IDs (Number), sanitised names (Label), and original names (RawLabel)
+#' @param reference_treatment Reactive containing the sanitised name of the reference treatment
 #' @param metaoutcome Reactive containing meta analysis outcome: "Continuous" or "Binary"
 #' @param outcome_measure Reactive containing meta analysis outcome measure: "MD", "SMD", "OR, "RR", or "RD"
 #' @param model_effects Reactive containing model effects: either "random" or "fixed"
@@ -87,6 +92,7 @@ covariate_analysis_panel_server <- function(
     id, 
     all_data,
     treatment_df,
+    reference_treatment,
     metaoutcome,
     outcome_measure,
     model_effects,
@@ -161,6 +167,7 @@ covariate_analysis_panel_server <- function(
       covariate_type = reactive({ input$covariate_type_selection }),
       covariate_data = reactive({ all_data()[[covariate_title()]] })
     )
+    
     # obtain gemtc output types to be used in rest of page
     model_output <- reactive(CovariateModelOutput(model = model_reactive(), cov_value = covariate_value()))
     # Create forest plot and associated statistics
@@ -171,6 +178,15 @@ covariate_analysis_panel_server <- function(
       metaoutcome = metaoutcome,
       outcome_measure = outcome_measure,
       bugsnetdt = bugsnetdt
+    )
+    
+    # 4c-2 Regression plot
+    regression_plot_panel_server(
+      id = "regression_plot",
+      model = model_reactive,
+      reference_treatment = reference_treatment,
+      treatment_df = treatment_df,
+      covariate_value = covariate_value
     )
   })
 }

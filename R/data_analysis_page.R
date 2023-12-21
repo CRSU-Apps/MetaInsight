@@ -233,6 +233,7 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, m
       id = "meta_regression",
       all_data = data,
       treatment_df = treatment_df,
+      reference_treatment = reactive({ reference_alter()$ref_all }),
       metaoutcome = metaoutcome,
       outcome_measure = outcome_measure,
       model_effects = model_effects,

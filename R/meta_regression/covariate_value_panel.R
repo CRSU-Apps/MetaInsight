@@ -14,42 +14,49 @@
 covariate_value_panel_ui <- function(id) {
   ns <- NS(id)
   div(
-    # Continuous value input & warning if extrapolating outside of data range
-    conditionalPanel(
-      condition = "output.covariate_type == 'Continuous'",
-      ns = ns,
-      .CreateInlineBlock(
-        numericInput(
-          inputId = ns("numeric"),
-          label = NULL,
-          min = -.Machine$double.xmax,
-          max = .Machine$double.xmax,
-          value = 0,
-          width = "100pt"
-        )
-      ),
-      .CreateInlineBlock(
-        conditionalPanel(
-          condition = "output.extrapolated",
-          ns = ns,
-          div(
-            "Covariate value outside data range",
-            style = "color: orange; font-style: italic; font-weight: bold; padding-left: 10pt"
+    title = "This value will be used by all regression analysis output",
+    style = "padding-left: 5px;",
+    .CreateInlineBlock(
+      h4("Covariate value:")
+    ),
+    .CreateInlineBlock(
+      # Continuous value input & warning if extrapolating outside of data range
+      conditionalPanel(
+        condition = "output.covariate_type == 'Continuous'",
+        ns = ns,
+        .CreateInlineBlock(
+          numericInput(
+            inputId = ns("numeric"),
+            label = NULL,
+            min = -.Machine$double.xmax,
+            max = .Machine$double.xmax,
+            value = 0,
+            width = "100pt"
+          )
+        ),
+        .CreateInlineBlock(
+          conditionalPanel(
+            condition = "output.extrapolated",
+            ns = ns,
+            div(
+              "Covariate value outside data range",
+              style = "color: orange; font-style: italic; font-weight: bold; padding-left: 10pt"
+            )
           )
         )
-      )
-    ),
-    # Binary value input
-    conditionalPanel(
-      condition = "output.covariate_type == 'Binary'",
-      ns = ns,
-      div(
-        .CreateInlineBlock("0", style = "padding-right: 10pt;"),
-        shinyWidgets::materialSwitch(
-          inputId = ns("toggle"),
-          inline = TRUE
-        ),
-        .CreateInlineBlock("1")
+      ),
+      # Binary value input
+      conditionalPanel(
+        condition = "output.covariate_type == 'Binary'",
+        ns = ns,
+        div(
+          .CreateInlineBlock("0", style = "padding-right: 10pt;"),
+          shinyWidgets::materialSwitch(
+            inputId = ns("toggle"),
+            inline = TRUE
+          ),
+          .CreateInlineBlock("1")
+        )
       )
     )
   )
@@ -112,7 +119,7 @@ covariate_value_panel_server <- function(id, covariate_type, covariate_data) {
     # Update the client code to inform the user when the covariate value is outside the range of the data
     output$extrapolated <- reactive({ covariate_value() < min_value() || covariate_value() > max_value() })
     outputOptions(x = output, name = "extrapolated", suspendWhenHidden = FALSE)
-  
-    return(reactive({ covariate_value() }))
+    
+    return(debounce(r = reactive({ covariate_value() }), millis = 500))
   })
 }
