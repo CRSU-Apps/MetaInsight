@@ -68,15 +68,19 @@ CreateCompositeMetaRegressionPlot <- function(
     contribution_multiplier = contribution_multiplier
   )
   
+  # Find the x-axis ranges of the 2 plots
   x_range_1 <- ggplot_build(direct_plot)$layout$panel_params[[1]]$x.range
   x_range_2 <- ggplot_build(indirect_plot)$layout$panel_params[[1]]$x.range
   
+  # Find the largest range covered by either plot
   x_min = min(x_range_1[1], x_range_2[1])
   x_max = max(x_range_1[2], x_range_2[2])
   
+  # Scale both plots to cover the full x-axis range
   direct_plot <- direct_plot + coord_cartesian(xlim = c(x_min, x_max)) 
   indirect_plot <- indirect_plot + coord_cartesian(xlim = c(x_min, x_max)) 
   
+  # Create composite plot by placing the indirect plot atop the direct plot
   plot <- ggpubr::ggarrange(
     indirect_plot, direct_plot,
     heights = c(1, 4),

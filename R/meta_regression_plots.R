@@ -20,7 +20,7 @@
 #' - "BL" - Bottom-left of the plot area
 #' - "TR" - Top-right of the plot area
 #' - "TL" - Top-left of the plot area
-#' Defaultsa to "BR"
+#' Defaults to "BR"
 #'
 #' @return Created ggplot2 object.
 CreateMainRegressionPlot <- function(
