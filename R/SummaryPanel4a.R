@@ -64,7 +64,7 @@ metaregression_summary_panel_server <- function(id, all_data, metaoutcome) {
         if (metaoutcome() == "Continuous") {
            
           # Add baseline column that is the mean value and 
-          # baseline.sd column that is 1.96 * SD / sqrt(N)
+          # baseline_error column that is 1.96 * SD / sqrt(N)
           # of the reference arm for the study, or NA if there is no reference arm
           mutated_data <- all_data() %>% 
             dplyr::group_by(Study) %>%
@@ -78,20 +78,23 @@ metaregression_summary_panel_server <- function(id, all_data, metaoutcome) {
         } else if (metaoutcome() == "Binary") {
           # Baseline risk for binary outcomes
           
-          logit <- function(p) { log(p/(1-p)) }
+          # Use escalc function with the logit transformed proportion (PLO) measure
+          effects <- metafor::escalc(measure="PLO", xi = all_data()$R, ni = all_data()$N)
           
-          # Add baseline column that is R/N 
-          # baseline.sd column that is 1.96 * se
+          # Merge effects and all_data into one df
+          mutated_data <- cbind(all_data(), effects)
+          
+          # Add baseline column that is yi column from escalc
+          # baseline_error column that is 1.96 * sqrt(vi) column from escalc
           # of the reference arm for the study, or NA if there is no reference arm
-          mutated_data <- all_data() %>% 
+          mutated_data <- mutated_data %>%
             dplyr::group_by(Study) %>%
             dplyr::mutate(
               # Reference arm is always numbered 1 internally
-              baseline = ifelse(is.null(R[T == 1]), NA, logit(((R+1)[T == 1] / N[T == 1])))
+              baseline = ifelse(is.null(R[T == 1]), NA, yi[T == 1])
             ) %>%
             dplyr::mutate(
-              baseline_error = ifelse(is.null(R[T == 1]), NA, 
-                                      logit((R+1)[T == 1] / N[T == 1]) - 1.96 * sqrt( 1 / (N[T == 1] * ((R+1)[T == 1] / N[T == 1]) * (1 - (R+1)[T == 1] / N[T == 1]))))
+              baseline_error = ifelse(is.null(R[T == 1]), NA, 1.96 * sqrt(vi[T == 1]))
             )
         }
           
@@ -167,17 +170,24 @@ metaregression_summary_panel_server <- function(id, all_data, metaoutcome) {
     })
     
     test_data <- as.data.frame(reactive({
-      logit <- function(p){log(p/(1-p))}
+      data <- all_data()
+      # Use escalc function with the logit transformed proportion (PLO) measure
+      effects <- metafor::escalc(measure="PLO", xi = data$R, ni = data$N)
       
-      all_data() %>%
+      # Merge effects and all_data into one df
+      mutated_data <- cbind(all_data(), effects)
+      
+      # Add baseline column that is yi column from escalc
+      # baseline_error column that is 1.96 * sqrt(vi) column from escalc
+      # of the reference arm for the study, or NA if there is no reference arm
+      mutated_data <- mutated_data %>%
         dplyr::group_by(Study) %>%
         dplyr::mutate(
           # Reference arm is always numbered 1 internally
-          baseline = ifelse(is.null(R[T == 1]), NA, logit(((R+1)[T == 1] / N[T == 1])))
+          baseline = ifelse(is.null(R[T == 1]), NA, yi[T == 1])
         ) %>%
         dplyr::mutate(
-          baseline_error = ifelse(is.null(R[T == 1]), NA, 
-                                  abs(logit((R+1)[T == 1] / N[T == 1]) - 1.96 * sqrt( 1 / (N[T == 1] * ((R+1)[T == 1] / N[T == 1]) * (1 - (R+1)[T == 1] / N[T == 1])))))
+          baseline_error = ifelse(is.null(R[T == 1]), NA, 1.96 * sqrt(vi[T == 1]))
         )
     }))
     
