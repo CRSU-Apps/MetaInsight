@@ -85,14 +85,13 @@ regression_plot_panel_ui <- function(id) {
       div(
         id = ns("contribution_options"),
         p("Study circle sized by:"),
-        div(
-          .CreateInlineBlock("% Contribution", style = "padding-right: 10pt;"),
-          shinyWidgets::materialSwitch(
-            inputId = ns("contribution_toggle"),
-            inline = TRUE,
-            status = "primary"
-          ),
-          .CreateInlineBlock("Inverse Variance")
+        radioButtons(
+          inputId = ns("contribution_toggle"),
+          label = "Study circle sized by:",
+          choices = c(
+            "% Contribution" = "percentage",
+            "Inverse Variance" = "inverse variance"
+          )
         ),
         div(
           .CreateInlineBlock(
@@ -186,11 +185,7 @@ regression_plot_panel_server <- function(id, model, treatment_df, reference_trea
     })
     
     contribution_type <- reactive({
-      if (input$contribution_toggle) {
-        return("inverse variance")
-      } else {
-        return("percentage")
-      }
+      input$contribution_toggle
     })
     
     output$regression_plot <- renderPlot({
