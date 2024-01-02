@@ -93,19 +93,12 @@ regression_plot_panel_ui <- function(id) {
             "Inverse Variance" = "inverse variance"
           )
         ),
-        div(
-          .CreateInlineBlock(
-            numericInput(
-              inputId = ns("circle_multipler"),
-              label = NULL,
-              min = 0,
-              value = 1,
-              step = 0.5,
-              width = "60px"
-            ),
-            style = "padding-right: 10pt;"
-          ),
-          .CreateInlineBlock("Circle Size Multiplier")
+        numericInput(
+          inputId = ns("circle_multipler"),
+          label = "Circle Size Multiplier",
+          min = 0,
+          value = 1,
+          step = 0.5
         )
       ),
       selectInput(
