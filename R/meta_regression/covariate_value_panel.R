@@ -17,7 +17,8 @@ covariate_value_panel_ui <- function(id) {
     title = "This value will be used by all regression analysis output",
     style = "padding-left: 5px;",
     .CreateInlineBlock(
-      h4("Covariate value:")
+      h4("Covariate value:", tags$i(class="fa-regular fa-circle-question")),
+      style = "padding-right: 5pt;"
     ),
     .CreateInlineBlock(
       # Continuous value input & warning if extrapolating outside of data range
