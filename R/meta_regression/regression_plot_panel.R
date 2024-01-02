@@ -51,12 +51,19 @@ regression_plot_panel_ui <- function(id) {
       h3("Plot Options"),
       # Covariate value
       .AddTooltip(
-        checkboxInput(inputId = ns("covariate"), label = "Show covariate value", value = TRUE),
+        checkboxInput(
+          inputId = ns("covariate"),
+          label = tags$html("Show covariate value ", tags$i(class="fa-regular fa-circle-question")),
+          value = TRUE
+          ),
         tooltip = "Show the covariate value as a vertical line at the current value"
       ),
       # Confidence regions
       .AddTooltip(
-        checkboxInput(inputId = ns("confidence"), label = "Show confidence regions"),
+        checkboxInput(
+          inputId = ns("confidence"),
+          label = tags$html("Show confidence regions", tags$i(class="fa-regular fa-circle-question"))
+        ),
         tooltip = "Show confidence regions for the added comparisons"
       ),
       sliderInput(
@@ -69,36 +76,57 @@ regression_plot_panel_ui <- function(id) {
       ),
       # Regression lines
       .AddTooltip(
-        checkboxInput(inputId = ns("ghosts"), label = "Show ghost comparisons", value = TRUE),
+        checkboxInput(
+          inputId = ns("ghosts"),
+          label = tags$html("Show ghost comparisons", tags$i(class="fa-regular fa-circle-question")),
+          value = TRUE
+        ),
         tooltip = "Show other available comparisons in light grey behind the main plot"
       ),
       .AddTooltip(
-        checkboxInput(inputId = ns("extrapolate"), label = "Extrapolate regression lines", value = TRUE),
+        checkboxInput(
+          inputId = ns("extrapolate"),
+          label = tags$html("Extrapolate regression lines", tags$i(class="fa-regular fa-circle-question")),
+          value = TRUE
+        ),
         tooltip = "Extrapolate the regression lines beyond the range of the original data"
       ),
       # Contributions
       .AddTooltip(
-        checkboxInput(inputId = ns("contributions"), label = "Show contributions", value = TRUE),
+        checkboxInput(
+          inputId = ns("contributions"),
+          label = tags$html("Show contributions", tags$i(class="fa-regular fa-circle-question")),
+          value = TRUE
+        ),
         tooltip = "Show study contributions as circles, where a bigger circle represents a larger contribution"
       ),
       
       div(
         id = ns("contribution_options"),
-        p("Study circle sized by:"),
         radioButtons(
           inputId = ns("contribution_toggle"),
           label = "Study circle sized by:",
-          choices = c(
-            "% Contribution" = "percentage",
-            "Inverse Variance" = "inverse variance"
-          )
+          choiceNames = list(
+            div(
+              tags$html("% Contribution", tags$i(class="fa-regular fa-circle-question")),
+              title = "Circles scaled by percentage contribution of each study to each treatmentregression"
+            ),
+            div(
+              tags$html("Inverse Variance", tags$i(class="fa-regular fa-circle-question")),
+              title = "Circles scaled by inverse variance of each study"
+            )
+          ),
+          choiceValues = c("percentage", "inverse variance")
         ),
-        numericInput(
-          inputId = ns("circle_multipler"),
-          label = "Circle Size Multiplier",
-          min = 0,
-          value = 1,
-          step = 0.5
+        .AddTooltip(
+          numericInput(
+            inputId = ns("circle_multipler"),
+            label = tags$html("Circle Size Multiplier", tags$i(class="fa-regular fa-circle-question")),
+            min = 0,
+            value = 1,
+            step = 0.5
+          ),
+          tooltip = "Multiply the size of every study contribution circle by this amount"
         )
       ),
       selectInput(
@@ -227,7 +255,10 @@ regression_plot_panel_server <- function(id, model, treatment_df, reference_trea
 # Test code to launch the panel as a self-contained app.
 shiny::shinyApp(
   ui = fluidPage(
-    shinyjs::useShinyjs(),
+    tags$head(
+      shinyjs::useShinyjs(),
+      tags$script(src = "https://kit.fontawesome.com/23f0e167ac.js", crossorigin = "anonymous")
+    ),
     numericInput(inputId = "covariate", label = "Covariate Value", value = 0),
     regression_plot_panel_ui(id = "TEST")
   ),
