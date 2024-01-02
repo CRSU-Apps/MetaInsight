@@ -21,7 +21,7 @@ home_page_ui <- function(id) {
                                 });
                             ')
     ),
-    h2("MetaInsight v5.1.1", align= "left"),
+    h2("MetaInsight v5.1.2", align= "left"),
     fluidRow(
       column(
         width = 3,
@@ -44,8 +44,8 @@ home_page_ui <- function(id) {
       column(
         width = 5, 
         p(tags$strong("Latest Updates:")),
-        p(tags$strong("Patch (07 December 2023 v5.1.1):")),
-        p("Fixed minor bugs"),
+        p(tags$strong("Patch (02 January 2024 v5.1.2):")),
+        p("Google Analytics fix"),
         p(tags$strong("Major update (15 August 2023 v5.0.0):")),
         p(tags$ul(
           tags$li("MetaInsight has been changed to make it easier for users to upload their own datasets for analysis. 
