@@ -50,7 +50,7 @@ metaregression_summary_panel_server <- function(id, all_data, metaoutcome) {
       )
     })
   
-    output$test <- renderPrint ({ input$toggle_covariate_baseline })
+    output$test <- renderPrint ({ all_data() })
     
 
     # Not working

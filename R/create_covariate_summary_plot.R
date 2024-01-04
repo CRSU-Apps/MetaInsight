@@ -32,7 +32,8 @@ CreateCovariateSummaryPlot <- function(all_data, metaoutcome, covariate_or_basel
         )
       
       # Error bar text for plot caption
-      error_bar_text <- "Error bars: mean +/- 1.96 * SD / sqrt(N)"
+      error_bar_text <- "Error bars: mean +/- 1.96 * SD / sqrt(N)
+                         It is assumed that the data are normally distributed"
       
     # Baseline risk for binary outcomes
     } else if (metaoutcome == "Binary") {
@@ -57,7 +58,8 @@ CreateCovariateSummaryPlot <- function(all_data, metaoutcome, covariate_or_basel
         )
       
       # Error bar text for plot caption
-      error_bar_text <- "Error bars: effect size +/- 1.96 * sqrt(variance)"
+      error_bar_text <- "Error bars: effect size +/- 1.96 * sqrt(variance).
+                         It is assumed that the data are normally distributed"
      
     # Error message
     } else {
