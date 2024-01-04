@@ -23,9 +23,10 @@ metaregression_summary_panel_ui <- function(id) {
 #' @param id ID of the module
 #' @param all_data Study data including covariate columns, in wide or long format
 #' @param metaoutcome Reactive containing meta analysis outcome: "Continuous" or "Binary"
+#' @param treatment_df Reactive containing data frame containing treatment IDs (Number) and names (Label)
 #' @return Covariate summary plot tab
 #' 
-metaregression_summary_panel_server <- function(id, all_data, metaoutcome) {
+metaregression_summary_panel_server <- function(id, all_data, metaoutcome, treatment_df) {
   moduleServer(id, function(input, output, session) {
     
     # Toggle between covariate and baseline risk, only when there is a covariate
@@ -41,17 +42,33 @@ metaregression_summary_panel_server <- function(id, all_data, metaoutcome) {
     })
     
     # Render covariate summary plot
-    observe({
+    debounce(observe({
       output$covariate_plot <- renderPlot({
   
-        CreateCovariateSummaryPlot(all_data(), metaoutcome(), input$toggle_covariate_baseline)
+        CreateCovariateSummaryPlot(all_data(), metaoutcome(), input$toggle_covariate_baseline, treatment_df())
         
       }, width = calculate_plot_pixel(nrow(all_data()))
       )
-    })
-  
-    output$test <- renderPrint ({ all_data() })
+    }), 1500)
     
+    # mutated_data <- reactive({
+    #   
+    #   mutated_data <- all_data() %>%
+    #     dplyr::inner_join(treatment_df(), by = join_by(T == Number)) %>%
+    #     dplyr::group_by(Study) %>%
+    #     dplyr::mutate(
+    #       # Reference arm is always numbered 1 internally
+    #       baseline = ifelse(is.null(Mean[T == 1]), NA, Mean[T == 1])
+    #     ) %>%
+    #     dplyr::mutate(
+    #       baseline_error = ifelse(is.null(Mean[T == 1]), NA, (1.96 * SD[T == 1]) / sqrt(N[T == 1]))
+    #     )
+    #   
+    #   return(mutated_data)
+    # })
+    # 
+    # output$test <- renderPrint ({ mutated_data() })
+    # output$test <- renderPrint ({ all_data() })
 
     # Not working
     output$downloadCovariateSummary <- downloadHandler(

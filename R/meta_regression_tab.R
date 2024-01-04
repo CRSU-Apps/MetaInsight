@@ -49,11 +49,13 @@ meta_regression_tab_ui <- function(id) {
 #' @param id ID of the module
 #' @param all_data Study data including covariate columns, in wide or long format
 #' @param metaoutcome Reactive containing meta analysis outcome: "Continuous" or "Binary"
+#' @param treatment_df Reactive containing data frame containing treatment IDs (Number) and names (Label)
 
-meta_regression_tab_server <- function(id, all_data, metaoutcome) {
+meta_regression_tab_server <- function(id, all_data, metaoutcome, treatment_df) {
   shiny::moduleServer(id, function(input, output, session) {
     
-    metaregression_summary_panel_server(id = "metaregression_summary_panel", all_data = all_data, metaoutcome = metaoutcome)
+    metaregression_summary_panel_server(id = "metaregression_summary_panel", all_data = all_data, 
+                                        metaoutcome = metaoutcome, treatment_df = treatment_df)
   
     output$has_covariates <- reactive({
       length(FindCovariateNames(all_data())) > 0

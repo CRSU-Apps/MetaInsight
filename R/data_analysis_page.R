@@ -2150,7 +2150,8 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, m
     meta_regression_tab_server(
       id = "meta_regression",
       all_data = data,
-      metaoutcome = metaoutcome
+      metaoutcome = metaoutcome,
+      treatment_df = treatment_df
     )
   })
 }

@@ -4,9 +4,10 @@
 #' @param all_data Study data including covariate columns, in wide or long format
 #' @param metaoutcome Reactive containing meta analysis outcome: "Continuous" or "Binary"
 #' @param covariate_or_baseline Output from widget to toggle between covariate and baseline risk for the plot type.
+#' @param treatment_df Reactive containing data frame containing treatment IDs (Number) and names (Label)
 #' @return BUGSnet::data.plot plot
 
-CreateCovariateSummaryPlot <- function(all_data, metaoutcome, covariate_or_baseline) {
+CreateCovariateSummaryPlot <- function(all_data, metaoutcome, covariate_or_baseline, treatment_df) {
 
   # If there is no covariate, or baseline risk is selected by the toggle
   if (is.na(FindCovariateNames(all_data)[1]) || covariate_or_baseline == "Baseline risk") {
@@ -61,14 +62,9 @@ CreateCovariateSummaryPlot <- function(all_data, metaoutcome, covariate_or_basel
       error_bar_text <- "Error bars: effect size +/- 1.96 * sqrt(variance).
                          It is assumed that the data are normally distributed"
      
-    # Error message
     } else {
       stop("The outcome should be either continuous or binary")
     }
-    
-    # Convert tibble created by dplyr to df
-    BUGSnet_df <- as.data.frame(mutated_data)
-    
   }
   
   # If there is a covariate 
@@ -81,13 +77,19 @@ CreateCovariateSummaryPlot <- function(all_data, metaoutcome, covariate_or_basel
     y_axis_label <- GetFriendlyCovariateName(covariate)
     
     caption_setting <- "covariate" # Text to add to caption
-    BUGSnet_df <- all_data # Rename for input to BUGSnet::data.prep
-    
+    mutated_data <- all_data # Rename for input to BUGSnet::data.prep
   } 
+  
+  # Add column with treatment labels
+  mutated_data <- mutated_data %>%
+    dplyr::inner_join(treatment_df, by = join_by(T == Number)) 
+  
+  # Convert tibble created by dplyr to df
+  BUGSnet_df <- as.data.frame(mutated_data)
     
   # BUGSnet data prep to convert data to format required for data.plot
   BUGSnet_data <- BUGSnet::data.prep(arm.data = BUGSnet_df,
-                                     varname.t = 'T',
+                                     varname.t = 'Label',
                                      varname.s = 'Study')
   
   # Baseline risk plot with error bars
