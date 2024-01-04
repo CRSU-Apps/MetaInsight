@@ -9,12 +9,11 @@ metaregression_summary_panel_ui <- function(id) {
     uiOutput(ns("toggle_covariate_baseline")),
     plotOutput(outputId = ns('covariate_plot')),
     textOutput(outputId = ns('covariate_info')),
-    verbatimTextOutput(ns("test")),
     radioButtons(inputId = ns('format_covariate_plot'), 
                  label = 'Document format', 
                  choices = c('PDF', 'PNG'), 
                  inline = TRUE),
-    downloadButton(outputId = ns('downloadCovariateSummary'))
+    downloadButton(outputId = ns('download_covariate_summary'))
   )
 }
 
@@ -50,35 +49,16 @@ metaregression_summary_panel_server <- function(id, all_data, metaoutcome, treat
       }, width = calculate_plot_pixel(nrow(all_data()))
       )
     }), 1500)
-    
-    # mutated_data <- reactive({
-    #   
-    #   mutated_data <- all_data() %>%
-    #     dplyr::inner_join(treatment_df(), by = join_by(T == Number)) %>%
-    #     dplyr::group_by(Study) %>%
-    #     dplyr::mutate(
-    #       # Reference arm is always numbered 1 internally
-    #       baseline = ifelse(is.null(Mean[T == 1]), NA, Mean[T == 1])
-    #     ) %>%
-    #     dplyr::mutate(
-    #       baseline_error = ifelse(is.null(Mean[T == 1]), NA, (1.96 * SD[T == 1]) / sqrt(N[T == 1]))
-    #     )
-    #   
-    #   return(mutated_data)
-    # })
-    # 
-    # output$test <- renderPrint ({ mutated_data() })
-    # output$test <- renderPrint ({ all_data() })
 
     # Not working
-    output$downloadCovariateSummary <- downloadHandler(
+    output$download_covariate_summary <- downloadHandler(
       filename = function() {
         paste0('4a_Summary.', input$format_covariate_plot)
       },
       content = function(file) {
         draw_covariate_summary <- function() {
 
-          make_covariate_plot(all_data)
+          CreateCovariateSummaryPlot(all_data(), metaoutcome(), input$toggle_covariate_baseline, treatment_df())
 
         }
         write_to_pdf_or_png(
@@ -88,6 +68,5 @@ metaregression_summary_panel_server <- function(id, all_data, metaoutcome, treat
         )
       }
     )
-    
   })
 }
