@@ -109,7 +109,7 @@ regression_plot_panel_ui <- function(id) {
           choiceNames = list(
             div(
               tags$html("% Contribution", tags$i(class="fa-regular fa-circle-question")),
-              title = "Circles scaled by percentage contribution of each study to each treatmentregression"
+              title = "Circles scaled by percentage contribution of each study to each treatment regression"
             ),
             div(
               tags$html("Inverse Variance", tags$i(class="fa-regular fa-circle-question")),
