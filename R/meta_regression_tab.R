@@ -98,7 +98,14 @@ meta_regression_tab_server <- function(
       error_message_text_expression = { .BuildUnsupportedOutcomeMeasureErrorMessageText(basline_risk_outcomes) },
       inner_server_expression = {
         baseline_risk_analysis_panel_server(
-          id = "baseline_risk_analysis"
+          id = "baseline_risk_analysis",
+          all_data = all_data,
+          treatment_df = treatment_df,
+          reference_treatment = reference_treatment,
+          metaoutcome = metaoutcome,
+          outcome_measure = outcome_measure,
+          model_effects = model_effects,
+          bugsnetdt = bugsnetdt
         )
       }
     )

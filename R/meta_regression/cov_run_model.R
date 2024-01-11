@@ -68,6 +68,7 @@ covariate_run_model_server <- function(
     # Bayesian analysis
 
     model <- eventReactive(input$baye_do, {
+      glimpse(data())
       RunCovariateModel(data = data(), treatment_ids = treatment_df(), outcome_type = metaoutcome(), 
                         outcome = outcome_measure(), covariate = covariate(), cov_friendly = cov_friendly(), 
                         model_type = model_effects(), regressor_type = input$select_regressor, 
