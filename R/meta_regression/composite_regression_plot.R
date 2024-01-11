@@ -1,12 +1,11 @@
 
 #' Create a composite meta-regression plot which comprises plots showing direct and indirect evidence.
 #'
-#' @param model GEMTC model result object.
+#' @param model_output GEMTC model results found by calling `CovariateModelOutput()`.
 #' @param treatment_df Reactive containing data frame containing treatment IDs (Number), sanitised names (Label), and original names (RawLabel).
-#' @param reference Name of reference treatment.
 #' @param comparators Vector of names of comparison treatments to plot in colour.
-#' @param covariate_value The value of the covariate to plot as a vertical line. NULL if not to be plotted.
 #' @param contribution_type Type of contribution, used to calculate sizes for the study contribution circles.
+#' @param include_covariate TRUE if the value of the covariate is to be plotted as a vertical line. Defaults to FALSE.
 #' @param include_ghosts TRUE if all other comparator studies should be plotted in grey in the background of the plot. Defaults to FALSE.
 #' @param include_extrapolation TRUE if regression lines should be extrapolated beyond the range of the given data. These will appear as dashed lines.
 #' Defaults to FALSE.
@@ -23,12 +22,11 @@
 #'
 #' @return Created ggplot2 object.
 CreateCompositeMetaRegressionPlot <- function(
-    model,
+    model_output,
     treatment_df,
-    reference,
     comparators,
-    covariate_value,
     contribution_type,
+    include_covariate = FALSE,
     include_ghosts = FALSE,
     include_extrapolation = FALSE,
     include_confidence = FALSE,
@@ -38,12 +36,11 @@ CreateCompositeMetaRegressionPlot <- function(
     legend_position = "BR") {
   
   direct_plot <- CreateMainRegressionPlot(
-    model = model,
+    model_output = model_output,
     treatment_df = treatment_df,
-    reference = reference,
     comparators = comparators,
-    covariate_value = covariate_value,
     contribution_type = contribution_type,
+    include_covariate = include_covariate,
     include_ghosts = include_ghosts,
     include_extrapolation = include_extrapolation,
     include_confidence = include_confidence,
@@ -58,12 +55,11 @@ CreateCompositeMetaRegressionPlot <- function(
   }
   
   indirect_plot <- CreateIndirectContributionPlot(
-    model = model,
+    model_output = model_output,
     treatment_df = treatment_df,
-    reference = reference,
     comparators = comparators,
-    covariate_value = covariate_value,
     contribution_type = contribution_type,
+    include_covariate = include_covariate,
     include_ghosts = include_ghosts,
     contribution_multiplier = contribution_multiplier
   )
@@ -96,19 +92,19 @@ CreateCompositeMetaRegressionPlot <- function(
 #' @return Created ggplot2 object.
 .MetaRegressionCompositePlotExample <- function() {
   data <- read.csv("tests/testthat/Cont_long_continuous_cov.csv")
-  treatment_ids <- CreateTreatmentIds(FindAllTreatments(data))
+  treatment_ids <- CreateTreatmentIds(FindAllTreatments(data), reference_treatment = "the Little")
   data <- WrangleUploadData(data, treatment_ids, "Continuous")
   wrangled_treatment_list <- CleanTreatmentIds(treatment_ids)
   
   model <- RunCovariateModel(data, wrangled_treatment_list, "Continuous", 'MD', "covar.age", "age", 'random', 'unrelated', "the_Little")
+  model_output <<- CovariateModelOutput(model, 98)
   
   plot <- CreateCompositeMetaRegressionPlot(
-    model = model,
+    model_output = model_output,
     treatment_df = wrangled_treatment_list,
-    reference = "the_Little",
     comparators = c("the_Butcher", "the_Dung_named"),
-    covariate_value = 4.16,
     contribution_type = "percentage",
+    include_covariate = TRUE,
     include_ghosts = TRUE,
     include_extrapolation = TRUE,
     include_confidence = TRUE,

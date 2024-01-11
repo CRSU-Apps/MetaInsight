@@ -147,16 +147,14 @@ regression_plot_panel_ui <- function(id) {
 #' Create the regression plot server.
 #'
 #' @param id ID of the module.
-#' @param model Reactive containing GEMTC analysis model results.
+#' @param model_output GEMTC model results found by calling `CovariateModelOutput()`.
 #' @param treatment_df Reactive containing data frame containing treatment IDs (Number), sanitised names (Label), and original names (RawLabel).
-#' @param reference_treatment Reactive containing name of reference treatment.
-#' @param covariate_value Reactive containing the value of the covariate.
-regression_plot_panel_server <- function(id, model, treatment_df, reference_treatment, covariate_value) {
+regression_plot_panel_server <- function(id, model_output, treatment_df) {
   shiny::moduleServer(id, function(input, output, session) {
     
     available_to_add <- reactive({
       raw_labels = treatment_df()$RawLabel
-      raw_reference = treatment_df()$RawLabel[treatment_df()$Label == reference_treatment()]
+      raw_reference = treatment_df()$RawLabel[treatment_df()$Label == model_output()$reference_name]
       return(raw_labels[(raw_labels != raw_reference) & !(raw_labels %in% added_comparators())])
     })
     
@@ -216,19 +214,12 @@ regression_plot_panel_server <- function(id, model, treatment_df, reference_trea
         comparators <- sapply(added_comparators(), function(treatment) { treatment_df()$Label[treatment_df()$RawLabel == treatment] })
       }
       
-      if (input$covariate) {
-        covariate <- covariate_value()
-      } else {
-        covariate <- NULL
-      }
-      
       CreateCompositeMetaRegressionPlot(
-        model = model(),
+        model_output = model_output(),
         treatment_df = treatment_df(),
-        reference = reference_treatment(),
         comparators = comparators,
-        covariate_value = covariate,
         contribution_type = contribution_type(),
+        include_covariate = input$covariate,
         include_ghosts = input$ghosts,
         include_extrapolation = input$extrapolate,
         include_confidence = input$confidence,
@@ -284,12 +275,14 @@ shiny::shinyApp(
       RunCovariateModel(data(), treatment_df(), "Continuous", 'MD', "covar.age", "age", 'random', 'unrelated', "the_Little")
     })
     
+    model_output = reactive({
+      CovariateModelOutput(model(), input$covariate)
+    })
+    
     regression_plot_panel_server(
       id = "TEST",
-      model = model,
-      treatment_df = treatment_df,
-      reference_treatment = reactive({ "the_Little" }),
-      covariate_value = reactive({ input$covariate })
+      model_output = model_output,
+      treatment_df = treatment_df
     )
   }
 )

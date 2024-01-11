@@ -168,14 +168,15 @@ test_that("CreateGemtcModel() has correct model settings for MD outcome", {
 })
 
 test_that("RunCovariateModel() gives reproducible output. Follow on: FindCovariateDefault() & CovariateModelOutput() gives correct output", {
+  reference = "the_Little"
   
   data <- read.csv("Binary_wide_continuous_cov.csv")
-  treatment_ids <- CreateTreatmentIds(FindAllTreatments(data))
+  treatment_ids <- CreateTreatmentIds(FindAllTreatments(data), reference_treatment = reference)
   data <- WrangleUploadData(data, treatment_ids, "Binary")
   wrangled_treatment_list <- CleanTreatmentIds(treatment_ids)
   
-  result_1 <- RunCovariateModel(data, wrangled_treatment_list, "Binary", 'OR', "covar.age", "age", 'random', 'unrelated', "the_Little")
-  result_2 <- RunCovariateModel(data, wrangled_treatment_list, "Binary", 'OR', "covar.age", "age", 'random', 'unrelated', "the_Little")
+  result_1 <- RunCovariateModel(data, wrangled_treatment_list, "Binary", 'OR', "covar.age", "age", 'random', 'unrelated', reference)
+  result_2 <- RunCovariateModel(data, wrangled_treatment_list, "Binary", 'OR', "covar.age", "age", 'random', 'unrelated', reference)
   
   expect_equal(result_1$samples[1], result_2$samples[1])
   expect_equal(result_1$samples[2], result_2$samples[2])
@@ -183,13 +184,17 @@ test_that("RunCovariateModel() gives reproducible output. Follow on: FindCovaria
   expect_equal(result_1$samples[4], result_2$samples[4])
   
   default <- FindCovariateDefault(result_1)
+  covariate_value = 98
   
-  expect_equal(default, 98)
+  expect_equal(default, covariate_value)
   
   output_1 <- CovariateModelOutput(result_1, cov_value = default)
   
-  expect_equal(length(output_1), 5)
+  expect_equal(length(output_1), 11)
   expect_equal(output_1$a, "random effect")
   expect_equal(output_1$cov_value_sentence, "Value for covariate age set at 98")
+  expect_equal(output_1$covariate_value, covariate_value)
+  expect_equal(output_1$reference_name, reference)
+  expect_equal(output_1$comparator_names, c("the_Butcher", "the_Dung_named", "the_Great", "the_Slit_nosed", "the_Younger"))
   
 })

@@ -118,6 +118,9 @@ RunCovariateModel <- function(data, treatment_ids, outcome_type, outcome, covari
 #' @return List of gemtc related output:
 #'  mtcResults = model object itself carried through (needed to match existing code)
 #'  mtcRelEffects = data relating to presenting relative effects;
+#'  covariate_value = The covariate value orignally passed into this function
+#'  reference_name = The nmae fo the reference treatment
+#'  comparator_names = The name of the 
 #'  a = text output stating whether fixed or random effects;
 #'  sumresults = summary output of relative effects
 #'  dic = data frame of model fit statistics
@@ -125,6 +128,11 @@ RunCovariateModel <- function(data, treatment_ids, outcome_type, outcome, covari
 #'  slopes = named list of slopes for the regression equations (unstandardised - equal to one 'increment')
 #'  intercepts = named list of intercepts for the regression equations at cov_value
 CovariateModelOutput <- function(model, cov_value) {
+  
+  model_levels = levels(model$model$data$reg.control)
+  reference_name <- model_levels[model_levels %in% model$model$data$reg.control]
+  comparator_names <- model_levels[!model_levels %in% model$model$data$reg.control]
+  
   
   # Relative Effects raw data
   rel_eff <- gemtc::relative.effect(model, as.character(model$model$regressor$control), covariate = cov_value)
@@ -150,21 +158,27 @@ CovariateModelOutput <- function(model, cov_value) {
   slopes <- summ$summaries$statistics[slope_indices, 1]  * model$model$regressor$scale
   
   # Rename rows for intercepts and slopes
-  if (model$model$regressor$coefficient != "shared") {
-    names(slopes) <- levels(model$model$data$reg.control)[! levels(model$model$data$reg.control) %in% model$model$data$reg.control]
+  if (model$model$regressor$coefficient == "shared") {
+    slopes <- rep(slopes[1], length(comparator_names))
   }
-  names(intercepts) <- levels(model$model$data$reg.control)[! levels(model$model$data$reg.control) %in% model$model$data$reg.control]
+  names(slopes) <- comparator_names
+  names(intercepts) <- comparator_names
   
   # naming conventions to match current Bayesian functions
-  return(list(
-    mtcResults = model,
-    mtcRelEffects = rel_eff,
-    a = model_text,
-    sumresults = summary,
-    dic = fit_stats,
-    cov_value_sentence = cov_value_sentence,
-    slopes = slopes,
-    intercepts = intercepts)
+  return(
+    list(
+      mtcResults = model,
+      mtcRelEffects = rel_eff,
+      covariate_value = cov_value,
+      reference_name = reference_name,
+      comparator_names = comparator_names,
+      a = model_text,
+      sumresults = summary,
+      dic = fit_stats,
+      cov_value_sentence = cov_value_sentence,
+      slopes = slopes,
+      intercepts = intercepts
+    )
   )
 }
 

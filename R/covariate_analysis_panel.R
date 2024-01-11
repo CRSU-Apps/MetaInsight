@@ -183,10 +183,8 @@ covariate_analysis_panel_server <- function(
     # 4c-2 Regression plot
     regression_plot_panel_server(
       id = "regression_plot",
-      model = model_reactive,
-      reference_treatment = reference_treatment,
-      treatment_df = treatment_df,
-      covariate_value = covariate_value
+      model_output = model_output,
+      treatment_df = treatment_df
     )
   })
 }
