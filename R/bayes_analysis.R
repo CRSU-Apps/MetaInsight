@@ -120,6 +120,7 @@ CreateTauSentence <- function(results,outcome) {
 #' @param rankdirection "good" or "bad" (referring to smaller outcome values).
 #' @param longdata Output from 'dataform.df' function. This should be the same dataset that was passed as the 'data' argument to baye(), which resulted in @param NMAdata.
 #'        (TM: Suggested improvement: baye() should output its 'data' argument, then @param longdata becomes superfluous, and there is no possibility of a mismatch between @param NMAdata and @param longdata.)
+#' @param cov_value covariate value if a meta-regression
 #' @return List:
 #' - 'SUCRA' = Data frame of SUCRA data.
 #'     - 'Treatment'
@@ -141,13 +142,15 @@ CreateTauSentence <- function(results,outcome) {
 #'     - ...
 #'     - 'Rank n_t' = Probability 'Treatment' is ranked last (n_t = number of treatments).
 #' - 'BUGSnetData' = Output from BUGSnet::data.prep with arguments from @param longdata.
-rankdata <- function(NMAdata, rankdirection, longdata) {
+rankdata <- function(NMAdata, rankdirection, longdata, cov_value = NA) {
   # data frame of colours
   colour_dat = data.frame(SUCRA = seq(0, 100, by = 0.1)) 
   colour_dat = dplyr::mutate(colour_dat, colour = seq(0, 100, length.out = 1001)) 
   
   # probability rankings
-  prob <- as.data.frame(print(gemtc::rank.probability(NMAdata, preferredDirection=(if (rankdirection=="good") -1 else 1)))) # rows treatments, columns ranks
+  prob <- as.data.frame(print(gemtc::rank.probability(NMAdata, 
+                                                      preferredDirection=(if (rankdirection=="good") -1 else 1), 
+                                                      covariate = cov_value))) # rows treatments, columns ranks
   names(prob)[1:ncol(prob)] <- paste("Rank ", 1:(ncol(prob)), sep="")
   sucra <- gemtc::sucra(prob)  # 1 row of SUCRA values for each treatment column
   treatments <- stringr::str_wrap(gsub("_", " ", row.names(prob)), width=10)

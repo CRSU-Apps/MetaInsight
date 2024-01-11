@@ -236,6 +236,8 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, m
       metaoutcome = metaoutcome,
       outcome_measure = outcome_measure,
       model_effects = model_effects,
+      rank_option = rank_option,
+      freq_all = freq_all,
       bugsnetdt = bugsnetdt
     )
   })

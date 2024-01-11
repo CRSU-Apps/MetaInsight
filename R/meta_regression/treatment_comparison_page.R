@@ -17,6 +17,7 @@ covariate_treatment_comparisons_page_ui <- function(id) {
     br(),
     p(tags$strong("Treatment effects for all studies: comparison of all treatment pairs.")),
     tableOutput(outputId = ns("baye_comparison")),
+    textOutput(outputId = ns('cov_value_statement')),
     downloadButton(outputId = ns('downloadbaye_comparison'))
   )
 }
@@ -40,6 +41,10 @@ covariate_treatment_comparisons_page_server <- function(
       baye_comp(model(), outcome_measure())
     }, rownames=TRUE, colnames = TRUE
     )
+    
+    output$cov_value_statement <- renderText({
+      model()$cov_value_sentence
+    })
 
     output$downloadbaye_comparison <- downloadHandler(
       filename = 'regression_comparison.csv',

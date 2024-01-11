@@ -75,6 +75,8 @@ meta_regression_tab_ui <- function(id) {
 #' @param metaoutcome Reactive containing meta analysis outcome: "Continuous" or "Binary"
 #' @param outcome_measure Reactive containing meta analysis outcome measure: "MD", "SMD", "OR, "RR", or "RD"
 #' @param model_effects Reactive containing model effects: either "random" or "fixed"
+#' @param rank_option Reactive containing ranking option: "good" or "bad" depending on whether small values are desirable or not
+#' @param freq_all Reactive containing frequentist meta-analysis
 #' @param bugsnetdt Reactive containing bugsnet meta-analysis
 meta_regression_tab_server <- function(
     id, 
@@ -83,6 +85,8 @@ meta_regression_tab_server <- function(
     metaoutcome,
     outcome_measure,
     model_effects,
+    rank_option,
+    freq_all,
     bugsnetdt
     ) {
   shiny::moduleServer(id, function(input, output, session) {
@@ -123,6 +127,8 @@ meta_regression_tab_server <- function(
               metaoutcome = metaoutcome,
               outcome_measure = outcome_measure,
               model_effects = model_effects,
+              rank_option = rank_option,
+              freq_all = freq_all,
               bugsnetdt = bugsnetdt
             )
           }

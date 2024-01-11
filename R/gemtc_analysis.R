@@ -116,12 +116,15 @@ RunCovariateModel <- function(data, treatment_ids, outcome_type, outcome, covari
 #' @param model Completed model object after running RunCovariateRegression()
 #' @param cov_value Value of covariate for which to give output (default value the mean of study covariates)
 #' @return List of gemtc related output:
+#'  mtcResults = model object itself carried through (needed to match existing code)
 #'  mtcRelEffects = data relating to presenting relative effects;
 #'  rel_eff_tbl = table of relative effects for each comparison;
 #'  a = text output stating whether fixed or random effects;
 #'  sumresults = summary output of relative effects
 #'  dic = data frame of model fit statistics
 #'  cov_value_sentence = text output stating the value for which the covariate has been set to for producing output
+#'  slopes = named list of slopes for the regression equations (unstandardised - equal to one 'increment')
+#'  intercepts = named list of intercepts for the regression equations at cov_value
 CovariateModelOutput <- function(model, cov_value) {
   
   # Relative Effects raw data
@@ -133,8 +136,11 @@ CovariateModelOutput <- function(model, cov_value) {
   # Create text for random/fixed effect
   model_text <- paste(model$model$linearModel,"effect",sep=" ")
   
-  # Summary of model
-  summary <- summary(model)
+  # Summary of relative effects
+  summary <- summary(rel_eff)
+  
+  # Intercepts (regression)
+  intercepts <- summary$summaries$statistics[1:(nrow(summary$summaries$statistics)-1),1]
   
   # Table of Model fit stats
   fit_stats <- as.data.frame(summary$DIC)
@@ -142,14 +148,28 @@ CovariateModelOutput <- function(model, cov_value) {
   # Summary sentence of where covariate value has been set for results
   cov_value_sentence <- paste0("Value for covariate ", model$model$regressor$variable, " set at ", cov_value)
   
+  # Obtain slope(s)
+  slope_indices <- grep(ifelse(model$model$regressor$coefficient == "shared", "^B$", "^beta\\[[0-9]+\\]$"), model$model$monitors$enabled)
+  summ <- summary(model)
+  slopes <- summ$summaries$statistics[slope_indices, 1]  * model$model$regressor$scale
+  
+  # Rename rows for intercepts and slopes
+  if (model$model$regressor$coefficient != "shared") {
+    names(slopes) <- levels(model$model$data$reg.control)[! levels(model$model$data$reg.control) %in% model$model$data$reg.control]
+  }
+  names(intercepts) <- levels(model$model$data$reg.control)[! levels(model$model$data$reg.control) %in% model$model$data$reg.control]
+  
   # naming conventions to match current Bayesian functions
   return(list(
+    mtcResults = model,
     mtcRelEffects = rel_eff,
     rel_eff_tbl = rel_eff_tbl,
     a = model_text,
     sumresults = summary,
     dic = fit_stats,
-    cov_value_sentence = cov_value_sentence)
+    cov_value_sentence = cov_value_sentence,
+    slopes = slopes,
+    intercepts = intercepts)
   )
 }
 

@@ -80,6 +80,9 @@ bayesian_forest_plot_plus_stats_server <- function(
                   Bayesian",
                   model_output()$a, 
                   "consistency model forest plot results"))
+      if (analysis_type == "Regression") {
+        mtext(model_output()$cov_value_sentence, side = 1, adj = 0)
+      }
     })
 
     # DIC table for all studies

@@ -20,7 +20,7 @@ bayesian_model <- function(sub, data, treatment_list, metaoutcome, exclusionbox,
 }
 
 # Function to create data regarding rank results - CRN
-obtain_rank_data <- function(data, metaoutcome, treatment_list, bayesmodel, rankdir, excluded = c()) {
+obtain_rank_data <- function(data, metaoutcome, treatment_list, bayesmodel, rankdir, cov_value = NA, excluded = c()) {
   newData1 <- as.data.frame(data)
   longsort2 <- dataform.df(newData1, treatment_list, metaoutcome)
   if (length(excluded > 0)) {
@@ -29,7 +29,7 @@ obtain_rank_data <- function(data, metaoutcome, treatment_list, bayesmodel, rank
   }
   # Use the self-defined function, rankdata in fn.analysis.R
   return(rankdata(NMAdata=bayesmodel$mtcResults, rankdirection=rankdir, 
-           longdata=longsort2))
+           longdata=longsort2, cov_value = cov_value))
 }
 
 #' Run the nodesplit model

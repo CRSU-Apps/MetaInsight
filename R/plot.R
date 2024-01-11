@@ -98,7 +98,7 @@ make_netgraph_rank = function(freq, order) {
 }
 
 # Litmus Rank-O-Gram #
-LitmusRankOGram <- function(CumData, SUCRAData, ColourData, colourblind=FALSE) {    #CumData needs Treatment, Rank, Cumulative_Probability and SUCRA; SUCRAData needs Treatment & SUCRA; COlourData needs SUCRA & colour; colourblind friendly option
+LitmusRankOGram <- function(CumData, SUCRAData, ColourData, colourblind=FALSE, regression_text="") {    #CumData needs Treatment, Rank, Cumulative_Probability and SUCRA; SUCRAData needs Treatment & SUCRA; COlourData needs SUCRA & colour; colourblind friendly option; regression annotation text
   # Basic Rankogram #
   Rankogram <- ggplot(CumData, aes(x=Rank, y=Cumulative_Probability, group=Treatment)) +
     geom_line(aes(colour=SUCRA)) + theme_classic() + theme(legend.position = "none", aspect.ratio=1) +
@@ -127,12 +127,16 @@ LitmusRankOGram <- function(CumData, SUCRAData, ColourData, colourblind=FALSE) {
     B <- Litmus_SUCRA + scale_colour_gradientn(colours=c("#7b3294","#c2a5cf","#a6dba0", "#008837"), values=c(0, 0.33, 0.66, 1), limits=c(0,100))
   }
   # Combo! #
-  Combo <- A + B    # '+' functionality from {patchwork}
+  if (regression_text != "") {
+    Combo <- A + B + patchwork::plot_annotation(caption = regression_text)
+  } else {
+    Combo <- A + B    # '+' functionality from {patchwork}
+  }
   Combo + theme(plot.margin = margin(t=0,r=0,b=0,l=0))
 }
 
 # Radial SUCRA Plot #
-RadialSUCRA <- function(SUCRAData, ColourData, BUGSnetData, colourblind=FALSE) {      # SUCRAData needs Treatment & Rank; ColourData needs SUCRA & colour; colourblind friendly option
+RadialSUCRA <- function(SUCRAData, ColourData, BUGSnetData, colourblind=FALSE, regression_text="") {      # SUCRAData needs Treatment & Rank; ColourData needs SUCRA & colour; colourblind friendly option; regression annotation text
   
   n <- nrow(SUCRAData) # number of treatments
   # Add values to angle and adjust radial treatment labels
@@ -271,6 +275,10 @@ RadialSUCRA <- function(SUCRAData, ColourData, BUGSnetData, colourblind=FALSE) {
   Final <- magick::image_composite(Final,Points)
   Finalplot <- cowplot::ggdraw() +
     cowplot::draw_image(Final)
+  if (regression_text != "") {
+    Finalplot <- Finalplot + 
+      cowplot::draw_label(regression_text, x = 0.95, y = 0.05, hjust = 1, size = 10)
+  }
   Background <- magick::image_read('BackgroundA.png')
   Network <- magick::image_read('NetworkA.png')
   Points <- magick::image_read('PointsA.png')
@@ -278,6 +286,10 @@ RadialSUCRA <- function(SUCRAData, ColourData, BUGSnetData, colourblind=FALSE) {
   Final <- magick::image_composite(Final,Points)
   Finalalt <- cowplot::ggdraw() +
     cowplot::draw_image(Final)
+  if (regression_text != "") {
+    Finalalt <- Finalalt + 
+      cowplot::draw_label(regression_text, x = 0.95, y = 0.05, hjust = 1, size = 10)
+  }
   
   file.remove('BackgroundO.png')
   file.remove('NetworkO.png')

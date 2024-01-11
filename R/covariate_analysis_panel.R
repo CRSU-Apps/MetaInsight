@@ -71,6 +71,10 @@ covariate_analysis_panel_ui <- function(id) {
           tabPanel(
             title = "4c-2. Comparison of all treatment pairs",
             covariate_treatment_comparisons_page_ui(id = ns("cov_treatment_comparisons"))
+          ),
+          tabPanel(
+            title = "4c-3. Ranking",
+            covariate_ranking_page_ui(id = ns("cov_ranking"))
           )
         )
       )
@@ -86,6 +90,8 @@ covariate_analysis_panel_ui <- function(id) {
 #' @param metaoutcome Reactive containing meta analysis outcome: "Continuous" or "Binary"
 #' @param outcome_measure Reactive containing meta analysis outcome measure: "MD", "SMD", "OR, "RR", or "RD"
 #' @param model_effects Reactive containing model effects: either "random" or "fixed"
+#' @param rank_option Reactive containing ranking option: "good" or "bad" depending on whether small values are desirable or not
+#' @param freq_all Reactive containing frequentist meta-analysis
 #' @param bugsnetdt Reactive containing bugsnet meta-analysis
 covariate_analysis_panel_server <- function(
     id, 
@@ -94,6 +100,8 @@ covariate_analysis_panel_server <- function(
     metaoutcome,
     outcome_measure,
     model_effects,
+    rank_option,
+    freq_all,
     bugsnetdt
     ) {
   shiny::moduleServer(id, function(input, output, session) {
@@ -167,7 +175,10 @@ covariate_analysis_panel_server <- function(
     )
     
     # obtain gemtc output types to be used in rest of page
-    model_output <- reactive(CovariateModelOutput(model = model_reactive(), cov_value = covariate_value()))
+    model_output <- reactive({
+      m_output <- CovariateModelOutput(model = model_reactive(), cov_value = covariate_value())
+      return(m_output)
+      })
     
     # Create forest plot and associated statistics
     bayesian_forest_plot_plus_stats_server(
@@ -184,6 +195,21 @@ covariate_analysis_panel_server <- function(
       id = "cov_treatment_comparisons",
       model = model_output,
       outcome_measure = outcome_measure
+    )
+    
+    # 4c-3 Ranking Panel
+    covariate_ranking_page_server(
+      id = "cov_ranking",
+      model = model_output,
+      data = all_data,
+      treatment_df = treatment_df,
+      metaoutcome = metaoutcome,
+      outcome_measure = outcome_measure,
+      model_effects = model_effects,
+      rank_option = rank_option,
+      freq_all = freq_all,
+      bugsnetdt = bugsnetdt,
+      cov_value = covariate_value
     )
   })
 }
