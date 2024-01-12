@@ -12,6 +12,7 @@ CreateCovariateSummaryPlot <- function(all_data, metaoutcome, covariate_or_basel
   # If there is no covariate, or baseline risk is selected by the toggle
   if (is.na(FindCovariateNames(all_data)[1]) || covariate_or_baseline == "Baseline risk") {
     
+    # Settings for baseline risk plot
     y_axis_label <- "Baseline risk"
     caption_setting <- "baseline risk" # Text to add to caption
     covariate <- "baseline" # Column of df selected for plot
@@ -22,10 +23,10 @@ CreateCovariateSummaryPlot <- function(all_data, metaoutcome, covariate_or_basel
       # Add baseline column that is the mean value and 
       # baseline_error column that is 1.96 * SD / sqrt(N)
       # of the reference arm for the study, or NA if there is no reference arm
+      # Reference arm is always numbered 1 internally
       mutated_data <- all_data %>% 
         dplyr::group_by(Study) %>%
         dplyr::mutate(
-          # Reference arm is always numbered 1 internally
           baseline = ifelse(is.null(Mean[T == 1]), NA, Mean[T == 1])
         ) %>%
         dplyr::mutate(
@@ -48,10 +49,10 @@ CreateCovariateSummaryPlot <- function(all_data, metaoutcome, covariate_or_basel
       # Add baseline column that is yi column from escalc
       # baseline_error column that is 1.96 * sqrt(vi) column from escalc
       # of the reference arm for the study, or NA if there is no reference arm
+      # Reference arm is always numbered 1 internally
       mutated_data <- mutated_data %>%
         dplyr::group_by(Study) %>%
         dplyr::mutate(
-          # Reference arm is always numbered 1 internally
           baseline = ifelse(is.null(R[T == 1]), NA, yi[T == 1])
         ) %>%
         dplyr::mutate(
@@ -110,8 +111,7 @@ CreateCovariateSummaryPlot <- function(all_data, metaoutcome, covariate_or_basel
       
       # Plot in logit scale, label on probability scale
       plot <- plot +
-        scale_y_continuous(labels = function(x) round(100 * plogis(x), digits = 1))
-      
+        scale_y_continuous(labels = function(x) round(plogis(x), digits = 2))
     }
     
   # Covariate plot without error bars
