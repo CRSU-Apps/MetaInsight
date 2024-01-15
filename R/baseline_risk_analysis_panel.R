@@ -132,8 +132,6 @@ baseline_risk_analysis_panel_server <- function(    id,
       })
     })
     
-    # ns <- session$ns
-    
     # Interactive UI
     output$bayesian_forest_plot <- renderUI({
       shinycssloaders::withSpinner(
@@ -141,7 +139,7 @@ baseline_risk_analysis_panel_server <- function(    id,
           outputId = ns("forest_plot"),
           width="630px",
           height = BayesPixels(
-            as.numeric(bugsnet_sumtb(bugsnetdt(), metaoutcome())$Value[1]) - 100,
+            as.numeric(bugsnet_sumtb(bugsnetdt(), metaoutcome())$Value[1]),
             title = TRUE
           )
         ), type = 6)
