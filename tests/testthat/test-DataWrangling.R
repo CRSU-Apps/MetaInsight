@@ -107,10 +107,10 @@ test_that("FindExpectedReferenceTreatment() returns first matching treatment whe
   expect_equal(!!result, "Placebo")
 })
 
-test_that(".FixColumnNameCases() fixes cases for continuous long data", {
-  data <- CleanData(read.csv("Cont_long.csv"))
-  names(data) <- c("sTuDy", "t", "n", "mEaN", "sD")
-  allowed_names = c("Study", "T", "N", "Mean", "SD")
+test_that(".FixColumnNameCases() fixes cases for continuous long data with covariate", {
+  data <- CleanData(read.csv("Cont_long_continuous_cov.csv"))
+  names(data) <- c("sTuDy", "t", "n", "mEaN", "sD", "CoVaR.age")
+  allowed_names = c("Study", "T", "N", "Mean", "SD", "covar.age")
   
   expect(all(!names(data) %in% allowed_names), failure_message = "Column names were not setup for the test correctly.")
   
@@ -121,14 +121,14 @@ test_that(".FixColumnNameCases() fixes cases for continuous long data", {
                expected.label = format_vector_to_string(allowed_names))
 })
 
-test_that(".FixColumnNameCases() fixes cases for continuous wide data", {
-  data <- CleanData(read.csv("Cont_wide.csv"))
+test_that(".FixColumnNameCases() fixes cases for continuous wide data with covariate", {
+  data <- CleanData(read.csv("Cont_wide_continuous_cov.csv"))
   
   arm_fields = c("t", "n", "mEaN", "sD")
-  names(data) <- c("sTuDy", paste0(arm_fields, ".1"), paste0(arm_fields, ".2"), paste0(arm_fields, ".3"))
+  names(data) <- c("sTuDy", paste0(arm_fields, ".1"), paste0(arm_fields, ".2"), paste0(arm_fields, ".3"), "CoVaR.age")
   
   allowed_arm_fields = c("T", "N", "Mean", "SD")
-  allowed_names = c("Study", paste0(allowed_arm_fields, ".1"), paste0(allowed_arm_fields, ".2"), paste0(allowed_arm_fields, ".3"))
+  allowed_names = c("Study", paste0(allowed_arm_fields, ".1"), paste0(allowed_arm_fields, ".2"), paste0(allowed_arm_fields, ".3"), "covar.age")
   
   expect(all(!names(data) %in% allowed_names), failure_message = "Column names were not setup for the test correctly.")
   
@@ -139,10 +139,10 @@ test_that(".FixColumnNameCases() fixes cases for continuous wide data", {
                expected.label = format_vector_to_string(allowed_names))
 })
 
-test_that(".FixColumnNameCases() fixes cases for binary long data", {
-  data <- CleanData(read.csv("Binary_long.csv"))
-  names(data) <- c("sTuDy", "t", "r", "n")
-  allowed_names = c("Study", "T", "R", "N")
+test_that(".FixColumnNameCases() fixes cases for binary long data with covariate", {
+  data <- CleanData(read.csv("Binary_long_continuous_cov.csv"))
+  names(data) <- c("sTuDy", "t", "r", "n", "CoVaR.age")
+  allowed_names = c("Study", "T", "R", "N", "covar.age")
   
   expect(all(!names(data) %in% allowed_names), failure_message = "Column names were not setup for the test correctly.")
   
@@ -153,14 +153,14 @@ test_that(".FixColumnNameCases() fixes cases for binary long data", {
                expected.label = format_vector_to_string(allowed_names))
 })
 
-test_that(".FixColumnNameCases() fixes cases for binary wide data", {
-  data <- CleanData(read.csv("Binary_wide.csv"))
+test_that(".FixColumnNameCases() fixes cases for binary wide data with covariate", {
+  data <- CleanData(read.csv("Binary_wide_continuous_cov.csv"))
   
   arm_fields = c("t", "r", "n")
-  names(data) <- c("sTuDy", paste0(arm_fields, ".1"), paste0(arm_fields, ".2"), paste0(arm_fields, ".3"))
+  names(data) <- c("sTuDy", paste0(arm_fields, ".1"), paste0(arm_fields, ".2"), paste0(arm_fields, ".3"), "CoVaR.age")
   
   allowed_arm_fields = c("T", "R", "N")
-  allowed_names = c("Study", paste0(allowed_arm_fields, ".1"), paste0(allowed_arm_fields, ".2"), paste0(allowed_arm_fields, ".3"))
+  allowed_names = c("Study", paste0(allowed_arm_fields, ".1"), paste0(allowed_arm_fields, ".2"), paste0(allowed_arm_fields, ".3"), "covar.age")
   
   expect(all(!names(data) %in% allowed_names), failure_message = "Column names were not setup for the test correctly.")
   
