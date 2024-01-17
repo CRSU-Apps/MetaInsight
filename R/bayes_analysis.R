@@ -119,9 +119,17 @@ CreateTauSentence <- function(results,outcome) {
 #'    - 'a' = "fixed effect" or "random effect".
 FormatForCreateTauSentence <- function(br_model){
   br_summary <- summary(br_model)
+  #Rename "sd" (bnma name) to "sd.d" (gemtc name)
   rownames(br_summary$summary.samples$statistics)[rownames(br_summary$summary.samples$statistics) == "sd"] <- "sd.d"
   rownames(br_summary$summary.samples$quantiles)[rownames(br_summary$summary.samples$quantiles) == "sd"] <- "sd.d"
-  return(list(sumresults = list(summaries = br_summary$summary.samples), a = paste0(br_model$network$type, " effect")))
+  return(
+    list(
+      sumresults = list(
+        summaries = br_summary$summary.samples
+      ),
+      a = paste0(br_model$network$type, " effect")
+    )
+  )
 }
 
 

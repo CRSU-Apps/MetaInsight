@@ -108,12 +108,11 @@ baseline_risk_analysis_panel_server <- function(    id,
       })
     
     #Warn if the model did not converge
-    convergence_warning_reactive <- reactive({
-      ifelse(model_reactive()$max.gelman > 1.05,
-             "<b><h3> Warning: Model did not converge according to Gelman-Rubin diagnostics </h3></b>",
-             "")
+    output$convergence_warning <- renderText({
+        ifelse(model_reactive()$max.gelman > 1.05,
+               "<b><h3> Warning: Model did not converge according to Gelman-Rubin diagnostics </h3></b>",
+               "")
     })
-    output$convergence_warning <- renderText({convergence_warning_reactive()})
       
     # Forest plot for all studies
     output$forest_plot <- renderPlot({
@@ -140,7 +139,7 @@ baseline_risk_analysis_panel_server <- function(    id,
           width="630px",
           height = BayesPixels(
             as.numeric(bugsnet_sumtb(bugsnetdt(), metaoutcome())$Value[1]),
-            title = TRUE
+            title = FALSE
           )
         ), type = 6)
     })
@@ -165,17 +164,5 @@ baseline_risk_analysis_panel_server <- function(    id,
     )
     
     })
-    
-    
-    
-    # # 4c-2 Regression plot
-    # regression_plot_panel_server(
-    #   id = "regression_plot",
-    #   model = model_reactive,
-    #   reference_treatment = reference_treatment,
-    #   treatment_df = treatment_df,
-    #   covariate_value = covariate_value
-    # )
-#   })
 }
 

@@ -8,11 +8,11 @@
 #'  - 'ArmLevel' = Data frame containing 'Study', 'Treat', 'N', 'Outcomes', and (for outcome_type="Continuous") 'SD'
 #'  - 'Treat.order' = Vector of (unique) treatments, with the reference treatment first
 FormatForBnma <- function(br_data, treatment_ids, outcome_type, ref){
-  if(FindDataShape(br_data) == "wide"){
+  if (FindDataShape(br_data) == "wide"){
     br_data2 <- as.data.frame(WideToLong(br_data, outcome_type=outcome_type))
-  } else if(FindDataShape(br_data) == "long"){
+  } else if (FindDataShape(br_data) == "long"){
     br_data2 <- br_data
-  } else {paste0("data_format has to be 'wide' or 'long'")}
+  } else {stop("data_format has to be 'wide' or 'long'")}
 
   #Use wrangled treatment names
   br_data3 <- br_data2
@@ -22,13 +22,15 @@ FormatForBnma <- function(br_data, treatment_ids, outcome_type, ref){
   Treat.order <- VectorWithItemFirst(vector = unique(br_data3$Treat), first_item = ref)
   
   #Arm-level data
-   if(outcome_type == "Binary"){
-     ArmLevel <- dplyr::rename(br_data3, "Outcomes"="R")
+   if (outcome_type == "Binary"){
+     ArmLevel <- dplyr::rename(br_data3, "Outcomes" = "R")
      ArmLevel <- dplyr::select(ArmLevel, c("Study", "Treat", "Outcomes", "N"))
-   } else if(outcome_type == "Continuous"){
-     ArmLevel <- dplyr::rename(br_data3, "Outcomes"="Mean")
+   } else if (outcome_type == "Continuous"){
+     ArmLevel <- dplyr::rename(br_data3, "Outcomes" = "Mean")
      ArmLevel <- dplyr::select(ArmLevel, c("Study", "Treat", "Outcomes", "SD", "N"))
-   } else {paste0("outcome_type has to be 'Continuous' or 'Binary'")}
+   } else{
+     stop("outcome_type has to be 'Continuous' or 'Binary'")
+   }
   
    return(list(ArmLevel=ArmLevel, Treat.order=Treat.order))
 }
@@ -44,8 +46,13 @@ FormatForBnma <- function(br_data, treatment_ids, outcome_type, ref){
 #' @return Output from bnma::network.data.
 BaselineRiskNetwork <- function(br_data, outcome_type, effects_type, cov_parameters){
   #Use bnma terms
-  if(cov_parameters == "shared"){cov_parameters <- "common"}
-  if(cov_parameters == "unrelated"){cov_parameters <- "independent"}
+  if (cov_parameters == "shared"){
+    cov_parameters <- "common"
+  } else if (cov_parameters == "unrelated"){
+    cov_parameters <- "independent"
+  } else if (cov_parameters != "exchangeable"){
+    stop("cov_parameters must be 'shared', 'exchangeable', or 'unrelated'")
+  }
   
   if(outcome_type == "Binary"){
     network <- with(br_data, bnma::network.data(Outcomes = ArmLevel$Outcomes,

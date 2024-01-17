@@ -305,11 +305,13 @@ KeepOrDeleteControlTreatment <- function(data, treatments, keep_delete){
   #Find the control treatment in each study
   control <- data.frame(Study = studies, Control = treatments[tapply(data$Treatment, INDEX = data$Study, FUN = min_match)])
   data <- merge(data, control, by = "Study", sort = FALSE)
-  if(keep_delete == "keep"){
+  if (keep_delete == "keep"){
     return(data[data$Treatment == data$Control, ])
-  } else if(keep_delete == "delete"){
+  } else if (keep_delete == "delete"){
     return(data[data$Treatment != data$Control, ])
-  } else{stop("keep_delete must be 'keep' or 'delete'")}
+  } else{
+    stop("keep_delete must be 'keep' or 'delete'")
+  }
 }
 
 
@@ -344,20 +346,22 @@ KeepControlTreatment <- function(data, treatments){
 GetReferenceOutcome <- function(data, treatments, outcome_type){
   #Data with only control treatment rows kept
   data_control <- KeepControlTreatment(data = data, treatments = treatments)
-  if(outcome_type == "Binary"){
+  if (outcome_type == "Binary"){
     data_control$R[data_control$Treatment != treatments[1]] <- NA
     effect_sizes <- metafor::escalc(measure = "PLO",
                                     xi = data_control$R,
                                     ni = data_control$N)
-  } else if(outcome_type == "Continuous"){
+  } else if (outcome_type == "Continuous"){
     data_control$Mean[data_control$Treatment != treatments[1]] <- NA
     effect_sizes <- metafor::escalc(measure = "MN",
                                     mi = data_control$Mean,
                                     sdi = data_control$SD,
                                     ni = data_control$N)
-  } else stop("'outcome_type' must be 'Continuous' or 'Binary'")
+  } else{
+    stop("'outcome_type' must be 'Continuous' or 'Binary'")
+  }
   outcomes <- as.numeric(effect_sizes$yi)
-  names(outcomes) <- unique(data_wide$Study)
+  names(outcomes) <- unique(data_control$Study)
   return(outcomes)
 }
 
