@@ -21,7 +21,7 @@ bayesian_analysis_panel_ui <- function(id) {
       ),
       tabPanel(
         title = "3d. Nodesplit model",
-        nodesplit_panel_ui(id = ns("nodesplit"))
+        nodesplit_page_ui(id = ns("nodesplit"))
       ),
       tabPanel(
         title = "3e. Bayesian result details",
@@ -133,7 +133,7 @@ bayesian_analysis_panel_server <- function(
     )
 
     # 3d. Nodesplit model
-    nodesplit_panel_server(
+    nodesplit_page_server(
       id = "nodesplit",
       data = data,
       treatment_df = treatment_df,
