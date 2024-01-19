@@ -33,7 +33,7 @@ PrepDataGemtc <- function(data, treatment_ids, outcome_type, covariate, cov_frie
   }
   # specify study level data
   studyData <- unique(data.frame(study = long_data$Study,
-                                 cov_name = long_data[,covariate]))
+                                 covariate = long_data[,covariate]))
   names(studyData)[2] <- cov_friendly
   rownames(studyData) <- NULL
   
