@@ -6,7 +6,7 @@ metaregression_summary_panel_ui <- function(id) {
   ns <- NS(id)
   fluidPage(
     h4('Summary Characteristic Plot'),
-    uiOutput(ns('toggle_covariate_baseline')),
+    uiOutput(ns('toggle')),
     plotOutput(outputId = ns('covariate_plot')),
     textOutput(outputId = ns('covariate_info')),
     radioButtons(inputId = ns('format_covariate_plot'), 
@@ -23,29 +23,31 @@ metaregression_summary_panel_ui <- function(id) {
 #' @param all_data Study data including covariate columns, in wide or long format
 #' @param metaoutcome Reactive containing meta analysis outcome: 'Continuous' or 'Binary'
 #' @param treatment_df Reactive containing data frame containing treatment IDs (Number) and names (Label)
-#' @return Covariate summary plot tab
 #' 
 metaregression_summary_panel_server <- function(id, all_data, metaoutcome, treatment_df) {
   moduleServer(id, function(input, output, session) {
     
     # Toggle between covariate and baseline risk, only when there is a covariate
-    output$toggle_covariate_baseline <- renderUI({
-      # If there is a covariate (i.e. the covariate name is not NA)
-      if(!is.na(FindCovariateNames(all_data())[1])) {
-        shinyWidgets::radioGroupButtons(
-              inputId = session$ns('toggle_covariate_baseline'),
-              choices = c('Covariate', 'Baseline risk'),
-              status = 'primary'
-        )
-      }
+    observe({
+      output$toggle <- renderUI({
+        # If there is a covariate (i.e. the covariate name is not NA)
+        if(!is.na(FindCovariateNames(all_data())[1])) {
+          shinyWidgets::radioGroupButtons(
+                inputId = session$ns('toggle_covariate_baseline'),
+                choices = c('Covariate', 'Baseline risk'),
+                status = 'primary'
+          )
+        }
+      })
     })
     
     # Render covariate summary plot
+    # Needs observe wrapper due to width argument
     observe({
       output$covariate_plot <- renderPlot({
-
+  
         CreateCovariateSummaryPlot(all_data(), metaoutcome(), input$toggle_covariate_baseline, treatment_df())
-
+  
       }, width = calculate_plot_pixel(nrow(all_data()))
       )
     })
