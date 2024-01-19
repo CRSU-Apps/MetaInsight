@@ -12,7 +12,9 @@ FormatForBnma <- function(br_data, treatment_ids, outcome_type, ref){
     br_data2 <- as.data.frame(WideToLong(br_data, outcome_type=outcome_type))
   } else if (FindDataShape(br_data) == "long"){
     br_data2 <- br_data
-  } else {stop("data_format has to be 'wide' or 'long'")}
+  } else {
+    stop("data_format has to be 'wide' or 'long'")
+  }
 
   #Use wrangled treatment names
   br_data3 <- br_data2
