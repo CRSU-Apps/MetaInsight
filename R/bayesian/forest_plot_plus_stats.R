@@ -8,8 +8,25 @@ bayesian_forest_plot_plus_stats_ui <- function(id) {
   div(
     uiOutput(outputId = ns("bayesian_forest_plot")),
     
-    uiOutput(outputId = ns("axis_limits")),
+    conditionalPanel(
+      condition = "output.package == 'gemtc'",
+      ns = ns,
 
+      fixedRow(
+        p("Options to change limits of the x-axis:"),
+        column(
+          width = 6,
+          align = 'center',
+          numericInput(inputId = ns('axis_min'), label = "Minimum", value = 0, step = 0.1)
+        ),
+        column(
+          width = 6,
+          align = 'center',
+          numericInput(inputId = ns('axis_max'), label = "Maximum", value = 5, step = 1)
+        )
+      )
+    ),
+    
     p("Model fit:"),
     tableOutput(outputId = ns("dic")),
     textOutput(outputId = ns("tau_text")),
@@ -45,6 +62,9 @@ bayesian_forest_plot_plus_stats_server <- function(
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
 
+    output$package <- reactive({"gemtc"})
+    outputOptions(x = output, name = "package", suspendWhenHidden = FALSE)
+    
     # forest min and max values different if continuous/binary
     observe({
       if (outcome_measure() %in% c("OR", "RR")) {
@@ -121,23 +141,7 @@ bayesian_forest_plot_plus_stats_server <- function(
         )
       ), type = 6)
     })
-
-    # Interactive UI - axis limits (this is interactive because it is not displayed for baseline risk, which uses the same ui)
-    output$axis_limits <- renderUI(
-      fixedRow(
-        p("Options to change limits of the x-axis:"),
-        column(
-          width = 6,
-          align = 'center',
-          numericInput(inputId = ns('axis_min'), label = "Minimum", value = 0, step = 0.1)
-          ),
-        column(
-          width = 6,
-          align = 'center',
-          numericInput(inputId = ns('axis_max'), label = "Maximum", value = 5, step = 1)
-          )
-        )
-      )
+    
   })
 }
 
@@ -163,6 +167,9 @@ bayesian_forest_plot_plus_stats_baseline_risk_server <- function(
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
 
+    output$package <- reactive({"bnma"})
+    outputOptions(x = output, name = "package", suspendWhenHidden = FALSE)
+    
     # Forest plot for all studies
     output$forest_plot <- renderPlot({
       bnma::network.forest.plot(model_reactive(), only.reference.treatment = TRUE)
@@ -176,7 +183,10 @@ bayesian_forest_plot_plus_stats_baseline_risk_server <- function(
       }, digits=3, rownames=TRUE, colnames=FALSE)
       # Tau all studies
       output$tau_text <-renderText({
-        CreateTauSentence(FormatForCreateTauSentence(model_reactive()), outcome_measure())
+        CreateTauSentence(
+          FormatForCreateTauSentence(model_reactive()),
+          outcome_measure()
+        )
       })
     })
     
@@ -212,9 +222,6 @@ bayesian_forest_plot_plus_stats_baseline_risk_server <- function(
           )
         ), type = 6)
     })
-    
-    # Interactive UI - axis limits (not displayed for baseline risk)
-    output$axis_limits <- renderUI({})
-    
+
   })
 }

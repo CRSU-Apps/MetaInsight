@@ -6,7 +6,11 @@
 covariate_run_model_ui <- function(id) {
   ns <- NS(id)
   div(
-    uiOutput(ns("model_text")),
+    "Baysesian covariate meta-regression using the", textOutput(ns("package"), inline=TRUE), "package.",
+    br(),
+    "Heterogeneity prior: standard deviation", textOutput(ns("model_text"), inline=TRUE),
+    br(),
+    tags$strong("Please note each simulation may take 60 seconds.", style = "color:#FF0000"),
 
     fixedRow(
       align = "center",
@@ -61,19 +65,12 @@ covariate_run_model_server <- function(
     ns <- session$ns
 
     #Bayesian analysis
-      
-    #Interactive UI (interactive because the ui is also used for baseline risk)
-    output$model_text <- renderUI({
-      div(
-        "Baysesian covariate meta-regression using the gemtc package.",
-        br(),
-        "Heterogeneity prior: standard deviation ~ U(0,X), where X represents a ",
-        tags$i("very large"),
-        "difference in the analysis' outcome scale and is determined from the data.",
-        br(),
-        tags$strong("Please note each simulation may take 20 seconds.", style = "color:#FF0000")
-      )
+    
+    output$package <- renderText({"gemtc"})
+    output$model_text <- renderText({
+      "~ U(0,X), where X represents a very large difference in the analysis' outcome scale and is determined from the data."
     })
+    
     
     #The model
     model <- eventReactive(input$baye_do, {
@@ -110,15 +107,9 @@ baseline_risk_run_model_server <- function(
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
     
-    #Interactive UI (interactive because the ui is also used for meta-regression)
-    output$model_text <- renderUI({
-      div(
-        "Baysesian covariate meta-regression using the bnma package.",
-        br(),
-        "Heterogeneity prior: standard deviation ~ U(0,5) or U(0,100) for a binary or continuous outcome respectively",
-        br(),
-        tags$strong("Please note each simulation may take 60 seconds.", style = "color:#FF0000")
-      )
+    output$package <- renderText({"bnma"})
+    output$model_text <- renderText({
+      "~ U(0,5) or U(0,100) for a binary or continuous outcome respectively."
     })
     
     #The model
