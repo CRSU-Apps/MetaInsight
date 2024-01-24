@@ -173,7 +173,10 @@ covariate_analysis_panel_server <- function(
     )
     
     # obtain gemtc output types to be used in rest of page
-    model_output <- reactive(CovariateModelOutput(model = model_reactive(), cov_value = covariate_value()))
+    model_output <- reactive({
+      CovariateModelOutput(model = model_reactive(), cov_value = covariate_value())
+    })
+    
     # Create forest plot and associated statistics
     bayesian_forest_plot_plus_stats_server(
       id = "cov_forest_plots",
@@ -194,6 +197,6 @@ covariate_analysis_panel_server <- function(
     )
     
     # 4c-2 Result details
-    regression_result_details_page_server(id = "result_details", model = model_reactive)
+    regression_result_details_page_server(id = "result_details", model = model_output)
   })
 }

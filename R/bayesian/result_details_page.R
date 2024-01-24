@@ -33,13 +33,11 @@ result_details_page_server <- function(id, model, model_sub) {
   moduleServer(id, function(input, output, session) {
     result_details_panel_server(
       id = "gemtc_results",
-      summary = reactive({ model()$sumresults }),
-      samples = reactive ({ model()$mtcResults })
+      model = model
     )
     result_details_panel_server(
       id = "gemtc_results_sub",
-      summary = reactive({ model_sub()$sumresults }),
-      samples = reactive ({ model_sub()$mtcResults })
+      model = model_sub
     )
   })
 }

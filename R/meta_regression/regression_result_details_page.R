@@ -25,8 +25,7 @@ regression_result_details_page_server <- function(id, model) {
   moduleServer(id, function(input, output, session) {
     result_details_panel_server(
       id = "gemtc_results",
-      summary = reactive({ summary(model()) }),
-      samples = reactive({ model()$samples })
+      model = model
     )
   })
 }

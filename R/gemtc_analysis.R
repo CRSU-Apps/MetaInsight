@@ -140,6 +140,7 @@ CovariateModelOutput <- function(model, cov_value) {
   
   # naming conventions to match current Bayesian functions
   return(list(
+    mtcResults = model,
     mtcRelEffects = rel_eff,
     a = model_text,
     sumresults = summary,

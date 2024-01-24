@@ -18,17 +18,17 @@ result_details_panel_ui <- function(id) {
 #' 
 #' @param id ID of the module
 #' @param model Reactive containing bayesian meta-analysis
-result_details_panel_server <- function(id, summary, samples) {
+result_details_panel_server <- function(id, model) {
   moduleServer(id, function(input, output, session) {
     
     # Results details
     output$gemtc_results <- renderPrint ({
-      summary()
+      model()$sumresults
     })
     
     # Gelman plots
     output$gemtc_gelman <- renderPlot ({
-      gelman.plot(samples())
+      gelman.plot(model()$mtcResults)
     })
     
   })
