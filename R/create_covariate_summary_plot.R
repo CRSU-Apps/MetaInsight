@@ -1,4 +1,4 @@
-#' Create the covariate summary plot 
+#' Create the covariate summary plot using BUGSnet data.plot
 #' https://rdrr.io/github/audrey-b/BUGSnet/man/data.plot.html
 #'
 #' @param all_data Study data including covariate columns, in wide or long format
@@ -9,14 +9,14 @@
 
 CreateCovariateSummaryPlot <- function(all_data, metaoutcome, covariate_or_baseline, treatment_df) {
 
-  # If there is no covariate, or baseline risk is selected by the toggle
-  if (is.na(FindCovariateNames(all_data)[1]) || covariate_or_baseline == "Baseline risk") {
+  # Baseline risk version of plot
+  if (covariate_or_baseline == "Baseline risk") {
     
     # Input settings for plot
-    plot_settings <- PlotSettings("baseline", all_data) 
+    plot_settings <- CreateCovariateSummaryPlotSettings("baseline", all_data) 
     
     # Mutate data
-    mutated_data <- MutateData(all_data, "baseline", metaoutcome)
+    mutated_data <- MutateCovariateSummaryData(all_data, "baseline", metaoutcome)
     
     if (metaoutcome == "Continuous") {
         
@@ -26,18 +26,18 @@ CreateCovariateSummaryPlot <- function(all_data, metaoutcome, covariate_or_basel
     } else if (metaoutcome == "Binary") {
       
       # Error bar text for binary outcomes
-      error_bar_text <- "logit(outcome) +/- 1.96 * se(logit(outcome))"
+      error_bar_text <- "Error bars: logit(outcome) +/- 1.96 * se(logit(outcome))"
      
     } else {
       stop("The outcome should be either continuous or binary")
     }
   }
   
-  # If there is a covariate 
+  # Covariate version of plot 
   else {
     
     # Plot settings for covariate plot
-    plot_settings <- PlotSettings("covariate", all_data)
+    plot_settings <- CreateCovariateSummaryPlotSettings("covariate", all_data)
     
     mutated_data <- all_data # Rename for input to BUGSnet::data.prep
   } 
@@ -103,7 +103,7 @@ CreateCovariateSummaryPlot <- function(all_data, metaoutcome, covariate_or_basel
 #' @param all_data Study data including covariate columns, in wide or long format 
 #' @return List of plot settings for y_axis_label, caption_setting and covariate (all strings)
 #' 
-PlotSettings <- function(plot_type, all_data) {
+CreateCovariateSummaryPlotSettings <- function(plot_type, all_data) {
   
   # Settings for baseline risk plot
   if (plot_type == "baseline") {
@@ -136,14 +136,16 @@ PlotSettings <- function(plot_type, all_data) {
   return(plot_settings)
 }
 
-#' Mutate data
+#' Use dplyr to mutate the data into the correct format for use in the covariate summary plots
+#' Columns are created based on the reference treatment arm (where one is present)
+#' See continuous and baseline sections of function comments for specifics in each case
 #'
 #' @param all_data Study data including covariate columns, in wide or long format 
 #' @param plot_type Text string to describe type of plot. Can be "baseline" or "covariate"
 #' @param metaoutcome Meta-analysis outcome: "Continuous" or "Binary"
 #' @return Mutated data frame ready for BUGSnet data.prep function
 
-MutateData <- function(all_data, plot_type, metaoutcome) {
+MutateCovariateSummaryData <- function(all_data, plot_type, metaoutcome) {
   
   if (plot_type == "baseline") {
     
@@ -185,7 +187,7 @@ MutateData <- function(all_data, plot_type, metaoutcome) {
         )
       
     } else {
-      stop("metaoutcme should be Continous or Binary")
+      stop("metaoutcome should be Continous or Binary")
     }
   }
   

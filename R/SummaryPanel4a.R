@@ -46,7 +46,13 @@ metaregression_summary_panel_server <- function(id, all_data, metaoutcome, treat
     observe({
       output$covariate_plot <- renderPlot({
   
-        CreateCovariateSummaryPlot(all_data(), metaoutcome(), input$toggle_covariate_baseline, treatment_df())
+        CreateCovariateSummaryPlot(all_data(), 
+                                   metaoutcome(), 
+                                   # Prevents momentary error in app when plotting
+                                   ifelse(is.null(input$toggle_covariate_baseline), 'Baseline risk', input$toggle_covariate_baseline), 
+                                   treatment_df()
+                                   )
+        
   
       }, width = calculate_plot_pixel(nrow(all_data()))
       )
