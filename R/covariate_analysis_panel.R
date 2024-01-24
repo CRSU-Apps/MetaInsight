@@ -71,6 +71,10 @@ covariate_analysis_panel_ui <- function(id) {
           tabPanel(
             title = "4c-2. Regression plot",
             regression_plot_panel_ui(id = ns("regression_plot"))
+          ),
+          tabPanel(
+            title = "4c-3. Result details",
+            regression_result_details_page_ui(id = ns("result_details"))
           )
         )
       )
@@ -188,5 +192,8 @@ covariate_analysis_panel_server <- function(
       treatment_df = treatment_df,
       covariate_value = covariate_value
     )
+    
+    # 4c-2 Result details
+    regression_result_details_page_server(id = "result_details", model = model_reactive)
   })
 }
