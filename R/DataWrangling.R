@@ -301,15 +301,19 @@ KeepOrDeleteControlTreatment <- function(data, treatments, keep_delete){
   studies <- unique(data$Study)
   #Local function to find the control treatment in a single study
   #When used in tapply it matches the treatments within a study to the ordered 'treatments' vector, and then finds the lowest
-  min_match <- function(x){min(match(x, treatments))}
+  min_match <- function(x){
+    min(match(x, treatments))
+  }
   #Find the control treatment in each study
   control <- data.frame(Study = studies, Control = treatments[tapply(data$Treatment, INDEX = data$Study, FUN = min_match)])
   data <- merge(data, control, by = "Study", sort = FALSE)
-  if(keep_delete == "keep"){
+  if (keep_delete == "keep"){
     return(data[data$Treatment == data$Control, ])
-  } else if(keep_delete == "delete"){
+  } else if (keep_delete == "delete"){
     return(data[data$Treatment != data$Control, ])
-  } else{stop("keep_delete must be 'keep' or 'delete'")}
+  } else{
+    stop("keep_delete must be 'keep' or 'delete'")
+  }
 }
 
 
