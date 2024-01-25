@@ -67,7 +67,11 @@ metaregression_summary_panel_server <- function(id, all_data, metaoutcome, treat
         
           ggsave(filename = file, 
                  device = input$format_covariate_plot,
-                 plot = CreateCovariateSummaryPlot(all_data(), metaoutcome(), input$toggle_covariate_baseline, treatment_df())
+                 plot = CreateCovariateSummaryPlot(all_data(), 
+                                                   metaoutcome(), 
+                                                   ifelse(is.null(input$toggle_covariate_baseline), 'Baseline risk', input$toggle_covariate_baseline), 
+                                                   treatment_df()
+                                                   )
                  )
       }
     )
