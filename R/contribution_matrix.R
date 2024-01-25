@@ -1,3 +1,11 @@
+##############################################################################
+# The notation within this file matches that in the document:
+#   Supplementary_material(updated).pdf
+# which is an appendix to the paper:
+#   Graphs of study contributions and covariate distributions for network meta-regression, Donegan (2018)
+#   Res Syn Meth. 2018;9:243–260.
+##############################################################################
+
 
 #' Create the variance-covariance matrix of treatment effects.
 #' 
@@ -572,14 +580,6 @@ CreateLambdaBetaMatrix <- function(treatments, std_dev_beta){
   return(contribution)
 }
 
-
-##############################################################################
-# The notation within this file matches that in the document:
-#   Supplementary_material(updated).pdf
-# which is an appendix to the paper:
-#   Graphs of study contributions and covariate distributions for network meta-regression, Donegan (2018)
-#   Res Syn Meth. 2018;9:243–260.
-##############################################################################
 
 
 #' Create the contribution matrix
