@@ -184,7 +184,8 @@ covariate_analysis_panel_server <- function(
     regression_plot_panel_server(
       id = "regression_plot",
       model_output = model_output,
-      treatment_df = treatment_df
+      treatment_df = treatment_df,
+      reference = reference_treatment
     )
   })
 }

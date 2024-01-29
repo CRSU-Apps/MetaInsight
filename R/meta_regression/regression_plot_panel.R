@@ -32,7 +32,15 @@ regression_plot_panel_ui <- function(id) {
     sidebarPanel = sidebarPanel(
       width = 3,
       # Add comparators
-      selectInput(inputId = ns("add_comparator_dropdown"), label = "Add Comparator", choices = c(), selectize = FALSE),
+      selectInput(
+        inputId = ns("add_comparator_dropdown"),
+        label = .AddTooltip(
+          tags$html("Add Comparator", tags$i(class="fa-regular fa-circle-question")),
+          tooltip = "All treatments are compared to the reference treatment"
+        ),
+        choices = c(),
+        selectize = FALSE
+      ),
       actionButton(inputId = ns("add_comparator_btn"), label = "Add to plot"),
       div(
         style = "float: right;",
@@ -149,8 +157,12 @@ regression_plot_panel_ui <- function(id) {
 #' @param id ID of the module.
 #' @param model_output GEMTC model results found by calling `CovariateModelOutput()`.
 #' @param treatment_df Reactive containing data frame containing treatment IDs (Number), sanitised names (Label), and original names (RawLabel).
-regression_plot_panel_server <- function(id, model_output, treatment_df) {
+regression_plot_panel_server <- function(id, model_output, treatment_df, reference) {
   shiny::moduleServer(id, function(input, output, session) {
+    
+    ref_name <- renderText({
+      reference()
+    })
     
     available_to_add <- reactive({
       raw_labels = treatment_df()$RawLabel

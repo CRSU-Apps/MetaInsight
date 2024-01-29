@@ -118,9 +118,9 @@ RunCovariateModel <- function(data, treatment_ids, outcome_type, outcome, covari
 #' @return List of gemtc related output:
 #'  mtcResults = model object itself carried through (needed to match existing code)
 #'  mtcRelEffects = data relating to presenting relative effects;
-#'  covariate_value = The covariate value orignally passed into this function
-#'  reference_name = The nmae fo the reference treatment
-#'  comparator_names = The name of the 
+#'  covariate_value = The covariate value originally passed into this function
+#'  reference_name = The name of the reference treatment
+#'  comparator_names = Vector containing the names of the comparators.
 #'  a = text output stating whether fixed or random effects;
 #'  sumresults = summary output of relative effects
 #'  dic = data frame of model fit statistics
@@ -143,9 +143,6 @@ CovariateModelOutput <- function(model, cov_value) {
   # Summary of relative effects
   summary <- summary(rel_eff)
   
-  # Intercepts (regression)
-  intercepts <- summary$summaries$statistics[1:(nrow(summary$summaries$statistics)-1),1]
-  
   # Table of Model fit stats
   fit_stats <- as.data.frame(summary$DIC)
   
@@ -155,12 +152,18 @@ CovariateModelOutput <- function(model, cov_value) {
   # Obtain slope(s)
   slope_indices <- grep(ifelse(model$model$regressor$coefficient == "shared", "^B$", "^beta\\[[0-9]+\\]$"), model$model$monitors$enabled)
   summ <- summary(model)
-  slopes <- summ$summaries$statistics[slope_indices, 1]  * model$model$regressor$scale
+  slopes <- summ$summaries$statistics[slope_indices, 1] * model$model$regressor$scale
   
-  # Rename rows for intercepts and slopes
+  # Duplicate slope for each comparator when "shared" type
   if (model$model$regressor$coefficient == "shared") {
     slopes <- rep(slopes[1], length(comparator_names))
   }
+  
+  # Intercepts (regression)
+  treatment_effect <- summary$summaries$statistics[1:(nrow(summary$summaries$statistics) - 1), 1]
+  intercepts <- treatment_effect * model$model$regressor$scale - cov_value * slopes
+  
+  # Rename rows for intercepts and slopes
   names(slopes) <- comparator_names
   names(intercepts) <- comparator_names
   
