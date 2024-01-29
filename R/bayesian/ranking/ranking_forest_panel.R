@@ -63,7 +63,7 @@ ranking_forest_panel_server <- function(
 
     output$download_rank_forest <- downloadHandler(
       filename = function() {
-        paste0(filename_prefix, ".Forest", input$rank_forest_choice)
+        paste0(filename_prefix, "Forest.", input$rank_forest_choice)
       },
       content = function(file) {
         draw_forest <- function() {
