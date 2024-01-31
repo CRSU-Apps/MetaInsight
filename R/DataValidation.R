@@ -25,12 +25,7 @@ ValidateUploadedData <- function(data, outcome_type) {
     return(
       list(
         valid = FALSE,
-        message = paste0(
-          "Missing columns for ",
-          outcome_type,
-          " data: ",
-          paste0(missing_names, collapse = ", ")
-        )
+        message = glue::glue("Missing columns for {outcome_type} data: {paste0(missing_names, collapse = ', ')}")
       )
     )
   }
@@ -42,10 +37,8 @@ ValidateUploadedData <- function(data, outcome_type) {
     return(
       list(
         valid = FALSE,
-        message = paste0(
-          "For wide format data, numbered columns (",
-          paste0(numbered_columns$name, collapse = ", "),
-          ") must all have matching sequential indices, starting from 1"
+        message = glue::glue(
+          "For wide format data, numbered columns ({paste0(numbered_columns$name, collapse = ', ')}) must all have matching sequential indices, starting from 1"
         )
       )
     )
@@ -88,75 +81,43 @@ ValidateUploadedData <- function(data, outcome_type) {
 #'
 #' @return TRUE if the columns are correctly numbered, else FALSE.
 .ValidateMatchingWideColumns <- function(uploaded_data, required_columns) {
-  wide_column_nas <- unlist(
-    sapply(
-      required_columns$pattern,
-      function (pattern) {
-        return(
-          uploaded_data %>%
-            dplyr::select(grep(pattern, names(uploaded_data))) %>%
-            names() %>%
-            gsub(pattern = pattern, replacement = required_columns$number_group[required_columns$pattern == pattern]) %>%
-            as.integer() %>%
-            is.na() %>%
-            all()
-        )
-      }
-    )
+  wide_numbers <- list()
+  sapply(
+    required_columns$pattern,
+    function (pattern) {
+      wide_numbers[[required_columns$name[required_columns$pattern == pattern]]] <<- uploaded_data %>%
+        dplyr::select(grep(pattern, names(uploaded_data))) %>%
+        names() %>%
+        gsub(pattern = pattern, replacement = required_columns$number_group[required_columns$pattern == pattern]) %>%
+        as.integer()
+    }
   )
   
-  if (all(wide_column_nas)) {
+  
+  if (all(is.na(wide_numbers))) {
     return(TRUE)
-  } else if (any(wide_column_nas) != all(wide_column_nas)) {
+  } else if (any(is.na(wide_numbers)) != all(is.na(wide_numbers))) {
     return(FALSE)
   }
   
-  wide_column_counts <- unlist(
-    sapply(
-      required_columns$pattern,
-      function (pattern) {
-        return(
-          uploaded_data %>%
-            dplyr::select(grep(pattern, names(uploaded_data))) %>%
-            names() %>%
-            length()
-        )
-      }
-    )
-  )
-  
-  if (length(unique(wide_column_counts)) > 1) {
-    return(FALSE)
-  }
-  
-  wide_column_maxes <- sapply(
-    required_columns$pattern,
-    function (pattern) {
-      column_numbers <- uploaded_data %>%
-        dplyr::select(grep(pattern, names(uploaded_data))) %>%
-        names() %>%
-        gsub(pattern = pattern, replacement = required_columns$number_group[required_columns$pattern == pattern]) %>%
-        as.integer() %>%
-        max()
+  lengths <- sapply(
+    names(wide_numbers),
+    function(name) {
+      return(length(wide_numbers[[name]]))
     }
   )
   
-  if (length(unique(wide_column_maxes)) > 1) {
+  if (length(unique(lengths)) > 1) {
     return(FALSE)
   }
   
-  wide_column_sequentials <- sapply(
-    required_columns$pattern,
-    function (pattern) {
-      column_numbers <- uploaded_data %>%
-        dplyr::select(grep(pattern, names(uploaded_data))) %>%
-        names() %>%
-        gsub(pattern = pattern, replacement = required_columns$number_group[required_columns$pattern == pattern]) %>%
-        as.integer() %>%
-        sort()
-      return(column_numbers == 1:length(column_numbers))
+  sequentials <- sapply(
+    names(wide_numbers),
+    function(name) {
+      each_set <- sort(wide_numbers[[name]])
+      return(each_set == 1:length(each_set))
     }
   )
   
-  return(all(wide_column_sequentials))
+  return(all(sequentials))
 }
