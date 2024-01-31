@@ -71,10 +71,12 @@ data_input_panel_server <- function(id, metaoutcome, continuous_file = 'Cont_lon
 
     # Logical to show reset button only when data uploaded
     data_uploaded <- reactiveVal(FALSE)
-    output$data_uploaded <- reactive({data_uploaded()})
+    output$data_uploaded <- reactive({
+      data_uploaded()
+    })
     outputOptions(output, 'data_uploaded', suspendWhenHidden = FALSE)
 
-    # Render the file input intially
+    # Render the file input initially
     output$file_input_panel <- default_file_input
     
     # Load default data
@@ -85,6 +87,8 @@ data_input_panel_server <- function(id, metaoutcome, continuous_file = 'Cont_lon
         defaultD <- read.csv(binary_file)
       }
     })
+    
+    invalid_data <- reactiveVal(NULL)
     
     # Make data reactive i.e. default or user uploaded
     data <- reactive({
@@ -105,7 +109,42 @@ data_input_panel_server <- function(id, metaoutcome, continuous_file = 'Cont_lon
                          fileEncoding = 'UTF-8-BOM')
       }
       
+      result = ValidateData(df, metaoutcome())
+
+      if (!result$valid) {
+        showModal(
+          modalDialog(
+            title = "Invalid Data",
+            easyClose = TRUE,
+            p("Uploaded data was invalid because:"),
+            p(tags$strong(result$message)),
+            p("Please check you data file and ensure that you have the correct outcome type selected on the home page"),
+            shinyBS::bsCollapse(
+              shinyBS::bsCollapsePanel(
+                title = "Show Data",
+                div(
+                  style = 'overflow-x: scroll',
+                  DT::dataTableOutput(outputId = ns("invalid_data"))
+                )
+              )
+            ),
+            modalButton(label = "OK"),
+            footer = NULL
+          )
+        )
+        invalid_data(df)
+        output$file_input_panel <- default_file_input
+        df <- defaultD()
+        data_uploaded(FALSE)
+      } else {
+        invalid_data(NULL)
+      }
+      
       return(CleanData(df))
+    })
+    
+    output$invalid_data <- DT::renderDataTable({
+      invalid_data()
     })
     
     all_treatments <- reactive({
