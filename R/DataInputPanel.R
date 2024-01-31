@@ -109,7 +109,7 @@ data_input_panel_server <- function(id, metaoutcome, continuous_file = 'Cont_lon
                          fileEncoding = 'UTF-8-BOM')
       }
       
-      result = ValidateData(df, metaoutcome())
+      result = ValidateUploadedData(df, metaoutcome())
 
       if (!result$valid) {
         showModal(
