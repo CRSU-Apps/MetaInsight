@@ -140,7 +140,7 @@ CovariateModelOutput <- function(model, cov_value) {
   summary <- summary(rel_eff)
   
   # Intercepts (regression)
-  intercepts <- summary$summaries$statistics[1:(nrow(model$model$network$treatments)-1),1]
+  intercepts <- summary$summaries$statistics[startsWith(rownames(summary$summaries$statistics), "d."),"Mean"]
   
   # Table of Model fit stats
   fit_stats <- as.data.frame(summary$DIC)
@@ -151,7 +151,7 @@ CovariateModelOutput <- function(model, cov_value) {
   # Obtain slope(s)
   slope_indices <- grep(ifelse(model$model$regressor$coefficient == "shared", "^B$", "^beta\\[[0-9]+\\]$"), model$model$monitors$enabled)
   summ <- summary(model)
-  slopes <- summ$summaries$statistics[slope_indices, 1]  / model$model$regressor$scale
+  slopes <- summ$summaries$statistics[slope_indices, "Mean"]  / model$model$regressor$scale
   
   # Rename rows for intercepts and slopes
   if (model$model$regressor$coefficient != "shared") {
