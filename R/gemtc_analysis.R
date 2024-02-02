@@ -152,7 +152,9 @@ CovariateModelOutput <- function(model, cov_value) {
   # Obtain slope(s)
   slope_indices <- grep(ifelse(model$model$regressor$coefficient == "shared", "^B$", "^beta\\[[0-9]+\\]$"), model$model$monitors$enabled)
   summ <- summary(model)
-  slopes <- summ$summaries$statistics[slope_indices, 1] * model$model$regressor$scale
+  
+  # Un-scale the slopes
+  slopes <- summ$summaries$statistics[slope_indices, 1] / model$model$regressor$scale
   
   # Duplicate slope for each comparator when "shared" type
   if (model$model$regressor$coefficient == "shared") {
@@ -163,7 +165,7 @@ CovariateModelOutput <- function(model, cov_value) {
   treatment_effect <- summary$summaries$statistics[1:(nrow(summary$summaries$statistics) - 1), 1]
   intercepts <- treatment_effect * model$model$regressor$scale - cov_value * slopes
   
-  # Rename rows for intercepts and slopes
+  # Rename items for intercepts and slopes
   names(slopes) <- comparator_names
   names(intercepts) <- comparator_names
   

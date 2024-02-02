@@ -198,3 +198,33 @@ test_that("RunCovariateModel() gives reproducible output. Follow on: FindCovaria
   expect_equal(output_1$comparator_names, c("the_Butcher", "the_Dung_named", "the_Great", "the_Slit_nosed", "the_Younger"))
   
 })
+
+test_that("RunCovariateModel() gives reproducible output. Follow on: FindCovariateDefault() & CovariateModelOutput() gives correct output", {
+  reference = "the_Little"
+  
+  data <- read.csv("Binary_wide_continuous_cov.csv")
+  treatment_ids <- CreateTreatmentIds(FindAllTreatments(data), reference_treatment = reference)
+  data <- WrangleUploadData(data, treatment_ids, "Binary")
+  wrangled_treatment_list <- CleanTreatmentIds(treatment_ids)
+  
+  result_1 <- RunCovariateModel(data, wrangled_treatment_list, "Binary", 'OR', "covar.age", "age", 'random', 'unrelated', reference)
+  output_1 <- CovariateModelOutput(result_1, cov_value = 98)
+  
+  rel_eff <- gemtc::relative.effect(result_1, as.character(result_1$model$regressor$control), covariate = 0)
+  summary <- summary(rel_eff)
+
+  intercepts <- summary$summaries$statistics[1:(nrow(summary$summaries$statistics) - 1), 1]
+  names(intercepts) <- output_1$comparator_names
+
+  # print(intercepts)
+  # print(output_1$intercepts)
+  # 
+  # print(abs(intercepts / output_1$intercept - 1))
+  # print(abs(intercepts - output_1$intercept))
+
+  expect_equal(length(rel_eff), length(output_1$comparator_names) - 1)
+  for (index in 1:length(output_1$comparator_names)) {
+    expect_equal(output_1$intercepts[index], intercepts[index])
+  }
+  
+})
