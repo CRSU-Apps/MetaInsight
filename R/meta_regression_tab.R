@@ -93,6 +93,11 @@ meta_regression_tab_server <- function(
     ) {
   shiny::moduleServer(id, function(input, output, session) {
     
+    metaregression_summary_panel_server(id = "metaregression_summary_panel", 
+                                        all_data = all_data, 
+                                        metaoutcome = metaoutcome, 
+                                        treatment_df = treatment_df)
+    
     basline_risk_outcomes <- c("MD", "OR")
     baseline_risk_supported = reactive({ outcome_measure() %in% basline_risk_outcomes })
     # Baseline risk analysis
