@@ -191,7 +191,7 @@ RadialSUCRA <- function(SUCRAData, ColourData, BUGSnetData, colourblind=FALSE, r
   lwd_rangeO <- lwd.maxO - lwd.minO
   lwd_rangeA <- lwd.maxA - lwd.minA
   study_min <- min(edges$edge.weight)
-  study_range <- max(edges$edge.weight) - study_min
+  study_range <- max(max(edges$edge.weight) - study_min, 1)
   comp.i <- 1
   ID <- 1
   for (i in 1:nrow(edges)) {

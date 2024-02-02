@@ -36,7 +36,7 @@ covariate_analysis_panel_ui <- function(id) {
                 style = "color: orange;"
               )
             ),
-            style = "display: inline-block; vertical-align: 50%"
+            style = "display: inline-block; vertical-align: 65%"
           ),
           div(
             covariate_value_panel_ui(id = ns("covariate_value")),
@@ -69,11 +69,15 @@ covariate_analysis_panel_ui <- function(id) {
             )
           ),
           tabPanel(
-            title = "4c-2. Comparison of all treatment pairs",
+            title = "4c-2. Regression plot",
+            regression_plot_panel_ui(id = ns("regression_plot"))
+          ),
+          tabPanel(
+            title = "4c-3. Comparison of all treatment pairs",
             covariate_treatment_comparisons_page_ui(id = ns("cov_treatment_comparisons"))
           ),
           tabPanel(
-            title = "4c-3. Ranking",
+            title = "4c-4. Ranking",
             covariate_ranking_page_ui(id = ns("cov_ranking"))
           )
         )
@@ -86,7 +90,8 @@ covariate_analysis_panel_ui <- function(id) {
 #'
 #' @param id ID of the module
 #' @param all_data Study data including covariate columns, in wide or long format
-#' @param treatment_df Reactive containing data frame containing treatment IDs (Number) and names (Label)
+#' @param treatment_df Reactive containing data frame containing treatment IDs (Number), sanitised names (Label), and original names (RawLabel)
+#' @param reference_treatment Reactive containing the sanitised name of the reference treatment
 #' @param metaoutcome Reactive containing meta analysis outcome: "Continuous" or "Binary"
 #' @param outcome_measure Reactive containing meta analysis outcome measure: "MD", "SMD", "OR, "RR", or "RD"
 #' @param model_effects Reactive containing model effects: either "random" or "fixed"
@@ -97,6 +102,7 @@ covariate_analysis_panel_server <- function(
     id, 
     all_data,
     treatment_df,
+    reference_treatment,
     metaoutcome,
     outcome_measure,
     model_effects,
@@ -190,14 +196,23 @@ covariate_analysis_panel_server <- function(
       bugsnetdt = bugsnetdt
     )
     
-    # 4c-2 Treatment comparisons
+    # 4c-2 Regression plot
+    regression_plot_panel_server(
+      id = "regression_plot",
+      model = model_reactive,
+      reference_treatment = reference_treatment,
+      treatment_df = treatment_df,
+      covariate_value = covariate_value
+    )
+    
+    # 4c-3 Treatment comparisons
     covariate_treatment_comparisons_page_server(
       id = "cov_treatment_comparisons",
       model = model_output,
       outcome_measure = outcome_measure
     )
     
-    # 4c-3 Ranking Panel
+    # 4c-4 Ranking Panel
     covariate_ranking_page_server(
       id = "cov_ranking",
       model = model_output,
@@ -211,5 +226,6 @@ covariate_analysis_panel_server <- function(
       bugsnetdt = bugsnetdt,
       cov_value = covariate_value
     )
+
   })
 }
