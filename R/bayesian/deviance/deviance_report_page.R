@@ -1,14 +1,22 @@
 
-#' Module UI for the deviance report page
+#' Module UI for the deviance report page.
 #' 
-#' @param id ID of the module
+#' @param id ID of the module.
+#' @param item_names Vector of item names to be shown side-by-side in the page.
 #' @return Div for the page
-deviance_report_page_ui <- function(id) {
+deviance_report_page_ui <- function(id, item_names) {
   ns <- NS(id)
   
-  # Gather deviance report divs to be inserted into the main UI
-  all_divs <- deviance_report_panel_ui(id = ns("all"), item_name = "all studies")
-  sub_divs <- deviance_report_panel_ui(id = ns("sub"), item_name = "the sensitivity analysis")
+  # Matrix containing plots for named items
+  index <- 0
+  divs <- sapply(
+    item_names,
+    function(name) {
+      div <- deviance_report_panel_ui(id = ns(as.character(index)), item_name = name)
+      index <<- index + 1
+      return(div)
+    }
+  )
   
   # Main UI
   div(
@@ -17,16 +25,21 @@ deviance_report_page_ui <- function(id) {
       you will need to re-run the primary and/or sensitivity analysis from the 'Forest Plot' page."
     ),
     p(tags$strong("Deviance report for all studies and the sensitivity analysis")),
-    fluidRow(
-      column(
-        width = 6,
-        all_divs$residual
-      ),
-      column(
-        width = 6,
-        sub_divs$residual
+    
+    # This is the way to get a dynamic number of columns rendered into the row
+    do.call(
+      fluidRow,
+      lapply(
+        item_names,
+        function(name) {
+          column(
+            width = 12 / length(item_names),
+            divs["residual", name]
+          )
+        }
       )
     ),
+    
     p(
       "This plot represents each data points' contribution to the residual deviance for the
       NMA with consistency (horizontal axis) and the unrelated mean effect (ume) inconsistency models
@@ -41,37 +54,49 @@ deviance_report_page_ui <- function(id) {
     br(),
     br(),
     br(),
-    fluidRow(
-      column(
-        width = 6,
-        all_divs$per_arm
-      ),
-      column(
-        width = 6,
-        sub_divs$per_arm
-      ),
-      br(),
-      p(
-        "This stem plot represents the posterior residual deviance per study arm. The total number of stems equals
-        the total number of data points in the network meta analysis. Going from left to right, the alternating symbols
-        on the stems indicate the different studies. Each stem corresponds to the residual deviance ($dev.ab) associated with each
-        arm in each study. The smaller residual deviance (the shorter stem), dev.ab, the better model fit for each
-        data point. You can identify which stem corresponds to which study arm by hovering on the stem symbols.
-        (Further reading: Dias S, Ades AE, Welton NJ, Jansen JP, Sutton AJ. Network meta-anlaysis for
-        decision-making. Chapter 3 Model fit, model comparison and outlier detection. @2018 John Wiley & Sons Ltd.)"
-      ),
-      br(),
-      br(),
-      br(),
-      column(
-        width = 6,
-        all_divs$leverage
-      ),
-      column(
-        width = 6,
-        sub_divs$leverage
+    
+    # This is the way to get a dynamic number of columns rendered into the row
+    do.call(
+      fluidRow,
+      lapply(
+        item_names,
+        function(name) {
+          column(
+            width = 12 / length(item_names),
+            divs["per_arm", name]
+          )
+        }
       )
     ),
+    
+    br(),
+    p(
+      "This stem plot represents the posterior residual deviance per study arm. The total number of stems equals
+      the total number of data points in the network meta analysis. Going from left to right, the alternating symbols
+      on the stems indicate the different studies. Each stem corresponds to the residual deviance ($dev.ab) associated with each
+      arm in each study. The smaller residual deviance (the shorter stem), dev.ab, the better model fit for each
+      data point. You can identify which stem corresponds to which study arm by hovering on the stem symbols.
+      (Further reading: Dias S, Ades AE, Welton NJ, Jansen JP, Sutton AJ. Network meta-anlaysis for
+      decision-making. Chapter 3 Model fit, model comparison and outlier detection. @2018 John Wiley & Sons Ltd.)"
+    ),
+    br(),
+    br(),
+    br(),
+    
+    # This is the way to get a dynamic number of columns rendered into the row
+    do.call(
+      fluidRow,
+      lapply(
+        item_names,
+        function(name) {
+          column(
+            width = 12 / length(item_names),
+            divs["leverage", name]
+          )
+        }
+      )
+    ),
+    
     br(),
     p(
       "This leverage plot shows the average leverage across the arms for each study ({sum($lev.ab)}/{number of arms}
@@ -99,11 +124,17 @@ deviance_report_page_ui <- function(id) {
 #' Module server for the deviance report page.
 #' 
 #' @param id ID of the module
-#' @param model Reactive containing bayesian meta-analysis for all studies
-#' @param model_sub Reactive containing meta-analysis with studies excluded
-deviance_report_page_server <- function(id, model, model_sub) {
+#' @param models Vector of reactives containing bayesian meta-analyses.
+deviance_report_page_server <- function(id, models) {
   moduleServer(id, function(input, output, session) {
-    deviance_report_panel_server(id = "all", model = model)
-    deviance_report_panel_server(id = "sub", model = model_sub)
+    # Create server for each model
+    index <- 0
+    sapply(
+      models,
+      function(mod) {
+        deviance_report_panel_server(id = as.character(index), model = mod)
+        index <<- index + 1
+      }
+    )
   })
 }

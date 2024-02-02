@@ -33,7 +33,7 @@ PrepDataGemtc <- function(data, treatment_ids, outcome_type, covariate, cov_frie
   }
   # specify study level data
   studyData <- unique(data.frame(study = long_data$Study,
-                                 covariate = long_data[,covariate]))
+                                 covariate = long_data[, covariate]))
   names(studyData)[2] <- cov_friendly
   rownames(studyData) <- NULL
   
@@ -115,13 +115,17 @@ RunCovariateModel <- function(data, treatment_ids, outcome_type, outcome, covari
 #' 
 #' @param model Completed model object after running RunCovariateRegression()
 #' @param cov_value Value of covariate for which to give output (default value the mean of study covariates)
+#' @param outcome_measure The outcome measure for the analysis: One of: "OR", "RR", "MD"
 #' @return List of gemtc related output:
 #'  mtcRelEffects = data relating to presenting relative effects;
 #'  a = text output stating whether fixed or random effects;
 #'  sumresults = summary output of relative effects
 #'  dic = data frame of model fit statistics
 #'  cov_value_sentence = text output stating the value for which the covariate has been set to for producing output
-CovariateModelOutput <- function(model, cov_value) {
+#'  mtcNetwork = The GEMTC network object
+#'  outcome = The outcome measure for the analysis: One of: "OR", "RR", "MD"
+#'  model = The type of model effects. Either "random" or "fixed"
+CovariateModelOutput <- function(model, cov_value, outcome_measure) {
   
   # Relative Effects raw data
   rel_eff <- gemtc::relative.effect(model, as.character(model$model$regressor$control), covariate = cov_value)
@@ -139,13 +143,18 @@ CovariateModelOutput <- function(model, cov_value) {
   cov_value_sentence <- paste0("Value for covariate ", model$model$regressor$variable, " set at ", cov_value)
   
   # naming conventions to match current Bayesian functions
-  return(list(
-    mtcResults = model,
-    mtcRelEffects = rel_eff,
-    a = model_text,
-    sumresults = summary,
-    dic = fit_stats,
-    cov_value_sentence = cov_value_sentence)
+  return(
+    list(
+      mtcResults = model,
+      mtcRelEffects = rel_eff,
+      a = model_text,
+      sumresults = summary,
+      dic = fit_stats,
+      cov_value_sentence = cov_value_sentence,
+      mtcNetwork = model$model$network,
+      outcome = outcome_measure,
+      model = model$model$linearModel
+    )
   )
 }
 
