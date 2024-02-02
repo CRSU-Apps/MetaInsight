@@ -204,9 +204,13 @@ PasteCaptionText <- function(caption_setting, error_bar_text = NULL) {
   
   # Short lines because the line lengths are not reactive to plot width and I haven't found a fix
   caption_text <- paste('The plotted', caption_setting, 'value is the same for all treatment arms across 
-                              a study and is the outcome in the reference treatment arm.
-                              Values for studies without a reference treatment arm are not plotted. \n', 
-                              error_bar_text)
+                              a study')
+  
+  if(caption_setting == "baseline risk") {
+    caption_text <- paste(caption_text, 'and is the outcome in the reference treatment arm.
+                                Values for studies without a reference treatment arm are not plotted. \n', 
+                          error_bar_text)
+  }
   
   return(caption_text)
   
