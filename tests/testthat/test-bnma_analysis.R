@@ -122,7 +122,7 @@ test_that("BaselineRiskNetwork() assigns model type, covariate type and referenc
   bnma_network <- BaselineRiskNetwork(br_data = data,
                                       outcome_type = "Binary",
                                       effects_type = "random",
-                                      cov_parameters = "independent")
+                                      cov_parameters = "unrelated")
   
   expect_equal(bnma_network$response, "binomial")
   expect_equal(bnma_network$type, "random")
@@ -144,7 +144,7 @@ test_that("BaselineRiskNetwork() has correct model settings for Binary outcome",
   bnma_network <- BaselineRiskNetwork(br_data = data,
                                       outcome_type = "Binary",
                                       effects_type = "random",
-                                      cov_parameters = "independent")
+                                      cov_parameters = "unrelated")
   
   expect_equal(bnma_network$response, "binomial")
 })
@@ -175,21 +175,28 @@ test_that("BaselineRiskRegression() sets RNGs correctly and gives reproducible o
   
   data <- list(ArmLevel = data.frame(
     Study = c(rep("Constantine", 3), rep("Leo", 3), rep("Justinian", 2)),
-    Treat = c("the_Great", "the_Younger", "the_Dung_named", "the_Little", "the_Great", "the_Butcher", "the_Great", "the_Slit_nosed"),
-    Outcomes = c(-1, -2.1, -3.2, -4.3, -1.4, -5.5, -1.6, -7.7),
+    T = c(1, 2, 3, 4, 1, 5, 1, 6),
+    Mean = c(-1, -2.1, -3.2, -4.3, -1.4, -5.5, -1.6, -7.7),
     SD = c(11.1, 12.2, 13.3, 14.4, 15.5, 16.6, 17.7, 18.8),
     N = 30:37))
   data$Treat.order <- VectorWithItemFirst(vector = unique(data$ArmLevel$Treat), first_item = "the_Great")
   
-  bnma_network <- BaselineRiskNetwork(br_data = data,
+  treatment_ids <- data.frame(Number = 1:6, Label = c("the_Great", "the_Younger", "the_Dung_named", "the_Little", "the_Butcher", "the_Slit_nosed"))
+
+  result_1 <- BaselineRiskRegression(br_data = data$ArmLevel,
+                                     treatment_ids = treatment_ids,
                                      outcome_type = "Continuous",
+                                     ref = "the_Great",
                                      effects_type = "random",
-                                     cov_parameters = "exchangeable")
-  
-  result_1 <- BaselineRiskRegression(br_network = bnma_network,
+                                     cov_parameters = "exchangeable",
                                      seed = 97531)
   
-  result_2 <- BaselineRiskRegression(br_network = bnma_network,
+  result_2 <- BaselineRiskRegression(br_data = data$ArmLevel,
+                                     treatment_ids = treatment_ids,
+                                     outcome_type = "Continuous",
+                                     ref = "the_Great",
+                                     effects_type = "random",
+                                     cov_parameters = "exchangeable",
                                      seed = 97531)
   
   expect_equal(result_1$inits[[1]]$.RNG.name, "base::Wichmann-Hill")
