@@ -10,12 +10,14 @@ google_analytics_header_ui <- function(id) {
   )
 }
 
-google_analytics_header_server <- function(id, google_analytics_id) {
+google_analytics_header_server <- function(id, app_name, google_analytics_id) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
     
+    cookie_name = glue::glue("{app_name}_analytics")
+    
     gdpr_cookie_value <- reactive({
-      cookie_value <- cookies::get_cookie(cookie_name = "analytics")
+      cookie_value <- cookies::get_cookie(cookie_name = cookie_name)
       return(cookie_value)
     })
     
@@ -49,7 +51,7 @@ google_analytics_header_server <- function(id, google_analytics_id) {
       {
         shiny::removeModal()
         set_cookie(
-          cookie_name = "analytics",
+          cookie_name = cookie_name,
           cookie_value = TRUE,
           expiration = 365
         )
@@ -61,7 +63,7 @@ google_analytics_header_server <- function(id, google_analytics_id) {
       {
         shiny::removeModal()
         set_cookie(
-          cookie_name = "analytics",
+          cookie_name = cookie_name,
           cookie_value = FALSE,
           expiration = 365
         )

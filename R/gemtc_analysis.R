@@ -118,6 +118,7 @@ RunCovariateModel <- function(data, treatment_ids, outcome_type, outcome, covari
 #' @return List of gemtc related output:
 #'  mtcResults = model object itself carried through (needed to match existing code)
 #'  mtcRelEffects = data relating to presenting relative effects;
+#'  rel_eff_tbl = table of relative effects for each comparison;
 #'  covariate_value = The covariate value originally passed into this function
 #'  reference_name = The name of the reference treatment
 #'  comparator_names = Vector containing the names of the comparators.
@@ -133,9 +134,11 @@ CovariateModelOutput <- function(model, cov_value) {
   reference_name <- model_levels[model_levels %in% model$model$data$reg.control]
   comparator_names <- model_levels[!model_levels %in% model$model$data$reg.control]
   
-  
   # Relative Effects raw data
   rel_eff <- gemtc::relative.effect(model, as.character(model$model$regressor$control), covariate = cov_value)
+  
+  # Relative Effects table of all comparisons
+  rel_eff_tbl <- gemtc::relative.effect.table(model, covariate = cov_value)
   
   # Create text for random/fixed effect
   model_text <- paste(model$model$linearModel,"effect",sep=" ")
@@ -152,28 +155,23 @@ CovariateModelOutput <- function(model, cov_value) {
   # Obtain slope(s)
   slope_indices <- grep(ifelse(model$model$regressor$coefficient == "shared", "^B$", "^beta\\[[0-9]+\\]$"), model$model$monitors$enabled)
   summ <- summary(model)
-  
-  # Un-scale the slopes
-  slopes <- summ$summaries$statistics[slope_indices, 1] / model$model$regressor$scale
-  
-  # Duplicate slope for each comparator when "shared" type
-  if (model$model$regressor$coefficient == "shared") {
-    slopes <- rep(slopes[1], length(comparator_names))
-  }
+  slopes <- summ$summaries$quantiles[slope_indices, "50%"]  / model$model$regressor$scale
   
   # Intercepts (regression)
-  treatment_effect <- summary$summaries$statistics[1:(nrow(summary$summaries$statistics) - 1), 1]
+  treatment_effect <- summary$summaries$quantiles[startsWith(rownames(summary$summaries$quantiles), "d."), "50%"]
+  print(treatment_effect)
   intercepts <- treatment_effect * model$model$regressor$scale - cov_value * slopes
   
   # Rename items for intercepts and slopes
   names(slopes) <- comparator_names
   names(intercepts) <- comparator_names
-  
+
   # naming conventions to match current Bayesian functions
   return(
     list(
       mtcResults = model,
       mtcRelEffects = rel_eff,
+      rel_eff_tbl = rel_eff_tbl,
       covariate_value = cov_value,
       reference_name = reference_name,
       comparator_names = comparator_names,

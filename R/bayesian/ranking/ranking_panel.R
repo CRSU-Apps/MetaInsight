@@ -43,6 +43,7 @@ ranking_panel_ui <- function(id, title, table_label) {
 #' @param rank_option Reactive containing ranking option: "good" or "bad" depending on whether small values are desirable or not
 #' @param frequentist Reactive containing frequentist meta-analysis
 #' @param bugsnetdt Reactive containing bugsnet meta-analysis
+#' @param cov_value Value of covariate for regression analysis
 #' @param exclusions Reactive containing names of studies excluded from the sensitivity analysis
 ranking_panel_server <- function(
     id,
@@ -55,12 +56,14 @@ ranking_panel_server <- function(
     bugsnetdt,
     filename_prefix,
     title_prefix,
+    cov_value = reactive({NA}),
     exclusions = reactive({ c() })
     ) {
   moduleServer(id, function(input, output, session) {
     
     ranking_data <- eventReactive(model(), {
-      obtain_rank_data(data(), metaoutcome(), treatment_df(), model(), rank_option(), exclusions())
+      r_data <- obtain_rank_data(data(), metaoutcome(), treatment_df(), model(), rank_option(), cov_value(), exclusions())
+      return(r_data)
     })
 
     # Network plots for ranking panel (Bayesian) (they have slightly different formatting to those on tab1) CRN
@@ -87,10 +90,19 @@ ranking_panel_server <- function(
       title_prefix = title_prefix
     )
     
+    regression_text <- reactive({
+      if (is.na(cov_value()) == FALSE) {
+        return(model()$cov_value_sentence)
+      } else {
+        return("")
+      }
+    })
+    
     rankogram_panel_server(
       id = "rankogram",
       ranking_data = ranking_data,
-      filename_prefix = filename_prefix
+      filename_prefix = filename_prefix,
+      regression_text = regression_text
     )
     
     ranking_network_panel_server(

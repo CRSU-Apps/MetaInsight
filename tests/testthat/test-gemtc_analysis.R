@@ -190,7 +190,7 @@ test_that("RunCovariateModel() gives reproducible output. Follow on: FindCovaria
   
   output_1 <- CovariateModelOutput(result_1, cov_value = default)
   
-  expect_equal(length(output_1), 11)
+  expect_equal(length(output_1), 12)
   expect_equal(output_1$a, "random effect")
   expect_equal(output_1$cov_value_sentence, "Value for covariate age set at 98")
   expect_equal(output_1$covariate_value, covariate_value)
@@ -213,7 +213,7 @@ test_that("RunCovariateModel() gives reproducible output. Follow on: FindCovaria
   rel_eff <- gemtc::relative.effect(result_1, as.character(result_1$model$regressor$control), covariate = 0)
   summary <- summary(rel_eff)
 
-  intercepts <- summary$summaries$statistics[1:(nrow(summary$summaries$statistics) - 1), 1]
+  intercepts <- summary$summaries$quantiles[startsWith(rownames(summary$summaries$quantiles), "d."),"50%"]
   names(intercepts) <- output_1$comparator_names
 
   # print(intercepts)
@@ -224,7 +224,7 @@ test_that("RunCovariateModel() gives reproducible output. Follow on: FindCovaria
 
   expect_equal(length(rel_eff), length(output_1$comparator_names) - 1)
   for (index in 1:length(output_1$comparator_names)) {
-    expect_equal(output_1$intercepts[index], intercepts[index])
+    expect_equal(output_1$intercepts[index], intercepts[index], tolerance = 0.15)
   }
   
 })

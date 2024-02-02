@@ -37,10 +37,12 @@ test_that("Covariate name NA when not available", {
 test_that("Covariate name extracted from data when available", {
   df <- read.csv("Cont_long_continuous_cov.csv") %>%
     CleanData()
+  
   testServer(
     covariate_analysis_panel_server,
     args = list(all_data = reactive({ df }),
                 treatment_df = reactive(NULL),
+                reference_treatment = reactive(NULL),
                 metaoutcome = reactive("Continuous"),
                 outcome_measure = reactive("MD"),
                 model_effects = reactive("random"),
