@@ -86,50 +86,50 @@ test_that("ValidateAndInferCovariateType() throws error when wide data has all i
   )
 })
 
-test_that("ValidateAndInferCovariateType() returns 'binary' when only 0 & 1 in long data", {
+test_that("ValidateAndInferCovariateType() returns 'Binary' when only 0 & 1 in long data", {
   df <- data.frame(
     Study = c("Jeff et al", "Jeff et al", "Steve and Al", "Steve and Al", "Frank", "Frank"),
     covar.bananas = c(0, 0, 1, 1, 0, 0)
   )
-  expect_equal(ValidateAndInferCovariateType(df, "covar.bananas"), "binary")
+  expect_equal(ValidateAndInferCovariateType(df, "covar.bananas"), "Binary")
 })
 
-test_that("ValidateAndInferCovariateType() returns 'binary' when only 0 & 1 in wide data", {
+test_that("ValidateAndInferCovariateType() returns 'Binary' when only 0 & 1 in wide data", {
   df <- data.frame(
     Study = c("Jeff et al", "Steve and Al", "Frank"),
     covar.bananas = c(0, 1, 0)
   )
-  expect_equal(ValidateAndInferCovariateType(df, "covar.bananas"), "binary")
+  expect_equal(ValidateAndInferCovariateType(df, "covar.bananas"), "Binary")
 })
 
-test_that("ValidateAndInferCovariateType() returns 'continuous' when only 2 values in long data which aren't 0 & 1", {
+test_that("ValidateAndInferCovariateType() returns 'Continuous' when only 2 values in long data which aren't 0 & 1", {
   df <- data.frame(
     Study = c("Jeff et al", "Jeff et al", "Steve and Al", "Steve and Al", "Frank", "Frank"),
     covar.bananas = c(11, 11, 1, 1, 11, 11)
   )
-  expect_equal(ValidateAndInferCovariateType(df, "covar.bananas"), "continuous")
+  expect_equal(ValidateAndInferCovariateType(df, "covar.bananas"), "Continuous")
 })
 
-test_that("ValidateAndInferCovariateType() returns 'continuous' when only 2 values in wide data which aren't 0 & 1", {
+test_that("ValidateAndInferCovariateType() returns 'Continuous' when only 2 values in wide data which aren't 0 & 1", {
   df <- data.frame(
     Study = c("Jeff et al", "Steve and Al", "Frank"),
     covar.bananas = c(11, 1, 11)
   )
-  expect_equal(ValidateAndInferCovariateType(df, "covar.bananas"), "continuous")
+  expect_equal(ValidateAndInferCovariateType(df, "covar.bananas"), "Continuous")
 })
 
-test_that("ValidateAndInferCovariateType() returns 'continuous' when more than 2 values in long data", {
+test_that("ValidateAndInferCovariateType() returns 'Continuous' when more than 2 values in long data", {
   df <- data.frame(
     Study = c("Jeff et al", "Jeff et al", "Steve and Al", "Steve and Al", "Frank", "Frank"),
     covar.bananas = c(11, 11, 1, 1, 45, 45)
   )
-  expect_equal(ValidateAndInferCovariateType(df, "covar.bananas"), "continuous")
+  expect_equal(ValidateAndInferCovariateType(df, "covar.bananas"), "Continuous")
 })
 
-test_that("ValidateAndInferCovariateType() returns 'continuous' when more than 2 values in wide data", {
+test_that("ValidateAndInferCovariateType() returns 'Continuous' when more than 2 values in wide data", {
   df <- data.frame(
     Study = c("Jeff et al", "Steve and Al", "Frank"),
     covar.bananas = c(11, 1, 45)
   )
-  expect_equal(ValidateAndInferCovariateType(df, "covar.bananas"), "continuous")
+  expect_equal(ValidateAndInferCovariateType(df, "covar.bananas"), "Continuous")
 })

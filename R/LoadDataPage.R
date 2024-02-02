@@ -70,8 +70,12 @@ load_data_page_server <- function(id, metaoutcome, data_input_panel_server_funct
       return(WrangleUploadData(isolate(data()), treatment_list(), metaoutcome()))
     })
     
+    wrangled_treatment_list <- reactive({
+      CleanTreatmentIds(treatment_list())
+    })
+    
     return(list(data = wrangled_data,
                 is_default_data = is_default_data,
-                treatment_df = treatment_list))
+                treatment_df = wrangled_treatment_list))
   })
 }

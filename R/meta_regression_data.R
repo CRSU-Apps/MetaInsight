@@ -65,8 +65,8 @@ ValidateAndInferCovariateType <- function(data, covariate_title) {
   if (length(unique_items) == 1) {
     stop("Cannot analyse covariate with no variation.")
   } else if (length(unique_items) == 2 && all(sort(unique_items) == c(0, 1))) {
-    return("binary")
+    return("Binary")
   }
   
-  return("continuous")
+  return("Continuous")
 }
