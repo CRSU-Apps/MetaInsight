@@ -81,28 +81,6 @@ FindExpectedReferenceTreatment <- function(treatments) {
   }
 }
 
-# Regular expression explanation:
-# ^ = Start of string
-# (?i) = Ignore case for matching
-# (\\.[0-9]+)? = Optional group of full stop, followed by at least one digit
-# $ = End of string
-# (.+) = Group of at least one character
-.continuous_column_names <- c(
-  "^(?i)Study(\\.[0-9]+)?$" = "Study\\1",
-  "^(?i)T(\\.[0-9]+)?$" = "T\\1",
-  "^(?i)N(\\.[0-9]+)?$" = "N\\1",
-  "^(?i)Mean(\\.[0-9]+)?$" = "Mean\\1",
-  "^(?i)SD(\\.[0-9]+)?$" = "SD\\1",
-  "^(?i)covar\\.(.+)$" = "covar.\\1"
-)
-.binary_column_names <- c(
-  "^(?i)Study(\\.[0-9]+)?$" = "Study\\1",
-  "^(?i)T(\\.[0-9]+)?$" = "T\\1",
-  "^(?i)R(\\.[0-9]+)?$" = "R\\1",
-  "^(?i)N(\\.[0-9]+)?$" = "N\\1",
-  "^(?i)covar\\.(.+)$" = "covar.\\1"
-)
-
 #' Rename the columns of a data frame to match the expected letter casing.
 #'
 #' @param data Data frame to fix
@@ -111,9 +89,9 @@ FindExpectedReferenceTreatment <- function(treatments) {
 #' @return Data frame with renamed columns.
 .FixColumnNameCases <- function(data, outcome_type) {
   if (outcome_type == "Continuous") {
-    column_names <- .continuous_column_names
+    column_names <- continuous_column_names
   } else if (outcome_type == "Binary") {
-    column_names <- .binary_column_names
+    column_names <- binary_column_names
   } else {
     stop(glue::glue("Outcome type {outcome_type} is not recognised. Please use 'Continuous' or 'Binary'"))
   }
@@ -128,7 +106,6 @@ FindExpectedReferenceTreatment <- function(treatments) {
   )
   
   names(data) <- corrected_names
-  
   return(data)
 }
 
@@ -141,10 +118,10 @@ FindExpectedReferenceTreatment <- function(treatments) {
 .CorrectColumnName <- function(original_name, column_names) {
   matches <- unlist(
     sapply(
-      names(column_names),
-      function(nom) {
-        if (length(grep(nom, original_name)) > 0) {
-          column_names[[nom]]
+      column_names$pattern,
+      function(pattern) {
+        if (length(grep(pattern, original_name)) > 0) {
+          column_names$replacement[column_names$pattern == pattern]
         } else {
           NULL
         }
