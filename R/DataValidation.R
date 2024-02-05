@@ -81,6 +81,7 @@ ValidateUploadedData <- function(data, outcome_type) {
 #'
 #' @return TRUE if the columns are correctly numbered, else FALSE.
 .ValidateMatchingWideColumns <- function(uploaded_data, required_columns) {
+  # Extract all of the numbers for each column in wide format eg. T.1 -> 1, N.3 -> 3
   wide_numbers <- list()
   sapply(
     required_columns$pattern,
@@ -93,13 +94,15 @@ ValidateUploadedData <- function(data, outcome_type) {
     }
   )
   
-  
+  # If numbers are NA for all column titles, then the data must be in long format. The rest of the checks are not relevant.
+  # If only some are NA, then this data is neither long nor wide. Return FALSE for validity.
   if (all(is.na(wide_numbers))) {
     return(TRUE)
   } else if (any(is.na(wide_numbers)) != all(is.na(wide_numbers))) {
     return(FALSE)
   }
   
+  # Check that all number lists are the same length
   lengths <- sapply(
     names(wide_numbers),
     function(name) {
@@ -111,6 +114,7 @@ ValidateUploadedData <- function(data, outcome_type) {
     return(FALSE)
   }
   
+  # Checkl that all number lists are sequential from 1
   sequentials <- sapply(
     names(wide_numbers),
     function(name) {

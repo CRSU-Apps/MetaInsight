@@ -35,7 +35,7 @@ test_that("ValidateUploadedData() identifies valid binary wide data", {
   expect_equal(validation_result$message, "Data is valid")
 })
 
-test_that("ValidateUploadedData() identifies invalid coninuous long data, missing colunm 'N'", {
+test_that("ValidateUploadedData() identifies invalid continuous long data, missing colunm 'N'", {
   data <- CleanData(read.csv("invalid_data/continuous-missing-long.csv"))
   
   validation_result <- ValidateUploadedData(data, "Continuous")
@@ -44,7 +44,7 @@ test_that("ValidateUploadedData() identifies invalid coninuous long data, missin
   expect_equal(validation_result$message, "Missing columns for Continuous data: N")
 })
 
-test_that("ValidateUploadedData() identifies invalid coninuous wide data, missing all colunms 'N.*'", {
+test_that("ValidateUploadedData() identifies invalid continuous wide data, missing all colunms 'N.*'", {
   data <- CleanData(read.csv("invalid_data/continuous-missing-entirely-wide.csv"))
   
   validation_result <- ValidateUploadedData(data, "Continuous")
@@ -53,7 +53,7 @@ test_that("ValidateUploadedData() identifies invalid coninuous wide data, missin
   expect_equal(validation_result$message, "Missing columns for Continuous data: N")
 })
 
-test_that("ValidateUploadedData() identifies invalid coninuous wide data, missing some colunms 'N.*'", {
+test_that("ValidateUploadedData() identifies invalid continuous wide data, missing some colunms 'N.*'", {
   data <- CleanData(read.csv("invalid_data/continuous-missing-partially-wide.csv"))
   
   validation_result <- ValidateUploadedData(data, "Continuous")
@@ -62,7 +62,7 @@ test_that("ValidateUploadedData() identifies invalid coninuous wide data, missin
   expect_equal(validation_result$message, "For wide format data, numbered columns (T, N, Mean, SD) must all have matching sequential indices, starting from 1")
 })
 
-test_that("ValidateUploadedData() identifies invalid coninuous wide data, with inconsistently numbered colunms 'N.*'", {
+test_that("ValidateUploadedData() identifies invalid continuous wide data, with inconsistently numbered colunms 'N.*'", {
   data <- CleanData(read.csv("invalid_data/continuous-misnumbered-wide.csv"))
   
   validation_result <- ValidateUploadedData(data, "Continuous")
@@ -71,7 +71,7 @@ test_that("ValidateUploadedData() identifies invalid coninuous wide data, with i
   expect_equal(validation_result$message, "For wide format data, numbered columns (T, N, Mean, SD) must all have matching sequential indices, starting from 1")
 })
 
-test_that("ValidateUploadedData() identifies invalid coninuous long data, missing colunm 'N'", {
+test_that("ValidateUploadedData() identifies invalid binary long data, missing colunm 'N'", {
   data <- CleanData(read.csv("invalid_data/binary-missing-long.csv"))
   
   validation_result <- ValidateUploadedData(data, "Binary")
@@ -80,7 +80,7 @@ test_that("ValidateUploadedData() identifies invalid coninuous long data, missin
   expect_equal(validation_result$message, "Missing columns for Binary data: N")
 })
 
-test_that("ValidateUploadedData() identifies invalid coninuous wide data, missing all colunms 'N.*'", {
+test_that("ValidateUploadedData() identifies invalid binary wide data, missing all colunms 'N.*'", {
   data <- CleanData(read.csv("invalid_data/binary-missing-entirely-wide.csv"))
   
   validation_result <- ValidateUploadedData(data, "Binary")
@@ -89,7 +89,7 @@ test_that("ValidateUploadedData() identifies invalid coninuous wide data, missin
   expect_equal(validation_result$message, "Missing columns for Binary data: N")
 })
 
-test_that("ValidateUploadedData() identifies invalid coninuous wide data, missing some colunms 'N.*'", {
+test_that("ValidateUploadedData() identifies invalid binary wide data, missing some colunms 'N.*'", {
   data <- CleanData(read.csv("invalid_data/binary-missing-partially-wide.csv"))
   
   validation_result <- ValidateUploadedData(data, "Binary")
@@ -98,7 +98,7 @@ test_that("ValidateUploadedData() identifies invalid coninuous wide data, missin
   expect_equal(validation_result$message, "For wide format data, numbered columns (T, R, N) must all have matching sequential indices, starting from 1")
 })
 
-test_that("ValidateUploadedData() identifies invalid coninuous wide data, with inconsistently numbered colunms 'N.*'", {
+test_that("ValidateUploadedData() identifies invalid binary wide data, with inconsistently numbered colunms 'N.*'", {
   data <- CleanData(read.csv("invalid_data/binary-misnumbered-wide.csv"))
   
   validation_result <- ValidateUploadedData(data, "Binary")
