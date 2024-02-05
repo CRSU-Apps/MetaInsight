@@ -141,26 +141,30 @@ CovariateModelOutput <- function(model, cov_value) {
   rel_eff_tbl <- gemtc::relative.effect.table(model, covariate = cov_value)
   
   # Create text for random/fixed effect
-  model_text <- paste(model$model$linearModel,"effect",sep=" ")
+  model_text <- paste(model$model$linearModel, "effect", sep = " ")
   
   # Summary of relative effects
-  summary <- summary(rel_eff)
+  rel_eff_summary <- summary(rel_eff)
   
   # Table of Model fit stats
-  fit_stats <- as.data.frame(summary$DIC)
+  fit_stats <- as.data.frame(rel_eff_summary$DIC)
   
   # Summary sentence of where covariate value has been set for results
   cov_value_sentence <- paste0("Value for covariate ", model$model$regressor$variable, " set at ", cov_value)
   
   # Obtain slope(s)
   slope_indices <- grep(ifelse(model$model$regressor$coefficient == "shared", "^B$", "^beta\\[[0-9]+\\]$"), model$model$monitors$enabled)
-  summ <- summary(model)
-  slopes <- summ$summaries$quantiles[slope_indices, "50%"]  / model$model$regressor$scale
+  model_summary <- summary(model)
+  slopes <- model_summary$summaries$statistics[slope_indices, "Mean"] / model$model$regressor$scale
+  
+  # Duplicate slope for each comparator when "shared" type
+  if (model$model$regressor$coefficient == "shared") {
+    slopes <- rep(slopes[1], length(comparator_names))
+  }
   
   # Intercepts (regression)
-  treatment_effect <- summary$summaries$quantiles[startsWith(rownames(summary$summaries$quantiles), "d."), "50%"]
-  print(treatment_effect)
-  intercepts <- treatment_effect * model$model$regressor$scale - cov_value * slopes
+  treatment_effect <- rel_eff_summary$summaries$statistics[1:(nrow(rel_eff_summary$summaries$statistics) - 1), 1]
+  intercepts <- treatment_effect - cov_value * slopes
   
   # Rename items for intercepts and slopes
   names(slopes) <- comparator_names
@@ -176,7 +180,7 @@ CovariateModelOutput <- function(model, cov_value) {
       reference_name = reference_name,
       comparator_names = comparator_names,
       a = model_text,
-      sumresults = summary,
+      sumresults = rel_eff_summary,
       dic = fit_stats,
       cov_value_sentence = cov_value_sentence,
       slopes = slopes,
