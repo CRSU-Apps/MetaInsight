@@ -114,7 +114,7 @@ ValidateUploadedData <- function(data, outcome_type) {
     return(FALSE)
   }
   
-  # Checkl that all number lists are sequential from 1
+  # Check that all number lists are sequential from 1
   sequentials <- sapply(
     names(wide_numbers),
     function(name) {
