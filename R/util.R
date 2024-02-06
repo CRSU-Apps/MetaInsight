@@ -27,7 +27,7 @@ obtain_rank_data <- function(data, metaoutcome, treatment_list, bayesmodel, rank
     # Subset of data when studies excluded
     longsort2 <- dplyr::filter(longsort2, !Study %in% excluded)
   }
-  # Use the self-defined function, rankdata in fn.analysis.R
+  # Use the self-defined function, rankdata in bayes_analysis.R
   return(rankdata(NMAdata=bayesmodel$mtcResults, rankdirection=rankdir, 
            longdata=longsort2, cov_value = cov_value))
 }

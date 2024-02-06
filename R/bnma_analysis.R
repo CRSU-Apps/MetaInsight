@@ -124,3 +124,82 @@ BaselineRiskDicTable <- function(br_model){
   names(dic_table)[4] <- "Data points"
   return(dic_table)
 }
+
+
+
+#' Puts a relative effects table from bnma into gemtc format
+#'
+#' @param br_model Output from bnma::network.run, typically created from BaselineRiskRegression().
+#' @return A relative effects table in the same format as from gemtc.
+BaselineRiskRelativeEffectsTable <- function(br_model){
+  #Table with entries in the form "[lower_ci, median, upper_ci]"
+  median_ci_table <- bnma::relative.effects.table(result = br_model,
+                                                  summary_stat = "ci")
+  dim_median <- nrow(median_ci_table)
+  #Create matrices to store the lower_ci, median and upper_ci separately
+  lower_ci <- matrix(nrow = dim_median, ncol = dim_median)
+  median_br <- matrix(nrow = dim_median, ncol = dim_median)
+  upper_ci <- matrix(nrow = dim_median, ncol = dim_median)
+  
+  #Extract the lower_ci
+  for(row in 1:dim_median){
+    for(col in 1:dim_median){
+      lower_ci[row, col] <- round(
+        as.numeric(
+          substr(x = median_ci_table[row, col],
+                 start = 2,
+                 stop = as.vector(
+                   gregexpr(pattern = ",",
+                            text = median_ci_table[row, col])[[1]]
+                   )[1] - 1
+                 )
+          ), digits = 2
+      )
+    }
+  }
+  
+  #Extract the median
+  for(row in 1:dim_median){
+    for(col in 1:dim_median){
+      median_br[row, col] <- round(
+        as.numeric(
+          substr(x = median_ci_table[row, col],
+                 start = as.vector(
+                   gregexpr(pattern = ",",
+                            text = median_ci_table[row, col])[[1]]
+                 )[1] + 1,
+                 stop = as.vector(
+                   gregexpr(pattern = ",",
+                            text = median_ci_table[row, col])[[1]]
+                 )[2] - 2
+          )
+        ), digits = 2
+      )
+    }
+  }
+  
+  #Extract the upper_ci
+  for(row in 1:dim_median){
+    for(col in 1:dim_median){
+      upper_ci[row, col] <- round(
+        as.numeric(
+          substr(x = median_ci_table[row, col],
+                 start = as.vector(
+                   gregexpr(pattern = ",",
+                            text = median_ci_table[row, col])[[1]]
+                 )[2] + 1,
+                 stop = nchar(median_ci_table[row, col]) - 1
+          )
+        ), digits = 2
+      )
+    }
+  }
+  
+  #Paste into the format "median (lower_ci, upper_ci)"
+  median_ci_table_new <- matrix(paste0(median_br, " (", lower_ci, ", ", upper_ci, ")"), nrow = dim_median)
+  diag(median_ci_table_new) <- "NA"
+  rownames(median_ci_table_new) <- rownames(median_ci_table)
+  colnames(median_ci_table_new) <- colnames(median_ci_table)
+  
+  return(median_ci_table_new)
+}
