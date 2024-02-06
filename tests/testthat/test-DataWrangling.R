@@ -701,17 +701,17 @@ test_that("CleanTreatmentIds() replaces special characters in treatment names", 
   )
   expect_equal(!!CleanTreatmentIds(treatment_ids ), !!expected_treatment_ids)
 })
-
+ 
 test_that("CleanTreatmentIds() replaces multiple sequential special characters in treatment names with single underscore", {
   treatment_ids <- data.frame(
     Number = 1:5,
-    Label = c("2 * 4 = 8", "^(*(oo)*)^ <- It's a pig", "you stupid *%£$@#!", "var <- value", ":,-)")
+    Label = c("2 * 4 = 8", "^(*(oo)*)^ <- It's a pig", "you stupid *%?$@#!", "var <- value", ":,-)")
   )
-  
+
   expected_treatment_ids <- data.frame(
     Number = 1:5,
     Label = c("2_4_8", "_oo_It_s_a_pig", "you_stupid_", "var_value", "_"),
-    RawLabel = c("2 * 4 = 8", "^(*(oo)*)^ <- It's a pig", "you stupid *%£$@#!", "var <- value", ":,-)")
+    RawLabel = c("2 * 4 = 8", "^(*(oo)*)^ <- It's a pig", "you stupid *%?$@#!", "var <- value", ":,-)")
   )
   expect_equal(!!CleanTreatmentIds(treatment_ids ), !!expected_treatment_ids)
 })

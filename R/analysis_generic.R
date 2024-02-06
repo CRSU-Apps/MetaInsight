@@ -45,40 +45,46 @@ RankingOrder <- function(outcome,data) {
 
 ### data transform
 dataform.df <- function(newData1, treat_list, CONBI) {
-  if (ncol(newData1)==6 | ncol(newData1)==5) {
+  if (FindDataShape(newData1) == "long") {
     long <- newData1
   } else {
-    data_wide <-newData1
-    a<- ifelse(CONBI=='Continuous', 4, 3)
-    numbertreat=(ncol(newData1)-2)/a
+    data_wide <- newData1
+    a <- ifelse(CONBI == 'Continuous', 4, 3)
+    numbertreat <- (ncol(newData1) - 2) / a
+    
+    # Add more columns to make data up to 6 columns
     if (numbertreat < 6) {
-      for (k in (numbertreat+1):6) {
-        if (CONBI=='Continuous') {
-          data_wide[c(paste0("T.",k),paste0("N.",k),paste0("Mean.",k),paste0("SD.",k))]<-NA
+      for (k in (numbertreat + 1):6) {
+        if (CONBI == 'Continuous') {
+          data_wide[c(paste0("T.", k), paste0("N.", k), paste0("Mean.", k), paste0("SD.", k))] <- NA
         } else {
-          data_wide[c(paste0("T.",k),paste0("R.",k),paste0("N.",k))]<-NA
+          data_wide[c(paste0("T.", k), paste0("R.", k), paste0("N.", k))] <- NA
         }
       }
+    } else {
+      data_wide <- newData1
     }
-    else {
-      data_wide<-newData1
-    }
-    long_pre <- reshape(data_wide, direction = "long",
-                        varying = 3:ncol(data_wide), 
-                        times=c(".1", ".2", ".3", ".4", ".5", ".6"), sep=".", idvar= c("StudyID", "Study"))
-    long_pre<-subset(long_pre, select=-time)
+    long_pre <- reshape(
+      data_wide,
+      direction = "long",
+      varying = 3:ncol(data_wide), 
+      times = c(".1", ".2", ".3", ".4", ".5", ".6"),
+      sep = ".",
+      idvar =  c("StudyID", "Study")
+    )
+    long_pre <- subset(long_pre, select = -time)
     long <- long_pre[!is.na(long_pre$T), ]
   }
-  long_sort<-long[order(long$StudyID, -long$T), ]
-  if (CONBI=='Continuous') {
-    long_sort$se<-long_sort$SD/sqrt(long_sort$N)
+  long_sort <- long[order(long$StudyID, -long$T), ]
+  if (CONBI == 'Continuous') {
+    long_sort$se<-long_sort$SD / sqrt(long_sort$N)
   }
   lstx <- treat_list$Label
-  treat_list2<-data.frame(treat_list)
+  treat_list2 <- data.frame(treat_list)
   ntx <- nrow(treat_list)
   colnames(treat_list2)[1] <- "T"
-  long_sort2<-merge(long_sort, treat_list2, by=c("T"))
-  long_sort2<-subset(long_sort2, select=-T)
+  long_sort2 <- merge(long_sort, treat_list2, by = c("T"))
+  long_sort2 <- subset(long_sort2, select = -T)
   names(long_sort2)[names(long_sort2) == 'Label'] <- 'T'
   return(long_sort2)
 } 
