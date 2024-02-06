@@ -33,7 +33,7 @@ bayesian_analysis_panel_ui <- function(id) {
       ),
       tabPanel(
         title = "3g. Model details",
-        model_details_panel_ui(id = ns("model_details"))
+        model_details_panel_ui(id = ns("model_details"), c("all studies", " the sensitivity analysis"))
       )
     )
   )
@@ -159,8 +159,7 @@ bayesian_analysis_panel_server <- function(
     # 3g. Model details
     model_details_panel_server(
       id = "model_details",
-      model = model,
-      model_sub = model_sub
+      models = c(model, model_sub)
     )
   })
 }
