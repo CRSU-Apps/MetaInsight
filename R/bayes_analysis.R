@@ -148,7 +148,7 @@ rankdata <- function(NMAdata, rankdirection, longdata) {
   prob <- as.data.frame(print(gemtc::rank.probability(NMAdata, preferredDirection=(if (rankdirection=="good") -1 else 1)))) # rows treatments, columns ranks
   names(prob)[1:ncol(prob)] <- paste("Rank ", 1:(ncol(prob)), sep="")
   sucra <- gemtc::sucra(prob)  # 1 row of SUCRA values for each treatment column
-  treatments <- stringr::str_wrap(gsub("_", " ", row.names(prob)), width=10)
+  treatments <- row.names(prob)
   
   # SUCRA
   SUCRA <- data.frame(Treatment=treatments,
@@ -167,11 +167,12 @@ rankdata <- function(NMAdata, rankdirection, longdata) {
   Cumulative_Data <- Cumulative_Data %>% left_join(SUCRA, by = "Treatment")
   
   # Number of people in each node #
-  Patients <- data.frame(Treatment=str_wrap(gsub("_", " ",longdata$T), width=10),
-                         Sample=longdata$N)
+  Patients <- data.frame(
+    Treatment = longdata$T,
+    Sample = longdata$N
+  )
   Patients <- aggregate(Patients$Sample, by=list(Category=Patients$Treatment), FUN=sum)
   Patients <- dplyr::rename(Patients, c("Treatment"="Category", "N"="x"))  # previously using plyr::rename where old/new names are other way round
-  Patients$Treatment <- gsub("_", " ", Patients$Treatment) #remove underscores, otherwise next line won't work
   SUCRA <- SUCRA %>% dplyr::right_join(Patients, by = "Treatment")
   
   # Node size #
@@ -189,11 +190,10 @@ rankdata <- function(NMAdata, rankdirection, longdata) {
   }
   
   prob <- data.table::setDT(prob, keep.rownames = "Treatment") # treatment as a column rather than rownames (useful for exporting)
-  prob$Treatment <- stringr::str_wrap(gsub("_", " ", prob$Treatment), width=10)
+  prob$Treatment <- prob$Treatment
   
   # Number of trials as line thickness taken from BUDGnetData object #
   BUGSnetData <- data.prep(arm.data=longdata, varname.t = "T", varname.s="Study")
-  
   return(list(SUCRA=SUCRA, Colour=colour_dat, Cumulative=Cumulative_Data, Probabilities=prob, BUGSnetData=BUGSnetData))
 }
 

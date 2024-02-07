@@ -28,8 +28,13 @@ obtain_rank_data <- function(data, metaoutcome, treatment_list, bayesmodel, rank
     longsort2 <- dplyr::filter(longsort2, !Study %in% excluded)
   }
   # Use the self-defined function, rankdata in fn.analysis.R
-  return(rankdata(NMAdata=bayesmodel$mtcResults, rankdirection=rankdir, 
-           longdata=longsort2))
+  return(
+    rankdata(
+      NMAdata = bayesmodel$mtcResults,
+      rankdirection = rankdir, 
+      longdata = longsort2
+    )
+  )
 }
 
 #' Run the nodesplit model

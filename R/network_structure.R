@@ -13,8 +13,8 @@ network.structure <- function(data.nma, my_order=NA) {     # data.nma is a BUGSn
   varname.t.quo <- rlang::quo(!! as.name(data.nma$varname.t))
   
   # Change underscores if present (as when my_order is based on rank results, it'll already have underscores removed)
-  data.nma[["arm.data"]][["T"]] <- str_wrap(gsub("_", " ", data.nma[["arm.data"]][["T"]]), width=10)
-  data.nma[["treatments"]][["T"]] <- str_wrap(gsub("_", " ", data.nma[["treatments"]][["T"]]), width=10)
+  data.nma[["arm.data"]][["T"]] <- data.nma[["arm.data"]][["T"]]
+  data.nma[["treatments"]][["T"]] <- data.nma[["treatments"]][["T"]]
   
   studytrt <- data.nma$arm.data %>%
     dplyr::select(data.nma$varname.s, data.nma$varname.t) %>%
@@ -67,6 +67,5 @@ network.structure <- function(data.nma, my_order=NA) {     # data.nma is a BUGSn
     dplyr::mutate(study = paste(unlist(data), collapse=', \n')) %>%
     dplyr::select(-data)
   
-  #return(list("edges"=edges, "nodes"=nodes))
   return(edges)
 }
