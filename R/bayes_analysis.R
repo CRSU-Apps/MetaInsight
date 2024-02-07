@@ -139,7 +139,7 @@ gemtctau <- function(results,outcome) {
 #'     - ...
 #'     - 'Rank n_t' = Probability 'Treatment' is ranked last (n_t = number of treatments).
 #' - 'BUGSnetData' = Output from BUGSnet::data.prep with arguments from @param longdata.
-rankdata <- function(NMAdata, rankdirection, longdata) {
+rankdata <- function(NMAdata, rankdirection, longdata, treatment_list) {
   # data frame of colours
   colour_dat = data.frame(SUCRA = seq(0, 100, by = 0.1)) 
   colour_dat = dplyr::mutate(colour_dat, colour = seq(0, 100, length.out = 1001)) 
