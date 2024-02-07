@@ -5,17 +5,39 @@
 #####
 
 # Bayesian analysis
-bayesian_model <- function(sub, data, treatment_list, metaoutcome, exclusionbox, 
-                           outcome_measure, modelranfix, reference_alter) {
+bayesian_model <- function(
+    sub,
+    data,
+    treatment_list,
+    metaoutcome,
+    exclusionbox,
+    outcome_measure,
+    modelranfix,
+    reference_alter) {
   newData1 <- as.data.frame(data)
   longsort2 <- dataform.df(newData1, treatment_list, metaoutcome) 
-  if (sub == TRUE) {
-    longsort2 <- filter(longsort2, !Study %in% exclusionbox)
-    return(baye(longsort2, treatment_list, modelranfix, outcome_measure ,metaoutcome, 
-                reference_alter$ref_sub))
+  if (sub) {
+    return(
+      baye(
+        filter(longsort2, !Study %in% exclusionbox),
+        treatment_list,
+        modelranfix,
+        outcome_measure,
+        metaoutcome,
+        reference_alter$ref_sub
+      )
+    )
   } else {
-    return(baye(longsort2, treatment_list, modelranfix, outcome_measure ,metaoutcome, 
-                reference_alter$ref_all))
+    return(
+      baye(
+        longsort2,
+        treatment_list,
+        modelranfix,
+        outcome_measure,
+        metaoutcome,
+        reference_alter$ref_all
+      )
+    )
   }
 }
 

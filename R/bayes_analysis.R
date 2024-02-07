@@ -144,26 +144,38 @@ rankdata <- function(NMAdata, rankdirection, longdata, treatment_list) {
   colour_dat = data.frame(SUCRA = seq(0, 100, by = 0.1)) 
   colour_dat = dplyr::mutate(colour_dat, colour = seq(0, 100, length.out = 1001)) 
   
+  direction <- ifelse(rankdirection == "good", -1, 1)
   # probability rankings
-  prob <- as.data.frame(print(gemtc::rank.probability(NMAdata, preferredDirection=(if (rankdirection=="good") -1 else 1)))) # rows treatments, columns ranks
-  names(prob)[1:ncol(prob)] <- paste("Rank ", 1:(ncol(prob)), sep="")
+  prob <- as.data.frame(
+    print(
+      gemtc::rank.probability(
+        NMAdata,
+        preferredDirection = direction
+      )
+    )
+  ) # rows treatments, columns ranks
+  names(prob)[1:ncol(prob)] <- paste("Rank ", 1:ncol(prob), sep = "")
   sucra <- gemtc::sucra(prob)  # 1 row of SUCRA values for each treatment column
   treatments <- row.names(prob)
   
   # SUCRA
-  SUCRA <- data.frame(Treatment=treatments,
-                      SUCRA=as.numeric(sucra)*100)
+  SUCRA <- data.frame(
+    Treatment = treatments,
+    SUCRA = as.numeric(sucra) * 100
+  )
   
   # Cumulative Probabilities
   cumprob <- prob              # obtain copy of probabilities
   for (i in 2:ncol(prob)) {    # for each rank (column)
     for (j in 1:ncol(prob)) {  # for each treatment (row)
-      cumprob[j,i] <- cumprob[j,i-1] + cumprob[j,i]
+      cumprob[j, i] <- cumprob[j, i-1] + cumprob[j, i]
     }
   }
-  Cumulative_Data <- data.frame(Treatment=rep(treatments,each=ncol(prob)),
-                                Rank = rep(1:(ncol(prob)), times=ncol(prob)),
-                                Cumulative_Probability = as.numeric(t(cumprob)))
+  Cumulative_Data <- data.frame(
+    Treatment = rep(treatments, each = ncol(prob)),
+    Rank = rep(1:ncol(prob), times = ncol(prob)),
+    Cumulative_Probability = as.numeric(t(cumprob))
+  )
   Cumulative_Data <- Cumulative_Data %>% left_join(SUCRA, by = "Treatment")
   
   # Number of people in each node #
@@ -171,8 +183,12 @@ rankdata <- function(NMAdata, rankdirection, longdata, treatment_list) {
     Treatment = longdata$T,
     Sample = longdata$N
   )
-  Patients <- aggregate(Patients$Sample, by=list(Category=Patients$Treatment), FUN=sum)
-  Patients <- dplyr::rename(Patients, c("Treatment"="Category", "N"="x"))  # previously using plyr::rename where old/new names are other way round
+  Patients <- aggregate(
+    Patients$Sample,
+    by = list(Category = Patients$Treatment),
+    FUN = sum
+  )
+  Patients <- dplyr::rename(Patients, c(Treatment = "Category", N = "x"))  # previously using plyr::rename where old/new names are other way round
   SUCRA <- SUCRA %>% dplyr::right_join(Patients, by = "Treatment")
   
   # Node size #
@@ -181,20 +197,30 @@ rankdata <- function(NMAdata, rankdirection, longdata, treatment_list) {
   size.min <- 1
   n <- ncol(prob)
   for (i in 1:n) {
-    SUCRA$SizeO[i] <- size.maxO * SUCRA$N[i]/max(SUCRA$N)
-    SUCRA$SizeA[i] <- size.maxA * SUCRA$N[i]/max(SUCRA$N)
+    SUCRA$SizeO[i] <- size.maxO * SUCRA$N[i] / max(SUCRA$N)
+    SUCRA$SizeA[i] <- size.maxA * SUCRA$N[i] / max(SUCRA$N)
     if (SUCRA$SizeO[i] < size.min) {
-      SUCRA$SizeO[i] <- size.min}
+      SUCRA$SizeO[i] <- size.min
+    }
     if (SUCRA$SizeA[i] < size.min) {
-      SUCRA$SizeA[i] <- size.min}
+      SUCRA$SizeA[i] <- size.min
+    }
   }
   
   prob <- data.table::setDT(prob, keep.rownames = "Treatment") # treatment as a column rather than rownames (useful for exporting)
   prob$Treatment <- prob$Treatment
   
   # Number of trials as line thickness taken from BUDGnetData object #
-  BUGSnetData <- data.prep(arm.data=longdata, varname.t = "T", varname.s="Study")
-  return(list(SUCRA=SUCRA, Colour=colour_dat, Cumulative=Cumulative_Data, Probabilities=prob, BUGSnetData=BUGSnetData))
+  BUGSnetData <- data.prep(arm.data = longdata, varname.t = "T", varname.s = "Study")
+  return(
+    list(
+      SUCRA = SUCRA,
+      Colour = colour_dat,
+      Cumulative = Cumulative_Data,
+      Probabilities = prob,
+      BUGSnetData = BUGSnetData
+    )
+  )
 }
 
 # text to go underneath plots #
