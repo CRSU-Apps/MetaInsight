@@ -90,7 +90,7 @@ baseline_risk_analysis_panel_server <- function(    id,
     )
     
     # 4c-4 Ranking Panel
-    baseline_risk_ranking_page_server(
+    covariate_ranking_page_server(
       id = "baseline_risk_ranking",
       model = model_reactive,
       data = all_data,
@@ -99,7 +99,8 @@ baseline_risk_analysis_panel_server <- function(    id,
       model_effects = model_effects,
       rank_option = rank_option,
       freq_all = freq_all,
-      bugsnetdt = bugsnetdt
+      bugsnetdt = bugsnetdt,
+      package = "bnma"
     )
       
     })

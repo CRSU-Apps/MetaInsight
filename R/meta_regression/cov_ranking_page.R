@@ -60,63 +60,38 @@ covariate_ranking_page_server <- function(
     ) {
   
   moduleServer(id, function(input, output, session) {
-    ranking_panel_server(
-      id = "rank_all",
-      data = data,
-      treatment_df = treatment_df,
-      model = model,
-      metaoutcome = metaoutcome,
-      rank_option = rank_option,
-      frequentist = freq_all,
-      bugsnetdt = bugsnetdt,
-      filename_prefix = "regression_",
-      title_prefix = "Regression analysis",
-      cov_value = cov_value
-    )
     
+    if (package == "gemtc"){
+      ranking_panel_server(
+        id = "rank_all",
+        data = data,
+        treatment_df = treatment_df,
+        model = model,
+        metaoutcome = metaoutcome,
+        rank_option = rank_option,
+        frequentist = freq_all,
+        bugsnetdt = bugsnetdt,
+        filename_prefix = "regression_",
+        title_prefix = "Regression analysis",
+        cov_value = cov_value
+      )
+    } else if(package == "bnma"){
+      ranking_panel_server(
+        id = "rank_all",
+        data = data,
+        treatment_df = treatment_df,
+        model = model,
+        metaoutcome = metaoutcome,
+        rank_option = rank_option,
+        frequentist = freq_all,
+        bugsnetdt = bugsnetdt,
+        filename_prefix = "baseline_risk_",
+        title_prefix = "Baseline risk",
+        package = package
+      )
+    } else{
+      stop("package must be 'gemtc' or 'bnma'")
+    }
   })
 }
 
-
-
-
-#' Module server for the baseline risk ranking page.
-#' 
-#' @param id ID of the module.
-#' @param model Reactive containing bayesian meta-analysis for all studies.
-#' @param data Reactive containing data to analyse.
-#' @param treatment_df Reactive containing data frame containing treatment IDs (Number) and names (Label).
-#' @param metaoutcome Reactive containing meta analysis outcome: "Continuous" or "Binary".
-#' @param outcome_measure Reactive containing meta analysis outcome measure: "MD" or "OR".
-#' @param model_effects Reactive containing model effects: either "random" or "fixed".
-#' @param rank_option Reactive containing ranking option: "good" or "bad" depending on whether small values are desirable or not.
-#' @param bugsnetdt Reactive containing bugsnet meta-analysis.
-#' regression_text Annotation text for regression model plots.
-baseline_risk_ranking_page_server <- function(
-    id,
-    model,
-    data,
-    treatment_df,
-    metaoutcome,
-    model_effects,
-    rank_option,
-    freq_all,
-    bugsnetdt
-) {
-  
-  moduleServer(id, function(input, output, session) {
-    ranking_panel_baseline_risk_server(
-      id = "rank_all",
-      data = data,
-      treatment_df = treatment_df,
-      model = model,
-      metaoutcome = metaoutcome,
-      rank_option = rank_option,
-      frequentist = freq_all,
-      bugsnetdt = bugsnetdt,
-      filename_prefix = "baseline_risk_",
-      title_prefix = "Baseline risk"
-    )
-    
-  })
-}
