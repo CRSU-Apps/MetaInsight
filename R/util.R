@@ -20,7 +20,7 @@ bayesian_model <- function(sub, data, treatment_list, metaoutcome, exclusionbox,
 }
 
 # Function to create data regarding rank results - CRN
-obtain_rank_data <- function(data, metaoutcome, treatment_list, bayesmodel, rankdir, cov_value = NA, excluded = c()) {
+obtain_rank_data <- function(data, metaoutcome, treatment_list, bayesmodel, rankdir, cov_value = NA, excluded = c(), package = "gemtc") {
   newData1 <- as.data.frame(data)
   longsort2 <- dataform.df(newData1, treatment_list, metaoutcome)
   if (length(excluded > 0)) {
@@ -28,8 +28,15 @@ obtain_rank_data <- function(data, metaoutcome, treatment_list, bayesmodel, rank
     longsort2 <- dplyr::filter(longsort2, !Study %in% excluded)
   }
   # Use the self-defined function, rankdata in bayes_analysis.R
-  return(rankdata(NMAdata=bayesmodel$mtcResults, rankdirection=rankdir, 
-           longdata=longsort2, cov_value = cov_value))
+  if (package == "gemtc"){
+    return(rankdata(NMAdata=bayesmodel$mtcResults, rankdirection=rankdir, 
+                    longdata=longsort2, cov_value = cov_value))
+  } else if (package == "bnma"){
+    return(rankdata(NMAdata=bayesmodel, rankdirection=rankdir, 
+                    longdata=longsort2, cov_value = cov_value, package = package))
+  } else{
+    stop("package must be 'gemtc' or 'bnma'")
+  }
 }
 
 #' Run the nodesplit model

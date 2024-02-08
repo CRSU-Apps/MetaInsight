@@ -42,6 +42,7 @@ covariate_ranking_page_ui <- function(id) {
 #' @param freq_all Reactive containing frequentist meta-analysis.
 #' @param bugsnetdt Reactive containing bugsnet meta-analysis.
 #' @param cov_value Value of covariate for regression analysis.
+#' @param package "gemtc" or "bnma". Defaults to "gemtc".
 #' regression_text Annotation text for regression model plots.
 covariate_ranking_page_server <- function(
     id,
@@ -54,7 +55,8 @@ covariate_ranking_page_server <- function(
     rank_option,
     freq_all,
     bugsnetdt,
-    cov_value
+    cov_value,
+    package = "gemtc"
     ) {
   
   moduleServer(id, function(input, output, session) {
@@ -70,6 +72,50 @@ covariate_ranking_page_server <- function(
       filename_prefix = "regression_",
       title_prefix = "Regression analysis",
       cov_value = cov_value
+    )
+    
+  })
+}
+
+
+
+
+#' Module server for the baseline risk ranking page.
+#' 
+#' @param id ID of the module.
+#' @param model Reactive containing bayesian meta-analysis for all studies.
+#' @param data Reactive containing data to analyse.
+#' @param treatment_df Reactive containing data frame containing treatment IDs (Number) and names (Label).
+#' @param metaoutcome Reactive containing meta analysis outcome: "Continuous" or "Binary".
+#' @param outcome_measure Reactive containing meta analysis outcome measure: "MD" or "OR".
+#' @param model_effects Reactive containing model effects: either "random" or "fixed".
+#' @param rank_option Reactive containing ranking option: "good" or "bad" depending on whether small values are desirable or not.
+#' @param bugsnetdt Reactive containing bugsnet meta-analysis.
+#' regression_text Annotation text for regression model plots.
+baseline_risk_ranking_page_server <- function(
+    id,
+    model,
+    data,
+    treatment_df,
+    metaoutcome,
+    model_effects,
+    rank_option,
+    freq_all,
+    bugsnetdt
+) {
+  
+  moduleServer(id, function(input, output, session) {
+    ranking_panel_baseline_risk_server(
+      id = "rank_all",
+      data = data,
+      treatment_df = treatment_df,
+      model = model,
+      metaoutcome = metaoutcome,
+      rank_option = rank_option,
+      frequentist = freq_all,
+      bugsnetdt = bugsnetdt,
+      filename_prefix = "baseline_risk_",
+      title_prefix = "Baseline risk"
     )
     
   })

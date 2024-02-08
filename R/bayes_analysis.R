@@ -141,11 +141,12 @@ FormatForCreateTauSentence <- function(br_model){
 
 #' Get SUCRA data
 #'
-#' @param NMAdata Output from 'baye' function.
+#' @param NMAdata Output from 'baye' function, or output from bnma::network.run.
 #' @param rankdirection "good" or "bad" (referring to smaller outcome values).
 #' @param longdata Output from 'dataform.df' function. This should be the same dataset that was passed as the 'data' argument to baye(), which resulted in @param NMAdata.
 #'        (TM: Suggested improvement: baye() should output its 'data' argument, then @param longdata becomes superfluous, and there is no possibility of a mismatch between @param NMAdata and @param longdata.)
 #' @param cov_value covariate value if a meta-regression
+#' @param package "gemtc" or "bnma", defaults to "gemtc".
 #' @return List:
 #' - 'SUCRA' = Data frame of SUCRA data.
 #'     - 'Treatment'
@@ -167,15 +168,23 @@ FormatForCreateTauSentence <- function(br_model){
 #'     - ...
 #'     - 'Rank n_t' = Probability 'Treatment' is ranked last (n_t = number of treatments).
 #' - 'BUGSnetData' = Output from BUGSnet::data.prep with arguments from @param longdata.
-rankdata <- function(NMAdata, rankdirection, longdata, cov_value = NA) {
+rankdata <- function(NMAdata, rankdirection, longdata, cov_value = NA, package = "gemtc") {
   # data frame of colours
   colour_dat = data.frame(SUCRA = seq(0, 100, by = 0.1)) 
   colour_dat = dplyr::mutate(colour_dat, colour = seq(0, 100, length.out = 1001)) 
   
   # probability rankings
-  prob <- as.data.frame(print(gemtc::rank.probability(NMAdata, 
-                                                      preferredDirection=(if (rankdirection=="good") -1 else 1), 
-                                                      covariate = cov_value))) # rows treatments, columns ranks
+  if (package == "gemtc"){
+    prob <- as.data.frame(print(gemtc::rank.probability(NMAdata, 
+                                                        preferredDirection=(if (rankdirection=="good") -1 else 1),
+                                                        covariate = cov_value))) # rows treatments, columns ranks
+  } else if (package == "bnma"){
+    prob <- as.data.frame(t(NMAdata$rank.tx))
+    #Remove "treatment " from the start of the treatment names
+    rownames(prob) <- substr(rownames(prob), start = 11, stop = nchar(rownames(prob)))
+  } else{
+    stop("package must be 'gemtc' or 'bnma'") 
+  }
   names(prob)[1:ncol(prob)] <- paste("Rank ", 1:(ncol(prob)), sep="")
   sucra <- gemtc::sucra(prob)  # 1 row of SUCRA values for each treatment column
   treatments <- stringr::str_wrap(gsub("_", " ", row.names(prob)), width=10)

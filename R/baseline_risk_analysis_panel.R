@@ -45,6 +45,7 @@ baseline_risk_analysis_panel_server <- function(    id,
                                                     metaoutcome,
                                                     outcome_measure,
                                                     model_effects,
+                                                    freq_all,
                                                     bugsnetdt
 ) {
   shiny::moduleServer(id, function(input, output, session) {
@@ -89,18 +90,16 @@ baseline_risk_analysis_panel_server <- function(    id,
     )
     
     # 4c-4 Ranking Panel
-    covariate_ranking_page_server(
-      id = "cov_ranking",
-      model = model_output,
+    baseline_risk_ranking_page_server(
+      id = "baseline_risk_ranking",
+      model = model_reactive,
       data = all_data,
       treatment_df = treatment_df,
       metaoutcome = metaoutcome,
-      outcome_measure = outcome_measure,
       model_effects = model_effects,
       rank_option = rank_option,
       freq_all = freq_all,
-      bugsnetdt = bugsnetdt,
-      cov_value = covariate_value
+      bugsnetdt = bugsnetdt
     )
       
     })
