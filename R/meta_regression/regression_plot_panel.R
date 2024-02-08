@@ -160,10 +160,6 @@ regression_plot_panel_ui <- function(id) {
 regression_plot_panel_server <- function(id, model_output, treatment_df, reference) {
   shiny::moduleServer(id, function(input, output, session) {
     
-    ref_name <- renderText({
-      reference()
-    })
-    
     available_to_add <- reactive({
       raw_labels = treatment_df()$RawLabel
       raw_reference = treatment_df()$RawLabel[treatment_df()$Label == model_output()$reference_name]
