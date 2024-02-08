@@ -68,7 +68,7 @@ long_format_upload_panel_ui <- function(id) {
     p('Select the reference treatment in the drop-down box. By default, MetaInsight will select a treatment which matches common names for a standard reference treatment.'),
     hr(),
     conditionalPanel(
-      condition = "input.metaoutcome=='Continuous'",
+      condition = "output.metaoutcome=='Continuous'",
       ns = ns,
       p(
         HTML(
@@ -81,7 +81,7 @@ long_format_upload_panel_ui <- function(id) {
       )
     ),
     conditionalPanel(
-      condition = "input.metaoutcome=='Binary'",
+      condition = "output.metaoutcome=='Binary'",
       ns = ns,
       p(
         "This default dataset for binary outcome data is from Hasselblad, V. (1998), Meta-Analysis of Multi-Treatment Studies, 
