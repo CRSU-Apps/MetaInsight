@@ -7,37 +7,28 @@ home_page_ui <- function(id) {
   ns <- NS(id)
   div(
     tags$head(
-      tags$script('
-                                var dimension = [0, 0];
-                                $(document).on("shiny:connected", function(e) {
-                                    dimension[0] = window.innerWidth;
-                                    dimension[1] = window.innerHeight;
-                                    Shiny.onInputChange("dimension", dimension);
-                                });
-                                $(window).resize(function(e) {
-                                    dimension[0] = window.innerWidth;
-                                    dimension[1] = window.innerHeight;
-                                    Shiny.onInputChange("dimension", dimension);
-                                });
-                            ')
+      tags$script(
+        'var dimension = [0, 0];
+        $(document).on("shiny:connected", function(e) {
+            dimension[0] = window.innerWidth;
+            dimension[1] = window.innerHeight;
+            Shiny.onInputChange("dimension", dimension);
+        });
+        $(window).resize(function(e) {
+            dimension[0] = window.innerWidth;
+            dimension[1] = window.innerHeight;
+            Shiny.onInputChange("dimension", dimension);
+        });'
+      )
     ),
     h2("MetaInsight v5.1.2", align= "left"),
     fluidRow(
       column(
         width = 3,
-        prettyRadioButtons(
-          inputId = ns("metaoutcome"),
-          label = "Please select your outcome type:",
-          choices = c(
-            "Continuous (e.g. mean difference) " = "Continuous",
-            "Binary (e.g. Odds Ratio)" = "Binary"
-          ),
-          animation = "pulse",
-          status = "info",
-          width = '400px'
+        div(
+          tags$h4("Selection of continuous or binary outcomes has moved to the data upload page"),
+          style = "color: #aa0000; border: solid; border-color: lightgray; border-width: thin; border-radius: 6pt; padding: 0 10pt;"
         ),
-        br(),
-        br(),
         img(src='network2.jpg', width=500, height=400, align = "center")
       ),
       column(width = 2),
@@ -119,6 +110,6 @@ home_page_ui <- function(id) {
 #' @param id ID of the module
 home_page_server <- function(id) {
   moduleServer(id, function(input, output, session) {
-    return(reactive({ input$metaoutcome }))
+    # Do nothing
   })
 }

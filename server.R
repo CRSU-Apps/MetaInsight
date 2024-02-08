@@ -17,16 +17,13 @@ shinyServer(function(input, output, session) {
   # Reactive functions used in various places
   #####
   
-  # Define outcome measure (continuous or binary) - NVB
-  metaoutcome <- home_page_server(id = "home")
+  home_page_server(id = "home")
   
-  data_reactives <- load_data_page_server(
-    id = 'load_data_page',
-    metaoutcome = metaoutcome
-  )
+  data_reactives <- load_data_page_server(id = 'load_data_page')
   data <- data_reactives$data
   is_default_data = data_reactives$is_default_data
   treatment_df <- data_reactives$treatment_df
+  metaoutcome <- data_reactives$metaoutcome
   
   data_analysis_page_server(
     id = "data_analysis",
