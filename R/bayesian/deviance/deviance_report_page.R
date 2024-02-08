@@ -14,6 +14,7 @@ deviance_report_page_ui <- function(id, item_names) {
     function(name) {
       div <- deviance_report_panel_ui(id = ns(as.character(index)), item_name = name)
       # Update the index variable in the outer scope with <<-
+      # This updates the variable defined above the `sapply` call instead of creating a new variable with the same name within this inner function
       index <<- index + 1
       return(div)
     }
@@ -135,6 +136,7 @@ deviance_report_page_server <- function(id, models) {
       function(mod) {
         deviance_report_panel_server(id = as.character(index), model = mod)
         # Update the index variable in the outer scope with <<-
+        # This updates the variable defined above the `sapply` call instead of creating a new variable with the same name within this inner function
         index <<- index + 1
       }
     )
