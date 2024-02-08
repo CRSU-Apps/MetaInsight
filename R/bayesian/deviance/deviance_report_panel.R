@@ -2,6 +2,7 @@
 #' Module UI for the deviance report panel
 #' 
 #' @param id ID of the module
+#' @param item_names Name of this deviance report item.
 #' @return List of divs containing the plots. Named "residual", "per_arm", and "leverage".
 deviance_report_panel_ui <- function(id, item_name) {
   ns <- NS(id)
@@ -27,8 +28,7 @@ deviance_report_panel_ui <- function(id, item_name) {
 #' Module server for the deviance report panel.
 #' 
 #' @param id ID of the module
-#' @param model Reactive containing bayesian meta-analysis for all studies
-#' @param model_sub Reactive containing meta-analysis with studies excluded
+#' @param model Reactive containing bayesian meta-analysis.
 deviance_report_panel_server <- function(id, model) {
   moduleServer(id, function(input, output, session) {
 

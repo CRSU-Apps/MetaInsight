@@ -13,6 +13,7 @@ deviance_report_page_ui <- function(id, item_names) {
     item_names,
     function(name) {
       div <- deviance_report_panel_ui(id = ns(as.character(index)), item_name = name)
+      # Update the index variable in the outer scope with <<-
       index <<- index + 1
       return(div)
     }
@@ -133,6 +134,7 @@ deviance_report_page_server <- function(id, models) {
       models,
       function(mod) {
         deviance_report_panel_server(id = as.character(index), model = mod)
+        # Update the index variable in the outer scope with <<-
         index <<- index + 1
       }
     )
