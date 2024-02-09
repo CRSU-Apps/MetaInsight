@@ -92,7 +92,7 @@ ranking_forest_panel_server <- function(
 
 
 
-#' Module server for the ranking panel.
+#' Module server for the baseline risk ranking panel.
 #' 
 #' @param id ID of the module
 #' @param model Reactive containing bayesian meta-analysis for all studies

@@ -141,7 +141,7 @@ FormatForCreateTauSentence <- function(br_model){
 
 #' Get SUCRA data
 #'
-#' @param NMAdata Output from 'baye' function, or output from bnma::network.run.
+#' @param NMAdata Output from 'baye' function or from bnma::network.run.
 #' @param rankdirection "good" or "bad" (referring to smaller outcome values).
 #' @param longdata Output from 'dataform.df' function. This should be the same dataset that was passed as the 'data' argument to baye(), which resulted in @param NMAdata.
 #'        (TM: Suggested improvement: baye() should output its 'data' argument, then @param longdata becomes superfluous, and there is no possibility of a mismatch between @param NMAdata and @param longdata.)
@@ -179,7 +179,11 @@ rankdata <- function(NMAdata, rankdirection, longdata, cov_value = NA, package =
                                                         preferredDirection=(if (rankdirection=="good") -1 else 1),
                                                         covariate = cov_value))) # rows treatments, columns ranks
   } else if (package == "bnma"){
-    prob <- as.data.frame(t(NMAdata$rank.tx))
+    if (rankdirection == "good"){
+      prob <- as.data.frame(t(NMAdata$rank.tx))
+    } else{
+      prob <- as.data.frame(t(BnmaSwitchRanking(NMAdata$rank.tx)))
+    }
     #Remove "treatment " from the start of the treatment names
     rownames(prob) <- substr(rownames(prob), start = 11, stop = nchar(rownames(prob)))
   } else{

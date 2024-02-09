@@ -129,12 +129,12 @@ BaselineRiskDicTable <- function(br_model){
 
 #' Puts a relative effects table from bnma into gemtc format
 #'
-#' @param br_model Output from bnma::network.run, typically created from BaselineRiskRegression().
+#' @param median_ci_table Output from bnma::relative.effects.table(, summary_stat = "ci")
 #' @return A relative effects table in the same format as from gemtc.
-BaselineRiskRelativeEffectsTable <- function(br_model){
-  #Table with entries in the form "[lower_ci, median, upper_ci]"
-  median_ci_table <- bnma::relative.effects.table(result = br_model,
-                                                  summary_stat = "ci")
+BaselineRiskRelativeEffectsTable <- function(median_ci_table){
+  #Entries in the input table are in the form "[lower_ci,median,upper_ci]" (no spaces)
+  
+  #The dimensions of the (square) table
   dim_median <- nrow(median_ci_table)
   #Create matrices to store the lower_ci, median and upper_ci separately
   lower_ci <- matrix(nrow = dim_median, ncol = dim_median)
@@ -171,7 +171,7 @@ BaselineRiskRelativeEffectsTable <- function(br_model){
                  stop = as.vector(
                    gregexpr(pattern = ",",
                             text = median_ci_table[row, col])[[1]]
-                 )[2] - 2
+                 )[2] - 1
           )
         ), digits = 2
       )
@@ -203,3 +203,18 @@ BaselineRiskRelativeEffectsTable <- function(br_model){
   
   return(median_ci_table_new)
 }
+
+
+
+
+#' Change the ranking direction in a bnma ranking table.
+#'
+#' @param ranking_table The $rank.tx table from output from bnma::network.run()
+#' @return A relative effects table in the same format as from gemtc.
+BnmaSwitchRanking <- function(ranking_table){
+  ranking_table <- cbind(ranking_table, data.frame(new_ranks = nrow(ranking_table):1))
+  new_table <- dplyr::arrange(ranking_table, ranking_table$new_ranks)
+  rownames(new_table) <- rownames(ranking_table)
+  return(as.matrix(dplyr::select(new_table, !"new_ranks")))
+}
+                            

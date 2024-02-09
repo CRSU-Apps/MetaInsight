@@ -45,6 +45,7 @@ baseline_risk_analysis_panel_server <- function(    id,
                                                     metaoutcome,
                                                     outcome_measure,
                                                     model_effects,
+                                                    rank_option,
                                                     freq_all,
                                                     bugsnetdt
 ) {

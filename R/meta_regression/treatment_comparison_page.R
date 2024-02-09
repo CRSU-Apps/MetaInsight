@@ -67,7 +67,7 @@ covariate_treatment_comparisons_page_server <- function(
 
 
 
-#' Module server for the covariate regression treatment comparisons page.
+#' Module server for the baseline risk regression treatment comparisons page.
 #' 
 #' @param id ID of the module
 #' @param model Reactive containing covariate regression meta-analysis for all studies

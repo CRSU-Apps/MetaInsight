@@ -114,6 +114,7 @@ meta_regression_tab_server <- function(
           metaoutcome = metaoutcome,
           outcome_measure = outcome_measure,
           model_effects = model_effects,
+          rank_option = rank_option,
           freq_all = freq_all,
           bugsnetdt = bugsnetdt
         )
