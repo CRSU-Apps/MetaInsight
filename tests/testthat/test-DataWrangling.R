@@ -983,7 +983,7 @@ test_that("LongToWide() correctly converts continuous wide data with continuous 
 
 
 
-test_that("DeleteControlTreatment() deletes only rows with control treatments", {
+test_that("KeepOrDeleteControlTreatment() deletes only rows with control treatments", {
   data <- data.frame(Study = c("A", "A", "B", "B", "C", "C", "C", "D", "D"),
                      T = c(1, 2, 2, 3, 1, 2, 3, 3, 4),
                      Treatment = c("Hydrogen", "Oxygen", "Oxygen", "Sulphur", "Hydrogen", "Oxygen", "Sulphur", "Sulphur", "Zinc"))
@@ -996,12 +996,12 @@ test_that("DeleteControlTreatment() deletes only rows with control treatments", 
                                 Control = c("Hydrogen", "Oxygen", "Hydrogen", "Hydrogen", "Sulphur"))
   attr(data_no_control, "row.names") <- as.integer(c(2, 4, 6, 7, 9))
   
-  expect_equal(DeleteControlTreatment(data, treatments), data_no_control)
+  expect_equal(KeepOrDeleteControlTreatment(data, treatments, "delete"), data_no_control)
 })
 
 
 
-test_that("KeepControlTreatment() keeps only rows with control treatments", {
+test_that("KeepOrDeleteControlTreatment() keeps only rows with control treatments", {
   data <- data.frame(Study = c("A", "A", "B", "B", "C", "C", "C", "D", "D"),
                      T = c(1, 2, 2, 3, 1, 2, 3, 3, 4),
                      Treatment = c("Hydrogen", "Oxygen", "Oxygen", "Sulphur", "Hydrogen", "Oxygen", "Sulphur", "Sulphur", "Zinc"))
@@ -1014,5 +1014,5 @@ test_that("KeepControlTreatment() keeps only rows with control treatments", {
                              Control = c("Hydrogen", "Oxygen", "Hydrogen", "Sulphur"))
   attr(data_control, "row.names") <- as.integer(c(1, 3, 5, 8))
   
-  expect_equal(KeepControlTreatment(data, treatments), data_control)
+  expect_equal(KeepOrDeleteControlTreatment(data, treatments, "keep"), data_control)
 })

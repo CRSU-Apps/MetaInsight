@@ -316,24 +316,3 @@ KeepOrDeleteControlTreatment <- function(data, treatments, keep_delete){
   }
 }
 
-
-
-#' Delete rows in @param data corresponding to the control treatment in each study.
-#' 
-#' @param data Data in long format, plus the column 'Treatment', a text version of 'T'.
-#' @param treatments Vector of treatments with the reference treatment first.
-#' @return @param data with rows corresponding to the control treatment deleted, and a new column 'Control'.
-DeleteControlTreatment <- function(data, treatments){
-  return(KeepOrDeleteControlTreatment(data = data, treatments = treatments, keep_delete = "delete"))
-}
-
-
-
-#' Keep rows in @param data corresponding to the control treatment in each study.
-#' 
-#' @param data Data in long format, plus the column 'Treatment', a text version of 'T'.
-#' @param treatments Vector of treatments with the reference treatment first.
-#' @return @param data with rows corresponding to the control treatment kept, and a new column 'Control'.
-KeepControlTreatment <- function(data, treatments){
-  return(KeepOrDeleteControlTreatment(data = data, treatments = treatments, keep_delete = "keep"))
-}

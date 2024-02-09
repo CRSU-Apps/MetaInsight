@@ -19,9 +19,9 @@ CreateVMatrix <- function(data, studies, treatments, outcome_type, outcome_measu
   #Number of studies
   n_studies <- length(studies)
   #Data with only control treatment rows kept
-  data_control <- KeepControlTreatment(data = data, treatments = treatments)
+  data_control <- KeepOrDeleteControlTreatment(data = data, treatments = treatments, keep_delete = "keep")
   #Data with control treatment rows deleted
-  data_no_control <- DeleteControlTreatment(data = data, treatments = treatments)
+  data_no_control <- KeepOrDeleteControlTreatment(data = data, treatments = treatments, keep_delete = "delete")
   #Create a wide version of data
   data_wide <- merge(data_control, data_no_control, by = "Study")
   #Used as labels for the matrix rows and columns
@@ -129,7 +129,7 @@ CreateXMatrix <- function(data, studies, treatments, covar_centred, cov_paramete
   #Reference treatment
   reference <- treatments[1]
   #Data with control treatment rows deleted
-  data_no_control <- DeleteControlTreatment(data = data, treatments = treatments)
+  data_no_control <- KeepOrDeleteControlTreatment(data = data, treatments = treatments, keep_delete = "delete")
   #Used as labels for the matrix rows
   study_treatment_label <- paste0("(", data_no_control$Study, ")", data_no_control$Control, ":", data_no_control$Treatment)
   
@@ -209,7 +209,7 @@ CreateXMatrix <- function(data, studies, treatments, covar_centred, cov_paramete
         X[row_index, col_index_beta] <- covar_centred[data_no_control$Study[i]]
         
         #If the study does not contain the reference treatment...
-      } else if (data_no_control$Control[i] != reference){
+      } else{
         #...put 1 in the treatment column...
         X[row_index, col_index_d_treat] <- 1
         #...put -1 in the control treatment column...
@@ -320,7 +320,7 @@ CreateLambdaTauMatrix <- function(data, studies, treatments, std_dev_d){
   #Between study-variance
   var_d <- std_dev_d^2
   #Data with control treatment rows deleted
-  data_no_control <- DeleteControlTreatment(data = data, treatments = treatments)
+  data_no_control <- KeepOrDeleteControlTreatment(data = data, treatments = treatments, keep_delete = "delete")
   #Used as labels for the matrix rows and columns
   study_treatment_label <- paste0("(", data_no_control$Study, ")", data_no_control$Control, ":", data_no_control$Treatment)
   #Create the Lambda_tau matrix with var_d on the leading diagonal
