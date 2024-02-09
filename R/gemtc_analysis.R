@@ -115,6 +115,7 @@ RunCovariateModel <- function(data, treatment_ids, outcome_type, outcome, covari
 #' 
 #' @param model Completed model object after running RunCovariateRegression()
 #' @param cov_value Value of covariate for which to give output (default value the mean of study covariates)
+#' @param outcome_measure The meta analysis outcome measure: "MD", "OR" or "RR"
 #' @return List of gemtc related output:
 #'  mtcResults = model object itself carried through (needed to match existing code)
 #'  mtcRelEffects = data relating to presenting relative effects;
@@ -125,7 +126,10 @@ RunCovariateModel <- function(data, treatment_ids, outcome_type, outcome, covari
 #'  cov_value_sentence = text output stating the value for which the covariate has been set to for producing output
 #'  slopes = named list of slopes for the regression equations (unstandardised - equal to one 'increment')
 #'  intercepts = named list of intercepts for the regression equations at cov_value
-CovariateModelOutput <- function(model, cov_value) {
+#'  outcome = The outcome type for the analysis eg. "MD" or "OR"
+#'  mtcNetwork = The network object from GEMTC
+#'  model = The type of linear model, either "fixed" or "random"
+CovariateModelOutput <- function(model, cov_value, outcome_measure) {
   
   # Relative Effects raw data
   rel_eff <- gemtc::relative.effect(model, as.character(model$model$regressor$control), covariate = cov_value)
@@ -160,16 +164,21 @@ CovariateModelOutput <- function(model, cov_value) {
   names(intercepts) <- levels(model$model$data$reg.control)[! levels(model$model$data$reg.control) %in% model$model$data$reg.control]
   
   # naming conventions to match current Bayesian functions
-  return(list(
-    mtcResults = model,
-    mtcRelEffects = rel_eff,
-    rel_eff_tbl = rel_eff_tbl,
-    a = model_text,
-    sumresults = summary,
-    dic = fit_stats,
-    cov_value_sentence = cov_value_sentence,
-    slopes = slopes,
-    intercepts = intercepts)
+  return(
+    list(
+      mtcResults = model,
+      mtcRelEffects = rel_eff,
+      rel_eff_tbl = rel_eff_tbl,
+      a = model_text,
+      sumresults = summary,
+      dic = fit_stats,
+      cov_value_sentence = cov_value_sentence,
+      slopes = slopes,
+      intercepts = intercepts,
+      outcome = outcome_measure,
+      mtcNetwork = model$model$network,
+      model = model$model$linearModel
+    )
   )
 }
 

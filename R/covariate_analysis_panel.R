@@ -189,7 +189,7 @@ covariate_analysis_panel_server <- function(
     
     # obtain gemtc output types to be used in rest of page
     model_output <- reactive({
-      m_output <- CovariateModelOutput(model = model_reactive(), cov_value = covariate_value())
+      m_output <- CovariateModelOutput(model = model_reactive(), cov_value = covariate_value(), outcome_measure = outcome_measure())
       return(m_output)
       })
     

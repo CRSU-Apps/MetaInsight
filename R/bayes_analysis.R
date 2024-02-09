@@ -287,7 +287,7 @@ bayenode <- function(data, treat_list, model, outcome, CONBI) {
 
 ### 3f. UME deviance scatter plot
 
-umeplot.df <- function(c,mtcNetwork, model,outcome) {
+umeplot.df <- function(c, mtcNetwork, model, outcome) {
   progress <- shiny::Progress$new()
   on.exit(progress$close())
   progress$set(message="Updating.", value=0)
@@ -295,11 +295,11 @@ umeplot.df <- function(c,mtcNetwork, model,outcome) {
   if (outcome == "MD") {
     like <- "normal"
     link <- "identity"
-  } 
-  else  {
+  } else  {
     like <- "binom"
     link <- ifelse (outcome == "OR","logit", "log")
   }
+  
   ume <- mtc.model(network=mtcNetwork,
                    type = "ume",
                    linearModel= model, 

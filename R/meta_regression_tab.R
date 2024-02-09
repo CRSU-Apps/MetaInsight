@@ -86,7 +86,7 @@ meta_regression_tab_ui <- function(id, page_numbering) {
 #' @param treatment_df Reactive containing data frame containing treatment IDs (Number) and names (Label)
 #' @param reference_treatment Reactive containing the sanitised name of reference treatment
 #' @param metaoutcome Reactive containing meta analysis outcome: "Continuous" or "Binary"
-#' @param outcome_measure Reactive containing meta analysis outcome measure: "MD", "SMD", "OR, "RR", or "RD"
+#' @param outcome_measure Reactive containing meta analysis outcome measure: "MD", "SMD", "OR", "RR", or "RD"
 #' @param model_effects Reactive containing model effects: either "random" or "fixed"
 #' @param rank_option Reactive containing ranking option: "good" or "bad" depending on whether small values are desirable or not
 #' @param freq_all Reactive containing frequentist meta-analysis
