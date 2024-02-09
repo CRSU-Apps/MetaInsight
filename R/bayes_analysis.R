@@ -180,9 +180,9 @@ rankdata <- function(NMAdata, rankdirection, longdata, cov_value = NA, package =
                                                         covariate = cov_value))) # rows treatments, columns ranks
   } else if (package == "bnma"){
     if (rankdirection == "good"){
-      prob <- as.data.frame(t(NMAdata$rank.tx))
-    } else{
       prob <- as.data.frame(t(BnmaSwitchRanking(NMAdata$rank.tx)))
+    } else{
+      prob <- as.data.frame(t(NMAdata$rank.tx))
     }
     #Remove "treatment " from the start of the treatment names
     rownames(prob) <- substr(rownames(prob), start = 11, stop = nchar(rownames(prob)))
