@@ -130,7 +130,7 @@ data_input_panel_server <- function(id, continuous_file = 'Cont_long.csv', binar
             easyClose = TRUE,
             p("Uploaded data was invalid because:"),
             p(tags$strong(result$message)),
-            p("Please check you data file and ensure that you have the correct outcome type selected on the home page"),
+            p("Please check you data file and ensure that you have the correct outcome type selected."),
             shinyBS::bsCollapse(
               shinyBS::bsCollapsePanel(
                 title = "Show Data",
