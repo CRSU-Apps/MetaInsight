@@ -82,7 +82,10 @@ baseline_risk_treatment_comparisons_page_server <- function(
     
     # Treatment effects for all studies
     output$baye_comparison <- renderTable ({
-      BaselineRiskRelativeEffectsTable(model())
+      BaselineRiskRelativeEffectsTable(
+        bnma::relative.effects.table(model(),
+                                     summary_stat = "ci")
+      )
     }, rownames=TRUE, colnames = TRUE
     )
     
