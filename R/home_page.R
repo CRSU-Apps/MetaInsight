@@ -26,7 +26,7 @@ home_page_ui <- function(id) {
       column(
         width = 3,
         div(
-          tags$h4("Selection of continuous or binary outcomes has moved to the data upload page"),
+          tags$h4("Selection of continuous or binary outcomes has moved to the ", tags$i("Load Data"), " tab"),
           style = "color: #aa0000; border: solid; border-color: lightgray; border-width: thin; border-radius: 6pt; padding: 0 10pt;"
         ),
         img(src='network2.jpg', width=500, height=400, align = "center")
