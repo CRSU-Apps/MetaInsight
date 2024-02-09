@@ -197,7 +197,7 @@ BaselineRiskRelativeEffectsTable <- function(median_ci_table){
   
   #Paste into the format "median (lower_ci, upper_ci)"
   median_ci_table_new <- matrix(paste0(median_br, " (", lower_ci, ", ", upper_ci, ")"), nrow = dim_median)
-  diag(median_ci_table_new) <- "NA"
+  diag(median_ci_table_new) <- rownames(median_ci_table)
   rownames(median_ci_table_new) <- rownames(median_ci_table)
   colnames(median_ci_table_new) <- colnames(median_ci_table)
   
