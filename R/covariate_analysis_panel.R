@@ -2,8 +2,11 @@
 #'
 #' @param id ID of the module
 #' @return Div containing the module UI
-covariate_analysis_panel_ui <- function(id) {
+covariate_analysis_panel_ui <- function(id, page_numbering) {
   ns <- NS(id)
+  
+  page_numbering$DiveLevel()
+  
   div(
     fluidPage(
       div(
@@ -61,7 +64,7 @@ covariate_analysis_panel_ui <- function(id) {
         ns = ns,
         tabsetPanel(
           tabPanel(
-            title = "4c-1. Forest plot",
+            title = paste0(page_numbering$AddChild(), " Forest plot"),
             covariate_run_model_ui(id = ns("cov_model")),
             fixedRow(
               align = "center",
@@ -69,16 +72,20 @@ covariate_analysis_panel_ui <- function(id) {
             )
           ),
           tabPanel(
-            title = "4c-2. Regression plot",
+            title = paste0(page_numbering$AddChild(), " Regression plot"),
             regression_plot_panel_ui(id = ns("regression_plot"))
           ),
           tabPanel(
-            title = "4c-3. Comparison of all treatment pairs",
+            title = paste0(page_numbering$AddChild(), " Comparison of all treatment pairs"),
             covariate_treatment_comparisons_page_ui(id = ns("cov_treatment_comparisons"))
           ),
           tabPanel(
-            title = "4c-4. Ranking",
+            title = paste0(page_numbering$AddChild(), " Ranking"),
             covariate_ranking_page_ui(id = ns("cov_ranking"))
+          ),
+          tabPanel(
+            title = paste0(page_numbering$AddChild(), " Model details"),
+            model_details_panel_ui(id = ns("model_details"), item_names = c("regression analysis"), page_numbering)
           )
         )
       )
@@ -226,6 +233,9 @@ covariate_analysis_panel_server <- function(
       bugsnetdt = bugsnetdt,
       cov_value = covariate_value
     )
+    
+    # 4c-8 Model details
+    model_details_panel_server(id = "model_details", models = c(model_output))
 
   })
 }

@@ -3,8 +3,10 @@
 #' 
 #' @param id ID of the module
 #' @return Div for the panel
-model_details_panel_ui <- function(id, item_names) {
+model_details_panel_ui <- function(id, item_names, page_numbering) {
   ns <- NS(id)
+  
+  page_numbering$DiveLevel()
   
   # Matrix containing plots for named items
   index <- 0
@@ -27,20 +29,20 @@ model_details_panel_ui <- function(id, item_names) {
     }
   )
   
-  div(
+  ui = div(
     helpText(
       "Please note: if you change the selections on the sidebar,
       you will need to re-run the primary and/or sensitivity analysis from the 'Forest Plot' page."
     ),
     tabsetPanel(
       tabPanel(
-        title = "3g-1. Model codes",
+        title = paste0(page_numbering$AddChild(), " Model codes"),
         p(tags$strong("Model codes for analysis of all studies")),
         downloadButton(outputId = ns('download_code')),
         verbatimTextOutput(outputId = ns("code"))
       ),
       tabPanel(
-        title = "3g-2. Initial values",
+        title = paste0(page_numbering$AddChild(), " Initial values"),
         p(tags$strong("Initial values")),
         downloadButton(outputId = ns('download_inits_1'), "Download initial values for chain 1"),
         downloadButton(outputId = ns('download_inits_2'), "Download initial values for chain 2"),
@@ -49,7 +51,7 @@ model_details_panel_ui <- function(id, item_names) {
         verbatimTextOutput(outputId = ns("inits"))
       ),
       tabPanel(
-        title = "3g-3. Download simulations",
+        title = paste0(page_numbering$AddChild(), " Download simulations"),
         p(tags$strong("Download simulated data")),
         downloadButton(outputId = ns('download_data1'), "Download data from chain 1"),
         br(),
@@ -60,7 +62,7 @@ model_details_panel_ui <- function(id, item_names) {
         downloadButton(outputId = ns('download_data4'), "Download data from chain 4")
       ),
       tabPanel(
-        title = "3g-4. Deviance details",
+        title = paste0(page_numbering$AddChild(), " Deviance details"),
         
         # This is the way to get a dynamic number of columns rendered into the row
         do.call(
@@ -92,6 +94,10 @@ model_details_panel_ui <- function(id, item_names) {
       )
     )
   )
+  
+  page_numbering$FloatLevel()
+  
+  return(ui)
 }
 
 

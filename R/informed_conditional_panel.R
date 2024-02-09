@@ -4,8 +4,9 @@
 #' @param inner_ui_expression Expression for the UI function for this item.
 #' 
 #' @return Div containing the module
-informed_conditional_panel_ui <- function(id, inner_ui_expression) {
+informed_conditional_panel_ui <- function(id, inner_ui_expression, args = list()) {
   ns <- NS(id)
+  
   div(
     conditionalPanel(
       condition = "!output.supported",
@@ -15,11 +16,14 @@ informed_conditional_panel_ui <- function(id, inner_ui_expression) {
     conditionalPanel(
       condition = "output.supported",
       ns = ns,
-      eval({
-        substitute({
-          inner_ui_expression
-        })
-      })
+      eval(
+        {
+          substitute({
+            inner_ui_expression
+          })
+        },
+        envir = args
+      )
     )
   )
 }
