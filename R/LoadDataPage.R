@@ -11,11 +11,14 @@ load_data_page_ui <- function(id) {
         data_input_panel_ui(id = ns('data_input_panel'))
       ),
       mainPanel(
-        tabsetPanel(id = "instructions",
-                    long_format_upload_panel_ui(id = ns('long_upload')),
-                    wide_format_upload_panel_ui(id = ns('wide_upload')),
-                    tabPanel(title = "View Data",
-                             uiOutput(outputId = ns("tb")))
+        tabsetPanel(
+          id = "instructions",
+          long_format_upload_panel_ui(id = ns('long_upload')),
+          wide_format_upload_panel_ui(id = ns('wide_upload')),
+          tabPanel(
+            title = "View Data",
+            uiOutput(outputId = ns("tb"))
+          )
         )
       )
     )
