@@ -44,13 +44,23 @@ if (storageAvailable("localStorage")) {
     }
   });
   
-  // Stored data
-  Shiny.addCustomMessageHandler('update-storage', function(m) {
+  // Set stored data
+  Shiny.addCustomMessageHandler('add-to-storage', function(m) {
     // update local storage (for persistent effect)
     localStorage.setItem(m.id, m.value);
     
     // also update shiny input (for the current session)
     storedVals[m.id] = m.value;
+    Shiny.setInputValue('storage', storedVals, {priority: 'event'});
+  });
+  
+  // Remove stored data
+  Shiny.addCustomMessageHandler('remove-from-storage', function(m) {
+    // update local storage (for persistent effect)
+    localStorage.removeItem(m.id);
+    
+    // also update shiny input (for the current session)
+    delete storedVals[m.id];
     Shiny.setInputValue('storage', storedVals, {priority: 'event'});
   });
 } else {

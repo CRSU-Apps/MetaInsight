@@ -17,18 +17,31 @@ LocalStorage <- R6::R6Class(
       })
     },
     #' @description
-    #' Write a value to the browser local storage.
+    #' Write a value to the browser local storage. This will overwrite the value if it is already stored.
     #' 
     #' @param id (`character(1)`)\cr
     #'   Name of the value to store.
     #' @param value (`any`)\cr
     #'   Value to store.
-    UpdateStoredValue = function(id, value) {
+    SetStoredValue = function(id, value) {
       private$session$sendCustomMessage(
-        "update-storage", 
+        "add-to-storage", 
         list(
           id = id,
           value = value
+        )
+      )
+    },
+    #' @description
+    #' Remove a value from the browser local storage.
+    #' 
+    #' @param id (`character(1)`)\cr
+    #'   Name of the value to remove
+    RemoveStoredValue = function(id) {
+      private$session$sendCustomMessage(
+        "remove-from-storage", 
+        list(
+          id = id
         )
       )
     },
@@ -43,6 +56,17 @@ LocalStorage <- R6::R6Class(
     GetStoredValue = function(id) {
       if (!is.null(isolate(private$storage()))) {
         return(isolate(private$storage())[[id]])
+      }
+      return(NULL)
+    },
+    #' @description
+    #' Retrieve the IDs of all values in the browser local storage. This does not take a reactive dependency.
+    #'   
+    #' @return
+    #'   Vector of store item IDs, or NULL if storage is not available.
+    GetStoredIds = function() {
+      if (!is.null(isolate(private$storage()))) {
+        return(isolate(names(private$storage())))
       }
       return(NULL)
     }

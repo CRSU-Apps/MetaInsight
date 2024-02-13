@@ -49,7 +49,7 @@ google_analytics_header_server <- function(id, app_name, google_analytics_id) {
       input$accept,
       {
         shiny::removeModal()
-        storage$UpdateStoredValue(id = cookie_name, value = TRUE)
+        storage$SetStoredValue(id = cookie_name, value = TRUE)
         gdpr_cookie_value(TRUE)
       }
     )
@@ -58,7 +58,7 @@ google_analytics_header_server <- function(id, app_name, google_analytics_id) {
       input$reject,
       {
         shiny::removeModal()
-        storage$UpdateStoredValue(id = cookie_name, value = FALSE)
+        storage$SetStoredValue(id = cookie_name, value = FALSE)
         gdpr_cookie_value(FALSE)
       }
     )
