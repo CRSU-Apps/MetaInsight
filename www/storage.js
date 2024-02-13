@@ -38,9 +38,9 @@ if (storageAvailable("localStorage")) {
         var tmpKey = localStorage.key(i);
         storedVals[tmpKey] = localStorage.getItem(tmpKey);
       }
-      Shiny.setInputValue('<<STORAGE_NAME>>', storedVals, {priority: 'event'});
+      Shiny.setInputValue('storage', storedVals, {priority: 'event'});
     } else {
-      Shiny.setInputValue('<<STORAGE_NAME>>', null);
+      Shiny.setInputValue('storage', null);
     }
   });
   
@@ -51,9 +51,9 @@ if (storageAvailable("localStorage")) {
     
     // also update shiny input (for the current session)
     storedVals[m.id] = m.value;
-    Shiny.setInputValue('<<STORAGE_NAME>>', storedVals, {priority: 'event'});
+    Shiny.setInputValue('storage', storedVals, {priority: 'event'});
   });
 } else {
-  // We are fucked ...
-  Shiny.setInputValue('<<STORAGE_NAME>>', null);
+  // Storage is unavailable
+  Shiny.setInputValue('storage', null);
 }

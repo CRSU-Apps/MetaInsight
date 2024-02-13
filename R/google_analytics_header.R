@@ -1,7 +1,7 @@
 
 google_analytics_header_ui <- function(id) {
   ns <- NS(id)
-  div(
+  tags$head(
     IncludeLocalStorage(),
     uiOutput(outputId = ns("analytics_script"))
   )
@@ -12,13 +12,12 @@ google_analytics_header_server <- function(id, app_name, google_analytics_id) {
     ns <- session$ns
     
     cookie_name = glue::glue("{app_name}_analytics")
-    
     gdpr_cookie_value <- reactiveVal(NULL)
-    
     storage <- LocalStorage$new()
     
-    observe({
+    initial_value_observer <- observe({
       gdpr_cookie_value(storage$GetStoredValue(cookie_name))
+      initial_value_observer$destroy()
     })
     
     observeEvent(
