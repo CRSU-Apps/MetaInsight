@@ -100,7 +100,7 @@ home_page_ui <- function(id) {
         tags$p("MetaInsight is part of the Complex Reviews Synthesis Unit (CRSU) suite of evidence synthesis apps. 
         The development of these apps are currently funded (majority) and overseen by the Evidence Synthesis Group @ CRSU (NIHR153934). 
         Further details of other funders and support, current and past, can be found ",
-          tags$a(href="https://github.com/CRSU-Apps/.github/blob/main/DetailedFundingStatement.docx", "on our GitHub page"),
+          tags$a(href="https://github.com/CRSU-Apps/.github/blob/main/DetailedFundingStatement.pdf", "on our GitHub page"),
         ". The views expressed are those of the author(s) and not necessarily those of the NIHR or the Department of Health and Social Care."),
         tags$p(
           "More information about the UK NIHR Complex Reviews Synthesis Unit (CRSU) can be found ",
