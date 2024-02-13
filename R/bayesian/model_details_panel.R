@@ -192,8 +192,14 @@ model_details_panel_server <- function(id, models) {
         })
         
         # UME inconsistency model
-        output[[glue::glue("dev_ume_{index}")]] <- renderPrint({
-          scat_plot(mod())$y
+        output[[glue::glue("dev_ume_{index}")]] <- renderText({
+          printed_output <- capture.output(scat_plot(mod())$y)
+          
+          # Strip out progress bars
+          progress_bar_lines <- grep("^(\\s*\\|\\s+\\|(\\+|\\*)*?\\s*\\|\\s+[0-9]+%)+$", printed_output)
+          printed_output <- printed_output[-progress_bar_lines]
+          
+          return(paste0(printed_output, collapse = "\n"))
         })
         
         index <<- index + 1
