@@ -12,6 +12,7 @@
 #'  - 'ntx' = Number of treatments
 #'  - 'treat_list2' = Same as @param treat_list (TM: Not sure why this is here)
 #'  - 'mtcRelEffects' = Output from gemtc::relative.effect
+#'  - 'rel_eff_tbl = Output from gemtc::relative.effect.table
 #'  - 'sumresults' = summary(mtcRelEffects)
 #'  - 'a' = "fixed effect" or "random effect"
 #'  - 'mtcNetwork' = Output from gemtc::mtc.network
@@ -55,6 +56,7 @@ baye <- function(data,treat_list, model, outcome, CONBI, ref) {
     mtcResults <- mtc.run(mtcModel)   # Run gemtc model object for analysis
     progress$inc(0.4, detail="Rendering results")
     mtcRelEffects <- relative.effect(mtcResults,t1=ref)  #Set reference treatment
+    rel_eff_tbl <- relative.effect.table(mtcResults) 
     #mtcRelEffects <- relative.effect(mtcResults,t1=treat_list2[1,2])  #Set reference treatment
     sumresults<-summary(mtcRelEffects)
     a<- paste(model,"effect",sep=" ")   #Create text for random/fixed effect
@@ -64,7 +66,7 @@ baye <- function(data,treat_list, model, outcome, CONBI, ref) {
     sumoverall<-summary(mtcResults)
     dic<-as.data.frame(sumoverall$DIC) # The statistics 'Dbar', 'pD', 'DIC', and 'data points'
     list(mtcResults=mtcResults,lstx=lstx,ntx=ntx,treat_list2=treat_list2,mtcRelEffects=mtcRelEffects,
-         sumresults=sumresults, a=a, mtcNetwork=mtcNetwork, dic=dic, model=model, outcome=outcome)
+         rel_eff_tbl=rel_eff_tbl, sumresults=sumresults, a=a, mtcNetwork=mtcNetwork, dic=dic, model=model, outcome=outcome)
   }}
 
 
@@ -109,6 +111,31 @@ CreateTauSentence <- function(results,outcome) {
   }
 }
 
+
+#' Put the output from a bnma model into the format of a gemtc model, in order to apply CreateTauSentence().
+#'
+#' @param br_model Output from bnma::network.run.
+#' @return List:
+#'  - 'sumresults' = List:
+#'    - 'summaries' = equivalent of summary(gemtc model)$summaries.
+#'    - 'a' = "fixed effect" or "random effect".
+FormatForCreateTauSentence <- function(br_model){
+  br_summary <- summary(br_model)
+  #Rename "sd" (bnma name) to "sd.d" (gemtc name)
+  rownames(br_summary$summary.samples$statistics)[rownames(br_summary$summary.samples$statistics) == "sd"] <- "sd.d"
+  rownames(br_summary$summary.samples$quantiles)[rownames(br_summary$summary.samples$quantiles) == "sd"] <- "sd.d"
+  return(
+    list(
+      sumresults = list(
+        summaries = br_summary$summary.samples
+      ),
+      a = paste0(br_model$network$type, " effect")
+    )
+  )
+}
+
+
+
 ### 3c. Ranking results 
 
 
@@ -118,6 +145,7 @@ CreateTauSentence <- function(results,outcome) {
 #' @param rankdirection "good" or "bad" (referring to smaller outcome values).
 #' @param longdata Output from 'dataform.df' function. This should be the same dataset that was passed as the 'data' argument to baye(), which resulted in @param NMAdata.
 #'        (TM: Suggested improvement: baye() should output its 'data' argument, then @param longdata becomes superfluous, and there is no possibility of a mismatch between @param NMAdata and @param longdata.)
+#' @param cov_value covariate value if a meta-regression
 #' @return List:
 #' - 'SUCRA' = Data frame of SUCRA data.
 #'     - 'Treatment'
@@ -139,13 +167,15 @@ CreateTauSentence <- function(results,outcome) {
 #'     - ...
 #'     - 'Rank n_t' = Probability 'Treatment' is ranked last (n_t = number of treatments).
 #' - 'BUGSnetData' = Output from BUGSnet::data.prep with arguments from @param longdata.
-rankdata <- function(NMAdata, rankdirection, longdata) {
+rankdata <- function(NMAdata, rankdirection, longdata, cov_value = NA) {
   # data frame of colours
   colour_dat = data.frame(SUCRA = seq(0, 100, by = 0.1)) 
   colour_dat = dplyr::mutate(colour_dat, colour = seq(0, 100, length.out = 1001)) 
   
   # probability rankings
-  prob <- as.data.frame(print(gemtc::rank.probability(NMAdata, preferredDirection=(if (rankdirection=="good") -1 else 1)))) # rows treatments, columns ranks
+  prob <- as.data.frame(print(gemtc::rank.probability(NMAdata, 
+                                                      preferredDirection=(if (rankdirection=="good") -1 else 1), 
+                                                      covariate = cov_value))) # rows treatments, columns ranks
   names(prob)[1:ncol(prob)] <- paste("Rank ", 1:(ncol(prob)), sep="")
   sucra <- gemtc::sucra(prob)  # 1 row of SUCRA values for each treatment column
   treatments <- stringr::str_wrap(gsub("_", " ", row.names(prob)), width=10)

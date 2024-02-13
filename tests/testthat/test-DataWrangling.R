@@ -107,6 +107,70 @@ test_that("FindExpectedReferenceTreatment() returns first matching treatment whe
   expect_equal(!!result, "Placebo")
 })
 
+test_that(".FixColumnNameCases() fixes cases for continuous long data with covariate", {
+  data <- CleanData(read.csv("Cont_long_continuous_cov.csv"))
+  names(data) <- c("sTuDy", "t", "n", "mEaN", "sD", "CoVaR.age")
+  allowed_names = c("Study", "T", "N", "Mean", "SD", "covar.age")
+  
+  expect(all(!names(data) %in% allowed_names), failure_message = "Column names were not setup for the test correctly.")
+  
+  wrangled_data <- .FixColumnNameCases(data, "Continuous")
+  
+  expect_equal(colnames(wrangled_data), allowed_names,
+               label = format_vector_to_string(colnames(wrangled_data)),
+               expected.label = format_vector_to_string(allowed_names))
+})
+
+test_that(".FixColumnNameCases() fixes cases for continuous wide data with covariate", {
+  data <- CleanData(read.csv("Cont_wide_continuous_cov.csv"))
+  
+  arm_fields = c("t", "n", "mEaN", "sD")
+  names(data) <- c("sTuDy", paste0(arm_fields, ".1"), paste0(arm_fields, ".2"), paste0(arm_fields, ".3"), "CoVaR.age")
+  
+  allowed_arm_fields = c("T", "N", "Mean", "SD")
+  allowed_names = c("Study", paste0(allowed_arm_fields, ".1"), paste0(allowed_arm_fields, ".2"), paste0(allowed_arm_fields, ".3"), "covar.age")
+  
+  expect(all(!names(data) %in% allowed_names), failure_message = "Column names were not setup for the test correctly.")
+  
+  wrangled_data <- .FixColumnNameCases(data, "Continuous")
+  
+  expect_equal(colnames(wrangled_data), allowed_names,
+               label = format_vector_to_string(colnames(wrangled_data)),
+               expected.label = format_vector_to_string(allowed_names))
+})
+
+test_that(".FixColumnNameCases() fixes cases for binary long data with covariate", {
+  data <- CleanData(read.csv("Binary_long_continuous_cov.csv"))
+  names(data) <- c("sTuDy", "t", "r", "n", "CoVaR.age")
+  allowed_names = c("Study", "T", "R", "N", "covar.age")
+  
+  expect(all(!names(data) %in% allowed_names), failure_message = "Column names were not setup for the test correctly.")
+  
+  wrangled_data <- .FixColumnNameCases(data, "Binary")
+  
+  expect_equal(colnames(wrangled_data), allowed_names,
+               label = format_vector_to_string(colnames(wrangled_data)),
+               expected.label = format_vector_to_string(allowed_names))
+})
+
+test_that(".FixColumnNameCases() fixes cases for binary wide data with covariate", {
+  data <- CleanData(read.csv("Binary_wide_continuous_cov.csv"))
+  
+  arm_fields = c("t", "r", "n")
+  names(data) <- c("sTuDy", paste0(arm_fields, ".1"), paste0(arm_fields, ".2"), paste0(arm_fields, ".3"), "CoVaR.age")
+  
+  allowed_arm_fields = c("T", "R", "N")
+  allowed_names = c("Study", paste0(allowed_arm_fields, ".1"), paste0(allowed_arm_fields, ".2"), paste0(allowed_arm_fields, ".3"), "covar.age")
+  
+  expect(all(!names(data) %in% allowed_names), failure_message = "Column names were not setup for the test correctly.")
+  
+  wrangled_data <- .FixColumnNameCases(data, "Binary")
+  
+  expect_equal(colnames(wrangled_data), allowed_names,
+               label = format_vector_to_string(colnames(wrangled_data)),
+               expected.label = format_vector_to_string(allowed_names))
+})
+
 test_that("ReplaceTreatmentIds() updates treatment names to IDs for continuous long data", {
   data <- CleanData(read.csv("Cont_long.csv"))
   all_treatments <- FindAllTreatments(data)
@@ -637,17 +701,17 @@ test_that("CleanTreatmentIds() replaces special characters in treatment names", 
   )
   expect_equal(!!CleanTreatmentIds(treatment_ids ), !!expected_treatment_ids)
 })
-
+ 
 test_that("CleanTreatmentIds() replaces multiple sequential special characters in treatment names with single underscore", {
   treatment_ids <- data.frame(
     Number = 1:5,
-    Label = c("2 * 4 = 8", "^(*(oo)*)^ <- It's a pig", "you stupid *%£$@#!", "var <- value", ":,-)")
+    Label = c("2 * 4 = 8", "^(*(oo)*)^ <- It's a pig", "you stupid *%?$@#!", "var <- value", ":,-)")
   )
-  
+
   expected_treatment_ids <- data.frame(
     Number = 1:5,
     Label = c("2_4_8", "_oo_It_s_a_pig", "you_stupid_", "var_value", "_"),
-    RawLabel = c("2 * 4 = 8", "^(*(oo)*)^ <- It's a pig", "you stupid *%£$@#!", "var <- value", ":,-)")
+    RawLabel = c("2 * 4 = 8", "^(*(oo)*)^ <- It's a pig", "you stupid *%?$@#!", "var <- value", ":,-)")
   )
   expect_equal(!!CleanTreatmentIds(treatment_ids ), !!expected_treatment_ids)
 })
@@ -982,7 +1046,6 @@ test_that("LongToWide() correctly converts continuous wide data with continuous 
 })
 
 
-
 test_that("KeepOrDeleteControlTreatment() deletes only rows with control treatments", {
   data <- data.frame(Study = c("A", "A", "B", "B", "C", "C", "C", "D", "D"),
                      T = c(1, 2, 2, 3, 1, 2, 3, 3, 4),
@@ -1000,7 +1063,6 @@ test_that("KeepOrDeleteControlTreatment() deletes only rows with control treatme
 })
 
 
-
 test_that("KeepOrDeleteControlTreatment() keeps only rows with control treatments", {
   data <- data.frame(Study = c("A", "A", "B", "B", "C", "C", "C", "D", "D"),
                      T = c(1, 2, 2, 3, 1, 2, 3, 3, 4),
@@ -1016,3 +1078,39 @@ test_that("KeepOrDeleteControlTreatment() keeps only rows with control treatment
   
   expect_equal(KeepOrDeleteControlTreatment(data, treatments, "keep"), data_control)
 })
+
+
+test_that("GetReferenceOutcome() returns the reference outcome when the outcome is binary", {
+  data <- data.frame(Study = c("A", "A", "B", "B", "C", "C", "C", "D", "D"),
+                     T = c(1, 2, 2, 3, 1, 2, 3, 3, 4),
+                     Treatment = c("Hydrogen", "Oxygen", "Oxygen", "Sulphur", "Hydrogen", "Oxygen", "Sulphur", "Sulphur", "Zinc"),
+                     R = c(5, 7, 4, 5, 2, 6, 7, 3, 5),
+                     N = 30:38)
+  
+  treatments <- c("Hydrogen", "Oxygen", "Sulphur", "Zinc")
+  outcome_type <- "Binary"
+  
+  reference_outcome <- c(log(5 / (30 - 5)), NA, log(2 / (34 - 2)), NA)
+  names(reference_outcome) <- c("A", "B", "C", "D")
+  
+  expect_equal(GetReferenceOutcome(data, treatments, outcome_type), reference_outcome)
+})
+
+
+test_that("GetReferenceOutcome() returns the reference outcome when the outcome is continuous", {
+  data <- data.frame(Study = c("A", "A", "B", "B", "C", "C", "C", "D", "D"),
+                     T = c(1, 2, 2, 3, 1, 2, 3, 3, 4),
+                     Treatment = c("Hydrogen", "Oxygen", "Oxygen", "Sulphur", "Hydrogen", "Oxygen", "Sulphur", "Sulphur", "Zinc"),
+                     Mean = c(5, 7, 4, 5, 2, 6, 7, 3, 5),
+                     N = 30:38,
+                     SD = c(2, 3, 4, 2, 3, 4, 2, 3, 4))
+  
+  treatments <- c("Hydrogen", "Oxygen", "Sulphur", "Zinc")
+  outcome_type <- "Continuous"
+  
+  reference_outcome <- c(5, NA, 2, NA)
+  names(reference_outcome) <- c("A", "B", "C", "D")
+  
+  expect_equal(GetReferenceOutcome(data, treatments, outcome_type), reference_outcome)
+})
+

@@ -111,7 +111,6 @@ bayesian_analysis_panel_server <- function(
       id = "treatment_comparisons",
       model = model,
       model_sub = model_sub,
-      metaoutcome = metaoutcome,
       outcome_measure = outcome_measure
     )
 

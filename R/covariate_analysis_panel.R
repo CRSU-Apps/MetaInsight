@@ -36,7 +36,7 @@ covariate_analysis_panel_ui <- function(id) {
                 style = "color: orange;"
               )
             ),
-            style = "display: inline-block; vertical-align: 50%"
+            style = "display: inline-block; vertical-align: 65%"
           ),
           div(
             covariate_value_panel_ui(id = ns("covariate_value")),
@@ -67,6 +67,18 @@ covariate_analysis_panel_ui <- function(id) {
               align = "center",
               bayesian_forest_plot_plus_stats_ui(id = ns("cov_forest_plots"))
             )
+          ),
+          tabPanel(
+            title = "4c-2. Regression plot",
+            regression_plot_panel_ui(id = ns("regression_plot"))
+          ),
+          tabPanel(
+            title = "4c-3. Comparison of all treatment pairs",
+            covariate_treatment_comparisons_page_ui(id = ns("cov_treatment_comparisons"))
+          ),
+          tabPanel(
+            title = "4c-4. Ranking",
+            covariate_ranking_page_ui(id = ns("cov_ranking"))
           )
         )
       )
@@ -78,18 +90,24 @@ covariate_analysis_panel_ui <- function(id) {
 #'
 #' @param id ID of the module
 #' @param all_data Study data including covariate columns, in wide or long format
-#' @param treatment_df Reactive containing data frame containing treatment IDs (Number) and names (Label)
+#' @param treatment_df Reactive containing data frame containing treatment IDs (Number), sanitised names (Label), and original names (RawLabel)
+#' @param reference_treatment Reactive containing the sanitised name of the reference treatment
 #' @param metaoutcome Reactive containing meta analysis outcome: "Continuous" or "Binary"
 #' @param outcome_measure Reactive containing meta analysis outcome measure: "MD", "SMD", "OR, "RR", or "RD"
 #' @param model_effects Reactive containing model effects: either "random" or "fixed"
+#' @param rank_option Reactive containing ranking option: "good" or "bad" depending on whether small values are desirable or not
+#' @param freq_all Reactive containing frequentist meta-analysis
 #' @param bugsnetdt Reactive containing bugsnet meta-analysis
 covariate_analysis_panel_server <- function(
     id, 
     all_data,
     treatment_df,
+    reference_treatment,
     metaoutcome,
     outcome_measure,
     model_effects,
+    rank_option,
+    freq_all,
     bugsnetdt
     ) {
   shiny::moduleServer(id, function(input, output, session) {
@@ -161,8 +179,13 @@ covariate_analysis_panel_server <- function(
       covariate_type = reactive({ input$covariate_type_selection }),
       covariate_data = reactive({ all_data()[[covariate_title()]] })
     )
+    
     # obtain gemtc output types to be used in rest of page
-    model_output <- reactive(CovariateModelOutput(model = model_reactive(), cov_value = covariate_value()))
+    model_output <- reactive({
+      m_output <- CovariateModelOutput(model = model_reactive(), cov_value = covariate_value())
+      return(m_output)
+      })
+    
     # Create forest plot and associated statistics
     bayesian_forest_plot_plus_stats_server(
       id = "cov_forest_plots",
@@ -172,5 +195,37 @@ covariate_analysis_panel_server <- function(
       outcome_measure = outcome_measure,
       bugsnetdt = bugsnetdt
     )
+    
+    # 4c-2 Regression plot
+    regression_plot_panel_server(
+      id = "regression_plot",
+      model = model_reactive,
+      reference_treatment = reference_treatment,
+      treatment_df = treatment_df,
+      covariate_value = covariate_value
+    )
+    
+    # 4c-3 Treatment comparisons
+    covariate_treatment_comparisons_page_server(
+      id = "cov_treatment_comparisons",
+      model = model_output,
+      outcome_measure = outcome_measure
+    )
+    
+    # 4c-4 Ranking Panel
+    covariate_ranking_page_server(
+      id = "cov_ranking",
+      model = model_output,
+      data = all_data,
+      treatment_df = treatment_df,
+      metaoutcome = metaoutcome,
+      outcome_measure = outcome_measure,
+      model_effects = model_effects,
+      rank_option = rank_option,
+      freq_all = freq_all,
+      bugsnetdt = bugsnetdt,
+      cov_value = covariate_value
+    )
+
   })
 }

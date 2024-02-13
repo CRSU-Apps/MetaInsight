@@ -126,21 +126,26 @@ FindDataShape <- function(data) {
 #' @param data Data frame in which to search for treatment names
 #' @return Vector of all treatment names
 FindAllTreatments <- function(data) {
-  if (FindDataShape(data) == "long") {
-    # Long format
-    return(unique(data$T))
-  } else {
-    # Wide format
-    all_treatments <- c()
-    index <- 1
-    col <- paste0('T.', index)
-    while (col %in% colnames(data)) {
-      all_treatments <- c(all_treatments, data[[col]])
-      index <- index + 1
-      col <- paste0('T.', index)
-    }
-    return(unique(all_treatments[!is.na(all_treatments)]))
-  }
+  # Regular expression explanation:
+  # ^ = Start of string
+  # (?i) = Ignore case for matching
+  # (\\.[0-9]+)? = Optional group of full stop, followed by at least one digit
+  # $ = End of string
+  treatment_column_matches <- stringr::str_match(names(data), "^(?i)T(\\.[0-9]+)?$")
+  treatment_column_names <- treatment_column_matches[!is.na(treatment_column_matches)]
+  
+  treatment_names = unlist(
+    sapply(
+      treatment_column_names,
+      function (nom) {
+        treatments <- data[[nom]]
+        return(treatments[!is.na(treatments)])
+      }
+    )
+  )
+  
+  # Wrapped in c() to convert to an unnamed vector
+  return(unique(c(treatment_names)))
 }
 
 #' Create a copy of a vector with the given item as the first element.
@@ -180,7 +185,68 @@ FindExpectedReferenceTreatment <- function(treatments) {
   }
 }
 
-#' Replace all of the treatment names in the data with IDs, both for long and wide formats.
+#' Rename the columns of a data frame to match the expected letter casing.
+#'
+#' @param data Data frame to fix
+#' @param outcome_type Type of outcome for which to reorder, either 'Continuous' or 'Binary'
+#'
+#' @return Data frame with renamed columns.
+.FixColumnNameCases <- function(data, outcome_type) {
+  if (outcome_type == "Continuous") {
+    column_names <- continuous_column_names
+  } else if (outcome_type == "Binary") {
+    column_names <- binary_column_names
+  } else {
+    stop(glue::glue("Outcome type {outcome_type} is not recognised. Please use 'Continuous' or 'Binary'"))
+  }
+  
+  corrected_names <- unlist(
+    sapply(
+      names(data),
+      function (name) {
+        return(.CorrectColumnName(name, column_names))
+      }
+    )
+  )
+  
+  names(data) <- corrected_names
+  return(data)
+}
+
+#' Correct a column name to match the expected letter casing.
+#'
+#' @param original_name Column name to fix
+#' @param column_names Named vector where each name is a regular expression to match, and the value is the replacement string.
+#'
+#' @return The corrected column name.
+.CorrectColumnName <- function(original_name, column_names) {
+  matches <- unlist(
+    sapply(
+      column_names$pattern,
+      function(pattern) {
+        if (length(grep(pattern, original_name)) > 0) {
+          column_names$replacement[column_names$pattern == pattern]
+        } else {
+          NULL
+        }
+      }
+    )
+  )
+  
+  if (length(matches) > 0) {
+    return(
+      sub(
+        names(matches)[1],
+        matches[1],
+        original_name
+      )
+    )
+  }
+  
+  return(original_name)
+}
+
+#' Find all of the treatment names in the data, both for long and wide formats.
 #' 
 #' @param data Data frame in which to search for treatment names
 #' @param treatent_ids Data frame containing treatment names (Label) and IDs (Number)
@@ -249,6 +315,7 @@ ReorderColumns <- function(data, outcome_type) {
 #' @return Data frame which is uasable by the rest of the app
 WrangleUploadData <- function(data, treatment_ids, outcome_type) {
   new_df <- data %>%
+    .FixColumnNameCases(outcome_type) %>%
     ReplaceTreatmentIds(treatment_ids) %>%
     AddStudyIds() %>%
     ReorderColumns(outcome_type)
@@ -314,5 +381,35 @@ KeepOrDeleteControlTreatment <- function(data, treatments, keep_delete){
   } else{
     stop("keep_delete must be 'keep' or 'delete'")
   }
+}
+
+
+
+#' Get the outcome in the reference arm when it exists
+#' 
+#' @param data Data in long format, plus the column 'Treatment', a text version of 'T'.
+#' @param treatments Vector of treatments with the reference treatment first.
+#' @param outcome_type "Binary" or "Continuous".
+#' @return Vector of reference arm outcomes, named by study.
+GetReferenceOutcome <- function(data, treatments, outcome_type){
+  #Data with only control treatment rows kept
+  data_control <- KeepOrDeleteControlTreatment(data = data, treatments = treatments, keep_delete = "keep")
+  if (outcome_type == "Binary"){
+    data_control$R[data_control$Treatment != treatments[1]] <- NA
+    effect_sizes <- metafor::escalc(measure = "PLO",
+                                    xi = data_control$R,
+                                    ni = data_control$N)
+  } else if (outcome_type == "Continuous"){
+    data_control$Mean[data_control$Treatment != treatments[1]] <- NA
+    effect_sizes <- metafor::escalc(measure = "MN",
+                                    mi = data_control$Mean,
+                                    sdi = data_control$SD,
+                                    ni = data_control$N)
+  } else{
+    stop("'outcome_type' must be 'Continuous' or 'Binary'")
+  }
+  outcomes <- as.numeric(effect_sizes$yi)
+  names(outcomes) <- unique(data_control$Study)
+  return(outcomes)
 }
 
