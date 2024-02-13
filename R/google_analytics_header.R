@@ -1,12 +1,9 @@
-library(cookies)
-library(shiny)
 
 google_analytics_header_ui <- function(id) {
   ns <- NS(id)
-  add_cookie_handlers(
-    div(
-      uiOutput(outputId = ns("analytics_script"))
-    )
+  div(
+    IncludeLocalStorage(),
+    uiOutput(outputId = ns("analytics_script"))
   )
 }
 
@@ -16,9 +13,12 @@ google_analytics_header_server <- function(id, app_name, google_analytics_id) {
     
     cookie_name = glue::glue("{app_name}_analytics")
     
-    gdpr_cookie_value <- reactive({
-      cookie_value <- cookies::get_cookie(cookie_name = cookie_name)
-      return(cookie_value)
+    gdpr_cookie_value <- reactiveVal(NULL)
+    
+    storage <- LocalStorage$new()
+    
+    observe({
+      gdpr_cookie_value(storage$GetStoredValue(cookie_name))
     })
     
     observeEvent(
@@ -50,11 +50,8 @@ google_analytics_header_server <- function(id, app_name, google_analytics_id) {
       input$accept,
       {
         shiny::removeModal()
-        set_cookie(
-          cookie_name = cookie_name,
-          cookie_value = TRUE,
-          expiration = 365
-        )
+        storage$UpdateStoredValue(id = cookie_name, value = TRUE)
+        gdpr_cookie_value(TRUE)
       }
     )
     
@@ -62,11 +59,8 @@ google_analytics_header_server <- function(id, app_name, google_analytics_id) {
       input$reject,
       {
         shiny::removeModal()
-        set_cookie(
-          cookie_name = cookie_name,
-          cookie_value = FALSE,
-          expiration = 365
-        )
+        storage$UpdateStoredValue(id = cookie_name, value = FALSE)
+        gdpr_cookie_value(FALSE)
       }
     )
     
