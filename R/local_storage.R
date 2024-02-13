@@ -28,7 +28,7 @@ LocalStorage <- R6::R6Class(
         "add-to-storage", 
         list(
           id = id,
-          value = value
+          value = as.character(jsonlite::toJSON(value))
         )
       )
     },
@@ -55,7 +55,8 @@ LocalStorage <- R6::R6Class(
     #'   Value if stored in local storage, NULL if not present.
     GetStoredValue = function(id) {
       if (!is.null(isolate(private$storage()))) {
-        return(isolate(private$storage())[[id]])
+        value <- isolate(private$storage())[[id]]
+        return(jsonlite::fromJSON(value))
       }
       return(NULL)
     },
