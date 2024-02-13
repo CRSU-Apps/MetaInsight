@@ -3,6 +3,7 @@
 #'
 #' @param model_output GEMTC model results found by calling `CovariateModelOutput()`.
 #' @param treatment_df Reactive containing data frame containing treatment IDs (Number), sanitised names (Label), and original names (RawLabel).
+#' @param outcome_type Reactive type of outcome (OR, RR, RD, MD or SD)
 #' @param comparators Vector of names of comparison treatments to plot in colour.
 #' @param contribution_type Type of contribution, used to calculate sizes for the study contribution circles.
 #' @param include_covariate TRUE if the value of the covariate is to be plotted as a vertical line. Defaults to FALSE.
@@ -24,6 +25,7 @@
 CreateCompositeMetaRegressionPlot <- function(
     model_output,
     treatment_df,
+    outcome_type,
     comparators,
     contribution_type,
     include_covariate = FALSE,
@@ -38,6 +40,7 @@ CreateCompositeMetaRegressionPlot <- function(
   direct_plot <- CreateMainRegressionPlot(
     model_output = model_output,
     treatment_df = treatment_df,
+    outcome_type = outcome_type,
     comparators = comparators,
     contribution_type = contribution_type,
     include_covariate = include_covariate,

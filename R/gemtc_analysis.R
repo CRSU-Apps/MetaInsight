@@ -155,7 +155,7 @@ CovariateModelOutput <- function(model, cov_value) {
   # Obtain slope(s)
   slope_indices <- grep(ifelse(model$model$regressor$coefficient == "shared", "^B$", "^beta\\[[0-9]+\\]$"), model$model$monitors$enabled)
   model_summary <- summary(model)
-  slopes <- model_summary$summaries$statistics[slope_indices, "Mean"] / model$model$regressor$scale
+  slopes <- model_summary$summaries$quantiles[slope_indices, "50%"] / model$model$regressor$scale
   
   # Duplicate slope for each comparator when "shared" type
   if (model$model$regressor$coefficient == "shared") {
@@ -163,8 +163,9 @@ CovariateModelOutput <- function(model, cov_value) {
   }
   
   # Intercepts (regression)
-  treatment_effect <- rel_eff_summary$summaries$statistics[1:(nrow(rel_eff_summary$summaries$statistics) - 1), 1]
-  intercepts <- treatment_effect - cov_value * slopes
+  rel_eff_zero <- gemtc::relative.effect(model, as.character(model$model$regressor$control), covariate = 0)
+  rel_eff_zero_summary <- summary(rel_eff_zero)
+  intercepts <- rel_eff_zero_summary$summaries$quantiles[startsWith(rownames(rel_eff_zero_summary$summaries$quantiles), "d."), "50%"]
   
   # Rename items for intercepts and slopes
   names(slopes) <- comparator_names

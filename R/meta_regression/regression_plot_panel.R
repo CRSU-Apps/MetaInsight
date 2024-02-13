@@ -157,7 +157,8 @@ regression_plot_panel_ui <- function(id) {
 #' @param id ID of the module.
 #' @param model_output GEMTC model results found by calling `CovariateModelOutput()`.
 #' @param treatment_df Reactive containing data frame containing treatment IDs (Number), sanitised names (Label), and original names (RawLabel).
-regression_plot_panel_server <- function(id, model_output, treatment_df, reference) {
+#' @param outcome_type Reactive type of outcome (OR, RR, RD, MD or SD)
+regression_plot_panel_server <- function(id, model_output, treatment_df, outcome_type, reference) {
   shiny::moduleServer(id, function(input, output, session) {
     
     available_to_add <- reactive({
@@ -225,6 +226,7 @@ regression_plot_panel_server <- function(id, model_output, treatment_df, referen
       CreateCompositeMetaRegressionPlot(
         model_output = model_output(),
         treatment_df = treatment_df(),
+        outcome_type = outcome_type(),
         comparators = comparators,
         contribution_type = contribution_type(),
         include_covariate = input$covariate,
