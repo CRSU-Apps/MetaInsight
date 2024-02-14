@@ -210,6 +210,7 @@ FindExpectedReferenceTreatment <- function(treatments) {
   )
   
   names(data) <- corrected_names
+  
   return(data)
 }
 
