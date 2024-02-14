@@ -12,7 +12,7 @@ LocalStorage <- R6::R6Class(
     initialize = function() {
       # Get root session so that storage is not tied to module namespace
       private$session <- shiny::getDefaultReactiveDomain()$rootScope()
-      private$storage <- reactive({
+      private$storage <- shiny::reactive({
         private$session$input$storage
       })
     },
