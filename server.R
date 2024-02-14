@@ -11,7 +11,7 @@ shinyServer(function(input, output, session) {
   
   ### GDPR
   
-  google_analytics_header_server(id = "analytics", app_name = "MetaInsight", google_analytics_id = "UA-135597033-7")
+  google_analytics_header_server(id = "analytics", google_analytics_id = "UA-135597033-7")
   
   #####
   # Reactive functions used in various places

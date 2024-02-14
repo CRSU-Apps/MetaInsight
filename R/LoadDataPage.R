@@ -7,34 +7,23 @@ load_data_page_ui <- function(id) {
   ns <- NS(id)
   div(
     htmlOutput(outputId = ns("CONBI")),
-    tags$head(
-      tags$style(
-        paste0(
-          "#",
-          ns("CONBI"),
-          "{",
-          "color: white;
-          font-size: 20px;
-          font-style: bold;
-          background-color: #2196c4
-          }"
-        )
-    )
-    ),
+    tags$head(tags$style(paste0("#", ns("CONBI"), "{",
+                                "color: white;
+                                font-size: 20px;
+                                font-style: bold;
+                                background-color: #2196c4
+                                }"))),
     br(),
     sidebarLayout(
       sidebarPanel(
         data_input_panel_ui(id = ns('data_input_panel'))
       ),
       mainPanel(
-        tabsetPanel(
-          id = "instructions",
-          long_format_upload_panel_ui(id = ns('long_upload')),
-          wide_format_upload_panel_ui(id = ns('wide_upload')),
-          tabPanel(
-            title = "View Data",
-            uiOutput(outputId = ns("tb"))
-          )
+        tabsetPanel(id = "instructions",
+                    long_format_upload_panel_ui(id = ns('long_upload')),
+                    wide_format_upload_panel_ui(id = ns('wide_upload')),
+                    tabPanel(title = "View Data",
+                             uiOutput(outputId = ns("tb")))
         )
       )
     )
@@ -55,17 +44,9 @@ load_data_page_server <- function(id, metaoutcome, data_input_panel_server_funct
   moduleServer(id, function(input, output, session) {
     ### Outcome selection
     output$CONBI <- renderText({
-      paste(
-        "You have selected",
-        "<font color=\"#ffd966\"><b>",
-        metaoutcome(),
-        "</b></font>", 
-        "outcome on the 'Home' page. The instructions for formatting",
-        "<font color=\"#ffd966\"><b>",
-        metaoutcome(),
-        "</b></font>",
-        "outcomes are now displayed."
-      )
+      paste("You have selected", "<font color=\"#ffd966\"><b>", metaoutcome(),"</b></font>", 
+            "outcome on the 'Home' page. The instructions for formatting",
+            "<font color=\"#ffd966\"><b>", metaoutcome(), "</b></font>", "outcomes are now displayed.")
     })
     
     data_reactives <- data_input_panel_server_function(id = 'data_input_panel', metaoutcome = metaoutcome)
@@ -89,12 +70,8 @@ load_data_page_server <- function(id, metaoutcome, data_input_panel_server_funct
       return(WrangleUploadData(isolate(data()), treatment_list(), metaoutcome()))
     })
     
-    return(
-      list(
-        data = wrangled_data,
-        is_default_data = is_default_data,
-        treatment_df = treatment_list
-      )
-    )
+    return(list(data = wrangled_data,
+                is_default_data = is_default_data,
+                treatment_df = treatment_list))
   })
 }
