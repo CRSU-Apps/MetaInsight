@@ -115,7 +115,7 @@ LitmusRankOGram <- function(CumData, SUCRAData, ColourData, colourblind=FALSE) {
                      y = SUCRA, yend = SUCRA, colour = colour),
                  show.legend = FALSE) +
     geom_point() + labs(y="SUCRA (%)") +
-    ggrepel::geom_text_repel(aes(label=str_wrap(gsub("_", " ", Treatment), width = 10)), box.padding = 0, direction="y", hjust=0, nudge_x=0.05, size=3) + scale_x_continuous(limits=c(0.4,0.8)) +
+    ggrepel::geom_text_repel(aes(label=Treatment), box.padding = 0, direction="y", hjust=0, nudge_x=0.05, size=3) + scale_x_continuous(limits=c(0.4,0.8)) +
     theme_classic() + theme(axis.title.x = element_blank(), axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.line.x = element_blank(), aspect.ratio=4)
   if (colourblind==FALSE) {
     B <- Litmus_SUCRA + scale_colour_gradient2(low = "red",
@@ -131,6 +131,7 @@ LitmusRankOGram <- function(CumData, SUCRAData, ColourData, colourblind=FALSE) {
 
 # Radial SUCRA Plot #
 RadialSUCRA <- function(SUCRAData, ColourData, BUGSnetData, colourblind=FALSE) {      # SUCRAData needs Treatment & Rank; ColourData needs SUCRA & colour; colourblind friendly option
+  
   n <- nrow(SUCRAData) # number of treatments
   # Add values to angle and adjust radial treatment labels
   SUCRAData <- SUCRAData[order(-SUCRAData$SUCRA),]
@@ -143,7 +144,7 @@ RadialSUCRA <- function(SUCRAData, ColourData, BUGSnetData, colourblind=FALSE) {
     theme(panel.grid.major.y = element_line(colour = c(rep("black",6),"white")), axis.title = element_blank(), axis.text.y = element_blank(), axis.ticks = element_blank(), axis.line = element_blank(), 
           aspect.ratio = 1, axis.text.x = element_blank()) +
     coord_polar() +
-    geom_text(aes(label=reorder(str_wrap(gsub("_", " ", Treatment), width = 10), -SUCRA), y=110, angle=Angle, hjust=Adjust),
+    geom_text(aes(label=reorder(Treatment, -SUCRA), y=110, angle=Angle, hjust=Adjust),
               size=3, family="sans")
   if (colourblind==FALSE) {
     Background <- Background + scale_colour_gradient2(low = "red", mid = "yellow", high = "green", midpoint=50, limits=c(0,100)) +
@@ -177,7 +178,6 @@ RadialSUCRA <- function(SUCRAData, ColourData, BUGSnetData, colourblind=FALSE) {
                           adj = NA,
                           col = "",
                           lwd = NA)
-  
   lwd.maxO <- 4
   lwd.maxA <- 3
   lwd.minO <- 0.5
