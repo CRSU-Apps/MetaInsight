@@ -74,7 +74,7 @@ home_page_ui <- function(id) {
     ),
     br(),
     p(
-      "App powered by Rshiny.All frequentist statistical calculations are performed using R package netmeta (Gerta Rücker, Guido Schwarzer, Ulrike Krahn and Jochem König 2017).", 
+      "App powered by R and Shiny. All frequentist statistical calculations are performed using R package netmeta (Gerta Rücker, Guido Schwarzer, Ulrike Krahn and Jochem König 2017).", 
       tags$a(href="http://CRAN.R-project.org/package=netmeta", "netmeta: Network Meta-Analysis using Frequentist Methods. R package version 0.9-8.",target="_blank"),
       "All Bayesian statistical calculations are performed using R package gemtc (Gert van Valkenhoef, Joel Kuiper 2016)",
       tags$a(href="https://cran.r-project.org/web/packages/gemtc/gemtc.pdf", "gemtc: Network Meta-Analysis Using Bayesian Methods R package version 0.8-2.",target="_blank"),
@@ -91,14 +91,21 @@ home_page_ui <- function(id) {
       WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
       OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."),
     wellPanel(
-      img(src = 'CRSULogo.png', width = "100%"),
-      tags$strong("Funding and Support Acknowledgement:"),
-      tags$p("The Complex Reviews Support Unit is funded by the National Institute for Health Research (NIHR) (project number 14/178/29).
-       Development of this app is also funded by the NIHR Applied Research Collaboration East Midlands (ARC EM) and the Leicester NIHR Biomedical Research Centre (BRC).
-       The views expressed are those of the author(s) and not necessarily those of the NIHR or the Department of Health and Social Care."),
-      tags$p(
-        "More information about the UK NIHR Complex Reviews Support Unit (CRSU) can be found ",
-        tags$a(href="https://www.gla.ac.uk/research/az/evidencesynthesis/apps-materials-guidence/", "on our website", target="_blank"),
+      div(style = "display: inline;",
+          img(src = 'funded-by-nihr-logo.png', width = "55%")),
+      div(style = "display: inline;",
+          img(src = 'CRSU_logo.png', width = "40%")),
+      div(
+        tags$strong("Funding and Support Acknowledgement:"),
+        tags$p("MetaInsight is part of the Complex Reviews Synthesis Unit (CRSU) suite of evidence synthesis apps. 
+        The development of these apps are currently funded (majority) and overseen by the Evidence Synthesis Group @ CRSU (NIHR153934). 
+        Further details of other funders and support, current and past, can be found ",
+          tags$a(href="https://github.com/CRSU-Apps/.github/blob/main/DetailedFundingStatement.pdf", "on our GitHub page"),
+        ". The views expressed are those of the author(s) and not necessarily those of the NIHR or the Department of Health and Social Care."),
+        tags$p(
+          "More information about the UK NIHR Complex Reviews Synthesis Unit (CRSU) can be found ",
+          tags$a(href="https://www.gla.ac.uk/research/az/evidencesynthesis/apps-materials-guidence/", "on our website", target="_blank"),
+        )
       )
     )
   )
