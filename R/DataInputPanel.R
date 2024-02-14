@@ -92,7 +92,7 @@ data_input_panel_server <- function(id, continuous_file = 'Cont_long.csv', binar
     
     # Load default data
     defaultD <- reactive({
-      if (metaoutcome() == 'Continuous') {
+      if (input$metaoutcome == 'Continuous') {
         defaultD <- rio::import(file = continuous_file)
       } else {
         defaultD <- rio::import(file = binary_file)

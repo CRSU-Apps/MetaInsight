@@ -73,8 +73,8 @@ test_that("Continuous data passed back to module parent", {
 })
 
 test_that("Continuous long data matches between .csv and .xlsx files", {
-  testServer(data_input_panel_server, args = list(metaoutcome = reactive({ 'Continuous' })), {
-    session$setInputs(data = data.frame(datapath = 'Cont_long.csv'))
+  testServer(data_input_panel_server, {
+    session$setInputs(data = data.frame(datapath = 'Cont_long.csv'), metaoutcome = 'Continuous')
     csv_data = data()
     
     session$setInputs(data = data.frame(datapath = 'Cont_long.xlsx'))
@@ -85,8 +85,8 @@ test_that("Continuous long data matches between .csv and .xlsx files", {
 })
 
 test_that("Continuous wide data matches between .csv and .xlsx files", {
-  testServer(data_input_panel_server, args = list(metaoutcome = reactive({ 'Continuous' })), {
-    session$setInputs(data = data.frame(datapath = 'Cont_wide.csv'))
+  testServer(data_input_panel_server, {
+    session$setInputs(data = data.frame(datapath = 'Cont_wide.csv'), metaoutcome = 'Continuous')
     csv_data = data()
     
     session$setInputs(data = data.frame(datapath = 'Cont_wide.xlsx'))
@@ -168,8 +168,8 @@ test_that("Binary data passed back to module parent", {
 })
 
 test_that("Binary long data matches between .csv and .xlsx files", {
-  testServer(data_input_panel_server, args = list(metaoutcome = reactive({ 'Binary' })), {
-    session$setInputs(data = data.frame(datapath = 'Binary_long.csv'))
+  testServer(data_input_panel_server, {
+    session$setInputs(data = data.frame(datapath = 'Binary_long.csv'), metaoutcome = 'Binary')
     csv_data = data()
     
     session$setInputs(data = data.frame(datapath = 'Binary_long.xlsx'))
@@ -180,8 +180,8 @@ test_that("Binary long data matches between .csv and .xlsx files", {
 })
 
 test_that("Binary wide data matches between .csv and .xlsx files", {
-  testServer(data_input_panel_server, args = list(metaoutcome = reactive({ 'Binary' })), {
-    session$setInputs(data = data.frame(datapath = 'Binary_wide.csv'))
+  testServer(data_input_panel_server, {
+    session$setInputs(data = data.frame(datapath = 'Binary_wide.csv'), metaoutcome = 'Binary')
     csv_data = data()
     
     session$setInputs(data = data.frame(datapath = 'Binary_wide.xlsx'))
