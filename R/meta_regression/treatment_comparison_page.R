@@ -9,9 +9,10 @@ covariate_treatment_comparisons_page_ui <- function(id) {
     helpText("Please note: if you change the selections on the sidebar, you will need to re-run the analysis from the 'Forest Plot' page."),
     p(
       tags$strong(
-        "This table only contains the estimates from the network meta analysis,
-        i.e. does not contain estimates from pairwise meta-analysis which only contains direct evidence.
-        If you would like to obtain the pairwise meta-analysis results, please run 4c-4. Nodesplit model"
+        conditionalPanel(condition = "output.package == 'gemtc'",
+                         ns = ns,
+                         textOutput(outputId = ns('nodesplit_text'))
+                         )
       )
     ),
     br(),
@@ -21,7 +22,6 @@ covariate_treatment_comparisons_page_ui <- function(id) {
                      ns = ns,
                      textOutput(outputId = ns('cov_value_statement'))
                      ),
-    # textOutput(outputId = ns('cov_value_statement')),
     downloadButton(outputId = ns('downloadbaye_comparison'))
   )
 }
@@ -48,6 +48,12 @@ covariate_treatment_comparisons_page_server <- function(
     
     output$package <- reactive({"gemtc"})
     outputOptions(x = output, name = "package", suspendWhenHidden = FALSE)
+    
+    output$nodesplit_text <- renderText({
+      "This table only contains the estimates from the network meta analysis,
+        i.e. does not contain estimates from pairwise meta-analysis which only contains direct evidence.
+        If you would like to obtain the pairwise meta-analysis results, please run 4c-4. Nodesplit model"
+    })
     
     output$cov_value_statement <- renderText({
       model()$cov_value_sentence
