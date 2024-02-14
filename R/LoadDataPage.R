@@ -17,7 +17,10 @@ load_data_page_ui <- function(id) {
           wide_format_upload_panel_ui(id = ns('wide_upload')),
           tabPanel(
             title = "View Data",
-            uiOutput(outputId = ns("tb"))
+            div(
+              style = 'overflow-x: scroll',
+              uiOutput(outputId = ns("tb"))
+            )
           )
         )
       )
