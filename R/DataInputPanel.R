@@ -76,8 +76,7 @@ data_input_panel_server <- function(id, continuous_file = 'Cont_long.csv', binar
         inputId = ns("data"),
         label = NULL,
         buttonLabel = "Select",
-        placeholder = "No file selected",
-        accept = '.csv'
+        accept = c(".csv", ".xlsx")
       )
     })
 
@@ -94,9 +93,9 @@ data_input_panel_server <- function(id, continuous_file = 'Cont_long.csv', binar
     # Load default data
     defaultD <- reactive({
       if (input$metaoutcome == 'Continuous') {
-        defaultD <- read.csv(continuous_file)
+        defaultD <- rio::import(file = continuous_file)
       } else {
-        defaultD <- read.csv(binary_file)
+        defaultD <- rio::import(file = binary_file)
       }
     })
     
@@ -113,12 +112,7 @@ data_input_panel_server <- function(id, continuous_file = 'Cont_long.csv', binar
         # if data is triggered without reload, only load the default data
         df <- defaultD()
       } else {
-        df <- read.table(file = file1$datapath,
-                         sep = ",",
-                         header = TRUE,
-                         stringsAsFactors = FALSE,
-                         quote = "\"",
-                         fileEncoding = 'UTF-8-BOM')
+        df <- rio::import(file = file1$datapath)
       }
       
       result = ValidateUploadedData(df, input$metaoutcome)

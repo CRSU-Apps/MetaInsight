@@ -72,6 +72,30 @@ test_that("Continuous data passed back to module parent", {
   })
 })
 
+test_that("Continuous long data matches between .csv and .xlsx files", {
+  testServer(data_input_panel_server, {
+    session$setInputs(data = data.frame(datapath = 'Cont_long.csv'), metaoutcome = 'Continuous')
+    csv_data = data()
+    
+    session$setInputs(data = data.frame(datapath = 'Cont_long.xlsx'))
+    xlsx_data = data()
+    
+    expect_equal(xlsx_data, csv_data)
+  })
+})
+
+test_that("Continuous wide data matches between .csv and .xlsx files", {
+  testServer(data_input_panel_server, {
+    session$setInputs(data = data.frame(datapath = 'Cont_wide.csv'), metaoutcome = 'Continuous')
+    csv_data = data()
+    
+    session$setInputs(data = data.frame(datapath = 'Cont_wide.xlsx'))
+    xlsx_data = data()
+    
+    expect_equal(xlsx_data, csv_data)
+  })
+})
+
 test_that("Binary data registered as initially not uploaded", {
   testServer(data_input_panel_server, {
     session$setInputs(metaoutcome = 'Binary')
@@ -140,5 +164,29 @@ test_that("Binary data passed back to module parent", {
     expect_equal(session$returned$is_default_data(), is_default_data())
     expect_equal(session$returned$treatment_list(), treatment_list())
     expect_equal(session$returned$metaoutcome(), session$input$metaoutcome)
+  })
+})
+
+test_that("Binary long data matches between .csv and .xlsx files", {
+  testServer(data_input_panel_server, {
+    session$setInputs(data = data.frame(datapath = 'Binary_long.csv'), metaoutcome = 'Binary')
+    csv_data = data()
+    
+    session$setInputs(data = data.frame(datapath = 'Binary_long.xlsx'))
+    xlsx_data = data()
+    
+    expect_equal(xlsx_data, csv_data)
+  })
+})
+
+test_that("Binary wide data matches between .csv and .xlsx files", {
+  testServer(data_input_panel_server, {
+    session$setInputs(data = data.frame(datapath = 'Binary_wide.csv'), metaoutcome = 'Binary')
+    csv_data = data()
+    
+    session$setInputs(data = data.frame(datapath = 'Binary_wide.xlsx'))
+    xlsx_data = data()
+    
+    expect_equal(xlsx_data, csv_data)
   })
 })
