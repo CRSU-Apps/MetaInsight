@@ -10,7 +10,7 @@ meta_regression_tab_ui <- function(id) {
         id = "regression_tabs",
         tabPanel(
           title = "4a. Summary",
-          # Add a new module here for the summary panel
+          metaregression_summary_panel_ui(id = ns("metaregression_summary_panel"))
         ),
         tabPanel(
           title = "4b. Baseline Risk Analysis",
@@ -93,6 +93,11 @@ meta_regression_tab_server <- function(
     ) {
   shiny::moduleServer(id, function(input, output, session) {
     
+    metaregression_summary_panel_server(id = "metaregression_summary_panel", 
+                                        all_data = all_data, 
+                                        metaoutcome = metaoutcome, 
+                                        treatment_df = treatment_df)
+    
     basline_risk_outcomes <- c("MD", "OR")
     baseline_risk_supported = reactive({ outcome_measure() %in% basline_risk_outcomes })
     # Baseline risk analysis
@@ -102,7 +107,14 @@ meta_regression_tab_server <- function(
       error_message_text_expression = { .BuildUnsupportedOutcomeMeasureErrorMessageText(basline_risk_outcomes) },
       inner_server_expression = {
         baseline_risk_analysis_panel_server(
-          id = "baseline_risk_analysis"
+          id = "baseline_risk_analysis",
+          all_data = all_data,
+          treatment_df = treatment_df,
+          reference_treatment = reference_treatment,
+          metaoutcome = metaoutcome,
+          outcome_measure = outcome_measure,
+          model_effects = model_effects,
+          bugsnetdt = bugsnetdt
         )
       }
     )

@@ -6,15 +6,12 @@
 covariate_run_model_ui <- function(id) {
   ns <- NS(id)
   div(
-    helpText(
-      "Baysesian covariate meta-regression using the gemtc package.",
-      br(),
-      "Heterogeneity prior: standard deviation ~ U(0,X), where X represents a ",
-      tags$i("very large"),
-      "difference in the analysis' outcome scale and is determined from the data.",
-      br(),
-      tags$strong("Please note each simulation may take 20 seconds.", style = "color:#FF0000")
-    ),
+    "Baysesian covariate meta-regression using the", textOutput(ns("package"), inline=TRUE), "package.",
+    br(),
+    "Heterogeneity prior: standard deviation", textOutput(ns("model_text"), inline=TRUE),
+    br(),
+    tags$strong("Please note each simulation may take 60 seconds.", style = "color:#FF0000"),
+
     fixedRow(
       align = "center",
       p(tags$strong("Results for all studies")),
@@ -38,6 +35,8 @@ covariate_run_model_ui <- function(id) {
     )
   )
 }
+
+
 
 
 #' Module server for running the covariate model.
@@ -65,17 +64,63 @@ covariate_run_model_server <- function(
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
 
-    # Bayesian analysis
-
+    #Bayesian analysis
+    
+    output$package <- renderText({"gemtc"})
+    output$model_text <- renderText({
+      "~ U(0,X), where X represents a very large difference in the analysis' outcome scale and is determined from the data."
+    })
+    
+    
+    #The model
     model <- eventReactive(input$baye_do, {
       RunCovariateModel(data = data(), treatment_ids = treatment_df(), outcome_type = metaoutcome(), 
                         outcome = outcome_measure(), covariate = covariate(), cov_friendly = cov_friendly(), 
                         model_type = model_effects(), regressor_type = input$select_regressor, 
                         ref_choice = treatment_df()$Label[match(1, treatment_df()$Number)])
     })
+
+    return(model)
+  })
+}
+
+
+
+
+
+#' Module server for running the baseline risk model.
+#' 
+#' @param id ID of the module
+#' @param data Reactive containing data to analyse
+#' @param treatment_df Reactive containing data frame containing treatment IDs (Number) and names (Label)
+#' @param metaoutcome Reactive containing meta analysis outcome: "Continuous" or "Binary"
+#' @param model_effects Reactive containing model effects: either "random" or "fixed"
+#'
+#' @return List of reactives: "model_output" contains meta-regression model outputs
+baseline_risk_run_model_server <- function(
+    id,
+    data,
+    treatment_df,
+    metaoutcome,
+    model_effects
+) {
+  moduleServer(id, function(input, output, session) {
+    ns <- session$ns
     
+    output$package <- renderText({"bnma"})
+    output$model_text <- renderText({
+      "~ U(0,5) or U(0,100) for a binary or continuous outcome respectively."
+    })
     
-    
+    #The model
+    model <- eventReactive(input$baye_do, {
+      BaselineRiskRegression(br_data = data(),
+                             treatment_ids = treatment_df(),
+                             outcome_type = metaoutcome(),
+                             ref = treatment_df()$Label[match(1, treatment_df()$Number)],
+                             effects_type = model_effects(),
+                             cov_parameters = input$select_regressor)
+    })
     
     return(model)
   })
