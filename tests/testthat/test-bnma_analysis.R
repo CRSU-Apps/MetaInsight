@@ -214,15 +214,15 @@ test_that("BaselineRiskRegression() sets RNGs correctly and gives reproducible o
 
 test_that("BaselineRiskRelativeEffectsTable() has the correct format", {
   
-  rel_eff_table <- matrix(c(NA, "[-0.1,0,0.1]", "[-2.3,-1,4]",
+  rel_eff_table <- matrix(c(NA, "[-0.1234,0,0.1753]", "[-2.3,-1,4]",
                             "[3,4,5]", NA, "[2,6,8.3]",
-                            "[-7,4,11]", "[15,16,17]", NA), nrow = 3)
+                            "[-7,4,11]", "[15.83125,16,17.0367]", NA), nrow = 3)
   rownames(rel_eff_table) <- c("TreatA", "TreatB", "TreatC")
   colnames(rel_eff_table) <- c("TreatA", "TreatB", "TreatC")
   
-  expected_table <- matrix(c("TreatA", "0 (-0.1, 0.1)", "-1 (-2.3, 4)",
+  expected_table <- matrix(c("TreatA", "0 (-0.12, 0.18)", "-1 (-2.3, 4)",
                              "4 (3, 5)", "TreatB", "6 (2, 8.3)",
-                             "4 (-7, 11)", "16 (15, 17)", "TreatC"), nrow = 3)
+                             "4 (-7, 11)", "16 (15.83, 17.04)", "TreatC"), nrow = 3)
   rownames(expected_table) <- c("TreatA", "TreatB", "TreatC")
   colnames(expected_table) <- c("TreatA", "TreatB", "TreatC")
   

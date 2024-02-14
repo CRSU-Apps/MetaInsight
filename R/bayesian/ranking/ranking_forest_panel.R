@@ -114,7 +114,7 @@ ranking_forest_panel_baseline_risk_server <- function(
     # All studies #
     output$gemtc2 <- renderPlot({
       png("forest.png")  # initialise image
-        bnma::network.forest.plot(model(), only.reference.treatment = TRUE)
+      bnma::network.forest.plot(model(), only.reference.treatment = TRUE)
       dev.off()
       ForestImg <- magick::image_read('forest.png')
       Img <- cowplot::ggdraw() +

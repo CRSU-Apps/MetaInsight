@@ -141,55 +141,27 @@ BaselineRiskRelativeEffectsTable <- function(median_ci_table){
   median_br <- matrix(nrow = dim_median, ncol = dim_median)
   upper_ci <- matrix(nrow = dim_median, ncol = dim_median)
   
-  #Extract the lower_ci
   for(row in 1:dim_median){
     for(col in 1:dim_median){
+      #Extract the lower_ci
       lower_ci[row, col] <- round(
         as.numeric(
-          substr(x = median_ci_table[row, col],
-                 start = 2,
-                 stop = as.vector(
-                   gregexpr(pattern = ",",
-                            text = median_ci_table[row, col])[[1]]
-                   )[1] - 1
-                 )
+          stringr::str_extract_all(string = median_ci_table[row, col],
+                                   pattern = "[-0-9\\.]+")[[1]][1]
           ), digits = 2
       )
-    }
-  }
-  
-  #Extract the median
-  for(row in 1:dim_median){
-    for(col in 1:dim_median){
+      #Extract the median
       median_br[row, col] <- round(
         as.numeric(
-          substr(x = median_ci_table[row, col],
-                 start = as.vector(
-                   gregexpr(pattern = ",",
-                            text = median_ci_table[row, col])[[1]]
-                 )[1] + 1,
-                 stop = as.vector(
-                   gregexpr(pattern = ",",
-                            text = median_ci_table[row, col])[[1]]
-                 )[2] - 1
-          )
+          stringr::str_extract_all(string = median_ci_table[row, col],
+                                   pattern = "[-0-9\\.]+")[[1]][2]
         ), digits = 2
       )
-    }
-  }
-  
-  #Extract the upper_ci
-  for(row in 1:dim_median){
-    for(col in 1:dim_median){
+      #Extract the upper_ci
       upper_ci[row, col] <- round(
         as.numeric(
-          substr(x = median_ci_table[row, col],
-                 start = as.vector(
-                   gregexpr(pattern = ",",
-                            text = median_ci_table[row, col])[[1]]
-                 )[2] + 1,
-                 stop = nchar(median_ci_table[row, col]) - 1
-          )
+          stringr::str_extract_all(string = median_ci_table[row, col],
+                                   pattern = "[-0-9\\.]+")[[1]][3]
         ), digits = 2
       )
     }
