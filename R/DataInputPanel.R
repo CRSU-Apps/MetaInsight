@@ -6,6 +6,18 @@
 data_input_panel_ui <- function(id) {
   ns <- NS(id)
   div(
+    h4(tags$strong("Select outcome type")),
+    prettyRadioButtons(
+      inputId = ns("metaoutcome"),
+      label = NULL,
+      choices = c(
+        "Continuous (e.g. mean difference) " = "Continuous",
+        "Binary (e.g. Odds Ratio)" = "Binary"
+      ),
+      animation = "pulse",
+      status = "info",
+      width = '400px'
+    ),
     h4(tags$strong("Select a data file (.csv) to upload")),
     p(
       tags$strong(
@@ -19,7 +31,7 @@ data_input_panel_ui <- function(id) {
     p(tags$strong("Default maximum file size is 5MB.")),
     uiOutput(outputId = ns("file_input_panel")),
     conditionalPanel(
-      condition = 'output.data_uploaded == true',
+      condition = 'output.data_uploaded',
       ns = ns,
       div(
         style = "float:right",
@@ -42,14 +54,14 @@ data_input_panel_ui <- function(id) {
 #' Module server for uploading data into the app.
 #' 
 #' @param id ID of the module
-#' @param metaoutcome Reactive containing the outcome type selected
 #' @param continuous_file Default data file for continuous outcomes. Defaults to 'Cont_long.csv'
 #' @param binary_file Default data file for binary outcomes. Defaults to 'Binary_long.csv'
 #' @return List of reactives:
 #'   - 'data' is the uplodaded data or the default data
 #'   - 'is_default_data' is TRUE if data is an example data set, else FALSE if data has been uploaded
 #'   - 'treatment_list' is the data frame containing the treatment ID ('Number') and the treatment name ('Label')
-data_input_panel_server <- function(id, metaoutcome, continuous_file = 'Cont_long.csv', binary_file = 'Binary_long.csv') {
+#'   - 'metaoutcome' is the outcome type selected
+data_input_panel_server <- function(id, continuous_file = 'Cont_long.csv', binary_file = 'Binary_long.csv') {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
     
@@ -80,8 +92,8 @@ data_input_panel_server <- function(id, metaoutcome, continuous_file = 'Cont_lon
     
     # Load default data
     defaultD <- reactive({
-      if (metaoutcome() == 'Continuous') {
-        defaultD <- read.csv(continuous_file)
+      if (input$metaoutcome == 'Continuous') {
+        defaultD <- rio::import(file = continuous_file)
       } else {
         defaultD <- rio::import(file = binary_file)
       }
@@ -100,12 +112,38 @@ data_input_panel_server <- function(id, metaoutcome, continuous_file = 'Cont_lon
         # if data is triggered without reload, only load the default data
         df <- defaultD()
       } else {
-        df <- read.table(file = file1$datapath,
-                         sep = ",",
-                         header = TRUE,
-                         stringsAsFactors = FALSE,
-                         quote = "\"",
-                         fileEncoding = 'UTF-8-BOM')
+        df <- rio::import(file = file1$datapath)
+      }
+      
+      result = ValidateUploadedData(df, input$metaoutcome)
+
+      if (!result$valid) {
+        showModal(
+          modalDialog(
+            title = "Invalid Data",
+            easyClose = TRUE,
+            p("Uploaded data was invalid because:"),
+            p(tags$strong(result$message)),
+            p("Please check you data file and ensure that you have the correct outcome type selected."),
+            shinyBS::bsCollapse(
+              shinyBS::bsCollapsePanel(
+                title = "Show Data",
+                div(
+                  style = 'overflow-x: scroll',
+                  DT::dataTableOutput(outputId = ns("invalid_data"))
+                )
+              )
+            ),
+            modalButton(label = "OK"),
+            footer = NULL
+          )
+        )
+        invalid_data(df)
+        output$file_input_panel <- default_file_input
+        df <- defaultD()
+        data_uploaded(FALSE)
+      } else {
+        invalid_data(NULL)
       }
       
       return(CleanData(df))
@@ -130,7 +168,7 @@ data_input_panel_server <- function(id, metaoutcome, continuous_file = 'Cont_lon
     #####
     
     # if the outcome is changed, reload the data and labels, reset the file input and hide the reload button
-    observeEvent(metaoutcome(),
+    observeEvent(input$metaoutcome,
                  {
                    reload(TRUE)
                    output$file_input_panel <- default_file_input
@@ -168,7 +206,8 @@ data_input_panel_server <- function(id, metaoutcome, continuous_file = 'Cont_lon
       list(
         data = data,
         is_default_data = is_default_data,
-        treatment_list = treatment_list
+        treatment_list = treatment_list,
+        metaoutcome = reactive({ input$metaoutcome })
       )
     )
   })
