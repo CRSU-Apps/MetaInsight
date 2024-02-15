@@ -21,7 +21,7 @@ home_page_ui <- function(id) {
         });'
       )
     ),
-    h2("MetaInsight v5.1.2", align= "left"),
+    h2("MetaInsight v5.2.0", align = "left"),
     fluidRow(
       column(
         width = 3,
@@ -29,14 +29,23 @@ home_page_ui <- function(id) {
           tags$h4("Selection of continuous or binary outcomes has moved to the ", tags$i("Load Data"), " tab"),
           style = "color: #aa0000; border: solid; border-color: lightgray; border-width: thin; border-radius: 6pt; padding: 0 10pt;"
         ),
-        img(src='network2.jpg', width=500, height=400, align = "center")
+        img(src = 'network2.jpg', width = 500, height = 400, align = "center")
       ),
       column(width = 2),
       column(
         width = 5, 
         p(tags$strong("Latest Updates:")),
-        p(tags$strong("Patch (02 January 2024 v5.1.2):")),
-        p("Google Analytics fix"),
+        p(tags$strong("Minor update (15th February 2024 v5.2.0):")),
+        tags$ui(
+          tags$li("Bug fix where data upload instructions were hidden."),
+          tags$li("Update to data upload to allow for arbitrary letter casing of column titles."),
+          tags$li("Added validation for data column titles with helpful messages."),
+          tags$li("Bug fix for treatment names being truncated in ranking download."),
+          tags$li("Moved continuous/binary selection to data upload page."),
+          tags$li("Update to data upload to accept .xlsx files."),
+          tags$li("Changed analytics cookie to use browser local storage."),
+          tags$li("Updated funding statements.")
+        ),
         p(tags$strong("Major update (15 August 2023 v5.0.0):")),
         p(tags$ul(
           tags$li("MetaInsight has been changed to make it easier for users to upload their own datasets for analysis. 
