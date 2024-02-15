@@ -32,7 +32,7 @@ covariate_analysis_panel_ui <- function(id) {
               ns = ns,
               div(
                 tags$i(class = "fa-solid fa-circle-info"),
-                title = "If the data is intended to be binary, the only allowed values are 0, 1, and NA",
+                title = "If the covariate is intended to be binary, the only allowed values are 0, 1, and NA",
                 style = "color: orange;"
               )
             ),
