@@ -1,22 +1,39 @@
-library(cookies)
-library(shiny)
+
+.expiry_date_format = "%Y-%m-%d"
 
 google_analytics_header_ui <- function(id) {
   ns <- NS(id)
-  add_cookie_handlers(
-    div(
-      uiOutput(outputId = ns("analytics_script"))
-    )
+  tags$head(
+    IncludeLocalStorage(),
+    uiOutput(outputId = ns("analytics_script"))
   )
 }
 
-google_analytics_header_server <- function(id, google_analytics_id) {
+google_analytics_header_server <- function(id, app_name, google_analytics_id) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
     
-    gdpr_cookie_value <- reactive({
-      cookie_value <- cookies::get_cookie(cookie_name = "analytics")
-      return(cookie_value)
+    cookie_name = glue::glue("{app_name}_analytics")
+    gdpr_cookie_value <- reactiveVal(NULL)
+    storage <- LocalStorage$new()
+    
+    initial_value_observer <- observe({
+      tryCatch(
+        {
+          stored_data <- storage$GetStoredValue(cookie_name)
+          expiry <- as.Date(stored_data$expiry, format = .expiry_date_format)
+          days_until_expiry = expiry - Sys.Date()
+          if (days_until_expiry > 0) {
+            gdpr_cookie_value(stored_data$value)
+          } else {
+            gdpr_cookie_value(NULL)
+          }
+        },
+        error = function(err) {
+          gdpr_cookie_value(NULL)
+        }
+      )
+      initial_value_observer$destroy()
     })
     
     observeEvent(
@@ -48,11 +65,14 @@ google_analytics_header_server <- function(id, google_analytics_id) {
       input$accept,
       {
         shiny::removeModal()
-        set_cookie(
-          cookie_name = "analytics",
-          cookie_value = TRUE,
-          expiration = 365
+        storage$SetStoredValue(
+          id = cookie_name,
+          value = list(
+            value = TRUE,
+            expiry = Sys.Date() + lubridate::years(1)
+          )
         )
+        gdpr_cookie_value(TRUE)
       }
     )
     
@@ -60,11 +80,15 @@ google_analytics_header_server <- function(id, google_analytics_id) {
       input$reject,
       {
         shiny::removeModal()
-        set_cookie(
-          cookie_name = "analytics",
-          cookie_value = FALSE,
-          expiration = 365
+        # storage$SetStoredValue(id = cookie_name, value = FALSE)
+        storage$SetStoredValue(
+          id = cookie_name,
+          value = list(
+            value = FALSE,
+            expiry = Sys.Date() + lubridate::years(1)
+          )
         )
+        gdpr_cookie_value(FALSE)
       }
     )
     
