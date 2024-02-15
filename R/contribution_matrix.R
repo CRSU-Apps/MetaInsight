@@ -7,17 +7,16 @@
 ##############################################################################
 
 
-#' Create the variance-covariance matrix of treatment effects.
+#' Get observed effect sizes and variances, as well as variances in the control arm.
 #' 
 #' @param data Input data in long format plus the column 'Treatment', a text version of 'T'.
-#' @param studies Vector of studies.
 #' @param treatments Vector of treatments with the reference treatment first.
 #' @param outcome_type "Continuous" or "Binary".
-#' @param outcome_measure "MD" (when outcome_type == "Continuous"), "OR", "RR" or "RD" (when outcome_type == "Binary")
-#' @return V matrix.
-CreateVMatrix <- function(data, studies, treatments, outcome_type, outcome_measure){
-  #Number of studies
-  n_studies <- length(studies)
+#' @param outcome_measure "MD" (when outcome_type == "Continuous"), "OR", "RR" or "RD" (when outcome_type == "Binary").
+#' @return List
+#'  - 'effect_sizes' = data frame with columns 'Study', 'Treatment', 'Effect', 'Variance'.
+#'  - 'control_variance' = data frame with columns 'Study', 'Treatment', 'Variance'.
+GetEffectSizesAndVariances <- function(data, treatments, outcome_type, outcome_measure){
   #Data with only control treatment rows kept
   data_control <- KeepOrDeleteControlTreatment(data = data, treatments = treatments, keep_delete = "keep")
   #Data with control treatment rows deleted
@@ -25,7 +24,6 @@ CreateVMatrix <- function(data, studies, treatments, outcome_type, outcome_measu
   #Create a wide version of data
   data_wide <- merge(data_control, data_no_control, by = "Study")
   #Used as labels for the matrix rows and columns
-  study_treatment_label <- paste0("(", data_no_control$Study, ")", data_no_control$Control, ":", data_no_control$Treatment)
   
   if (outcome_type == "Binary"){
     
@@ -41,14 +39,15 @@ CreateVMatrix <- function(data, studies, treatments, outcome_type, outcome_measu
     }
     
     #Calculate treatment effect variances
-    effect_sizes <- metafor::escalc(measure = outcome_measure,
-                                    ai = data_wide$R.x,
-                                    ci = data_wide$R.y,
-                                    n1i = data_wide$N.x,
-                                    n2i = data_wide$N.y)
-    effect_variance <- data.frame(Study = data_no_control$Study,
-                                  Treatment = data_no_control$Treatment,
-                                  Variance = effect_sizes$vi)
+    effect_sizes_raw <- metafor::escalc(measure = outcome_measure,
+                                        ai = data_wide$R.x,
+                                        ci = data_wide$R.y,
+                                        n1i = data_wide$N.x,
+                                        n2i = data_wide$N.y)
+    effect_sizes <- data.frame(Study = data_no_control$Study,
+                               Treatment = data_no_control$Treatment,
+                               Effect = as.numeric(effect_sizes_raw$yi),
+                               Variance = effect_sizes_raw$vi)
     
     #Calculate variance in the control arm
     control_outcome <- metafor::escalc(measure = metafor_measure,
@@ -63,38 +62,65 @@ CreateVMatrix <- function(data, studies, treatments, outcome_type, outcome_measu
     if (outcome_measure == "MD"){
       
       #Calculate treatment effect variances
-      effect_sizes <- metafor::escalc(measure = "MD",
-                                      m1i = data_wide$Mean.x,
-                                      m2i = data_wide$Mean.y,
-                                      sd1i = data_wide$SD.x,
-                                      sd2i = data_wide$SD.y,
-                                      n1i = data_wide$N.x,
-                                      n2i = data_wide$N.y)
-      effect_variance <- data.frame(Study = data_no_control$Study,
-                                    Treatment = data_no_control$Treatment,
-                                    Variance = effect_sizes$vi)
+      effect_sizes_raw <- metafor::escalc(measure = "MD",
+                                          m1i = data_wide$Mean.x,
+                                          m2i = data_wide$Mean.y,
+                                          sd1i = data_wide$SD.x,
+                                          sd2i = data_wide$SD.y,
+                                          n1i = data_wide$N.x,
+                                          n2i = data_wide$N.y)
+      effect_sizes <- data.frame(Study = data_no_control$Study,
+                                 Treatment = data_no_control$Treatment,
+                                 Effect = as.numeric(effect_sizes_raw$yi),
+                                 Variance = effect_sizes_raw$vi)
       
       #Calculate variance in the control arm
-      control_mean <- metafor::escalc(measure = "MN",
+      control_outcome <- metafor::escalc(measure = "MN",
                                       mi = data_control$Mean,
                                       sdi = data_control$SD,
                                       ni = data_control$N)
       control_variance <- data.frame(Study = data_control$Study,
                                      Treatment = data_control$Treatment,
-                                     Variance = control_mean$vi)
+                                     Variance = control_outcome$vi)
     } else{
       stop("When outcome_type == 'Continuous', outcome_measure must be 'MD'") 
     }
   } else{
     stop("outcome_type must be 'Continuous' or 'Binary'")
   }
+  return(list(effect_sizes = effect_sizes, control_variance = control_variance))
+}
+
+
+
+#' Create the variance-covariance matrix of treatment effects.
+#' 
+#' @param data Input data in long format plus the column 'Treatment', a text version of 'T'.
+#' @param studies Vector of studies.
+#' @param treatments Vector of treatments with the reference treatment first.
+#' @param outcome_type "Continuous" or "Binary".
+#' @param outcome_measure "MD" (when outcome_type == "Continuous"), "OR", "RR" or "RD" (when outcome_type == "Binary")
+#' @return V matrix.
+CreateVMatrix <- function(data, studies, treatments, outcome_type, outcome_measure){
+  #Number of studies
+  n_studies <- length(studies)
+  #Data with control treatment rows deleted
+  data_no_control <- KeepOrDeleteControlTreatment(data = data, treatments = treatments, keep_delete = "delete")
+  #Used as labels for the matrix rows and columns
+  study_treatment_label <- paste0("(", data_no_control$Study, ")", data_no_control$Control, ":", data_no_control$Treatment)
+  
+  effect_sizes_and_variances <- GetEffectSizesAndVariances(data = data, treatments = treatments,
+                                                           outcome_type = outcome_type, outcome_measure = outcome_measure)
+  
+  effect_sizes <- effect_sizes_and_variances$effect_sizes
+  control_variance <- effect_sizes_and_variances$control_variance
   
   #Create the V matrix with treatment effect variances on the leading diagonal
-  V <- diag(effect_variance$Variance)
+  V <- diag(effect_sizes$Variance)
   rownames(V) <- study_treatment_label
   colnames(V) <- study_treatment_label
   #Number of non-control arms per study
-  n_arms <- table(data_wide$Study)
+  n_arms <- table(data_no_control$Study)
   #Insert covariances into multi-arm studies. The covariance is always the variance in the control arm.
   for (i in 1:n_studies){
     if (n_arms[studies[i]] > 1){
@@ -103,9 +129,9 @@ CreateVMatrix <- function(data, studies, treatments, outcome_type, outcome_measu
                        nrow = n_arms[studies[i]],
                        ncol = n_arms[studies[i]])
       #Put the treatment effect variances on the leading diagonal
-      diag(mini_V) <- effect_variance$Variance[effect_variance$Study == studies[i]]
+      diag(mini_V) <- effect_sizes$Variance[effect_sizes$Study == studies[i]]
       #Overwrite the submatrix in V corresponding to this study
-      V[which(effect_variance$Study == studies[i]), which(effect_variance$Study == studies[i])] <- mini_V
+      V[which(effect_sizes$Study == studies[i]), which(effect_sizes$Study == studies[i])] <- mini_V
     }
   }
   return(V)
@@ -366,6 +392,18 @@ CreateLambdaBetaMatrix <- function(treatments, std_dev_beta){
 
 
 
+#' Check if the given matrix is singular, which would prevent the contribution matrix from being obtainable, and return an error if it is.
+#' 
+#' @param matrix The matrix that needs to be inverted to obtain the contribution matrix.
+#' @return Error if the matrix is singular.
+CheckSingularMatrix <- function(matrix){
+  if (matrixcalc::is.singular.matrix(matrix)) {
+    stop("Contribution matrix cannot be determined due to singular X^T V^{-1} X. Try changing fixed/random effects or shared/exchangeable/unrelated covariate parameter assumptions")
+  }
+}
+
+
+
 #' Intermediate function called within CreateContributionMatrix(), dealing with the fixed effects, unrelated or shared cases.
 #' 
 #' @param X X matrix.
@@ -374,6 +412,8 @@ CreateLambdaBetaMatrix <- function(treatments, std_dev_beta){
 #' @param basic_or_all_parameters "basic" for one column per basic parameter, "all" for one column per parameter.
 #' @return Raw contribution matrix (no absolute values, no percentages, not by study).
 .RawContributionMatrixFixedUnrelatedShared <- function(X, V, Z, basic_or_all_parameters){
+  CheckSingularMatrix(t(X) %*% solve(V) %*% X)
+
   if (basic_or_all_parameters == "all"){
     contribution <- Z %*% solve(t(X) %*% solve(V) %*% X) %*% t(X) %*% solve(V)
   } else if (basic_or_all_parameters == "basic"){
@@ -439,6 +479,8 @@ CreateLambdaBetaMatrix <- function(treatments, std_dev_beta){
   #Populate the bottom right of X_star
   X_star[row_bottom_index, col_right_index] <- -matrix(1, nrow = ncol(X_d), ncol = 1)
   
+  CheckSingularMatrix(t(X_star) %*% solve(V_star) %*% X_star)
+  
   A <- solve(t(X_star) %*% solve(V_star) %*% X_star) %*% t(X_star) %*% solve(V_star)
   A_top_left <- A[1:ncol(X_d), 1:nrow(X_d)]
   A_middle_left <- A[(ncol(X_d) + 1):(ncol(X_d) + ncol(X_beta)), 1:nrow(X_beta)]
@@ -489,6 +531,8 @@ CreateLambdaBetaMatrix <- function(treatments, std_dev_beta){
     X_star[row_bottom_index, col_left_index] <- diag(1, nrow = nrow(X))
     #Populate the bottom right of X_star
     X_star[row_bottom_index, col_right_index] <- -X
+    
+    CheckSingularMatrix(t(X_star) %*% solve(V_star) %*% X_star)
     
     A <- solve(t(X_star) %*% solve(V_star) %*% X_star) %*% t(X_star) %*% solve(V_star)
     A_bottom_left <- A[(nrow(X) + 1):nrow(A), 1:nrow(X)]
@@ -566,6 +610,8 @@ CreateLambdaBetaMatrix <- function(treatments, std_dev_beta){
   #Populate the bottom right column of X_star
   X_star[row_bottom_index, col_right_index] <- -matrix(1, nrow = ncol(X_d), ncol = 1)
   
+  CheckSingularMatrix(t(X_star) %*% solve(V_star) %*% X_star)
+  
   A <- solve(t(X_star) %*% solve(V_star) %*% X_star) %*% t(X_star) %*% solve(V_star)
   A_row2_left <- A[(ncol(X) + 1):(ncol(X) + ncol(X_d)), 1:nrow(X)]
   A_row3_left <- A[(ncol(X) + ncol(X_d) + 1):(ncol(X) + 2 * ncol(X_d)), 1:nrow(X)]
@@ -596,6 +642,7 @@ CreateLambdaBetaMatrix <- function(treatments, std_dev_beta){
 #' @param study_or_comparison_level "study" for study-level contributions, "comparison" for basic-comparison-level contributions.
 #' @param absolute_or_percentage "percentage" for percentage contributions, "absolute" for absolute contributions.
 #' @param basic_or_all_parameters "basic" for one column per basic parameter, "all" for one column per parameter. Defaults to "basic".
+#' @param weight_or_contribution "weight" for coefficients or "contribution" for coefficients multiplied by observed treatment effects.
 #' @param full_output TRUE or FALSE, defaults to FALSE. See @return for details.
 #' @return If @param full_output = FALSE:
 #'           The contribution matrix.
@@ -607,7 +654,7 @@ CreateLambdaBetaMatrix <- function(treatments, std_dev_beta){
 #'            - 'Z' = The Z matrix.
 #'            - 'Lambda_tau' = The Lambda_tau matrix (only included if @param effects_type == "random").
 #'            - 'Lambda_beta' = The Lambda_beta matrix (only included if @param cov_parameters == "exchangeable").
-CreateContributionMatrix <- function(data, treatment_ids, outcome_type, outcome_measure, effects_type, std_dev_d = NULL, cov_parameters, cov_centre = NULL, std_dev_beta = NULL, study_or_comparison_level, absolute_or_percentage, basic_or_all_parameters = "basic", full_output = FALSE){
+CreateContributionMatrix <- function(data, treatment_ids, outcome_type, outcome_measure, effects_type, std_dev_d = NULL, cov_parameters, cov_centre = NULL, std_dev_beta = NULL, study_or_comparison_level, absolute_or_percentage, basic_or_all_parameters = "basic", weight_or_contribution, full_output = FALSE){
   #Create a text version of the treatment
   data$Treatment <- treatment_ids$Label[match(data$T, treatment_ids$Number)]
   #The unique studies
@@ -646,7 +693,7 @@ CreateContributionMatrix <- function(data, treatment_ids, outcome_type, outcome_
                                                              basic_or_all_parameters = basic_or_all_parameters,
                                                              treatments = treatments,
                                                              std_dev_beta = std_dev_beta)
-      }
+    }
   } else if (effects_type == "random"){
     
     if (is.null(std_dev_d)){
@@ -669,6 +716,15 @@ CreateContributionMatrix <- function(data, treatment_ids, outcome_type, outcome_
 
   } else{
     stop("effects_type must be 'fixed' or 'random'")
+  }
+  
+  if (weight_or_contribution == "contribution") {
+    effect_sizes <- GetEffectSizesAndVariances(data = data, treatments = treatments, outcome_type = outcome_type,
+                                               outcome_measure = outcome_measure)$effect_sizes$Effect
+    #Multiply the n-th row of 'contribution' by the n-th element of 'effect_sizes'
+    contribution <- contribution * effect_sizes
+  } else if (weight_or_contribution != "weight") {
+    stop("weight_or_contribution must be 'weight' or 'contribution'")
   }
   
   contribution_abs <- abs(contribution)

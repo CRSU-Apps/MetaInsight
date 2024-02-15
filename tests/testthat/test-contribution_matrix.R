@@ -1,5 +1,5 @@
 
-test_that("CreateVMatrix() works for binary outcomes and odds ratios", {
+test_that("GetEffectSizesAndVariances() and CreateVMatrix() work for binary outcomes and odds ratios", {
   data <- read.csv("Binary_long_for_contribution_matrix.csv")
   
   studies <- c("A", "B", "C", "D")
@@ -7,25 +7,50 @@ test_that("CreateVMatrix() works for binary outcomes and odds ratios", {
   outcome_type <- "Binary"
   outcome_measure <- "OR"
 
+  expected_effects <- vector(length = 5)
+  expected_effects[1] <- log(8 / (40 - 8)) - log(13 / (41 - 13))
+  expected_effects[2] <- log(14 / (42 - 14)) - log(21 / (43 - 21))
+  expected_effects[3] <- log(10 / (44 - 10)) - log(15 / (45 - 15))
+  expected_effects[4] <- log(10 / (44 - 10)) - log(22 / (46 - 22))
+  expected_effects[5] <- log(23 / (47 - 23)) - log(30 / (48 - 30))
+  
   #Variance formula from "Introducion to Meta-Analysis" 2nd edition, Borenstein et al, page 36.
-  effect_variances <- vector(length=5)
-  effect_variances[1] <- 1/8 + 1/(40-8) + 1/13 + 1/(41-13)
-  effect_variances[2] <- 1/14 + 1/(42-14) + 1/21 + 1/(43-21)
-  effect_variances[3] <- 1/10 + 1/(44-10) + 1/15 + 1/(45-15)
-  effect_variances[4] <- 1/10 + 1/(44-10) + 1/22 + 1/(46-22)
-  effect_variances[5] <- 1/23 + 1/(47-23) + 1/30 + 1/(48-30)
-  expected_v_matrix <- diag(effect_variances)
-  expected_v_matrix[3, 4] <- 1/10 + 1/(44-10)
-  expected_v_matrix[4, 3] <- expected_v_matrix[3, 4]
+  expected_effect_variances <- vector(length=5)
+  expected_effect_variances[1] <- 1/8 + 1/(40-8) + 1/13 + 1/(41-13)
+  expected_effect_variances[2] <- 1/14 + 1/(42-14) + 1/21 + 1/(43-21)
+  expected_effect_variances[3] <- 1/10 + 1/(44-10) + 1/15 + 1/(45-15)
+  expected_effect_variances[4] <- 1/10 + 1/(44-10) + 1/22 + 1/(46-22)
+  expected_effect_variances[5] <- 1/23 + 1/(47-23) + 1/30 + 1/(48-30)
+  
+  expected_effect_sizes <- data.frame(Study = c("A", "B", "C", "C", "D"),
+                                      Treatment = c("Oxygen", "Sulphur", "Oxygen", "Sulphur", "Zinc"),
+                                      Effect = expected_effects,
+                                      Variance = expected_effect_variances)
+  
+  expected_control_var <- vector(length = 4)
+  expected_control_var[1] <- 1/8 + 1/(40 - 8)
+  expected_control_var[2] <- 1/14 + 1/(42 - 14)
+  expected_control_var[3] <- 1/10 + 1/(44 - 10)
+  expected_control_var[4] <- 1/23 + 1/(47 - 23)
+  
+  expected_control_variance <- data.frame(Study = c("A", "B", "C", "D"),
+                                          Treatment = c("Hydrogen", "Oxygen", "Hydrogen", "Sulphur"),
+                                          Variance = expected_control_var)
+  
+  expected_v_matrix <- diag(expected_effect_variances)
+  expected_v_matrix[3, 4] <- expected_control_var[3]
+  expected_v_matrix[4, 3] <- expected_control_var[3]
   rownames(expected_v_matrix) <- c("(A)Hydrogen:Oxygen", "(B)Oxygen:Sulphur", "(C)Hydrogen:Oxygen", "(C)Hydrogen:Sulphur", "(D)Sulphur:Zinc")
   colnames(expected_v_matrix) <- rownames(expected_v_matrix)
     
+  expect_equal(GetEffectSizesAndVariances(data, treatments, outcome_type, outcome_measure)$effect_sizes, expected_effect_sizes)
+  expect_equal(GetEffectSizesAndVariances(data, treatments, outcome_type, outcome_measure)$control_variance, expected_control_variance)
   expect_equal(CreateVMatrix(data, studies, treatments, outcome_type, outcome_measure), expected_v_matrix)
 })
 
 
 
-test_that("CreateVMatrix() works for binary outcomes and risk ratios", {
+test_that("GetEffectSizesAndVariances() and CreateVMatrix() work for binary outcomes and risk ratios", {
   data <- read.csv("Binary_long_for_contribution_matrix.csv")
   
   studies <- c("A", "B", "C", "D")
@@ -33,25 +58,50 @@ test_that("CreateVMatrix() works for binary outcomes and risk ratios", {
   outcome_type <- "Binary"
   outcome_measure <- "RR"
   
+  expected_effects <- vector(length = 5)
+  expected_effects[1] <- log(8 / 40) - log(13 / 41)
+  expected_effects[2] <- log(14 / 42) - log(21 / 43)
+  expected_effects[3] <- log(10 / 44) - log(15 / 45)
+  expected_effects[4] <- log(10 / 44) - log(22 / 46)
+  expected_effects[5] <- log(23 / 47) - log(30 / 48)
+
   #Variance formula from "Introducion to Meta-Analysis" 2nd edition, Borenstein et al, page 34.
-  effect_variances <- vector(length=5)
-  effect_variances[1] <- 1/8 - 1/40 + 1/13 - 1/41
-  effect_variances[2] <- 1/14 - 1/42 + 1/21 - 1/43
-  effect_variances[3] <- 1/10 - 1/44 + 1/15 - 1/45
-  effect_variances[4] <- 1/10 - 1/44 + 1/22 - 1/46
-  effect_variances[5] <- 1/23 - 1/47 + 1/30 - 1/48
-  expected_v_matrix <- diag(effect_variances)
-  expected_v_matrix[3, 4] <- 1/10 - 1/44
-  expected_v_matrix[4, 3] <- expected_v_matrix[3, 4]
+  expected_effect_variances <- vector(length=5)
+  expected_effect_variances[1] <- 1/8 - 1/40 + 1/13 - 1/41
+  expected_effect_variances[2] <- 1/14 - 1/42 + 1/21 - 1/43
+  expected_effect_variances[3] <- 1/10 - 1/44 + 1/15 - 1/45
+  expected_effect_variances[4] <- 1/10 - 1/44 + 1/22 - 1/46
+  expected_effect_variances[5] <- 1/23 - 1/47 + 1/30 - 1/48
+  
+  expected_effect_sizes <- data.frame(Study = c("A", "B", "C", "C", "D"),
+                                      Treatment = c("Oxygen", "Sulphur", "Oxygen", "Sulphur", "Zinc"),
+                                      Effect = expected_effects,
+                                      Variance = expected_effect_variances)
+  
+  expected_control_var <- vector(length = 4)
+  expected_control_var[1] <- 1/8 - 1/40
+  expected_control_var[2] <- 1/14 - 1/42
+  expected_control_var[3] <- 1/10 - 1/44
+  expected_control_var[4] <- 1/23 - 1/47
+  
+  expected_control_variance <- data.frame(Study = c("A", "B", "C", "D"),
+                                          Treatment = c("Hydrogen", "Oxygen", "Hydrogen", "Sulphur"),
+                                          Variance = expected_control_var)
+  
+  expected_v_matrix <- diag(expected_effect_variances)
+  expected_v_matrix[3, 4] <- expected_control_var[3]
+  expected_v_matrix[4, 3] <- expected_control_var[3]
   rownames(expected_v_matrix) <- c("(A)Hydrogen:Oxygen", "(B)Oxygen:Sulphur", "(C)Hydrogen:Oxygen", "(C)Hydrogen:Sulphur", "(D)Sulphur:Zinc")
   colnames(expected_v_matrix) <- rownames(expected_v_matrix)
   
+  expect_equal(GetEffectSizesAndVariances(data, treatments, outcome_type, outcome_measure)$effect_sizes, expected_effect_sizes)
+  expect_equal(GetEffectSizesAndVariances(data, treatments, outcome_type, outcome_measure)$control_variance, expected_control_variance)
   expect_equal(CreateVMatrix(data, studies, treatments, outcome_type, outcome_measure), expected_v_matrix)
 })
 
 
 
-test_that("CreateVMatrix() works for binary outcomes and risk differences", {
+test_that("GetEffectSizesAndVariances() and CreateVMatrix() work for binary outcomes and risk differences", {
   data <- read.csv("Binary_long_for_contribution_matrix.csv")
   
   studies <- c("A", "B", "C", "D")
@@ -59,25 +109,50 @@ test_that("CreateVMatrix() works for binary outcomes and risk differences", {
   outcome_type <- "Binary"
   outcome_measure <- "RD"
   
+  expected_effects <- vector(length = 5)
+  expected_effects[1] <- (8 / 40) - (13 / 41)
+  expected_effects[2] <- (14 / 42) - (21 / 43)
+  expected_effects[3] <- (10 / 44) - (15 / 45)
+  expected_effects[4] <- (10 / 44) - (22 / 46)
+  expected_effects[5] <- (23 / 47) - (30 / 48)
+  
   #Variance formula from "Introducion to Meta-Analysis" 2nd edition, Borenstein et al, page 37.
-  effect_variances <- vector(length=5)
-  effect_variances[1] <- 8 * (40 - 8) / (40^3) + 13 * (41 - 13) / (41^3)
-  effect_variances[2] <- 14 * (42 - 14) / (42^3) + 21 * (43 - 21) / (43^3)
-  effect_variances[3] <- 10 * (44 - 10) / (44^3) + 15 * (45 - 15) / (45^3)
-  effect_variances[4] <- 10 * (44 - 10) / (44^3) + 22 * (46 - 22) / (46^3)
-  effect_variances[5] <- 23 * (47 - 23) / (47^3) + 30 * (48 - 30) / (48^3)
+  expected_effect_variances <- vector(length=5)
+  expected_effect_variances[1] <- 8 * (40 - 8) / (40^3) + 13 * (41 - 13) / (41^3)
+  expected_effect_variances[2] <- 14 * (42 - 14) / (42^3) + 21 * (43 - 21) / (43^3)
+  expected_effect_variances[3] <- 10 * (44 - 10) / (44^3) + 15 * (45 - 15) / (45^3)
+  expected_effect_variances[4] <- 10 * (44 - 10) / (44^3) + 22 * (46 - 22) / (46^3)
+  expected_effect_variances[5] <- 23 * (47 - 23) / (47^3) + 30 * (48 - 30) / (48^3)
+  
+  expected_effect_sizes <- data.frame(Study = c("A", "B", "C", "C", "D"),
+                                      Treatment = c("Oxygen", "Sulphur", "Oxygen", "Sulphur", "Zinc"),
+                                      Effect = expected_effects,
+                                      Variance = expected_effect_variances)
+  
+  expected_control_var <- vector(length = 4)
+  expected_control_var[1] <- 8 * (40 - 8) / 40^3
+  expected_control_var[2] <- 14 * (42 - 14) / 42^3
+  expected_control_var[3] <- 10 * (44 - 10) / 44^3
+  expected_control_var[4] <- 23 * (47 - 23) / 47^3
+  
+  expected_control_variance <- data.frame(Study = c("A", "B", "C", "D"),
+                                          Treatment = c("Hydrogen", "Oxygen", "Hydrogen", "Sulphur"),
+                                          Variance = expected_control_var)
+  
   expected_v_matrix <- diag(effect_variances)
-  expected_v_matrix[3, 4] <- 10 * (44 - 10) / (44^3)
-  expected_v_matrix[4, 3] <- expected_v_matrix[3, 4]
+  expected_v_matrix[3, 4] <- expected_control_var[3]
+  expected_v_matrix[4, 3] <- expected_control_var[3]
   rownames(expected_v_matrix) <- c("(A)Hydrogen:Oxygen", "(B)Oxygen:Sulphur", "(C)Hydrogen:Oxygen", "(C)Hydrogen:Sulphur", "(D)Sulphur:Zinc")
   colnames(expected_v_matrix) <- rownames(expected_v_matrix)
   
+  expect_equal(GetEffectSizesAndVariances(data, treatments, outcome_type, outcome_measure)$effect_sizes, expected_effect_sizes)
+  expect_equal(GetEffectSizesAndVariances(data, treatments, outcome_type, outcome_measure)$control_variance, expected_control_variance)
   expect_equal(CreateVMatrix(data, studies, treatments, outcome_type, outcome_measure), expected_v_matrix)
 })
 
 
 
-test_that("CreateVMatrix() works for continuous outcomes", {
+test_that("GetEffectSizesAndVariances() and CreateVMatrix() work for continuous outcomes", {
   data <- data.frame(Study = c("A", "A", "B", "B", "C", "C", "C", "D", "D"),
                      T = c(1, 2, 2, 3, 1, 2, 3, 3, 4),
                      Treatment = c("Hydrogen", "Oxygen", "Oxygen", "Sulphur", "Hydrogen", "Oxygen", "Sulphur", "Sulphur", "Zinc"),
@@ -90,19 +165,44 @@ test_that("CreateVMatrix() works for continuous outcomes", {
   outcome_type <- "Continuous"
   outcome_measure <- "MD"
   
+  expected_effects <- vector(length = 5)
+  expected_effects[1] <- 20 - 30
+  expected_effects[2] <- 31 - 40
+  expected_effects[3] <- 21 - 32
+  expected_effects[4] <- 21 - 41
+  expected_effects[5] <- 42 - 50
+  
   #Variance formula from "Introducion to Meta-Analysis" 2nd edition, Borenstein et al, page 22, unpooled variance.
-  effect_variances <- vector(length=5)
-  effect_variances[1] <- 5^2 / 30 + 6^2 / 31
-  effect_variances[2] <- 6^2 / 32 + 7^2 / 33
-  effect_variances[3] <- 7^2 / 34 + 8^2 / 35
-  effect_variances[4] <- 7^2 / 34 + 9^2 / 36
-  effect_variances[5] <- 9^2 / 37 + 10^2 / 38
-  expected_v_matrix <- diag(effect_variances)
-  expected_v_matrix[3, 4] <- 7^2 / 34
-  expected_v_matrix[4, 3] <- expected_v_matrix[3, 4]
+  expected_effect_variances <- vector(length=5)
+  expected_effect_variances[1] <- 5^2 / 30 + 6^2 / 31
+  expected_effect_variances[2] <- 6^2 / 32 + 7^2 / 33
+  expected_effect_variances[3] <- 7^2 / 34 + 8^2 / 35
+  expected_effect_variances[4] <- 7^2 / 34 + 9^2 / 36
+  expected_effect_variances[5] <- 9^2 / 37 + 10^2 / 38
+  
+  expected_effect_sizes <- data.frame(Study = c("A", "B", "C", "C", "D"),
+                                      Treatment = c("Oxygen", "Sulphur", "Oxygen", "Sulphur", "Zinc"),
+                                      Effect = expected_effects,
+                                      Variance = expected_effect_variances)
+  
+  expected_control_var <- vector(length = 4)
+  expected_control_var[1] <- 5^2 / 30
+  expected_control_var[2] <- 6^2 / 32
+  expected_control_var[3] <- 7^2 / 34
+  expected_control_var[4] <- 9^2 / 37
+  
+  expected_control_variance <- data.frame(Study = c("A", "B", "C", "D"),
+                                          Treatment = c("Hydrogen", "Oxygen", "Hydrogen", "Sulphur"),
+                                          Variance = expected_control_var)
+  
+  expected_v_matrix <- diag(expected_effect_variances)
+  expected_v_matrix[3, 4] <- expected_control_var[3]
+  expected_v_matrix[4, 3] <- expected_control_var[3]
   rownames(expected_v_matrix) <- c("(A)Hydrogen:Oxygen", "(B)Oxygen:Sulphur", "(C)Hydrogen:Oxygen", "(C)Hydrogen:Sulphur", "(D)Sulphur:Zinc")
   colnames(expected_v_matrix) <- rownames(expected_v_matrix)
   
+  expect_equal(GetEffectSizesAndVariances(data, treatments, outcome_type, outcome_measure)$effect_sizes, expected_effect_sizes)
+  expect_equal(GetEffectSizesAndVariances(data, treatments, outcome_type, outcome_measure)$control_variance, expected_control_variance)
   expect_equal(CreateVMatrix(data, studies, treatments, outcome_type, outcome_measure), expected_v_matrix)
 })
 
@@ -206,16 +306,26 @@ test_that("CreateLambdaBetaMatrix() works", {
 
 
 
+test_that("CheckSingularMatrix() works", {
+  invertible_matrix <- matrix(c(1:3, 8:6, c(0, 0, 1)), nrow = 3)
+  singular_matrix <- matrix(c(1:3, 1:3, 4:6), nrow = 3)
+  
+  expect_equal(CheckSingularMatrix(invertible_matrix), NULL)
+  expect_error(CheckSingularMatrix(singular_matrix))
+})
+
+
+
 test_that("CreateContributionMatrix() produces a matrix of the correct format for all three covariate parameter assumptions", {
   data <- read.csv("Binary_long_cov_for_contribution_matrix.csv")
   
   treatment_ids <- list(Number = 1:3, Label = c("Hydrogen", "Oxygen", "Sulphur"))
   
-  contribution_unrelated <- CreateContributionMatrix(data = data, treatment_ids = treatment_ids, outcome_type = "Binary", outcome_measure = "OR", effects_type = "fixed", cov_parameters = "unrelated", study_or_comparison_level = "comparison", absolute_or_percentage = "percentage", basic_or_all_parameters = "all")
+  contribution_unrelated <- CreateContributionMatrix(data = data, treatment_ids = treatment_ids, outcome_type = "Binary", outcome_measure = "OR", effects_type = "fixed", cov_parameters = "unrelated", study_or_comparison_level = "comparison", absolute_or_percentage = "percentage", basic_or_all_parameters = "all", weight_or_contribution = "weight")
   
-  contribution_exchangeable <- CreateContributionMatrix(data = data, treatment_ids = treatment_ids, outcome_type = "Binary", outcome_measure = "OR", effects_type = "fixed", cov_parameters = "exchangeable", std_dev_beta = 1, study_or_comparison_level = "comparison", absolute_or_percentage = "percentage", basic_or_all_parameters = "all")
+  contribution_exchangeable <- CreateContributionMatrix(data = data, treatment_ids = treatment_ids, outcome_type = "Binary", outcome_measure = "OR", effects_type = "fixed", cov_parameters = "exchangeable", std_dev_beta = 1, study_or_comparison_level = "comparison", absolute_or_percentage = "percentage", basic_or_all_parameters = "all", weight_or_contribution = "weight")
   
-  contribution_shared <- CreateContributionMatrix(data = data, treatment_ids = treatment_ids, outcome_type = "Binary", outcome_measure = "OR", effects_type = "fixed", cov_parameters = "shared", study_or_comparison_level = "comparison", absolute_or_percentage = "percentage", basic_or_all_parameters = "all")
+  contribution_shared <- CreateContributionMatrix(data = data, treatment_ids = treatment_ids, outcome_type = "Binary", outcome_measure = "OR", effects_type = "fixed", cov_parameters = "shared", study_or_comparison_level = "comparison", absolute_or_percentage = "percentage", basic_or_all_parameters = "all", weight_or_contribution = "weight")
   
   expect_equal(rownames(contribution_unrelated), c("(A)Hydrogen:Oxygen", "(B)Hydrogen:Oxygen", "(C)Hydrogen:Oxygen", "(C)Hydrogen:Sulphur", "(D)Hydrogen:Sulphur"))
   expect_equal(colnames(contribution_unrelated), c("Hydrogen:Oxygen_d", "Hydrogen:Sulphur_d", "Oxygen:Sulphur_d", "Hydrogen:Oxygen_beta", "Hydrogen:Sulphur_beta", "Oxygen:Sulphur_beta"))
@@ -234,9 +344,9 @@ test_that("CreateContributionMatrix() produces a matrix of the correct format wh
   
   treatment_ids <- list(Number = 1:3, Label = c("Hydrogen", "Oxygen", "Sulphur"))
   
-  contribution_unrelated <- CreateContributionMatrix(data = data, treatment_ids = treatment_ids, outcome_type = "Binary", outcome_measure = "OR", effects_type = "fixed", cov_parameters = "unrelated", study_or_comparison_level = "study", absolute_or_percentage = "percentage", basic_or_all_parameters = "all")
+  contribution_unrelated <- CreateContributionMatrix(data = data, treatment_ids = treatment_ids, outcome_type = "Binary", outcome_measure = "OR", effects_type = "fixed", cov_parameters = "unrelated", study_or_comparison_level = "study", absolute_or_percentage = "percentage", basic_or_all_parameters = "all", weight_or_contribution = "weight")
   
-  contribution_shared <- CreateContributionMatrix(data = data, treatment_ids = treatment_ids, outcome_type = "Binary", outcome_measure = "OR", effects_type = "fixed", cov_parameters = "shared", study_or_comparison_level = "study", absolute_or_percentage = "percentage", basic_or_all_parameters = "all")
+  contribution_shared <- CreateContributionMatrix(data = data, treatment_ids = treatment_ids, outcome_type = "Binary", outcome_measure = "OR", effects_type = "fixed", cov_parameters = "shared", study_or_comparison_level = "study", absolute_or_percentage = "percentage", basic_or_all_parameters = "all", weight_or_contribution = "weight")
   
   expect_equal(rownames(contribution_unrelated), c("A", "B", "C", "D"))
   expect_equal(colnames(contribution_unrelated), c("Hydrogen:Oxygen_d", "Hydrogen:Sulphur_d", "Oxygen:Sulphur_d", "Hydrogen:Oxygen_beta", "Hydrogen:Sulphur_beta", "Oxygen:Sulphur_beta"))
@@ -252,9 +362,9 @@ test_that("CreateContributionMatrix() produces a matrix of the correct format wh
   
   treatment_ids <- list(Number = 1:3, Label = c("Hydrogen", "Oxygen", "Sulphur"))
   
-  contribution_unrelated <- CreateContributionMatrix(data = data, treatment_ids = treatment_ids, outcome_type = "Binary", outcome_measure = "OR", effects_type = "fixed", cov_parameters = "unrelated", study_or_comparison_level = "comparison", basic_or_all_parameters = "basic", absolute_or_percentage = "percentage")
+  contribution_unrelated <- CreateContributionMatrix(data = data, treatment_ids = treatment_ids, outcome_type = "Binary", outcome_measure = "OR", effects_type = "fixed", cov_parameters = "unrelated", study_or_comparison_level = "comparison", basic_or_all_parameters = "basic", absolute_or_percentage = "percentage", weight_or_contribution = "weight")
   
-  contribution_shared <- CreateContributionMatrix(data = data, treatment_ids = treatment_ids, outcome_type = "Binary", outcome_measure = "OR", effects_type = "fixed", cov_parameters = "shared", study_or_comparison_level = "comparison", basic_or_all_parameters = "basic", absolute_or_percentage = "percentage")
+  contribution_shared <- CreateContributionMatrix(data = data, treatment_ids = treatment_ids, outcome_type = "Binary", outcome_measure = "OR", effects_type = "fixed", cov_parameters = "shared", study_or_comparison_level = "comparison", basic_or_all_parameters = "basic", absolute_or_percentage = "percentage", weight_or_contribution = "weight")
   
   expect_equal(rownames(contribution_unrelated), c("(A)Hydrogen:Oxygen", "(B)Hydrogen:Oxygen", "(C)Hydrogen:Oxygen", "(C)Hydrogen:Sulphur", "(D)Hydrogen:Sulphur"))
   expect_equal(colnames(contribution_unrelated), c("Hydrogen:Oxygen_d", "Hydrogen:Sulphur_d", "Hydrogen:Oxygen_beta", "Hydrogen:Sulphur_beta"))
@@ -262,3 +372,5 @@ test_that("CreateContributionMatrix() produces a matrix of the correct format wh
   expect_equal(rownames(contribution_shared), c("(A)Hydrogen:Oxygen", "(B)Hydrogen:Oxygen", "(C)Hydrogen:Oxygen", "(C)Hydrogen:Sulphur", "(D)Hydrogen:Sulphur"))
   expect_equal(colnames(contribution_shared), c("Hydrogen:Oxygen_d", "Hydrogen:Sulphur_d", "B"))
 })
+
+
