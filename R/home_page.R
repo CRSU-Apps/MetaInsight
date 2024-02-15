@@ -33,10 +33,10 @@ home_page_ui <- function(id) {
       ),
       column(width = 2),
       column(
-        width = 5, 
+        width = 5,
         p(tags$strong("Latest Updates:")),
         p(tags$strong("Minor update (15th February 2024 v5.2.0):")),
-        tags$ui(
+        tags$ul(
           tags$li("Bug fix where data upload instructions were hidden."),
           tags$li("Update to data upload to allow for arbitrary letter casing of column titles."),
           tags$li("Added validation for data column titles with helpful messages."),
@@ -48,7 +48,7 @@ home_page_ui <- function(id) {
         ),
         p(tags$strong("Major update (15 August 2023 v5.0.0):")),
         p(tags$ul(
-          tags$li("MetaInsight has been changed to make it easier for users to upload their own datasets for analysis. 
+          tags$li("MetaInsight has been changed to make it easier for users to upload their own datasets for analysis.
          Study data and treatment labels can now be uploaded in a single file.
          See the 'load data' tab for more guidance and the option to upgrade data files used in previous versions of MetaInsight ")
         )),
@@ -60,7 +60,7 @@ home_page_ui <- function(id) {
           "The code for MetaInsight is available on",
           tags$a(href="https://github.com/CRSU-Apps/MetaInsight", "GitHub",target="_blank")
         ),
-        br(),
+        br()
       )
     ),
     br(),
@@ -83,7 +83,7 @@ home_page_ui <- function(id) {
     ),
     br(),
     p(
-      "App powered by R and Shiny. All frequentist statistical calculations are performed using R package netmeta (Gerta Rücker, Guido Schwarzer, Ulrike Krahn and Jochem König 2017).", 
+      "App powered by R and Shiny. All frequentist statistical calculations are performed using R package netmeta (Gerta Rücker, Guido Schwarzer, Ulrike Krahn and Jochem König 2017).",
       tags$a(href="http://CRAN.R-project.org/package=netmeta", "netmeta: Network Meta-Analysis using Frequentist Methods. R package version 0.9-8.",target="_blank"),
       "All Bayesian statistical calculations are performed using R package gemtc (Gert van Valkenhoef, Joel Kuiper 2016)",
       tags$a(href="https://cran.r-project.org/web/packages/gemtc/gemtc.pdf", "gemtc: Network Meta-Analysis Using Bayesian Methods R package version 0.8-2.",target="_blank"),
@@ -106,8 +106,8 @@ home_page_ui <- function(id) {
           img(src = 'CRSU_logo.png', width = "40%")),
       div(
         tags$strong("Funding and Support Acknowledgement:"),
-        tags$p("MetaInsight is part of the Complex Reviews Synthesis Unit (CRSU) suite of evidence synthesis apps. 
-        The development of these apps are currently funded (majority) and overseen by the Evidence Synthesis Group @ CRSU (NIHR153934). 
+        tags$p("MetaInsight is part of the Complex Reviews Synthesis Unit (CRSU) suite of evidence synthesis apps.
+        The development of these apps are currently funded (majority) and overseen by the Evidence Synthesis Group @ CRSU (NIHR153934).
         Further details of other funders and support, current and past, can be found ",
           tags$a(href="https://github.com/CRSU-Apps/.github/blob/main/DetailedFundingStatement.pdf", "on our GitHub page"),
         ". The views expressed are those of the author(s) and not necessarily those of the NIHR or the Department of Health and Social Care."),
