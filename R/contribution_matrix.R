@@ -25,16 +25,16 @@ GetEffectSizesAndVariances <- function(data, treatments, outcome_type, outcome_m
   data_wide <- merge(data_control, data_no_control, by = "Study")
   #Used as labels for the matrix rows and columns
   
-  if (outcome_type == "Binary"){
+  if (outcome_type == "Binary") {
     
     #Create metafor_measure to pass to metafor::escalc
-    if (outcome_measure == "OR"){
+    if (outcome_measure == "OR") {
       metafor_measure <- "PLO"
-    } else if (outcome_measure == "RR"){
+    } else if (outcome_measure == "RR") {
       metafor_measure <- "PLN"
-    } else if (outcome_measure == "RD"){
+    } else if (outcome_measure == "RD") {
       metafor_measure <- "PR"
-    } else{
+    } else {
       stop("When outcome_type == 'Binary', outcome_measure must be 'OR', 'RR', or 'RD'")
     }
     
@@ -57,9 +57,9 @@ GetEffectSizesAndVariances <- function(data, treatments, outcome_type, outcome_m
                                    Treatment = data_control$Treatment,
                                    Variance = control_outcome$vi)
     
-  } else if (outcome_type == "Continuous"){
+  } else if (outcome_type == "Continuous") {
     
-    if (outcome_measure == "MD"){
+    if (outcome_measure == "MD") {
       
       #Calculate treatment effect variances
       effect_sizes_raw <- metafor::escalc(measure = "MD",
@@ -82,13 +82,15 @@ GetEffectSizesAndVariances <- function(data, treatments, outcome_type, outcome_m
       control_variance <- data.frame(Study = data_control$Study,
                                      Treatment = data_control$Treatment,
                                      Variance = control_outcome$vi)
-    } else{
+    } else {
       stop("When outcome_type == 'Continuous', outcome_measure must be 'MD'") 
     }
-  } else{
+  } else {
     stop("outcome_type must be 'Continuous' or 'Binary'")
   }
-  return(list(effect_sizes = effect_sizes, control_variance = control_variance))
+  return(list(effect_sizes = effect_sizes,
+              control_variance = control_variance)
+         )
 }
 
 
@@ -160,7 +162,7 @@ CreateXMatrix <- function(data, studies, treatments, covar_centred, cov_paramete
   study_treatment_label <- paste0("(", data_no_control$Study, ")", data_no_control$Control, ":", data_no_control$Treatment)
   
   #Create the design matrix with the right dimensions and zeros everywhere
-  if (cov_parameters %in% c("unrelated", "exchangeable")){
+  if (cov_parameters %in% c("unrelated", "exchangeable")) {
     X <- matrix(0, nrow = length(study_treatment_label), ncol = 2 * (n_treatments - 1))
     colnames(X) <- c(paste0(treatments[1], ":", treatments[-1], "_d"),
                      paste0(treatments[1], ":", treatments[-1], "_beta"))
@@ -168,7 +170,7 @@ CreateXMatrix <- function(data, studies, treatments, covar_centred, cov_paramete
     X <- matrix(0, nrow = length(study_treatment_label), ncol = n_treatments)
     colnames(X) <- c(paste0(treatments[1], ":", treatments[-1], "_d"),
                      "B")
-  } else{
+  } else {
     stop("cov_parameters must be 'shared', 'exchangeable', or 'unrelated'")
   }
   rownames(X) <- study_treatment_label
@@ -184,8 +186,8 @@ CreateXMatrix <- function(data, studies, treatments, covar_centred, cov_paramete
   }
   
   #Populate the design matrix for unrelated or exchangeable covariate parameters
-  if (cov_parameters %in% c("unrelated", "exchangeable")){
-    for (i in 1:length(data_no_control$Study)){
+  if (cov_parameters %in% c("unrelated", "exchangeable")) {
+    for (i in 1:length(data_no_control$Study)) {
       
       row_index <- which(GetStudies(rownames(X)) == data_no_control$Study[i]
                          & GetTreatments(rownames(X)) == data_no_control$Treatment[i])
@@ -195,14 +197,14 @@ CreateXMatrix <- function(data, studies, treatments, covar_centred, cov_paramete
       col_index_beta_control <- which(GetTreatments(colnames(X)) == paste0(data_no_control$Control[i], "_beta"))
       
       #If the study contains the reference treatment...
-      if (data_no_control$Control[i] == reference){
+      if (data_no_control$Control[i] == reference) {
         #...put 1 in the treatment column...
         X[row_index, col_index_d_treat] <- 1
         #...and put the covariate value in the treatment's covariate column
         X[row_index, col_index_beta_treat] <- covar_centred[data_no_control$Study[i]]
         
         #If the study does not contain the reference treatment...
-      } else if (data_no_control$Control[i] != reference){
+      } else if (data_no_control$Control[i] != reference) {
         #...put 1 in the treatment column...
         X[row_index, col_index_d_treat] <- 1
         #...put -1 in the control treatment column...
@@ -216,11 +218,11 @@ CreateXMatrix <- function(data, studies, treatments, covar_centred, cov_paramete
   }
   
   #Populate the design matrix for shared covariate parameters
-  if (cov_parameters == "shared"){
+  if (cov_parameters == "shared") {
     
     col_index_beta <- which(GetTreatments(colnames(X)) == "B")
     
-    for (i in 1:length(data_no_control$Study)){
+    for (i in 1:length(data_no_control$Study)) {
       
       row_index <- which(GetStudies(rownames(X)) == data_no_control$Study[i]
                          & GetTreatments(rownames(X)) == data_no_control$Treatment[i])
@@ -228,14 +230,14 @@ CreateXMatrix <- function(data, studies, treatments, covar_centred, cov_paramete
       col_index_d_control <- which(GetTreatments(colnames(X)) == paste0(data_no_control$Control[i], "_d"))
       
       #If the study contains the reference treatment...
-      if (data_no_control$Control[i] == reference){
+      if (data_no_control$Control[i] == reference) {
         #...put 1 in the treatment column...
         X[row_index, col_index_d_treat] <- 1
         #...and put the covariate value in the covariate column
         X[row_index, col_index_beta] <- covar_centred[data_no_control$Study[i]]
         
         #If the study does not contain the reference treatment...
-      } else{
+      } else {
         #...put 1 in the treatment column...
         X[row_index, col_index_d_treat] <- 1
         #...put -1 in the control treatment column...
@@ -263,8 +265,8 @@ CreateZMatrix <- function(treatments, cov_parameters){
   reference <- treatments[1]
   #Create the variable treat1_treat2_label, which is all pairs of treatments in the form treatment1:treatment2, where treatment1 comes earlier in 'treatments' than treatment2. There are choose(n_treatments, 2) of these, and they are used as row names in the Z matrix
   treat1_treat2_label <- matrix(0, nrow = n_treatments, ncol = n_treatments)
-  for (i in 1:n_treatments){
-    for (j in i:n_treatments){
+  for (i in 1:n_treatments) {
+    for (j in i:n_treatments) {
       treat1_treat2_label[i, j] <- paste0(treatments[i], ":", treatments[j])
     }
   }
@@ -278,7 +280,7 @@ CreateZMatrix <- function(treatments, cov_parameters){
   colnames(Z_top_left) <- treatments[-1]
   
   #Populate the Z_top_left matrix
-  for (i in 1:length(rownames(Z_top_left))){
+  for (i in 1:length(rownames(Z_top_left))) {
     #First treatment in the row
     first_treatment <- substr(rownames(Z_top_left)[i],
                               start = 1,
@@ -288,12 +290,12 @@ CreateZMatrix <- function(treatments, cov_parameters){
                                start = unlist(gregexpr(":", rownames(Z_top_left)[i])) + 1,
                                stop = nchar(rownames(Z_top_left)[i]))
     #If the first treatment in the row is the reference...
-    if (first_treatment == reference){
+    if (first_treatment == reference) {
       #...put 1 in the column correseponding to the second treatment
       Z_top_left[i, which(colnames(Z_top_left) == second_treatment)] <- 1
     }
     #If the first treatment in the row is not the reference...
-    else{
+    else {
       #...put -1 in the column correseponding to the first treatment
       Z_top_left[i, which(colnames(Z_top_left) == first_treatment)] <- -1
       #...and put 1 in the column correseponding to the second treatment
@@ -302,26 +304,26 @@ CreateZMatrix <- function(treatments, cov_parameters){
   }
   
   #Create the other three corners of the Z matrix
-  if (cov_parameters %in% c("unrelated", "exchangeable")){
+  if (cov_parameters %in% c("unrelated", "exchangeable")) {
     Z_top_right <- matrix(0, nrow = n_treatments * (n_treatments - 1) / 2, ncol = n_treatments - 1)
     Z_bottom_left <- Z_top_right
     Z_bottom_right <- Z_top_left
-  } else if (cov_parameters == "shared"){
+  } else if (cov_parameters == "shared") {
     Z_top_right <- matrix(0, nrow = n_treatments * (n_treatments - 1) / 2, ncol = 1)
     Z_bottom_left <- matrix(0, nrow = 1, ncol = n_treatments - 1)
     Z_bottom_right <- 1
-  } else{
+  } else {
     stop("cov_parameters must be 'shared', 'exchangeable', or 'unrelated'")
   }
   
   #Create the Z matrix
   Z <- rbind(cbind(Z_top_left, Z_top_right), cbind(Z_bottom_left, Z_bottom_right))
-  if (cov_parameters %in% c("unrelated", "exchangeable")){
+  if (cov_parameters %in% c("unrelated", "exchangeable")) {
     rownames(Z) <- c(paste0(treat1_treat2_label, "_d"),
                      paste0(treat1_treat2_label, "_beta"))
     colnames(Z) <- c(paste0(treatments[1], ":", treatments[-1], "_d"),
                      paste0(treatments[1], ":", treatments[-1], "_beta"))
-  } else if (cov_parameters == "shared"){
+  } else if (cov_parameters == "shared") {
     rownames(Z) <- c(paste0(treat1_treat2_label, "_d"),
                      "B")
     colnames(Z) <- c(paste0(treatments[1], ":", treatments[-1], "_d"),
@@ -356,8 +358,8 @@ CreateLambdaTauMatrix <- function(data, studies, treatments, std_dev_d){
   #Number of non-control arms per study
   n_arms <- table(data_no_control$Study)
   #Insert covariances into multi-arm studies. The covariance is var_d/2.
-  for (i in 1:n_studies){
-    if (n_arms[studies[i]] > 1){
+  for (i in 1:n_studies) {
+    if (n_arms[studies[i]] > 1) {
       #Create a small matrix for this study only, with var_d/2 everywhere
       mini_Lambda <- matrix(var_d/2,
                             nrow = n_arms[studies[i]],
@@ -414,11 +416,11 @@ CheckSingularMatrix <- function(matrix){
 .RawContributionMatrixFixedUnrelatedShared <- function(X, V, Z, basic_or_all_parameters){
   CheckSingularMatrix(t(X) %*% solve(V) %*% X)
 
-  if (basic_or_all_parameters == "all"){
+  if (basic_or_all_parameters == "all") {
     contribution <- Z %*% solve(t(X) %*% solve(V) %*% X) %*% t(X) %*% solve(V)
-  } else if (basic_or_all_parameters == "basic"){
+  } else if (basic_or_all_parameters == "basic") {
     contribution <- solve(t(X) %*% solve(V) %*% X) %*% t(X) %*% solve(V)
-  } else{
+  } else {
     stop("basic_or_all_parameters must be 'basic' or 'all'")
   }
   return(contribution)
@@ -440,7 +442,7 @@ CheckSingularMatrix <- function(matrix){
   #Number of treatments
   n_treatments <- length(treatments)
   
-  if (is.null(std_dev_beta)){
+  if (is.null(std_dev_beta)) {
     stop("Must specify 'std_dev_beta' when cov_parameters == 'exchangeable'")
   }
   
@@ -485,11 +487,11 @@ CheckSingularMatrix <- function(matrix){
   A_top_left <- A[1:ncol(X_d), 1:nrow(X_d)]
   A_middle_left <- A[(ncol(X_d) + 1):(ncol(X_d) + ncol(X_beta)), 1:nrow(X_beta)]
   
-  if (basic_or_all_parameters == "all"){
+  if (basic_or_all_parameters == "all") {
     contribution <- Z %*% rbind(A_top_left, A_middle_left)
-  } else if (basic_or_all_parameters == "basic"){
+  } else if (basic_or_all_parameters == "basic") {
     contribution <- rbind(A_top_left, A_middle_left)
-  } else{
+  } else {
     stop("basic_or_all_parameters must be 'basic' or 'all'")
   }
   return(contribution)
@@ -537,11 +539,11 @@ CheckSingularMatrix <- function(matrix){
     A <- solve(t(X_star) %*% solve(V_star) %*% X_star) %*% t(X_star) %*% solve(V_star)
     A_bottom_left <- A[(nrow(X) + 1):nrow(A), 1:nrow(X)]
     
-    if (basic_or_all_parameters == "all"){
+    if (basic_or_all_parameters == "all") {
       contribution <- Z %*% A_bottom_left
-    } else if (basic_or_all_parameters == "basic"){
+    } else if (basic_or_all_parameters == "basic") {
       contribution <- A_bottom_left
-    } else{
+    } else {
       stop("basic_or_all_parameters must be 'basic' or 'all'")
     }
     return(contribution)
@@ -560,7 +562,7 @@ CheckSingularMatrix <- function(matrix){
 #' @param std_dev_beta Standard deviation of covariate parameters.
 #' @return Raw contribution matrix (no absolute values, no percentages, not by study).
 .RawContributionMatrixRandomExchangeable <- function(X, V, Z, Lambda_tau, basic_or_all_parameters, treatments, std_dev_beta){
-  if (is.null(std_dev_beta)){
+  if (is.null(std_dev_beta)) {
     stop("Must specify 'std_dev_beta' when cov_parameters == 'exchangeable'")
   }
   
@@ -616,11 +618,11 @@ CheckSingularMatrix <- function(matrix){
   A_row2_left <- A[(ncol(X) + 1):(ncol(X) + ncol(X_d)), 1:nrow(X)]
   A_row3_left <- A[(ncol(X) + ncol(X_d) + 1):(ncol(X) + 2 * ncol(X_d)), 1:nrow(X)]
   
-  if (basic_or_all_parameters == "all"){
+  if (basic_or_all_parameters == "all") {
     contribution <- Z %*% rbind(A_row2_left, A_row3_left)
-  } else if (basic_or_all_parameters == "basic"){
+  } else if (basic_or_all_parameters == "basic") {
     contribution <- rbind(A_row2_left, A_row3_left)
-  } else{
+  } else {
     stop("basic_or_all_parameters must be 'basic' or 'all'")
   }
   return(contribution)
@@ -664,9 +666,9 @@ CreateContributionMatrix <- function(data, treatment_ids, outcome_type, outcome_
   #Unduplicated covariate values (one per study)
   covariate <- unique(dplyr::select(data, starts_with(c("Study", "covar."))))$covar.
   #centred covariate values
-  if (is.null(cov_centre)){
+  if (is.null(cov_centre)) {
     covar_centred <- covariate - mean(covariate)
-  } else{
+  } else {
     covar_centred <- covariate - cov_centre
   }
   names(covar_centred) <- studies
@@ -684,29 +686,29 @@ CreateContributionMatrix <- function(data, treatment_ids, outcome_type, outcome_
   Z <- CreateZMatrix(treatments = treatments,
                      cov_parameters = cov_parameters)
   
-  if (effects_type == "fixed"){
-    if (cov_parameters %in% c("unrelated", "shared")){
+  if (effects_type == "fixed") {
+    if (cov_parameters %in% c("unrelated", "shared")) {
       contribution <- .RawContributionMatrixFixedUnrelatedShared(X = X, V = V, Z = Z,
                                                                  basic_or_all_parameters = basic_or_all_parameters)
-    } else if (cov_parameters == "exchangeable"){
+    } else if (cov_parameters == "exchangeable") {
       contribution <- .RawContributionMatrixFixedExchangeable(X = X, V = V, Z = Z,
                                                              basic_or_all_parameters = basic_or_all_parameters,
                                                              treatments = treatments,
                                                              std_dev_beta = std_dev_beta)
     }
-  } else if (effects_type == "random"){
+  } else if (effects_type == "random") {
     
-    if (is.null(std_dev_d)){
+    if (is.null(std_dev_d)) {
       stop("Must specify 'std_dev_d' when effects_type == 'random'")
     }
     
     Lambda_tau <- CreateLambdaTauMatrix(data = data, studies = studies, treatments = treatments, std_dev_d = std_dev_d)
     
-    if (cov_parameters %in% c("unrelated", "shared")){
+    if (cov_parameters %in% c("unrelated", "shared")) {
       contribution <- .RawContributionMatrixRandomUnrelatedShared(X = X, V = V, Z = Z,
                                                                   Lambda_tau = Lambda_tau,
                                                                   basic_or_all_parameters = basic_or_all_parameters)
-    } else if (cov_parameters == "exchangeable"){
+    } else if (cov_parameters == "exchangeable") {
       contribution <- .RawContributionMatrixRandomExchangeable(X = X, V = V, Z = Z,
                                                               Lambda_tau = Lambda_tau,
                                                               basic_or_all_parameters = basic_or_all_parameters,
@@ -719,7 +721,9 @@ CreateContributionMatrix <- function(data, treatment_ids, outcome_type, outcome_
   }
   
   if (weight_or_contribution == "contribution") {
-    effect_sizes <- GetEffectSizesAndVariances(data = data, treatments = treatments, outcome_type = outcome_type,
+    effect_sizes <- GetEffectSizesAndVariances(data = data,
+                                               treatments = treatments,
+                                               outcome_type = outcome_type,
                                                outcome_measure = outcome_measure)$effect_sizes$Effect
     #Multiply the n-th row of 'contribution' by the n-th element of 'effect_sizes'
     contribution <- contribution * effect_sizes
@@ -732,16 +736,16 @@ CreateContributionMatrix <- function(data, treatment_ids, outcome_type, outcome_
   contribution_percent <- 100 * contribution_abs / contribution_row_sums
   
   #Select percentage contributions or absolute contributions
-  if (absolute_or_percentage == "percentage"){
+  if (absolute_or_percentage == "percentage") {
     contribution_output <- t(contribution_percent)
-  } else if (absolute_or_percentage == "absolute"){
+  } else if (absolute_or_percentage == "absolute") {
     contribution_output <- t(contribution_abs)
-  } else{
+  } else {
     stop("absolute_or_percentage must be 'absolute' or 'percentage'") 
   }
   
   #Create a study level contribution matrix if required
-  if (study_or_comparison_level == "study"){
+  if (study_or_comparison_level == "study") {
     #Number of studies
     n_studies <- length(studies)
     #Number of arms per study
@@ -758,36 +762,36 @@ CreateContributionMatrix <- function(data, treatment_ids, outcome_type, outcome_
     contribution_study <- matrix(nrow = n_studies, ncol = ncol(contribution_output))
     rownames(contribution_study) <- studies
     colnames(contribution_study) <- colnames(contribution_output)
-    for (study in studies){
+    for (study in studies) {
       #If there is only one row in the contribution matrix for this study, copy it
-      if (n_arms[study] == 2){
+      if (n_arms[study] == 2) {
         contribution_study[which(rownames(contribution_study) == study), ] <- contribution_output[which(rownames(contribution_output) == study), ]
       #If there is more than one row for this study, add up the rows
-      } else if (n_arms[study] > 2){
+      } else if (n_arms[study] > 2) {
         contribution_study[which(rownames(contribution_study) == study), ] <- colSums(contribution_output[which(rownames(contribution_output) == study), ])
       }
     }
     contribution_output <- contribution_study
-  } else if (study_or_comparison_level != "comparison"){
+  } else if (study_or_comparison_level != "comparison") {
     stop("study_or_comparison_level must be 'study' or 'comparison'")
   }
 
   #For some configurations the column names are not carried through, so put them back in
-  if (is.null(colnames(contribution_output))){
+  if (is.null(colnames(contribution_output))) {
     colnames(contribution_output) <- colnames(X)
   }
   
-  if (!full_output){
+  if (!full_output) {
     return(round(contribution_output, digits = 2))
   } else{
-    if (effects_type == "fixed"){
-      if (cov_parameters %in% c("unrelated", "shared")){
+    if (effects_type == "fixed") {
+      if (cov_parameters %in% c("unrelated", "shared")) {
         return(list(contribution = contribution_output,
                     V = V,
                     X = X,
                     Z = Z)
         )
-      } else if (cov_parameters == "exchangeable"){
+      } else if (cov_parameters == "exchangeable") {
         return(list(contribution = contribution_output,
                     V = V,
                     X = X,
@@ -795,15 +799,15 @@ CreateContributionMatrix <- function(data, treatment_ids, outcome_type, outcome_
                     Lambda_beta = Lambda_beta)
         )
       }
-    } else if (effects_type == "random"){
-      if (cov_parameters %in% c("unrelated", "shared")){
+    } else if (effects_type == "random") {
+      if (cov_parameters %in% c("unrelated", "shared")) {
         return(list(contribution = contribution_output,
                     V = V,
                     X = X,
                     Z = Z,
                     Lambda_tau = Lambda_tau)
         )
-      } else if (cov_parameters == "exchangeable"){
+      } else if (cov_parameters == "exchangeable") {
         return(list(contribution = contribution_output,
                     V = V,
                     X = X,
