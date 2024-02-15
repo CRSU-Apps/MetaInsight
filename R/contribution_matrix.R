@@ -23,7 +23,6 @@ GetEffectSizesAndVariances <- function(data, treatments, outcome_type, outcome_m
   data_no_control <- KeepOrDeleteControlTreatment(data = data, treatments = treatments, keep_delete = "delete")
   #Create a wide version of data
   data_wide <- merge(data_control, data_no_control, by = "Study")
-  #Used as labels for the matrix rows and columns
   
   if (outcome_type == "Binary") {
     
