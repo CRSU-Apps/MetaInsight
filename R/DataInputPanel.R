@@ -6,18 +6,6 @@
 data_input_panel_ui <- function(id) {
   ns <- NS(id)
   div(
-    h4(tags$strong("Select outcome type")),
-    prettyRadioButtons(
-      inputId = ns("metaoutcome"),
-      label = NULL,
-      choices = c(
-        "Continuous (e.g. mean difference) " = "Continuous",
-        "Binary (e.g. Odds Ratio)" = "Binary"
-      ),
-      animation = "pulse",
-      status = "info",
-      width = '400px'
-    ),
     h4(tags$strong("Select a data file (.csv) to upload")),
     p(
       tags$strong(
@@ -31,7 +19,7 @@ data_input_panel_ui <- function(id) {
     p(tags$strong("Default maximum file size is 5MB.")),
     uiOutput(outputId = ns("file_input_panel")),
     conditionalPanel(
-      condition = 'output.data_uploaded',
+      condition = 'output.data_uploaded == true',
       ns = ns,
       div(
         style = "float:right",
@@ -54,14 +42,14 @@ data_input_panel_ui <- function(id) {
 #' Module server for uploading data into the app.
 #' 
 #' @param id ID of the module
+#' @param metaoutcome Reactive containing the outcome type selected
 #' @param continuous_file Default data file for continuous outcomes. Defaults to 'Cont_long.csv'
 #' @param binary_file Default data file for binary outcomes. Defaults to 'Binary_long.csv'
 #' @return List of reactives:
 #'   - 'data' is the uplodaded data or the default data
 #'   - 'is_default_data' is TRUE if data is an example data set, else FALSE if data has been uploaded
 #'   - 'treatment_list' is the data frame containing the treatment ID ('Number') and the treatment name ('Label')
-#'   - 'metaoutcome' is the outcome type selected
-data_input_panel_server <- function(id, continuous_file = 'Cont_long.csv', binary_file = 'Binary_long.csv') {
+data_input_panel_server <- function(id, metaoutcome, continuous_file = 'Cont_long.csv', binary_file = 'Binary_long.csv') {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
     
@@ -74,29 +62,32 @@ data_input_panel_server <- function(id, continuous_file = 'Cont_long.csv', binar
     default_file_input <- renderUI({
       fileInput(
         inputId = ns("data"),
-        label = "",
+        label = NULL,
         buttonLabel = "Select",
-        placeholder = "No file selected",
-        accept = '.csv'
+        accept = c(".csv", ".xlsx")
       )
     })
 
     # Logical to show reset button only when data uploaded
     data_uploaded <- reactiveVal(FALSE)
-    output$data_uploaded <- reactive({data_uploaded()})
+    output$data_uploaded <- reactive({
+      data_uploaded()
+    })
     outputOptions(output, 'data_uploaded', suspendWhenHidden = FALSE)
 
-    # Render the file input intially
+    # Render the file input initially
     output$file_input_panel <- default_file_input
     
     # Load default data
     defaultD <- reactive({
-      if (input$metaoutcome == 'Continuous') {
-        defaultD <- rio::import(file = continuous_file)
+      if (metaoutcome() == 'Continuous') {
+        defaultD <- read.csv(continuous_file)
       } else {
-        defaultD <- read.csv(binary_file)
+        defaultD <- rio::import(file = binary_file)
       }
     })
+    
+    invalid_data <- reactiveVal(NULL)
     
     # Make data reactive i.e. default or user uploaded
     data <- reactive({
@@ -109,41 +100,19 @@ data_input_panel_server <- function(id, continuous_file = 'Cont_long.csv', binar
         # if data is triggered without reload, only load the default data
         df <- defaultD()
       } else {
-        df <- rio::import(file = file1$datapath)
-      }
-      
-      result = ValidateUploadedData(df, input$metaoutcome)
-
-      if (!result$valid) {
-        showModal(
-          modalDialog(
-            title = "Invalid Data",
-            easyClose = TRUE,
-            p("Uploaded data was invalid because:"),
-            p(tags$strong(result$message)),
-            p("Please check you data file and ensure that you have the correct outcome type selected."),
-            shinyBS::bsCollapse(
-              shinyBS::bsCollapsePanel(
-                title = "Show Data",
-                div(
-                  style = 'overflow-x: scroll',
-                  DT::dataTableOutput(outputId = ns("invalid_data"))
-                )
-              )
-            ),
-            modalButton(label = "OK"),
-            footer = NULL
-          )
-        )
-        invalid_data(df)
-        output$file_input_panel <- default_file_input
-        df <- defaultD()
-        data_uploaded(FALSE)
-      } else {
-        invalid_data(NULL)
+        df <- read.table(file = file1$datapath,
+                         sep = ",",
+                         header = TRUE,
+                         stringsAsFactors = FALSE,
+                         quote = "\"",
+                         fileEncoding = 'UTF-8-BOM')
       }
       
       return(CleanData(df))
+    })
+    
+    output$invalid_data <- DT::renderDataTable({
+      invalid_data()
     })
     
     all_treatments <- reactive({
@@ -161,7 +130,7 @@ data_input_panel_server <- function(id, continuous_file = 'Cont_long.csv', binar
     #####
     
     # if the outcome is changed, reload the data and labels, reset the file input and hide the reload button
-    observeEvent(input$metaoutcome,
+    observeEvent(metaoutcome(),
                  {
                    reload(TRUE)
                    output$file_input_panel <- default_file_input
@@ -199,8 +168,7 @@ data_input_panel_server <- function(id, continuous_file = 'Cont_long.csv', binar
       list(
         data = data,
         is_default_data = is_default_data,
-        treatment_list = treatment_list,
-        metaoutcome = reactive({ input$metaoutcome })
+        treatment_list = treatment_list
       )
     )
   })

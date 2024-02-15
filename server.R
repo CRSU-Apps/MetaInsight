@@ -11,19 +11,22 @@ shinyServer(function(input, output, session) {
   
   ### GDPR
   
-  google_analytics_header_server(id = "analytics", google_analytics_id = "UA-135597033-7")
+  google_analytics_header_server(id = "analytics", app_name = "MetaInsight", google_analytics_id = "UA-135597033-7")
   
   #####
   # Reactive functions used in various places
   #####
   
-  home_page_server(id = "home")
+  # Define outcome measure (continuous or binary) - NVB
+  metaoutcome <- home_page_server(id = "home")
   
-  data_reactives <- load_data_page_server(id = 'load_data_page')
+  data_reactives <- load_data_page_server(
+    id = 'load_data_page',
+    metaoutcome = metaoutcome
+  )
   data <- data_reactives$data
   is_default_data = data_reactives$is_default_data
   treatment_df <- data_reactives$treatment_df
-  metaoutcome <- data_reactives$metaoutcome
   
   data_analysis_page_server(
     id = "data_analysis",
