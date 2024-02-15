@@ -9,7 +9,7 @@ google_analytics_header_ui <- function(id) {
   )
 }
 
-google_analytics_header_server <- function(id, app_name, google_analytics_id) {
+google_analytics_header_server <- function(id, google_analytics_id) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
     
@@ -80,7 +80,6 @@ google_analytics_header_server <- function(id, app_name, google_analytics_id) {
       input$reject,
       {
         shiny::removeModal()
-        # storage$SetStoredValue(id = cookie_name, value = FALSE)
         storage$SetStoredValue(
           id = cookie_name,
           value = list(

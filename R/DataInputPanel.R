@@ -74,20 +74,19 @@ data_input_panel_server <- function(id, continuous_file = 'Cont_long.csv', binar
     default_file_input <- renderUI({
       fileInput(
         inputId = ns("data"),
-        label = NULL,
+        label = "",
         buttonLabel = "Select",
-        accept = c(".csv", ".xlsx")
+        placeholder = "No file selected",
+        accept = '.csv'
       )
     })
 
     # Logical to show reset button only when data uploaded
     data_uploaded <- reactiveVal(FALSE)
-    output$data_uploaded <- reactive({
-      data_uploaded()
-    })
+    output$data_uploaded <- reactive({data_uploaded()})
     outputOptions(output, 'data_uploaded', suspendWhenHidden = FALSE)
 
-    # Render the file input initially
+    # Render the file input intially
     output$file_input_panel <- default_file_input
     
     # Load default data
@@ -95,11 +94,9 @@ data_input_panel_server <- function(id, continuous_file = 'Cont_long.csv', binar
       if (input$metaoutcome == 'Continuous') {
         defaultD <- rio::import(file = continuous_file)
       } else {
-        defaultD <- rio::import(file = binary_file)
+        defaultD <- read.csv(binary_file)
       }
     })
-    
-    invalid_data <- reactiveVal(NULL)
     
     # Make data reactive i.e. default or user uploaded
     data <- reactive({
@@ -147,10 +144,6 @@ data_input_panel_server <- function(id, continuous_file = 'Cont_long.csv', binar
       }
       
       return(CleanData(df))
-    })
-    
-    output$invalid_data <- DT::renderDataTable({
-      invalid_data()
     })
     
     all_treatments <- reactive({

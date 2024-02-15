@@ -12,26 +12,21 @@ CleanData <- function(data) {
 #' @param data Data frame in which to search for treatment names
 #' @return Vector of all treatment names
 FindAllTreatments <- function(data) {
-  # Regular expression explanation:
-  # ^ = Start of string
-  # (?i) = Ignore case for matching
-  # (\\.[0-9]+)? = Optional group of full stop, followed by at least one digit
-  # $ = End of string
-  treatment_column_matches <- stringr::str_match(names(data), "^(?i)T(\\.[0-9]+)?$")
-  treatment_column_names <- treatment_column_matches[!is.na(treatment_column_matches)]
-  
-  treatment_names = unlist(
-    sapply(
-      treatment_column_names,
-      function (nom) {
-        treatments <- data[[nom]]
-        return(treatments[!is.na(treatments)])
+  if ('T' %in% colnames(data)) {
+    # Long format
+    return(unique(data$T))
+  } else {
+    # Wide format
+    all_treatments <- c()
+    for (col in paste0('T.', seq(6))) {
+      if (col %in% colnames(data)) {
+        all_treatments <- c(all_treatments, data[[col]])
+      } else {
+        break
       }
-    )
-  )
-  
-  # Wrapped in c() to convert to an unnamed vector
-  return(unique(c(treatment_names)))
+    }
+    return(unique(all_treatments[!is.na(all_treatments)]))
+  }
 }
 
 #' Create a copy of a vector with the given item as the first element.
@@ -79,67 +74,6 @@ FindExpectedReferenceTreatment <- function(treatments) {
   } else {
     return(NULL)
   }
-}
-
-#' Rename the columns of a data frame to match the expected letter casing.
-#'
-#' @param data Data frame to fix
-#' @param outcome_type Type of outcome for which to reorder, either 'Continuous' or 'Binary'
-#'
-#' @return Data frame with renamed columns.
-.FixColumnNameCases <- function(data, outcome_type) {
-  if (outcome_type == "Continuous") {
-    column_names <- continuous_column_names
-  } else if (outcome_type == "Binary") {
-    column_names <- binary_column_names
-  } else {
-    stop(glue::glue("Outcome type {outcome_type} is not recognised. Please use 'Continuous' or 'Binary'"))
-  }
-  
-  corrected_names <- unlist(
-    sapply(
-      names(data),
-      function (name) {
-        return(.CorrectColumnName(name, column_names))
-      }
-    )
-  )
-  
-  names(data) <- corrected_names
-  return(data)
-}
-
-#' Correct a column name to match the expected letter casing.
-#'
-#' @param original_name Column name to fix
-#' @param column_names Named vector where each name is a regular expression to match, and the value is the replacement string.
-#'
-#' @return The corrected column name.
-.CorrectColumnName <- function(original_name, column_names) {
-  matches <- unlist(
-    sapply(
-      column_names$pattern,
-      function(pattern) {
-        if (length(grep(pattern, original_name)) > 0) {
-          column_names$replacement[column_names$pattern == pattern]
-        } else {
-          NULL
-        }
-      }
-    )
-  )
-  
-  if (length(matches) > 0) {
-    return(
-      sub(
-        names(matches)[1],
-        matches[1],
-        original_name
-      )
-    )
-  }
-  
-  return(original_name)
 }
 
 #' Find all of the treatment names in the data, both for long and wide formats.
@@ -222,7 +156,6 @@ ReorderColumns <- function(data, outcome_type) {
 #' @return Data frame which is uasable by the rest of the app
 WrangleUploadData <- function(data, treatment_ids, outcome_type) {
   new_df <- data %>%
-    .FixColumnNameCases(outcome_type) %>%
     ReplaceTreatmentIds(treatment_ids) %>%
     AddStudyIds() %>%
     ReorderColumns(outcome_type)
