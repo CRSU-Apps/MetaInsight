@@ -11,8 +11,10 @@ covariate_treatment_comparisons_page_ui <- function(id) {
       tags$strong(
         conditionalPanel(condition = "output.package == 'gemtc'",
                          ns = ns,
-                         textOutput(outputId = ns('nodesplit_text'))
-                         )
+                         p("This table only contains the estimates from the network meta analysis,
+        i.e. does not contain estimates from pairwise meta-analysis which only contains direct evidence.
+        If you would like to obtain the pairwise meta-analysis results, please run 4c-4. Nodesplit model")
+        )
       )
     ),
     br(),
@@ -48,12 +50,6 @@ covariate_treatment_comparisons_page_server <- function(
     
     output$package <- reactive({"gemtc"})
     outputOptions(x = output, name = "package", suspendWhenHidden = FALSE)
-    
-    output$nodesplit_text <- renderText({
-      "This table only contains the estimates from the network meta analysis,
-        i.e. does not contain estimates from pairwise meta-analysis which only contains direct evidence.
-        If you would like to obtain the pairwise meta-analysis results, please run 4c-4. Nodesplit model"
-    })
     
     output$cov_value_statement <- renderText({
       model()$cov_value_sentence
