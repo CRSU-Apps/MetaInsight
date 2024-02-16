@@ -143,27 +143,16 @@ BaselineRiskRelativeEffectsTable <- function(median_ci_table){
   
   for(row in 1:dim_median){
     for(col in 1:dim_median){
-      #Extract the lower_ci
-      lower_ci[row, col] <- round(
+      #Extract lower_ci, median and upper_ci
+      interval <- round(
         as.numeric(
           stringr::str_extract_all(string = median_ci_table[row, col],
-                                   pattern = "[-0-9\\.]+")[[1]][1]
+                                   pattern = "[-0-9\\.]+")[[1]]
           ), digits = 2
       )
-      #Extract the median
-      median_br[row, col] <- round(
-        as.numeric(
-          stringr::str_extract_all(string = median_ci_table[row, col],
-                                   pattern = "[-0-9\\.]+")[[1]][2]
-        ), digits = 2
-      )
-      #Extract the upper_ci
-      upper_ci[row, col] <- round(
-        as.numeric(
-          stringr::str_extract_all(string = median_ci_table[row, col],
-                                   pattern = "[-0-9\\.]+")[[1]][3]
-        ), digits = 2
-      )
+    lower_ci[row, col] <- interval[1]
+    median_br[row, col] <- interval[2]
+    upper_ci[row, col] <- interval[3]
     }
   }
   
