@@ -2,7 +2,7 @@
 #' Module UI for the deviance report panel
 #' 
 #' @param id ID of the module
-#' @param item_names Name of this deviance report item.
+#' @param item_name Name of this deviance report item.
 #' @return List of divs containing the plots. Named "residual", "per_arm", and "leverage".
 deviance_report_panel_ui <- function(id, item_name) {
   ns <- NS(id)
