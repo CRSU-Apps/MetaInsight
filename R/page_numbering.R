@@ -4,7 +4,7 @@
 #' @description
 #' Class for numbering pages in a logical manner.
 PageNumbering <- R6::R6Class(
-  classname = "Page Numbering",
+  classname = "PageNumbering",
   public = list(
     #' @description
     #' Create a new instance of this [R6][R6::R6Class] class.
