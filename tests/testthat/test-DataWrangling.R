@@ -701,17 +701,17 @@ test_that("CleanTreatmentIds() replaces special characters in treatment names", 
   )
   expect_equal(!!CleanTreatmentIds(treatment_ids ), !!expected_treatment_ids)
 })
-
+ 
 test_that("CleanTreatmentIds() replaces multiple sequential special characters in treatment names with single underscore", {
   treatment_ids <- data.frame(
     Number = 1:5,
-    Label = c("2 * 4 = 8", "^(*(oo)*)^ <- It's a pig", "you stupid *%£$@#!", "var <- value", ":,-)")
+    Label = c("2 * 4 = 8", "^(*(oo)*)^ <- It's a pig", "you stupid *%?$@#!", "var <- value", ":,-)")
   )
-  
+
   expected_treatment_ids <- data.frame(
     Number = 1:5,
     Label = c("2_4_8", "_oo_It_s_a_pig", "you_stupid_", "var_value", "_"),
-    RawLabel = c("2 * 4 = 8", "^(*(oo)*)^ <- It's a pig", "you stupid *%£$@#!", "var <- value", ":,-)")
+    RawLabel = c("2 * 4 = 8", "^(*(oo)*)^ <- It's a pig", "you stupid *%?$@#!", "var <- value", ":,-)")
   )
   expect_equal(!!CleanTreatmentIds(treatment_ids ), !!expected_treatment_ids)
 })
@@ -1046,6 +1046,40 @@ test_that("LongToWide() correctly converts continuous wide data with continuous 
 })
 
 
+test_that("KeepOrDeleteControlTreatment() deletes only rows with control treatments", {
+  data <- data.frame(Study = c("A", "A", "B", "B", "C", "C", "C", "D", "D"),
+                     T = c(1, 2, 2, 3, 1, 2, 3, 3, 4),
+                     Treatment = c("Hydrogen", "Oxygen", "Oxygen", "Sulphur", "Hydrogen", "Oxygen", "Sulphur", "Sulphur", "Zinc"))
+  
+  treatments <- c("Hydrogen", "Oxygen", "Sulphur", "Zinc")
+  
+  data_no_control <- data.frame(Study = c("A", "B", "C", "C", "D"),
+                                T = c(2, 3, 2, 3, 4),
+                                Treatment = c("Oxygen", "Sulphur", "Oxygen", "Sulphur", "Zinc"),
+                                Control = c("Hydrogen", "Oxygen", "Hydrogen", "Hydrogen", "Sulphur"))
+  attr(data_no_control, "row.names") <- as.integer(c(2, 4, 6, 7, 9))
+  
+  expect_equal(KeepOrDeleteControlTreatment(data, treatments, "delete"), data_no_control)
+})
+
+
+test_that("KeepOrDeleteControlTreatment() keeps only rows with control treatments", {
+  data <- data.frame(Study = c("A", "A", "B", "B", "C", "C", "C", "D", "D"),
+                     T = c(1, 2, 2, 3, 1, 2, 3, 3, 4),
+                     Treatment = c("Hydrogen", "Oxygen", "Oxygen", "Sulphur", "Hydrogen", "Oxygen", "Sulphur", "Sulphur", "Zinc"))
+  
+  treatments <- c("Hydrogen", "Oxygen", "Sulphur", "Zinc")
+  
+  data_control <- data.frame(Study = c("A", "B", "C", "D"),
+                             T = c(1, 2, 1, 3),
+                             Treatment = c("Hydrogen", "Oxygen", "Hydrogen", "Sulphur"),
+                             Control = c("Hydrogen", "Oxygen", "Hydrogen", "Sulphur"))
+  attr(data_control, "row.names") <- as.integer(c(1, 3, 5, 8))
+  
+  expect_equal(KeepOrDeleteControlTreatment(data, treatments, "keep"), data_control)
+})
+
+
 test_that("GetReferenceOutcome() returns the reference outcome when the outcome is binary", {
   data <- data.frame(Study = c("A", "A", "B", "B", "C", "C", "C", "D", "D"),
                      T = c(1, 2, 2, 3, 1, 2, 3, 3, 4),
@@ -1079,3 +1113,4 @@ test_that("GetReferenceOutcome() returns the reference outcome when the outcome 
   
   expect_equal(GetReferenceOutcome(data, treatments, outcome_type), reference_outcome)
 })
+

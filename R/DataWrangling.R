@@ -185,28 +185,6 @@ FindExpectedReferenceTreatment <- function(treatments) {
   }
 }
 
-# Regular expression explanation:
-# ^ = Start of string
-# (?i) = Ignore case for matching
-# (\\.[0-9]+)? = Optional group of full stop, followed by at least one digit
-# $ = End of string
-# (.+) = Group of at least one character
-.continuous_column_names <- c(
-  "^(?i)Study(\\.[0-9]+)?$" = "Study\\1",
-  "^(?i)T(\\.[0-9]+)?$" = "T\\1",
-  "^(?i)N(\\.[0-9]+)?$" = "N\\1",
-  "^(?i)Mean(\\.[0-9]+)?$" = "Mean\\1",
-  "^(?i)SD(\\.[0-9]+)?$" = "SD\\1",
-  "^(?i)covar\\.(.+)$" = "covar.\\1"
-)
-.binary_column_names <- c(
-  "^(?i)Study(\\.[0-9]+)?$" = "Study\\1",
-  "^(?i)T(\\.[0-9]+)?$" = "T\\1",
-  "^(?i)R(\\.[0-9]+)?$" = "R\\1",
-  "^(?i)N(\\.[0-9]+)?$" = "N\\1",
-  "^(?i)covar\\.(.+)$" = "covar.\\1"
-)
-
 #' Rename the columns of a data frame to match the expected letter casing.
 #'
 #' @param data Data frame to fix
@@ -215,9 +193,9 @@ FindExpectedReferenceTreatment <- function(treatments) {
 #' @return Data frame with renamed columns.
 .FixColumnNameCases <- function(data, outcome_type) {
   if (outcome_type == "Continuous") {
-    column_names <- .continuous_column_names
+    column_names <- continuous_column_names
   } else if (outcome_type == "Binary") {
-    column_names <- .binary_column_names
+    column_names <- binary_column_names
   } else {
     stop(glue::glue("Outcome type {outcome_type} is not recognised. Please use 'Continuous' or 'Binary'"))
   }
@@ -245,10 +223,10 @@ FindExpectedReferenceTreatment <- function(treatments) {
 .CorrectColumnName <- function(original_name, column_names) {
   matches <- unlist(
     sapply(
-      names(column_names),
-      function(nom) {
-        if (length(grep(nom, original_name)) > 0) {
-          column_names[[nom]]
+      column_names$pattern,
+      function(pattern) {
+        if (length(grep(pattern, original_name)) > 0) {
+          column_names$replacement[column_names$pattern == pattern]
         } else {
           NULL
         }
@@ -391,7 +369,9 @@ KeepOrDeleteControlTreatment <- function(data, treatments, keep_delete){
   studies <- unique(data$Study)
   #Local function to find the control treatment in a single study
   #When used in tapply it matches the treatments within a study to the ordered 'treatments' vector, and then finds the lowest
-  min_match <- function(x){min(match(x, treatments))}
+  min_match <- function(x){
+    min(match(x, treatments))
+  }
   #Find the control treatment in each study
   control <- data.frame(Study = studies, Control = treatments[tapply(data$Treatment, INDEX = data$Study, FUN = min_match)])
   data <- merge(data, control, by = "Study", sort = FALSE)
@@ -406,27 +386,6 @@ KeepOrDeleteControlTreatment <- function(data, treatments, keep_delete){
 
 
 
-#' Delete rows in @param data corresponding to the control treatment in each study.
-#' 
-#' @param data Data in long format, plus the column 'Treatment', a text version of 'T'.
-#' @param treatments Vector of treatments with the reference treatment first.
-#' @return @param data with rows corresponding to the control treatment deleted, and a new column 'Control'.
-DeleteControlTreatment <- function(data, treatments){
-  return(KeepOrDeleteControlTreatment(data = data, treatments = treatments, keep_delete = "delete"))
-}
-
-
-
-#' Keep rows in @param data corresponding to the control treatment in each study.
-#' 
-#' @param data Data in long format, plus the column 'Treatment', a text version of 'T'.
-#' @param treatments Vector of treatments with the reference treatment first.
-#' @return @param data with rows corresponding to the control treatment kept, and a new column 'Control'.
-KeepControlTreatment <- function(data, treatments){
-  return(KeepOrDeleteControlTreatment(data = data, treatments = treatments, keep_delete = "keep"))
-}
-
-
 #' Get the outcome in the reference arm when it exists
 #' 
 #' @param data Data in long format, plus the column 'Treatment', a text version of 'T'.
@@ -435,7 +394,7 @@ KeepControlTreatment <- function(data, treatments){
 #' @return Vector of reference arm outcomes, named by study.
 GetReferenceOutcome <- function(data, treatments, outcome_type){
   #Data with only control treatment rows kept
-  data_control <- KeepControlTreatment(data = data, treatments = treatments)
+  data_control <- KeepOrDeleteControlTreatment(data = data, treatments = treatments, keep_delete = "keep")
   if (outcome_type == "Binary"){
     data_control$R[data_control$Treatment != treatments[1]] <- NA
     effect_sizes <- metafor::escalc(measure = "PLO",
