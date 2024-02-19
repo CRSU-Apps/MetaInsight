@@ -79,6 +79,10 @@ covariate_analysis_panel_ui <- function(id) {
           tabPanel(
             title = "4c-4. Ranking",
             covariate_ranking_page_ui(id = ns("cov_ranking"))
+          ),
+          tabPanel(
+            title = "4c-5. Nodesplit model",
+            covariate_nodesplit_page_ui(id = ns("nodesplit"), package_name = "gemtc")
           )
         )
       )
@@ -226,6 +230,9 @@ covariate_analysis_panel_server <- function(
       bugsnetdt = bugsnetdt,
       cov_value = covariate_value
     )
+    
+    # 4c-5 Nodesplit model
+    covariate_nodesplit_page_server(id = "nodesplit")
 
   })
 }
