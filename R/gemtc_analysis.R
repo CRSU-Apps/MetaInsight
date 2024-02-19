@@ -146,9 +146,6 @@ CovariateModelOutput <- function(model, cov_value, outcome_measure) {
   # Intercepts (regression)
   intercepts <- summary$summaries$quantiles[startsWith(rownames(summary$summaries$quantiles), "d."),"50%"]
   
-  # Table of Model fit stats
-  fit_stats <- as.data.frame(summary$DIC)
-  
   # Summary sentence of where covariate value has been set for results
   cov_value_sentence <- paste0("Value for covariate ", model$model$regressor$variable, " set at ", cov_value)
   
@@ -162,6 +159,9 @@ CovariateModelOutput <- function(model, cov_value, outcome_measure) {
     names(slopes) <- levels(model$model$data$reg.control)[! levels(model$model$data$reg.control) %in% model$model$data$reg.control]
   }
   names(intercepts) <- levels(model$model$data$reg.control)[! levels(model$model$data$reg.control) %in% model$model$data$reg.control]
+  
+  # Table of Model fit stats
+  fit_stats <- as.data.frame(summ$DIC)
   
   # naming conventions to match current Bayesian functions
   return(
