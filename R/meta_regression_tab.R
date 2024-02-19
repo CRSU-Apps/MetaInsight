@@ -98,13 +98,13 @@ meta_regression_tab_server <- function(
                                         metaoutcome = metaoutcome, 
                                         treatment_df = treatment_df)
     
-    basline_risk_outcomes <- c("MD", "OR")
-    baseline_risk_supported = reactive({ outcome_measure() %in% basline_risk_outcomes })
+    baseline_risk_outcomes <- c("MD", "OR")
+    baseline_risk_supported = reactive({ outcome_measure() %in% baseline_risk_outcomes })
     # Baseline risk analysis
     informed_conditional_panel_server(
       id = "baseline_risk_outcome_dependent",
       condition = baseline_risk_supported,
-      error_message_text_expression = { .BuildUnsupportedOutcomeMeasureErrorMessageText(basline_risk_outcomes) },
+      error_message_text_expression = { .BuildUnsupportedOutcomeMeasureErrorMessageText(baseline_risk_outcomes) },
       inner_server_expression = {
         baseline_risk_analysis_panel_server(
           id = "baseline_risk_analysis",
@@ -114,6 +114,8 @@ meta_regression_tab_server <- function(
           metaoutcome = metaoutcome,
           outcome_measure = outcome_measure,
           model_effects = model_effects,
+          rank_option = rank_option,
+          freq_all = freq_all,
           bugsnetdt = bugsnetdt
         )
       }

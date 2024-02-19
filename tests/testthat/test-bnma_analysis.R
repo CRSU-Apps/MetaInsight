@@ -209,3 +209,41 @@ test_that("BaselineRiskRegression() sets RNGs correctly and gives reproducible o
   expect_equal(result_1$samples[4], result_2$samples[4])
   
 })
+
+
+
+test_that("BaselineRiskRelativeEffectsTable() has the correct format", {
+  
+  rel_eff_table <- matrix(c(NA, "[-0.1234,0,0.1753]", "[-2.3,-1,4]",
+                            "[3,4,5]", NA, "[2,6,8.3]",
+                            "[-7,4,11]", "[15.83125,16,17.0367]", NA), nrow = 3)
+  rownames(rel_eff_table) <- c("TreatA", "TreatB", "TreatC")
+  colnames(rel_eff_table) <- c("TreatA", "TreatB", "TreatC")
+  
+  expected_table <- matrix(c("TreatA", "0 (-0.12, 0.18)", "-1 (-2.3, 4)",
+                             "4 (3, 5)", "TreatB", "6 (2, 8.3)",
+                             "4 (-7, 11)", "16 (15.83, 17.04)", "TreatC"), nrow = 3)
+  rownames(expected_table) <- c("TreatA", "TreatB", "TreatC")
+  colnames(expected_table) <- c("TreatA", "TreatB", "TreatC")
+  
+  expect_equal(BaselineRiskRelativeEffectsTable(rel_eff_table), expected_table)
+})
+
+
+
+test_that("BnmaSwitchRanking() works", {
+  
+  ranking_table <- matrix(c(0.3, 0.1, 0.9,
+                            0.5, 0.4, 0.06,
+                            0.2, 0.5, 0.04), nrow = 3, byrow = TRUE)
+  rownames(ranking_table) <- c("rank 1", "rank 2", "rank 3")
+  colnames(ranking_table) <- c("TreatA", "TreatB", "TreatC")
+  
+  expected_table <- matrix(c(0.2, 0.5, 0.04,
+                             0.5, 0.4, 0.06,
+                             0.3, 0.1, 0.9), nrow = 3, byrow = TRUE)
+  rownames(expected_table) <- c("rank 1", "rank 2", "rank 3")
+  colnames(expected_table) <- c("TreatA", "TreatB", "TreatC")
+  
+  expect_equal(BnmaSwitchRanking(ranking_table), expected_table)
+})

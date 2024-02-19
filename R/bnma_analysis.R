@@ -124,3 +124,58 @@ BaselineRiskDicTable <- function(br_model){
   names(dic_table)[4] <- "Data points"
   return(dic_table)
 }
+
+
+
+#' Puts a relative effects table from bnma into gemtc format
+#'
+#' @param median_ci_table Output from bnma::relative.effects.table(, summary_stat = "ci")
+#' @return A relative effects table in the same format as from gemtc.
+BaselineRiskRelativeEffectsTable <- function(median_ci_table){
+  #Entries in the input table are in the form "[lower_ci,median,upper_ci]" (no spaces)
+  
+  #The dimensions of the (square) table
+  dim_median <- nrow(median_ci_table)
+  #Create matrices to store the lower_ci, median and upper_ci separately
+  lower_ci <- matrix(nrow = dim_median, ncol = dim_median)
+  median_br <- matrix(nrow = dim_median, ncol = dim_median)
+  upper_ci <- matrix(nrow = dim_median, ncol = dim_median)
+  
+  for(row in 1:dim_median){
+    for(col in 1:dim_median){
+      #Extract lower_ci, median and upper_ci
+      interval <- round(
+        as.numeric(
+          stringr::str_extract_all(string = median_ci_table[row, col],
+                                   pattern = "[-0-9\\.]+")[[1]]
+          ), digits = 2
+      )
+    lower_ci[row, col] <- interval[1]
+    median_br[row, col] <- interval[2]
+    upper_ci[row, col] <- interval[3]
+    }
+  }
+  
+  #Paste into the format "median (lower_ci, upper_ci)"
+  median_ci_table_new <- matrix(paste0(median_br, " (", lower_ci, ", ", upper_ci, ")"), nrow = dim_median)
+  diag(median_ci_table_new) <- rownames(median_ci_table)
+  rownames(median_ci_table_new) <- rownames(median_ci_table)
+  colnames(median_ci_table_new) <- colnames(median_ci_table)
+  
+  return(median_ci_table_new)
+}
+
+
+
+
+#' Change the ranking direction in a bnma ranking table.
+#'
+#' @param ranking_table The $rank.tx table from output from bnma::network.run()
+#' @return A relative effects table in the same format as from gemtc.
+BnmaSwitchRanking <- function(ranking_table){
+  ranking_table <- cbind(ranking_table, data.frame(new_ranks = nrow(ranking_table):1))
+  new_table <- dplyr::arrange(ranking_table, ranking_table$new_ranks)
+  rownames(new_table) <- rownames(ranking_table)
+  return(as.matrix(dplyr::select(new_table, !"new_ranks")))
+}
+                            

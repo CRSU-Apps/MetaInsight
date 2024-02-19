@@ -17,6 +17,14 @@ baseline_risk_analysis_panel_ui <- function(id) {
           uiOutput(outputId = ns("convergence_warning")),
           bayesian_forest_plot_plus_stats_ui(id = ns("baseline_risk_forest"))
         )
+      ),
+      tabPanel(
+        title = "4b-3. Comparison of all treatment pairs",
+        covariate_treatment_comparisons_page_ui(id = ns("baseline_risk_treatment_comparisons"))
+      ),
+      tabPanel(
+        title = "4b-4. Ranking",
+        covariate_ranking_page_ui(id = ns("baseline_risk_ranking"))
       )
     )
   )
@@ -37,6 +45,8 @@ baseline_risk_analysis_panel_server <- function(    id,
                                                     metaoutcome,
                                                     outcome_measure,
                                                     model_effects,
+                                                    rank_option,
+                                                    freq_all,
                                                     bugsnetdt
 ) {
   shiny::moduleServer(id, function(input, output, session) {
@@ -64,13 +74,34 @@ baseline_risk_analysis_panel_server <- function(    id,
                "")
     })
     
-    # Create forest plot and associated statistics
+    # 4b-2 Create forest plot and associated statistics
     bayesian_forest_plot_plus_stats_baseline_risk_server(
       id = "baseline_risk_forest",
       model_reactive = model_reactive,
       metaoutcome = metaoutcome,
       outcome_measure = outcome_measure,
       bugsnetdt = bugsnetdt
+    )
+    
+    # 4b-3 Treatment comparisons
+    baseline_risk_treatment_comparisons_page_server(
+      id = "baseline_risk_treatment_comparisons",
+      model = model_reactive,
+      outcome_measure = outcome_measure
+    )
+    
+    # 4c-4 Ranking Panel
+    covariate_ranking_page_server(
+      id = "baseline_risk_ranking",
+      model = model_reactive,
+      data = all_data,
+      treatment_df = treatment_df,
+      metaoutcome = metaoutcome,
+      model_effects = model_effects,
+      rank_option = rank_option,
+      freq_all = freq_all,
+      bugsnetdt = bugsnetdt,
+      package = "bnma"
     )
       
     })
