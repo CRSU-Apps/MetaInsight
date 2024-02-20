@@ -130,6 +130,9 @@ CovariateModelOutput <- function(model, cov_value, outcome_measure) {
   # Relative Effects raw data
   rel_eff <- gemtc::relative.effect(model, as.character(model$model$regressor$control), covariate = cov_value)
   
+  # Summary of relative effects
+  summary_rel_eff <- summary (rel_eff)
+  
   # Create text for random/fixed effect
   model_text <- paste(model$model$linearModel,"effect",sep=" ")
   
@@ -148,7 +151,7 @@ CovariateModelOutput <- function(model, cov_value, outcome_measure) {
       mtcResults = model,
       mtcRelEffects = rel_eff,
       a = model_text,
-      sumresults = summary,
+      sumresults = summary_rel_eff,
       dic = fit_stats,
       cov_value_sentence = cov_value_sentence,
       mtcNetwork = model$model$network,

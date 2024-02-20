@@ -74,10 +74,6 @@ covariate_analysis_panel_ui <- function(id) {
           ),
           tabPanel(
             title = "4c-3. Result details",
-            div(
-              "Please note: The printout of result details may not reflect the chosen reference treatment and chosen covariate values. This is a limitation that we are exploring with the {gemtc} developers.",
-              style = "color: #aa0000; border: solid; border-color: lightgray; border-width: thin; border-radius: 6pt; padding: 0 10pt; margin-top: 8pt;"
-            ),
             result_details_page_ui(id = ns("result_details"), item_names = c("all studies"))
           ),
           tabPanel(
