@@ -139,7 +139,7 @@ test_that("GetEffectSizesAndVariances() and CreateVMatrix() work for binary outc
                                           Treatment = c("Hydrogen", "Oxygen", "Hydrogen", "Sulphur"),
                                           Variance = expected_control_var)
   
-  expected_v_matrix <- diag(effect_variances)
+  expected_v_matrix <- diag(expected_effect_variances)
   expected_v_matrix[3, 4] <- expected_control_var[3]
   expected_v_matrix[4, 3] <- expected_control_var[3]
   rownames(expected_v_matrix) <- c("(A)Hydrogen:Oxygen", "(B)Oxygen:Sulphur", "(C)Hydrogen:Oxygen", "(C)Hydrogen:Sulphur", "(D)Sulphur:Zinc")
