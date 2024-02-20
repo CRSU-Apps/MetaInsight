@@ -15,7 +15,7 @@ result_details_page_ui <- function(id, item_names) {
   div(
     helpText(
       "Please note: if you change the selections on the sidebar,
-      you will need to re-run the primary and/or sensitivity analysis from the 'Forest Plot' page."
+      you will need to re-run the analysis from the 'Forest Plot' page."
     ),
     
     # This is the way to get a dynamic number of columns rendered into the row
