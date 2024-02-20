@@ -25,7 +25,7 @@ bayesian_analysis_panel_ui <- function(id) {
       ),
       tabPanel(
         title = "3e. Bayesian result details",
-        result_details_page_ui(id = ns("result_details"))
+        result_details_page_ui(id = ns("result_details"), item_names = c("all studies", "the sensitivity analysis"))
       ),
       tabPanel(
         title = "3f. Deviance report",
@@ -146,8 +146,7 @@ bayesian_analysis_panel_server <- function(
     # 3e. Bayesian result details
     result_details_page_server(
       id = "result_details",
-      model = model,
-      model_sub = model_sub
+      models = c(model, model_sub)
     )
 
     # 3f. Deviance report

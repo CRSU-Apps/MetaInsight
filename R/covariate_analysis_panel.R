@@ -74,7 +74,7 @@ covariate_analysis_panel_ui <- function(id) {
           ),
           tabPanel(
             title = "4c-3. Result details",
-            regression_result_details_page_ui(id = ns("result_details"))
+            result_details_page_ui(id = ns("result_details"), item_names = c("all studies"))
           ),
           tabPanel(
             title = "4c-4. Deviance report",
@@ -201,7 +201,7 @@ covariate_analysis_panel_server <- function(
     )
     
     # 4c-3 Result details
-    regression_result_details_page_server(id = "result_details", model = model_output)
+    result_details_page_server(id = "result_details", models = c(model_output))
     
     # 4c-4. Deviance report
     deviance_report_page_server(id = "deviance_report", models = c(model_output))

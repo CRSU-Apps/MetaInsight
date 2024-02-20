@@ -2,13 +2,14 @@
 #' Module UI for the result details panel
 #' 
 #' @param id ID of the module
+#' @param item_name Name of this deviance report item.
 #' @return Div for the panel
-result_details_panel_ui <- function(id) {
+result_details_panel_ui <- function(id, item_name) {
   ns <- NS(id)
   div(
-    p(tags$strong("Results details for all studies")),
+    p(tags$strong(glue::glue("Results details for {item_name}"))),
     verbatimTextOutput(outputId = ns("gemtc_results")),
-    p(tags$strong("Gelman convergence assessment plot for all studies")),
+    p(tags$strong(glue::glue("Gelman convergence assessment plot for {item_name}"))),
     plotOutput(outputId = ns("gemtc_gelman"))
   )
 }

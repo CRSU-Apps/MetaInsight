@@ -2,22 +2,37 @@
 #' Module UI for the result details page
 #' 
 #' @param id ID of the module
+#' @param item_names Vector of item names to be shown side-by-side in the page.
 #' @return Div for the panel
-result_details_page_ui <- function(id) {
+result_details_page_ui <- function(id, item_names) {
   ns <- NS(id)
+  
+  
+  
+  # Matrix containing plots for named items
+  index <- 0
+  
   div(
     helpText(
       "Please note: if you change the selections on the sidebar,
       you will need to re-run the primary and/or sensitivity analysis from the 'Forest Plot' page."
     ),
-    fluidRow(
-      column(
-        width = 6,
-        result_details_panel_ui(id = ns("gemtc_results"))
-      ),
-      column(
-        width = 6,
-        result_details_panel_ui(id = ns("gemtc_results_sub"))
+    
+    # This is the way to get a dynamic number of columns rendered into the row
+    do.call(
+      fluidRow,
+      lapply(
+        item_names,
+        function(name) {
+          col <- column(
+            width = 12 / length(item_names),
+            result_details_panel_ui(id = ns(as.character(index)), item_name = name)
+          )
+          # Update the index variable in the outer scope with <<-
+          # This updates the variable defined above the `div` call instead of creating a new variable with the same name within this inner function
+          index <<- index + 1
+          return(col)
+        }
       )
     )
   )
@@ -27,17 +42,23 @@ result_details_page_ui <- function(id) {
 #' Module server for the result details page.
 #' 
 #' @param id ID of the module
-#' @param model Reactive containing bayesian meta-analysis for all studies
-#' @param model_sub Reactive containing meta-analysis with studies excluded
-result_details_page_server <- function(id, model, model_sub) {
+#' @param models Vector of reactives containing bayesian meta-analyses.
+result_details_page_server <- function(id, models) {
   moduleServer(id, function(input, output, session) {
-    result_details_panel_server(
-      id = "gemtc_results",
-      model = model
-    )
-    result_details_panel_server(
-      id = "gemtc_results_sub",
-      model = model_sub
+    # Create server for each model
+    index <- 0
+    sapply(
+      models,
+      function(mod) {
+        serv <- result_details_panel_server(
+          id = as.character(index),
+          model = mod
+        )
+        # Update the index variable in the outer scope with <<-
+        # This updates the variable defined above the `sapply` call instead of creating a new variable with the same name within this inner function
+        index <<- index + 1
+        return(serv)
+      }
     )
   })
 }
