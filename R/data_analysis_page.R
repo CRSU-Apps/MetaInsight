@@ -5,6 +5,9 @@
 #' @return Div for the data analysis page
 data_analysis_page_ui <- function(id) {
   ns <- NS(id)
+  
+  page_numbering <- PageNumbering$new()
+  
   div(
     htmlOutput(ns("CONBI2")),
     tags$head(
@@ -49,20 +52,20 @@ data_analysis_page_ui <- function(id) {
         ),
         tabsetPanel(
           tabPanel(
-            title = "1. Data summary",
-            data_summary_panel_ui(id = ns("data_summary"))
+            title = paste0(page_numbering$AddChild(), " Data summary"),
+            data_summary_panel_ui(id = ns("data_summary"), page_numbering)
           ),
           tabPanel(
-            title = "2. Frequentist network meta-analysis",
-            frequentist_analysis_panel_ui(id = ns("frequentist_analysis"))
+            title = paste0(page_numbering$AddChild(), " Frequentist network meta-analysis"),
+            frequentist_analysis_panel_ui(id = ns("frequentist_analysis"), page_numbering)
           ),
           tabPanel(
-            title = "3. Bayesian network meta-analysis",
-            bayesian_analysis_panel_ui(id = ns("bayesian_analysis"))
+            title = paste0(page_numbering$AddChild(), " Bayesian network meta-analysis"),
+            bayesian_analysis_panel_ui(id = ns("bayesian_analysis"), page_numbering)
           ),
           tabPanel(
-            title = "4. Meta-regression",
-            meta_regression_tab_ui(id = ns("meta_regression"))
+            title = paste0(page_numbering$AddChild(), " Meta-regression"),
+            meta_regression_tab_ui(id = ns("meta_regression"), page_numbering)
           )
         )
       )

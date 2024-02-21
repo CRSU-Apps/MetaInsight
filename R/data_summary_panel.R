@@ -3,12 +3,15 @@
 #' 
 #' @param id ID of the module
 #' @return Div for the panel
-data_summary_panel_ui <- function(id) {
+data_summary_panel_ui <- function(id, page_numbering) {
   ns <- NS(id)
-  div(
+  
+  page_numbering$DiveLevel()
+  
+  ui = div(
     tabsetPanel(
       tabPanel(
-        title = "1a. Data Characteristics",
+        title = paste0(page_numbering$AddChild(), " Data Characteristics"),
         p("This tab shows a summary of study characteristics."),
         column(
           width = 6,
@@ -22,7 +25,7 @@ data_summary_panel_ui <- function(id) {
         )
       ),
       tabPanel(
-        title = "1b. Study Results",
+        title = paste0(page_numbering$AddChild(), " Study Results"),
         p("If the formatting of the text for this plot needs adjusting please see options at the bottom."),
         plotOutput(outputId = ns("forestPlot"), height = "1000px", width = "800px"),
         h5("If the formatting of the text in the above plot needs adjusting (for on screen or download) please use the following options:"),
@@ -53,7 +56,7 @@ data_summary_panel_ui <- function(id) {
         downloadButton(outputId = ns('downloadStudy'))
       ),
       tabPanel(
-        title = "1c. Network Plot",
+        title = paste0(page_numbering$AddChild(), " Network Plot"),
         column(
           width = 6,
           plotOutput(outputId = ns("netGraphStatic1")),
@@ -141,6 +144,10 @@ data_summary_panel_ui <- function(id) {
       )
     )
   )
+  
+  page_numbering$FloatLevel()
+  
+  return(ui)
 }
 
 

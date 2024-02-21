@@ -2,16 +2,19 @@
 #'
 #' @param id ID of the module
 #' @return Div containing the module UI
-baseline_risk_analysis_panel_ui <- function(id) {
+baseline_risk_analysis_panel_ui <- function(id, page_numbering) {
   ns <- NS(id)
-  fluidPage(
+  
+  page_numbering$DiveLevel()
+  
+  ui = fluidPage(
     tabsetPanel(
       tabPanel(
-        title = "4b-1. Regression plot",
+        title = paste0(page_numbering$AddChild(), " Regression plot"),
         covariate_run_model_ui(id = ns("baseline_risk_model"))
       ),
       tabPanel(
-        title = "4b-2. Forest plot",
+        title = paste0(page_numbering$AddChild(), " Forest plot"),
         fixedRow(
           align = "center",
           uiOutput(outputId = ns("convergence_warning")),
@@ -28,6 +31,10 @@ baseline_risk_analysis_panel_ui <- function(id) {
       )
     )
   )
+  
+  page_numbering$FloatLevel()
+  
+  return(ui)
 }
 
 

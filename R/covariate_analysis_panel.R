@@ -2,8 +2,11 @@
 #'
 #' @param id ID of the module
 #' @return Div containing the module UI
-covariate_analysis_panel_ui <- function(id) {
+covariate_analysis_panel_ui <- function(id, page_numbering) {
   ns <- NS(id)
+  
+  page_numbering$DiveLevel()
+  
   div(
     fluidPage(
       div(
@@ -61,7 +64,7 @@ covariate_analysis_panel_ui <- function(id) {
         ns = ns,
         tabsetPanel(
           tabPanel(
-            title = "4c-1. Forest plot",
+            title = paste0(page_numbering$AddChild(), " Forest plot"),
             covariate_run_model_ui(id = ns("cov_model")),
             fixedRow(
               align = "center",
@@ -69,28 +72,32 @@ covariate_analysis_panel_ui <- function(id) {
             )
           ),
           tabPanel(
-            title = "4c-2. Regression plot",
+            title = paste0(page_numbering$AddChild(), " Regression plot"),
             regression_plot_panel_ui(id = ns("regression_plot"))
           ),
           tabPanel(
-            title = "4c-3. Comparison of all treatment pairs",
+            title = paste0(page_numbering$AddChild(), " Comparison of all treatment pairs"),
             covariate_treatment_comparisons_page_ui(id = ns("cov_treatment_comparisons"))
           ),
           tabPanel(
-            title = "4c-4. Ranking",
+            title = paste0(page_numbering$AddChild(), " Ranking"),
             covariate_ranking_page_ui(id = ns("cov_ranking"))
           ),
           tabPanel(
-            title = "4c-5. Nodesplit model",
+            title = paste0(page_numbering$AddChild(), " Nodesplit model"),
             covariate_nodesplit_page_ui(id = ns("nodesplit"), package_name = "gemtc")
           ),
           tabPanel(
-            title = "4c-6. Result details",
+            title = paste0(page_numbering$AddChild(), " Result details"),
             result_details_page_ui(id = ns("result_details"), item_names = c("all studies"))
           ),
           tabPanel(
-            title = "4c-7. Deviance report",
+            title = paste0(page_numbering$AddChild(), " Deviance report"),
             deviance_report_page_ui(id = ns("deviance_report"), item_names = c("all studies"))
+          ),
+          tabPanel(
+            title = paste0(page_numbering$AddChild(), " Model details"),
+            model_details_panel_ui(id = ns("model_details"), item_names = c("regression analysis"), page_numbering)
           )
         )
       )
@@ -237,7 +244,6 @@ covariate_analysis_panel_server <- function(
       bugsnetdt = bugsnetdt,
       cov_value = covariate_value
     )
-    
     # 4c-5 Nodesplit model
     covariate_nodesplit_page_server(id = "nodesplit")
     
@@ -246,5 +252,9 @@ covariate_analysis_panel_server <- function(
     
     # 4c-7 Deviance report
     deviance_report_page_server(id = "deviance_report", models = c(model_output))
+    
+    # 4c-8 Model details
+    model_details_panel_server(id = "model_details", models = c(model_output))
+    
   })
 }

@@ -2,36 +2,48 @@
 #'
 #' @param id ID of the module
 #' @return Div containing the module
-meta_regression_tab_ui <- function(id) {
+meta_regression_tab_ui <- function(id, page_numbering) {
   ns <- NS(id)
-  div(
+  
+  page_numbering$DiveLevel()
+  
+  ui = div(
     fluidPage(
       tabsetPanel(
         id = "regression_tabs",
         tabPanel(
-          title = "4a. Summary",
+          title = paste0(page_numbering$AddChild(), " Summary"),
           metaregression_summary_panel_ui(id = ns("metaregression_summary_panel"))
         ),
         tabPanel(
-          title = "4b. Baseline Risk Analysis",
+          title = paste0(page_numbering$AddChild(), " Baseline Risk Analysis"),
           informed_conditional_panel_ui(
             id = ns("baseline_risk_outcome_dependent"),
-            inner_ui_expression = { baseline_risk_analysis_panel_ui(id = ns("baseline_risk_analysis")) }
+            inner_ui_expression = { baseline_risk_analysis_panel_ui(id = ns("baseline_risk_analysis"), page_numbering) },
+            args = list(page_numbering = page_numbering)
           )
         ),
         tabPanel(
-          title = "4c. Covariate Analysis",
+          title = paste0(page_numbering$AddChild(), " Covariate Analysis"),
           informed_conditional_panel_ui(
             id = ns("covariate_presence_dependent"),
-            informed_conditional_panel_ui(
-              id = ns("covariate_outcome_dependent"),
-              inner_ui_expression = { covariate_analysis_panel_ui(id = ns("covariate_analysis")) }
-            )
+            inner_ui_expression = {
+              informed_conditional_panel_ui(
+                id = ns("covariate_outcome_dependent"),
+                inner_ui_expression = { covariate_analysis_panel_ui(id = ns("covariate_analysis"), page_numbering) },
+                args = list(page_numbering = page_numbering)
+              )
+            },
+            args = list(page_numbering = page_numbering)
           )
         )
       )
     )
   )
+  
+  page_numbering$FloatLevel()
+  
+  return(ui)
 }
 
 #' Build the text to inform the user that the outcome measure is not supported.
@@ -74,7 +86,7 @@ meta_regression_tab_ui <- function(id) {
 #' @param treatment_df Reactive containing data frame containing treatment IDs (Number) and names (Label)
 #' @param reference_treatment Reactive containing the sanitised name of reference treatment
 #' @param metaoutcome Reactive containing meta analysis outcome: "Continuous" or "Binary"
-#' @param outcome_measure Reactive containing meta analysis outcome measure: "MD", "SMD", "OR, "RR", or "RD"
+#' @param outcome_measure Reactive containing meta analysis outcome measure: "MD", "SMD", "OR", "RR", or "RD"
 #' @param model_effects Reactive containing model effects: either "random" or "fixed"
 #' @param rank_option Reactive containing ranking option: "good" or "bad" depending on whether small values are desirable or not
 #' @param freq_all Reactive containing frequentist meta-analysis

@@ -3,40 +3,47 @@
 #' 
 #' @param id ID of the module
 #' @return Div for the panel
-bayesian_analysis_panel_ui <- function(id) {
+bayesian_analysis_panel_ui <- function(id, page_numbering) {
   ns <- NS(id)
-  div(
+  
+  page_numbering$DiveLevel()
+  
+  ui = div(
     tabsetPanel(
       tabPanel(
-        title = "3a. Forest plot",
+        title = paste0(page_numbering$AddChild(), " Forest plot"),
         bayesian_forest_plots_page_ui(id = ns("forest_plots"))
       ),
       tabPanel(
-        title = "3b. Comparison of all treatment pairs",
+        title = paste0(page_numbering$AddChild(), " Comparison of all treatment pairs"),
         bayesian_treatment_comparisons_page_ui(id = ns("treatment_comparisons"))
       ),
       tabPanel(
-        title = "3c. Ranking",
+        title = paste0(page_numbering$AddChild(), " Ranking"),
         ranking_page_ui(id = ns("ranking"))
       ),
       tabPanel(
-        title = "3d. Nodesplit model",
+        title = paste0(page_numbering$AddChild(), " Nodesplit model"),
         nodesplit_page_ui(id = ns("nodesplit"))
       ),
       tabPanel(
-        title = "3e. Bayesian result details",
+        title = paste0(page_numbering$AddChild(), " Bayesian result details"),
         result_details_page_ui(id = ns("result_details"), item_names = c("all studies", "the sensitivity analysis"))
       ),
       tabPanel(
-        title = "3f. Deviance report",
+        title = paste0(page_numbering$AddChild(), " Deviance report"),
         deviance_report_page_ui(id = ns("deviance_report"), item_names = c("all studies", "the sensitivity analysis"))
       ),
       tabPanel(
-        title = "3g. Model details",
-        model_details_panel_ui(id = ns("model_details"))
+        title = paste0(page_numbering$AddChild(), " Model details"),
+        model_details_panel_ui(id = ns("model_details"), c("all studies", " the sensitivity analysis"), page_numbering)
       )
     )
   )
+  
+  page_numbering$FloatLevel()
+  
+  return(ui)
 }
 
 
@@ -157,8 +164,7 @@ bayesian_analysis_panel_server <- function(
     # 3g. Model details
     model_details_panel_server(
       id = "model_details",
-      model = model,
-      model_sub = model_sub
+      models = c(model, model_sub)
     )
   })
 }

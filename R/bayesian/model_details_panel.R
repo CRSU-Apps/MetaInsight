@@ -3,22 +3,46 @@
 #' 
 #' @param id ID of the module
 #' @return Div for the panel
-model_details_panel_ui <- function(id) {
+model_details_panel_ui <- function(id, item_names, page_numbering) {
   ns <- NS(id)
-  div(
+  
+  page_numbering$DiveLevel()
+  
+  # Matrix containing plots for named items
+  index <- 0
+  divs <- sapply(
+    item_names,
+    function(name) {
+      divs <- list(
+        deviance = div(
+          p(tags$strong("Deviance data for", name)),
+          p("NMA (consistency) model"),
+          verbatimTextOutput(outputId = ns(glue::glue("dev_{index}")))
+        ),
+        inconsistency = div(
+          p("UME (inconsistency) model"),
+          verbatimTextOutput(outputId = ns(glue::glue("dev_ume_{index}")))
+        )
+      )
+      index <<- index + 1
+      return(divs)
+    }
+  )
+  
+  ui = div(
     helpText(
       "Please note: if you change the selections on the sidebar,
       you will need to re-run the primary and/or sensitivity analysis from the 'Forest Plot' page."
     ),
     tabsetPanel(
       tabPanel(
-        title = "3g-1. Model codes",
+        title = paste0(page_numbering$AddChild(), " Model codes"),
         p(tags$strong("Model codes for analysis of all studies")),
         downloadButton(outputId = ns('download_code')),
         verbatimTextOutput(outputId = ns("code"))
       ),
       tabPanel(
-        title = "3g-2. Initial values",
+        title = paste0(page_numbering$AddChild(), " Initial values"),
         p(tags$strong("Initial values")),
         downloadButton(outputId = ns('download_inits_1'), "Download initial values for chain 1"),
         downloadButton(outputId = ns('download_inits_2'), "Download initial values for chain 2"),
@@ -27,7 +51,7 @@ model_details_panel_ui <- function(id) {
         verbatimTextOutput(outputId = ns("inits"))
       ),
       tabPanel(
-        title = "3g-3. Download simulations",
+        title = paste0(page_numbering$AddChild(), " Download simulations"),
         p(tags$strong("Download simulated data")),
         downloadButton(outputId = ns('download_data1'), "Download data from chain 1"),
         br(),
@@ -38,36 +62,42 @@ model_details_panel_ui <- function(id) {
         downloadButton(outputId = ns('download_data4'), "Download data from chain 4")
       ),
       tabPanel(
-        title = "3g-4. Deviance details",
-        fluidRow(
-          column(
-            width = 6,
-            p(tags$strong("Deviance data for all studies")),
-            p("NMA (consistency) model"),
-            verbatimTextOutput(outputId = ns("dev"))
-          ),
-          column(
-            width = 6,
-            p(tags$strong("Deviance data for sensitivity analysis")),
-            p("NMA (consistency) model"),
-            verbatimTextOutput(outputId = ns("dev_sub"))
+        title = paste0(page_numbering$AddChild(), " Deviance details"),
+        
+        # This is the way to get a dynamic number of columns rendered into the row
+        do.call(
+          fluidRow,
+          lapply(
+            item_names,
+            function(name) {
+              column(
+                width = 12 / length(item_names),
+                divs["deviance", name]
+              )
+            }
           )
         ),
-        fluidRow(
-          column(
-            width = 6,
-            p("UME (inconsistency) model"),
-            verbatimTextOutput(outputId = ns("dev_ume"))
-          ),
-          column(
-            width = 6,
-            p("UME (inconsistency) model"),
-            verbatimTextOutput(outputId = ns("dev_ume_sub"))
+      
+        # This is the way to get a dynamic number of columns rendered into the row
+        do.call(
+          fluidRow,
+          lapply(
+            item_names,
+            function(name) {
+              column(
+                width = 12 / length(item_names),
+                divs["inconsistency", name]
+              )
+            }
           )
         )
       )
     )
   )
+  
+  page_numbering$FloatLevel()
+  
+  return(ui)
 }
 
 
@@ -76,29 +106,27 @@ model_details_panel_ui <- function(id) {
 #' @param id ID of the module
 #' @param model Reactive containing bayesian meta-analysis for all studies
 #' @param model_sub Reactive containing meta-analysis with studies excluded
-model_details_panel_server <- function(
-    id,
-    model,
-    model_sub
-    ) {
+model_details_panel_server <- function(id, models) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
+    
+    main_model <- models[[1]]
 
     # 3g-1 Model codes
     output$code <- renderPrint({
-      cat(model()$mtcResults$model$code, fill=FALSE, labels=NULL, append=FALSE)
+      cat(main_model()$mtcResults$model$code, fill = FALSE, labels = NULL, append = FALSE)
     })
 
     output$download_code <- downloadHandler(
       filename = "code.txt",
-      content = function(file){
+      content = function(file) {
         file.copy("./codes.txt", file)
       }
     )
 
     # 3g-2 Initial values
     output$inits <- renderPrint({
-      model()$mtcResults$model$inits
+      main_model()$mtcResults$model$inits
     })
 
     #' Create a download handler for the initial values for a given chain
@@ -112,11 +140,11 @@ model_details_panel_server <- function(
           filename = filename,
           content = function(file) {
             lapply(
-              model()$mtcResults$model$inits[[index]],
+              main_model()$mtcResults$model$inits[[index]],
               write,
               file,
               append = TRUE,
-              ncolumns=1000
+              ncolumns = 1000
             )
           }
         )
@@ -139,7 +167,7 @@ model_details_panel_server <- function(
         downloadHandler(
           filename = paste0("data_for_chain_", index, ".csv"),
           content = function(file) {
-            data <- as.data.frame(model()$mtcResults$samples[[index]])
+            data <- as.data.frame(main_model()$mtcResults$samples[[index]])
             write.csv(data, file)
           }
         )
@@ -152,25 +180,30 @@ model_details_panel_server <- function(
     output$download_data4 <- create_chain_data_download_handler(4)
 
     # 3g-4 Output deviance
-
-    # NMA consistency model (all studies)
-    output$dev <- renderPrint({
-      mtc.deviance({model()$mtcResults})
-    })
-
-    # NMA consistency model (sensitivity)
-    output$dev_sub <- renderPrint({
-      mtc.deviance({model_sub()$mtcResults})
-    })
-
-    # UME inconsistency model (all studies)
-    output$dev_ume<- renderPrint({
-      scat_plot(model())$y
-    })
-
-    # UME inconsistency model (sensitivity)
-    output$dev_ume_sub<- renderPrint({
-      scat_plot(model_sub())$y
-    })
+    
+    # Create server for each model
+    index <- 0
+    sapply(
+      models,
+      function(mod) {
+        # NMA consistency model
+        output[[glue::glue("dev_{index}")]] <- renderPrint({
+          mtc.deviance({mod()$mtcResults})
+        })
+        
+        # UME inconsistency model
+        output[[glue::glue("dev_ume_{index}")]] <- renderText({
+          printed_output <- capture.output(scat_plot(mod())$y)
+          
+          # Strip out progress bars
+          progress_bar_lines <- grep("^(\\s*\\|\\s+\\|(\\+|\\*)*?\\s*\\|\\s+[0-9]+%)+$", printed_output)
+          printed_output <- printed_output[-progress_bar_lines]
+          
+          return(paste0(printed_output, collapse = "\n"))
+        })
+        
+        index <<- index + 1
+      }
+    )
   })
 }

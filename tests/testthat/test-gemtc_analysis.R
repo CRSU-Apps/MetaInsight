@@ -174,7 +174,6 @@ test_that("RunCovariateModel() gives reproducible output. Follow on: FindCovaria
   treatment_ids <- CreateTreatmentIds(FindAllTreatments(data), reference_treatment = reference)
   data <- WrangleUploadData(data, treatment_ids, "Binary")
   wrangled_treatment_list <- CleanTreatmentIds(treatment_ids)
-  
   outcome_measure = "OR"
   
   result_1 <- RunCovariateModel(data, wrangled_treatment_list, "Binary", outcome_measure, "covar.age", "age", 'random', 'unrelated', reference)
@@ -197,6 +196,8 @@ test_that("RunCovariateModel() gives reproducible output. Follow on: FindCovaria
 
   expect_equal(output_1$a, "random effect")
   expect_equal(output_1$cov_value_sentence, "Value for covariate age set at 98")
+  expect_equal(output_1$outcome, outcome_measure)
+  expect_equal(output_1$model, "random")
   expect_equal(output_1$covariate_value, covariate_value)
   expect_equal(output_1$reference_name, reference)
   expect_equal(output_1$comparator_names, c("the_Butcher", "the_Dung_named", "the_Great", "the_Slit_nosed", "the_Younger"))

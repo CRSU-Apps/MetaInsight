@@ -7,8 +7,6 @@
 result_details_page_ui <- function(id, item_names) {
   ns <- NS(id)
   
-  
-  
   # Matrix containing plots for named items
   index <- 0
   

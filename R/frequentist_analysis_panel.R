@@ -3,12 +3,15 @@
 #' 
 #' @param id ID of the module
 #' @return Div for the panel
-frequentist_analysis_panel_ui <- function(id) {
+frequentist_analysis_panel_ui <- function(id, page_numbering) {
   ns <- NS(id)
-  div(
+  
+  page_numbering$DiveLevel()
+  
+  ui = div(
     tabsetPanel(
       tabPanel(
-        title = "2a. Forest Plot",
+        title = paste0(page_numbering$AddChild(), " Forest Plot"),
         column(
           width = 6,
           uiOutput(outputId = ns("FreqForestPlot")),
@@ -74,7 +77,7 @@ frequentist_analysis_panel_ui <- function(id) {
         )
       ),
       tabPanel(
-        title = "2b. Comparison of all treatment pairs",
+        title = paste0(page_numbering$AddChild(), " Comparison of all treatment pairs"),
         helpText("Treatments are ranked from best to worst along the leading diagonal. Above the leading diagonal are estimates from pairwise meta-analyses, below the leading diagonal are estimates from network meta-analyses"),
         helpText("Relative treatment effects in ranked order for all studies"),
         tableOutput(outputId = ns("rankChartStatic")),
@@ -84,7 +87,7 @@ frequentist_analysis_panel_ui <- function(id) {
         downloadButton(outputId = ns('downloadRankUpdate'), label = "Download")
       ),
       tabPanel(
-        title = "2c. Inconsistency",
+        title = paste0(page_numbering$AddChild(), " Inconsistency"),
         helpText("Assessment of inconsistency for all studies"),
         tableOutput(outputId = ns("Incon1")),
         downloadButton(outputId = ns('downloadIncon'), label = "Download"),
@@ -94,6 +97,10 @@ frequentist_analysis_panel_ui <- function(id) {
       )
     )
   )
+  
+  page_numbering$FloatLevel()
+  
+  return(ui)
 }
 
 
