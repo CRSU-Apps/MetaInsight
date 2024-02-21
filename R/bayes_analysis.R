@@ -19,55 +19,78 @@
 #'  - 'dic' = Data frame containing the statistics 'Dbar', 'pD', 'DIC', and 'data points'
 #'  - 'model' = Same as @param model
 #'  - 'outcome' = Same as @param outcome
-baye <- function(data,treat_list, model, outcome, CONBI, ref) {
-  if (outcome %in% c('OR', 'RR', 'MD')) {
-    progress <- shiny::Progress$new()   # Adding progress bars
-    on.exit(progress$close())
-    progress$set(message="Updating.This may take up to 10 minutes", value=0)
-    treat_list2<-data.frame(treat_list)
-    if (CONBI=="Continuous") { 
-      armData <- data.frame(study=data$Study,       # Create arm level data set for gemtc
-                            treatment=data$T,
-                            mean=data$Mean,
-                            std.err=data$se)
-    } else if(CONBI=="Binary") {
-      armData <- data.frame(study=data$Study,
-                            treatment=data$T,
-                            responders=data$R,
-                            sampleSize=data$N)
-    }
-    progress$inc(0.2, detail="Preparing to run simulation models")
-    mtcNetwork <- mtc.network(data.ab=armData,description="Network")   # Gemtc network object
-    if (outcome == "MD") {
-      like <- "normal"
-      link <- "identity"
-    } 
-    else  {
-      like <- "binom"
-      link <- ifelse (outcome == "OR","logit", ifelse(outcome == "RR", "log", stop()))
-    }
-    mtcModel <- mtc.model(network=mtcNetwork,
-                          type = "consistency",
-                          linearModel=model,
-                          likelihood=like,
-                          link = link,
-                          dic=TRUE)
-    progress$inc(0.4, detail="Running simulation models")
-    mtcResults <- mtc.run(mtcModel)   # Run gemtc model object for analysis
-    progress$inc(0.4, detail="Rendering results")
-    mtcRelEffects <- relative.effect(mtcResults,t1=ref)  #Set reference treatment
-    rel_eff_tbl <- relative.effect.table(mtcResults) 
-    #mtcRelEffects <- relative.effect(mtcResults,t1=treat_list2[1,2])  #Set reference treatment
-    sumresults<-summary(mtcRelEffects)
-    a<- paste(model,"effect",sep=" ")   #Create text for random/fixed effect
-    cat(mtcResults$model$code, file="codes.txt", fill=FALSE, labels=NULL, append=FALSE)  # write the code into a file for download
-    lstx <- treat_list$Label # Treatment names
-    ntx <- nrow(treat_list) # Number of treatments
-    sumoverall<-summary(mtcResults)
-    dic<-as.data.frame(sumoverall$DIC) # The statistics 'Dbar', 'pD', 'DIC', and 'data points'
-    list(mtcResults=mtcResults,lstx=lstx,ntx=ntx,treat_list2=treat_list2,mtcRelEffects=mtcRelEffects,
-         rel_eff_tbl=rel_eff_tbl, sumresults=sumresults, a=a, mtcNetwork=mtcNetwork, dic=dic, model=model, outcome=outcome)
-  }}
+baye <- function(data, treat_list, model, outcome, CONBI, ref) {
+  if (!outcome %in% c('OR', 'RR', 'MD')) {
+    stop(glue::glue("Outcome type '{outcome}' is not supported. Please use one of: 'MD', 'OR', 'RR'"))
+  }
+  
+  progress <- shiny::Progress$new()   # Adding progress bars
+  on.exit(progress$close())
+  progress$set(message = "Updating.This may take up to 10 minutes", value = 0)
+  treat_list2 <- data.frame(treat_list)
+  
+  if (CONBI == "Continuous") { 
+    armData <- data.frame(study = data$Study,       # Create arm level data set for gemtc
+                          treatment = data$T,
+                          mean = data$Mean,
+                          std.err = data$se)
+  } else if (CONBI == "Binary") {
+    armData <- data.frame(study = data$Study,
+                          treatment = data$T,
+                          responders = data$R,
+                          sampleSize = data$N)
+  }
+  
+  progress$inc(0.2, detail = "Preparing to run simulation models")
+  mtcNetwork <- mtc.network(data.ab = armData, description = "Network")   # Gemtc network object
+  
+  if (outcome == "MD") {
+    like <- "normal"
+    link <- "identity"
+  } else if (outcome == "OR" || outcome == "RR") {
+    like <- "binom"
+    link <- ifelse (outcome == "OR","logit", "log")
+  }
+  
+  mtcModel <- mtc.model(
+    network = mtcNetwork,
+    type = "consistency",
+    linearModel = model,
+    likelihood = like,
+    link = link,
+    dic = TRUE
+  )
+  
+  progress$inc(0.4, detail = "Running simulation models")
+  mtcResults <- mtc.run(mtcModel)   # Run gemtc model object for analysis
+  progress$inc(0.4, detail = "Rendering results")
+  mtcRelEffects <- relative.effect(mtcResults, t1 = ref)  #Set reference treatment
+  rel_eff_tbl <- relative.effect.table(mtcResults) 
+  sumresults <- summary(mtcRelEffects)
+  a <- paste(model, "effect", sep = " ")   #Create text for random/fixed effect
+  cat(mtcResults$model$code, file = "codes.txt", fill = FALSE, labels = NULL, append = FALSE)  # write the code into a file for download
+  lstx <- treat_list$Label # Treatment names
+  ntx <- nrow(treat_list) # Number of treatments
+  sumoverall <- summary(mtcResults)
+  dic <- as.data.frame(sumoverall$DIC) # The statistics 'Dbar', 'pD', 'DIC', and 'data points'
+  
+  return(
+    list(
+      mtcResults = mtcResults,
+      lstx = lstx,
+      ntx = ntx,
+      treat_list2 = treat_list2,
+      mtcRelEffects = mtcRelEffects,
+      rel_eff_tbl=rel_eff_tbl,
+      sumresults = sumresults,
+      a = a,
+      mtcNetwork = mtcNetwork,
+      dic = dic,
+      model = model,
+      outcome = outcome
+    )
+  )
+}
 
 
 
@@ -83,31 +106,36 @@ baye <- function(data,treat_list, model, outcome, CONBI, ref) {
 #' @param outcome One of "SMD", "RD", "MD", "OR". Anything else is interpreted as RR. (TM: Probably don't need this, as it's included as @param results$outcome)
 #' @return Text with the point estimate and 95% CrI of between-trial SD of treatment effects (all 0 if fixed effects)
 CreateTauSentence <- function(results,outcome) {
-  sumresults<-results$sumresults
-  if (results$a=="random effect") {   #SD and its 2.5% and 97.5%
-    sd_mean<- round(sumresults$summaries$statistics["sd.d", "Mean"], digits = 2)
-    sd_lowCI<-round(sumresults$summaries$quantiles["sd.d", "2.5%"], digits = 2)
-    sd_highCI<-round(sumresults$summaries$quantiles["sd.d", "97.5%"], digits=2)
+  if (!outcome %in% c('OR', 'RR', 'MD')) {
+    stop(glue::glue("Outcome type '{outcome}' is not supported. Please use one of: 'MD', 'OR', 'RR'"))
   }
-  else {
-    sd_mean =0
-    sd_lowCI=0
-    sd_highCI=0
+  
+  sumresults <- results$sumresults
+  if (results$a == "random effect") {   #SD and its 2.5% and 97.5%
+    sd_mean <- round(sumresults$summaries$statistics["sd.d", "Mean"], digits = 2)
+    sd_lowCI <- round(sumresults$summaries$quantiles["sd.d", "2.5%"], digits = 2)
+    sd_highCI <- round(sumresults$summaries$quantiles["sd.d", "97.5%"], digits=2)
+  }   else {
+    sd_mean = 0
+    sd_lowCI = 0
+    sd_highCI = 0
   }
   if (results$a=="random effect") {
     if (outcome=="OR") {
-      paste("Between-study standard deviation (log-odds scale):", sd_mean, ". 95% credible interval:",sd_lowCI,", ", sd_highCI, ".")}
-    else if (outcome=="RR") {
-      paste ("Between-study standard deviation (log probability scale):", sd_mean, ". 95% credible interval:",sd_lowCI,", ", sd_highCI, ".")}
-    else {
-      paste ("Between-study standard deviation:", sd_mean, ". 95% credible interval:",sd_lowCI,", ", sd_highCI, ".")}}
-  else{
+      paste("Between-study standard deviation (log-odds scale):", sd_mean, ". 95% credible interval:",sd_lowCI,", ", sd_highCI, ".")
+    } else if (outcome=="RR") {
+      paste ("Between-study standard deviation (log probability scale):", sd_mean, ". 95% credible interval:",sd_lowCI,", ", sd_highCI, ".")
+    } else {
+      paste ("Between-study standard deviation:", sd_mean, ". 95% credible interval:",sd_lowCI,", ", sd_highCI, ".")
+    }
+  } else{
     if (outcome=="OR") {
-      paste("Between-study standard deviation (log-odds scale) set at 0")}
-    else if (outcome=="RR") {
-      paste("Between-study standard deviation (log probability scale) set at 0")}
-    else {
-      paste("Between-study standard deviation set at 0")}
+      paste("Between-study standard deviation (log-odds scale) set at 0")
+    } else if (outcome=="RR") {
+      paste("Between-study standard deviation (log probability scale) set at 0")
+    } else {
+      paste("Between-study standard deviation set at 0")
+    }
   }
 }
 
@@ -250,6 +278,10 @@ relative_rank_text <- function(results) {
 ### 3d. nodesplit models
 
 bayenode <- function(data, treat_list, model, outcome, CONBI) {
+  if (!outcome %in% c('OR', 'RR', 'MD')) {
+    stop(glue::glue("Outcome type '{outcome}' is not supported. Please use one of: 'MD', 'OR', 'RR'"))
+  }
+  
   if (outcome=="SMD" ) {
     print("Please note: standardised mean difference currently cannot be analysed in Bayesian analysis", type = "warning")
   } 
@@ -300,122 +332,139 @@ bayenode <- function(data, treat_list, model, outcome, CONBI) {
 
 ### 3f. UME deviance scatter plot
 
-umeplot.df <- function(c,mtcNetwork, model,outcome) {
+#' Create unrelated mean effects (UME) plot.
+#'
+#' @param c Arm data for model.
+#' @param mtcNetwork GEMTC network object.
+#' @param model Model effects type. "random" or "fixed".
+#' @param outcome Outcome measure being analysed: one of "OR". "RR", "MD".
+#'
+#' @return Plot and deviance report object in a list of "p" and "y" respectively.
+umeplot.df <- function(c, mtcNetwork, model, outcome) {
+  if (!outcome %in% c('OR', 'RR', 'MD')) {
+    stop(glue::glue("Outcome type '{outcome}' is not supported. Please use one of: 'MD', 'OR', 'RR'"))
+  }
+  
   progress <- shiny::Progress$new()
   on.exit(progress$close())
-  progress$set(message="Updating.", value=0)
+  progress$set(message = "Updating.", value = 0)
   c$names <- rownames(c)
+  
   if (outcome == "MD") {
     like <- "normal"
     link <- "identity"
-  } 
-  else  {
+  } else if (outcome == "OR" || outcome == "RR") {
     like <- "binom"
     link <- ifelse (outcome == "OR","logit", "log")
   }
-  ume <- mtc.model(network=mtcNetwork,
+  
+  ume <- mtc.model(network = mtcNetwork,
                    type = "ume",
-                   linearModel= model, 
-                   likelihood=like,
+                   linearModel = model, 
+                   likelihood = like,
                    link = link,
                    dic = TRUE)
-  progress$inc(0.5, detail="Preparing results")
+  progress$inc(0.5, detail = "Preparing results")
   ume_results <- mtc.run(ume)
-  progress$inc(0.3, detail="Rendering results")
-  y<-mtc.deviance({ume_results})
-  inc <-data.frame(y$dev.ab)
+  progress$inc(0.3, detail = "Rendering results")
+  y <- mtc.deviance({ume_results})
+  inc <- data.frame(y$dev.ab)
   inc$names <- rownames(inc)
   all <-merge(c,inc, by="names")
+  
   names(all)[names(all) == "X1.x"] <- "NMAmodel_arm1"
   names(all)[names(all) == "X1.y"] <- "UMEmodel_arm1"
   names(all)[names(all) == "X2.x"] <- "NMAmodel_arm2"
   names(all)[names(all) == "X2.y"] <- "UMEmodel_arm2"
-  k<-all[ , names(all) != "names"]  #### to define the maximum range of the equality line: find the maximum number of the dev data in the dataset.
-  j <- max(k, na.rm=TRUE)
-  m <- c(0,1,j)
-  n <- c(0,1,j)
-  dline<-data.frame(m,n)
+  
+  k <- all[, names(all) != "names"]  #### to define the maximum range of the equality line: find the maximum number of the dev data in the dataset.
+  j <- max(k, na.rm = TRUE)
+  m <- c(0, 1, j)
+  n <- c(0, 1, j)
+  
+  dline <- data.frame(m, n)
   
   p = plot_ly() %>%   # plot
-    add_trace(data=dline, x = ~m, y = ~n, type = 'scatter', mode = 'lines',
+    add_trace(data = dline, x = ~m, y = ~n, type = 'scatter', mode = 'lines',
               line = list(color = '#45171D'))
   p = p %>%
-    add_trace(data=all, x=~NMAmodel_arm1, y=~UMEmodel_arm1, type='scatter', mode='markers',
-              marker=list(size=4, color = '#CAEFD1',
+    add_trace(data = all, x = ~NMAmodel_arm1, y = ~UMEmodel_arm1, type = 'scatter', mode = 'markers',
+              marker = list(size = 4, color = '#CAEFD1',
                           line = list(color = 'rgb(0,128,0)',
                                       width = 2)),
               hoverinfo='text',
               text=~paste('</br> Author', all$names,
                           '</br> Arm 1',
-                          '</br> Deviance from NMA model:',round(NMAmodel_arm1, digits=2),
-                          '</br> Deviance from UME model:',round(UMEmodel_arm1, digits=2)
+                          '</br> Deviance from NMA model:',round(NMAmodel_arm1, digits = 2),
+                          '</br> Deviance from UME model:',round(UMEmodel_arm1, digits = 2)
               ))
-  p=p %>% 
+  p = p %>% 
     add_trace(
-      x=~NMAmodel_arm2, y=~UMEmodel_arm2, type='scatter', mode='markers', 
-      marker=list(size=4, color = '#CAEFD1',
+      x = ~NMAmodel_arm2, y = ~UMEmodel_arm2, type = 'scatter', mode = 'markers', 
+      marker = list(size = 4, color = '#CAEFD1',
                   line = list(color = 'rgb(0,128,0)',
                               width = 2)),
-      hoverinfo='text',
-      text=~paste('</br> Author', all$names,
+      hoverinfo = 'text',
+      text = ~paste('</br> Author', all$names,
                   '</br> Arm 2',
-                  '</br> Deviance from NMA model:',round(NMAmodel_arm2, digits=2),
-                  '</br> Deviance from UME model:',round(UMEmodel_arm2, digits=2)
+                  '</br> Deviance from NMA model:', round(NMAmodel_arm2, digits = 2),
+                  '</br> Deviance from UME model:', round(UMEmodel_arm2, digits = 2)
                   
       ))%>%
-    layout(showlegend = FALSE, xaxis=list(title="Deviance from NMA model"), 
-           yaxis=list(title="Deviance from UME inconsistency model"))
+    layout(showlegend = FALSE, xaxis = list(title = "Deviance from NMA model"), 
+           yaxis = list(title = "Deviance from UME inconsistency model"))
   
-  if (ncol(c)>3) { 
-    p=p %>% 
-      add_trace(data=all,
-                x=~X3.x, y=~X3.y, type='scatter', mode='markers', 
-                marker=list(size=4, color = '#CAEFD1',
+  if (ncol(c) > 3) { 
+    p = p %>% 
+      add_trace(data = all,
+                x = ~X3.x, y = ~X3.y, type = 'scatter', mode = 'markers', 
+                marker = list(size = 4, color = '#CAEFD1',
                             line = list(color = 'rgb(0,128,0)',
                                         width = 2)),
-                hoverinfo='text',
-                text=~paste('</br>', all$names,
+                hoverinfo = 'text',
+                text = ~paste('</br>', all$names,
                             '</br> Arm 3',
-                            '</br> Deviance from NMA model:',round(X3.x, digits=2),
-                            '</br> Deviance from UME model:',round(X3.y, digits=2)))}
-  if (ncol(c)>4) { 
-    p=p %>% 
-      add_trace(data=all,
-                x=~X4.x, y=~X4.y, type='scatter', mode='markers', 
-                marker=list(size=4, color = '#CAEFD1',
+                            '</br> Deviance from NMA model:', round(X3.x, digits = 2),
+                            '</br> Deviance from UME model:', round(X3.y, digits = 2)))}
+  if (ncol(c) > 4) { 
+    p = p %>% 
+      add_trace(data = all,
+                x = ~X4.x, y = ~X4.y, type = 'scatter', mode = 'markers', 
+                marker = list(size = 4, color = '#CAEFD1',
                             line = list(color = 'rgb(0,128,0)',
                                         width = 2)),
-                hoverinfo='text',
-                text=~paste('</br>', all$names,
+                hoverinfo = 'text',
+                text = ~paste('</br>', all$names,
                             '</br> Arm 4',
-                            '</br> Deviance from NMA model:',round(X4.x, digits=2),
-                            '</br> Deviance from UME model:',round(X4.y, digits=2)))}
-  if (ncol(c)>5) { 
-    p=p %>% 
-      add_trace(data=all,
-                x=~X5.x, y=~X5.y, type='scatter', mode='markers', 
-                marker=list(size=4, color = '#CAEFD1',
+                            '</br> Deviance from NMA model:', round(X4.x, digits = 2),
+                            '</br> Deviance from UME model:', round(X4.y, digits = 2)))}
+  if (ncol(c) > 5) { 
+    p = p %>% 
+      add_trace(data = all,
+                x = ~X5.x, y = ~X5.y, type = 'scatter', mode = 'markers', 
+                marker = list(size = 4, color = '#CAEFD1',
                             line = list(color = 'rgb(0,128,0)',
                                         width = 2)),
-                hoverinfo='text',
-                text=~paste('</br>', all$names,
+                hoverinfo = 'text',
+                text = ~paste('</br>', all$names,
                             '</br> Arm 5',
-                            '</br> Deviance from NMA model:',round(X5.x, digits=2),
-                            '</br> Deviance from UME model:',round(X5.y, digits=2)))}
-  if (ncol(c)>6) { 
-    p=p %>% 
-      add_trace(data=all,
-                x=~X6.x, y=~X6.y, type='scatter', mode='markers', 
-                marker=list(size=4, color = '#CAEFD1',
+                            '</br> Deviance from NMA model:', round(X5.x, digits = 2),
+                            '</br> Deviance from UME model:', round(X5.y, digits = 2)))}
+  if (ncol(c) > 6) { 
+    p = p %>% 
+      add_trace(data = all,
+                x = ~X6.x, y = ~X6.y, type = 'scatter', mode = 'markers', 
+                marker = list(size = 4, color = '#CAEFD1',
                             line = list(color = 'rgb(0,128,0)',
                                         width = 2)),
-                hoverinfo='text',
-                text=~paste('</br>', all$names,
+                hoverinfo = 'text',
+                text = ~paste('</br>', all$names,
                             '</br> Arm 6',
-                            '</br> Deviance from NMA model:',round(X6.x, digits=2),
-                            '</br> Deviance from UME model:',round(X6.y, digits=2)))}
-  progress$inc(0.2, detail="Exporting results")
-  list(p=p,y=y)
+                            '</br> Deviance from NMA model:', round(X6.x, digits = 2),
+                            '</br> Deviance from UME model:', round(X6.y, digits = 2)))}
+  progress$inc(0.2, detail = "Exporting results")
+  
+  return(list(p = p, y = y))
 }
 
 

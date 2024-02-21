@@ -33,7 +33,7 @@ PrepDataGemtc <- function(data, treatment_ids, outcome_type, covariate, cov_frie
   }
   # specify study level data
   studyData <- unique(data.frame(study = long_data$Study,
-                                 cov_name = long_data[,covariate]))
+                                 covariate = long_data[, covariate]))
   names(studyData)[2] <- cov_friendly
   rownames(studyData) <- NULL
   
@@ -115,6 +115,7 @@ RunCovariateModel <- function(data, treatment_ids, outcome_type, outcome, covari
 #' 
 #' @param model Completed model object after running RunCovariateRegression()
 #' @param cov_value Value of covariate for which to give output (default value the mean of study covariates)
+#' @param outcome_measure The outcome measure for the analysis: One of: "OR", "RR", "MD"
 #' @return List of gemtc related output:
 #'  mtcResults = model object itself carried through (needed to match existing code)
 #'  mtcRelEffects = data relating to presenting relative effects;
@@ -126,9 +127,10 @@ RunCovariateModel <- function(data, treatment_ids, outcome_type, outcome, covari
 #'  sumresults = summary output of relative effects
 #'  dic = data frame of model fit statistics
 #'  cov_value_sentence = text output stating the value for which the covariate has been set to for producing output
-#'  slopes = named list of slopes for the regression equations (unstandardised - equal to one 'increment')
-#'  intercepts = named list of intercepts for the regression equations at cov_value
-CovariateModelOutput <- function(model, cov_value) {
+#'  mtcNetwork = The GEMTC network object
+#'  outcome = The outcome measure for the analysis: One of: "OR", "RR", "MD"
+#'  model = The type of model effects. Either "random" or "fixed"
+CovariateModelOutput <- function(model, cov_value, outcome_measure) {
   
   model_levels = levels(model$model$data$reg.control)
   reference_name <- model_levels[model_levels %in% model$model$data$reg.control]
@@ -136,6 +138,9 @@ CovariateModelOutput <- function(model, cov_value) {
   
   # Relative Effects raw data
   rel_eff <- gemtc::relative.effect(model, as.character(model$model$regressor$control), covariate = cov_value)
+  
+  # Summary of relative effects
+  summary_rel_eff <- summary (rel_eff)
   
   # Relative Effects table of all comparisons
   rel_eff_tbl <- gemtc::relative.effect.table(model, covariate = cov_value)
@@ -181,9 +186,12 @@ CovariateModelOutput <- function(model, cov_value) {
       reference_name = reference_name,
       comparator_names = comparator_names,
       a = model_text,
-      sumresults = rel_eff_summary,
+      sumresults = summary_rel_eff,
       dic = fit_stats,
       cov_value_sentence = cov_value_sentence,
+      mtcNetwork = model$model$network,
+      outcome = outcome_measure,
+      model = model$model$linearModel,
       slopes = slopes,
       intercepts = intercepts
     )

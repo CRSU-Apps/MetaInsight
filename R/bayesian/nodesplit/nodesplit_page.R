@@ -1,9 +1,9 @@
 
-#' Module UI for the nodesplit model panel
+#' Module UI for the nodesplit model page
 #' 
 #' @param id ID of the module
 #' @return Div for the panel
-nodesplit_panel_ui <- function(id) {
+nodesplit_page_ui <- function(id) {
   ns <- NS(id)
   div(
     helpText(
@@ -20,23 +20,19 @@ nodesplit_panel_ui <- function(id) {
       column(
         width = 6,
         p(tags$strong("Inconsistency test with notesplitting model for all studies")),
-        actionButton(inputId = ns("node"), label = "Click here to run the nodesplitting analysis for all studies"),
-        tableOutput(outputId = ns("node_table")),
-        downloadButton(outputId = ns('downloadnode'))
+        nodesplit_panel_ui(id = ns("all"))
       ),
       column(
         width = 6,
         p(tags$strong("Inconsistency test with notesplitting model with studies excluded")),
-        actionButton(inputId = ns("node_sub"), label = "Click here to run the nodesplitting analysis with studies excluded"),
-        tableOutput(outputId = ns("node_table_sub")),
-        downloadButton(outputId = ns('downloadnode_sub'))
+        nodesplit_panel_ui(id = ns("sub"))
       )
     )
   )
 }
 
 
-#' Module server for the nodesplit model panel.
+#' Module server for the nodesplit model page.
 #' 
 #' @param id ID of the module
 #' @param data Reactive containing data to analyse
@@ -45,7 +41,7 @@ nodesplit_panel_ui <- function(id) {
 #' @param outcome_measure Reactive containing meta analysis outcome measure: "MD", "SMD", "OR, "RR", or "RD"
 #' @param model_effects Reactive containing model effects: either "random" or "fixed"
 #' @param exclusions Reactive containing names of studies excluded from the sensitivity analysis
-nodesplit_panel_server <- function(
+nodesplit_page_server <- function(
     id,
     data,
     treatment_df,
@@ -55,36 +51,23 @@ nodesplit_panel_server <- function(
     exclusions
     ) {
   moduleServer(id, function(input, output, session) {
-    # Inconsistency test with notesplitting model for all studies
-    model_nodesplit <- eventReactive(input$node, {
-      nodesplit(data(), treatment_df(), metaoutcome(), outcome_measure(), model_effects())
-    })
-
-    output$node_table<- renderTable(colnames=TRUE, {
-      model_nodesplit()
-    })
-
-    # Inconsistency test with notesplitting model with studies excluded
-    model_nodesplit_sub <- eventReactive(input$node_sub, {
-      nodesplit(data(), treatment_df(), metaoutcome(), outcome_measure(), model_effects(), exclusions())
-    })
-
-    output$node_table_sub<- renderTable(colnames=TRUE, {
-      model_nodesplit_sub()
-    })
-
-    output$downloadnode <- downloadHandler(
-      filename = 'Nodesplit.csv',
-      content = function(file) {
-        write.csv(model_nodesplit(), file)
-      }
+    nodesplit_panel_server(
+      id = "all",
+      data = data,
+      treatment_df = treatment_df,
+      metaoutcome = metaoutcome,
+      outcome_measure = outcome_measure,
+      model_effects = model_effects
     )
-
-    output$downloadnode_sub <- downloadHandler(
-      filename = 'Nodesplit_sen.csv',
-      content = function(file) {
-        write.csv(model_nodesplit_sub(), file)
-      }
+    
+    nodesplit_panel_server(
+      id = "sub",
+      data = data,
+      treatment_df = treatment_df,
+      metaoutcome = metaoutcome,
+      outcome_measure = outcome_measure,
+      model_effects = model_effects,
+      exclusions = exclusions
     )
   })
 }

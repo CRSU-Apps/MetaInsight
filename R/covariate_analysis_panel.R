@@ -83,6 +83,14 @@ covariate_analysis_panel_ui <- function(id) {
           tabPanel(
             title = "4c-5. Nodesplit model",
             covariate_nodesplit_page_ui(id = ns("nodesplit"), package_name = "gemtc")
+          ),
+          tabPanel(
+            title = "4c-6. Result details",
+            result_details_page_ui(id = ns("result_details"), item_names = c("all studies"))
+          ),
+          tabPanel(
+            title = "4c-7. Deviance report",
+            deviance_report_page_ui(id = ns("deviance_report"), item_names = c("all studies"))
           )
         )
       )
@@ -186,9 +194,8 @@ covariate_analysis_panel_server <- function(
     
     # obtain gemtc output types to be used in rest of page
     model_output <- reactive({
-      m_output <- CovariateModelOutput(model = model_reactive(), cov_value = covariate_value())
-      return(m_output)
-      })
+      CovariateModelOutput(model = model_reactive(), cov_value = covariate_value(), outcome_measure = outcome_measure())
+    })
     
     # Create forest plot and associated statistics
     bayesian_forest_plot_plus_stats_server(
@@ -233,6 +240,11 @@ covariate_analysis_panel_server <- function(
     
     # 4c-5 Nodesplit model
     covariate_nodesplit_page_server(id = "nodesplit")
-
+    
+    # 4c-6 Result details
+    result_details_page_server(id = "result_details", models = c(model_output))
+    
+    # 4c-7 Deviance report
+    deviance_report_page_server(id = "deviance_report", models = c(model_output))
   })
 }
