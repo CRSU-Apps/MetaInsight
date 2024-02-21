@@ -39,7 +39,6 @@ test_that(".FindVaryingColumnIndices() finds all varying columns for continuous 
   data <- read.csv("Cont_wide_continuous_cov.csv")
   treatment_ids <- CreateTreatmentIds(FindAllTreatments(data))
   data <- WrangleUploadData(data, treatment_ids, "Continuous")
-  print(data)
   
   expect_equal(
     !!.FindVaryingColumnIndices(data),

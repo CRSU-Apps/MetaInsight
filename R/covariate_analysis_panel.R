@@ -210,8 +210,6 @@ covariate_analysis_panel_server <- function(
     # 4c-2 Regression plot
     regression_plot_panel_server(
       id = "regression_plot",
-      model = model_output()$mtcResults,
-      reference_treatment = reference_treatment,
       model_output = model_output,
       treatment_df = treatment_df,
       outcome_type = outcome_measure,
