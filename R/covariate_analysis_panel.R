@@ -35,7 +35,7 @@ covariate_analysis_panel_ui <- function(id, page_numbering) {
               ns = ns,
               div(
                 tags$i(class = "fa-solid fa-circle-info"),
-                title = "If the data is intended to be binary, the only allowed values are 0, 1, and NA",
+                title = "If the covariate is intended to be binary, the only allowed values are 0, 1, and NA",
                 style = "color: orange;"
               )
             ),
@@ -82,6 +82,18 @@ covariate_analysis_panel_ui <- function(id, page_numbering) {
           tabPanel(
             title = paste0(page_numbering$AddChild(), " Ranking"),
             covariate_ranking_page_ui(id = ns("cov_ranking"))
+          ),
+          tabPanel(
+            title = paste0(page_numbering$AddChild(), " Nodesplit model"),
+            covariate_nodesplit_page_ui(id = ns("nodesplit"), package_name = "gemtc")
+          ),
+          tabPanel(
+            title = paste0(page_numbering$AddChild(), " Result details"),
+            result_details_page_ui(id = ns("result_details"), item_names = c("all studies"))
+          ),
+          tabPanel(
+            title = paste0(page_numbering$AddChild(), " Deviance report"),
+            deviance_report_page_ui(id = ns("deviance_report"), item_names = c("all studies"))
           ),
           tabPanel(
             title = paste0(page_numbering$AddChild(), " Model details"),
@@ -189,9 +201,8 @@ covariate_analysis_panel_server <- function(
     
     # obtain gemtc output types to be used in rest of page
     model_output <- reactive({
-      m_output <- CovariateModelOutput(model = model_reactive(), cov_value = covariate_value(), outcome_measure = outcome_measure())
-      return(m_output)
-      })
+      CovariateModelOutput(model = model_reactive(), cov_value = covariate_value(), outcome_measure = outcome_measure())
+    })
     
     # Create forest plot and associated statistics
     bayesian_forest_plot_plus_stats_server(
@@ -206,10 +217,10 @@ covariate_analysis_panel_server <- function(
     # 4c-2 Regression plot
     regression_plot_panel_server(
       id = "regression_plot",
-      model = model_reactive,
-      reference_treatment = reference_treatment,
+      model_output = model_output,
       treatment_df = treatment_df,
-      covariate_value = covariate_value
+      outcome_type = outcome_measure,
+      reference = reference_treatment
     )
     
     # 4c-3 Treatment comparisons
@@ -233,9 +244,17 @@ covariate_analysis_panel_server <- function(
       bugsnetdt = bugsnetdt,
       cov_value = covariate_value
     )
+    # 4c-5 Nodesplit model
+    covariate_nodesplit_page_server(id = "nodesplit")
+    
+    # 4c-6 Result details
+    result_details_page_server(id = "result_details", models = c(model_output))
+    
+    # 4c-7 Deviance report
+    deviance_report_page_server(id = "deviance_report", models = c(model_output))
     
     # 4c-8 Model details
     model_details_panel_server(id = "model_details", models = c(model_output))
-
+    
   })
 }

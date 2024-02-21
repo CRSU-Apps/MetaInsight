@@ -28,11 +28,11 @@ bayesian_analysis_panel_ui <- function(id, page_numbering) {
       ),
       tabPanel(
         title = paste0(page_numbering$AddChild(), " Bayesian result details"),
-        result_details_panel_ui(id = ns("result_details"))
+        result_details_panel_ui(id = ns("result_details"), item_names = c("all studies", "the sensitivity analysis"))
       ),
       tabPanel(
         title = paste0(page_numbering$AddChild(), " Deviance report"),
-        deviance_report_panel_ui(id = ns("deviance_report"))
+        deviance_report_panel_ui(id = ns("deviance_report"), item_names = c("all studies", "the sensitivity analysis"))
       ),
       tabPanel(
         title = paste0(page_numbering$AddChild(), " Model details"),
@@ -139,7 +139,7 @@ bayesian_analysis_panel_server <- function(
     )
 
     # 3d. Nodesplit model
-    nodesplit_panel_server(
+    nodesplit_page_server(
       id = "nodesplit",
       data = data,
       treatment_df = treatment_df,
@@ -150,17 +150,15 @@ bayesian_analysis_panel_server <- function(
     )
 
     # 3e. Bayesian result details
-    result_details_panel_server(
+    result_details_page_server(
       id = "result_details",
-      model = model,
-      model_sub = model_sub
+      models = c(model, model_sub)
     )
 
     # 3f. Deviance report
-    deviance_report_panel_server(
+    deviance_report_page_server(
       id = "deviance_report",
-      model = model,
-      model_sub = model_sub
+      models = c(model, model_sub)
     )
 
     # 3g. Model details

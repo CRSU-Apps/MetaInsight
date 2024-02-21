@@ -1,13 +1,13 @@
 test_that("PrepDataGemtc() gives correct data for wide binary", {
-  
+
   # process data as would be in app
   data <- read.csv("Binary_wide_continuous_cov.csv")
   treatment_ids <- CreateTreatmentIds(FindAllTreatments(data))
   data <- WrangleUploadData(data, treatment_ids, "Binary")
   wrangled_treatment_list <- CleanTreatmentIds(treatment_ids)
-  
+
   gemtc_data <- PrepDataGemtc(data, wrangled_treatment_list, "Binary", "covar.age", "age")
-  
+
   expected_armData = data.frame(
     study = c(rep("Constantine", 3), rep("Leo", 3), rep("Justinian", 2)),
     treatment = c("the_Great", "the_Younger", "the_Dung_named", "the_Little", "the_Great", "the_Butcher", "the_Great", "the_Slit_nosed"),
@@ -16,20 +16,20 @@ test_that("PrepDataGemtc() gives correct data for wide binary", {
   expected_studyData = data.frame(
       study = c("Constantine", "Leo", "Justinian"),
       age = c(99, 98, 97))
-  
+
   expect_equal(gemtc_data$armData, expected_armData)
   expect_equal(gemtc_data$studyData, expected_studyData)
 })
 
 test_that("PrepDataGemtc() gives correct data for long binary", {
-  
+
   data <- read.csv("Binary_long_continuous_cov.csv")
   treatment_ids <- CreateTreatmentIds(FindAllTreatments(data))
   data <- WrangleUploadData(data, treatment_ids, "Binary")
   wrangled_treatment_list <- CleanTreatmentIds(treatment_ids)
-  
+
   gemtc_data <- PrepDataGemtc(data, wrangled_treatment_list, "Binary", "covar.age", "age")
-  
+
   expected_armData <- data.frame(
     study = c(rep("Constantine", 3), rep("Leo", 3), rep("Justinian", 2)),
     treatment = c("the_Great", "the_Younger", "the_Dung_named", "the_Little", "the_Great", "the_Butcher", "the_Great", "the_Slit_nosed"),
@@ -38,20 +38,20 @@ test_that("PrepDataGemtc() gives correct data for long binary", {
   expected_studyData = data.frame(
       study = c("Constantine", "Leo", "Justinian"),
       age = c(99, 98, 97))
-  
+
   expect_equal(gemtc_data$armData, expected_armData)
   expect_equal(gemtc_data$studyData, expected_studyData)
 })
 
 test_that("PrepDataGemtc() gives correct data for wide continuous", {
-  
+
   data <- read.csv("Cont_wide_continuous_cov.csv")
   treatment_ids <- CreateTreatmentIds(FindAllTreatments(data))
   data <- WrangleUploadData(data, treatment_ids, "Continuous")
   wrangled_treatment_list <- CleanTreatmentIds(treatment_ids)
-  
+
   gemtc_data <- PrepDataGemtc(data, wrangled_treatment_list, "Continuous", "covar.age", "age")
-  
+
   expected_armData <- data.frame(
     study = c(rep("Constantine", 3), rep("Leo", 3), rep("Justinian", 2)),
     treatment = c("the_Great", "the_Younger", "the_Dung_named", "the_Little", "the_Great", "the_Butcher", "the_Great", "the_Slit_nosed"),
@@ -61,20 +61,20 @@ test_that("PrepDataGemtc() gives correct data for wide continuous", {
   expected_studyData = data.frame(
       study = c("Constantine", "Leo", "Justinian"),
       age = c(99, 98, 97))
-  
+
   expect_equal(gemtc_data$armData, expected_armData)
   expect_equal(gemtc_data$studyData, expected_studyData)
 })
 
 test_that("PrepDataGemtc() gives correct data for long continuous", {
-  
+
   data <- read.csv("Cont_long_continuous_cov.csv")
   treatment_ids <- CreateTreatmentIds(FindAllTreatments(data))
   data <- WrangleUploadData(data, treatment_ids, "Continuous")
   wrangled_treatment_list <- CleanTreatmentIds(treatment_ids)
-  
+
   gemtc_data <- PrepDataGemtc(data, wrangled_treatment_list, "Continuous", "covar.age", "age")
-  
+
   expected_armData <- data.frame(
     study = c(rep("Constantine", 3), rep("Leo", 3), rep("Justinian", 2)),
     treatment = c("the_Great", "the_Younger", "the_Dung_named", "the_Little", "the_Great", "the_Butcher", "the_Great", "the_Slit_nosed"),
@@ -84,13 +84,13 @@ test_that("PrepDataGemtc() gives correct data for long continuous", {
   expected_studyData = data.frame(
       study = c("Constantine", "Leo", "Justinian"),
       age = c(99, 98, 97))
-  
+
   expect_equal(gemtc_data$armData, expected_armData)
   expect_equal(gemtc_data$studyData, expected_studyData)
 })
 
 test_that("CreateGemtcModel() assigns model type, covariate type, reference treatment, and RNGs correctly", {
-  
+
   data <- list(armData = data.frame(
     study = c(rep("Constantine", 3), rep("Leo", 3), rep("Justinian", 2)),
     treatment = c("the_Great", "the_Younger", "the_Dung_named", "the_Little", "the_Great", "the_Butcher", "the_Great", "the_Slit_nosed"),
@@ -101,7 +101,7 @@ test_that("CreateGemtcModel() assigns model type, covariate type, reference trea
       age = c(99, 98, 97))
   )
   gemtc_model <- CreateGemtcModel(data, 'random', 'OR', 'unrelated', 'the_Great')
-  
+
   expect_equal(gemtc_model$linearModel, "random")
   expect_equal(gemtc_model$regressor$coefficient, "unrelated")
   expect_equal(as.character(gemtc_model$regressor$control), "the_Great")
@@ -109,11 +109,11 @@ test_that("CreateGemtcModel() assigns model type, covariate type, reference trea
   expect_equal(gemtc_model$inits[[2]]$.RNG.name, "base::Marsaglia-Multicarry")
   expect_equal(gemtc_model$inits[[3]]$.RNG.name, "base::Super-Duper")
   expect_equal(gemtc_model$inits[[4]]$.RNG.name, "base::Mersenne-Twister")
-  
+
 })
 
 test_that("CreateGemtcModel() has correct model settings for OR outcome", {
-  
+
   data <- list(armData = data.frame(
       study = c(rep("Constantine", 3), rep("Leo", 3), rep("Justinian", 2)),
       treatment = c("the_Great", "the_Younger", "the_Dung_named", "the_Little", "the_Great", "the_Butcher", "the_Great", "the_Slit_nosed"),
@@ -124,14 +124,14 @@ test_that("CreateGemtcModel() has correct model settings for OR outcome", {
       age = c(99, 98, 97))
   )
   gemtc_model <- CreateGemtcModel(data, 'random', 'OR', 'shared', 'the_Great')
-  
+
   expect_equal(gemtc_model$likelihood, "binom")
   expect_equal(gemtc_model$link, "logit")
-  
+
 })
 
 test_that("CreateGemtcModel() has correct model settings for RR outcome", {
-  
+
   data <- list(armData = data.frame(
     study = c(rep("Constantine", 3), rep("Leo", 3), rep("Justinian", 2)),
     treatment = c("the_Great", "the_Younger", "the_Dung_named", "the_Little", "the_Great", "the_Butcher", "the_Great", "the_Slit_nosed"),
@@ -142,14 +142,14 @@ test_that("CreateGemtcModel() has correct model settings for RR outcome", {
       age = c(99, 98, 97))
   )
   gemtc_model <- CreateGemtcModel(data, 'random', 'RR', 'shared', 'the_Great')
-  
+
   expect_equal(gemtc_model$likelihood, "binom")
   expect_equal(gemtc_model$link, "log")
-  
+
 })
 
 test_that("CreateGemtcModel() has correct model settings for MD outcome", {
-  
+
   data <- list(armData = data.frame(
       study = c(rep("Constantine", 3), rep("Leo", 3), rep("Justinian", 2)),
       treatment = c("the_Great", "the_Younger", "the_Dung_named", "the_Little", "the_Great", "the_Butcher", "the_Great", "the_Slit_nosed"),
@@ -161,38 +161,44 @@ test_that("CreateGemtcModel() has correct model settings for MD outcome", {
       age = c(99, 98, 97))
   )
   gemtc_model <- CreateGemtcModel(data, 'random', 'MD', 'shared', 'the_Great')
-  
+
   expect_equal(gemtc_model$likelihood, "normal")
   expect_equal(gemtc_model$link, "identity")
-  
+
 })
 
 test_that("RunCovariateModel() gives reproducible output. Follow on: FindCovariateDefault() & CovariateModelOutput() gives correct output", {
-  
+  reference = "the_Little"
+
   data <- read.csv("Binary_wide_continuous_cov.csv")
-  treatment_ids <- CreateTreatmentIds(FindAllTreatments(data))
+  treatment_ids <- CreateTreatmentIds(FindAllTreatments(data), reference_treatment = reference)
   data <- WrangleUploadData(data, treatment_ids, "Binary")
   wrangled_treatment_list <- CleanTreatmentIds(treatment_ids)
   outcome_measure = "OR"
   
-  result_1 <- RunCovariateModel(data, wrangled_treatment_list, "Binary", outcome_measure, "covar.age", "age", 'random', 'unrelated', "the_Little")
-  result_2 <- RunCovariateModel(data, wrangled_treatment_list, "Binary", outcome_measure, "covar.age", "age", 'random', 'unrelated', "the_Little")
+  result_1 <- RunCovariateModel(data, wrangled_treatment_list, "Binary", outcome_measure, "covar.age", "age", 'random', 'unrelated', reference)
+  result_2 <- RunCovariateModel(data, wrangled_treatment_list, "Binary", outcome_measure, "covar.age", "age", 'random', 'unrelated', reference)
   
   expect_equal(result_1$samples[1], result_2$samples[1])
   expect_equal(result_1$samples[2], result_2$samples[2])
   expect_equal(result_1$samples[3], result_2$samples[3])
   expect_equal(result_1$samples[4], result_2$samples[4])
-  
+
   default <- FindCovariateDefault(result_1)
   
-  expect_equal(default, 98)
-  
+  covariate_value = 98
+
+  expect_equal(default, covariate_value)
+
   output_1 <- CovariateModelOutput(result_1, cov_value = default, outcome_measure = outcome_measure)
-  
-  expect_equal(length(output_1), 12)
+
+  expect_equal(length(output_1), 15)
+
   expect_equal(output_1$a, "random effect")
   expect_equal(output_1$cov_value_sentence, "Value for covariate age set at 98")
   expect_equal(output_1$outcome, outcome_measure)
   expect_equal(output_1$model, "random")
-  
+  expect_equal(output_1$covariate_value, covariate_value)
+  expect_equal(output_1$reference_name, reference)
+  expect_equal(output_1$comparator_names, c("the_Butcher", "the_Dung_named", "the_Great", "the_Slit_nosed", "the_Younger"))
 })

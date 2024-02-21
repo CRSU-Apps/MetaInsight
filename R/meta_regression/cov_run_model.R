@@ -62,7 +62,6 @@ covariate_run_model_server <- function(
     model_effects
     ) {
   moduleServer(id, function(input, output, session) {
-    ns <- session$ns
 
     #Bayesian analysis
     
@@ -74,10 +73,17 @@ covariate_run_model_server <- function(
     
     #The model
     model <- eventReactive(input$baye_do, {
-      RunCovariateModel(data = data(), treatment_ids = treatment_df(), outcome_type = metaoutcome(), 
-                        outcome = outcome_measure(), covariate = covariate(), cov_friendly = cov_friendly(), 
-                        model_type = model_effects(), regressor_type = input$select_regressor, 
-                        ref_choice = treatment_df()$Label[match(1, treatment_df()$Number)])
+      RunCovariateModel(
+        data = data(),
+        treatment_ids = treatment_df(),
+        outcome_type = metaoutcome(),
+        outcome = outcome_measure(),
+        covariate = covariate(),
+        cov_friendly = cov_friendly(),
+        model_type = model_effects(),
+        regressor_type = input$select_regressor,
+        ref_choice = treatment_df()$Label[match(1, treatment_df()$Number)]
+      )
     })
 
     return(model)

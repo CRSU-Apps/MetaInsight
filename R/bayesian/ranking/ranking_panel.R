@@ -43,8 +43,11 @@ ranking_panel_ui <- function(id, title, table_label) {
 #' @param rank_option Reactive containing ranking option: "good" or "bad" depending on whether small values are desirable or not
 #' @param frequentist Reactive containing frequentist meta-analysis
 #' @param bugsnetdt Reactive containing bugsnet meta-analysis
+#' @param filename_prefix Text to prefix the filename of all the downloads
+#' @param title_prefix Text to prefix the title of plots
 #' @param cov_value Value of covariate for regression analysis
 #' @param exclusions Reactive containing names of studies excluded from the sensitivity analysis
+#' @param package "gemtc" or "bnma". Defaults to "gemtc".
 ranking_panel_server <- function(
     id,
     data,
@@ -57,15 +60,17 @@ ranking_panel_server <- function(
     filename_prefix,
     title_prefix,
     cov_value = reactive({NA}),
-    exclusions = reactive({ c() })
+    exclusions = reactive({ c() }),
+    package = "gemtc"
     ) {
   moduleServer(id, function(input, output, session) {
     
     ranking_data <- eventReactive(model(), {
-      r_data <- obtain_rank_data(data(), metaoutcome(), treatment_df(), model(), rank_option(), cov_value(), exclusions())
+      r_data <- obtain_rank_data(data(), metaoutcome(), treatment_df(), model(), rank_option(),
+                                 cov_value(), exclusions(), package)
       return(r_data)
     })
-
+    
     # Network plots for ranking panel (Bayesian) (they have slightly different formatting to those on tab1) CRN
     treat_order <- reactive({
       ranking_data()$SUCRA[order(ranking_data()$SUCRA$SUCRA), 1]
@@ -80,15 +85,28 @@ ranking_panel_server <- function(
       bugsnetdt()
     })
     
-    ranking_forest_panel_server(
-      id = "forest",
-      model = model,
-      treat_order = treat_order,
-      frequentist_react = frequentist_react,
-      bugsnetdt_react = bugsnetdt_react,
-      filename_prefix = filename_prefix,
-      title_prefix = title_prefix
-    )
+    if (package == "gemtc"){
+      ranking_forest_panel_server(
+        id = "forest",
+        model = model,
+        treat_order = treat_order,
+        frequentist_react = frequentist_react,
+        bugsnetdt_react = bugsnetdt_react,
+        filename_prefix = filename_prefix,
+        title_prefix = title_prefix
+      )
+    } else if (package == "bnma"){
+      ranking_forest_panel_baseline_risk_server(
+        id = "forest",
+        model = model,
+        treat_order = treat_order,
+        bugsnetdt_react = bugsnetdt_react,
+        filename_prefix = filename_prefix,
+        title_prefix = title_prefix
+      )
+    } else{
+      stop("package must be 'gemtc' or 'bnma'")
+    }
     
     regression_text <- reactive({
       if (is.na(cov_value()) == FALSE) {
@@ -115,3 +133,4 @@ ranking_panel_server <- function(
     )
   })
 }
+
