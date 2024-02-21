@@ -10,7 +10,7 @@ meta_regression_tab_ui <- function(id) {
         id = "regression_tabs",
         tabPanel(
           title = "4a. Summary",
-          # Add a new module here for the summary panel
+          metaregression_summary_panel_ui(id = ns("metaregression_summary_panel"))
         ),
         tabPanel(
           title = "4b. Baseline Risk Analysis",
@@ -76,6 +76,8 @@ meta_regression_tab_ui <- function(id) {
 #' @param metaoutcome Reactive containing meta analysis outcome: "Continuous" or "Binary"
 #' @param outcome_measure Reactive containing meta analysis outcome measure: "MD", "SMD", "OR, "RR", or "RD"
 #' @param model_effects Reactive containing model effects: either "random" or "fixed"
+#' @param rank_option Reactive containing ranking option: "good" or "bad" depending on whether small values are desirable or not
+#' @param freq_all Reactive containing frequentist meta-analysis
 #' @param bugsnetdt Reactive containing bugsnet meta-analysis
 meta_regression_tab_server <- function(
     id, 
@@ -85,20 +87,36 @@ meta_regression_tab_server <- function(
     metaoutcome,
     outcome_measure,
     model_effects,
+    rank_option,
+    freq_all,
     bugsnetdt
     ) {
   shiny::moduleServer(id, function(input, output, session) {
     
-    basline_risk_outcomes <- c("MD", "OR")
-    baseline_risk_supported = reactive({ outcome_measure() %in% basline_risk_outcomes })
+    metaregression_summary_panel_server(id = "metaregression_summary_panel", 
+                                        all_data = all_data, 
+                                        metaoutcome = metaoutcome, 
+                                        treatment_df = treatment_df)
+    
+    baseline_risk_outcomes <- c("MD", "OR")
+    baseline_risk_supported = reactive({ outcome_measure() %in% baseline_risk_outcomes })
     # Baseline risk analysis
     informed_conditional_panel_server(
       id = "baseline_risk_outcome_dependent",
       condition = baseline_risk_supported,
-      error_message_text_expression = { .BuildUnsupportedOutcomeMeasureErrorMessageText(basline_risk_outcomes) },
+      error_message_text_expression = { .BuildUnsupportedOutcomeMeasureErrorMessageText(baseline_risk_outcomes) },
       inner_server_expression = {
         baseline_risk_analysis_panel_server(
-          id = "baseline_risk_analysis"
+          id = "baseline_risk_analysis",
+          all_data = all_data,
+          treatment_df = treatment_df,
+          reference_treatment = reference_treatment,
+          metaoutcome = metaoutcome,
+          outcome_measure = outcome_measure,
+          model_effects = model_effects,
+          rank_option = rank_option,
+          freq_all = freq_all,
+          bugsnetdt = bugsnetdt
         )
       }
     )
@@ -126,6 +144,8 @@ meta_regression_tab_server <- function(
               metaoutcome = metaoutcome,
               outcome_measure = outcome_measure,
               model_effects = model_effects,
+              rank_option = rank_option,
+              freq_all = freq_all,
               bugsnetdt = bugsnetdt
             )
           }

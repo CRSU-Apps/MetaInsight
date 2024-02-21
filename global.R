@@ -1,5 +1,10 @@
 ###### MetaInsight ######
 
+# The version of BUGSnet on the CRSU GitHub account needs to be used 
+# remotes::install_github("https://github.com/CRSU-Apps/BUGSnet")
+# You may wish to remove this version of BUGSnet afterwards using
+# remove.packages("BUGSnet")
+
 # plyr is recommended to be loaded before dplyr for better performance
 library(plyr)
 
@@ -17,6 +22,7 @@ library(ggplot2)
 library(ggrepel)
 library(glue)
 library(magick)
+library(matrixcalc)
 library(metafor)
 library(netmeta)
 library(patchwork)

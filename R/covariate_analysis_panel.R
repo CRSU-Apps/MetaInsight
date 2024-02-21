@@ -32,7 +32,7 @@ covariate_analysis_panel_ui <- function(id) {
               ns = ns,
               div(
                 tags$i(class = "fa-solid fa-circle-info"),
-                title = "If the data is intended to be binary, the only allowed values are 0, 1, and NA",
+                title = "If the covariate is intended to be binary, the only allowed values are 0, 1, and NA",
                 style = "color: orange;"
               )
             ),
@@ -73,11 +73,23 @@ covariate_analysis_panel_ui <- function(id) {
             regression_plot_panel_ui(id = ns("regression_plot"))
           ),
           tabPanel(
-            title = "4c-3. Result details",
+            title = "4c-3. Comparison of all treatment pairs",
+            covariate_treatment_comparisons_page_ui(id = ns("cov_treatment_comparisons"))
+          ),
+          tabPanel(
+            title = "4c-4. Ranking",
+            covariate_ranking_page_ui(id = ns("cov_ranking"))
+          ),
+          tabPanel(
+            title = "4c-5. Nodesplit model",
+            covariate_nodesplit_page_ui(id = ns("nodesplit"), package_name = "gemtc")
+          ),
+          tabPanel(
+            title = "4c-6. Result details",
             result_details_page_ui(id = ns("result_details"), item_names = c("all studies"))
           ),
           tabPanel(
-            title = "4c-4. Deviance report",
+            title = "4c-7. Deviance report",
             deviance_report_page_ui(id = ns("deviance_report"), item_names = c("all studies"))
           )
         )
@@ -95,6 +107,8 @@ covariate_analysis_panel_ui <- function(id) {
 #' @param metaoutcome Reactive containing meta analysis outcome: "Continuous" or "Binary"
 #' @param outcome_measure Reactive containing meta analysis outcome measure: "MD", "SMD", "OR, "RR", or "RD"
 #' @param model_effects Reactive containing model effects: either "random" or "fixed"
+#' @param rank_option Reactive containing ranking option: "good" or "bad" depending on whether small values are desirable or not
+#' @param freq_all Reactive containing frequentist meta-analysis
 #' @param bugsnetdt Reactive containing bugsnet meta-analysis
 covariate_analysis_panel_server <- function(
     id, 
@@ -104,6 +118,8 @@ covariate_analysis_panel_server <- function(
     metaoutcome,
     outcome_measure,
     model_effects,
+    rank_option,
+    freq_all,
     bugsnetdt
     ) {
   shiny::moduleServer(id, function(input, output, session) {
@@ -196,14 +212,41 @@ covariate_analysis_panel_server <- function(
       id = "regression_plot",
       model = model_output()$mtcResults,
       reference_treatment = reference_treatment,
+      model_output = model_output,
       treatment_df = treatment_df,
-      covariate_value = covariate_value
+      outcome_type = outcome_measure,
+      reference = reference_treatment
     )
     
-    # 4c-3 Result details
+    # 4c-3 Treatment comparisons
+    covariate_treatment_comparisons_page_server(
+      id = "cov_treatment_comparisons",
+      model = model_output,
+      outcome_measure = outcome_measure
+    )
+    
+    # 4c-4 Ranking Panel
+    covariate_ranking_page_server(
+      id = "cov_ranking",
+      model = model_output,
+      data = all_data,
+      treatment_df = treatment_df,
+      metaoutcome = metaoutcome,
+      outcome_measure = outcome_measure,
+      model_effects = model_effects,
+      rank_option = rank_option,
+      freq_all = freq_all,
+      bugsnetdt = bugsnetdt,
+      cov_value = covariate_value
+    )
+    
+    # 4c-5 Nodesplit model
+    covariate_nodesplit_page_server(id = "nodesplit")
+    
+    # 4c-6 Result details
     result_details_page_server(id = "result_details", models = c(model_output))
     
-    # 4c-4. Deviance report
+    # 4c-7 Deviance report
     deviance_report_page_server(id = "deviance_report", models = c(model_output))
   })
 }

@@ -117,7 +117,12 @@ RunCovariateModel <- function(data, treatment_ids, outcome_type, outcome, covari
 #' @param cov_value Value of covariate for which to give output (default value the mean of study covariates)
 #' @param outcome_measure The outcome measure for the analysis: One of: "OR", "RR", "MD"
 #' @return List of gemtc related output:
+#'  mtcResults = model object itself carried through (needed to match existing code)
 #'  mtcRelEffects = data relating to presenting relative effects;
+#'  rel_eff_tbl = table of relative effects for each comparison;
+#'  covariate_value = The covariate value originally passed into this function
+#'  reference_name = The name of the reference treatment
+#'  comparator_names = Vector containing the names of the comparators.
 #'  a = text output stating whether fixed or random effects;
 #'  sumresults = summary output of relative effects
 #'  dic = data frame of model fit statistics
@@ -127,36 +132,68 @@ RunCovariateModel <- function(data, treatment_ids, outcome_type, outcome, covari
 #'  model = The type of model effects. Either "random" or "fixed"
 CovariateModelOutput <- function(model, cov_value, outcome_measure) {
   
+  model_levels = levels(model$model$data$reg.control)
+  reference_name <- model_levels[model_levels %in% model$model$data$reg.control]
+  comparator_names <- model_levels[!model_levels %in% model$model$data$reg.control]
+  
   # Relative Effects raw data
   rel_eff <- gemtc::relative.effect(model, as.character(model$model$regressor$control), covariate = cov_value)
   
   # Summary of relative effects
   summary_rel_eff <- summary (rel_eff)
   
-  # Create text for random/fixed effect
-  model_text <- paste(model$model$linearModel,"effect",sep=" ")
+  # Relative Effects table of all comparisons
+  rel_eff_tbl <- gemtc::relative.effect.table(model, covariate = cov_value)
   
-  # Summary of model
-  summary <- summary(model)
+  # Create text for random/fixed effect
+  model_text <- paste(model$model$linearModel, "effect", sep = " ")
+  
+  # Summary of relative effects
+  rel_eff_summary <- summary(rel_eff)
   
   # Table of Model fit stats
-  fit_stats <- as.data.frame(summary$DIC)
+  fit_stats <- as.data.frame(rel_eff_summary$DIC)
   
   # Summary sentence of where covariate value has been set for results
   cov_value_sentence <- paste0("Value for covariate ", model$model$regressor$variable, " set at ", cov_value)
   
+  # Obtain slope(s)
+  slope_indices <- grep(ifelse(model$model$regressor$coefficient == "shared", "^B$", "^beta\\[[0-9]+\\]$"), model$model$monitors$enabled)
+  model_summary <- summary(model)
+  slopes <- model_summary$summaries$quantiles[slope_indices, "50%"] / model$model$regressor$scale
+  
+  # Duplicate slope for each comparator when "shared" type
+  if (model$model$regressor$coefficient == "shared") {
+    slopes <- rep(slopes[1], length(comparator_names))
+  }
+  
+  # Intercepts (regression)
+  rel_eff_zero <- gemtc::relative.effect(model, as.character(model$model$regressor$control), covariate = 0)
+  rel_eff_zero_summary <- summary(rel_eff_zero)
+  intercepts <- rel_eff_zero_summary$summaries$quantiles[startsWith(rownames(rel_eff_zero_summary$summaries$quantiles), "d."), "50%"]
+  
+  # Rename items for intercepts and slopes
+  names(slopes) <- comparator_names
+  names(intercepts) <- comparator_names
+
   # naming conventions to match current Bayesian functions
   return(
     list(
       mtcResults = model,
       mtcRelEffects = rel_eff,
+      rel_eff_tbl = rel_eff_tbl,
+      covariate_value = cov_value,
+      reference_name = reference_name,
+      comparator_names = comparator_names,
       a = model_text,
       sumresults = summary_rel_eff,
       dic = fit_stats,
       cov_value_sentence = cov_value_sentence,
       mtcNetwork = model$model$network,
       outcome = outcome_measure,
-      model = model$model$linearModel
+      model = model$model$linearModel,
+      slopes = slopes,
+      intercepts = intercepts
     )
   )
 }
