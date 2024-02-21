@@ -138,23 +138,20 @@ CovariateModelOutput <- function(model, cov_value, outcome_measure) {
   reference_name <- model_levels[model_levels %in% model$model$data$reg.control]
   comparator_names <- model_levels[!model_levels %in% model$model$data$reg.control]
   
+  # Create text for random/fixed effect
+  model_text <- paste(model$model$linearModel, "effect", sep = " ")
+  
   # Relative Effects raw data
   rel_eff <- gemtc::relative.effect(model, as.character(model$model$regressor$control), covariate = cov_value)
   
   # Summary of relative effects
-  summary_rel_eff <- summary (rel_eff)
+  rel_eff_summary <- summary(rel_eff)
   
   # Relative Effects table of all comparisons
   rel_eff_tbl <- gemtc::relative.effect.table(model, covariate = cov_value)
   
-  # Create text for random/fixed effect
-  model_text <- paste(model$model$linearModel, "effect", sep = " ")
-  
-  # Summary of relative effects
-  rel_eff_summary <- summary(rel_eff)
-  
   # Table of Model fit stats
-  fit_stats <- as.data.frame(rel_eff_summary$DIC)
+  fit_stats <- as.data.frame(summary(model)$DIC)
   
   # Summary sentence of where covariate value has been set for results
   cov_value_sentence <- paste0("Value for covariate ", model$model$regressor$variable, " set at ", cov_value)
@@ -188,7 +185,7 @@ CovariateModelOutput <- function(model, cov_value, outcome_measure) {
       reference_name = reference_name,
       comparator_names = comparator_names,
       a = model_text,
-      sumresults = summary,
+      sumresults = rel_eff_summary,
       dic = fit_stats,
       cov_value_sentence = cov_value_sentence,
       slopes = slopes,

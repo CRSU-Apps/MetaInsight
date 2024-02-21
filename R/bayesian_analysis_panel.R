@@ -24,15 +24,15 @@ bayesian_analysis_panel_ui <- function(id, page_numbering) {
       ),
       tabPanel(
         title = paste0(page_numbering$AddChild(), " Nodesplit model"),
-        nodesplit_panel_ui(id = ns("nodesplit"))
+        nodesplit_page_ui(id = ns("nodesplit"))
       ),
       tabPanel(
         title = paste0(page_numbering$AddChild(), " Bayesian result details"),
-        result_details_panel_ui(id = ns("result_details"), item_names = c("all studies", "the sensitivity analysis"))
+        result_details_page_ui(id = ns("result_details"), item_names = c("all studies", "the sensitivity analysis"))
       ),
       tabPanel(
         title = paste0(page_numbering$AddChild(), " Deviance report"),
-        deviance_report_panel_ui(id = ns("deviance_report"), item_names = c("all studies", "the sensitivity analysis"))
+        deviance_report_page_ui(id = ns("deviance_report"), item_names = c("all studies", "the sensitivity analysis"))
       ),
       tabPanel(
         title = paste0(page_numbering$AddChild(), " Model details"),
