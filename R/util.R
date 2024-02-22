@@ -5,17 +5,40 @@
 #####
 
 # Bayesian analysis
-bayesian_model <- function(sub, data, treatment_list, metaoutcome, exclusionbox, 
-                           outcome_measure, modelranfix, reference_alter) {
+bayesian_model <- function(
+    sub,
+    data,
+    treatment_list,
+    metaoutcome,
+    exclusionbox,
+    outcome_measure,
+    modelranfix,
+    reference_alter) {
   newData1 <- as.data.frame(data)
   longsort2 <- dataform.df(newData1, treatment_list, metaoutcome) 
-  if (sub == TRUE) {
+  if (sub) {
     longsort2 <- filter(longsort2, !Study %in% exclusionbox)
-    return(baye(longsort2, treatment_list, modelranfix, outcome_measure ,metaoutcome, 
-                reference_alter$ref_sub))
+    return(
+      baye(
+        longsort2,
+        treatment_list,
+        modelranfix,
+        outcome_measure,
+        metaoutcome,
+        reference_alter$ref_sub
+      )
+    )
   } else {
-    return(baye(longsort2, treatment_list, modelranfix, outcome_measure ,metaoutcome, 
-                reference_alter$ref_all))
+    return(
+      baye(
+        longsort2,
+        treatment_list,
+        modelranfix,
+        outcome_measure,
+        metaoutcome,
+        reference_alter$ref_all
+      )
+    )
   }
 }
 
@@ -29,11 +52,24 @@ obtain_rank_data <- function(data, metaoutcome, treatment_list, bayesmodel, rank
   }
   # Use the self-defined function, rankdata in bayes_analysis.R
   if (package == "gemtc"){
-    return(rankdata(NMAdata=bayesmodel$mtcResults, rankdirection=rankdir, 
-                    longdata=longsort2, cov_value = cov_value))
+    return(
+      rankdata(
+        NMAdata = bayesmodel$mtcResults,
+        rankdirection = rankdir,
+        longdata = longsort2,
+        cov_value = cov_value
+      )
+    )
   } else if (package == "bnma"){
-    return(rankdata(NMAdata=bayesmodel, rankdirection=rankdir, 
-                    longdata=longsort2, cov_value = cov_value, package = package))
+    return(
+      rankdata(
+        NMAdata = bayesmodel,
+        rankdirection = rankdir,
+        longdata = longsort2,
+        cov_value = cov_value,
+        package = package
+      )
+    )
   } else{
     stop("package must be 'gemtc' or 'bnma'")
   }

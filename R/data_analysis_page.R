@@ -9,20 +9,6 @@ data_analysis_page_ui <- function(id) {
   page_numbering <- PageNumbering$new()
   
   div(
-    htmlOutput(ns("CONBI2")),
-    tags$head(
-      tags$style(
-        glue::glue(
-          "#{ns(\"CONBI2\")} {{
-            color: white;
-            font-size: 20px;
-            font-style: bold;
-            background-color: #2196c4;
-          }}"
-        )
-      )
-    ),
-    br(),
     sidebarLayout(
       sidebarPanel(
         width = 3,
@@ -129,14 +115,6 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, m
     # Make ref_alter function (in fn_analysis.R) reactive - NVB
     reference_alter <- reactive({
       return(ref_alter(non_covariate_data(), metaoutcome(), exclusions(), treatment_df()))
-    })
-
-    ### Confirmation for continuous / binary data
-
-    output$CONBI2 <- renderText({
-      paste("You have selected", "<font color=\"#ffd966\"><b>" , metaoutcome(),"</b></font>",
-            "outcome on the 'Home' page. The analysis page for ",
-            "<font color=\"#ffd966\"><b>" , metaoutcome(),"</b></font>", "outcomes are now displayed.")
     })
     
     ### Get data for data table

@@ -65,12 +65,22 @@ ranking_panel_server <- function(
     ) {
   moduleServer(id, function(input, output, session) {
     
-    ranking_data <- eventReactive(model(), {
-      r_data <- obtain_rank_data(data(), metaoutcome(), treatment_df(), model(), rank_option(),
-                                 cov_value(), exclusions(), package)
-      return(r_data)
-    })
-    
+    ranking_data <- eventReactive(
+      model(),
+      {
+        obtain_rank_data(
+          data(),
+          metaoutcome(),
+          treatment_df(),
+          model(),
+          rank_option(),
+          cov_value(),
+          exclusions(),
+          package
+        )
+      }
+    )
+
     # Network plots for ranking panel (Bayesian) (they have slightly different formatting to those on tab1) CRN
     treat_order <- reactive({
       ranking_data()$SUCRA[order(ranking_data()$SUCRA$SUCRA), 1]
@@ -109,7 +119,7 @@ ranking_panel_server <- function(
     }
     
     regression_text <- reactive({
-      if (is.na(cov_value()) == FALSE) {
+      if (!is.na(cov_value())) {
         return(model()$cov_value_sentence)
       } else {
         return("")
@@ -133,4 +143,3 @@ ranking_panel_server <- function(
     )
   })
 }
-
