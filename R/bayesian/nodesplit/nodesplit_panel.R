@@ -2,11 +2,12 @@
 #' Module UI for the nodesplit model panel
 #' 
 #' @param id ID of the module
+#' @param item_name Name of this nodesplit item.
 #' @return Div for the panel
-nodesplit_panel_ui <- function(id) {
+nodesplit_panel_ui <- function(id, item_name) {
   ns <- NS(id)
   div(
-    actionButton(inputId = ns("node"), label = "Click here to run the nodesplitting analysis for all studies"),
+    actionButton(inputId = ns("node"), label = glue::glue("Click here to run the nodesplitting analysis for {item_name}")),
     tableOutput(outputId = ns("node_table")),
     downloadButton(outputId = ns('downloadnode'))
      
