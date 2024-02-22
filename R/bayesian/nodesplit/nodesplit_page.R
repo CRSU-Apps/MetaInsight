@@ -20,12 +20,12 @@ nodesplit_page_ui <- function(id) {
       column(
         width = 6,
         p(tags$strong("Inconsistency test with notesplitting model for all studies")),
-        nodesplit_panel_ui(id = ns("all"))
+        nodesplit_panel_ui(id = ns("all"), item_name = "all studies")
       ),
       column(
         width = 6,
         p(tags$strong("Inconsistency test with notesplitting model with studies excluded")),
-        nodesplit_panel_ui(id = ns("sub"))
+        nodesplit_panel_ui(id = ns("sub"), item_name = "the sensitivity analysis")
       )
     )
   )
