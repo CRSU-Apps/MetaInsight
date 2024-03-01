@@ -317,15 +317,68 @@ scat_plot = function(model) {
 }
 
 # Stemplot
-stemplot <- function(model) {
-  x <- mtc.deviance(model$mtcResults)
-  c <- data.frame(x$dev.ab)
-  c$names <- rownames(c)
+stemplot <- function(model, package = "gemtc") {
+  if (package == "gemtc") {
+    x <- mtc.deviance(model$mtcResults)
+    c <- data.frame(x$dev.ab)
+    c$names <- rownames(c)
+  } else if (package == "bnma") {
+    #In gemtc the only element of mtc.deviance(model$mtcResults) that is used in the plot is $dev.ab, so this is the only thing that needs to be passed to x.
+    x <- list(dev.ab = model$deviance$dev_arm)
+    c <- data.frame(x$dev.ab)
+    #The arm-level deviances in bnma are not named, so the study names cannot come from rownames(c) as they do in gemtc.
+    c$names <- unname(model$network$Study.order)
+  } else {
+    stop("package must be 'gemtc' or 'bnma'")
+  }
   return(stemplot.df(c, x))
 }
 
 # Leverage plot
-levplot <- function(model) {
-  x <- mtc.deviance(model$mtcResults)
+levplot <- function(model, package = "gemtc") {
+  if (package == "gemtc") {
+    x <- mtc.deviance(model$mtcResults)
+  } else if (package == "bnma") {
+    #These are the only elements of mtc.deviance(model$mtcResults) that are used in the plot, so these are the only things that needs to be passed to x.
+    x <- list(dev.ab = model$deviance$dev_arm,
+              fit.ab = model$deviance$devtilda_arm,
+              dev.re = NULL,
+              fit.re = NULL,
+              nd.ab = model$network$na,
+              nd.re = NULL
+              )
+  } else {
+    stop("package must be 'gemtc' or 'bnma'")
+  }
   return(levplot.df(x))
+}
+
+
+#' Creates a Gelman plot for a BNMA baseline-risk model.
+#' 
+#' @param gelman_plot Output from coda::gelman.plot(bnma_model$samples[, parm]), where parm is a parameter from 'bnma_model'.
+#' @param parameter The parameter from the previous argument, used as the title.
+#' @return Reproduces the Gelman plot mentioned in @param gelman_plot as a plot that can be put in a grid.
+BnmaGelmanPlot <- function(gelman_plot, parameter){
+  y_vals_median <- gelman_plot$shrink[, , "median"]
+  y_vals_975 <- gelman_plot$shrink[, , "97.5%"]
+  x_vals <- gelman_plot$last.iter
+  
+  plot(x_vals, y_vals_975, type = "l", col = "red", lty = 2, ylab = "shrink factor",
+       xlab = "last iteration in chain", cex.lab = 1.5, cex.main = 1.5, main = parameter)
+  lines(x_vals, y_vals_median, type = "l")
+  lines(c(-max(x_vals)/5, max(x_vals)), c(1, 1))
+  legend("topright", legend = c("median", "97.5%"), lty = c(1, 2), col = c("black", "red"))
+}
+
+
+#' Creates Gelman plots for a BNMA baseline-risk model.
+#' 
+#' @param gelman_plots List of outputs from coda::gelman.plot(bnma_model$samples[, parm]), where parm is a parameter from bnma_model.
+#' @param parameters Vector of parameters mentioned in the previous argument.
+#' @return Plots the Gelman plots mentioned in @param gelman_plots.
+BnmaGelmanPlots <- function(gelman_plots, parameters){
+  for (i in 1:length(parameters)) {
+    BnmaGelmanPlot(gelman_plot = gelman_plots[[i]], parameter = parameters[i])
+  }
 }

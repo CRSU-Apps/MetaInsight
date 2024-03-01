@@ -74,7 +74,7 @@ covariate_treatment_comparisons_page_server <- function(
 #' @param id ID of the module
 #' @param model Reactive containing covariate regression meta-analysis for all studies
 #' @param outcome_measure Reactive containing meta analysis outcome measure: "MD" or "OR"
-baseline_risk_treatment_comparisons_page_server <- function(
+treatment_comparisons_page_baseline_risk_server <- function(
     id,
     model,
     outcome_measure

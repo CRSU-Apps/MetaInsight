@@ -28,6 +28,22 @@ baseline_risk_analysis_panel_ui <- function(id, page_numbering) {
       tabPanel(
         title = "4b-4. Ranking",
         covariate_ranking_page_ui(id = ns("baseline_risk_ranking"))
+      ),
+      tabPanel(
+        title = "4b-5. Nodesplit",
+        covariate_nodesplit_page_ui(id = ns("baseline_risk_nodesplit"), package_name = "bnma")
+      ),
+      tabPanel(
+        title = "4b-6. Result details",
+        result_details_page_ui(id = ns("baseline_risk_result_details"), item_names = c("all studies"))
+      ),
+      tabPanel(
+        title = "4b-7. Deviance report",
+        deviance_report_page_ui(id = ns("baseline_risk_deviance_report"), item_names = c("all studies"))
+      ),
+      tabPanel(
+        title = "4b-8.  Model details",
+        model_details_panel_ui(id = ns("baseline_risk_model_details"), item_names = c("regression analysis"), page_numbering)
       )
     )
   )
@@ -91,13 +107,13 @@ baseline_risk_analysis_panel_server <- function(    id,
     )
     
     # 4b-3 Treatment comparisons
-    baseline_risk_treatment_comparisons_page_server(
+    treatment_comparisons_page_baseline_risk_server(
       id = "baseline_risk_treatment_comparisons",
       model = model_reactive,
       outcome_measure = outcome_measure
     )
     
-    # 4c-4 Ranking Panel
+    # 4b-4 Ranking Panel
     covariate_ranking_page_server(
       id = "baseline_risk_ranking",
       model = model_reactive,
@@ -111,6 +127,18 @@ baseline_risk_analysis_panel_server <- function(    id,
       package = "bnma"
     )
       
+    # 4b-5 Nodesplit model
+    covariate_nodesplit_page_server(id = "baseline_risk_nodesplit")
+    
+    # 4b-6 Result details
+    result_details_page_server(id = "baseline_risk_result_details", models = c(model_reactive), package = "bnma")
+    
+    # 4b-7 Deviance report
+    deviance_report_page_server(id = "baseline_risk_deviance_report", models = c(model_reactive), package = "bnma")
+    
+    # 4c-8 Model details
+    model_details_panel_server(id = "baseline_risk_model_details", models = c(model_reactive), package = "bnma")
+    
     })
 }
 
