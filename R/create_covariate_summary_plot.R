@@ -62,7 +62,8 @@ CreateCovariateSummaryPlot <- function(all_data, metaoutcome, covariate_or_basel
                                covariate.label = plot_settings$y_axis_label,
                                half.length = "baseline_error",
                                by = 'treatment',
-                               text.size = 16)
+                               text.size = 16,
+                               orientation = "portrait")
     
     # Add caption text under plot
     plot <- plot +
@@ -82,7 +83,8 @@ CreateCovariateSummaryPlot <- function(all_data, metaoutcome, covariate_or_basel
                                covariate = plot_settings$covariate,
                                covariate.label = plot_settings$y_axis_label,
                                by = 'treatment',
-                               text.size = 16) 
+                               text.size = 16,
+                               orientation = "portrait") 
     
     # Add caption text under plot
     plot <- plot +
@@ -90,8 +92,9 @@ CreateCovariateSummaryPlot <- function(all_data, metaoutcome, covariate_or_basel
   }
   
   plot <- plot +
-    # Right aligned caption text
-    theme(plot.caption = element_text(hjust = 1)) 
+    theme(plot.caption = element_text(hjust = 1)) + # Right aligned caption text
+    # Centre x-axis text & increase spacing between tick and axis labels
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, margin = margin(b = 10))) 
 
   return(plot)
   

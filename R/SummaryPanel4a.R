@@ -54,7 +54,7 @@ metaregression_summary_panel_server <- function(id, all_data, metaoutcome, treat
                                    )
         
   
-      }, width = calculate_plot_pixel(nrow(all_data()))
+      }, height = calculate_plot_pixel(nrow(all_data()))
       )
     })
 
