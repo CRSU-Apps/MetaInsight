@@ -251,11 +251,11 @@ test_that("BnmaSwitchRanking() works", {
 
 
 test_that("GetBnmaParameters returns the correct parameters", {
-  all_parameters <- c("d[1]", "d[2]", "d[3]", "b_bl[1]", "b_bl[2]", "b_bl[3]", "sd", "sdB", "sd1", "delta[2]", "B_BL[3]")
-  expected_parameters_fixed_shared <- c("d[2]", "d[3]", "b_bl[2]", "b_bl[3]")
-  expected_parameters_random_unrelated <- c("d[2]", "d[3]", "b_bl[2]", "b_bl[3]", "sd")
-  expected_parameters_fixed_exchangeable <- c("d[2]", "d[3]", "b_bl[2]", "b_bl[3]", "sdB")
-  expected_parameters_random_exchangeable <- c("d[2]", "d[3]", "b_bl[2]", "b_bl[3]", "sd", "sdB")
+  all_parameters <- c("d[1]", "d[2]", "d[3]", "d[10]", "b_bl[1]", "b_bl[2]", "b_bl[3]", "sd", "sdB", "sd1", "delta[2]", "B_BL[3]")
+  expected_parameters_fixed_shared <- c("d[2]", "d[3]", "d[10]", "b_bl[2]", "b_bl[3]")
+  expected_parameters_random_unrelated <- c("d[2]", "d[3]", "d[10]", "b_bl[2]", "b_bl[3]", "sd")
+  expected_parameters_fixed_exchangeable <- c("d[2]", "d[3]", "d[10]", "b_bl[2]", "b_bl[3]", "sdB")
+  expected_parameters_random_exchangeable <- c("d[2]", "d[3]", "d[10]", "b_bl[2]", "b_bl[3]", "sd", "sdB")
     
   bnma_parameters_fixed_shared <- GetBnmaParameters(all_parameters = all_parameters,
                                                     effects_type = "fixed",

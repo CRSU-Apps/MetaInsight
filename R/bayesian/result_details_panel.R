@@ -10,7 +10,7 @@ result_details_panel_ui <- function(id, item_name) {
     p(tags$strong(glue::glue("Results details for {item_name}"))),
     verbatimTextOutput(outputId = ns("gemtc_results")),
     p(tags$strong(glue::glue("Gelman convergence assessment plot for {item_name}"))),
-    plotOutput(outputId = ns("gemtc_gelman"))
+    plotOutput(outputId = ns("gemtc_gelman"), inline = TRUE)
   )
 }
 
@@ -65,7 +65,8 @@ result_details_panel_server <- function(id, model, package = "gemtc") {
                  function(parameter){
                    return(coda::gelman.plot(model()$samples[, parameter]))
                  }
-          ))
+          )
+        )
       }
     })
     
@@ -82,7 +83,8 @@ result_details_panel_server <- function(id, model, package = "gemtc") {
         par(mfrow = c(n_rows(), 2))
         return(BnmaGelmanPlots(gelman_plots = gelman_plots(), parameters = parameters()))
       }
-    }, height = reactive(n_rows() * 300)
+    },
+    height = function(){n_rows() * 300}
     )
   })
 }

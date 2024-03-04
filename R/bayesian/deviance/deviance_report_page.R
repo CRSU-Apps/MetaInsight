@@ -30,7 +30,7 @@ deviance_report_page_ui <- function(id, item_names) {
     conditionalPanel(
       condition = "output.model_type != 'consistency'",
       ns = ns,
-      h4(tags$strong("PLEASE NOTE: the", textOutput(ns("package"), inline = TRUE), "package does not currently include unrelated-mean-effects meta-regression models, therefore the"), tags$strong(tags$em(" consistency vs UME ")), tags$strong("graph that is displayed in tab 3f is not available here."))
+      h4(tags$strong("PLEASE NOTE: the", textOutput(ns("package"), inline = TRUE), "package does not currently include unrelated-mean-effects meta-regression models, therefore the"), tags$strong(tags$em(" consistency vs UME ")), tags$strong("graph that is displayed in the ", tags$code("deviance report"), " tab under ", tags$code("Bayesian network meta-analysis"), " is not available here."))
     ),
     
     conditionalPanel(
@@ -53,7 +53,7 @@ deviance_report_page_ui <- function(id, item_names) {
       ),
       
       p(
-        "This plot represents each data points' contribution to the residual deviance for the
+        "This plot represents each data point's contribution to the residual deviance for the
         NMA with consistency (horizontal axis) and the unrelated mean effect (ume) inconsistency models
         (vertical axis) along with the line of equality. The points on the equality line means there is no
         improvement in model fit when using the inconsistency model, suggesting that there is no evidence of inconsistency.
@@ -142,16 +142,16 @@ deviance_report_page_ui <- function(id, item_names) {
 deviance_report_page_server <- function(id, models, package = "gemtc") {
   moduleServer(id, function(input, output, session) {
 
-    output$package <- reactive(package)
+    output$package <- reactive(paste0("{", package, "}"))
     outputOptions(x = output, name = "package", suspendWhenHidden = FALSE)
     
-    output$model_type <- reactive(
+    output$model_type <- reactive({
       if (package == "gemtc") {
         return(models[[1]]()$mtcResults$model$type)
       } else if (package == "bnma") {
         return("baseline risk")
       }
-    )
+    })
     outputOptions(x = output, name = "model_type", suspendWhenHidden = FALSE)
     
     # Create server for each model

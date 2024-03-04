@@ -134,15 +134,15 @@ model_details_panel_server <- function(id, models, package = "gemtc") {
     )
     
     # 3g-2 Initial values
-    inits <- reactive(
+    inits <- reactive({
       if (package == "gemtc") {
         return(main_model()$mtcResults$model$inits)
       } else if (package == "bnma") {
         return(main_model()$inits)
       }
-    )
+    })
     
-    output$inits <- renderPrint(inits())
+    output$inits <- renderPrint({inits()})
 
     #' Create a download handler for the initial values for a given chain
     #'
@@ -174,13 +174,13 @@ model_details_panel_server <- function(id, models, package = "gemtc") {
 
     # 3g-3 Chain data.
 
-    samples <- reactive(
+    samples <- reactive({
       if (package == "gemtc") {
         return(main_model()$mtcResults$samples)
       } else if (package == "bnma") {
         return(main_model()$samples)
       }
-    )
+    })
     
     #' Create a download handler for the data for a given chain
     #'
@@ -205,13 +205,13 @@ model_details_panel_server <- function(id, models, package = "gemtc") {
 
     # 3g-4 Output deviance
     
-    model_type <- reactive(
+    model_type <- reactive({
       if (package == "gemtc") {
         return(main_model()$mtcResults$model$type)
       } else if (package == "bnma") {
         return("baseline risk")
       }
-    )
+    })
     
     output$model_type <- reactive(model_type())
     outputOptions(x = output, name = "model_type", suspendWhenHidden = FALSE)

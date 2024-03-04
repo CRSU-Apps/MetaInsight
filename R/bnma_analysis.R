@@ -188,7 +188,7 @@ BnmaSwitchRanking <- function(ranking_table){
 #' @return Vector of treatment effect and covariate parameter names, plus random effects sd and/or exchangeable covariate sd.
 GetBnmaParameters <- function(all_parameters, effects_type, cov_parameters){
   #Extract parameters which begin with "d[" or "b_bl[", except d[1] and b_bl[1]
-  parameters <- grep("(d|b_bl)\\[[2-9][0-9]*",
+  parameters <- grep("(d|b_bl)\\[([0-9][0-9]+|[2-9])\\]",
                      all_parameters,
                      value = TRUE)
   if (effects_type == "random") {
