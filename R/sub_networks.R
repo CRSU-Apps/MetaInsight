@@ -24,8 +24,12 @@
 #'
 #' @param data Data frame containing all of the studies for binary or continuous outcomes, and wide or long format.
 #' @param treatment_df Data frame containing the names ("Label") and IDs ("Number") of the treatments.
-#' @param reference_treatment ID of the reference treatment if applicable. Defaults to 1.
+#' @param reference_treatment_name The name of the reference treatment. If not specified, then defaults to treatment with "Number" 1 in treatment_df.
 #' @param subnet_name_prefix Names of the subnetworks. Defaults to "subnet_"
+#'
+#' @return List of subnetworks, where each subnetwork is a list containing:
+#' - "treatments" = The IDs of the treatments included in the given network
+#' - "studies" = The names of the studies included in the given subnetwork
 IdentifySubNetworks <- function(data, treatment_df, reference_treatment_name = NULL, subnet_name_prefix = "subnet_") {
   if (is.null(reference_treatment_name)) {
     reference_treatment <- 1
