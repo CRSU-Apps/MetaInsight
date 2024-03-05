@@ -22,27 +22,27 @@ baseline_risk_analysis_panel_ui <- function(id, page_numbering) {
         )
       ),
       tabPanel(
-        title = "4b-3. Comparison of all treatment pairs",
+        title = paste0(page_numbering$AddChild(), " Comparison of all treatment pairs"),
         covariate_treatment_comparisons_page_ui(id = ns("baseline_risk_treatment_comparisons"))
       ),
       tabPanel(
-        title = "4b-4. Ranking",
+        title = paste0(page_numbering$AddChild(), " Ranking"),
         covariate_ranking_page_ui(id = ns("baseline_risk_ranking"))
       ),
       tabPanel(
-        title = "4b-5. Nodesplit",
+        title = paste0(page_numbering$AddChild(), " Nodesplit"),
         covariate_nodesplit_page_ui(id = ns("baseline_risk_nodesplit"), package_name = "bnma")
       ),
       tabPanel(
-        title = "4b-6. Result details",
+        title = paste0(page_numbering$AddChild(), " Result details"),
         result_details_page_ui(id = ns("baseline_risk_result_details"), item_names = c("all studies"))
       ),
       tabPanel(
-        title = "4b-7. Deviance report",
+        title = paste0(page_numbering$AddChild(), " Deviance report"),
         deviance_report_page_ui(id = ns("baseline_risk_deviance_report"), item_names = c("all studies"))
       ),
       tabPanel(
-        title = "4b-8.  Model details",
+        title = paste0(page_numbering$AddChild(), " Model details"),
         model_details_panel_ui(id = ns("baseline_risk_model_details"), item_names = c("regression analysis"), page_numbering)
       )
     )
