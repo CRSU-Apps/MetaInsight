@@ -179,3 +179,27 @@ BnmaSwitchRanking <- function(ranking_table){
   return(as.matrix(dplyr::select(new_table, !"new_ranks")))
 }
                             
+
+#' Get the parameters that are to be displayed in Gelman plots.
+#' 
+#' @param all_parameters Vector of monitored parameters from a bnma model.
+#' @param effects_type "fixed" or "random".
+#' @param cov_parameters "shared", "exchangeable", or "unrelated".
+#' @return Vector of treatment effect and covariate parameter names, plus random effects sd and/or exchangeable covariate sd.
+GetBnmaParameters <- function(all_parameters, effects_type, cov_parameters){
+  #Extract parameters which begin with "d[" or "b_bl[", except d[1] and b_bl[1]
+  parameters <- grep("(d|b_bl)\\[([0-9][0-9]+|[2-9])\\]",
+                     all_parameters,
+                     value = TRUE)
+  if (effects_type == "random") {
+    parameters <- c(parameters, "sd")
+  } else if (effects_type != "fixed") {
+    stop("effects_type must be 'fixed' or 'random'")
+  }
+  if (cov_parameters == "exchangeable") {
+    parameters <- c(parameters, "sdB")
+  } else if (!cov_parameters %in% c("shared", "unrelated")) {
+    stop("cov_parameters must be 'shared', 'exchangeable' or 'unrelated'")
+  }
+  return(parameters)
+}

@@ -41,7 +41,8 @@ result_details_page_ui <- function(id, item_names) {
 #' 
 #' @param id ID of the module
 #' @param models Vector of reactives containing bayesian meta-analyses.
-result_details_page_server <- function(id, models) {
+#' @param package "gemtc" (default) or "bnma".
+result_details_page_server <- function(id, models, package = "gemtc") {
   moduleServer(id, function(input, output, session) {
     # Create server for each model
     index <- 0
@@ -50,7 +51,8 @@ result_details_page_server <- function(id, models) {
       function(mod) {
         serv <- result_details_panel_server(
           id = as.character(index),
-          model = mod
+          model = mod,
+          package = package
         )
         # Update the index variable in the outer scope with <<-
         # This updates the variable defined above the `sapply` call instead of creating a new variable with the same name within this inner function
@@ -60,3 +62,4 @@ result_details_page_server <- function(id, models) {
     )
   })
 }
+

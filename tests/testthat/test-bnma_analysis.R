@@ -247,3 +247,31 @@ test_that("BnmaSwitchRanking() works", {
   
   expect_equal(BnmaSwitchRanking(ranking_table), expected_table)
 })
+
+
+
+test_that("GetBnmaParameters returns the correct parameters", {
+  all_parameters <- c("d[1]", "d[2]", "d[3]", "d[10]", "b_bl[1]", "b_bl[2]", "b_bl[3]", "sd", "sdB", "sd1", "delta[2]", "B_BL[3]")
+  expected_parameters_fixed_shared <- c("d[2]", "d[3]", "d[10]", "b_bl[2]", "b_bl[3]")
+  expected_parameters_random_unrelated <- c("d[2]", "d[3]", "d[10]", "b_bl[2]", "b_bl[3]", "sd")
+  expected_parameters_fixed_exchangeable <- c("d[2]", "d[3]", "d[10]", "b_bl[2]", "b_bl[3]", "sdB")
+  expected_parameters_random_exchangeable <- c("d[2]", "d[3]", "d[10]", "b_bl[2]", "b_bl[3]", "sd", "sdB")
+    
+  bnma_parameters_fixed_shared <- GetBnmaParameters(all_parameters = all_parameters,
+                                                    effects_type = "fixed",
+                                                    cov_parameters = "shared")
+  bnma_parameters_random_unrelated <- GetBnmaParameters(all_parameters = all_parameters,          
+                                                        effects_type = "random",
+                                                        cov_parameters = "unrelated")
+  bnma_parameters_fixed_exchangeable <- GetBnmaParameters(all_parameters = all_parameters,
+                                                          effects_type = "fixed",
+                                                          cov_parameters = "exchangeable")
+  bnma_parameters_random_exchangeable <- GetBnmaParameters(all_parameters = all_parameters,
+                                                           effects_type = "random",
+                                                           cov_parameters = "exchangeable")
+  
+  expect_equal(expected_parameters_fixed_shared, bnma_parameters_fixed_shared)
+  expect_equal(expected_parameters_random_unrelated, bnma_parameters_random_unrelated)
+  expect_equal(expected_parameters_fixed_exchangeable, bnma_parameters_fixed_exchangeable)
+  expect_equal(expected_parameters_random_exchangeable, bnma_parameters_random_exchangeable)
+})

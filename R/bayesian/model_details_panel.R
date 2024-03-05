@@ -79,16 +79,20 @@ model_details_panel_ui <- function(id, item_names, page_numbering) {
         ),
       
         # This is the way to get a dynamic number of columns rendered into the row
-        do.call(
-          fluidRow,
-          lapply(
-            item_names,
-            function(name) {
-              column(
-                width = 12 / length(item_names),
-                divs["inconsistency", name]
-              )
-            }
+        conditionalPanel(
+          condition = "output.model_type == 'consistency'",
+          ns = ns,
+          do.call(
+            fluidRow,
+            lapply(
+              item_names,
+              function(name) {
+                column(
+                  width = 12 / length(item_names),
+                  divs["inconsistency", name]
+                )
+              }
+            )
           )
         )
       )
@@ -106,7 +110,8 @@ model_details_panel_ui <- function(id, item_names, page_numbering) {
 #' @param id ID of the module
 #' @param model Reactive containing bayesian meta-analysis for all studies
 #' @param model_sub Reactive containing meta-analysis with studies excluded
-model_details_panel_server <- function(id, models) {
+#' @param package "gemtc" (default) or "bnma".
+model_details_panel_server <- function(id, models, package = "gemtc") {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
     
@@ -114,7 +119,11 @@ model_details_panel_server <- function(id, models) {
 
     # 3g-1 Model codes
     output$code <- renderPrint({
-      cat(main_model()$mtcResults$model$code, fill = FALSE, labels = NULL, append = FALSE)
+      if (package == "gemtc") {
+        return(cat(main_model()$mtcResults$model$code, fill = FALSE, labels = NULL, append = FALSE))
+      } else if (package == "bnma") {
+        return(cat(main_model()$network$code, fill = FALSE, labels = NULL, append = FALSE))
+      }
     })
 
     output$download_code <- downloadHandler(
@@ -123,11 +132,17 @@ model_details_panel_server <- function(id, models) {
         file.copy("./codes.txt", file)
       }
     )
-
+    
     # 3g-2 Initial values
-    output$inits <- renderPrint({
-      main_model()$mtcResults$model$inits
+    inits <- reactive({
+      if (package == "gemtc") {
+        return(main_model()$mtcResults$model$inits)
+      } else if (package == "bnma") {
+        return(main_model()$inits)
+      }
     })
+    
+    output$inits <- renderPrint({inits()})
 
     #' Create a download handler for the initial values for a given chain
     #'
@@ -135,12 +150,13 @@ model_details_panel_server <- function(id, models) {
     #' @return The created download handler
     create_chain_initial_data_download_handler <- function(index) {
       filename <- paste0("initialvalues_chain", index, ".txt")
+      
       return(
         downloadHandler(
           filename = filename,
           content = function(file) {
             lapply(
-              main_model()$mtcResults$model$inits[[index]],
+              inits(),
               write,
               file,
               append = TRUE,
@@ -158,6 +174,14 @@ model_details_panel_server <- function(id, models) {
 
     # 3g-3 Chain data.
 
+    samples <- reactive({
+      if (package == "gemtc") {
+        return(main_model()$mtcResults$samples)
+      } else if (package == "bnma") {
+        return(main_model()$samples)
+      }
+    })
+    
     #' Create a download handler for the data for a given chain
     #'
     #' @param index the Index of the chain
@@ -167,7 +191,7 @@ model_details_panel_server <- function(id, models) {
         downloadHandler(
           filename = paste0("data_for_chain_", index, ".csv"),
           content = function(file) {
-            data <- as.data.frame(main_model()$mtcResults$samples[[index]])
+            data <- as.data.frame(samples()[[index]])
             write.csv(data, file)
           }
         )
@@ -181,6 +205,17 @@ model_details_panel_server <- function(id, models) {
 
     # 3g-4 Output deviance
     
+    model_type <- reactive({
+      if (package == "gemtc") {
+        return(main_model()$mtcResults$model$type)
+      } else if (package == "bnma") {
+        return("baseline risk")
+      }
+    })
+    
+    output$model_type <- reactive(model_type())
+    outputOptions(x = output, name = "model_type", suspendWhenHidden = FALSE)
+    
     # Create server for each model
     index <- 0
     sapply(
@@ -188,18 +223,26 @@ model_details_panel_server <- function(id, models) {
       function(mod) {
         # NMA consistency model
         output[[glue::glue("dev_{index}")]] <- renderPrint({
-          mtc.deviance({mod()$mtcResults})
+          if (package == "gemtc") {
+            return(mtc.deviance({mod()$mtcResults}))
+          } else if (package == "bnma") {
+            return(mod()$deviance)
+          }
         })
         
         # UME inconsistency model
         output[[glue::glue("dev_ume_{index}")]] <- renderText({
-          printed_output <- capture.output(scat_plot(mod())$y)
-          
-          # Strip out progress bars
-          progress_bar_lines <- grep("^(\\s*\\|\\s+\\|(\\+|\\*)*?\\s*\\|\\s+[0-9]+%)+$", printed_output)
-          printed_output <- printed_output[-progress_bar_lines]
-          
-          return(paste0(printed_output, collapse = "\n"))
+          if (model_type() != "consistency") {
+            return(NULL)
+          } else {
+            printed_output <- capture.output(scat_plot(mod())$y)
+            
+            # Strip out progress bars
+            progress_bar_lines <- grep("^(\\s*\\|\\s+\\|(\\+|\\*)*?\\s*\\|\\s+[0-9]+%)+$", printed_output)
+            printed_output <- printed_output[-progress_bar_lines]
+            
+            return(paste0(printed_output, collapse = "\n"))
+          }
         })
         
         index <<- index + 1
@@ -207,3 +250,4 @@ model_details_panel_server <- function(id, models) {
     )
   })
 }
+

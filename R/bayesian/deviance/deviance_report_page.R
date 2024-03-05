@@ -26,36 +26,47 @@ deviance_report_page_ui <- function(id, item_names) {
       "Please note: if you change the selections on the sidebar,
       you will need to re-run the primary and/or sensitivity analysis from the 'Forest Plot' page."
     ),
-    p(tags$strong("Deviance report for all studies and the sensitivity analysis")),
     
-    # This is the way to get a dynamic number of columns rendered into the row
-    do.call(
-      fluidRow,
-      lapply(
-        item_names,
-        function(name) {
-          column(
-            width = 12 / length(item_names),
-            divs["residual", name]
-          )
-        }
-      )
+    conditionalPanel(
+      condition = "output.model_type != 'consistency'",
+      ns = ns,
+      h4(tags$strong("PLEASE NOTE: the", textOutput(ns("package"), inline = TRUE), "package does not currently include unrelated-mean-effects meta-regression models, therefore the"), tags$strong(tags$em(" consistency vs UME ")), tags$strong("graph that is displayed in the ", tags$code("deviance report"), " tab under ", tags$code("Bayesian network meta-analysis"), " is not available here."))
     ),
     
-    p(
-      "This plot represents each data points' contribution to the residual deviance for the
-      NMA with consistency (horizontal axis) and the unrelated mean effect (ume) inconsistency models
-      (vertical axis) along with the line of equality. The points on the equality line means there is no
-      improvement in model fit when using the inconsistency model, suggesting that there is no evidence of inconsistency.
-      Points above the equality line means they have a smaller residual deviance for the consistency model indicating a
-      better fit in the NMA consistency model and points below the equality line
-      means they have a better fit in the ume inconsistency model. Please note that the unrelated mean effects model
-      may not handle multi-arm trials correctly. (Further reading: Dias S, Ades AE, Welton NJ, Jansen JP, Sutton AJ. Network meta-anlaysis for
-      decision-making. Chapter 3 Model fit, model comparison and outlier detection. @2018 John Wiley & Sons Ltd.)"
+    conditionalPanel(
+      condition = "output.model_type == 'consistency'",
+      ns = ns,
+      p(tags$strong("Deviance report for all studies and the sensitivity analysis")),
+      
+      # This is the way to get a dynamic number of columns rendered into the row
+      do.call(
+        fluidRow,
+        lapply(
+          item_names,
+          function(name) {
+            column(
+              width = 12 / length(item_names),
+              divs["residual", name]
+            )
+          }
+        )
+      ),
+      
+      p(
+        "This plot represents each data point's contribution to the residual deviance for the
+        NMA with consistency (horizontal axis) and the unrelated mean effect (ume) inconsistency models
+        (vertical axis) along with the line of equality. The points on the equality line means there is no
+        improvement in model fit when using the inconsistency model, suggesting that there is no evidence of inconsistency.
+        Points above the equality line means they have a smaller residual deviance for the consistency model indicating a
+        better fit in the NMA consistency model and points below the equality line
+        means they have a better fit in the ume inconsistency model. Please note that the unrelated mean effects model
+        may not handle multi-arm trials correctly. (Further reading: Dias S, Ades AE, Welton NJ, Jansen JP, Sutton AJ. Network meta-anlaysis for
+        decision-making. Chapter 3 Model fit, model comparison and outlier detection. @2018 John Wiley & Sons Ltd.)"
+      ),
+      br(),
+      br(),
+      br()
     ),
-    br(),
-    br(),
-    br(),
     
     # This is the way to get a dynamic number of columns rendered into the row
     do.call(
@@ -127,14 +138,28 @@ deviance_report_page_ui <- function(id, item_names) {
 #' 
 #' @param id ID of the module
 #' @param models Vector of reactives containing bayesian meta-analyses.
-deviance_report_page_server <- function(id, models) {
+#' @param package "gemtc" (default) or "bnma".
+deviance_report_page_server <- function(id, models, package = "gemtc") {
   moduleServer(id, function(input, output, session) {
+
+    output$package <- reactive(paste0("{", package, "}"))
+    outputOptions(x = output, name = "package", suspendWhenHidden = FALSE)
+    
+    output$model_type <- reactive({
+      if (package == "gemtc") {
+        return(models[[1]]()$mtcResults$model$type)
+      } else if (package == "bnma") {
+        return("baseline risk")
+      }
+    })
+    outputOptions(x = output, name = "model_type", suspendWhenHidden = FALSE)
+    
     # Create server for each model
     index <- 0
     sapply(
       models,
       function(mod) {
-        deviance_report_panel_server(id = as.character(index), model = mod)
+        deviance_report_panel_server(id = as.character(index), model = mod, package = package)
         # Update the index variable in the outer scope with <<-
         # This updates the variable defined above the `sapply` call instead of creating a new variable with the same name within this inner function
         index <<- index + 1
@@ -142,3 +167,4 @@ deviance_report_page_server <- function(id, models) {
     )
   })
 }
+
