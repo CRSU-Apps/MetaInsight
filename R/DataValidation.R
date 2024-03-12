@@ -39,6 +39,15 @@ ValidateUploadedData <- function(data, outcome_type) {
   return(.valid_result)
 }
 
+#' Validate that there are no missing columns in the data.
+#'
+#' @param data Data frame to validate.
+#' @param required_columns Data frame containing data definitions.
+#' @param outcome_type Outcome type selected for the data. Either "Binary" or "Continuous".
+#'
+#' @return Validation result in the form of a list:
+#' - "valid" = TRUE or FALSE defining whether data is valid
+#' - "message" = String describing any issues causing the data to be invalid
 .ValidateMissingColumns <- function(data, required_columns, outcome_type) {
   missing_names <- .FindMissingColumns(data, required_columns)
   
@@ -79,6 +88,14 @@ ValidateUploadedData <- function(data, outcome_type) {
   )
 }
 
+#' Validate that numbered columns in the data are seqential from 1.
+#'
+#' @param data Data frame to validate.
+#' @param required_columns Data frame containing data definitions.
+#'
+#' @return Validation result in the form of a list:
+#' - "valid" = TRUE or FALSE defining whether data is valid
+#' - "message" = String describing any issues causing the data to be invalid
 .ValidateNumberedColumns <- function(data, required_columns) {
   numbered_columns <- required_columns %>%
     dplyr::filter(!is.na(number_group))
@@ -151,6 +168,14 @@ ValidateUploadedData <- function(data, outcome_type) {
   return(all(sequentials))
 }
 
+#' Validate that all columns in the data are of the expected type.
+#'
+#' @param data Data frame to validate.
+#' @param outcome_columns Data frame containing data definitions.
+#'
+#' @return Validation result in the form of a list:
+#' - "valid" = TRUE or FALSE defining whether data is valid
+#' - "message" = String describing any issues causing the data to be invalid
 .ValidateColumnTypes <- function(data, outcome_columns) {
   mistyped_columns <- .FindMistypedColumns(data, outcome_columns)
   
@@ -166,6 +191,12 @@ ValidateUploadedData <- function(data, outcome_type) {
   return(.valid_result)
 }
 
+#' Identify any columns which are not of the expected type.
+#'
+#' @param data Data frame to validate.
+#' @param outcome_columns Data frame containing data definitions.
+#'
+#' @return A vector of column titles which contain data of the wrong type.
 .FindMistypedColumns <- function(data, outcome_columns) {
   mistyped_columns = c()
   sapply(

@@ -1,7 +1,7 @@
 
 test_that("Continuous data registered as initially not uploaded", {
   testServer(data_input_panel_server, {
-    session$setInputs(metaoutcome = 'Continuous')
+    session$setInputs(metaoutcome = "Continuous")
     
     expect_false(data_uploaded())
   })
@@ -9,16 +9,16 @@ test_that("Continuous data registered as initially not uploaded", {
 
 test_that("Continuous data registered as uploaded on upload", {
   testServer(data_input_panel_server, {
-    session$setInputs(metaoutcome = 'Continuous')
+    session$setInputs(metaoutcome = "Continuous")
     
-    session$setInputs(data = data.frame(datapath = 'Cont_long.csv'))
+    session$setInputs(data = data.frame(datapath = "data/Cont_long.csv"))
     expect_true(data_uploaded())
   })
 })
 
 test_that("Treatments extracted from default continuous file", {
   testServer(data_input_panel_server, {
-    session$setInputs(metaoutcome = 'Continuous')
+    session$setInputs(metaoutcome = "Continuous")
     
     treatment_df <- data.frame(Number = seq(6),
                                Label = c('the Great','the Younger','the Dung-named','the Little','the Butcher','the Slit-nosed'))
@@ -29,7 +29,7 @@ test_that("Treatments extracted from default continuous file", {
 
 test_that("Treatments reordered from default continuous file when reference selected", {
   testServer(data_input_panel_server, {
-    session$setInputs(metaoutcome = 'Continuous')
+    session$setInputs(metaoutcome = "Continuous")
     
     session$setInputs(reference_treatment = 'the Dung-named')
     treatment_df <- data.frame(Number = seq(6),
@@ -41,7 +41,7 @@ test_that("Treatments reordered from default continuous file when reference sele
 
 test_that("Data extracted from default continuous file", {
   testServer(data_input_panel_server, {
-    session$setInputs(metaoutcome = 'Continuous')
+    session$setInputs(metaoutcome = "Continuous")
     
     expect_equal(colnames(data()), c('Study', 'T', 'N', 'Mean', 'SD'),
                  label = format_vector_to_string(colnames(data())))
@@ -62,7 +62,7 @@ test_that("Data extracted from default continuous file", {
 
 test_that("Continuous data passed back to module parent", {
   testServer(data_input_panel_server, {
-    session$setInputs(metaoutcome = 'Continuous')
+    session$setInputs(metaoutcome = "Continuous")
     
     expect_equal(length(session$returned), 4)
     expect_equal(session$returned$data(), data())
@@ -74,10 +74,10 @@ test_that("Continuous data passed back to module parent", {
 
 test_that("Continuous long data matches between .csv and .xlsx files", {
   testServer(data_input_panel_server, {
-    session$setInputs(data = data.frame(datapath = 'Cont_long.csv'), metaoutcome = 'Continuous')
+    session$setInputs(data = data.frame(datapath = "data/Cont_long.csv"), metaoutcome = "Continuous")
     csv_data = data()
     
-    session$setInputs(data = data.frame(datapath = 'Cont_long.xlsx'))
+    session$setInputs(data = data.frame(datapath = "data/Cont_long.xlsx"))
     xlsx_data = data()
     
     expect_equal(xlsx_data, csv_data)
@@ -86,10 +86,10 @@ test_that("Continuous long data matches between .csv and .xlsx files", {
 
 test_that("Continuous wide data matches between .csv and .xlsx files", {
   testServer(data_input_panel_server, {
-    session$setInputs(data = data.frame(datapath = 'Cont_wide.csv'), metaoutcome = 'Continuous')
+    session$setInputs(data = data.frame(datapath = "data/Cont_wide.csv"), metaoutcome = "Continuous")
     csv_data = data()
     
-    session$setInputs(data = data.frame(datapath = 'Cont_wide.xlsx'))
+    session$setInputs(data = data.frame(datapath = "data/Cont_wide.xlsx"))
     xlsx_data = data()
     
     expect_equal(xlsx_data, csv_data)
@@ -98,7 +98,7 @@ test_that("Continuous wide data matches between .csv and .xlsx files", {
 
 test_that("Binary data registered as initially not uploaded", {
   testServer(data_input_panel_server, {
-    session$setInputs(metaoutcome = 'Binary')
+    session$setInputs(metaoutcome = "Binary")
     
     expect_false(data_uploaded())
   })
@@ -106,16 +106,16 @@ test_that("Binary data registered as initially not uploaded", {
 
 test_that("Binary data registered as uploaded on upload", {
   testServer(data_input_panel_server, {
-    session$setInputs(metaoutcome = 'Binary')
+    session$setInputs(metaoutcome = "Binary")
     
-    session$setInputs(data = data.frame(datapath = 'Binary_long.csv'))
+    session$setInputs(data = data.frame(datapath = "data/Binary_long.csv"))
     expect_true(data_uploaded())
   })
 })
 
 test_that("Treatments extracted from default binary file", {
   testServer(data_input_panel_server, {
-    session$setInputs(metaoutcome = 'Binary')
+    session$setInputs(metaoutcome = "Binary")
     
     treatment_df <- data.frame(Number = seq(6),
                                Label = c('the Great','the Younger','the Dung-named','the Little','the Butcher','the Slit-nosed'))
@@ -126,7 +126,7 @@ test_that("Treatments extracted from default binary file", {
 
 test_that("Treatments reordered from default binary file when reference selected", {
   testServer(data_input_panel_server, {
-    session$setInputs(metaoutcome = 'Binary')
+    session$setInputs(metaoutcome = "Binary")
     
     session$setInputs(reference_treatment = 'the Dung-named')
     treatment_df <- data.frame(Number = seq(6),
@@ -138,7 +138,7 @@ test_that("Treatments reordered from default binary file when reference selected
 
 test_that("Data extracted from default binary file", {
   testServer(data_input_panel_server, {
-    session$setInputs(metaoutcome = 'Binary')
+    session$setInputs(metaoutcome = "Binary")
     
     expect_equal(colnames(data()), c('Study', 'T', 'R', 'N'),
                  label = format_vector_to_string(colnames(data())))
@@ -157,7 +157,7 @@ test_that("Data extracted from default binary file", {
 
 test_that("Binary data passed back to module parent", {
   testServer(data_input_panel_server, {
-    session$setInputs(metaoutcome = 'Binary')
+    session$setInputs(metaoutcome = "Binary")
     
     expect_equal(length(session$returned), 4)
     expect_equal(session$returned$data(), data())
@@ -169,10 +169,10 @@ test_that("Binary data passed back to module parent", {
 
 test_that("Binary long data matches between .csv and .xlsx files", {
   testServer(data_input_panel_server, {
-    session$setInputs(data = data.frame(datapath = 'Binary_long.csv'), metaoutcome = 'Binary')
+    session$setInputs(data = data.frame(datapath = "data/Binary_long.csv"), metaoutcome = "Binary")
     csv_data = data()
     
-    session$setInputs(data = data.frame(datapath = 'Binary_long.xlsx'))
+    session$setInputs(data = data.frame(datapath = "data/Binary_long.xlsx"))
     xlsx_data = data()
     
     expect_equal(xlsx_data, csv_data)
@@ -181,10 +181,10 @@ test_that("Binary long data matches between .csv and .xlsx files", {
 
 test_that("Binary wide data matches between .csv and .xlsx files", {
   testServer(data_input_panel_server, {
-    session$setInputs(data = data.frame(datapath = 'Binary_wide.csv'), metaoutcome = 'Binary')
+    session$setInputs(data = data.frame(datapath = "data/Binary_wide.csv"), metaoutcome = "Binary")
     csv_data = data()
     
-    session$setInputs(data = data.frame(datapath = 'Binary_wide.xlsx'))
+    session$setInputs(data = data.frame(datapath = "data/Binary_wide.xlsx"))
     xlsx_data = data()
     
     expect_equal(xlsx_data, csv_data)

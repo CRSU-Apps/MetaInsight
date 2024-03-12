@@ -31,7 +31,7 @@ test_that("Data wrangled from default continuous long file", {
 
 test_that("Continuous wide data wrangled with treatment IDs", {
   testServer(load_data_page_server, {
-    session$setInputs("data_input_panel-metaoutcome" = 'Continuous', "data_input_panel-data" = list(datapath = 'Cont_wide.csv'))
+    session$setInputs("data_input_panel-metaoutcome" = 'Continuous', "data_input_panel-data" = list(datapath = "data/Cont_wide.csv"))
     
     expect_equal(wrangled_data()$StudyID, c(1, 2, 3),
                  label = format_vector_to_string(wrangled_data()$StudyID))
@@ -119,7 +119,7 @@ test_that("Data wrangled from default binary long file", {
 
 test_that("Binary wide data wrangled with treatment IDs", {
   testServer(load_data_page_server, {
-    session$setInputs("data_input_panel-metaoutcome" = 'Binary', "data_input_panel-data" = list(datapath = 'Binary_wide.csv'))
+    session$setInputs("data_input_panel-metaoutcome" = 'Binary', "data_input_panel-data" = list(datapath = "data/Binary_wide.csv"))
     
     expect_equal(wrangled_data()$StudyID, c(1, 2, 3),
                  label = format_vector_to_string(wrangled_data()$StudyID))

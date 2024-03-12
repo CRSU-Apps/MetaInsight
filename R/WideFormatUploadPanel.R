@@ -80,6 +80,6 @@ wide_format_upload_panel_server <- function(id, metaoutcome) {
     output$metaoutcome <- reactive({ metaoutcome() })
     shiny::outputOptions(output, "metaoutcome", suspendWhenHidden = FALSE)
     
-    output$downloadDataWide <- create_raw_data_download_handler(metaoutcome, "MetaInsightdataWIDE.csv", "Cont_wide.csv", "Binary_wide.csv")
+    output$downloadDataWide <- create_raw_data_download_handler(metaoutcome, "MetaInsightdataWIDE.csv", "data/Cont_wide.csv", "data/Binary_wide.csv")
   })
 }
