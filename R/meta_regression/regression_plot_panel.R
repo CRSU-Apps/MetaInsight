@@ -112,19 +112,34 @@ regression_plot_panel_ui <- function(id) {
       div(
         id = ns("contribution_options"),
         radioButtons(
-          inputId = ns("contribution_toggle"),
+          inputId = ns("absolute_relative_toggle"),
           label = "Study circle sized by:",
           choiceNames = list(
-            div(
+            .AddTooltip(
               tags$html("% Contribution", tags$i(class="fa-regular fa-circle-question")),
-              title = "Circles scaled by percentage contribution of each study to each treatment regression"
+              tooltip = "Circles scaled by percentage contribution of each study to each treatment regression"
             ),
-            div(
-              tags$html("Inverse Variance", tags$i(class="fa-regular fa-circle-question")),
-              title = "Circles scaled by inverse variance of each study"
+            .AddTooltip(
+              tags$html("Absolute contribution", tags$i(class="fa-regular fa-circle-question")),
+              tooltip = "Circles scaled by absolute contribution of each study"
             )
           ),
-          choiceValues = c("percentage", "inverse variance")
+          choiceValues = c("percentage", "absolute")
+        ),
+        radioButtons(
+          inputId = ns("contribution_weight_toggle"),
+          label = "Contribution type:",
+          choiceNames = list(
+            .AddTooltip(
+              tags$html("Contribution", tags$i(class="fa-regular fa-circle-question")),
+              tooltip = "Circles scaled by total contribution to the regression; both the weight and the value are taken into account"
+            ),
+            .AddTooltip(
+              tags$html("Weight", tags$i(class="fa-regular fa-circle-question")),
+              tooltip = "Circles scaled by weight of each study; this does not take into account how much this study affects the regression"
+            )
+          ),
+          choiceValues = c("contribution", "weight")
         ),
         .AddTooltip(
           numericInput(
@@ -212,8 +227,19 @@ regression_plot_panel_server <- function(id, model_output, treatment_df, outcome
       shinyjs::toggleState(id = "contribution_options", condition = input$contributions)
     })
     
-    contribution_type <- reactive({
-      input$contribution_toggle
+    contribution_matrix <- reactive({
+      contribution_matrix <- CreateContributionMatrix(
+        # data = data(),
+        treatment_ids = treatment_df(),
+        # outcome_type = outcome_type(),
+        outcome_measure = outcome_type(), # outcome_measure,
+        effects_type = model_output()$model,
+        cov_parameters = model_output()$mtcResults$model$regressor$coefficient,
+        study_or_comparison_level = "study",
+        absolute_or_percentage = input$absolute_relative_toggle,
+        weight_or_contribution = input$contribution_weight_toggle,
+        full_output = FALSE
+      )
     })
     
     output$regression_plot <- renderPlot({
@@ -228,7 +254,7 @@ regression_plot_panel_server <- function(id, model_output, treatment_df, outcome
         treatment_df = treatment_df(),
         outcome_type = outcome_type(),
         comparators = comparators,
-        contribution_type = contribution_type(),
+        contribution_type = input$absolute_relative_toggle,
         include_covariate = input$covariate,
         include_ghosts = input$ghosts,
         include_extrapolation = input$extrapolate,
