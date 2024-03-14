@@ -93,7 +93,9 @@ baseline_risk_analysis_panel_server <- function(    id,
     #Warn if the model did not converge
     output$convergence_warning <- renderText({
         ifelse(model_reactive()$max.gelman > 1.05,
-               "<b><h3> Warning: Model did not converge according to Gelman-Rubin diagnostics </h3></b>",
+               paste0("<b><h3> Warning: the Gelman-Rubin statistic is ",
+                      round(model_reactive()$max.gelman, digits = 2),
+                      ". A value greater than 1.05 may indicate lack of convergence. Please check the Gelman plots in the <i>Result details</i> tab.</h3></b>"),
                "")
     })
     
