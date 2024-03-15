@@ -217,9 +217,11 @@ covariate_analysis_panel_server <- function(
     # 4c-2 Regression plot
     regression_plot_panel_server(
       id = "regression_plot",
+      data = all_data,
       model_output = model_output,
       treatment_df = treatment_df,
-      outcome_type = outcome_measure,
+      outcome_type = metaoutcome,
+      outcome_measure = outcome_measure,
       reference = reference_treatment
     )
     
