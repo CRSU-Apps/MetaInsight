@@ -64,7 +64,7 @@ bayesian_forest_plots_page_ui <- function(id) {
         radioButtons(
           inputId = ns('format2'),
           label = 'Document format',
-          choices = c('PDF', 'PNG'),
+          choices = c('PDF', 'PNG', 'SVG'),
           inline = TRUE
         ),
         downloadButton(outputId = ns('downloadBaye_plot'))
@@ -249,6 +249,8 @@ bayesian_forest_plots_page_server <- function(
       content = function(file) {
         if (input$format2 == "PDF") {
           pdf(file = file, width = 9, height = BayesInch(as.numeric(bugsnet_sumtb(bugsnetdt(), metaoutcome())$Value[1])))
+        } else if (input$format2 == "SVG") {
+          svg(file = file, width = 9, height = BayesInch(as.numeric(bugsnet_sumtb(bugsnetdt(), metaoutcome())$Value[1])))
         } else {
           png(file = file, width = 610, height = BayesPixels(as.numeric(bugsnet_sumtb(bugsnetdt(), metaoutcome())$Value[1])))
         }
