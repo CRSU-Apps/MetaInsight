@@ -249,16 +249,6 @@ regression_plot_panel_server <- function(id, data, model_output, treatment_df, o
             std_dev_beta <- NULL
           }
           
-          browser()
-          
-          # Bug happens in here at:
-          # Function                          File                        Line
-          # GetEffectSizesAndVariances        contribution_matrix.R       46
-          # CreateVMatrix                     contribution_matrix.R       113
-          # CreateContributionMatrix          contribution_matrix.R       789
-          # CalculateContributions            contribution_matrix.R       672
-          # regression_plot_panel_server      regression_plot_panel.R     262
-          
           CalculateContributions(
             data = data(),
             treatment_ids = treatment_df(),

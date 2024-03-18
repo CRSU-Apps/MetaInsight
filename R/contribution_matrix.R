@@ -642,17 +642,7 @@ CheckSingularMatrix <- function(matrix){
 #' @param absolute_or_percentage "percentage" for percentage contributions, "absolute" for absolute contributions.
 #' @param basic_or_all_parameters "basic" for one column per basic parameter, "all" for one column per parameter. Defaults to "basic".
 #' @param weight_or_contribution "weight" for coefficients or "contribution" for coefficients multiplied by observed treatment effects.
-#' @param full_output TRUE or FALSE, defaults to FALSE. See @return for details.
-#' @return If @param full_output = FALSE:
-#'           The contribution matrix.
-#'         If @param full_output = TRUE:
-#'           List
-#'            - 'contribution' = contribution matrix.
-#'            - 'V' = The treatment effect variance matrix.
-#'            - 'X' = The design matrix.
-#'            - 'Z' = The Z matrix.
-#'            - 'Lambda_tau' = The Lambda_tau matrix (only included if @param effects_type == "random").
-#'            - 'Lambda_beta' = The Lambda_beta matrix (only included if @param cov_parameters == "exchangeable").
+#' @return List of contributions
 CalculateContributions <- function(
     data,
     treatment_ids,
@@ -666,8 +656,7 @@ CalculateContributions <- function(
     study_or_comparison_level,
     absolute_or_percentage,
     basic_or_all_parameters = "basic",
-    weight_or_contribution,
-    full_output = FALSE){
+    weight_or_contribution) {
   
   contributions <- CreateContributionMatrix(
     data,
@@ -683,7 +672,7 @@ CalculateContributions <- function(
     absolute_or_percentage,
     basic_or_all_parameters,
     weight_or_contribution,
-    full_output
+    FALSE
   )
   
   freq <- frequentist(data, outcome_type, treatment_ids, outcome_measure, effects_type)
@@ -706,20 +695,18 @@ CalculateContributions <- function(
   colnames(relative_effects) <- treatments
   
   for (treatment in treatments) {
-    treatment_index <- as.integer(treatment)
+    treatment_index <- treatment_ids$Number[treatment_ids$Label == treatment]
     for (study in row.names(contributions)) {
-      contribution <- contributions[study, glue::glue("{reference_index}:{treatment_index}_d")]
+      contribution <- contributions[study, glue::glue("{reference}:{treatment}_d")]
       if (contribution == 0) {
         next
       }
       
-      if (treatment %in% FindAllTreatments(data, study)) {
+      if (treatment %in% FindAllTreatments(data, treatment_ids, study)) {
         direct_contributions[study, treatment] <- contribution
       } else {
         indirect_contributions[study, treatment] <- contribution
       }
-      
-      browser()
       
       treatment_effect <- d0$TE[
         (
@@ -734,11 +721,16 @@ CalculateContributions <- function(
     }
   }
   
+  covariate_column_name = grep("^covar\\..*$", names(data), value = TRUE)[1]
+  covariate_values <- data[[covariate_column_name]][match(studies, data$Study)]
+  names(covariate_values) <- studies
+  
   return(
     list(
       direct = direct_contributions,
       indirect = indirect_contributions,
-      treatment_effect = relative_effects
+      treatment_effect = relative_effects,
+      covariate_value = covariate_values
     )
   )
 }
