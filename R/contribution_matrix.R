@@ -627,9 +627,123 @@ CheckSingularMatrix <- function(matrix){
   return(contribution)
 }
 
+#' Create the contribution matrix in a convenient format.
+#' 
+#' @param data Input data in long format.
+#' @param treatment_ids Data frame containing treatment IDs and names in columns named 'Number' and 'Label' respectively.
+#' @param outcome_type "Continuous" or "Binary".
+#' @param outcome_measure "MD", "OR", "RR" or "RD".
+#' @param effects_type "fixed" or "random".
+#' @param std_dev_d Between-study standard deviation. Only required when @param effects_type == "random". Defaults to NULL.
+#' @param cov_parameters "shared", "exchangeable", or "unrelated".
+#' @param cov_centre Centring value for the covariate, defaults to the mean.
+#' @param std_dev_beta Standard deviation of covariate parameters. Only required when @param cov_parameters == "exchangeable". Defaults to NULL.
+#' @param study_or_comparison_level "study" for study-level contributions, "comparison" for basic-comparison-level contributions.
+#' @param absolute_or_percentage "percentage" for percentage contributions, "absolute" for absolute contributions.
+#' @param basic_or_all_parameters "basic" for one column per basic parameter, "all" for one column per parameter. Defaults to "basic".
+#' @param weight_or_contribution "weight" for coefficients or "contribution" for coefficients multiplied by observed treatment effects.
+#' @param full_output TRUE or FALSE, defaults to FALSE. See @return for details.
+#' @return If @param full_output = FALSE:
+#'           The contribution matrix.
+#'         If @param full_output = TRUE:
+#'           List
+#'            - 'contribution' = contribution matrix.
+#'            - 'V' = The treatment effect variance matrix.
+#'            - 'X' = The design matrix.
+#'            - 'Z' = The Z matrix.
+#'            - 'Lambda_tau' = The Lambda_tau matrix (only included if @param effects_type == "random").
+#'            - 'Lambda_beta' = The Lambda_beta matrix (only included if @param cov_parameters == "exchangeable").
+CalculateContributions <- function(
+    data,
+    treatment_ids,
+    outcome_type,
+    outcome_measure,
+    effects_type,
+    std_dev_d = NULL,
+    cov_parameters,
+    cov_centre = NULL,
+    std_dev_beta = NULL,
+    study_or_comparison_level,
+    absolute_or_percentage,
+    basic_or_all_parameters = "basic",
+    weight_or_contribution,
+    full_output = FALSE){
+  
+  contributions <- CreateContributionMatrix(
+    data,
+    treatment_ids,
+    outcome_type,
+    outcome_measure,
+    effects_type,
+    std_dev_d,
+    cov_parameters,
+    cov_centre,
+    std_dev_beta,
+    study_or_comparison_level,
+    absolute_or_percentage,
+    basic_or_all_parameters,
+    weight_or_contribution,
+    full_output
+  )
+  
+  freq <- frequentist(data, outcome_type, treatment_ids, outcome_measure, effects_type)
+  d0 <- freq$d0
+  
+  reference_index <- 1
+  reference <- treatment_ids$Label[treatment_ids$Number == reference_index]
+  treatments <- treatment_ids$Label[treatment_ids$Label != reference]
+  studies <- unique(data$Study)
+  
+  direct_contributions <- matrix(rep(NA, length(studies) * length(treatments)), length(studies), length(treatments))
+  indirect_contributions <- matrix(rep(NA, length(studies) * length(treatments)), length(studies), length(treatments))
+  relative_effects <- matrix(rep(NA, length(studies) * length(treatments)), length(studies), length(treatments))
+  
+  row.names(direct_contributions) <- studies
+  row.names(indirect_contributions) <- studies
+  row.names(relative_effects) <- studies
+  colnames(direct_contributions) <- treatments
+  colnames(indirect_contributions) <- treatments
+  colnames(relative_effects) <- treatments
+  
+  for (treatment in treatments) {
+    treatment_index <- as.integer(treatment)
+    for (study in row.names(contributions)) {
+      contribution <- contributions[study, glue::glue("{reference_index}:{treatment_index}_d")]
+      if (contribution == 0) {
+        next
+      }
+      
+      if (treatment %in% FindAllTreatments(data, study)) {
+        direct_contributions[study, treatment] <- contribution
+      } else {
+        indirect_contributions[study, treatment] <- contribution
+      }
+      
+      browser()
+      
+      treatment_effect <- d0$TE[
+        (
+          (d0$treat1 == reference_index & d0$treat2 == treatment_index) |
+          (d0$treat1 == treatment_index & d0$treat2 == reference_index)
+        ) &
+        d0$Study == study
+      ]
+      if (length(treatment_effect) != 0) {
+        relative_effects[study, treatment] <- treatment_effect
+      }
+    }
+  }
+  
+  return(
+    list(
+      direct = direct_contributions,
+      indirect = indirect_contributions,
+      treatment_effect = relative_effects
+    )
+  )
+}
 
-
-#' Create the contribution matrix
+#' Create the contribution matrix.
 #' 
 #' @param data Input data in long format.
 #' @param treatment_ids Data frame containing treatment IDs and names in columns named 'Number' and 'Label' respectively.

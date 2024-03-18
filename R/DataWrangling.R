@@ -122,10 +122,13 @@ FindDataShape <- function(data) {
 }
 
 #' Find all of the treatment names in the data, both for long and wide formats.
+#'  If a study is specified, then the treatments are only found for that study.
+#'   Otherwise, treatments are found for all studies.
 #' 
-#' @param data Data frame in which to search for treatment names
-#' @return Vector of all treatment names
-FindAllTreatments <- function(data) {
+#' @param data Data frame in which to search for treatment names.
+#' @param study Name of study for which to find treatment names. Defaults to NULL.
+#' @return Vector of all treatment names.
+FindAllTreatments <- function(data, study = NULL) {
   # Regular expression explanation:
   # ^ = Start of string
   # (?i) = Ignore case for matching
@@ -138,7 +141,11 @@ FindAllTreatments <- function(data) {
     sapply(
       treatment_column_names,
       function (nom) {
-        treatments <- data[[nom]]
+        if (is.null(study)) {
+          treatments <- data[[nom]]
+        } else {
+          treatments <- data[[nom]][data$Study == study]
+        }
         return(treatments[!is.na(treatments)])
       }
     )
