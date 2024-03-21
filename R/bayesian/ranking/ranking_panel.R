@@ -60,7 +60,9 @@ ranking_panel_server <- function(
   moduleServer(id, function(input, output, session) {
     
     ranking_data <- eventReactive(model(), {
-      obtain_rank_data(data(), metaoutcome(), treatment_df(), model(), rank_option(), exclusions())
+      obtain_rank_data(data = data(), metaoutcome = metaoutcome(), treatment_list = treatment_df(),
+                       bayesmodel = model(), rankdir = rank_option(), excluded = exclusions()
+                       )
     })
 
     # Network plots for ranking panel (Bayesian) (they have slightly different formatting to those on tab1) CRN

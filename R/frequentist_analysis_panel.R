@@ -150,7 +150,9 @@ frequentist_analysis_panel_server <- function(
 
     # Forest plot for all studies
     output$Comparison2<- renderPlot({
-      make_netComp(freq_all(), model_effects(), reference_alter()$ref_all, input$freqmin, input$freqmax)
+      make_netComp(freq = freq_all(), modelranfix = model_effects(), ref = reference_alter()$ref_all,
+                   min = input$freqmin, max = input$freqmax
+                   )
       title("Results for all studies")
     })
 
@@ -166,7 +168,8 @@ frequentist_analysis_panel_server <- function(
 
     # Forest plot with studies excluded
     output$SFPUpdatingComp <- renderPlot({
-      make_netComp(freq_sub(), model_effects(), reference_alter()$ref_sub, input$freqmin_sub, input$freqmax_sub)
+      make_netComp(freq = freq_sub(), modelranfix = model_effects(), ref = reference_alter()$ref_sub,
+                   min = input$freqmin_sub, max = input$freqmax_sub)
       title("Results with studies excluded")
     })
 
@@ -242,11 +245,11 @@ frequentist_analysis_panel_server <- function(
 
     ### 2b. Comparison and rank table
 
-    output$rankChartStatic<- renderTable(colnames=FALSE,{
-      make_netrank(freq_all(), model_effects(), rank_option())
+    output$rankChartStatic <- renderTable(colnames=FALSE, {
+      make_netrank(freq = freq_all(), modelranfix = model_effects(), rankopts = rank_option())
     })
-    output$rankChartUpdating<- renderTable(colnames=FALSE,{
-      make_netrank(freq_sub(), model_effects(), rank_option())
+    output$rankChartUpdating <- renderTable(colnames=FALSE, {
+      make_netrank(freq = freq_sub(), modelranfix = model_effects(), rankopts = rank_option())
     })
 
     output$downloadRank <- downloadHandler(

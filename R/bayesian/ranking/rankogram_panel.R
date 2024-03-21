@@ -161,7 +161,7 @@ rankogram_panel_server <- function(
       }
     )
 
-    # Table of Probabilities (need to include SUCRA and have it as a collapsable table)
+    # Table of Probabilities (need to include SUCRA and have it as a collapsible table)
     output$rank_probs <- renderTable(
       {
         rank_probs_table(ranking_data())
