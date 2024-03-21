@@ -45,7 +45,7 @@ FormatForBnma <- function(br_data, treatment_ids, outcome_type, ref){
 #' @param outcome_type "Continuous" or "Binary".
 #' @param effects_type "fixed" or "random".
 #' @param cov_parameters "shared", "exchangable", or "unrelated".
-#' @return Output from bnma::network.data.
+#' @return Output from bnma::network.data().
 BaselineRiskNetwork <- function(br_data, outcome_type, effects_type, cov_parameters){
   #Use bnma terms
   if (cov_parameters == "shared"){
@@ -92,31 +92,35 @@ BaselineRiskNetwork <- function(br_data, outcome_type, effects_type, cov_paramet
 #' @param effects_type "fixed" or "random".
 #' @param cov_parameters "shared", "exchangable", or "unrelated".
 #' @param seed Seed. Defaults to 123.
-#' @return Output from bnma::network.run.
+#' @return Output from bnma::network.run().
 BaselineRiskRegression <- function(br_data, treatment_ids, outcome_type, ref,  effects_type, cov_parameters, seed=123){
-  formatted_data <- FormatForBnma(br_data, treatment_ids, outcome_type, ref)
-  network <- BaselineRiskNetwork(formatted_data, outcome_type, effects_type, cov_parameters)
+  formatted_data <- FormatForBnma(br_data = br_data, treatment_ids = treatment_ids,
+                                  outcome_type = outcome_type, ref = ref)
+  network <- BaselineRiskNetwork(br_data = formatted_data, outcome_type = outcome_type,
+                                 effects_type = effects_type, cov_parameters = cov_parameters)
   #Select random seeds for the four chains based on 'seed'
   set.seed(seed)
   seeds <- sample.int(4, n = .Machine$integer.max)
 
-  #Put the seeds in the required format for passing to bnma::network.run
+  #Put the seeds in the required format for passing to bnma::network.run()
   rng_inits <- list()
   for(i in 1:length(seeds)){
     rng_inits[[i]] <- list(.RNG.name = "base::Wichmann-Hill", .RNG.seed = seeds[i])
   }
 
   return(bnma::network.run(network,
-                           n.run=10000,
-                           RNG.inits=rng_inits,
-                           n.chains=length(seeds)))
+                           n.run = 20000,
+                           max.run = 60000,
+                           conv.limit = 1.5,
+                           RNG.inits = rng_inits,
+                           n.chains = length(seeds)))
 }
 
 
 
 #' Creates a DIC table in gemtc format from a bnma model
 #'
-#' @param br_model Output from bnma::network.run, typically created from BaselineRiskRegression().
+#' @param br_model Output from bnma::network.run(), typically created from BaselineRiskRegression().
 #' @return A DIC table in the same format as from gemtc.
 BaselineRiskDicTable <- function(br_model){
   summary <- summary(br_model)
@@ -167,7 +171,6 @@ BaselineRiskRelativeEffectsTable <- function(median_ci_table){
 
 
 
-
 #' Change the ranking direction in a bnma ranking table.
 #'
 #' @param ranking_table The $rank.tx table from output from bnma::network.run()
@@ -179,6 +182,7 @@ BnmaSwitchRanking <- function(ranking_table){
   return(as.matrix(dplyr::select(new_table, !"new_ranks")))
 }
                             
+
 
 #' Get the parameters that are to be displayed in Gelman plots.
 #' 
