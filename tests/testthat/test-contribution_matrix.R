@@ -374,3 +374,345 @@ test_that("CreateContributionMatrix() produces a matrix of the correct format wh
 })
 
 
+
+test_that("CreateContributionMatrix() produces correct output for the Donegan example", {
+  #Load data
+  donegan_original <- read.csv("Donegan_contribution_matrix_data.csv")
+  #Make long format
+  donegan_t1 <- donegan_original[, c("s", "t1", "x")]
+  donegan_t2 <- donegan_original[, c("s", "t2", "x")]
+  names(donegan_t1)[names(donegan_t1) == "t1"] <- "T"
+  names(donegan_t2)[names(donegan_t2) == "t2"] <- "T"
+  donegan <- rbind(donegan_t1, donegan_t2)
+  #Create Study column
+  donegan$Study <- paste0("Study ", formatC(donegan$s, digits = 1, flag = 0))
+  #Create Treatment column
+  donegan$Treatment <- donegan$T
+  #Rename covariate
+  names(donegan)[names(donegan) == "x"] <- "covar.x"
+  donegan <- donegan[order(donegan$Study, donegan$Treatment), ]
+  donegan_studies <- unique(donegan$Study)
+  donegan_covariate <- donegan_t1$x
+  names(donegan_covariate) <- donegan_studies
+  #Create treatment IDs
+  donegan_ids <- data.frame(Number = 1:3, Label = as.character(1:3))
+  donegan <- donegan[, -which(names(donegan) == "s")]
+  
+  #Overwrite the V matrix, because the example is contrast-level rather than arm-level
+  CreateVMatrix <- function(data, studies, treatments, outcome_type, outcome_measure){
+    V <- diag(donegan_original$se^2)
+    rownames(V) <- donegan_studies
+    colnames(V) <- donegan_studies
+    return(V)
+  }
+  
+  #Overwrite the effect sizes, because the example is contrast-level rather than arm-level
+  GetEffectSizesAndVariances <- function(data, treatments, outcome_type, outcome_measure){
+    return(list(effect_sizes = data.frame(Effect = donegan_original$lor)))
+  }
+  
+  contribution_matrix <- CreateContributionMatrix(data = donegan,
+                                                  treatment_ids = donegan_ids,
+                                                  outcome_type = "Binary",                           
+                                                  outcome_measure = "OR",
+                                                  effects_type = "fixed",
+                                                  cov_parameters = "unrelated",
+                                                  basic_or_all_parameters = "all",
+                                                  study_or_comparison_level = "comparison",
+                                                  absolute_or_percentage = "percentage",
+                                                  weight_or_contribution = "weight",
+                                                  full_output = FALSE)
+
+  expected_contribution_matrix <- read.csv("Donegan_contribution_matrix_expected.csv")
+  expected_contribution_matrix <- as.matrix(expected_contribution_matrix[, 2:7])
+  colnames(expected_contribution_matrix) <- c("1:2_d", "1:3_d", "2:3_d", "1:2_beta", "1:3_beta", "2:3_beta")
+  rownames(expected_contribution_matrix) <- rownames(contribution_matrix)
+  
+  expect_equal(contribution_matrix, expected_contribution_matrix)
+  
+  #Remove the overwritten functions from the environment
+  rm(CreateVMatrix, GetEffectSizesAndVariances)
+})
+
+
+
+test_that("CreateContributionMatrix() produces correct output for a fixed effects, shared model", {
+  data <- read.csv("Cont_long_cont_cov_small.csv")
+
+  treatment_ids <- list(Number = 1:3, Label = c("Hydrogen", "Neon", "Carbon"))
+  
+  contribution_matrix <- CreateContributionMatrix(data = data,
+                                                  treatment_ids = treatment_ids,
+                                                  outcome_type = "Continuous",                           
+                                                  outcome_measure = "MD",
+                                                  effects_type = "fixed",
+                                                  cov_parameters = "shared",
+                                                  basic_or_all_parameters = "basic",
+                                                  study_or_comparison_level = "comparison",
+                                                  absolute_or_percentage = "absolute",
+                                                  weight_or_contribution = "weight")
+  
+  expected_V <- matrix(c(2^2/50 + 2^2/51, 0, 0,
+                         0, 3^2/60 + 3^2/61, 3^2/60,
+                         0, 3^2/60, 3^2/62 + 3^2/60),
+                       byrow = TRUE, nrow = 3)
+  expected_X <- matrix(c(1, 0, 1-1.25,
+                         1, 0, 1.5-1.25,
+                         0, 1, 1.5-1.25),
+                       byrow = TRUE, nrow = 3)
+  expected_XVX_matrix <- solve(t(expected_X)%*% solve(expected_V) %*% expected_X) %*% t(expected_X) %*% solve(expected_V)
+  expected_contribution_matrix <- round(t(abs(expected_XVX_matrix)), digits = 2)
+  rownames(expected_contribution_matrix) <- rownames(contribution_matrix)
+  colnames(expected_contribution_matrix) <- colnames(contribution_matrix)
+  
+  expect_equal(contribution_matrix, expected_contribution_matrix)
+})
+
+
+
+test_that("CreateContributionMatrix() produces correct output for a fixed effects, exchangeable model", {
+  data <- read.csv("Cont_long_cont_cov_small.csv")
+  
+  treatment_ids <- list(Number = 1:3, Label = c("Hydrogen", "Neon", "Carbon"))
+  
+  contribution_matrix <- CreateContributionMatrix(data = data,
+                                                  treatment_ids = treatment_ids,
+                                                  outcome_type = "Continuous",                           
+                                                  outcome_measure = "MD",
+                                                  effects_type = "fixed",
+                                                  cov_parameters = "exchangeable",
+                                                  std_dev_beta = 0.9,
+                                                  basic_or_all_parameters = "basic",
+                                                  study_or_comparison_level = "comparison",
+                                                  absolute_or_percentage = "absolute",
+                                                  weight_or_contribution = "weight")
+  
+  expected_V <- matrix(c(2^2/50 + 2^2/51, 0, 0,
+                         0, 3^2/60 + 3^2/61, 3^2/60,
+                         0, 3^2/60, 3^2/62 + 3^2/60),
+                       byrow = TRUE, nrow = 3)
+  expected_lambda_beta <- diag(0.9^2, nrow = 2)
+  expected_V_star <- rbind(cbind(expected_V, matrix(rep(0, times = 6), nrow = 3)),
+                           cbind(matrix(rep(0, times = 6), nrow = 2), expected_lambda_beta))
+  
+  expected_X_d <- matrix(c(1, 0,
+                           1, 0,
+                           0, 1),
+                         byrow = TRUE, nrow = 3)
+  expected_X_beta <- matrix(c(1-1.25, 0,
+                              1.5-1.25, 0,
+                              0, 1.5-1.25),
+                            byrow = TRUE, nrow = 3)
+  expected_X_star <- rbind(cbind(expected_X_d, expected_X_beta, matrix(rep(0, times = 3), nrow = 3)),
+                           cbind(matrix(rep(0, times = 4), nrow = 2), diag(1, nrow = 2), matrix(rep(1, times = 2), nrow = 2)))
+  expected_XVX_matrix <- solve(t(expected_X_star)%*% solve(expected_V_star) %*% expected_X_star) %*% t(expected_X_star) %*% solve(expected_V_star)
+  expected_A_matrix <- expected_XVX_matrix[1:4, 1:3]
+  expected_contribution_matrix <- round(t(abs(expected_A_matrix)), digits = 2)
+  rownames(expected_contribution_matrix) <- rownames(contribution_matrix)
+  colnames(expected_contribution_matrix) <- colnames(contribution_matrix)
+  
+  expect_equal(contribution_matrix, expected_contribution_matrix)
+})
+
+
+
+test_that("CreateContributionMatrix() produces correct output for a random effects, shared model", {
+  data <- read.csv("Cont_long_cont_cov_small.csv")
+  
+  treatment_ids <- list(Number = 1:3, Label = c("Hydrogen", "Neon", "Carbon"))
+  
+  contribution_matrix <- CreateContributionMatrix(data = data,
+                                                  treatment_ids = treatment_ids,
+                                                  outcome_type = "Continuous",                           
+                                                  outcome_measure = "MD",
+                                                  effects_type = "random",
+                                                  cov_parameters = "shared",
+                                                  std_dev_d = 0.9,
+                                                  basic_or_all_parameters = "basic",
+                                                  study_or_comparison_level = "comparison",
+                                                  absolute_or_percentage = "absolute",
+                                                  weight_or_contribution = "weight")
+  
+  expected_V <- matrix(c(2^2/50 + 2^2/51, 0, 0,
+                         0, 3^2/60 + 3^2/61, 3^2/60,
+                         0, 3^2/60, 3^2/62 + 3^2/60),
+                       byrow = TRUE, nrow = 3)
+  expected_lambda_tau <- matrix(c(0.9^2, 0, 0,
+                                  0, 0.9^2, 0.9^2/2,
+                                  0, 0.9^2/2, 0.9^2),
+                                byrow = TRUE, nrow = 3)
+  expected_V_star <- rbind(cbind(expected_V, matrix(rep(0, times = 9), nrow = 3)),
+                           cbind(matrix(rep(0, times = 9), nrow = 3), expected_lambda_tau))
+  
+  expected_X <- matrix(c(1, 0, 1-1.25,
+                         1, 0, 1.5-1.25,
+                         0, 1, 1.5-1.25),
+                       byrow = TRUE, nrow = 3)
+  expected_X_star <- rbind(cbind(diag(1, nrow = 3), matrix(rep(0, times = 9), nrow = 3)),
+                           cbind(diag(1, nrow = 3), -expected_X))
+  expected_XVX_matrix <- solve(t(expected_X_star)%*% solve(expected_V_star) %*% expected_X_star) %*% t(expected_X_star) %*% solve(expected_V_star)
+  expected_A_matrix <- expected_XVX_matrix[4:6, 1:3]
+  expected_contribution_matrix <- round(t(abs(expected_A_matrix)), digits = 2)
+  rownames(expected_contribution_matrix) <- rownames(contribution_matrix)
+  colnames(expected_contribution_matrix) <- colnames(contribution_matrix)
+  
+  expect_equal(contribution_matrix, expected_contribution_matrix)
+})
+
+
+
+test_that("CreateContributionMatrix() includes all parameters when 'basic_or_all_parameters' = 'all'", {
+  data <- read.csv("Cont_long_cont_cov_small.csv")
+  
+  treatment_ids <- list(Number = 1:3, Label = c("Hydrogen", "Neon", "Carbon"))
+  
+  contribution_matrix <- CreateContributionMatrix(data = data,
+                                                  treatment_ids = treatment_ids,
+                                                  outcome_type = "Continuous",                           
+                                                  outcome_measure = "MD",
+                                                  effects_type = "fixed",
+                                                  cov_parameters = "shared",
+                                                  basic_or_all_parameters = "all",
+                                                  study_or_comparison_level = "comparison",
+                                                  absolute_or_percentage = "absolute",
+                                                  weight_or_contribution = "weight")
+  
+  basic_contribution_matrix <- CreateContributionMatrix(data = data,
+                                                        treatment_ids = treatment_ids,
+                                                        outcome_type = "Continuous",                           
+                                                        outcome_measure = "MD",
+                                                        effects_type = "fixed",
+                                                        cov_parameters = "shared",
+                                                        basic_or_all_parameters = "basic",
+                                                        study_or_comparison_level = "comparison",
+                                                        absolute_or_percentage = "absolute",
+                                                        weight_or_contribution = "weight")
+  
+  expected_V <- matrix(c(2^2/50 + 2^2/51, 0, 0,
+                         0, 3^2/60 + 3^2/61, 3^2/60,
+                         0, 3^2/60, 3^2/62 + 3^2/60),
+                       byrow = TRUE, nrow = 3)
+  expected_X <- matrix(c(1, 0, 1-1.25,
+                         1, 0, 1.5-1.25,
+                         0, 1, 1.5-1.25),
+                       byrow = TRUE, nrow = 3)
+  expected_Z <- matrix(c(1, 0, 0,
+                         0, 1, 0,
+                         -1, 1, 0,
+                         0, 0, 1),
+                       byrow = TRUE, nrow = 4)
+  expected_XVX_matrix <- solve(t(expected_X)%*% solve(expected_V) %*% expected_X) %*% t(expected_X) %*% solve(expected_V)
+  expected_contribution_matrix <- round(t(abs(expected_Z %*% expected_XVX_matrix)), digits = 2)
+  rownames(expected_contribution_matrix) <- rownames(contribution_matrix)
+  colnames(expected_contribution_matrix) <- colnames(contribution_matrix)
+  
+  expect_equal(contribution_matrix, expected_contribution_matrix)
+})
+
+
+
+test_that("CreateContributionMatrix() adds up rows correctly when 'study_or_comparison_level' = 'study'", {
+  data <- read.csv("Cont_long_cont_cov_small.csv")
+  
+  treatment_ids <- list(Number = 1:3, Label = c("Hydrogen", "Neon", "Carbon"))
+  
+  contribution_matrix <- CreateContributionMatrix(data = data,
+                                                  treatment_ids = treatment_ids,
+                                                  outcome_type = "Continuous",                           
+                                                  outcome_measure = "MD",
+                                                  effects_type = "fixed",
+                                                  cov_parameters = "shared",
+                                                  basic_or_all_parameters = "basic",
+                                                  study_or_comparison_level = "study",
+                                                  absolute_or_percentage = "absolute",
+                                                  weight_or_contribution = "weight")
+  
+  comparison_matrix <- CreateContributionMatrix(data = data,
+                                                treatment_ids = treatment_ids,
+                                                outcome_type = "Continuous",                           
+                                                outcome_measure = "MD",
+                                                effects_type = "fixed",
+                                                cov_parameters = "shared",
+                                                basic_or_all_parameters = "basic",
+                                                study_or_comparison_level = "comparison",
+                                                absolute_or_percentage = "absolute",
+                                                weight_or_contribution = "weight")
+  
+  expected_contribution_matrix <- rbind(comparison_matrix[1, ],
+                                        colSums(comparison_matrix[2:3, ]))
+  rownames(expected_contribution_matrix) <- c("A", "B")
+  
+  expect_equal(contribution_matrix, expected_contribution_matrix)
+})
+
+
+
+test_that("CreateContributionMatrix() calculates percentages correctly", {
+  data <- read.csv("Cont_long_cont_cov_small.csv")
+  
+  treatment_ids <- list(Number = 1:3, Label = c("Hydrogen", "Neon", "Carbon"))
+  
+  contribution_matrix <- CreateContributionMatrix(data = data,
+                                                  treatment_ids = treatment_ids,
+                                                  outcome_type = "Continuous",                           
+                                                  outcome_measure = "MD",
+                                                  effects_type = "fixed",
+                                                  cov_parameters = "shared",
+                                                  basic_or_all_parameters = "basic",
+                                                  study_or_comparison_level = "comparison",
+                                                  absolute_or_percentage = "percentage",
+                                                  weight_or_contribution = "weight")
+  
+  absolute_contribution_matrix <- CreateContributionMatrix(data = data,
+                                                           treatment_ids = treatment_ids,
+                                                           outcome_type = "Continuous",                           
+                                                           outcome_measure = "MD",
+                                                           effects_type = "fixed",
+                                                           cov_parameters = "shared",
+                                                           basic_or_all_parameters = "basic",
+                                                           study_or_comparison_level = "comparison",
+                                                           absolute_or_percentage = "absolute",
+                                                           weight_or_contribution = "weight")
+  
+  column_totals <- colSums(absolute_contribution_matrix)
+  column_totals_matrix <- matrix(rep(column_totals, times = 3), byrow = TRUE, nrow = 3)
+  expected_contribution_matrix <- 100 * absolute_contribution_matrix / column_totals_matrix
+  
+  expect_equal(contribution_matrix, expected_contribution_matrix)
+})
+
+
+
+test_that("CreateContributionMatrix() calculates contributions correctly when 'weight_or_contribution' = 'contribution'", {
+  data <- read.csv("Cont_long_cont_cov_small.csv")
+  
+  treatment_ids <- list(Number = 1:3, Label = c("Hydrogen", "Neon", "Carbon"))
+  
+  contribution_matrix <- CreateContributionMatrix(data = data,
+                                                  treatment_ids = treatment_ids,
+                                                  outcome_type = "Continuous",                           
+                                                  outcome_measure = "MD",
+                                                  effects_type = "fixed",
+                                                  cov_parameters = "shared",
+                                                  basic_or_all_parameters = "basic",
+                                                  study_or_comparison_level = "comparison",
+                                                  absolute_or_percentage = "absolute",
+                                                  weight_or_contribution = "contribution")
+  
+  weight_matrix <- CreateContributionMatrix(data = data,
+                                            treatment_ids = treatment_ids,
+                                            outcome_type = "Continuous",                           
+                                            outcome_measure = "MD",
+                                            effects_type = "fixed",
+                                            cov_parameters = "shared",
+                                            basic_or_all_parameters = "basic",
+                                            study_or_comparison_level = "comparison",
+                                            absolute_or_percentage = "absolute",
+                                            weight_or_contribution = "weight")
+  
+  treatment_effects <- c(6 - 5, 7 - 6, 8 - 6)
+  treatment_effects_matrix <- matrix(rep(treatment_effects, times = 3), nrow = 3)
+  expected_contribution_matrix <- weight_matrix * treatment_effects_matrix
+  
+  expect_equal(contribution_matrix, expected_contribution_matrix)
+})
