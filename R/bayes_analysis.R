@@ -1,4 +1,4 @@
-#' Bayesian analysis
+#' Bayesian analysis.
 #'
 #' @param data Data frame in long format, with 'se' instead of 'SD' and 'N' when the outcome is continuous.
 #' @param treat_list Data frame consisting of the treatment IDs ('Number') and the treatment names ('Label').
@@ -68,10 +68,7 @@ baye <- function(data, treat_list, model, outcome, CONBI, ref) {
 
 
 
-### 3a. tau of gemtc
-
-
-#' Create text with the point estimate and 95% CrI of between-trial SD of treatment effects
+#' Create text with the point estimate and 95% CrI of between-trial SD of treatment effects.
 #'
 #' @param results Output from the 'baye' function. These are the list elements that are relevant:
 #'  - 'mtcResults' = Output from gemtc::mtc.run
@@ -111,10 +108,9 @@ gemtctau <- function(results, outcome) {
   }
 }
 
-### 3c. Ranking results 
 
 
-#' Get SUCRA data
+#' Get SUCRA data.
 #'
 #' @param NMAdata Output from 'baye' function.
 #' @param rankdirection "good" or "bad" (referring to smaller outcome values).
@@ -232,7 +228,7 @@ relative_rank_text <- function(results) {
 
 
 
-#' 3d. nodesplit models
+#' 3d. nodesplit models.
 #' 
 #' @param data Input data set.
 #' @param treat_list Data frame consisting of the treatment IDs ('Number') and the treatment names ('Label').
@@ -287,13 +283,13 @@ bayenode <- function(data, treat_list, model, outcome, CONBI) {
 
 
 
-#' 3f. UME deviance scatter plot
+#' 3f. UME deviance scatter plot.
 #' 
 #' @param c Deviance.
 #' @param mtcNetwork Model output from gemtc::mtc.run().
 #' @param model "random" or "fixed".
 #' @param outcome "MD", "OR", or "RR".
-#' @return UME plot.
+#' @return Creates a UME plot.
 umeplot.df <- function(c, mtcNetwork, model, outcome) {
   progress <- shiny::Progress$new()
   on.exit(progress$close())
@@ -427,11 +423,11 @@ umeplot.df <- function(c, mtcNetwork, model, outcome) {
 
 
 
-#' Per-arm residual deviance
+#' Per-arm residual deviance plot.
 #' 
 #' @param c Deviance obtained from @param x.
 #' @param x gemtc::mtc.deviance() object.
-#' @return Stemplot.
+#' @return Creates a stemplot of residual deviances by arm.
 stemplot.df <- function(c, x) {
   tpl <- x[['dev.ab']]
   study <- matrix(rep(1:nrow(tpl), times = ncol(tpl)), nrow = nrow(tpl), ncol = ncol(tpl))
@@ -494,10 +490,10 @@ stemplot.df <- function(c, x) {
 
 
 
-#' leverage
+#' Creates a plot of leverage versus residual deviance, by study.
 #' 
 #' @param x gemtc::mtc.deviance() object.
-#' @return Leverage plot.
+#' @return Leverage vs residual deviance plot.
 levplot.df <- function(x) {
   fit.ab <- apply(x[['fit.ab']], 1, sum, na.rm = TRUE)
   dev.ab <- apply(x[['dev.ab']], 1, sum, na.rm = TRUE)

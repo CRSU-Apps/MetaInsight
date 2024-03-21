@@ -73,7 +73,7 @@ make_netconnect <- function(freq) {
 
 
 
-#' 2a. Forest Plot
+#' 2a. Frequentist forest Plot
 #' 
 #' @param freq List of NMA results created by freq_wrap().
 #' @param modelranfix "fixed" or "random".
@@ -90,7 +90,7 @@ make_netComp <- function(freq, modelranfix, ref, min, max) {
 
 
 
-#' 2a. Creates text displayed under forest plots
+#' 2a. Creates text displayed under frequentist forest plots
 #' 
 #' @param freq List of NMA results created by freq_wrap().
 #' @param outcome_measure "MD", "SMD", "OR", "RR", or "RD".
@@ -108,7 +108,7 @@ texttau <- function(freq, outcome_measure, modelranfix){
 #' @param ref Reference treatment.
 #' @return Text as above.
 make_refText = function(ref) {
-  return(paste("All outcomes are versus the reference treatment:", ref))
+  return(paste0("All outcomes are versus the reference treatment: ", ref))
 }
 
 
@@ -136,7 +136,7 @@ make_netrank <- function(freq, modelranfix, rankopts) {
 
 
 
-#' 2c Inconsistency
+#' 2c Creates a data frame of inconsistency data obtained from netmeta::netsplit().
 #'
 #' @param freq List of NMA results created by freq_wrap().
 #' @param modelranfix "fixed" or "random".
@@ -148,7 +148,7 @@ make_Incon <- function(freq, modelranfix) {
 
 
 
-#' 3a Forest plot 
+#' 3a Bayesian forest plot 
 #' 
 #' @param model Various model output created by baye().
 #' @param metaoutcome "Continuous" or "Binary".
@@ -167,7 +167,7 @@ make_Forest <- function(model, metaoutcome, bayesmin, bayesmax) {
 
 
 
-#' 3b Comparison of all treatment pairs
+#' 3b Creates a table of comparisons of all treatment pairs
 #' 
 #' @param model Various model output created by baye().
 #' @param metaoutcome "Continuous" or "Binary".
@@ -183,8 +183,7 @@ baye_comp <- function(model, metaoutcome, outcome_measure){
 
 
 
-#' 3c Ranking Panel redesign by CRN
-#' Network plot - number of trials on line
+#' 3c Create network plot for the ranking panel
 #' 
 #' @param freq List of NMA results created by freq_wrap().
 #' @param order Vector of treatments in SUCRA order.

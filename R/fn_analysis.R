@@ -15,19 +15,17 @@ frequentist <- function(data, metaoutcome, treatment_list, outcome_measure, mode
     data_wide <- dplyr::filter(data_wide, !Study %in% excluded)
   }
   
+  altered_reference <- ref_alter(data = data, metaoutcome = metaoutcome, excluded = excluded,
+                                 treatment_list = treatment_list)$ref_sub
+  
   # Use the self-defined function, freq_wrap
   return(freq_wrap(data = data_wide, treat_list = treatment_list, model = modelranfix,
-                   outcome = outcome_measure, CONBI = metaoutcome,
-                   ref = ref_alter(data = data, metaoutcome = metaoutcome, excluded = excluded,
-                                   treatment_list = treatment_list)$ref_sub
+                   outcome = outcome_measure, CONBI = metaoutcome, ref = altered_reference
                    )
          )
 }
 
 
-##########################
-##### function for formating uploaded data
-##########################
 
 #' Converts long data to wide, leaves wide data unchanged.
 #' 
