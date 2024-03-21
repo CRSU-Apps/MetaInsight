@@ -398,18 +398,26 @@ test_that("CreateContributionMatrix() produces correct output for the Donegan ex
   donegan_ids <- data.frame(Number = 1:3, Label = as.character(1:3))
   donegan <- donegan[, -which(names(donegan) == "s")]
   
-  #Overwrite the V matrix, because the example is contrast-level rather than arm-level
-  CreateVMatrix <- function(data, studies, treatments, outcome_type, outcome_measure){
+  #Create backups of these two functions
+  BackupCreateVMatrix <- CreateVMatrix
+  BackupGetEffectSizesAndVariances <- GetEffectSizesAndVariances
+  
+  #Overwrite CreateVMatrix(), because the example is contrast-level rather than arm-level
+  CreateVMatrix <<- function(data, studies, treatments, outcome_type, outcome_measure){
     V <- diag(donegan_original$se^2)
     rownames(V) <- donegan_studies
     colnames(V) <- donegan_studies
     return(V)
   }
   
-  #Overwrite the effect sizes, because the example is contrast-level rather than arm-level
-  GetEffectSizesAndVariances <- function(data, treatments, outcome_type, outcome_measure){
+  #Overwrite GetEffectSizesAndVariances(), because the example is contrast-level rather than arm-level
+  GetEffectSizesAndVariances <<- function(data, treatments, outcome_type, outcome_measure){
     return(list(effect_sizes = data.frame(Effect = donegan_original$lor)))
   }
+  
+  #Restore the functions to their original definitions at the end
+  on.exit(CreateVMatrix <<- BackupCreateVMatrix, add = TRUE, after = FALSE)
+  on.exit(GetEffectSizesAndVariances <<- BackupGetEffectSizesAndVariances, add = TRUE, after = FALSE)
   
   contribution_matrix <- CreateContributionMatrix(data = donegan,
                                                   treatment_ids = donegan_ids,
@@ -422,16 +430,13 @@ test_that("CreateContributionMatrix() produces correct output for the Donegan ex
                                                   absolute_or_percentage = "percentage",
                                                   weight_or_contribution = "weight",
                                                   full_output = FALSE)
-
+  
   expected_contribution_matrix <- read.csv("Donegan_contribution_matrix_expected.csv")
   expected_contribution_matrix <- as.matrix(expected_contribution_matrix[, 2:7])
   colnames(expected_contribution_matrix) <- c("1:2_d", "1:3_d", "2:3_d", "1:2_beta", "1:3_beta", "2:3_beta")
   rownames(expected_contribution_matrix) <- rownames(contribution_matrix)
   
   expect_equal(contribution_matrix, expected_contribution_matrix)
-  
-  #Remove the overwritten functions from the environment
-  rm(CreateVMatrix, GetEffectSizesAndVariances)
 })
 
 
