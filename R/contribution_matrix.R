@@ -630,6 +630,7 @@ CheckSingularMatrix <- function(matrix){
 #' Create the contribution matrix in a convenient format.
 #' 
 #' @param data Input data in long format.
+#' @param covariate_title Title of covariate column in data.
 #' @param treatment_ids Data frame containing treatment IDs and names in columns named 'Number' and 'Label' respectively.
 #' @param outcome_type "Continuous" or "Binary".
 #' @param outcome_measure "MD", "OR", "RR" or "RD".
@@ -642,9 +643,18 @@ CheckSingularMatrix <- function(matrix){
 #' @param absolute_or_percentage "percentage" for percentage contributions, "absolute" for absolute contributions.
 #' @param basic_or_all_parameters "basic" for one column per basic parameter, "all" for one column per parameter. Defaults to "basic".
 #' @param weight_or_contribution "weight" for coefficients or "contribution" for coefficients multiplied by observed treatment effects.
-#' @return List of contributions
+#' @return List of contributions:
+#' - "direct"
+#'   - Matrix of direct contributions to the regression. Rows are studies, columns are treatments
+#' - "indirect"
+#'   - Matrix of indirect contributions to the regression. Rows are studies, columns are treatments
+#' - "relative_effect"
+#'   - Matrix of relative effects of treatments compared to the reference. Rows are studies, columns are treatments
+#' - "covariate_value"
+#'   - Vector of covariate values from the studies.
 CalculateContributions <- function(
     data,
+    covariate_title,
     treatment_ids,
     outcome_type,
     outcome_measure,
@@ -702,7 +712,7 @@ CalculateContributions <- function(
         next
       }
       
-      if (treatment %in% FindAllTreatments(data, treatment_ids, study)) {
+      if (treatment %in% FindAllTreatments(data, treatment_ids, study) && reference %in% FindAllTreatments(data, treatment_ids, study)) {
         direct_contributions[study, treatment] <- contribution
       } else {
         indirect_contributions[study, treatment] <- contribution
@@ -721,16 +731,68 @@ CalculateContributions <- function(
     }
   }
   
-  covariate_column_name = grep("^covar\\..*$", names(data), value = TRUE)[1]
-  covariate_values <- data[[covariate_column_name]][match(studies, data$Study)]
+  covariate_values <- data[[covariate_title]][match(studies, data$Study)]
   names(covariate_values) <- studies
+  
+  min_max <- .FindCovariateRanges(data, treatment_ids, reference, covariate_title)
   
   return(
     list(
       direct = direct_contributions,
       indirect = indirect_contributions,
-      treatment_effect = relative_effects,
-      covariate_value = covariate_values
+      relative_effect = relative_effects,
+      covariate_value = covariate_values,
+      covariate_min = min_max$min,
+      covariate_max = min_max$max
+    )
+  )
+}
+
+#' Find the lowest and highest covariate values given by a study comparing the reference and comparator treatments.
+#'
+#' @param data Data frame from which to find covariate ranges
+#' @param treatment_ids data frame containing treatment names ("Label") and IDs ("Number")
+#' @param reference Name of reference treatment.
+#' @param covariate_title Title of covariate column in data.
+#'
+#' @return The lowest and highest covariate values of relevant studies.
+.FindCovariateRanges <- function(data, treatment_ids, reference, covariate_title) {
+  study_treatments <- sapply(
+    unique(data$Study),
+    function(study) {
+      FindAllTreatments(data, treatment_ids, study)
+    }
+  )
+  
+  non_reference_treatment_names <- treatment_ids$Label[treatment_ids$Label != reference]
+  
+  treatment_min <- c()
+  treatment_max <- c()
+  for (treatment_name in non_reference_treatment_names) {
+    min <- NA
+    max <- NA
+    for (study in unique(data$Study)) {
+      
+      if (treatment_name %in% study_treatments[, study] && reference %in% study_treatments[, study]) {
+        covariate_value <- data[[covariate_title]][data$Study == study][1]
+        
+        if (is.na(min) || min > covariate_value) {
+          min <- covariate_value
+        }
+        
+        if (is.na(max) || max < covariate_value) {
+          max <- covariate_value
+        }
+      }
+    }
+    treatment_min[[treatment_name]] <- min
+    treatment_max[[treatment_name]] <- max
+  }
+  
+  return(
+    list(
+      min = unlist(treatment_min),
+      max = unlist(treatment_max)
     )
   )
 }

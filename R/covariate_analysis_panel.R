@@ -218,6 +218,7 @@ covariate_analysis_panel_server <- function(
     regression_plot_panel_server(
       id = "regression_plot",
       data = all_data,
+      covariate_title = covariate_title,
       model_output = model_output,
       treatment_df = treatment_df,
       outcome_type = metaoutcome,

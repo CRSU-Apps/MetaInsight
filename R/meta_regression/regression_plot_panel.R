@@ -171,12 +171,13 @@ regression_plot_panel_ui <- function(id) {
 #' Create the regression plot server.
 #'
 #' @param id ID of the module.
-#' @param data Study data including covariate columns, in wide or long format.
-#' @param model_output GEMTC model results found by calling `CovariateModelOutput()`.
+#' @param data Reactive containing study data including covariate columns, in wide or long format.
+#' @param covariate_title Reactive containing title of the covariate column in the data.
+#' @param model_output Reactive containing GEMTC model results found by calling `CovariateModelOutput()`.
 #' @param treatment_df Reactive containing data frame containing treatment IDs (Number), sanitised names (Label), and original names (RawLabel).
 #' @param outcome_type Reactive containing meta analysis outcome: "Continuous" or "Binary".
 #' @param outcome_measure Reactive type of outcome (OR, RR, RD, MD or SD).
-regression_plot_panel_server <- function(id, data, model_output, treatment_df, outcome_type, outcome_measure, reference) {
+regression_plot_panel_server <- function(id, data, covariate_title, model_output, treatment_df, outcome_type, outcome_measure, reference) {
   shiny::moduleServer(id, function(input, output, session) {
     
     available_to_add <- reactive({
@@ -251,6 +252,7 @@ regression_plot_panel_server <- function(id, data, model_output, treatment_df, o
           
           CalculateContributions(
             data = data(),
+            covariate_title = covariate_title(),
             treatment_ids = treatment_df(),
             outcome_type = outcome_type(),
             outcome_measure = outcome_measure(),
@@ -260,8 +262,7 @@ regression_plot_panel_server <- function(id, data, model_output, treatment_df, o
             cov_parameters = model_output()$mtcResults$model$regressor$coefficient,
             study_or_comparison_level = "study",
             absolute_or_percentage = input$absolute_relative_toggle,
-            weight_or_contribution = input$contribution_weight_toggle,
-            full_output = FALSE
+            weight_or_contribution = input$contribution_weight_toggle
           )
         },
         error = function(err) {
@@ -306,10 +307,13 @@ regression_plot_panel_server <- function(id, data, model_output, treatment_df, o
       }
       
       CreateCompositeMetaRegressionPlot(
+        data = data(),
+        covariate_title = covariate_title(),
         model_output = model_output(),
         treatment_df = treatment_df(),
         outcome_type = outcome_type(),
         comparators = comparators,
+        contribution_matrix = contribution_matrix(),
         contribution_type = input$absolute_relative_toggle,
         include_covariate = input$covariate,
         include_ghosts = input$ghosts,

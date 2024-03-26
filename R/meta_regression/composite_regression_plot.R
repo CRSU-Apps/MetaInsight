@@ -1,10 +1,16 @@
 
+# Zero-width space before "Other" to pin it to the first item in the list
+regression_ghost_name = "\u200BOther"
+
 #' Create a composite meta-regression plot which comprises plots showing direct and indirect evidence.
 #'
+#' @param data Data from which to find covariate ranges.
+#' @param covariate_title Title of the covariate column in the data
 #' @param model_output GEMTC model results found by calling `CovariateModelOutput()`.
 #' @param treatment_df Reactive containing data frame containing treatment IDs (Number), sanitised names (Label), and original names (RawLabel).
 #' @param outcome_type Reactive type of outcome (OR, RR, RD, MD or SD)
 #' @param comparators Vector of names of comparison treatments to plot in colour.
+#' @param contribution_matrix Contributions from function `CalculateContributions()`.
 #' @param contribution_type Type of contribution, used to calculate sizes for the study contribution circles.
 #' @param include_covariate TRUE if the value of the covariate is to be plotted as a vertical line. Defaults to FALSE.
 #' @param include_ghosts TRUE if all other comparator studies should be plotted in grey in the background of the plot. Defaults to FALSE.
@@ -13,7 +19,7 @@
 #' @param include_confidence TRUE if the confidence regions should be plotted for the specified comparators. These will be partially transparent regions.
 #' Defaults to FALSE.
 #' @param confidence_opacity The opacity of the confidence regions. Can be any value between 0 and 1, inclusive. Defaults to 0.2.
-#' @param include_contribution TRUE if study contribution should be displayed as circles. Defaults to TRUE.
+#' @param include_contributions TRUE if the contributions should be plotted as a circle for each study. Defaults to TRUE.
 #' @param contribution_multiplier Factor by which to scale the sizes of the study contribution circles. Defaults to 1.0.
 #' @param legend_position String informing the position of the legend. Acceptable values are:
 #' - "BR" - Bottom-right of the plot area
@@ -23,10 +29,13 @@
 #'
 #' @return Created ggplot2 object.
 CreateCompositeMetaRegressionPlot <- function(
+    data,
+    covariate_title,
     model_output,
     treatment_df,
     outcome_type,
     comparators,
+    contribution_matrix,
     contribution_type,
     include_covariate = FALSE,
     include_ghosts = FALSE,
@@ -38,10 +47,13 @@ CreateCompositeMetaRegressionPlot <- function(
     legend_position = "BR") {
   
   direct_plot <- CreateMainRegressionPlot(
+    data = data,
+    covariate_title = covariate_title,
     model_output = model_output,
     treatment_df = treatment_df,
     outcome_type = outcome_type,
     comparators = comparators,
+    contribution_matrix = contribution_matrix,
     contribution_type = contribution_type,
     include_covariate = include_covariate,
     include_ghosts = include_ghosts,
@@ -61,6 +73,7 @@ CreateCompositeMetaRegressionPlot <- function(
     model_output = model_output,
     treatment_df = treatment_df,
     comparators = comparators,
+    contribution_matrix = contribution_matrix,
     contribution_type = contribution_type,
     include_covariate = include_covariate,
     include_ghosts = include_ghosts,
@@ -85,34 +98,6 @@ CreateCompositeMetaRegressionPlot <- function(
     heights = c(1, 4),
     align = "v",
     ncol = 1
-  )
-  
-  return(plot)
-}
-
-#' Example for the meta-regression main plot.
-#'
-#' @return Created ggplot2 object.
-.MetaRegressionCompositePlotExample <- function() {
-  data <- read.csv("tests/testthat/Cont_long_continuous_cov.csv")
-  treatment_ids <- CreateTreatmentIds(FindAllTreatments(data), reference_treatment = "the Little")
-  data <- WrangleUploadData(data, treatment_ids, "Continuous")
-  wrangled_treatment_list <- CleanTreatmentIds(treatment_ids)
-  
-  model <- RunCovariateModel(data, wrangled_treatment_list, "Continuous", 'MD', "covar.age", "age", 'random', 'unrelated', "the_Little")
-  model_output <<- CovariateModelOutput(model, 98)
-  
-  plot <- CreateCompositeMetaRegressionPlot(
-    model_output = model_output,
-    treatment_df = wrangled_treatment_list,
-    comparators = c("the_Butcher", "the_Dung_named"),
-    contribution_type = "percentage",
-    include_covariate = TRUE,
-    include_ghosts = TRUE,
-    include_extrapolation = TRUE,
-    include_confidence = TRUE,
-    confidence_opacity = 0.2,
-    contribution_multiplier = 5.0
   )
   
   return(plot)

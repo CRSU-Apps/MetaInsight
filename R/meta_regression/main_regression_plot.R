@@ -1,13 +1,13 @@
 
-# Zero-width space before "Other" to pin it to the first item in the list
-.ghost_name = "\u200BOther"
-
 #' Create a covariate regression plot where multiple comparisons can be plotted, and the contributions from each study are shown as circles.
 #'
+#' @param data Data from which to find covariate ranges.
+#' @param covariate_title Title of the covariate column in the data.
 #' @param model_output GEMTC model results found by calling `CovariateModelOutput()`.
 #' @param treatment_df Reactive containing data frame containing treatment IDs (Number), sanitised names (Label), and original names (RawLabel).
 #' @param outcome_type Reactive type of outcome (OR, RR, RD, MD)
 #' @param comparators Vector of names of comparison treatments to plot in colour.
+#' @param contribution_matrix Contributions from function `CalculateContributions()`.
 #' @param contribution_type Name of the type of contribution, used to calculate sizes for the study contribution circles.
 #' @param include_covariate TRUE if the value of the covariate is to be plotted as a vertical line. Defaults to FALSE.
 #' @param include_ghosts TRUE if all other comparator studies should be plotted in grey in the background of the plot. Defaults to FALSE.
@@ -16,7 +16,7 @@
 #' @param include_confidence TRUE if the confidence regions should be plotted for the specified comparators. These will be partially transparent regions.
 #' Defaults to FALSE.
 #' @param confidence_opacity The opacity of the confidence regions. Can be any value between 0 and 1, inclusive. Defaults to 0.2.
-#' @param include_contribution TRUE if study contribution should be displayed as circles. Defaults to TRUE.
+#' @param include_contributions TRUE if the contributions should be plotted as a circle for each study. Defaults to TRUE.
 #' @param contribution_multiplier Multiplication factor by which to scale the sizes of the study contribution circles. Defaults to 1.0.
 #' @param legend_position String informing the position of the legend. Acceptable values are:
 #' - "BR" - Bottom-right of the plot area
@@ -27,10 +27,13 @@
 #'
 #' @return Created ggplot2 object.
 CreateMainRegressionPlot <- function(
+    data,
+    covariate_title,
     model_output,
     treatment_df,
     outcome_type,
     comparators,
+    contribution_matrix,
     contribution_type,
     include_covariate = FALSE,
     include_ghosts = FALSE,
@@ -60,9 +63,9 @@ CreateMainRegressionPlot <- function(
     ghosts <-  all_comparators[!all_comparators %in% comparators]
     
     if (include_contributions) {
-      plot <- .PlotDirectContributionCircles(plot, model_output, treatment_df, reference, ghosts, contribution_type, contribution_multiplier, ghosted = TRUE)
+      plot <- .PlotDirectContributionCircles(plot, model_output, treatment_df, reference, ghosts, contribution_matrix, contribution_type, contribution_multiplier, ghosted = TRUE)
     }
-    plot <- .PlotRegressionLines(plot, model_output, treatment_df, reference, ghosts, include_extrapolation, ghosted = TRUE)
+    plot <- .PlotRegressionLines(plot, data, covariate_title, model_output, treatment_df, reference, ghosts, include_extrapolation, ghosted = TRUE)
   }
   
   if (length(comparators) > 0) {
@@ -70,9 +73,9 @@ CreateMainRegressionPlot <- function(
       plot <- .PlotConfidenceRegions(plot, model_output, treatment_df, reference, comparators)
     }
     if (include_contributions) {
-      plot <- .PlotDirectContributionCircles(plot, model_output, treatment_df, reference, comparators, contribution_type, contribution_multiplier)
+      plot <- .PlotDirectContributionCircles(plot, model_output, treatment_df, reference, comparators, contribution_matrix, contribution_type, contribution_multiplier)
     }
-    plot <- .PlotRegressionLines(plot, model_output, treatment_df, reference, comparators, include_extrapolation)
+    plot <- .PlotRegressionLines(plot, data, covariate_title, model_output, treatment_df, reference, comparators, include_extrapolation)
   }
   
   # Plot a vertical line at the covariate value
@@ -183,18 +186,23 @@ CreateMainRegressionPlot <- function(
 #' @param treatment_df Reactive containing data frame containing treatment IDs (Number), sanitised names (Label), and original names (RawLabel).
 #' @param reference Name of reference treatment.
 #' @param comparators Vector of names of comparison treatments to plot.
+#' @param contribution_matrix Contributions from function `CalculateContributions()`.
 #' @param contribution_type Name of the type of contribution, used to calculate sizes for the study contribution circles.
 #' @param contribution_multiplier Multiplication factor by which to scale the sizes of the study contribution circles. Defaults to 1.0.
 #' @param ghosted TRUE if studies should be plotted in grey. Defaults to FALSE.
 #'
 #' @return The modified ggplot2 object.
-.PlotDirectContributionCircles <- function(plot, model_output, treatment_df, reference, comparators, contribution_type, contribution_multiplier, ghosted = FALSE) {
-  contributions = .FindDirectRegressionContributions(model_output, reference, comparators, contribution_type)
+.PlotDirectContributionCircles <- function(plot, model_output, treatment_df, reference, comparators, contribution_matrix, contribution_type, contribution_multiplier, ghosted = FALSE) {
+  contributions = .FindDirectRegressionContributions(model_output, reference, comparators, contribution_matrix, contribution_type)
+  
+  if (nrow(contributions) == 0) {
+    return(plot)
+  }
   
   contributions$Treatment <- sapply(contributions$Treatment, function(treatment) { treatment_df$RawLabel[treatment_df$Label == treatment] })
   
   if (ghosted) {
-    contributions$Treatment <- rep(.ghost_name, length(contributions$Treatment))
+    contributions$Treatment <- rep(regression_ghost_name, length(contributions$Treatment))
   }
   
   plot <- plot +
@@ -217,6 +225,8 @@ CreateMainRegressionPlot <- function(
 #' Plot the regression lines on the plot.
 #'
 #' @param plot ggplot2 object to which to add elements.
+#' @param data Data from which to find covariate ranges.
+#' @param covariate_title Title of the covariate column in the data.
 #' @param model_output GEMTC model results found by calling `CovariateModelOutput()`.
 #' @param treatment_df Reactive containing data frame containing treatment IDs (Number), sanitised names (Label), and original names (RawLabel).
 #' @param reference Name of reference treatment.
@@ -226,18 +236,24 @@ CreateMainRegressionPlot <- function(
 #' @param ghosted TRUE if studies should be plotted in grey. Defaults to FALSE.
 #'
 #' @return The modified ggplot2 object.
-.PlotRegressionLines <- function(plot, model_output, treatment_df, reference, comparators, extrapolate, ghosted = FALSE) {
+.PlotRegressionLines <- function(plot, data, covariate_title, model_output, treatment_df, reference, comparators, extrapolate, ghosted = FALSE) {
+  covariate_ranges <- .FindCovariateRange(data, treatment_df, reference, comparators, covariate_title)
+  
+  if (nrow(covariate_ranges) == 0) {
+    return(plot)
+  }
+  
   # Create data frame
   lines = data.frame(
     Treatment = sapply(comparators, function(comparator) { treatment_df$RawLabel[treatment_df$Label == comparator] }),
     intersect = model_output$intercepts[comparators],
     slope = model_output$slopes[comparators],
-    start_x = .FindRegressionStartX(model_output, reference, comparators),
-    end_x = .FindRegressionEndX(model_output, reference, comparators)
+    start_x = covariate_ranges$min[match(comparators, covariate_ranges$Treatment)],
+    end_x = covariate_ranges$max[match(comparators, covariate_ranges$Treatment)]
   )
   
   if (ghosted) {
-    lines$Treatment <- rep(.ghost_name, length(lines$Treatment))
+    lines$Treatment <- rep(regression_ghost_name, length(lines$Treatment))
   }
   
   if (extrapolate) {
@@ -275,48 +291,45 @@ CreateMainRegressionPlot <- function(
   return(plot)
 }
 
-#' Find the lowest covariate value given by a study comparing the reference and comparator treatments.
+#' Find the lowest and highest covariate values given by a study comparing the reference and comparator treatments.
 #'
-#' @param model_output GEMTC model results found by calling `CovariateModelOutput()`.
+#' @param data Data from which to find covariate ranges.
+#' @param treatment_ids Reactive containing data frame containing treatment IDs (Number), sanitised names (Label).
 #' @param reference Name of reference treatment.
 #' @param comparator Name of comparison treatment for which to find lowest covariate value.
+#' @param covariate_title Title of the covariate column in the data.
 #'
-#' @return The lowest covariate value of a relevant study.
-.FindRegressionStartX <- function(model_output, reference, comparator) {
-  intersects <- data.frame(
-    treatment = c(
-      "the_Butcher",
-      "the_Dung_named",
-      "the_Great",
-      "the_Little",
-      "the_Slit_nosed",
-      "the_Younger"
-    ),
-    value = c(0, 1, 2, NA, 3, 4) + 97
+#' @return The lowest and highest covariate values of relevant studies.
+.FindCovariateRange <- function(data, treatment_ids, reference, comparator, covariate_title) {
+  study_treatments <- sapply(
+    unique(data$Study),
+    function(study) {
+      FindAllTreatments(data, treatment_ids, study)
+    }
   )
-  return(intersects$value[intersects$treatment %in% comparator])
-}
 
-#' Find the highest covariate value given by a study comparing the reference and comparator treatments.
-#'
-#' @param model_output GEMTC model results found by calling `CovariateModelOutput()`.
-#' @param reference Name of reference treatment.
-#' @param comparator Name of comparison treatment for which to find highest covariate value.
-#'
-#' @return The highest covariate value of a relevant study.
-.FindRegressionEndX <- function(model_output, reference, comparator) {
-  intersects <- data.frame(
-    treatment = c(
-      "the_Butcher",
-      "the_Dung_named",
-      "the_Great",
-      "the_Little",
-      "the_Slit_nosed",
-      "the_Younger"
-    ),
-    value = c(6, 7, 8, NA, 9, 10) + 97
-  )
-  return(intersects$value[intersects$treatment %in% comparator])
+  min_max <- data.frame(Treatment = c(), min = c(), max = c())
+  for (treatment_name in comparator) {
+    min <- NA
+    max <- NA
+    for (study in unique(data$Study)) {
+
+      if (treatment_name %in% study_treatments[, study] && reference %in% study_treatments[, study]) {
+        covariate_value <- data[[covariate_title]][data$Study == study][1]
+
+        if (is.na(min) || min > covariate_value) {
+          min <- covariate_value
+        }
+
+        if (is.na(max) || max < covariate_value) {
+          max <- covariate_value
+        }
+      }
+    }
+    min_max <- rbind(min_max, data.frame(Treatment = treatment_name, min = min, max = max))
+  }
+  
+  return(min_max)
 }
 
 #' Find the contributions to the regression analysis.
@@ -324,6 +337,7 @@ CreateMainRegressionPlot <- function(
 #' @param model_output GEMTC model results found by calling `CovariateModelOutput()`.
 #' @param reference Name of reference treatment.
 #' @param comparator Name of comparison treatment for which to find the contributions.
+#' @param model_output GEMTC model results found by calling `CovariateModelOutput()`.
 #' @param contribution_type Name of the type of contribution to find.
 #'
 #' @return Data frame containing contribution details. Each row represents a study contributing to a given treatment. Columns are:
@@ -331,48 +345,35 @@ CreateMainRegressionPlot <- function(
 #' - covariate_value: Value of the covariate for this study.
 #' - relative_effect Relative effect for this study.
 #' - contribution: Size of contribution for this study.
-.FindDirectRegressionContributions <- function(model_output, reference, comparator, contribution_type) {
-  
+.FindDirectRegressionContributions <- function(model_output, reference, comparator, contribution_matrix, contribution_type) {
   treatments <- c()
   covariate_values <- c()
   relative_effects <- c()
   contributions <- c()
   
-  treatments <- c(treatments, rep("the_Butcher", 3))
-  covariate_values <- c(covariate_values, c(0, 7, 1))
-  relative_effects <- c(relative_effects, c(0.5, 8, 2))
-  contributions <- c(contributions, c(2, 3, 1))
+  for (treatment in comparator) {
+    for (study in row.names(contribution_matrix$direct)) {
+      direct_contribution <- contribution_matrix$direct[study, treatment]
+      
+      if (is.na(direct_contribution)) {
+        next
+      }
+      
+      treatments <- c(treatments, treatment)
+      covariate_values <- c(covariate_values, contribution_matrix$covariate_value[study])
+      relative_effects <- c(relative_effects, contribution_matrix$relative_effect[study, treatment])
+      contributions <- c(contributions, direct_contribution)
+    }
+  }
   
-  treatments <- c(treatments, rep("the_Dung_named", 2))
-  covariate_values <- c(covariate_values, c(1, 8))
-  relative_effects <- c(relative_effects, c(2, 4.8))
-  contributions <- c(contributions, c(2, 5))
-  
-  treatments <- c(treatments, rep("the_Great", 3))
-  covariate_values <- c(covariate_values, c(1.5, 2.5, 3.5))
-  relative_effects <- c(relative_effects, c(1.5, 2.5, 3.5))
-  contributions <- c(contributions, c(2, 3, 1))
-  
-  # the_Little is the reference treatment
-  
-  treatments <- c(treatments, rep("the_Slit_nosed", 3))
-  covariate_values <- c(covariate_values, c(2, 4, 6))
-  relative_effects <- c(relative_effects, c(6, 2, 4))
-  contributions <- c(contributions, c(2, 3, 5))
-  
-  treatments <- c(treatments, rep("the_Younger", 3))
-  covariate_values <- c(covariate_values, c(5, 7.7, 9))
-  relative_effects <- c(relative_effects, c(9, 3, 6))
-  contributions <- c(contributions, c(6, 6, 6))
-  
-  contribution_df <- data.frame(
-    Treatment = treatments,
-    covariate_value = covariate_values + 97,
-    relative_effect = relative_effects,
-    contribution = contributions
+  return(
+    data.frame(
+      Treatment = treatments,
+      covariate_value = covariate_values,
+      relative_effect = relative_effects,
+      contribution = contributions
+    )
   )
-  
-  return(contribution_df[contribution_df$Treatment %in% comparator, ])
 }
 
 #' Find the confidence regions for the regression analysis.
@@ -421,32 +422,4 @@ CreateMainRegressionPlot <- function(
   )
   
   return(confidence_df[confidence_df$Treatment %in% comparator, ])
-}
-
-#' Example for the meta-regression main plot.
-#'
-#' @return Created ggplot2 object.
-.MetaRegressionMainPlotExample <- function() {
-  data <- read.csv("tests/testthat/Cont_long_continuous_cov.csv")
-  treatment_ids <- CreateTreatmentIds(FindAllTreatments(data), reference_treatment = "the Little")
-  data <- WrangleUploadData(data, treatment_ids, "Continuous")
-  wrangled_treatment_list <- CleanTreatmentIds(treatment_ids)
-  
-  model <- RunCovariateModel(data, wrangled_treatment_list, "Continuous", 'MD', "covar.age", "age", 'random', 'unrelated', "the_Little")
-  model_output <<- CovariateModelOutput(model, 98)
-  
-  plot <- CreateMainRegressionPlot(
-    model_output = model_output,
-    treatment_df = wrangled_treatment_list,
-    comparators = c("the_Butcher", "the_Dung_named"),
-    contribution_type = "percentage",
-    include_covariate = TRUE,
-    include_ghosts = TRUE,
-    include_extrapolation = TRUE,
-    include_confidence = TRUE,
-    confidence_opacity = 0.2,
-    contribution_multiplier = 5.0
-  )
-  
-  return(plot)
 }
