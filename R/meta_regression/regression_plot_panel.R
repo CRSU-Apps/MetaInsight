@@ -307,8 +307,6 @@ regression_plot_panel_server <- function(id, data, covariate_title, model_output
       }
       
       CreateCompositeMetaRegressionPlot(
-        data = data(),
-        covariate_title = covariate_title(),
         model_output = model_output(),
         treatment_df = treatment_df(),
         outcome_type = outcome_type(),

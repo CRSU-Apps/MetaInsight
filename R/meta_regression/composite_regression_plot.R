@@ -4,8 +4,6 @@ regression_ghost_name = "\u200BOther"
 
 #' Create a composite meta-regression plot which comprises plots showing direct and indirect evidence.
 #'
-#' @param data Data from which to find covariate ranges.
-#' @param covariate_title Title of the covariate column in the data
 #' @param model_output GEMTC model results found by calling `CovariateModelOutput()`.
 #' @param treatment_df Reactive containing data frame containing treatment IDs (Number), sanitised names (Label), and original names (RawLabel).
 #' @param outcome_type Reactive type of outcome (OR, RR, RD, MD or SD)
@@ -29,8 +27,6 @@ regression_ghost_name = "\u200BOther"
 #'
 #' @return Created ggplot2 object.
 CreateCompositeMetaRegressionPlot <- function(
-    data,
-    covariate_title,
     model_output,
     treatment_df,
     outcome_type,
@@ -47,8 +43,6 @@ CreateCompositeMetaRegressionPlot <- function(
     legend_position = "BR") {
   
   direct_plot <- CreateMainRegressionPlot(
-    data = data,
-    covariate_title = covariate_title,
     model_output = model_output,
     treatment_df = treatment_df,
     outcome_type = outcome_type,

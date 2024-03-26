@@ -1,8 +1,6 @@
 
 #' Create a covariate regression plot where multiple comparisons can be plotted, and the contributions from each study are shown as circles.
 #'
-#' @param data Data from which to find covariate ranges.
-#' @param covariate_title Title of the covariate column in the data.
 #' @param model_output GEMTC model results found by calling `CovariateModelOutput()`.
 #' @param treatment_df Reactive containing data frame containing treatment IDs (Number), sanitised names (Label), and original names (RawLabel).
 #' @param outcome_type Reactive type of outcome (OR, RR, RD, MD)
@@ -27,8 +25,6 @@
 #'
 #' @return Created ggplot2 object.
 CreateMainRegressionPlot <- function(
-    data,
-    covariate_title,
     model_output,
     treatment_df,
     outcome_type,
@@ -65,7 +61,7 @@ CreateMainRegressionPlot <- function(
     if (include_contributions) {
       plot <- .PlotDirectContributionCircles(plot, model_output, treatment_df, reference, ghosts, contribution_matrix, contribution_type, contribution_multiplier, ghosted = TRUE)
     }
-    plot <- .PlotRegressionLines(plot, data, covariate_title, model_output, treatment_df, reference, ghosts, include_extrapolation, ghosted = TRUE)
+    plot <- .PlotRegressionLines(plot, model_output, contribution_matrix, treatment_df, reference, ghosts, include_extrapolation, ghosted = TRUE)
   }
   
   if (length(comparators) > 0) {
@@ -75,7 +71,7 @@ CreateMainRegressionPlot <- function(
     if (include_contributions) {
       plot <- .PlotDirectContributionCircles(plot, model_output, treatment_df, reference, comparators, contribution_matrix, contribution_type, contribution_multiplier)
     }
-    plot <- .PlotRegressionLines(plot, data, covariate_title, model_output, treatment_df, reference, comparators, include_extrapolation)
+    plot <- .PlotRegressionLines(plot, model_output, contribution_matrix, treatment_df, reference, comparators, include_extrapolation)
   }
   
   # Plot a vertical line at the covariate value
@@ -225,9 +221,8 @@ CreateMainRegressionPlot <- function(
 #' Plot the regression lines on the plot.
 #'
 #' @param plot ggplot2 object to which to add elements.
-#' @param data Data from which to find covariate ranges.
-#' @param covariate_title Title of the covariate column in the data.
 #' @param model_output GEMTC model results found by calling `CovariateModelOutput()`.
+#' @param contribution_matrix Contributions from function `CalculateContributions()`.
 #' @param treatment_df Reactive containing data frame containing treatment IDs (Number), sanitised names (Label), and original names (RawLabel).
 #' @param reference Name of reference treatment.
 #' @param comparators Vector of names of comparison treatments to plot.
@@ -236,20 +231,14 @@ CreateMainRegressionPlot <- function(
 #' @param ghosted TRUE if studies should be plotted in grey. Defaults to FALSE.
 #'
 #' @return The modified ggplot2 object.
-.PlotRegressionLines <- function(plot, data, covariate_title, model_output, treatment_df, reference, comparators, extrapolate, ghosted = FALSE) {
-  covariate_ranges <- .FindCovariateRange(data, treatment_df, reference, comparators, covariate_title)
-  
-  if (nrow(covariate_ranges) == 0) {
-    return(plot)
-  }
-  
+.PlotRegressionLines <- function(plot, model_output, contribution_matrix, treatment_df, reference, comparators, extrapolate, ghosted = FALSE) {
   # Create data frame
   lines = data.frame(
     Treatment = sapply(comparators, function(comparator) { treatment_df$RawLabel[treatment_df$Label == comparator] }),
     intersect = model_output$intercepts[comparators],
     slope = model_output$slopes[comparators],
-    start_x = covariate_ranges$min[match(comparators, covariate_ranges$Treatment)],
-    end_x = covariate_ranges$max[match(comparators, covariate_ranges$Treatment)]
+    start_x = contribution_matrix$covariate_min[comparators],
+    end_x = contribution_matrix$covariate_max[comparators]
   )
   
   if (ghosted) {
@@ -289,47 +278,6 @@ CreateMainRegressionPlot <- function(
     )
   
   return(plot)
-}
-
-#' Find the lowest and highest covariate values given by a study comparing the reference and comparator treatments.
-#'
-#' @param data Data from which to find covariate ranges.
-#' @param treatment_ids Reactive containing data frame containing treatment IDs (Number), sanitised names (Label).
-#' @param reference Name of reference treatment.
-#' @param comparator Name of comparison treatment for which to find lowest covariate value.
-#' @param covariate_title Title of the covariate column in the data.
-#'
-#' @return The lowest and highest covariate values of relevant studies.
-.FindCovariateRange <- function(data, treatment_ids, reference, comparator, covariate_title) {
-  study_treatments <- sapply(
-    unique(data$Study),
-    function(study) {
-      FindAllTreatments(data, treatment_ids, study)
-    }
-  )
-
-  min_max <- data.frame(Treatment = c(), min = c(), max = c())
-  for (treatment_name in comparator) {
-    min <- NA
-    max <- NA
-    for (study in unique(data$Study)) {
-
-      if (treatment_name %in% study_treatments[, study] && reference %in% study_treatments[, study]) {
-        covariate_value <- data[[covariate_title]][data$Study == study][1]
-
-        if (is.na(min) || min > covariate_value) {
-          min <- covariate_value
-        }
-
-        if (is.na(max) || max < covariate_value) {
-          max <- covariate_value
-        }
-      }
-    }
-    min_max <- rbind(min_max, data.frame(Treatment = treatment_name, min = min, max = max))
-  }
-  
-  return(min_max)
 }
 
 #' Find the contributions to the regression analysis.
