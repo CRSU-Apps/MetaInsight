@@ -7,7 +7,7 @@
   )
 }
 
-.AddTooltip <- function(..., tooltip) {
+.AddRegressionOptionTooltip <- function(..., tooltip) {
   return(
     div(
       ...,
@@ -34,7 +34,7 @@ regression_plot_panel_ui <- function(id) {
       # Add comparators
       selectInput(
         inputId = ns("add_comparator_dropdown"),
-        label = .AddTooltip(
+        label = .AddRegressionOptionTooltip(
           tags$html("Add Comparator", tags$i(class="fa-regular fa-circle-question")),
           tooltip = "All treatments are compared to the reference treatment"
         ),
@@ -58,7 +58,7 @@ regression_plot_panel_ui <- function(id) {
       
       h3("Plot Options"),
       # Covariate value
-      .AddTooltip(
+      .AddRegressionOptionTooltip(
         checkboxInput(
           inputId = ns("covariate"),
           label = tags$html("Show covariate value ", tags$i(class="fa-regular fa-circle-question")),
@@ -67,7 +67,7 @@ regression_plot_panel_ui <- function(id) {
         tooltip = "Show the covariate value as a vertical line at the current value"
       ),
       # Confidence regions
-      .AddTooltip(
+      .AddRegressionOptionTooltip(
         checkboxInput(
           inputId = ns("confidence"),
           label = tags$html("Show confidence regions", tags$i(class="fa-regular fa-circle-question"))
@@ -83,7 +83,7 @@ regression_plot_panel_ui <- function(id) {
         value = 0.2
       ),
       # Regression lines
-      .AddTooltip(
+      .AddRegressionOptionTooltip(
         checkboxInput(
           inputId = ns("ghosts"),
           label = tags$html("Show ghost comparisons", tags$i(class="fa-regular fa-circle-question")),
@@ -91,7 +91,7 @@ regression_plot_panel_ui <- function(id) {
         ),
         tooltip = "Show other available comparisons in light grey behind the main plot"
       ),
-      .AddTooltip(
+      .AddRegressionOptionTooltip(
         checkboxInput(
           inputId = ns("extrapolate"),
           label = tags$html("Extrapolate regression lines", tags$i(class="fa-regular fa-circle-question")),
@@ -100,7 +100,7 @@ regression_plot_panel_ui <- function(id) {
         tooltip = "Extrapolate the regression lines beyond the range of the original data"
       ),
       # Contributions
-      .AddTooltip(
+      .AddRegressionOptionTooltip(
         checkboxInput(
           inputId = ns("contributions"),
           label = tags$html("Show contributions", tags$i(class="fa-regular fa-circle-question")),
@@ -108,25 +108,41 @@ regression_plot_panel_ui <- function(id) {
         ),
         tooltip = "Show study contributions as circles, where a bigger circle represents a larger contribution"
       ),
+      uiOutput(outputId = ns("contributions_missing")),
       
       div(
         id = ns("contribution_options"),
         radioButtons(
-          inputId = ns("contribution_toggle"),
+          inputId = ns("absolute_relative_toggle"),
           label = "Study circle sized by:",
           choiceNames = list(
-            div(
+            .AddRegressionOptionTooltip(
               tags$html("% Contribution", tags$i(class="fa-regular fa-circle-question")),
-              title = "Circles scaled by percentage contribution of each study to each treatment regression"
+              tooltip = "Circles scaled by percentage contribution of each study to each treatment regression"
             ),
-            div(
-              tags$html("Inverse Variance", tags$i(class="fa-regular fa-circle-question")),
-              title = "Circles scaled by inverse variance of each study"
+            .AddRegressionOptionTooltip(
+              tags$html("Absolute contribution", tags$i(class="fa-regular fa-circle-question")),
+              tooltip = "Circles scaled by absolute contribution of each study"
             )
           ),
-          choiceValues = c("percentage", "inverse variance")
+          choiceValues = c("percentage", "absolute")
         ),
-        .AddTooltip(
+        radioButtons(
+          inputId = ns("contribution_weight_toggle"),
+          label = "Contribution type:",
+          choiceNames = list(
+            .AddRegressionOptionTooltip(
+              tags$html("Contribution", tags$i(class="fa-regular fa-circle-question")),
+              tooltip = "Circles scaled by total contribution to the regression; both the weight and the value are taken into account"
+            ),
+            .AddRegressionOptionTooltip(
+              tags$html("Weight", tags$i(class="fa-regular fa-circle-question")),
+              tooltip = "Circles scaled by weight of each study; this does not take into account how much this study affects the regression"
+            )
+          ),
+          choiceValues = c("contribution", "weight")
+        ),
+        .AddRegressionOptionTooltip(
           numericInput(
             inputId = ns("circle_multipler"),
             label = tags$html("Circle Size Multiplier", tags$i(class="fa-regular fa-circle-question")),
@@ -155,10 +171,13 @@ regression_plot_panel_ui <- function(id) {
 #' Create the regression plot server.
 #'
 #' @param id ID of the module.
-#' @param model_output GEMTC model results found by calling `CovariateModelOutput()`.
+#' @param data Reactive containing study data including covariate columns, in wide or long format.
+#' @param covariate_title Reactive containing title of the covariate column in the data.
+#' @param model_output Reactive containing GEMTC model results found by calling `CovariateModelOutput()`.
 #' @param treatment_df Reactive containing data frame containing treatment IDs (Number), sanitised names (Label), and original names (RawLabel).
-#' @param outcome_type Reactive type of outcome (OR, RR, RD, MD or SD)
-regression_plot_panel_server <- function(id, model_output, treatment_df, outcome_type, reference) {
+#' @param outcome_type Reactive containing meta analysis outcome: "Continuous" or "Binary".
+#' @param outcome_measure Reactive type of outcome (OR, RR, RD, MD or SD).
+regression_plot_panel_server <- function(id, data, covariate_title, model_output, treatment_df, outcome_type, outcome_measure, reference) {
   shiny::moduleServer(id, function(input, output, session) {
     
     available_to_add <- reactive({
@@ -212,8 +231,72 @@ regression_plot_panel_server <- function(id, model_output, treatment_df, outcome
       shinyjs::toggleState(id = "contribution_options", condition = input$contributions)
     })
     
-    contribution_type <- reactive({
-      input$contribution_toggle
+    mtc_summary <- reactive({
+      summary(model_output()$mtcResults)
+    })
+      
+    contribution_matrix <- reactive({
+      tryCatch(
+        expr = {
+          if (model_output()$model == "random") {
+            std_dev_d <- mtc_summary()$summaries$quantiles["sd.d", "50%"]
+          } else {
+            std_dev_d <- NULL
+          }
+          
+          if (model_output()$mtcResults$model$regressor$coefficient == "exchangeable") {
+            std_dev_beta <- mtc_summary()$summaries$quantiles["reg.sd", "50%"]
+          } else {
+            std_dev_beta <- NULL
+          }
+          
+          CalculateContributions(
+            data = data(),
+            covariate_title = covariate_title(),
+            treatment_ids = treatment_df(),
+            outcome_type = outcome_type(),
+            outcome_measure = outcome_measure(),
+            effects_type = model_output()$model,
+            std_dev_d = std_dev_d,
+            std_dev_beta = std_dev_beta,
+            cov_parameters = model_output()$mtcResults$model$regressor$coefficient,
+            study_or_comparison_level = "study",
+            absolute_or_percentage = input$absolute_relative_toggle,
+            weight_or_contribution = input$contribution_weight_toggle
+          )
+        },
+        error = function(err) {
+          return(NULL)
+        }
+      )
+    })
+    
+    output$contributions_missing <- renderUI({
+      if (is.null(contribution_matrix())) {
+        return(
+          div(
+            p("Contribution matrix cannot be calculated"),
+            style = "color: #ff0000;"
+          )
+        )
+      } else {
+        return(NULL)
+      }
+    })
+    
+    previous_contributions <- reactiveVal(TRUE)
+    
+    observe({
+      if (is.null(contribution_matrix())) {
+        # Store current state of contributions toggle to reinstate once checkbox is reenabled
+        previous_contributions(is.null(input$contibutions) || input$contibutions)
+        
+        updateCheckboxInput(inputId = "contributions", value = FALSE)
+        shinyjs::disable(id = "contributions")
+      } else {
+        updateCheckboxInput(inputId = "contributions", value = previous_contributions())
+        shinyjs::enable(id = "contributions")
+      }
     })
     
     output$regression_plot <- renderPlot({
@@ -228,7 +311,8 @@ regression_plot_panel_server <- function(id, model_output, treatment_df, outcome
         treatment_df = treatment_df(),
         outcome_type = outcome_type(),
         comparators = comparators,
-        contribution_type = contribution_type(),
+        contribution_matrix = contribution_matrix(),
+        contribution_type = input$absolute_relative_toggle,
         include_covariate = input$covariate,
         include_ghosts = input$ghosts,
         include_extrapolation = input$extrapolate,

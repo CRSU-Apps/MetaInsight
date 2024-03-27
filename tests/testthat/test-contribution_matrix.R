@@ -373,4 +373,129 @@ test_that("CreateContributionMatrix() produces a matrix of the correct format wh
   expect_equal(colnames(contribution_shared), c("Hydrogen:Oxygen_d", "Hydrogen:Sulphur_d", "B"))
 })
 
+test_that("CalculateContributions() gathers covariate values for studies", {
+  setup <- SetupAndCalculateContributionMatrix()
+  data <- setup$data
+  treatment_ids <- setup$treatment_ids
+  covariate_title <- setup$covariate_title
+  contributions <- setup$contributions
+  
+  studies <- unique(data$Study)
+  
+  expected_covariate_values <- unique(data[[covariate_title]])
+  names(expected_covariate_values) <- studies
+  
+  covariate_values <- contributions$covariate_value
+  names(covariate_values) <- studies
+  expect_equal(
+    !!covariate_values,
+    !!expected_covariate_values
+  )
+})
 
+test_that("CalculateContributions() gathers min and max direct covariate values for treatments", {
+  setup <- SetupAndCalculateContributionMatrix()
+  data <- setup$data
+  treatment_ids <- setup$treatment_ids
+  covariate_title <- setup$covariate_title
+  contributions <- setup$contributions
+  
+  # Numbers manually taken from data set
+  expect_equal(
+    !!contributions$covariate_min,
+    !!c(Oxygen = 911, Sulphur = 4, Zinc = 63, Einsteinium = 72)
+  )
+  
+  # Numbers manually taken from data set
+  expect_equal(
+    !!contributions$covariate_max,
+    !!c(Oxygen = 911, Sulphur = 4, Zinc = 72, Einsteinium = 72)
+  )
+})
+
+test_that("CalculateContributions() gathers direct contrinbutions for treatments and studies", {
+  setup <- SetupAndCalculateContributionMatrix()
+  data <- setup$data
+  treatment_ids <- setup$treatment_ids
+  covariate_title <- setup$covariate_title
+  contributions <- setup$contributions
+  
+  studies <- unique(data$Study)
+  
+  # Numbers manually taken from data set
+  expected_direct_contributions <- matrix(
+    data = c(
+      1.1, NA,  NA,  NA, NA,
+      NA,  4.4, NA,  NA, NA,
+      NA,  NA,  5.5, NA, 9.9,
+      NA,  NA,  6.6, NA, NA
+    ),
+    length(studies),
+    length(treatment_ids$Label) - 1
+  )
+  row.names(expected_direct_contributions) <- studies
+  colnames(expected_direct_contributions) <- treatment_ids$Label[-1]
+  
+  expect_equal(
+    !!contributions$direct,
+    !!expected_direct_contributions
+  )
+})
+
+test_that("CalculateContributions() gathers indirect contrinbutions for treatments and studies", {
+  setup <- SetupAndCalculateContributionMatrix()
+  data <- setup$data
+  treatment_ids <- setup$treatment_ids
+  covariate_title <- setup$covariate_title
+  contributions <- setup$contributions
+  
+  studies <- unique(data$Study)
+  
+  # Numbers manually taken from data set
+  expected_indirect_contributions <- matrix(
+    data = c(
+      NA,  3.3, NA,  7.7, NA,
+      2.2, NA,  NA,  8.8, NA,
+      NA,  NA,  NA,  NA,  NA,
+      NA,  NA,  NA,  NA,  NA
+    ),
+    length(studies),
+    length(treatment_ids$Label) - 1
+  )
+  row.names(expected_indirect_contributions) <- studies
+  colnames(expected_indirect_contributions) <- treatment_ids$Label[-1]
+  
+  expect_equal(
+    !!contributions$indirect,
+    !!expected_indirect_contributions
+  )
+})
+
+test_that("CalculateContributions() gathers relative treatment effects for treatments and studies", {
+  setup <- SetupAndCalculateContributionMatrix()
+  data <- setup$data
+  treatment_ids <- setup$treatment_ids
+  covariate_title <- setup$covariate_title
+  contributions <- setup$contributions
+  
+  studies <- unique(data$Study)
+  
+  # Numbers manually taken from data set
+  expected_relative_effects <- matrix(
+    data = c(
+      11, NA, NA, NA, NA,
+      NA, 22, NA, NA, NA,
+      NA, NA, 33, NA, 77,
+      NA, NA, 55, NA, NA
+    ),
+    length(studies),
+    length(treatment_ids$Label) - 1
+  )
+  row.names(expected_relative_effects) <- studies
+  colnames(expected_relative_effects) <- treatment_ids$Label[-1]
+  
+  expect_equal(
+    !!contributions$relative_effect,
+    !!expected_relative_effects
+  )
+})

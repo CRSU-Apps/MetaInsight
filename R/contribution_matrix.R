@@ -627,9 +627,209 @@ CheckSingularMatrix <- function(matrix){
   return(contribution)
 }
 
+#' Create the contribution matrix in a convenient format.
+#' 
+#' @param data Input data in long format.
+#' @param covariate_title Title of covariate column in data.
+#' @param treatment_ids Data frame containing treatment IDs and names in columns named 'Number' and 'Label' respectively.
+#' @param outcome_type "Continuous" or "Binary".
+#' @param outcome_measure "MD", "OR", "RR" or "RD".
+#' @param effects_type "fixed" or "random".
+#' @param std_dev_d Between-study standard deviation. Only required when @param effects_type == "random". Defaults to NULL.
+#' @param cov_parameters "shared", "exchangeable", or "unrelated".
+#' @param cov_centre Centring value for the covariate, defaults to the mean.
+#' @param std_dev_beta Standard deviation of covariate parameters. Only required when @param cov_parameters == "exchangeable". Defaults to NULL.
+#' @param study_or_comparison_level "study" for study-level contributions, "comparison" for basic-comparison-level contributions.
+#' @param absolute_or_percentage "percentage" for percentage contributions, "absolute" for absolute contributions.
+#' @param basic_or_all_parameters "basic" for one column per basic parameter, "all" for one column per parameter. Defaults to "basic".
+#' @param weight_or_contribution "weight" for coefficients or "contribution" for coefficients multiplied by observed treatment effects.
+#' @return List of contributions:
+#' - "direct"
+#'   - Matrix of direct contributions to the regression. Rows are studies, columns are treatments
+#' - "indirect"
+#'   - Matrix of indirect contributions to the regression. Rows are studies, columns are treatments
+#' - "relative_effect"
+#'   - Matrix of relative effects of treatments compared to the reference. Rows are studies, columns are treatments
+#' - "covariate_value"
+#'   - Vector of covariate values from the studies.
+CalculateContributions <- function(
+    data,
+    covariate_title,
+    treatment_ids,
+    outcome_type,
+    outcome_measure,
+    effects_type,
+    std_dev_d = NULL,
+    cov_parameters,
+    cov_centre = NULL,
+    std_dev_beta = NULL,
+    study_or_comparison_level,
+    absolute_or_percentage,
+    basic_or_all_parameters = "basic",
+    weight_or_contribution) {
+  
+  contributions <- CreateContributionMatrix(
+    data,
+    treatment_ids,
+    outcome_type,
+    outcome_measure,
+    effects_type,
+    std_dev_d,
+    cov_parameters,
+    cov_centre,
+    std_dev_beta,
+    study_or_comparison_level,
+    absolute_or_percentage,
+    basic_or_all_parameters,
+    weight_or_contribution,
+    FALSE
+  )
+  
+  freq <- frequentist(data, outcome_type, treatment_ids, outcome_measure, effects_type)
+  d0 <- freq$d0
+  
+  reference_index <- 1
+  reference <- treatment_ids$Label[treatment_ids$Number == reference_index]
+  treatments <- treatment_ids$Label[treatment_ids$Label != reference]
+  studies <- unique(data$Study)
+  
+  direct_contributions <- matrix(rep(NA, length(studies) * length(treatments)), length(studies), length(treatments))
+  indirect_contributions <- matrix(rep(NA, length(studies) * length(treatments)), length(studies), length(treatments))
+  relative_effects <- matrix(rep(NA, length(studies) * length(treatments)), length(studies), length(treatments))
+  
+  row.names(direct_contributions) <- studies
+  row.names(indirect_contributions) <- studies
+  row.names(relative_effects) <- studies
+  colnames(direct_contributions) <- treatments
+  colnames(indirect_contributions) <- treatments
+  colnames(relative_effects) <- treatments
+  
+  for (treatment in treatments) {
+    treatment_index <- treatment_ids$Number[treatment_ids$Label == treatment]
+    for (study in row.names(contributions)) {
+      contribution <- contributions[study, glue::glue("{reference}:{treatment}_d")]
+      if (contribution == 0) {
+        next
+      }
+      
+      if (treatment %in% FindAllTreatments(data, treatment_ids, study) && reference %in% FindAllTreatments(data, treatment_ids, study)) {
+        direct_contributions[study, treatment] <- contribution
+      } else {
+        indirect_contributions[study, treatment] <- contribution
+      }
+      
+      treatment_effect <- d0$TE[
+        (
+          (d0$treat1 == reference_index & d0$treat2 == treatment_index) |
+          (d0$treat1 == treatment_index & d0$treat2 == reference_index)
+        ) &
+        d0$Study == study
+      ]
+      if (length(treatment_effect) != 0) {
+        relative_effects[study, treatment] <- treatment_effect
+      }
+    }
+  }
+  
+  covariate_values <- data[[covariate_title]][match(studies, data$Study)]
+  names(covariate_values) <- studies
+  
+  min_max <- .FindCovariateRanges(data, treatment_ids, reference, covariate_title)
+  
+  return(
+    list(
+      direct = direct_contributions,
+      indirect = indirect_contributions,
+      relative_effect = relative_effects,
+      covariate_value = covariate_values,
+      covariate_min = min_max$min,
+      covariate_max = min_max$max
+    )
+  )
+}
 
+#' Find the lowest and highest covariate values given by a study comparing the reference and comparator treatments.
+#'
+#' @param data Data frame from which to find covariate ranges
+#' @param treatment_ids data frame containing treatment names ("Label") and IDs ("Number")
+#' @param reference Name of reference treatment.
+#' @param covariate_title Title of covariate column in data.
+#'
+#' @return The lowest and highest covariate values of relevant studies.
+.FindCovariateRanges <- function(data, treatment_ids, reference, covariate_title) {
+  studies <- unique(data$Study)
+  
+  study_treatments <- sapply(
+    studies,
+    function(study) {
+      FindAllTreatments(data, treatment_ids, study)
+    }
+  )
+  
+  # Turn list into matrix
+  # This is only needed when there are different numbers of treatment arms between studies
+  if (is.list(study_treatments)) {
+    max_treatments <- max(
+      sapply(
+        names(study_treatments),
+        function(name) {
+          length(study_treatments[[name]])
+        }
+      )
+    )
+    
+    temp_matrix <- matrix(
+      rep(NA, max_treatments * length(studies)),
+      max_treatments,
+      length(studies)
+    )
+    colnames(temp_matrix) <- studies
+    
+    sapply(
+      studies,
+      function(study) {
+        treatments <- study_treatments[[study]]
+        temp_matrix[1:length(treatments), study] <<- treatments
+      }
+    )
+    
+    study_treatments <- temp_matrix
+  }
+  
+  non_reference_treatment_names <- treatment_ids$Label[treatment_ids$Label != reference]
+  
+  treatment_min <- c()
+  treatment_max <- c()
+  for (treatment_name in non_reference_treatment_names) {
+    min <- NA
+    max <- NA
+    for (study in studies) {
+      
+      if (treatment_name %in% study_treatments[, study] && reference %in% study_treatments[, study]) {
+        covariate_value <- data[[covariate_title]][data$Study == study][1]
+        
+        if (is.na(min) || min > covariate_value) {
+          min <- covariate_value
+        }
+        
+        if (is.na(max) || max < covariate_value) {
+          max <- covariate_value
+        }
+      }
+    }
+    treatment_min[[treatment_name]] <- min
+    treatment_max[[treatment_name]] <- max
+  }
+  
+  return(
+    list(
+      min = unlist(treatment_min),
+      max = unlist(treatment_max)
+    )
+  )
+}
 
-#' Create the contribution matrix
+#' Create the contribution matrix.
 #' 
 #' @param data Input data in long format.
 #' @param treatment_ids Data frame containing treatment IDs and names in columns named 'Number' and 'Label' respectively.
