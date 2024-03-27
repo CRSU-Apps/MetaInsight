@@ -30,7 +30,7 @@ test_that("FindAllTreatments() finds all treatements for long-format data with t
     OtherText = c("A", "A", "B", "B", "C", "C", "C")
   )
   treatment_ids <- data.frame(
-    Number = c(1, 2, 3, 4, 5),
+    Number = 1:5,
     Label = c("Egg", "Flour", "Sugar", "Butter", "Cinnamon")
   )
   
@@ -50,7 +50,7 @@ test_that("FindAllTreatments() finds all treatements for wide-format data with t
     OtherText.3 = c(NA, NA, "C")
   )
   treatment_ids <- data.frame(
-    Number = c(1, 2, 3, 4, 5),
+    Number = 1:5,
     Label = c("Egg", "Flour", "Sugar", "Butter", "Cinnamon")
   )
   
@@ -66,7 +66,7 @@ test_that("FindAllTreatments() finds all treatements for study for long-format d
     OtherText = c("A", "A", "B", "B", "C", "C", "C")
   )
   treatment_ids <- data.frame(
-    Number = c(1, 2, 3, 4, 5),
+    Number = 1:5,
     Label = c("Egg", "Flour", "Sugar", "Butter", "Cinnamon")
   )
   
@@ -86,7 +86,7 @@ test_that("FindAllTreatments() finds all treatements for study for wide-format d
     OtherText.3 = c(NA, NA, "C")
   )
   treatment_ids <- data.frame(
-    Number = c(1, 2, 3, 4, 5),
+    Number = 1:5,
     Label = c("Egg", "Flour", "Sugar", "Butter", "Cinnamon")
   )
   

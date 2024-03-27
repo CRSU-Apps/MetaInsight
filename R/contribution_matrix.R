@@ -757,12 +757,44 @@ CalculateContributions <- function(
 #'
 #' @return The lowest and highest covariate values of relevant studies.
 .FindCovariateRanges <- function(data, treatment_ids, reference, covariate_title) {
+  studies <- unique(data$Study)
+  
   study_treatments <- sapply(
-    unique(data$Study),
+    studies,
     function(study) {
       FindAllTreatments(data, treatment_ids, study)
     }
   )
+  
+  # Turn list into matrix
+  # This is only needed when there are different numbers of treatment arms between studies
+  if (is.list(study_treatments)) {
+    max_treatments <- max(
+      sapply(
+        names(study_treatments),
+        function(name) {
+          length(study_treatments[[name]])
+        }
+      )
+    )
+    
+    temp_matrix <- matrix(
+      rep(NA, max_treatments * length(studies)),
+      max_treatments,
+      length(studies)
+    )
+    colnames(temp_matrix) <- studies
+    
+    sapply(
+      studies,
+      function(study) {
+        treatments <- study_treatments[[study]]
+        temp_matrix[1:length(treatments), study] <<- treatments
+      }
+    )
+    
+    study_treatments <- temp_matrix
+  }
   
   non_reference_treatment_names <- treatment_ids$Label[treatment_ids$Label != reference]
   
@@ -771,7 +803,7 @@ CalculateContributions <- function(
   for (treatment_name in non_reference_treatment_names) {
     min <- NA
     max <- NA
-    for (study in unique(data$Study)) {
+    for (study in studies) {
       
       if (treatment_name %in% study_treatments[, study] && reference %in% study_treatments[, study]) {
         covariate_value <- data[[covariate_title]][data$Study == study][1]
