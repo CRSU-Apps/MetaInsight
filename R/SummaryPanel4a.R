@@ -9,11 +9,11 @@ metaregression_summary_panel_ui <- function(id) {
     uiOutput(ns('toggle')),
     plotOutput(outputId = ns('covariate_plot')),
     textOutput(outputId = ns('covariate_info')),
-    radioButtons(inputId = ns('format_covariate_plot'), 
-                 label = 'Document format', 
-                 choices = c('PDF' = 'pdf', 'PNG' = 'png'), 
-                 inline = TRUE),
-    downloadButton(outputId = ns('download_covariate_summary'))
+    # radioButtons(inputId = ns('format_covariate_plot'), 
+    #              label = 'Document format', 
+    #              choices = c('PDF' = 'pdf', 'PNG' = 'png'), 
+    #              inline = TRUE),
+    # downloadButton(outputId = ns('download_covariate_summary'))
   )
 }
 
