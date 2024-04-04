@@ -377,26 +377,9 @@ test_that("CreateContributionMatrix() produces a matrix of the correct format wh
 
 test_that("CreateContributionMatrix() produces correct output for the Donegan example", {
   #Load data
-  donegan_original <- read.csv("Donegan_contribution_matrix_data.csv")
-  #Make long format
-  donegan_t1 <- donegan_original[, c("s", "t1", "x")]
-  donegan_t2 <- donegan_original[, c("s", "t2", "x")]
-  names(donegan_t1)[names(donegan_t1) == "t1"] <- "T"
-  names(donegan_t2)[names(donegan_t2) == "t2"] <- "T"
-  donegan <- rbind(donegan_t1, donegan_t2)
-  #Create Study column
-  donegan$Study <- paste0("Study ", formatC(donegan$s, digits = 1, flag = 0))
-  #Create Treatment column
-  donegan$Treatment <- donegan$T
-  #Rename covariate
-  names(donegan)[names(donegan) == "x"] <- "covar.x"
-  donegan <- donegan[order(donegan$Study, donegan$Treatment), ]
-  donegan_studies <- unique(donegan$Study)
-  donegan_covariate <- donegan_t1$x
-  names(donegan_covariate) <- donegan_studies
-  #Create treatment IDs
-  donegan_ids <- data.frame(Number = 1:3, Label = as.character(1:3))
-  donegan <- donegan[, -which(names(donegan) == "s")]
+  donegan <- read.csv("Donegan_for_MetaInsight.csv")
+
+  #The donegan dataset is in contrast form, which is not accepted by MetaInsight at the time of writing. The functions CreateVMatrix() and GetEffectSizesAndVariances() require arm-level data, whereas all other functions do not. Therefore to reproduce the contribution matrix given in the publication, these two functions must be overwritten to simulate what would have been produced had the data been arm-level.
   
   #Create backups of these two functions
   BackupCreateVMatrix <- CreateVMatrix
@@ -433,6 +416,7 @@ test_that("CreateContributionMatrix() produces correct output for the Donegan ex
   
   expected_contribution_matrix <- read.csv("Donegan_contribution_matrix_expected.csv")
   expected_contribution_matrix <- as.matrix(expected_contribution_matrix[, 2:7])
+  #Column and row names have already been tested in earlier tests, so no need to check here.
   colnames(expected_contribution_matrix) <- c("1:2_d", "1:3_d", "2:3_d", "1:2_beta", "1:3_beta", "2:3_beta")
   rownames(expected_contribution_matrix) <- rownames(contribution_matrix)
   
@@ -581,17 +565,6 @@ test_that("CreateContributionMatrix() includes all parameters when 'basic_or_all
                                                   study_or_comparison_level = "comparison",
                                                   absolute_or_percentage = "absolute",
                                                   weight_or_contribution = "weight")
-  
-  basic_contribution_matrix <- CreateContributionMatrix(data = data,
-                                                        treatment_ids = treatment_ids,
-                                                        outcome_type = "Continuous",                           
-                                                        outcome_measure = "MD",
-                                                        effects_type = "fixed",
-                                                        cov_parameters = "shared",
-                                                        basic_or_all_parameters = "basic",
-                                                        study_or_comparison_level = "comparison",
-                                                        absolute_or_percentage = "absolute",
-                                                        weight_or_contribution = "weight")
   
   expected_V <- matrix(c(2^2/50 + 2^2/51, 0, 0,
                          0, 3^2/60 + 3^2/61, 3^2/60,
