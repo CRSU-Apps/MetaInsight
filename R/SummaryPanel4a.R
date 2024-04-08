@@ -9,11 +9,11 @@ metaregression_summary_panel_ui <- function(id) {
     uiOutput(ns('toggle')),
     plotOutput(outputId = ns('covariate_plot')),
     textOutput(outputId = ns('covariate_info')),
-    # radioButtons(inputId = ns('format_covariate_plot'), 
-    #              label = 'Document format', 
-    #              choices = c('PDF' = 'pdf', 'PNG' = 'png'), 
-    #              inline = TRUE),
-    # downloadButton(outputId = ns('download_covariate_summary'))
+    radioButtons(inputId = ns('format_covariate_plot'),
+                 label = 'Document format',
+                 choices = c('PDF' = 'pdf', 'PNG' = 'png'),
+                 inline = TRUE),
+    downloadButton(outputId = ns('download_covariate_summary')),
   )
 }
 
@@ -42,7 +42,7 @@ metaregression_summary_panel_server <- function(id, all_data, metaoutcome, treat
     })
     
     # Render covariate summary plot
-    # Needs observe wrapper due to width argument
+    # Needs observe wrapper due to height argument
     observe({
       output$covariate_plot <- renderPlot({
   
@@ -54,6 +54,7 @@ metaregression_summary_panel_server <- function(id, all_data, metaoutcome, treat
                                    )
         
   
+      
       }, height = calculate_plot_pixel(nrow(all_data()))
       )
     })
