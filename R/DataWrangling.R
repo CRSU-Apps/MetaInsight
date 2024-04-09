@@ -376,7 +376,7 @@ GetFriendlyCovariateName <- function(column_name) {
 #' @return @param data with rows corresponding to the control treatment kept or deleted, and a new column 'Control'.
 KeepOrDeleteControlTreatment <- function(data, treatments, keep_delete){
   #It is imperative that 'data' is sorted by 'Study', because tapply below will sort by 'Study', creating a misalignment between 'Study' and 'Control' in the 'control' data frame if 'data' is not sorted by 'Study' already.
-  data <- dplyr::arrange(data, Study, T)
+  data <- data[order(data$Study, data$T), ]
   #The unique studies
   studies <- unique(data$Study)
   #Local function to find the control treatment in a single study
