@@ -275,8 +275,9 @@ regression_plot_panel_server <- function(id, data, covariate_title, model_output
       if (is.null(contribution_matrix())) {
         return(
           div(
-            p("Contribution matrix cannot be calculated"),
-            style = "color: #ff0000;"
+            tags$html("Contribution matrix cannot be calculated", tags$i(class="fa-regular fa-circle-question")),
+            style = "color: #ff0000;",
+            title = "This possibly indicates a poorly fitting model. Please check model diagnostics in the Result Details and Deviance Report tabs"
           )
         )
       } else {
