@@ -20,13 +20,13 @@
   return(igraph::graph(links, directed = FALSE))
 }
 
-#' Identify which studies compare each treatment to the reference.
+#' Identify which studies can be used to compare each treatment to the reference.
 #'
 #' @param data Data frame containing all of the studies for binary or continuous outcomes, and wide or long format.
 #' @param treatment_df Data frame containing the names ("Label") and IDs ("Number") of the treatments.
 #' @param reference_treatment_name The name of the reference treatment. If not specified, then defaults to treatment with "Number" 1 in treatment_df.
 #'
-#' @return Boolean matrix where rows are studies, columns are treatments, and contents are whether the study compares the treatment to the reference.
+#' @return Boolean matrix where rows are studies, columns are treatments, and contents are whether the study compares the treatment to the reference, either directly or indirectly.
 FindAllStudiesBetweenTreatments <- function(data, treatment_df, reference_treatment_name = NULL) {
   if (is.null(reference_treatment_name)) {
     reference_treatment <- 1
@@ -60,7 +60,7 @@ FindAllStudiesBetweenTreatments <- function(data, treatment_df, reference_treatm
   non_reference_treatments <- treatment_df$Label[-reference_treatment]
   
   connected <- matrix(
-    data = rep(FALSE, length(all_studies) * length(non_reference_treatments)),
+    data = FALSE,
     nrow = length(all_studies),
     ncol = length(non_reference_treatments)
   )
@@ -68,11 +68,40 @@ FindAllStudiesBetweenTreatments <- function(data, treatment_df, reference_treatm
   colnames(connected) <- non_reference_treatments
   
   study_treatment_ids <- sapply(
-    unique(data$Study),
+    all_studies,
     function(study) {
       FindAllTreatments(data = data, study = study)
     }
   )
+  
+  # Turn list into matrix
+  # This is only needed when there are different numbers of treatment arms between studies
+  if (is.list(study_treatment_ids)) {
+    max_treatments <- max(
+      sapply(
+        names(study_treatment_ids),
+        function(name) {
+          length(study_treatment_ids[[name]])
+        }
+      )
+    )
+    
+    temp_matrix <- matrix(
+      nrow = max_treatments,
+      ncol = length(all_studies)
+    )
+    colnames(temp_matrix) <- all_studies
+    
+    sapply(
+      all_studies,
+      function(study) {
+        treatments <- study_treatment_ids[[study]]
+        temp_matrix[1:length(treatments), study] <<- treatments
+      }
+    )
+    
+    study_treatment_ids <- temp_matrix
+  }
   
   graph <- .CreateGraph(data)
   

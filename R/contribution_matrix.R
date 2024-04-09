@@ -652,6 +652,10 @@ CheckSingularMatrix <- function(matrix){
 #'   - Matrix of relative effects of treatments compared to the reference. Rows are studies, columns are treatments
 #' - "covariate_value"
 #'   - Vector of covariate values from the studies.
+#' - "covariate_min"
+#'   - Vector of minimum covariate values directly contributing to the regression.
+#' - "covariate_max"
+#'   - Vector of maximum covariate values directly contributing to the regression.
 CalculateContributions <- function(
     data,
     covariate_title,
@@ -669,20 +673,20 @@ CalculateContributions <- function(
     weight_or_contribution) {
   
   contributions <- CreateContributionMatrix(
-    data,
-    treatment_ids,
-    outcome_type,
-    outcome_measure,
-    effects_type,
-    std_dev_d,
-    cov_parameters,
-    cov_centre,
-    std_dev_beta,
-    study_or_comparison_level,
-    absolute_or_percentage,
-    basic_or_all_parameters,
-    weight_or_contribution,
-    FALSE
+    data = data,
+    treatment_ids = treatment_ids,
+    outcome_type = outcome_type,
+    outcome_measure = outcome_measure,
+    effects_type = effects_type,
+    std_dev_d = std_dev_d,
+    cov_parameters = cov_parameters,
+    cov_centre = cov_centre,
+    std_dev_beta = std_dev_beta,
+    study_or_comparison_level = study_or_comparison_level,
+    absolute_or_percentage = absolute_or_percentage,
+    basic_or_all_parameters = basic_or_all_parameters,
+    weight_or_contribution = weight_or_contribution,
+    full_output = FALSE
   )
   
   freq <- frequentist(data, outcome_type, treatment_ids, outcome_measure, effects_type)
@@ -693,26 +697,40 @@ CalculateContributions <- function(
   treatments <- treatment_ids$Label[treatment_ids$Label != reference]
   studies <- unique(data$Study)
   
-  direct_contributions <- matrix(rep(NA, length(studies) * length(treatments)), length(studies), length(treatments))
-  indirect_contributions <- matrix(rep(NA, length(studies) * length(treatments)), length(studies), length(treatments))
-  relative_effects <- matrix(rep(NA, length(studies) * length(treatments)), length(studies), length(treatments))
-  
-  row.names(direct_contributions) <- studies
-  row.names(indirect_contributions) <- studies
-  row.names(relative_effects) <- studies
-  colnames(direct_contributions) <- treatments
-  colnames(indirect_contributions) <- treatments
-  colnames(relative_effects) <- treatments
+  direct_contributions <- matrix(
+    nrow = length(studies),
+    ncol = length(treatments),
+    dimnames = list(
+      studies,
+      treatments
+    )
+  )
+  indirect_contributions <- matrix(
+    nrow = length(studies),
+    ncol = length(treatments),
+    dimnames = list(
+      studies,
+      treatments
+    )
+  )
+  relative_effects <- matrix(
+    nrow = length(studies),
+    ncol = length(treatments),
+    dimnames = list(
+      studies,
+      treatments
+    )
+  )
   
   for (treatment in treatments) {
     treatment_index <- treatment_ids$Number[treatment_ids$Label == treatment]
-    for (study in row.names(contributions)) {
+    for (study in rownames(contributions)) {
       contribution <- contributions[study, glue::glue("{reference}:{treatment}_d")]
       if (contribution == 0) {
         next
       }
       
-      if (treatment %in% FindAllTreatments(data, treatment_ids, study) && reference %in% FindAllTreatments(data, treatment_ids, study)) {
+      if (all(c(treatment, reference) %in% FindAllTreatments(data, treatment_ids, study))) {
         direct_contributions[study, treatment] <- contribution
       } else {
         indirect_contributions[study, treatment] <- contribution
@@ -755,7 +773,9 @@ CalculateContributions <- function(
 #' @param reference Name of reference treatment.
 #' @param covariate_title Title of covariate column in data.
 #'
-#' @return The lowest and highest covariate values of relevant studies.
+#' @return The lowest and highest covariate values of relevant studies. This is structured as a list containing 2 items:
+#' - "min" a named vector of the lowest values, where the names are the treatment names.
+#' - "max" a named vector of the highets values, where the names are the treatment names.
 .FindCovariateRanges <- function(data, treatment_ids, reference, covariate_title) {
   studies <- unique(data$Study)
   
@@ -779,9 +799,8 @@ CalculateContributions <- function(
     )
     
     temp_matrix <- matrix(
-      rep(NA, max_treatments * length(studies)),
-      max_treatments,
-      length(studies)
+      nrow = max_treatments,
+      ncol = length(studies)
     )
     colnames(temp_matrix) <- studies
     

@@ -235,7 +235,7 @@ CreateMainRegressionPlot <- function(
   # Create data frame
   lines = data.frame(
     Treatment = sapply(comparators, function(comparator) { treatment_df$RawLabel[treatment_df$Label == comparator] }),
-    intersect = model_output$intercepts[comparators],
+    intercept = model_output$intercepts[comparators],
     slope = model_output$slopes[comparators],
     start_x = contribution_matrix$covariate_min[comparators],
     end_x = contribution_matrix$covariate_max[comparators]
@@ -251,7 +251,7 @@ CreateMainRegressionPlot <- function(
       geom_abline(
         data = lines,
         mapping = aes(
-          intercept = intersect,
+          intercept = intercept,
           slope = slope,
           color = Treatment
         ),
@@ -268,9 +268,9 @@ CreateMainRegressionPlot <- function(
       data = lines,
       mapping = aes(
         x = start_x,
-        y = intersect + slope * start_x,
+        y = intercept + slope * start_x,
         xend = end_x,
-        yend = intersect + slope * end_x,
+        yend = intercept + slope * end_x,
         color = Treatment
       ),
       linewidth = 1.2,
@@ -346,18 +346,18 @@ CreateMainRegressionPlot <- function(
   for (treatment in c("the_Butcher", "the_Dung_named", "the_Great", "the_Slit_nosed", "the_Younger")) {
     start_x <- .FindRegressionStartX(model_output, reference, treatment)
     end_x <- .FindRegressionEndX(model_output, reference, treatment)
-    intersect <- model_output$intercepts[[treatment]]
+    intercept <- model_output$intercepts[[treatment]]
     gradient <- model_output$slopes[[treatment]]
     for (covariate_value in seq(from = start_x, to = end_x, by = (end_x - start_x) / divisions)) {
       treatments <- c(treatments, treatment)
       covariate_values <- c(covariate_values, covariate_value)
       y_mins <- c(
         y_mins,
-        intersect + (gradient * covariate_value) - (0.04 * (((covariate_value - 97) - 5) ^ 2) + 1)
+        intercept + (gradient * covariate_value) - (0.04 * (((covariate_value - 97) - 5) ^ 2) + 1)
       )
       y_maxs <- c(
         y_maxs,
-        intersect + (gradient * covariate_value) + 0.04 * (((covariate_value - 97) - 5) ^ 2) + 1
+        intercept + (gradient * covariate_value) + 0.04 * (((covariate_value - 97) - 5) ^ 2) + 1
       )
     }
   }

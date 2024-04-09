@@ -425,13 +425,15 @@ test_that("CalculateContributions() gathers direct contrinbutions for treatments
   # Numbers manually taken from data set
   expected_direct_contributions <- matrix(
     data = c(
-      1.1, NA,  NA,  NA, NA,
-      NA,  4.4, NA,  NA, NA,
-      NA,  NA,  5.5, NA, 9.9,
-      NA,  NA,  6.6, NA, NA
+      1.1, NA,  NA,  NA,
+      NA,  4.4, NA,  NA,
+      NA,  NA,  5.5, 6.6,
+      NA,  NA,  NA,  NA,
+      NA,  NA,  9.9, NA
     ),
-    length(studies),
-    length(treatment_ids$Label) - 1
+    nrow = length(studies),
+    ncol = length(treatment_ids$Label) - 1,
+    byrow = TRUE
   )
   row.names(expected_direct_contributions) <- studies
   colnames(expected_direct_contributions) <- treatment_ids$Label[-1]
@@ -454,13 +456,15 @@ test_that("CalculateContributions() gathers indirect contrinbutions for treatmen
   # Numbers manually taken from data set
   expected_indirect_contributions <- matrix(
     data = c(
-      NA,  3.3, NA,  7.7, NA,
-      2.2, NA,  NA,  8.8, NA,
-      NA,  NA,  NA,  NA,  NA,
-      NA,  NA,  NA,  NA,  NA
+      NA,  2.2, NA,  NA,
+      3.3, NA,  NA,  NA,
+      NA,  NA,  NA,  NA,
+      7.7, 8.8, NA,  NA,
+      NA,  NA,  NA,  NA
     ),
-    length(studies),
-    length(treatment_ids$Label) - 1
+    nrow = length(studies),
+    ncol = length(treatment_ids$Label) - 1,
+    byrow = TRUE
   )
   row.names(expected_indirect_contributions) <- studies
   colnames(expected_indirect_contributions) <- treatment_ids$Label[-1]
@@ -483,13 +487,15 @@ test_that("CalculateContributions() gathers relative treatment effects for treat
   # Numbers manually taken from data set
   expected_relative_effects <- matrix(
     data = c(
-      11, NA, NA, NA, NA,
-      NA, 22, NA, NA, NA,
-      NA, NA, 33, NA, 77,
-      NA, NA, 55, NA, NA
+      11, NA, NA, NA,
+      NA, 22, NA, NA,
+      NA, NA, 33, 55,
+      NA, NA, NA, NA,
+      NA, NA, 77, NA
     ),
-    length(studies),
-    length(treatment_ids$Label) - 1
+    nrow = length(studies),
+    ncol = length(treatment_ids$Label) - 1,
+    byrow = TRUE
   )
   row.names(expected_relative_effects) <- studies
   colnames(expected_relative_effects) <- treatment_ids$Label[-1]
@@ -498,4 +504,68 @@ test_that("CalculateContributions() gathers relative treatment effects for treat
     !!contributions$relative_effect,
     !!expected_relative_effects
   )
+})
+
+test_that(".FindCovariateRanges() finds ranges for continuous long data", {
+  data <- CleanData(read.csv("Contribution_continuous_long_continuous_cov.csv"))
+  all_treatments <- FindAllTreatments(data)
+  treatment_ids <- CreateTreatmentIds(all_treatments, all_treatments[1])
+  
+  wrangled_data <- ReplaceTreatmentIds(data, treatment_ids)
+  
+  ranges <- .FindCovariateRanges(
+    data = wrangled_data,
+    treatment_ids = treatment_ids,
+    reference = "Paracetamol",
+    covariate_title = "covar.age"
+  )
+  
+  expected_min = c(
+    "Ibuprofen" = 98,
+    "A stiff drink" = 95,
+    "Sleep" = 97,
+    "Exercise" = NA
+  )
+  
+  expected_max = c(
+    "Ibuprofen" = 99,
+    "A stiff drink" = 99,
+    "Sleep" = 98,
+    "Exercise" = NA
+  )
+  
+  expect_mapequal(!!expected_min, !!ranges$min)
+  expect_mapequal(!!expected_max, !!ranges$max)
+})
+
+test_that(".FindCovariateRanges() finds ranges for continuous wide data", {
+  data <- CleanData(read.csv("Contribution_continuous_wide_continuous_cov.csv"))
+  all_treatments <- FindAllTreatments(data)
+  treatment_ids <- CreateTreatmentIds(all_treatments, all_treatments[1])
+  
+  wrangled_data <- ReplaceTreatmentIds(data, treatment_ids)
+  
+  ranges <- .FindCovariateRanges(
+    data = wrangled_data,
+    treatment_ids = treatment_ids,
+    reference = "Paracetamol",
+    covariate_title = "covar.age"
+  )
+  
+  expected_min = c(
+    "Ibuprofen" = 98,
+    "A stiff drink" = 95,
+    "Sleep" = 97,
+    "Exercise" = NA
+  )
+  
+  expected_max = c(
+    "Ibuprofen" = 99,
+    "A stiff drink" = 99,
+    "Sleep" = 98,
+    "Exercise" = NA
+  )
+  
+  expect_mapequal(!!expected_min, !!ranges$min)
+  expect_mapequal(!!expected_max, !!ranges$max)
 })

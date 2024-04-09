@@ -1,0 +1,15 @@
+Study,T,N,Mean,SD,covar.age
+Dave,Paracetamol,30,-1,11.1,99
+Dave,Ibuprofen,31,-1.1,12.2,99
+Dave,A stiff drink,32,-1.2,13.3,99
+Fred,Paracetamol,33,-1.3,14.4,98
+Fred,Ibuprofen,34,-1.4,15.5,98
+Fred,Sleep,35,-1.5,16.6,98
+Ian,Sleep,36,-1.6,17.7,97
+Ian,Paracetamol,37,-1.7,18.8,97
+Jeff,Ibuprofen,38,-1.8,19.9,96
+Jeff,A stiff drink,39,-1.9,20.1,96
+Nigel,A stiff drink,40,-2,21.11,95
+Nigel,Paracetamol,41,-2.1,22.12,95
+Steve,A stiff drink,42,-2.1,23.13,96
+Steve,Exercise,43,-2.1,24.14,97
