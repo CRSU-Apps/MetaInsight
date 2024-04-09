@@ -190,9 +190,16 @@ test_that("RunCovariateModel() gives reproducible output. Follow on: FindCovaria
 
   expect_equal(default, covariate_value)
 
-  output_1 <- CovariateModelOutput(result_1, cov_value = default, outcome_measure = outcome_measure)
+  output_1 <- CovariateModelOutput(
+    data = data,
+    treatment_ids = wrangled_treatment_list,
+    model = result_1,
+    covariate_title = "covar.age",
+    cov_value = default,
+    outcome_measure = outcome_measure
+  )
 
-  expect_equal(length(output_1), 15)
+  expect_equal(length(output_1), 17)
 
   expect_equal(output_1$a, "random effect")
   expect_equal(output_1$cov_value_sentence, "Value for covariate age set at 98")

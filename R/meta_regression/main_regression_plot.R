@@ -237,8 +237,8 @@ CreateMainRegressionPlot <- function(
     Treatment = sapply(comparators, function(comparator) { treatment_df$RawLabel[treatment_df$Label == comparator] }),
     intercept = model_output$intercepts[comparators],
     slope = model_output$slopes[comparators],
-    start_x = contribution_matrix$covariate_min[comparators],
-    end_x = contribution_matrix$covariate_max[comparators]
+    start_x = model_output$covariate_min[comparators],
+    end_x = model_output$covariate_max[comparators]
   )
   
   if (ghosted) {

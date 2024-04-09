@@ -393,26 +393,6 @@ test_that("CalculateContributions() gathers covariate values for studies", {
   )
 })
 
-test_that("CalculateContributions() gathers min and max direct covariate values for treatments", {
-  setup <- SetupAndCalculateContributionMatrix()
-  data <- setup$data
-  treatment_ids <- setup$treatment_ids
-  covariate_title <- setup$covariate_title
-  contributions <- setup$contributions
-  
-  # Numbers manually taken from data set
-  expect_equal(
-    !!contributions$covariate_min,
-    !!c(Oxygen = 911, Sulphur = 4, Zinc = 63, Einsteinium = 72)
-  )
-  
-  # Numbers manually taken from data set
-  expect_equal(
-    !!contributions$covariate_max,
-    !!c(Oxygen = 911, Sulphur = 4, Zinc = 72, Einsteinium = 72)
-  )
-})
-
 test_that("CalculateContributions() gathers direct contrinbutions for treatments and studies", {
   setup <- SetupAndCalculateContributionMatrix()
   data <- setup$data
@@ -504,68 +484,4 @@ test_that("CalculateContributions() gathers relative treatment effects for treat
     !!contributions$relative_effect,
     !!expected_relative_effects
   )
-})
-
-test_that(".FindCovariateRanges() finds ranges for continuous long data", {
-  data <- CleanData(read.csv("Contribution_continuous_long_continuous_cov.csv"))
-  all_treatments <- FindAllTreatments(data)
-  treatment_ids <- CreateTreatmentIds(all_treatments, all_treatments[1])
-  
-  wrangled_data <- ReplaceTreatmentIds(data, treatment_ids)
-  
-  ranges <- .FindCovariateRanges(
-    data = wrangled_data,
-    treatment_ids = treatment_ids,
-    reference = "Paracetamol",
-    covariate_title = "covar.age"
-  )
-  
-  expected_min = c(
-    "Ibuprofen" = 98,
-    "A stiff drink" = 95,
-    "Sleep" = 97,
-    "Exercise" = NA
-  )
-  
-  expected_max = c(
-    "Ibuprofen" = 99,
-    "A stiff drink" = 99,
-    "Sleep" = 98,
-    "Exercise" = NA
-  )
-  
-  expect_mapequal(!!expected_min, !!ranges$min)
-  expect_mapequal(!!expected_max, !!ranges$max)
-})
-
-test_that(".FindCovariateRanges() finds ranges for continuous wide data", {
-  data <- CleanData(read.csv("Contribution_continuous_wide_continuous_cov.csv"))
-  all_treatments <- FindAllTreatments(data)
-  treatment_ids <- CreateTreatmentIds(all_treatments, all_treatments[1])
-  
-  wrangled_data <- ReplaceTreatmentIds(data, treatment_ids)
-  
-  ranges <- .FindCovariateRanges(
-    data = wrangled_data,
-    treatment_ids = treatment_ids,
-    reference = "Paracetamol",
-    covariate_title = "covar.age"
-  )
-  
-  expected_min = c(
-    "Ibuprofen" = 98,
-    "A stiff drink" = 95,
-    "Sleep" = 97,
-    "Exercise" = NA
-  )
-  
-  expected_max = c(
-    "Ibuprofen" = 99,
-    "A stiff drink" = 99,
-    "Sleep" = 98,
-    "Exercise" = NA
-  )
-  
-  expect_mapequal(!!expected_min, !!ranges$min)
-  expect_mapequal(!!expected_max, !!ranges$max)
 })

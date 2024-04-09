@@ -201,7 +201,14 @@ covariate_analysis_panel_server <- function(
     
     # obtain gemtc output types to be used in rest of page
     model_output <- reactive({
-      CovariateModelOutput(model = model_reactive(), cov_value = covariate_value(), outcome_measure = outcome_measure())
+      CovariateModelOutput(
+        data = all_data(),
+        treatment_ids = treatment_df(),
+        model = model_reactive(),
+        covariate_title = covariate_title(),
+        cov_value = covariate_value(),
+        outcome_measure = outcome_measure()
+      )
     })
     
     # Create forest plot and associated statistics
