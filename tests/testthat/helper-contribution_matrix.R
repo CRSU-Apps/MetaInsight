@@ -55,11 +55,10 @@ SetupAndCalculateContributionMatrix <- function() {
     treat2 = c(2, 3, 4, 5, 1, 3, 4),
     TE = c(11, 22, 33, 44, 55, 66, 77)
   )
-  mock_frequentist <- list(d0 = mock_frequentist_d0)
   
   # Stub functions
   mockery::stub(CalculateContributions, "CreateContributionMatrix", mock_contribution_matrix)
-  mockery::stub(CalculateContributions, "frequentist", mock_frequentist)
+  mockery::stub(CalculateContributions, "netmeta::pairwise", mock_frequentist_d0)
   
   # Run calculation
   # Unused parameters set to NULL

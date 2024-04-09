@@ -689,8 +689,13 @@ CalculateContributions <- function(
     full_output = FALSE
   )
   
-  freq <- frequentist(data, outcome_type, treatment_ids, outcome_measure, effects_type)
-  d0 <- freq$d0
+  if (outcome_type == "Binary") {
+    d0 <- netmeta::pairwise(treat = T, event = R, studlab = Study, n = N, data = data)
+  } else if (outcome_type == "Continuous") {
+    d0 <- netmeta::pairwise(treat = T, mean = Mean, sd = SD, studlab = Study, n = N, data = data)
+  } else {
+    stop(glue::glue("Outcome type '{outcome_type}' is not supported. Please use 'Binary' or 'Continuous'"))
+  }
   
   reference_index <- 1
   reference <- treatment_ids$Label[treatment_ids$Number == reference_index]
