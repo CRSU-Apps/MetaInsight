@@ -8,7 +8,7 @@
 #'
 #' @return The lowest and highest covariate values of relevant studies. This is structured as a list containing 2 items:
 #' - "min" a named vector of the lowest values, where the names are the treatment names.
-#' - "max" a named vector of the highets values, where the names are the treatment names.
+#' - "max" a named vector of the highest values, where the names are the treatment names.
 FindCovariateRanges <- function(data, treatment_ids, reference, covariate_title) {
   studies <- unique(data$Study)
   
