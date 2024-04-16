@@ -18,7 +18,7 @@ data_input_panel_ui <- function(id) {
       status = "info",
       width = '400px'
     ),
-    h4(tags$strong("Select a data file (.csv) to upload")),
+    h4(tags$strong("Select a data file (.csv or .xlsx) to upload")),
     p(
       tags$strong(
         "Files used before version 5.0 are no longer compatible.",

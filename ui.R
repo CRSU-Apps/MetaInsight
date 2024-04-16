@@ -32,13 +32,9 @@ dashboardPage(
         data_analysis_page_ui(id = "data_analysis")
       ),
       tabPanel(
-        title = "User Guide",
+        title = HTML("User Guide
+                     </a></li><li><a href='https://github.com/CRSU-Apps/MetaInsight/wiki/Troubleshooting' target='_blank'>Troubleshooting"),  # Method for adding a link to the troubleshooting wiki as a hyperlink within the tab panel menu
         user_guide_page_ui(id = "user_guide")
-      ),
-      tabPanel(
-        title = "Troubleshooting",
-        tags$iframe(style = "height:1500px; width:100%; scrolling=yes",
-                    src = "trouble_shooting.pdf")
       )
     )
   )
