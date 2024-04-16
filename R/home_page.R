@@ -21,7 +21,7 @@ home_page_ui <- function(id) {
         });'
       )
     ),
-    h2("MetaInsight v5.2.0", align = "left"),
+    h2("MetaInsight v5.2.1", align = "left"),
     fluidRow(
       column(
         width = 3,
@@ -29,12 +29,17 @@ home_page_ui <- function(id) {
           tags$h4("Selection of continuous or binary outcomes has moved to the ", tags$i("Load Data"), " tab"),
           style = "color: #aa0000; border: solid; border-color: lightgray; border-width: thin; border-radius: 6pt; padding: 0 10pt;"
         ),
-        img(src = 'network2.jpg', width = 500, height = 400, align = "center")
+        img(src = "images/MetaInsightLogo.png", height = 400, align = "center")
       ),
       column(width = 2),
       column(
         width = 5,
         p(tags$strong("Latest Updates:")),
+        p(tags$strong("Patch (16th April 2024 v5.2.1):")),
+        tags$ul(
+          tags$li("Troubleshooting tab now links to our troubleshooting wiki page."),
+          tags$li("Added logo to home page.")
+        ),
         p(tags$strong("Minor update (15th February 2024 v5.2.0):")),
         tags$ul(
           tags$li("Bug fix where data upload instructions were hidden."),
