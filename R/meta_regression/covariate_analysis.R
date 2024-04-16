@@ -1,5 +1,6 @@
 
 #' Find the lowest and highest covariate values given by a study comparing the reference and comparator treatments.
+#' This does noes not include studies which do not directly compare treatments to the reference.
 #'
 #' @param data Data frame from which to find covariate ranges
 #' @param treatment_ids data frame containing treatment names ("Label") and IDs ("Number")

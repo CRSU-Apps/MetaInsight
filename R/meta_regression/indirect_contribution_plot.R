@@ -1,7 +1,7 @@
 #' Create a covariate regression plot where multiple comparisons can be plotted, and the contributions from each study are shown as circles.
 #'
 #' @param model_output GEMTC model results found by calling `CovariateModelOutput()`.
-#' @param treatment_df Reactive containing data frame containing treatment IDs (Number), sanitised names (Label), and original names (RawLabel).
+#' @param treatment_df Data frame containing treatment IDs (Number), sanitised names (Label), and original names (RawLabel).
 #' @param comparators Vector of names of comparison treatments to plot in colour.
 #' @param contribution_matrix Contributions from function `CalculateContributions()`.
 #' @param contribution_type Type of contribution, used to calculate sizes for the study contribution circles.
@@ -89,7 +89,7 @@ CreateIndirectContributionPlot <- function(
 #'
 #' @param plot object to which to add elements.
 #' @param model_output GEMTC model results found by calling `CovariateModelOutput()`.
-#' @param treatment_df Reactive containing data frame containing treatment IDs (Number), sanitised names (Label), and original names (RawLabel).
+#' @param treatment_df Data frame containing treatment IDs (Number), sanitised names (Label), and original names (RawLabel).
 #' @param reference Name of reference treatment.
 #' @param comparators Vector of names of comparison treatments to plot.
 #' @param contribution_type Type of contribution, used to calculate sizes for the study contribution circles.

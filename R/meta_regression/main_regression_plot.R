@@ -2,8 +2,8 @@
 #' Create a covariate regression plot where multiple comparisons can be plotted, and the contributions from each study are shown as circles.
 #'
 #' @param model_output GEMTC model results found by calling `CovariateModelOutput()`.
-#' @param treatment_df Reactive containing data frame containing treatment IDs (Number), sanitised names (Label), and original names (RawLabel).
-#' @param outcome_type Reactive type of outcome (OR, RR, RD, MD)
+#' @param treatment_df Data frame containing treatment IDs (Number), sanitised names (Label), and original names (RawLabel).
+#' @param outcome_measure Outcome measure of analysis (OR, RR, RD, MD)
 #' @param comparators Vector of names of comparison treatments to plot in colour.
 #' @param contribution_matrix Contributions from function `CalculateContributions()`.
 #' @param contribution_type Name of the type of contribution, used to calculate sizes for the study contribution circles.
@@ -27,7 +27,7 @@
 CreateMainRegressionPlot <- function(
     model_output,
     treatment_df,
-    outcome_type,
+    outcome_measure,
     comparators,
     contribution_matrix,
     contribution_type,
@@ -48,7 +48,7 @@ CreateMainRegressionPlot <- function(
   plot <- .SetupMainRegressionPlot(
     reference = treatment_df$RawLabel[treatment_df$Label == reference],
     comparators = comparators,
-    outcome_type = outcome_type,
+    outcome_measure = outcome_measure,
     include_ghosts = include_ghosts && length(comparators) < length(all_comparators),
     confidence_opacity = confidence_opacity,
     legend_position = legend_position
@@ -90,7 +90,7 @@ CreateMainRegressionPlot <- function(
 #'
 #' @param reference Name of the reference treatment.
 #' @param comparators Vector of names of comparison treatments to plot.
-#' @param outcome_type Reactive type of outcome (OR, RR, RD, MD or SD)
+#' @param outcome_measure Outcome measure of analysis (OR, RR, RD, MD)
 #' @param include_ghosts TRUE if all other comparator studies should be plotted in grey in the background of the plot. Defaults to FALSE.
 #' @param confidence_opacity The opacity of the confidence regions. Can be any value between 0 and 1, inclusive. Defaults to 0.2.
 #' @param legend_position String informing the position of the legend. Acceptable values are:
@@ -100,7 +100,7 @@ CreateMainRegressionPlot <- function(
 #' - "TL" - Top-left of the plot area
 #'
 #' @return Created ggplot2 object.
-.SetupMainRegressionPlot <- function(reference, comparators, outcome_type, include_ghosts, confidence_opacity, legend_position) {
+.SetupMainRegressionPlot <- function(reference, comparators, outcome_measure, include_ghosts, confidence_opacity, legend_position) {
   # Set up basic plot
   plot <- ggplot() +
     theme_minimal() +
@@ -127,10 +127,10 @@ CreateMainRegressionPlot <- function(
       legend.text = element_text(size = 12)
     ) +
     xlab("Covariate Value") +
-    ylab(glue::glue("Relative Effect vs {reference} ({outcome_type})")) 
+    ylab(glue::glue("Relative Effect vs {reference} ({outcome_measure})"))
   
   # Log scale for OR & RR
-  if (outcome_type %in% c("OR", "RR")) {
+  if (outcome_measure %in% c("OR", "RR")) {
     plot <- plot + 
       scale_y_continuous(breaks = c(0.1, 0.25, 0.5, 1, 2, 4, 6), trans = scales::log_trans())
   }
@@ -150,7 +150,7 @@ CreateMainRegressionPlot <- function(
 #'
 #' @param plot object to which to add elements.
 #' @param model_output GEMTC model results found by calling `CovariateModelOutput()`.
-#' @param treatment_df Reactive containing data frame containing treatment IDs (Number), sanitised names (Label), and original names (RawLabel).
+#' @param treatment_df Data frame containing treatment IDs (Number), sanitised names (Label), and original names (RawLabel).
 #' @param reference Name of reference treatment.
 #' @param comparators Vector of names of comparison treatments to plot.
 #'
@@ -179,7 +179,7 @@ CreateMainRegressionPlot <- function(
 #'
 #' @param plot ggplot2 object to which to add elements.
 #' @param model_output GEMTC model results found by calling `CovariateModelOutput()`.
-#' @param treatment_df Reactive containing data frame containing treatment IDs (Number), sanitised names (Label), and original names (RawLabel).
+#' @param treatment_df Data frame containing treatment IDs (Number), sanitised names (Label), and original names (RawLabel).
 #' @param reference Name of reference treatment.
 #' @param comparators Vector of names of comparison treatments to plot.
 #' @param contribution_matrix Contributions from function `CalculateContributions()`.
@@ -223,7 +223,7 @@ CreateMainRegressionPlot <- function(
 #' @param plot ggplot2 object to which to add elements.
 #' @param model_output GEMTC model results found by calling `CovariateModelOutput()`.
 #' @param contribution_matrix Contributions from function `CalculateContributions()`.
-#' @param treatment_df Reactive containing data frame containing treatment IDs (Number), sanitised names (Label), and original names (RawLabel).
+#' @param treatment_df Data frame containing treatment IDs (Number), sanitised names (Label), and original names (RawLabel).
 #' @param reference Name of reference treatment.
 #' @param comparators Vector of names of comparison treatments to plot.
 #' @param extrapolate TRUE if regression lines should be extrapolated beyond the range of the data. These will be plotted as dashed lines.
@@ -260,7 +260,6 @@ CreateMainRegressionPlot <- function(
         show.legend = FALSE
       )
   }
-  
   
   # Solid lines within data ranges
   plot <- plot +

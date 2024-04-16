@@ -5,8 +5,8 @@ regression_ghost_name = "\u200BOther"
 #' Create a composite meta-regression plot which comprises plots showing direct and indirect evidence.
 #'
 #' @param model_output GEMTC model results found by calling `CovariateModelOutput()`.
-#' @param treatment_df Reactive containing data frame containing treatment IDs (Number), sanitised names (Label), and original names (RawLabel).
-#' @param outcome_type Reactive type of outcome (OR, RR, RD, MD or SD)
+#' @param treatment_df Data frame containing treatment IDs (Number), sanitised names (Label), and original names (RawLabel).
+#' @param outcome_measure Outcome measure of analysis (OR, RR, RD or MD)
 #' @param comparators Vector of names of comparison treatments to plot in colour.
 #' @param contribution_matrix Contributions from function `CalculateContributions()`.
 #' @param contribution_type Type of contribution, used to calculate sizes for the study contribution circles.
@@ -29,7 +29,7 @@ regression_ghost_name = "\u200BOther"
 CreateCompositeMetaRegressionPlot <- function(
     model_output,
     treatment_df,
-    outcome_type,
+    outcome_measure,
     comparators,
     contribution_matrix,
     contribution_type,
@@ -45,7 +45,7 @@ CreateCompositeMetaRegressionPlot <- function(
   direct_plot <- CreateMainRegressionPlot(
     model_output = model_output,
     treatment_df = treatment_df,
-    outcome_type = outcome_type,
+    outcome_measure = outcome_measure,
     comparators = comparators,
     contribution_matrix = contribution_matrix,
     contribution_type = contribution_type,

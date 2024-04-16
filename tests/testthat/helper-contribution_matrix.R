@@ -1,3 +1,4 @@
+library(mockery)
 
 #' Stub the functions `CreateContributionMatrix()` and `frequentist()`, and run the contribution matrix calculation.
 #'
