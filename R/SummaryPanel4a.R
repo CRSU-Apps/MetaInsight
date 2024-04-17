@@ -7,7 +7,8 @@ metaregression_summary_panel_ui <- function(id) {
   fluidPage(
     h4('Summary Characteristic Plot'),
     uiOutput(ns('toggle')),
-    plotOutput(outputId = ns('covariate_plot')),
+    plotOutput(outputId = ns('covariate_plot'), height = "auto"), 
+    # height = "auto" prevents download button overlapping for longer plots
     textOutput(outputId = ns('covariate_info')),
     radioButtons(inputId = ns('format_covariate_plot'),
                  label = 'Document format',
