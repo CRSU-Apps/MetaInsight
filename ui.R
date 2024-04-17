@@ -33,7 +33,7 @@ dashboardPage(
         data_analysis_page_ui(id = "data_analysis")
       ),
       tabPanel(
-        title = HTML("User Guide"),
+        title = "User Guide",
         user_guide_page_ui(id = "user_guide")
       ),
       tabPanel(
