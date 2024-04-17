@@ -635,6 +635,7 @@ CheckSingularMatrix <- function(matrix){
 #' @param outcome_type "Continuous" or "Binary".
 #' @param outcome_measure "MD", "OR", "RR" or "RD".
 #' @param effects_type "fixed" or "random".
+#' @param regression_coefficient_type Type of regression coefficient. One of: "Shared", "Unrelated", "Exchangeable"
 #' @param std_dev_d Between-study standard deviation. Only required when @param effects_type == "random". Defaults to NULL.
 #' @param cov_parameters "shared", "exchangeable", or "unrelated".
 #' @param cov_centre Centring value for the covariate, defaults to the mean.
@@ -643,6 +644,7 @@ CheckSingularMatrix <- function(matrix){
 #' @param absolute_or_percentage "percentage" for percentage contributions, "absolute" for absolute contributions.
 #' @param basic_or_all_parameters "basic" for one column per basic parameter, "all" for one column per parameter. Defaults to "basic".
 #' @param weight_or_contribution "weight" for coefficients or "contribution" for coefficients multiplied by observed treatment effects.
+#' @param treatment_or_covariate_effect Whether contributions are for treatment effect or covariate effect. One of: "Treatment Effect", "Covariate Effect".
 #' @return List of contributions:
 #' - "direct"
 #'   - Matrix of direct contributions to the regression. Rows are studies, columns are treatments
@@ -659,6 +661,7 @@ CalculateContributions <- function(
     outcome_type,
     outcome_measure,
     effects_type,
+    regression_coefficient_type,
     std_dev_d = NULL,
     cov_parameters,
     cov_centre = NULL,
@@ -666,7 +669,8 @@ CalculateContributions <- function(
     study_or_comparison_level,
     absolute_or_percentage,
     basic_or_all_parameters = "basic",
-    weight_or_contribution) {
+    weight_or_contribution,
+    treatment_or_covariate_effect) {
   
   contributions <- CreateContributionMatrix(
     data = data,
@@ -723,10 +727,28 @@ CalculateContributions <- function(
     )
   )
   
+  if (!treatment_or_covariate_effect %in% c("Treatment Effect", "Covariate Effect")) {
+    stop(glue::glue("Contribution type '{}' not recognised. Please use one of: 'Treatment Effect', 'Covariate Effect'"))
+  }
+  
+  if (treatment_or_covariate_effect == "Treatment Effect") {
+    column_format <- "{reference}:{treatment}_d"
+  } else {
+    if (!regression_coefficient_type %in% c("Shared", "Unrelated", "Exchangeable")) {
+      stop(glue::glue("Regression coefficient '{regression_coefficient_type}' not recognised. Please use one of: 'Shared', 'Unrelated', 'Exchangeable'"))
+    }
+    
+    if (regression_coefficient_type == "Shared") {
+      column_format <- "B"
+    } else if (regression_coefficient_type %in% c("Unrelated", "Exchangeable")) {
+      column_format <- "{reference}:{treatment}_beta"
+    }
+  }
+  
   for (treatment in treatments) {
     treatment_index <- treatment_ids$Number[treatment_ids$Label == treatment]
     for (study in rownames(contributions)) {
-      contribution <- contributions[study, glue::glue("{reference}:{treatment}_d")]
+      contribution <- contributions[study, glue::glue(column_format)]
       if (contribution == 0) {
         next
       }

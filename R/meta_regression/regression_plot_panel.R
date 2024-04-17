@@ -101,10 +101,16 @@ regression_plot_panel_ui <- function(id) {
       ),
       # Contributions
       .AddRegressionOptionTooltip(
-        checkboxInput(
+        selectInput(
           inputId = ns("contributions"),
           label = tags$html("Show contributions", tags$i(class="fa-regular fa-circle-question")),
-          value = TRUE
+          choices = c(
+            "None",
+            "Treatment Effect",
+            "Covariate Effect"
+          ),
+          selected = "Treatment Effect",
+          selectize = FALSE
         ),
         tooltip = "Show study contributions as circles, where a bigger circle represents a larger contribution"
       ),
@@ -257,12 +263,14 @@ regression_plot_panel_server <- function(id, data, covariate_title, model_output
             outcome_type = outcome_type(),
             outcome_measure = outcome_measure(),
             effects_type = model_output()$model,
+            regression_coefficient_type = model_output()$model$regressor$coefficient,
             std_dev_d = std_dev_d,
             std_dev_beta = std_dev_beta,
             cov_parameters = model_output()$mtcResults$model$regressor$coefficient,
             study_or_comparison_level = "study",
             absolute_or_percentage = input$absolute_relative_toggle,
-            weight_or_contribution = input$contribution_weight_toggle
+            weight_or_contribution = input$contribution_weight_toggle,
+            treatment_or_covariate_effect = input$contributions
           )
         },
         error = function(err) {
@@ -285,17 +293,17 @@ regression_plot_panel_server <- function(id, data, covariate_title, model_output
       }
     })
     
-    previous_contributions <- reactiveVal(TRUE)
+    previous_contributions <- reactiveVal("Treatment Effect")
     
     observe({
       if (is.null(contribution_matrix())) {
         # Store current state of contributions toggle to reinstate once checkbox is reenabled
         previous_contributions(is.null(input$contibutions) || input$contibutions)
         
-        updateCheckboxInput(inputId = "contributions", value = FALSE)
+        updateSelectInput(inputId = "contributions", selected = "None")
         shinyjs::disable(id = "contributions")
       } else {
-        updateCheckboxInput(inputId = "contributions", value = previous_contributions())
+        updateSelectInput(inputId = "contributions", selected = previous_contributions())
         shinyjs::enable(id = "contributions")
       }
     })
@@ -319,7 +327,7 @@ regression_plot_panel_server <- function(id, data, covariate_title, model_output
         include_extrapolation = input$extrapolate,
         include_confidence = input$confidence,
         confidence_opacity = input$confidence_opacity,
-        include_contributions = input$contributions,
+        include_contributions = input$contributions != "None",
         contribution_multiplier = input$circle_multipler,
         legend_position = input$legend_position_dropdown
       )

@@ -374,7 +374,7 @@ test_that("CreateContributionMatrix() produces a matrix of the correct format wh
 })
 
 test_that("CalculateContributions() gathers covariate values for studies", {
-  setup <- SetupAndCalculateContributionMatrix()
+  setup <- SetupAndCalculateContributionMatrix(treatment_or_covariate_effect = "Treatment Effect", regression_coefficient_type = "Shared")
   data <- setup$data
   treatment_ids <- setup$treatment_ids
   covariate_title <- setup$covariate_title
@@ -393,8 +393,8 @@ test_that("CalculateContributions() gathers covariate values for studies", {
   )
 })
 
-test_that("CalculateContributions() gathers direct contrinbutions for treatments and studies", {
-  setup <- SetupAndCalculateContributionMatrix()
+test_that("CalculateContributions() gathers direct treatment effect contributions for treatments and studies", {
+  setup <- SetupAndCalculateContributionMatrix(treatment_or_covariate_effect = "Treatment Effect", regression_coefficient_type = "Shared")
   data <- setup$data
   treatment_ids <- setup$treatment_ids
   covariate_title <- setup$covariate_title
@@ -424,8 +424,8 @@ test_that("CalculateContributions() gathers direct contrinbutions for treatments
   )
 })
 
-test_that("CalculateContributions() gathers indirect contrinbutions for treatments and studies", {
-  setup <- SetupAndCalculateContributionMatrix()
+test_that("CalculateContributions() gathers indirect treatment effect contributions for treatments and studies", {
+  setup <- SetupAndCalculateContributionMatrix(treatment_or_covariate_effect = "Treatment Effect", regression_coefficient_type = "Shared")
   data <- setup$data
   treatment_ids <- setup$treatment_ids
   covariate_title <- setup$covariate_title
@@ -455,8 +455,72 @@ test_that("CalculateContributions() gathers indirect contrinbutions for treatmen
   )
 })
 
+test_that("CalculateContributions() gathers direct covariate effect contributions for treatments and studies", {
+  setup <- SetupAndCalculateContributionMatrix(treatment_or_covariate_effect = "Covariate Effect", regression_coefficient_type = "Shared")
+  data <- setup$data
+  treatment_ids <- setup$treatment_ids
+  covariate_title <- setup$covariate_title
+  contributions <- setup$contributions
+  
+  studies <- unique(data$Study)
+  
+  # Numbers manually taken from data set
+  expected_direct_contributions <- matrix(
+    data = c(
+      11, NA, NA, NA,
+      NA, 22, NA, NA,
+      NA, NA, 33, 33,
+      NA, NA, NA, NA,
+      NA, NA, 55, NA
+    ),
+    nrow = length(studies),
+    ncol = length(treatment_ids$Label) - 1,
+    byrow = TRUE
+  )
+  row.names(expected_direct_contributions) <- studies
+  colnames(expected_direct_contributions) <- treatment_ids$Label[-1]
+  
+  expect_equal(
+    !!contributions$direct,
+    !!expected_direct_contributions
+  )
+})
+
+test_that("CalculateContributions() gathers indirect covariate effect contributions for treatments and studies", {
+  setup <- SetupAndCalculateContributionMatrix(treatment_or_covariate_effect = "Covariate Effect", regression_coefficient_type = "Shared")
+  data <- setup$data
+  treatment_ids <- setup$treatment_ids
+  covariate_title <- setup$covariate_title
+  contributions <- setup$contributions
+  
+  studies <- unique(data$Study)
+  
+  # Numbers manually taken from data set
+  # All studies contribute to all treatments regardless of network configuration
+  # Therefore all studies which do not contribute directly, contribute indirectly
+  expected_indirect_contributions <- matrix(
+    data = c(
+      NA, 11, 11, 11,
+      22, NA, 22, 22,
+      33, 33, NA, NA,
+      44, 44, 44, 44,
+      55, 55, NA, 55
+    ),
+    nrow = length(studies),
+    ncol = length(treatment_ids$Label) - 1,
+    byrow = TRUE
+  )
+  row.names(expected_indirect_contributions) <- studies
+  colnames(expected_indirect_contributions) <- treatment_ids$Label[-1]
+  
+  expect_equal(
+    !!contributions$indirect,
+    !!expected_indirect_contributions
+  )
+})
+
 test_that("CalculateContributions() gathers relative treatment effects for treatments and studies", {
-  setup <- SetupAndCalculateContributionMatrix()
+  setup <- SetupAndCalculateContributionMatrix(treatment_or_covariate_effect = "Treatment Effect", regression_coefficient_type = "Shared")
   data <- setup$data
   treatment_ids <- setup$treatment_ids
   covariate_title <- setup$covariate_title
@@ -485,3 +549,92 @@ test_that("CalculateContributions() gathers relative treatment effects for treat
     !!expected_relative_effects
   )
 })
+
+
+
+
+
+
+
+
+
+
+
+
+test_that("CalculateContributions() gathers direct covariate effect contributions for treatments and studies for unrelated regression", {
+  setup <- SetupAndCalculateContributionMatrix(treatment_or_covariate_effect = "Covariate Effect", regression_coefficient_type = "Unrelated")
+  data <- setup$data
+  treatment_ids <- setup$treatment_ids
+  covariate_title <- setup$covariate_title
+  contributions <- setup$contributions
+  
+  studies <- unique(data$Study)
+  
+  # Numbers manually taken from data set
+  expected_direct_contributions <- matrix(
+    data = c(
+      11, NA, NA, NA,
+      NA, 44, NA, NA,
+      NA, NA, 55, 66,
+      NA, NA, NA, NA,
+      NA, NA, 99, NA
+    ),
+    nrow = length(studies),
+    ncol = length(treatment_ids$Label) - 1,
+    byrow = TRUE
+  )
+  row.names(expected_direct_contributions) <- studies
+  colnames(expected_direct_contributions) <- treatment_ids$Label[-1]
+  
+  expect_equal(
+    !!contributions$direct,
+    !!expected_direct_contributions
+  )
+})
+
+test_that("CalculateContributions() gathers indirect covariate effect contributions for treatments and studies for unrelated regression", {
+  setup <- SetupAndCalculateContributionMatrix(treatment_or_covariate_effect = "Covariate Effect", regression_coefficient_type = "Unrelated")
+  data <- setup$data
+  treatment_ids <- setup$treatment_ids
+  covariate_title <- setup$covariate_title
+  contributions <- setup$contributions
+  
+  studies <- unique(data$Study)
+  
+  # Numbers manually taken from data set
+  expected_indirect_contributions <- matrix(
+    data = c(
+      NA, 22, NA, NA,
+      33, NA, NA, NA,
+      NA, NA, NA, NA,
+      77, 88, NA, NA,
+      NA, NA, NA, NA
+    ),
+    nrow = length(studies),
+    ncol = length(treatment_ids$Label) - 1,
+    byrow = TRUE
+  )
+  row.names(expected_indirect_contributions) <- studies
+  colnames(expected_indirect_contributions) <- treatment_ids$Label[-1]
+  
+  expect_equal(
+    !!contributions$indirect,
+    !!expected_indirect_contributions
+  )
+})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,6 +1,8 @@
 library(mockery)
 
 #' Stub the functions `CreateContributionMatrix()` and `frequentist()`, and run the contribution matrix calculation.
+#' @param treatment_or_covariate_effect Whether contributions are for treatment effect or covariate effect. One of: "Treatment Effect", "Covariate Effect".
+#' @param regression_coefficient_type Type of regression coefficient. One of: "Shared", "Unrelated", "Exchangeable"
 #'
 #' @return List of objects used in the test:
 #' - data
@@ -11,7 +13,7 @@ library(mockery)
 #'   - Title of covariate column in data
 #' - contributions
 #'   - Output from function `CalculateContributions()`
-SetupAndCalculateContributionMatrix <- function() {
+SetupAndCalculateContributionMatrix <- function(treatment_or_covariate_effect, regression_coefficient_type) {
   covariate_title <- "covar.age"
   
   # Setup data
@@ -30,14 +32,20 @@ SetupAndCalculateContributionMatrix <- function() {
   studies <- unique(data$Study)
   non_reference_treatments <- treatment_ids$Label[treatment_ids$Label != reference_name]
   
+  if (regression_coefficient_type == "Shared") {
+    covariate_effect_columns <- "B"
+  } else {
+    covariate_effect_columns <- paste0(reference_name, ":", non_reference_treatments, "_beta")
+  }
+  
   # Setup mocked contribution matrix
   mock_contribution_matrix <- matrix(
-    rep(0, length(studies) * (length(non_reference_treatments) + 1)),
-    length(studies),
-    length(non_reference_treatments) + 1
+    0,
+    nrow = length(studies),
+    ncol = length(non_reference_treatments) + length(covariate_effect_columns)
   )
   row.names(mock_contribution_matrix) <- studies
-  colnames(mock_contribution_matrix) <- c(paste0(reference_name, ":", non_reference_treatments, "_d"), "B")
+  colnames(mock_contribution_matrix) <- c(paste0(reference_name, ":", non_reference_treatments, "_d"), covariate_effect_columns)
   
   mock_contribution_matrix["A", "Hydrogen:Oxygen_d"] <- 1.1
   mock_contribution_matrix["A", "Hydrogen:Sulphur_d"] <- 2.2
@@ -48,6 +56,24 @@ SetupAndCalculateContributionMatrix <- function() {
   mock_contribution_matrix["D", "Hydrogen:Oxygen_d"] <- 7.7
   mock_contribution_matrix["D", "Hydrogen:Sulphur_d"] <- 8.8
   mock_contribution_matrix["E", "Hydrogen:Zinc_d"] <- 9.9
+  
+  if (regression_coefficient_type == "Shared") {
+    mock_contribution_matrix["A", "B"] <- 11
+    mock_contribution_matrix["B", "B"] <- 22
+    mock_contribution_matrix["C", "B"] <- 33
+    mock_contribution_matrix["D", "B"] <- 44
+    mock_contribution_matrix["E", "B"] <- 55
+  } else {
+    mock_contribution_matrix["A", "Hydrogen:Oxygen_beta"] <- 11
+    mock_contribution_matrix["A", "Hydrogen:Sulphur_beta"] <- 22
+    mock_contribution_matrix["B", "Hydrogen:Oxygen_beta"] <- 33
+    mock_contribution_matrix["B", "Hydrogen:Sulphur_beta"] <- 44
+    mock_contribution_matrix["C", "Hydrogen:Zinc_beta"] <- 55
+    mock_contribution_matrix["C", "Hydrogen:Einsteinium_beta"] <- 66
+    mock_contribution_matrix["D", "Hydrogen:Oxygen_beta"] <- 77
+    mock_contribution_matrix["D", "Hydrogen:Sulphur_beta"] <- 88
+    mock_contribution_matrix["E", "Hydrogen:Zinc_beta"] <- 99
+  }
   
   # Setup mocked frequentist analysis
   mock_frequentist_d0 <- data.frame(
@@ -70,6 +96,7 @@ SetupAndCalculateContributionMatrix <- function() {
     outcome_type = "Binary",
     outcome_measure = "OR",
     effects_type = "random",
+    regression_coefficient_type = regression_coefficient_type,
     std_dev_d = NULL,
     cov_parameters,
     cov_centre = NULL,
@@ -77,7 +104,8 @@ SetupAndCalculateContributionMatrix <- function() {
     study_or_comparison_level = NULL,
     absolute_or_percentage = NULL,
     basic_or_all_parameters = NULL,
-    weight_or_contribution = NULL
+    weight_or_contribution = NULL,
+    treatment_or_covariate_effect = treatment_or_covariate_effect
   )
   
   return(
