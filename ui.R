@@ -38,7 +38,7 @@ dashboardPage(
       ),
       tabPanel(
         title = "Troubleshooting",
-        # Script to open the troubleshooting wiki page in a new tab hen the "Troubleshooting" tab is selected
+        # Script to open the troubleshooting wiki page in a new tab when the "Troubleshooting" tab is selected
         tags$head(
           tags$script(
             HTML(
