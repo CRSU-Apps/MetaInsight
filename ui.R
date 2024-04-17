@@ -18,6 +18,7 @@ dashboardPage(
       google_analytics_header_ui(id = "analytics")
     ),
     navbarPage(
+      id = "top_bar",
       title = "MetaInsight",
       tabPanel(
         title = "Home",
@@ -32,9 +33,23 @@ dashboardPage(
         data_analysis_page_ui(id = "data_analysis")
       ),
       tabPanel(
-        title = HTML("User Guide
-                     </a></li><li><a href='https://github.com/CRSU-Apps/MetaInsight/wiki/Troubleshooting' target='_blank'>Troubleshooting"),  # Method for adding a link to the troubleshooting wiki as a hyperlink within the tab panel menu
+        title = HTML("User Guide"),
         user_guide_page_ui(id = "user_guide")
+      ),
+      tabPanel(
+        title = "Troubleshooting",
+        # Script to open the troubleshooting wiki page in a new tab hen the "Troubleshooting" tab is selected
+        tags$head(
+          tags$script(
+            HTML(
+              "$(document).on('shiny:inputchanged', function(event) {
+                if (event.name == 'top_bar' && event.value == 'Troubleshooting') {
+                  window.open('https://github.com/CRSU-Apps/MetaInsight/wiki/Troubleshooting', '_blank');
+                }
+              });"
+            )
+          )
+        )
       )
     )
   )
