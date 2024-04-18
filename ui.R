@@ -12,12 +12,13 @@ dashboardPage(
       includeHTML("www/favicon/favicon.html"),
       tags$meta(name="description", content="A interactive web tool for network meta-analysis (NMA) that leverages established analysis routines"),
       tags$meta(name="keywords", content="MetaInsight, NMA, Network, Meta, Analysis, App"),
-      tags$meta(property="og:title", content="Meta Insight: v5.2.0"),
+      tags$meta(property="og:title", content="Meta Insight: v5.2.1"),
       tags$meta(property="og:description", content="An interactive web tool for network meta-analysis (NMA) that leverages established analysis routines"),
       tags$meta(property="og:image", content="https://raw.githubusercontent.com/CRSU-Apps/MetaInsight/main/www/images/MetaInsightLogo.png"),
       google_analytics_header_ui(id = "analytics")
     ),
     navbarPage(
+      id = "top_bar",
       title = "MetaInsight",
       tabPanel(
         title = "Home",
@@ -37,8 +38,18 @@ dashboardPage(
       ),
       tabPanel(
         title = "Troubleshooting",
-        tags$iframe(style = "height:1500px; width:100%; scrolling=yes",
-                    src = "trouble_shooting.pdf")
+        # Script to open the troubleshooting wiki page in a new tab when the "Troubleshooting" tab is selected
+        tags$head(
+          tags$script(
+            HTML(
+              "$(document).on('shiny:inputchanged', function(event) {
+                if (event.name == 'top_bar' && event.value == 'Troubleshooting') {
+                  window.open('https://github.com/CRSU-Apps/MetaInsight/wiki/Troubleshooting', '_blank');
+                }
+              });"
+            )
+          )
+        )
       )
     )
   )
