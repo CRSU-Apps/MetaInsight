@@ -326,7 +326,11 @@ RadialSUCRA <- function(SUCRAData, ColourData, BUGSnetData, colourblind = FALSE)
     comp.i <- comp.i + 2
     ID <- ID + 1
   }
-  # add lines #
+  
+  #' Creates the network part of the radical SUCRA plot, excluding the nodes.
+  #' 
+  #' @param Type "Original" or "Alternative.
+  #' @return ggplot object.
   CreateNetwork <- function(Type) {
     if (Type == 'Original') {
       g <- ggplot(dat.edges, aes(x = reorder(treatment, -SUCRA), y = SUCRA, group = pairwiseID)) +
@@ -345,6 +349,7 @@ RadialSUCRA <- function(SUCRAData, ColourData, BUGSnetData, colourblind = FALSE)
             axis.text.x = element_blank()) +
       annotate("text", x = rep(0.5, 7), y = c(-3, 17, 37, 57, 77, 97, 115), label = c("0", "20", "40", "60", "80", "100", "SUCRA (%)"), size = 2.5, family = "sans")
   }
+  
   Network <- CreateNetwork(Type = 'Original')
   ggsave(filename = 'NetworkO.png', device = 'png', bg = 'transparent', width = 5, height = 5)
   
@@ -352,7 +357,11 @@ RadialSUCRA <- function(SUCRAData, ColourData, BUGSnetData, colourblind = FALSE)
   ggsave(filename = "NetworkA.png", device = 'png', bg = 'transparent', width = 5, height = 5)
   
   
-  # Plot of just points to go on the very top #
+  #' Creates the nodes for the network part of the radial SUCRA plot.
+  #' 
+  #' @param Type "Original" or "Alternative".
+  #' @param colourblind TRUE for colourblind-friendly colours (default = FALSE).
+  #' @return ggplot object.
   CreatePoints <- function(Type, colourblind = FALSE) {
     if (Type == 'Original') {
       g <- ggplot(SUCRAData, aes(x = reorder(Treatment, -SUCRA), y = SUCRA, group = 1)) +
