@@ -80,7 +80,7 @@ dataform.df <- function(newData1, treat_list, CONBI) {
     a <- ifelse(CONBI == 'Continuous', 4, 3)
     #Find the number of treatments
     numbertreat <- (ncol(newData1) - 2) / a
-    #Add columns as if there were six treatments, but set values to NA for the dedundant columns
+    #Add columns as if there were six treatments, but set values to NA for the redundant columns
     if (numbertreat < 6) {
       for (k in (numbertreat+1):6) {
         if (CONBI == 'Continuous') {
