@@ -95,22 +95,28 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, m
 
     # Make frequentist function (in fn_analysis.R) reactive - NVB
     freq_all <- reactive({
-      return(frequentist(data(), metaoutcome(), treatment_df(), outcome_measure(), model_effects()))
+      return(frequentist(data = data(), metaoutcome = metaoutcome(), treatment_list = treatment_df(),
+                         outcome_measure = outcome_measure(), modelranfix = model_effects())
+             )
     })
 
     # Make frequentist function (in fn_analysis.R) reactive with excluded studies - NVB
     freq_sub <- reactive({
-      return(frequentist(data(), metaoutcome(), treatment_df(), outcome_measure(), model_effects(), exclusions()))
+      return(frequentist(data = data(), metaoutcome = metaoutcome(), treatment_list = treatment_df(),
+                         outcome_measure = outcome_measure(), modelranfix = model_effects(), excluded = exclusions())
+             )
     })
 
-    # Make bugsnetdata function (in fn_analysis.R) reactive - NVB
+    # Make bugsnetdata function (in analysis_generic.R) reactive - NVB
     bugsnetdt <- reactive({
-      return(bugsnetdata(data(), metaoutcome(), treatment_df()))
+      return(bugsnetdata(data = data(), metaoutcome = metaoutcome(), treatment_list = treatment_df()))
     })
 
-    # Make ref_alter function (in fn_analysis.R) reactive - NVB
+    # Make ref_alter function (in analysis_generic.R) reactive - NVB
     reference_alter <- reactive({
-      return(ref_alter(data(), metaoutcome(), exclusions(), treatment_df()))
+      return(ref_alter(data = data(), metaoutcome = metaoutcome(), excluded = exclusions(),
+                       treatment_list = treatment_df())
+             )
     })
     
     ### Get data for data table
