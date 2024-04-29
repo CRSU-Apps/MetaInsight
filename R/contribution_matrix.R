@@ -757,13 +757,8 @@ CalculateContributions <- function(
         indirect_contributions[study, treatment] <- contribution
       }
       
-      treatment_effect <- d0$TE[
-        (
-          (d0$treat1 == reference_index & d0$treat2 == treatment_index) |
-          (d0$treat1 == treatment_index & d0$treat2 == reference_index)
-        ) &
-        d0$Study == study
-      ]
+      treatment_effect <- d0$TE[d0$treat1 == reference_index & d0$treat2 == treatment_index & d0$Study == study]
+      
       if (length(treatment_effect) != 0) {
         relative_effects[study, treatment] <- treatment_effect
       }

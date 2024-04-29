@@ -278,6 +278,9 @@ regression_plot_panel_server <- function(id, data, covariate_title, model_output
       )
     })
     
+    contributions_failed <- reactiveVal(NULL)
+    
+    # Show warning when contribution maxtrix fails to calculate
     output$contributions_missing <- renderUI({
       if (!is.null(contributions_failed())) {
         return(
@@ -292,58 +295,18 @@ regression_plot_panel_server <- function(id, data, covariate_title, model_output
       }
     })
     
-    contributions_failed <- reactiveVal(NULL)
+    # Reset failed contributions when model recalculated
     observe({
       contributions_failed(NULL)
     }) %>% bindEvent(model_output())
     
+    # Reset contributions to "None" and record failed contribution matrix calculation
     observe({
       if (!is.null(model_output()) && input$contributions != "None" && is.null(contribution_matrix())) {
         updateSelectInput(inputId = "contributions", selected = "None")
         contributions_failed(input$contributions)
       }
     })
-    
-    # # previous_contributions <- reactiveVal("Treatment Effect")
-    # previous_contributions <- reactiveVal()
-    # observe({
-    #   previous_contributions(NULL)
-    # }) %>% bindEvent(model_output())
-    # 
-    # observe({
-    #   print("Checking contribution matrix")
-    #   # if (!is.null(model_output()) && input$contributions != "None" && is.null(contribution_matrix())) {
-    #   if (input$contributions != "None" && is.null(contribution_matrix())) {
-    #     # # Store current state of contributions toggle to reinstate once checkbox is reenabled
-    #     # previous_contributions(is.null(input$contibutions) || input$contibutions)
-    #     
-    #     updateSelectInput(inputId = "contributions", selected = "None")
-    #     # shinyjs::disable(id = "contributions")
-    #     
-    #     if (!is.null(previous_contributions())) {
-    #       
-    #       print(input$contributions)
-    #       print(is.null(contribution_matrix()))
-    #       print(previous_contributions())
-    #       print("---")
-    #       
-    #       showModal(
-    #         modalDialog(
-    #           title = "Contribution matrix cannot be calculated",
-    #           easyClose = TRUE,
-    #           p("This possibly indicates a poorly fitting model. Please check model diagnostics in the Result Details and Deviance Report tabs"),
-    #           modalButton(label = "OK"),
-    #           footer = NULL
-    #         )
-    #       )
-    #     }
-    #     
-    #   # } else {
-    #     # updateSelectInput(inputId = "contributions", selected = previous_contributions())
-    #     # shinyjs::enable(id = "contributions")
-    #   }
-    #   previous_contributions(input$contributions)
-    # })
     
     output$regression_plot <- renderPlot({
       if (length(added_comparators()) == 0) {

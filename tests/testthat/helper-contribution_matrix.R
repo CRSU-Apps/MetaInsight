@@ -78,8 +78,8 @@ SetupAndCalculateContributionMatrix <- function(treatment_or_covariate_effect, c
   # Setup mocked frequentist analysis
   mock_frequentist_d0 <- data.frame(
     Study = c("A", "B", "C", "C", "C", "D", "E"),
-    treat1 = c(1, 1, 1, 4, 5, 2, 1),
-    treat2 = c(2, 3, 4, 5, 1, 3, 4),
+    treat1 = c(1, 1, 1, 4, 1, 2, 1),
+    treat2 = c(2, 3, 4, 5, 5, 3, 4),
     TE = c(11, 22, 33, 44, 55, 66, 77)
   )
   
