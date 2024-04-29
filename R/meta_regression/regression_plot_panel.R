@@ -263,7 +263,6 @@ regression_plot_panel_server <- function(id, data, covariate_title, model_output
             outcome_type = outcome_type(),
             outcome_measure = outcome_measure(),
             effects_type = model_output()$model,
-            regression_coefficient_type = model_output()$model$regressor$coefficient,
             std_dev_d = std_dev_d,
             std_dev_beta = std_dev_beta,
             cov_parameters = model_output()$mtcResults$model$regressor$coefficient,
@@ -280,10 +279,10 @@ regression_plot_panel_server <- function(id, data, covariate_title, model_output
     })
     
     output$contributions_missing <- renderUI({
-      if (is.null(contribution_matrix())) {
+      if (!is.null(contributions_failed())) {
         return(
           div(
-            tags$html("Contribution matrix cannot be calculated", tags$i(class="fa-regular fa-circle-question")),
+            glue::glue("{contributions_failed()} contribution matrix cannot be calculated"), tags$i(class="fa-regular fa-circle-question"),
             style = "color: #ff0000;",
             title = "This possibly indicates a poorly fitting model. Please check model diagnostics in the Result Details and Deviance Report tabs"
           )
@@ -293,20 +292,58 @@ regression_plot_panel_server <- function(id, data, covariate_title, model_output
       }
     })
     
-    previous_contributions <- reactiveVal("Treatment Effect")
+    contributions_failed <- reactiveVal(NULL)
+    observe({
+      contributions_failed(NULL)
+    }) %>% bindEvent(model_output())
     
     observe({
-      if (is.null(contribution_matrix())) {
-        # Store current state of contributions toggle to reinstate once checkbox is reenabled
-        previous_contributions(is.null(input$contibutions) || input$contibutions)
-        
+      if (!is.null(model_output()) && input$contributions != "None" && is.null(contribution_matrix())) {
         updateSelectInput(inputId = "contributions", selected = "None")
-        shinyjs::disable(id = "contributions")
-      } else {
-        updateSelectInput(inputId = "contributions", selected = previous_contributions())
-        shinyjs::enable(id = "contributions")
+        contributions_failed(input$contributions)
       }
     })
+    
+    # # previous_contributions <- reactiveVal("Treatment Effect")
+    # previous_contributions <- reactiveVal()
+    # observe({
+    #   previous_contributions(NULL)
+    # }) %>% bindEvent(model_output())
+    # 
+    # observe({
+    #   print("Checking contribution matrix")
+    #   # if (!is.null(model_output()) && input$contributions != "None" && is.null(contribution_matrix())) {
+    #   if (input$contributions != "None" && is.null(contribution_matrix())) {
+    #     # # Store current state of contributions toggle to reinstate once checkbox is reenabled
+    #     # previous_contributions(is.null(input$contibutions) || input$contibutions)
+    #     
+    #     updateSelectInput(inputId = "contributions", selected = "None")
+    #     # shinyjs::disable(id = "contributions")
+    #     
+    #     if (!is.null(previous_contributions())) {
+    #       
+    #       print(input$contributions)
+    #       print(is.null(contribution_matrix()))
+    #       print(previous_contributions())
+    #       print("---")
+    #       
+    #       showModal(
+    #         modalDialog(
+    #           title = "Contribution matrix cannot be calculated",
+    #           easyClose = TRUE,
+    #           p("This possibly indicates a poorly fitting model. Please check model diagnostics in the Result Details and Deviance Report tabs"),
+    #           modalButton(label = "OK"),
+    #           footer = NULL
+    #         )
+    #       )
+    #     }
+    #     
+    #   # } else {
+    #     # updateSelectInput(inputId = "contributions", selected = previous_contributions())
+    #     # shinyjs::enable(id = "contributions")
+    #   }
+    #   previous_contributions(input$contributions)
+    # })
     
     output$regression_plot <- renderPlot({
       if (length(added_comparators()) == 0) {

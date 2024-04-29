@@ -374,7 +374,7 @@ test_that("CreateContributionMatrix() produces a matrix of the correct format wh
 })
 
 test_that("CalculateContributions() gathers covariate values for studies", {
-  setup <- SetupAndCalculateContributionMatrix(treatment_or_covariate_effect = "Treatment Effect", regression_coefficient_type = "Shared")
+  setup <- SetupAndCalculateContributionMatrix(treatment_or_covariate_effect = "Treatment Effect", cov_parameters = "shared")
   data <- setup$data
   treatment_ids <- setup$treatment_ids
   covariate_title <- setup$covariate_title
@@ -394,7 +394,7 @@ test_that("CalculateContributions() gathers covariate values for studies", {
 })
 
 test_that("CalculateContributions() gathers direct treatment effect contributions for treatments and studies", {
-  setup <- SetupAndCalculateContributionMatrix(treatment_or_covariate_effect = "Treatment Effect", regression_coefficient_type = "Shared")
+  setup <- SetupAndCalculateContributionMatrix(treatment_or_covariate_effect = "Treatment Effect", cov_parameters = "shared")
   data <- setup$data
   treatment_ids <- setup$treatment_ids
   covariate_title <- setup$covariate_title
@@ -425,7 +425,7 @@ test_that("CalculateContributions() gathers direct treatment effect contribution
 })
 
 test_that("CalculateContributions() gathers indirect treatment effect contributions for treatments and studies", {
-  setup <- SetupAndCalculateContributionMatrix(treatment_or_covariate_effect = "Treatment Effect", regression_coefficient_type = "Shared")
+  setup <- SetupAndCalculateContributionMatrix(treatment_or_covariate_effect = "Treatment Effect", cov_parameters = "shared")
   data <- setup$data
   treatment_ids <- setup$treatment_ids
   covariate_title <- setup$covariate_title
@@ -456,7 +456,7 @@ test_that("CalculateContributions() gathers indirect treatment effect contributi
 })
 
 test_that("CalculateContributions() gathers direct covariate effect contributions for treatments and studies", {
-  setup <- SetupAndCalculateContributionMatrix(treatment_or_covariate_effect = "Covariate Effect", regression_coefficient_type = "Shared")
+  setup <- SetupAndCalculateContributionMatrix(treatment_or_covariate_effect = "Covariate Effect", cov_parameters = "shared")
   data <- setup$data
   treatment_ids <- setup$treatment_ids
   covariate_title <- setup$covariate_title
@@ -487,7 +487,7 @@ test_that("CalculateContributions() gathers direct covariate effect contribution
 })
 
 test_that("CalculateContributions() gathers indirect covariate effect contributions for treatments and studies", {
-  setup <- SetupAndCalculateContributionMatrix(treatment_or_covariate_effect = "Covariate Effect", regression_coefficient_type = "Shared")
+  setup <- SetupAndCalculateContributionMatrix(treatment_or_covariate_effect = "Covariate Effect", cov_parameters = "shared")
   data <- setup$data
   treatment_ids <- setup$treatment_ids
   covariate_title <- setup$covariate_title
@@ -520,7 +520,7 @@ test_that("CalculateContributions() gathers indirect covariate effect contributi
 })
 
 test_that("CalculateContributions() gathers relative treatment effects for treatments and studies", {
-  setup <- SetupAndCalculateContributionMatrix(treatment_or_covariate_effect = "Treatment Effect", regression_coefficient_type = "Shared")
+  setup <- SetupAndCalculateContributionMatrix(treatment_or_covariate_effect = "Treatment Effect", cov_parameters = "shared")
   data <- setup$data
   treatment_ids <- setup$treatment_ids
   covariate_title <- setup$covariate_title
@@ -562,7 +562,7 @@ test_that("CalculateContributions() gathers relative treatment effects for treat
 
 
 test_that("CalculateContributions() gathers direct covariate effect contributions for treatments and studies for unrelated regression", {
-  setup <- SetupAndCalculateContributionMatrix(treatment_or_covariate_effect = "Covariate Effect", regression_coefficient_type = "Unrelated")
+  setup <- SetupAndCalculateContributionMatrix(treatment_or_covariate_effect = "Covariate Effect", cov_parameters = "unrelated")
   data <- setup$data
   treatment_ids <- setup$treatment_ids
   covariate_title <- setup$covariate_title
@@ -593,7 +593,7 @@ test_that("CalculateContributions() gathers direct covariate effect contribution
 })
 
 test_that("CalculateContributions() gathers indirect covariate effect contributions for treatments and studies for unrelated regression", {
-  setup <- SetupAndCalculateContributionMatrix(treatment_or_covariate_effect = "Covariate Effect", regression_coefficient_type = "Unrelated")
+  setup <- SetupAndCalculateContributionMatrix(treatment_or_covariate_effect = "Covariate Effect", cov_parameters = "unrelated")
   data <- setup$data
   treatment_ids <- setup$treatment_ids
   covariate_title <- setup$covariate_title

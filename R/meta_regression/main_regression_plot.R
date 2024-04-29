@@ -132,7 +132,7 @@ CreateMainRegressionPlot <- function(
   # Log scale for OR & RR
   if (outcome_measure %in% c("OR", "RR")) {
     plot <- plot + 
-      scale_y_continuous(breaks = c(0.1, 0.25, 0.5, 1, 2, 4, 6), trans = scales::log_trans())
+      scale_y_continuous(labels = function(x) { signif(exp(x), digits = 2) })
   }
   
   plot <- SetupRegressionPlotColours(

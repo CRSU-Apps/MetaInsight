@@ -23,14 +23,7 @@ FindCovariateRanges <- function(data, treatment_ids, reference, covariate_title)
   # Turn list into matrix
   # This is only needed when there are different numbers of treatment arms between studies
   if (is.list(study_treatments)) {
-    max_treatments <- max(
-      sapply(
-        names(study_treatments),
-        function(name) {
-          length(study_treatments[[name]])
-        }
-      )
-    )
+    max_treatments <- max(lengths(study_treatments))
     
     temp_matrix <- matrix(
       nrow = max_treatments,

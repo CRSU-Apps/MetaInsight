@@ -2,7 +2,7 @@ library(mockery)
 
 #' Stub the functions `CreateContributionMatrix()` and `frequentist()`, and run the contribution matrix calculation.
 #' @param treatment_or_covariate_effect Whether contributions are for treatment effect or covariate effect. One of: "Treatment Effect", "Covariate Effect".
-#' @param regression_coefficient_type Type of regression coefficient. One of: "Shared", "Unrelated", "Exchangeable"
+#' @param cov_parameters Type of regression coefficient. One of: "shared", "unrelated", "exchangeable"
 #'
 #' @return List of objects used in the test:
 #' - data
@@ -13,7 +13,7 @@ library(mockery)
 #'   - Title of covariate column in data
 #' - contributions
 #'   - Output from function `CalculateContributions()`
-SetupAndCalculateContributionMatrix <- function(treatment_or_covariate_effect, regression_coefficient_type) {
+SetupAndCalculateContributionMatrix <- function(treatment_or_covariate_effect, cov_parameters) {
   covariate_title <- "covar.age"
   
   # Setup data
@@ -32,7 +32,7 @@ SetupAndCalculateContributionMatrix <- function(treatment_or_covariate_effect, r
   studies <- unique(data$Study)
   non_reference_treatments <- treatment_ids$Label[treatment_ids$Label != reference_name]
   
-  if (regression_coefficient_type == "Shared") {
+  if (cov_parameters == "shared") {
     covariate_effect_columns <- "B"
   } else {
     covariate_effect_columns <- paste0(reference_name, ":", non_reference_treatments, "_beta")
@@ -57,7 +57,7 @@ SetupAndCalculateContributionMatrix <- function(treatment_or_covariate_effect, r
   mock_contribution_matrix["D", "Hydrogen:Sulphur_d"] <- 8.8
   mock_contribution_matrix["E", "Hydrogen:Zinc_d"] <- 9.9
   
-  if (regression_coefficient_type == "Shared") {
+  if (cov_parameters == "shared") {
     mock_contribution_matrix["A", "B"] <- 11
     mock_contribution_matrix["B", "B"] <- 22
     mock_contribution_matrix["C", "B"] <- 33
@@ -96,9 +96,8 @@ SetupAndCalculateContributionMatrix <- function(treatment_or_covariate_effect, r
     outcome_type = "Binary",
     outcome_measure = "OR",
     effects_type = "random",
-    regression_coefficient_type = regression_coefficient_type,
     std_dev_d = NULL,
-    cov_parameters,
+    cov_parameters = cov_parameters,
     cov_centre = NULL,
     std_dev_beta = NULL,
     study_or_comparison_level = NULL,

@@ -635,9 +635,8 @@ CheckSingularMatrix <- function(matrix){
 #' @param outcome_type "Continuous" or "Binary".
 #' @param outcome_measure "MD", "OR", "RR" or "RD".
 #' @param effects_type "fixed" or "random".
-#' @param regression_coefficient_type Type of regression coefficient. One of: "Shared", "Unrelated", "Exchangeable"
 #' @param std_dev_d Between-study standard deviation. Only required when @param effects_type == "random". Defaults to NULL.
-#' @param cov_parameters "shared", "exchangeable", or "unrelated".
+#' @param cov_parameters Type of regression coefficient. One of: "shared", "exchangeable", or "unrelated".
 #' @param cov_centre Centring value for the covariate, defaults to the mean.
 #' @param std_dev_beta Standard deviation of covariate parameters. Only required when @param cov_parameters == "exchangeable". Defaults to NULL.
 #' @param study_or_comparison_level "study" for study-level contributions, "comparison" for basic-comparison-level contributions.
@@ -661,7 +660,6 @@ CalculateContributions <- function(
     outcome_type,
     outcome_measure,
     effects_type,
-    regression_coefficient_type,
     std_dev_d = NULL,
     cov_parameters,
     cov_centre = NULL,
@@ -734,13 +732,13 @@ CalculateContributions <- function(
   if (treatment_or_covariate_effect == "Treatment Effect") {
     column_format <- "{reference}:{treatment}_d"
   } else {
-    if (!regression_coefficient_type %in% c("Shared", "Unrelated", "Exchangeable")) {
-      stop(glue::glue("Regression coefficient '{regression_coefficient_type}' not recognised. Please use one of: 'Shared', 'Unrelated', 'Exchangeable'"))
+    if (!cov_parameters %in% c("shared", "unrelated", "exchangeable")) {
+      stop(glue::glue("Regression coefficient '{cov_parameters}' not recognised. Please use one of: 'shared', 'unrelated', 'exchangeable'"))
     }
     
-    if (regression_coefficient_type == "Shared") {
+    if (cov_parameters == "shared") {
       column_format <- "B"
-    } else if (regression_coefficient_type %in% c("Unrelated", "Exchangeable")) {
+    } else if (cov_parameters %in% c("unrelated", "exchangeable")) {
       column_format <- "{reference}:{treatment}_beta"
     }
   }
