@@ -113,7 +113,10 @@ RunCovariateModel <- function(data, treatment_ids, outcome_type, outcome, covari
 
 #' Function to collate all the model output to be used in other existing functions
 #' 
+#' @param data Data frame from which model was calculated
+#' @param treatment_ids Data frame containing treatment IDs (Number) and names (Label)
 #' @param model Completed model object after running RunCovariateRegression()
+#' @param covariate_title Covariate name as per uploaded data
 #' @param cov_value Value of covariate for which to give output (default value the mean of study covariates)
 #' @param outcome_measure The outcome measure for the analysis: One of: "OR", "RR", "MD"
 #' @return List of gemtc related output:
@@ -132,7 +135,9 @@ RunCovariateModel <- function(data, treatment_ids, outcome_type, outcome, covari
 #'  outcome = The outcome type for the analysis eg. "MD" or "OR"
 #'  mtcNetwork = The network object from GEMTC
 #'  model = The type of linear model, either "fixed" or "random"
-CovariateModelOutput <- function(model, cov_value, outcome_measure) {
+#'  covariate_min = Vector of minimum covariate values directly contributing to the regression.
+#'  covariate_max = Vector of maximum covariate values directly contributing to the regression.
+CovariateModelOutput <- function(data, treatment_ids, model, covariate_title, cov_value, outcome_measure) {
   
   model_levels = levels(model$model$data$reg.control)
   reference_name <- model_levels[model_levels %in% model$model$data$reg.control]
@@ -174,6 +179,13 @@ CovariateModelOutput <- function(model, cov_value, outcome_measure) {
   # Rename items for intercepts and slopes
   names(slopes) <- comparator_names
   names(intercepts) <- comparator_names
+  
+  min_max <- FindCovariateRanges(
+    data = data,
+    treatment_ids = treatment_ids,
+    reference = as.character(model$model$regressor$control),
+    covariate_title = covariate_title
+  )
 
   # naming conventions to match current Bayesian functions
   return(
@@ -192,7 +204,9 @@ CovariateModelOutput <- function(model, cov_value, outcome_measure) {
       intercepts = intercepts,
       outcome = outcome_measure,
       mtcNetwork = model$model$network,
-      model = model$model$linearModel
+      model = model$model$linearModel,
+      covariate_min = min_max$min,
+      covariate_max = min_max$max
     )
   )
 }

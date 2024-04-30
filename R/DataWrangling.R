@@ -122,10 +122,15 @@ FindDataShape <- function(data) {
 }
 
 #' Find all of the treatment names in the data, both for long and wide formats.
+#' If a study is specified, then the treatments are only found for that study.
+#' Otherwise, treatments are found for all studies.
 #' 
-#' @param data Data frame in which to search for treatment names
-#' @return Vector of all treatment names
-FindAllTreatments <- function(data) {
+#' @param data Data frame in which to search for treatment names.
+#' @param treatment_ids Data frame containing names of treatments ("Label") and IDs ("Number").
+#' This is only needed if the "T" column in the data frame contains IDs instead of names. Defaults to NULL.
+#' @param study Name of study for which to find treatment names. Defaults to NULL.
+#' @return Vector of all treatment names.
+FindAllTreatments <- function(data, treatment_ids = NULL, study = NULL) {
   # Regular expression explanation:
   # ^ = Start of string
   # (?i) = Ignore case for matching
@@ -138,14 +143,22 @@ FindAllTreatments <- function(data) {
     sapply(
       treatment_column_names,
       function (nom) {
-        treatments <- data[[nom]]
+        if (is.null(study)) {
+          treatments <- data[[nom]]
+        } else {
+          treatments <- data[[nom]][data$Study == study]
+        }
         return(treatments[!is.na(treatments)])
       }
     )
   )
   
   # Wrapped in c() to convert to an unnamed vector
-  return(unique(c(treatment_names)))
+  if (is.null(treatment_ids)) {
+    return(unique(c(treatment_names)))
+  } else {
+    return(unique(c(treatment_ids$Label[match(treatment_names, treatment_ids$Number)])))
+  }
 }
 
 #' Create a copy of a vector with the given item as the first element.
@@ -363,7 +376,7 @@ GetFriendlyCovariateName <- function(column_name) {
 #' @return @param data with rows corresponding to the control treatment kept or deleted, and a new column 'Control'.
 KeepOrDeleteControlTreatment <- function(data, treatments, keep_delete){
   #It is imperative that 'data' is sorted by 'Study', because tapply below will sort by 'Study', creating a misalignment between 'Study' and 'Control' in the 'control' data frame if 'data' is not sorted by 'Study' already.
-  data <- dplyr::arrange(data, Study, T)
+  data <- data[order(data$Study, data$T), ]
   #The unique studies
   studies <- unique(data$Study)
   #Local function to find the control treatment in a single study

@@ -23,6 +23,78 @@ test_that("FindAllTreatments() finds all treatements for wide-format data", {
   expect_equal(!!treatments, c("Egg", "Flour", "Sugar", "Butter", "Cinnamon"))
 })
 
+test_that("FindAllTreatments() finds all treatements for long-format data with treatment IDs", {
+  data <- data.frame(
+    Study = c("A", "A", "B", "B", "C", "C", "C"),
+    T = c(1, 2, 1, 3, 1, 4, 5),
+    OtherText = c("A", "A", "B", "B", "C", "C", "C")
+  )
+  treatment_ids <- data.frame(
+    Number = 1:5,
+    Label = c("Egg", "Flour", "Sugar", "Butter", "Cinnamon")
+  )
+  
+  treatments <- FindAllTreatments(data = data, treatment_ids = treatment_ids)
+  
+  expect_equal(!!treatments, c("Egg", "Flour", "Sugar", "Butter", "Cinnamon"))
+})
+
+test_that("FindAllTreatments() finds all treatements for wide-format data with treatment IDs", {
+  data <- data.frame(
+    Study = c("A", "B", "C"),
+    T.1 = c(1, 1, 1),
+    OtherText.1 = c("A", "B", "C"),
+    T.2 = c(2, 3, 4),
+    OtherText.2 = c("A", "B", "C"),
+    T.3 = c(NA, NA, 5),
+    OtherText.3 = c(NA, NA, "C")
+  )
+  treatment_ids <- data.frame(
+    Number = 1:5,
+    Label = c("Egg", "Flour", "Sugar", "Butter", "Cinnamon")
+  )
+  
+  treatments <- FindAllTreatments(data = data, treatment_ids = treatment_ids)
+  
+  expect_equal(!!treatments, c("Egg", "Flour", "Sugar", "Butter", "Cinnamon"))
+})
+
+test_that("FindAllTreatments() finds all treatements for study for long-format data with treatment IDs", {
+  data <- data.frame(
+    Study = c("A", "A", "B", "B", "C", "C", "C"),
+    T = c(1, 2, 1, 3, 1, 4, 5),
+    OtherText = c("A", "A", "B", "B", "C", "C", "C")
+  )
+  treatment_ids <- data.frame(
+    Number = 1:5,
+    Label = c("Egg", "Flour", "Sugar", "Butter", "Cinnamon")
+  )
+  
+  treatments <- FindAllTreatments(data = data, treatment_ids = treatment_ids, study = "C")
+  
+  expect_equal(!!treatments, c("Egg", "Butter", "Cinnamon"))
+})
+
+test_that("FindAllTreatments() finds all treatements for study for wide-format data with treatment IDs", {
+  data <- data.frame(
+    Study = c("A", "B", "C"),
+    T.1 = c(1, 1, 1),
+    OtherText.1 = c("A", "B", "C"),
+    T.2 = c(2, 3, 4),
+    OtherText.2 = c("A", "B", "C"),
+    T.3 = c(NA, NA, 5),
+    OtherText.3 = c(NA, NA, "C")
+  )
+  treatment_ids <- data.frame(
+    Number = 1:5,
+    Label = c("Egg", "Flour", "Sugar", "Butter", "Cinnamon")
+  )
+  
+  treatments <- FindAllTreatments(data = data, treatment_ids = treatment_ids, study = "C")
+  
+  expect_equal(!!treatments, c("Egg", "Butter", "Cinnamon"))
+})
+
 test_that("VectorWithItemFirst() returns unchanged vector when intended first item not in vector", {
   vector <- c("Egg", "Flour", "Sugar", "Butter", "Cinnamon")
   

@@ -627,9 +627,158 @@ CheckSingularMatrix <- function(matrix){
   return(contribution)
 }
 
+#' Create the contribution matrix in a convenient format.
+#' 
+#' @param data Input data in long format.
+#' @param covariate_title Title of covariate column in data.
+#' @param treatment_ids Data frame containing treatment IDs and names in columns named 'Number' and 'Label' respectively.
+#' @param outcome_type "Continuous" or "Binary".
+#' @param outcome_measure "MD", "OR", "RR" or "RD".
+#' @param effects_type "fixed" or "random".
+#' @param std_dev_d Between-study standard deviation. Only required when @param effects_type == "random". Defaults to NULL.
+#' @param cov_parameters Type of regression coefficient. One of: "shared", "exchangeable", or "unrelated".
+#' @param cov_centre Centring value for the covariate, defaults to the mean.
+#' @param std_dev_beta Standard deviation of covariate parameters. Only required when @param cov_parameters == "exchangeable". Defaults to NULL.
+#' @param study_or_comparison_level "study" for study-level contributions, "comparison" for basic-comparison-level contributions.
+#' @param absolute_or_percentage "percentage" for percentage contributions, "absolute" for absolute contributions.
+#' @param basic_or_all_parameters "basic" for one column per basic parameter, "all" for one column per parameter. Defaults to "basic".
+#' @param weight_or_contribution "weight" for coefficients or "contribution" for coefficients multiplied by observed treatment effects.
+#' @param treatment_or_covariate_effect Whether contributions are for treatment effect or covariate effect. One of: "Treatment Effect", "Covariate Effect".
+#' @return List of contributions:
+#' - "direct"
+#'   - Matrix of direct contributions to the regression. Rows are studies, columns are treatments
+#' - "indirect"
+#'   - Matrix of indirect contributions to the regression. Rows are studies, columns are treatments
+#' - "relative_effect"
+#'   - Matrix of relative effects of treatments compared to the reference. Rows are studies, columns are treatments
+#' - "covariate_value"
+#'   - Vector of covariate values from the studies.
+CalculateContributions <- function(
+    data,
+    covariate_title,
+    treatment_ids,
+    outcome_type,
+    outcome_measure,
+    effects_type,
+    std_dev_d = NULL,
+    cov_parameters,
+    cov_centre = NULL,
+    std_dev_beta = NULL,
+    study_or_comparison_level,
+    absolute_or_percentage,
+    basic_or_all_parameters = "basic",
+    weight_or_contribution,
+    treatment_or_covariate_effect) {
+  
+  contributions <- CreateContributionMatrix(
+    data = data,
+    treatment_ids = treatment_ids,
+    outcome_type = outcome_type,
+    outcome_measure = outcome_measure,
+    effects_type = effects_type,
+    std_dev_d = std_dev_d,
+    cov_parameters = cov_parameters,
+    cov_centre = cov_centre,
+    std_dev_beta = std_dev_beta,
+    study_or_comparison_level = study_or_comparison_level,
+    absolute_or_percentage = absolute_or_percentage,
+    basic_or_all_parameters = basic_or_all_parameters,
+    weight_or_contribution = weight_or_contribution,
+    full_output = FALSE
+  )
+  
+  if (outcome_type == "Binary") {
+    d0 <- netmeta::pairwise(treat = T, event = R, studlab = Study, n = N, data = data)
+  } else if (outcome_type == "Continuous") {
+    d0 <- netmeta::pairwise(treat = T, mean = Mean, sd = SD, studlab = Study, n = N, data = data)
+  } else {
+    stop(glue::glue("Outcome type '{outcome_type}' is not supported. Please use 'Binary' or 'Continuous'"))
+  }
+  
+  reference_index <- 1
+  reference <- treatment_ids$Label[treatment_ids$Number == reference_index]
+  treatments <- treatment_ids$Label[treatment_ids$Label != reference]
+  studies <- unique(data$Study)
+  
+  direct_contributions <- matrix(
+    nrow = length(studies),
+    ncol = length(treatments),
+    dimnames = list(
+      studies,
+      treatments
+    )
+  )
+  indirect_contributions <- matrix(
+    nrow = length(studies),
+    ncol = length(treatments),
+    dimnames = list(
+      studies,
+      treatments
+    )
+  )
+  relative_effects <- matrix(
+    nrow = length(studies),
+    ncol = length(treatments),
+    dimnames = list(
+      studies,
+      treatments
+    )
+  )
+  
+  if (!treatment_or_covariate_effect %in% c("Treatment Effect", "Covariate Effect")) {
+    stop(glue::glue("Contribution type '{}' not recognised. Please use one of: 'Treatment Effect', 'Covariate Effect'"))
+  }
+  
+  if (treatment_or_covariate_effect == "Treatment Effect") {
+    column_format <- "{reference}:{treatment}_d"
+  } else {
+    if (!cov_parameters %in% c("shared", "unrelated", "exchangeable")) {
+      stop(glue::glue("Regression coefficient '{cov_parameters}' not recognised. Please use one of: 'shared', 'unrelated', 'exchangeable'"))
+    }
+    
+    if (cov_parameters == "shared") {
+      column_format <- "B"
+    } else if (cov_parameters %in% c("unrelated", "exchangeable")) {
+      column_format <- "{reference}:{treatment}_beta"
+    }
+  }
+  
+  for (treatment in treatments) {
+    treatment_index <- treatment_ids$Number[treatment_ids$Label == treatment]
+    for (study in rownames(contributions)) {
+      contribution <- contributions[study, glue::glue(column_format)]
+      if (contribution == 0) {
+        next
+      }
+      
+      if (all(c(treatment, reference) %in% FindAllTreatments(data, treatment_ids, study))) {
+        direct_contributions[study, treatment] <- contribution
+      } else {
+        indirect_contributions[study, treatment] <- contribution
+      }
+      
+      treatment_effect <- d0$TE[d0$treat1 == reference_index & d0$treat2 == treatment_index & d0$Study == study]
+      
+      if (length(treatment_effect) != 0) {
+        relative_effects[study, treatment] <- treatment_effect
+      }
+    }
+  }
+  
+  covariate_values <- data[[covariate_title]][match(studies, data$Study)]
+  names(covariate_values) <- studies
+  
+  return(
+    list(
+      direct = direct_contributions,
+      indirect = indirect_contributions,
+      relative_effect = relative_effects,
+      covariate_value = covariate_values
+    )
+  )
+}
 
-
-#' Create the contribution matrix
+#' Create the contribution matrix.
 #' 
 #' @param data Input data in long format.
 #' @param treatment_ids Data frame containing treatment IDs and names in columns named 'Number' and 'Label' respectively.
