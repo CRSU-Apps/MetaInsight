@@ -280,7 +280,7 @@ regression_plot_panel_server <- function(id, data, covariate_title, model_output
     
     contributions_failed <- reactiveVal(NULL)
     
-    # Show warning when contribution maxtrix fails to calculate
+    # Show warning when contribution matrix fails to calculate
     output$contributions_missing <- renderUI({
       if (!is.null(contributions_failed())) {
         return(
@@ -334,58 +334,3 @@ regression_plot_panel_server <- function(id, data, covariate_title, model_output
     })
   })
 }
-
-
-
-
-
-
-
-
-
-
-
-
-# Test code to launch the panel as a self-contained app.
-shiny::shinyApp(
-  ui = fluidPage(
-    tags$head(
-      shinyjs::useShinyjs(),
-      tags$script(src = "https://kit.fontawesome.com/23f0e167ac.js", crossorigin = "anonymous")
-    ),
-    numericInput(inputId = "covariate", label = "Covariate Value", value = 0),
-    regression_plot_panel_ui(id = "TEST")
-  ),
-  server = function(input, output, session) {
-    
-    raw_data <- reactive({
-      read.csv("../../tests/testthat/Cont_long_continuous_cov.csv")
-    })
-    
-    raw_treatment_df <- reactive({
-      CreateTreatmentIds(FindAllTreatments(raw_data()))
-    })
-    
-    data <- reactive({
-      return(WrangleUploadData(raw_data(), raw_treatment_df(), "Continuous"))
-    })
-    
-    treatment_df <- reactive({
-      CleanTreatmentIds(raw_treatment_df())
-    })
-    
-    model <- reactive({
-      RunCovariateModel(data(), treatment_df(), "Continuous", 'MD', "covar.age", "age", 'random', 'unrelated', "the_Little")
-    })
-    
-    model_output = reactive({
-      CovariateModelOutput(model(), input$covariate)
-    })
-    
-    regression_plot_panel_server(
-      id = "TEST",
-      model_output = model_output,
-      treatment_df = treatment_df
-    )
-  }
-)
