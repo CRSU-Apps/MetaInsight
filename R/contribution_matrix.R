@@ -873,8 +873,8 @@ CreateContributionMatrix <- function(data, treatment_ids, outcome_type, outcome_
                                                treatments = treatments,
                                                outcome_type = outcome_type,
                                                outcome_measure = outcome_measure)$effect_sizes$Effect
-    #Multiply the n-th row of 'contribution' by the n-th element of 'effect_sizes'
-    contribution <- contribution * effect_sizes
+    #Multiply the n-th column of 'contribution' by the n-th element of 'effect_sizes'
+    contribution <- t(t(contribution) * effect_sizes)
   } else if (weight_or_contribution != "weight") {
     stop("weight_or_contribution must be 'weight' or 'contribution'")
   }
