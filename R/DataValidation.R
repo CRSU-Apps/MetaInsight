@@ -10,6 +10,15 @@
 #' - "valid" = TRUE or FALSE defining whether data is valid
 #' - "message" = String describing any issues causing the data to be invalid
 ValidateUploadedData <- function(data, outcome_type) {
+  if (is.null(data)) {
+    return(
+      list(
+        valid = FALSE,
+        message = "File is empty"
+      )
+    )
+  }
+  
   if (outcome_type == "Continuous") {
     outcome_columns <- continuous_column_names
   } else if (outcome_type == "Binary") {

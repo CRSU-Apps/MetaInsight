@@ -112,7 +112,14 @@ data_input_panel_server <- function(id, continuous_file = "data/Cont_long.csv", 
         # if data is triggered without reload, only load the default data
         df <- defaultD()
       } else {
-        df <- rio::import(file = file1$datapath)
+        df <- tryCatch(
+          {
+            return(rio::import(file = file1$datapath))
+          },
+          error = function(err) {
+            return(NULL)
+          }
+        )
       }
       
       result = ValidateUploadedData(df, input$metaoutcome)
