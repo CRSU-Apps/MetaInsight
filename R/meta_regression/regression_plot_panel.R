@@ -7,11 +7,12 @@
   )
 }
 
-.AddRegressionOptionTooltip <- function(..., tooltip) {
+.AddRegressionOptionTooltip <- function(..., tooltip, style = NA) {
   return(
     div(
       ...,
-      title = tooltip
+      title = tooltip,
+      style = style
     )
   )
 }
@@ -67,20 +68,28 @@ regression_plot_panel_ui <- function(id) {
         tooltip = "Show the covariate value as a vertical line at the current value"
       ),
       # Confidence regions
-      .AddRegressionOptionTooltip(
-        checkboxInput(
+      div(
+        id = ns("confidence_options"),
+          checkboxInput(
           inputId = ns("confidence"),
-          label = tags$html("Show confidence regions", tags$i(class="fa-regular fa-circle-question"))
+          label = div(
+            .AddRegressionOptionTooltip(
+              "Show confidence regions",
+              tags$i(class="fa-regular fa-circle-question"),
+              tooltip = "Show confidence regions for the added comparisons. This will not show if there is one or zero direct contributions"
+            ),
+            uiOutput(outputId = ns("confidence_info")),
+            style = "display: -webkit-inline-box;"
+          )
         ),
-        tooltip = "Show confidence regions for the added comparisons"
-      ),
-      sliderInput(
-        inputId = ns("confidence_opacity"),
-        label = "Confidence Region Opacity",
-        min = 0,
-        max = 0.5,
-        step = 0.01,
-        value = 0.2
+        sliderInput(
+          inputId = ns("confidence_opacity"),
+          label = "Confidence Region Opacity",
+          min = 0,
+          max = 0.5,
+          step = 0.01,
+          value = 0.2
+        )
       ),
       # Regression lines
       .AddRegressionOptionTooltip(
@@ -198,27 +207,27 @@ regression_plot_panel_server <- function(id, data, covariate_title, model_output
     observe({
       added = unique(c(added_comparators(), input$add_comparator_dropdown))
       added_comparators(added)
-    }) %>%
+    }) |>
       bindEvent(input$add_comparator_btn)
     
     # Add all comparators on button click
     observe({
       added = unique(c(added_comparators(), available_to_add()))
       added_comparators(added)
-    }) %>%
+    }) |>
       bindEvent(input$add_all_btn)
     
     # Remove comparator on button click
     observe({
       added = added_comparators()[added_comparators() != input$remove_comparator_dropdown]
       added_comparators(added)
-    }) %>%
+    }) |>
       bindEvent(input$remove_comparator_btn, ignoreNULL = FALSE)
     
     # Remove all comparators on button click
     observe({
       added_comparators(character())
-    }) %>%
+    }) |>
       bindEvent(input$remove_all_btn, ignoreNULL = FALSE)
     
     # Update inputs on added comparators change
@@ -240,7 +249,53 @@ regression_plot_panel_server <- function(id, data, covariate_title, model_output
     mtc_summary <- reactive({
       summary(model_output()$mtcResults)
     })
+    
+    # Background process to calculate confidence regions
+    confidence_regions <- shiny::ExtendedTask$new(function(model_output) {
+      promises::future_promise({
+        return(CalculateConfidenceRegions(model_output))
+      })
+    })
+    
+    # Start calculation of confidence regions when the model output changes
+    observe({
+      confidence_regions$invoke(model_output())
+    }) |>
+      bindEvent(model_output())
+    
+    calculating_confidence_regions <- reactiveVal(FALSE)
+    previous_confidence_regions_shown <- reactiveVal(FALSE)
+    
+    # When model output changes, save the current state of the confidence region checkbox, then deselect and disable it
+    observe({
+      calculating_confidence_regions(TRUE)
+      previous_confidence_regions_shown(input$confidence)
+      updateCheckboxInput(inputId = "confidence", value = FALSE)
+      shinyjs::disable(id = "confidence_options")
+    }) |>
+      bindEvent(model_output())
+    
+    # When the confidence regions have been calculated, reenable the checkbox, and reset its value
+    observe({
+      shinyjs::enable(id = "confidence_options")
+      updateCheckboxInput(inputId = "confidence", value = previous_confidence_regions_shown())
+      calculating_confidence_regions(FALSE)
+    }) |>
+      bindEvent(confidence_regions$result())
+    
+    # Show a spinner when the confidence regions are being calculated
+    output$confidence_info <- renderUI({
+      if (!calculating_confidence_regions()) {
+        return(NULL)
+      }
       
+      .AddRegressionOptionTooltip(
+        tags$i(class = "fa-solid fa-circle-notch fa-spin"),
+        tooltip = "Calculating confidence regions",
+        style = "color: blue;"
+      )
+    })
+    
     contribution_matrix <- reactive({
       tryCatch(
         expr = {
@@ -298,7 +353,7 @@ regression_plot_panel_server <- function(id, data, covariate_title, model_output
     # Reset failed contributions when model recalculated
     observe({
       contributions_failed(NULL)
-    }) %>% bindEvent(model_output())
+    }) |> bindEvent(model_output())
     
     # Reset contributions to "None" and record failed contribution matrix calculation
     observe({
@@ -322,6 +377,7 @@ regression_plot_panel_server <- function(id, data, covariate_title, model_output
         comparators = comparators,
         contribution_matrix = contribution_matrix(),
         contribution_type = input$absolute_relative_toggle,
+        confidence_regions = confidence_regions$result(),
         include_covariate = input$covariate,
         include_ghosts = input$ghosts,
         include_extrapolation = input$extrapolate,
