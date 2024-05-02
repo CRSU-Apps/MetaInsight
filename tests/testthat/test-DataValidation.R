@@ -49,6 +49,42 @@ test_that("ValidateUploadedData() identifies invalid binary empty file", {
   expect_equal(validation_result$message, "File is empty")
 })
 
+test_that("ValidateUploadedData() identifies invalid continuous long empty file", {
+  data <- CleanData(read.csv("data/invalid_data/continuous-empty-long.csv"))
+  
+  validation_result <- ValidateUploadedData(data, "Continuous")
+  
+  expect_false(validation_result$valid)
+  expect_equal(validation_result$message, "File is empty")
+})
+
+test_that("ValidateUploadedData() identifies invalid continuous wide empty file", {
+  data <- CleanData(read.csv("data/invalid_data/continuous-empty-wide.csv"))
+  
+  validation_result <- ValidateUploadedData(data, "Continuous")
+  
+  expect_false(validation_result$valid)
+  expect_equal(validation_result$message, "File is empty")
+})
+
+test_that("ValidateUploadedData() identifies invalid binary long empty file", {
+  data <- CleanData(read.csv("data/invalid_data/binary-empty-long.csv"))
+  
+  validation_result <- ValidateUploadedData(data, "Binary")
+  
+  expect_false(validation_result$valid)
+  expect_equal(validation_result$message, "File is empty")
+})
+
+test_that("ValidateUploadedData() identifies invalid binary wide empty file", {
+  data <- CleanData(read.csv("data/invalid_data/binary-empty-wide.csv"))
+  
+  validation_result <- ValidateUploadedData(data, "Binary")
+  
+  expect_false(validation_result$valid)
+  expect_equal(validation_result$message, "File is empty")
+})
+
 test_that("ValidateUploadedData() identifies invalid continuous long data, missing colunm 'N'", {
   data <- CleanData(read.csv("data/invalid_data/continuous-missing-long.csv"))
   

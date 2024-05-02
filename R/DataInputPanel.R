@@ -114,7 +114,7 @@ data_input_panel_server <- function(id, continuous_file = "data/Cont_long.csv", 
       } else {
         df <- tryCatch(
           {
-            return(rio::import(file = file1$datapath))
+            rio::import(file = file1$datapath)
           },
           error = function(err) {
             return(NULL)

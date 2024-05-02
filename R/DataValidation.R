@@ -10,7 +10,7 @@
 #' - "valid" = TRUE or FALSE defining whether data is valid
 #' - "message" = String describing any issues causing the data to be invalid
 ValidateUploadedData <- function(data, outcome_type) {
-  if (is.null(data)) {
+  if (is.null(data) || nrow(data) == 0) {
     return(
       list(
         valid = FALSE,
