@@ -68,7 +68,7 @@ CreateMainRegressionPlot <- function(
   
   if (length(comparators) > 0) {
     if (include_confidence) {
-      plot <- .PlotConfidenceRegions(plot, confidence_regions, comparators)
+      plot <- .PlotConfidenceRegions(plot, confidence_regions, comparators, confidence_opacity)
     }
     if (include_contributions) {
       plot <- .PlotDirectContributionCircles(plot, model_output, treatment_df, reference, comparators, contribution_matrix, contribution_type, contribution_multiplier)
@@ -148,26 +148,39 @@ CreateMainRegressionPlot <- function(
   return(plot)
 }
 
-#' Plot the confidence regions on the plot.
+#' Plot the confidence regions and intervals on the plot.
 #'
 #' @param plot object to which to add elements.
 #' @param confidence_regions List of confidence region data frames from function `CalculateConfidenceRegions()`.
 #' @param comparators Vector of names of comparison treatments to plot.
 #'
 #' @return The modified ggplot2 object.
-.PlotConfidenceRegions <- function(plot, confidence_regions, comparators) {
-  confidence <- .FormatRegressionConfidenceRegion(confidence_regions, comparators)
+.PlotConfidenceRegions <- function(plot, confidence_regions, comparators, confidence_opacity) {
+  regions <- .FormatRegressionConfidenceRegion(confidence_regions$regions, comparators)
+  intervals <- .FormatRegressionConfidenceRegion(confidence_regions$intervals, comparators)
   
   plot <- plot +
     geom_ribbon(
-      data = confidence,
+      data = regions,
       mapping = aes(
         x = covariate_value,
         ymin = y_min,
         ymax = y_max,
         fill = Treatment
       ),
-      show.legend = FALSE,
+      show.legend = FALSE
+    ) +
+    geom_linerange(
+      data = intervals,
+      mapping = aes(
+        x = covariate_value,
+        ymin = y_min,
+        ymax = y_max,
+        color = Treatment
+      ),
+      linewidth = 2,
+      alpha = confidence_opacity,
+      show.legend = FALSE
     )
   
   return(plot)

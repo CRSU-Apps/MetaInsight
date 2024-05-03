@@ -230,18 +230,22 @@ FindCovariateDefault <- function(model) {
 #'
 #' @param model_output Return from `CovariateModelOutput()`.
 #'
-#' @return List of data frames for each treatment name. Each data frame contains 3 columns:
+#' @return list of confidence region objects and confidence interval objects.
+#' Regions cover treatments with a non-zero covariate range of direct contributions,
+#' intervals cover treatments with a single covariate value from direct contributions.
+#' Any treatment with no direct contributions will not be present in either list.
+#' Each is a list of data frames for each treatment name. Each data frame contains 3 columns:
 #' - cov_value: The covariate value at which the confidence region is calculated.
 #' - lower: the 2.5% quantile.
 #' - upper: the 97.5% quantile.
-#' Where the treatment has a range of direct contributions, the data frame contains 11 rows creating a 10-polygon region.
-#' Where the treatment has a single direct contribution, the data frame will contain a single row at the covariate value of that single contribution.
-#' Where the treatment has no direct contributions, the data frame will contain zero rows.
+#' Each data frame in "regions" contains 11 rows creating a 10-polygon region.
+#' Each data frame in "intervals" contains a single row at the covariate value of that single contribution.
 CalculateConfidenceRegions <- function(model_output) {
   mtc_results <- model_output$mtcResults
   reference_name <- model_output$reference_name
   
   confidence_regions <- list()
+  confidence_intervals <- list()
   
   for (treatment_name in model_output$comparator_names) {
     parameter_name <- glue::glue("d.{reference_name}.{treatment_name}")
@@ -249,20 +253,16 @@ CalculateConfidenceRegions <- function(model_output) {
     cov_max <- model_output$covariate_max[treatment_name]
     
     if (is.na(cov_min)) {
-      # Create an empty data frame with the correct column names
-      df <- data.frame(
-        matrix(
-          ncol = 3,
-          nrow = 0,
-          dimnames = list(
-            NULL,
-            c("cov_value", "lower", "upper")
-          )
-        )
-      )
+      next
     } else if (cov_min == cov_max) {
       interval <- .FindConfidenceInterval(mtc_results, reference_name, cov_min, parameter_name)
       df <- data.frame(cov_value = cov_min, lower = interval["2.5%"], upper = interval["97.5%"])
+      
+      # Strip out the row names
+      rownames(df) <- NULL
+      
+      # Add to regions list
+      confidence_intervals[[treatment_name]] <- df
     } else {
       df <- data.frame()
       for (cov_value in seq(from = cov_min, to = cov_max, length.out = 11)) {
@@ -272,15 +272,21 @@ CalculateConfidenceRegions <- function(model_output) {
           data.frame(cov_value = cov_value, lower = interval["2.5%"], upper = interval["97.5%"])
         )
       }
+      
+      # Strip out the row names
+      rownames(df) <- NULL
+      
+      # Add to regions list
+      confidence_regions[[treatment_name]] <- df
     }
-    
-    # Strip out the row names
-    rownames(df) <- NULL
-    
-    confidence_regions[[treatment_name]] <- df
   }
   
-  return(confidence_regions)
+  return(
+    list(
+      regions = confidence_regions,
+      intervals = confidence_intervals
+    )
+  )
 }
 
 #' Find the confidence interval at a given covariate value.
