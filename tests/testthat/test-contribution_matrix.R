@@ -641,7 +641,10 @@ test_that("CalculateContributions() gathers indirect covariate effect contributi
 
 test_that("CreateContributionMatrix() produces correct output for the Donegan example", {
   #Load data
+  donegan_original <- read.csv("Donegan_contribution_matrix_data.csv")
   donegan <- read.csv("Donegan_for_MetaInsight.csv")
+  donegan_ids <- data.frame(Number = 1:3, Label = as.character(1:3))
+  donegan_studies <- unique(donegan$Study)
 
   #The donegan dataset is in contrast form, which is not accepted by MetaInsight at the time of writing. The functions CreateVMatrix() and GetEffectSizesAndVariances() require arm-level data, whereas all other functions do not. Therefore to reproduce the contribution matrix given in the publication, these two functions must be overwritten to simulate what would have been produced had the data been arm-level.
   
