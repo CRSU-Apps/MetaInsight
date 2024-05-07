@@ -26,8 +26,8 @@ nodesplit_panel_ui <- function(id) {
       ),
       column(
         width = 6,
-        p(tags$strong("Inconsistency test with notesplitting model with studies excluded")),
-        actionButton(inputId = ns("node_sub"), label = "Click here to run the nodesplitting analysis with studies excluded"),
+        p(tags$strong("Inconsistency test with notesplitting model with selected studies excluded")),
+        actionButton(inputId = ns("node_sub"), label = "Click here to run the nodesplitting analysis with selected studies excluded"),
         tableOutput(outputId = ns("node_table_sub")),
         downloadButton(outputId = ns('downloadnode_sub'))
       )

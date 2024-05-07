@@ -19,7 +19,7 @@ deviance_report_panel_ui <- function(id) {
       ),
       column(
         width = 6,
-        p(tags$strong("Residual deviance from NMA model and UME inconsistency model with studies excluded")),
+        p(tags$strong("Residual deviance from NMA model and UME inconsistency model with selected studies excluded")),
         plotlyOutput(outputId = ns("dev_scat_sub"))
       )
     ),
