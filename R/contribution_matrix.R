@@ -934,7 +934,7 @@ CreateContributionMatrix <- function(data, treatment_ids, outcome_type, outcome_
   }
   
   if (!full_output) {
-    return(round(contribution_output, digits = 2))
+    return(contribution_output)
   } else{
     if (effects_type == "fixed") {
       if (cov_parameters %in% c("unrelated", "shared")) {
