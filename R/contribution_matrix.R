@@ -163,23 +163,23 @@ CreateXMatrix <- function(data, studies, treatments, covar_centred, cov_paramete
   #Create the design matrix with the right dimensions and zeros everywhere
   if (cov_parameters %in% c("unrelated", "exchangeable")) {
     X <- matrix(0, nrow = length(study_treatment_label), ncol = 2 * (n_treatments - 1))
-    colnames(X) <- c(paste0(treatments[1], ":", treatments[-1], "_d"),
-                     paste0(treatments[1], ":", treatments[-1], "_beta"))
+    colnames(X) <- c(paste0(treatments[1], ":", treatments[-1], "-d"),
+                     paste0(treatments[1], ":", treatments[-1], "-beta"))
   } else if (cov_parameters == "shared"){
     X <- matrix(0, nrow = length(study_treatment_label), ncol = n_treatments)
-    colnames(X) <- c(paste0(treatments[1], ":", treatments[-1], "_d"),
+    colnames(X) <- c(paste0(treatments[1], ":", treatments[-1], "-d"),
                      "B")
   } else {
     stop("cov_parameters must be 'shared', 'exchangeable', or 'unrelated'")
   }
   rownames(X) <- study_treatment_label
   
-  #Local function to extract the studies from a vector of strings that are in the format "(Study)Control_treatment:Treatment"
+  #Local function to extract the studies from a vector of strings that are in the format "(Study)Control:Treatment"
   GetStudies <- function(x){
     substr(x, start = 2, stop = unlist(gregexpr(")", x)) - 1)
   }
   
-  #Local function to extract the second treatments from a vector of strings that are in the format "(Study)Control_treatment:Treatment2" or "Reference_treatment:Treatment2"
+  #Local function to extract the second treatments from a vector of strings that are in the format "(Study)Control:Treatment" or "Reference:Treatment"
   GetTreatments <- function(x){
     substr(x, start = unlist(gregexpr(":", x)) + 1, stop = nchar(x))
   }
@@ -190,10 +190,10 @@ CreateXMatrix <- function(data, studies, treatments, covar_centred, cov_paramete
       
       row_index <- which(GetStudies(rownames(X)) == data_no_control$Study[i]
                          & GetTreatments(rownames(X)) == data_no_control$Treatment[i])
-      col_index_d_treat <- which(GetTreatments(colnames(X)) == paste0(data_no_control$Treatment[i], "_d"))
-      col_index_d_control <- which(GetTreatments(colnames(X)) == paste0(data_no_control$Control[i], "_d"))
-      col_index_beta_treat <- which(GetTreatments(colnames(X)) == paste0(data_no_control$Treatment[i], "_beta"))
-      col_index_beta_control <- which(GetTreatments(colnames(X)) == paste0(data_no_control$Control[i], "_beta"))
+      col_index_d_treat <- which(GetTreatments(colnames(X)) == paste0(data_no_control$Treatment[i], "-d"))
+      col_index_d_control <- which(GetTreatments(colnames(X)) == paste0(data_no_control$Control[i], "-d"))
+      col_index_beta_treat <- which(GetTreatments(colnames(X)) == paste0(data_no_control$Treatment[i], "-beta"))
+      col_index_beta_control <- which(GetTreatments(colnames(X)) == paste0(data_no_control$Control[i], "-beta"))
       
       #If the study contains the reference treatment...
       if (data_no_control$Control[i] == reference) {
@@ -225,8 +225,8 @@ CreateXMatrix <- function(data, studies, treatments, covar_centred, cov_paramete
       
       row_index <- which(GetStudies(rownames(X)) == data_no_control$Study[i]
                          & GetTreatments(rownames(X)) == data_no_control$Treatment[i])
-      col_index_d_treat <- which(GetTreatments(colnames(X)) == paste0(data_no_control$Treatment[i], "_d"))
-      col_index_d_control <- which(GetTreatments(colnames(X)) == paste0(data_no_control$Control[i], "_d"))
+      col_index_d_treat <- which(GetTreatments(colnames(X)) == paste0(data_no_control$Treatment[i], "-d"))
+      col_index_d_control <- which(GetTreatments(colnames(X)) == paste0(data_no_control$Control[i], "-d"))
       
       #If the study contains the reference treatment...
       if (data_no_control$Control[i] == reference) {
@@ -318,14 +318,14 @@ CreateZMatrix <- function(treatments, cov_parameters){
   #Create the Z matrix
   Z <- rbind(cbind(Z_top_left, Z_top_right), cbind(Z_bottom_left, Z_bottom_right))
   if (cov_parameters %in% c("unrelated", "exchangeable")) {
-    rownames(Z) <- c(paste0(treat1_treat2_label, "_d"),
-                     paste0(treat1_treat2_label, "_beta"))
-    colnames(Z) <- c(paste0(treatments[1], ":", treatments[-1], "_d"),
-                     paste0(treatments[1], ":", treatments[-1], "_beta"))
+    rownames(Z) <- c(paste0(treat1_treat2_label, "-d"),
+                     paste0(treat1_treat2_label, "-beta"))
+    colnames(Z) <- c(paste0(treatments[1], ":", treatments[-1], "-d"),
+                     paste0(treatments[1], ":", treatments[-1], "-beta"))
   } else if (cov_parameters == "shared") {
-    rownames(Z) <- c(paste0(treat1_treat2_label, "_d"),
+    rownames(Z) <- c(paste0(treat1_treat2_label, "-d"),
                      "B")
-    colnames(Z) <- c(paste0(treatments[1], ":", treatments[-1], "_d"),
+    colnames(Z) <- c(paste0(treatments[1], ":", treatments[-1], "-d"),
                      "B")
   }
   
@@ -730,7 +730,7 @@ CalculateContributions <- function(
   }
   
   if (treatment_or_covariate_effect == "Treatment Effect") {
-    column_format <- "{reference}:{treatment}_d"
+    column_format <- "{reference}:{treatment}-d"
   } else {
     if (!cov_parameters %in% c("shared", "unrelated", "exchangeable")) {
       stop(glue::glue("Regression coefficient '{cov_parameters}' not recognised. Please use one of: 'shared', 'unrelated', 'exchangeable'"))
@@ -739,7 +739,7 @@ CalculateContributions <- function(
     if (cov_parameters == "shared") {
       column_format <- "B"
     } else if (cov_parameters %in% c("unrelated", "exchangeable")) {
-      column_format <- "{reference}:{treatment}_beta"
+      column_format <- "{reference}:{treatment}-beta"
     }
   }
   
@@ -903,7 +903,7 @@ CreateContributionMatrix <- function(data, treatment_ids, outcome_type, outcome_
     #Number of arms per study
     n_arms <- table(data$Study)
     
-    #Local function to extract the studies from a vector of strings that are in the format "(Study)Control_treatment:Treatment2"
+    #Local function to extract the studies from a vector of strings that are in the format "(Study)Control:Treatment"
     GetStudies <- function(x){
       substr(x, start = 2, stop = unlist(gregexpr(")", x)) - 1)
     }
