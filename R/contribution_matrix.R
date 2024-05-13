@@ -695,6 +695,9 @@ CalculateContributions <- function(
     stop(glue::glue("Outcome type '{outcome_type}' is not supported. Please use 'Binary' or 'Continuous'"))
   }
   
+  #Switch the treatment effects to match the rest of the app.
+  d0$TE <- -d0$TE
+  
   reference_index <- 1
   reference <- treatment_ids$Label[treatment_ids$Number == reference_index]
   treatments <- treatment_ids$Label[treatment_ids$Label != reference]
