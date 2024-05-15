@@ -48,7 +48,7 @@ model_details_panel_ui <- function(id) {
           ),
           column(
             width = 6,
-            p(tags$strong("Deviance data for sensitivity analysis")),
+            p(tags$strong("Deviance data with selected studies excluded")),
             p("NMA (consistency) model"),
             verbatimTextOutput(outputId = ns("dev_sub"))
           )

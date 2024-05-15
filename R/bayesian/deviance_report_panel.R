@@ -10,7 +10,7 @@ deviance_report_panel_ui <- function(id) {
       "Please note: if you change the selections on the sidebar,
       you will need to re-run the primary and/or sensitivity analysis from the 'Forest Plot' page."
     ),
-    p(tags$strong("Deviance report for all studies and the sensitivity analysis")),
+    p(tags$strong("Deviance report for all studies and with selected studies excluded")),
     fluidRow(
       column(
         width = 6,
@@ -45,7 +45,7 @@ deviance_report_panel_ui <- function(id) {
       ),
       column(
         width = 6,
-        p(tags$strong("Per-arm residual deviance for sensitivity analysis")),
+        p(tags$strong("Per-arm residual deviance with selected studies excluded")),
         plotlyOutput(outputId = ns("dev1_sub"))
       ),
       br(),
@@ -68,7 +68,7 @@ deviance_report_panel_ui <- function(id) {
       ),
       column(
         width = 6,
-        p(tags$strong("Leverage plot for sensitivity analysis")),
+        p(tags$strong("Leverage plot with selected studies excluded")),
         plotlyOutput(outputId = ns("dev2_sub"))
       )
     ),
