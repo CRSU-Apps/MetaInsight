@@ -108,7 +108,7 @@ test_that("FindExpectedReferenceTreatment() returns first matching treatment whe
 })
 
 test_that(".FixColumnNameCases() fixes cases for continuous long data", {
-  data <- CleanData(read.csv("Cont_long.csv"))
+  data <- CleanData(read.csv("data/Cont_long.csv"))
   names(data) <- c("sTuDy", "t", "n", "mEaN", "sD")
   allowed_names = c("Study", "T", "N", "Mean", "SD")
   
@@ -122,7 +122,7 @@ test_that(".FixColumnNameCases() fixes cases for continuous long data", {
 })
 
 test_that(".FixColumnNameCases() fixes cases for continuous wide data", {
-  data <- CleanData(read.csv("Cont_wide.csv"))
+  data <- CleanData(read.csv("data/Cont_wide.csv"))
   
   arm_fields = c("t", "n", "mEaN", "sD")
   names(data) <- c("sTuDy", paste0(arm_fields, ".1"), paste0(arm_fields, ".2"), paste0(arm_fields, ".3"))
@@ -140,7 +140,7 @@ test_that(".FixColumnNameCases() fixes cases for continuous wide data", {
 })
 
 test_that(".FixColumnNameCases() fixes cases for binary long data", {
-  data <- CleanData(read.csv("Binary_long.csv"))
+  data <- CleanData(read.csv("data/Binary_long.csv"))
   names(data) <- c("sTuDy", "t", "r", "n")
   allowed_names = c("Study", "T", "R", "N")
   
@@ -154,7 +154,7 @@ test_that(".FixColumnNameCases() fixes cases for binary long data", {
 })
 
 test_that(".FixColumnNameCases() fixes cases for binary wide data", {
-  data <- CleanData(read.csv("Binary_wide.csv"))
+  data <- CleanData(read.csv("data/Binary_wide.csv"))
   
   arm_fields = c("t", "r", "n")
   names(data) <- c("sTuDy", paste0(arm_fields, ".1"), paste0(arm_fields, ".2"), paste0(arm_fields, ".3"))
@@ -172,7 +172,7 @@ test_that(".FixColumnNameCases() fixes cases for binary wide data", {
 })
 
 test_that("ReplaceTreatmentIds() updates treatment names to IDs for continuous long data", {
-  data <- CleanData(read.csv("Cont_long.csv"))
+  data <- CleanData(read.csv("data/Cont_long.csv"))
   all_treatments <- FindAllTreatments(data)
   treatment_ids <- CreateTreatmentIds(all_treatments, all_treatments[1])
   
@@ -191,7 +191,7 @@ test_that("ReplaceTreatmentIds() updates treatment names to IDs for continuous l
 })
 
 test_that("ReplaceTreatmentIds() updates treatment names to IDs for continuous wide data", {
-  data <- CleanData(read.csv("Cont_wide.csv"))
+  data <- CleanData(read.csv("data/Cont_wide.csv"))
   all_treatments <- FindAllTreatments(data)
   treatment_ids <- CreateTreatmentIds(all_treatments, all_treatments[1])
   
@@ -214,7 +214,7 @@ test_that("ReplaceTreatmentIds() updates treatment names to IDs for continuous w
 })
 
 test_that("ReplaceTreatmentIds() updates treatment names to IDs for binary long data", {
-  data <- CleanData(read.csv("Binary_long.csv"))
+  data <- CleanData(read.csv("data/Binary_long.csv"))
   all_treatments <- FindAllTreatments(data)
   treatment_ids <- CreateTreatmentIds(all_treatments, all_treatments[1])
   
@@ -233,7 +233,7 @@ test_that("ReplaceTreatmentIds() updates treatment names to IDs for binary long 
 })
 
 test_that("ReplaceTreatmentIds() updates treatment names to IDs for binary wide data", {
-  data <- CleanData(read.csv("Binary_wide.csv"))
+  data <- CleanData(read.csv("data/Binary_wide.csv"))
   all_treatments <- FindAllTreatments(data)
   treatment_ids <- CreateTreatmentIds(all_treatments, all_treatments[1])
   
@@ -256,7 +256,7 @@ test_that("ReplaceTreatmentIds() updates treatment names to IDs for binary wide 
 })
 
 test_that("AddStudyIds() adds study IDs for continuous long data", {
-  data <- CleanData(read.csv("Cont_long.csv"))
+  data <- CleanData(read.csv("data/Cont_long.csv"))
   
   wrangled_data <- AddStudyIds(data)
   
@@ -273,7 +273,7 @@ test_that("AddStudyIds() adds study IDs for continuous long data", {
 })
 
 test_that("AddStudyIds() adds study IDs for continuous wide data", {
-  data <- CleanData(read.csv("Cont_wide.csv"))
+  data <- CleanData(read.csv("data/Cont_wide.csv"))
   
   wrangled_data <- AddStudyIds(data)
   
@@ -290,7 +290,7 @@ test_that("AddStudyIds() adds study IDs for continuous wide data", {
 })
 
 test_that("AddStudyIds() adds study IDs for binary long data", {
-  data <- CleanData(read.csv("Binary_long.csv"))
+  data <- CleanData(read.csv("data/Binary_long.csv"))
   
   wrangled_data <- AddStudyIds(data)
   
@@ -307,7 +307,7 @@ test_that("AddStudyIds() adds study IDs for binary long data", {
 })
 
 test_that("AddStudyIds() adds study IDs for binary wide data", {
-  data <- CleanData(read.csv("Binary_wide.csv"))
+  data <- CleanData(read.csv("data/Binary_wide.csv"))
   
   wrangled_data <- AddStudyIds(data)
   
@@ -324,7 +324,7 @@ test_that("AddStudyIds() adds study IDs for binary wide data", {
 })
 
 test_that("ReorderColumns() reorders columns for continuous long data", {
-  data <- CleanData(read.csv("Cont_long.csv"))
+  data <- CleanData(read.csv("data/Cont_long.csv"))
   
   wrangled_data <- data %>%
     AddStudyIds() %>%
@@ -340,7 +340,7 @@ test_that("ReorderColumns() reorders columns for continuous long data", {
 })
 
 test_that("ReorderColumns() reorders columns for continuous wide data", {
-  data <- CleanData(read.csv("Cont_wide.csv"))
+  data <- CleanData(read.csv("data/Cont_wide.csv"))
   
   wrangled_data <- data %>%
     AddStudyIds() %>%
@@ -373,7 +373,7 @@ test_that("ReorderColumns() reorders columns for continuous wide data", {
 })
 
 test_that("ReorderColumns() reorders columns for binary long data", {
-  data <- CleanData(read.csv("Binary_long.csv"))
+  data <- CleanData(read.csv("data/Binary_long.csv"))
   
   wrangled_data <- data %>%
     AddStudyIds() %>%
@@ -393,7 +393,7 @@ test_that("ReorderColumns() reorders columns for binary long data", {
 })
 
 test_that("ReorderColumns() reorders columns for binary wide data", {
-  data <- CleanData(read.csv("Binary_wide.csv"))
+  data <- CleanData(read.csv("data/Binary_wide.csv"))
   
   wrangled_data <- data %>%
     AddStudyIds() %>%
@@ -423,7 +423,7 @@ test_that("ReorderColumns() reorders columns for binary wide data", {
 })
 
 test_that("WrangleUploadData() wrangles continuous long data to be usable in the rest of the app", {
-  data <- CleanData(read.csv("Cont_long.csv"))
+  data <- CleanData(read.csv("data/Cont_long.csv"))
   treatment_ids <- data %>%
     FindAllTreatments() %>%
     CreateTreatmentIds()
@@ -446,7 +446,7 @@ test_that("WrangleUploadData() wrangles continuous long data to be usable in the
 })
 
 test_that("WrangleUploadData() wrangles continuous wide data to be usable in the rest of the app", {
-  data <- CleanData(read.csv("Cont_wide.csv"))
+  data <- CleanData(read.csv("data/Cont_wide.csv"))
   treatment_ids <- data %>%
     FindAllTreatments() %>%
     CreateTreatmentIds()
@@ -488,7 +488,7 @@ test_that("WrangleUploadData() wrangles continuous wide data to be usable in the
 })
 
 test_that("WrangleUploadData() wrangles binary long data to be usable in the rest of the app", {
-  data <- CleanData(read.csv("Binary_long.csv"))
+  data <- CleanData(read.csv("data/Binary_long.csv"))
   treatment_ids <- data %>%
     FindAllTreatments() %>%
     CreateTreatmentIds()
@@ -511,7 +511,7 @@ test_that("WrangleUploadData() wrangles binary long data to be usable in the res
 })
 
 test_that("WrangleUploadData() wrangles binary wide data to be usable in the rest of the app", {
-  data <- CleanData(read.csv("Binary_wide.csv"))
+  data <- CleanData(read.csv("data/Binary_wide.csv"))
   treatment_ids <- data %>%
     FindAllTreatments() %>%
     CreateTreatmentIds()
