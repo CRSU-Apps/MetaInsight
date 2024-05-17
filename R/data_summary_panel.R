@@ -17,7 +17,7 @@ data_summary_panel_ui <- function(id) {
         ),
         column(
           width = 6,
-          h4("Characteristics table with studies excluded"),
+          h4("Characteristics table with selected studies excluded"),
           tableOutput(outputId = ns("sumtb_sub"))
         )
       ),
@@ -219,7 +219,7 @@ data_summary_panel_server <- function(id, metaoutcome, outcome_measure, exclusio
         # Number of trials by nodesize and line thickness
         make_netplot(filter(bugsnetdt(), !Study %in% exclusions()), input$label_excluded)
       }
-      title("Network plot with studies excluded")
+      title("Network plot with selected studies excluded")
     })
 
     # Network connectivity with studies excluded
@@ -262,7 +262,7 @@ data_summary_panel_server <- function(id, metaoutcome, outcome_measure, exclusio
             data.rh <- data.prep(arm.data = long_sort2_sub, varname.t = "T", varname.s = "Study")
             net.plot(data.rh, node.scale = 3, edge.scale=1.5, node.lab.cex = input$label_excluded)
           }
-          title("Network plot with studies excluded")
+          title("Network plot with selected studies excluded")
         }
         write_to_pdf_or_png(
           file,

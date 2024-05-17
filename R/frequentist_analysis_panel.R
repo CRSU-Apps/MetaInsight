@@ -79,7 +79,7 @@ frequentist_analysis_panel_ui <- function(id) {
         helpText("Relative treatment effects in ranked order for all studies"),
         tableOutput(outputId = ns("rankChartStatic")),
         downloadButton(outputId = ns('downloadRank'), label = "Download"),
-        helpText("Relative treatment effects in ranked order with studies excluded"),
+        helpText("Relative treatment effects in ranked order with selected studies excluded"),
         tableOutput(outputId = ns("rankChartUpdating")),
         downloadButton(outputId = ns('downloadRankUpdate'), label = "Download")
       ),
@@ -88,7 +88,7 @@ frequentist_analysis_panel_ui <- function(id) {
         helpText("Assessment of inconsistency for all studies"),
         tableOutput(outputId = ns("Incon1")),
         downloadButton(outputId = ns('downloadIncon'), label = "Download"),
-        helpText("Assessment of inconsistency with studies excluded"),
+        helpText("Assessment of inconsistency with selected studies excluded"),
         tableOutput(outputId = ns("Incon2")),
         downloadButton(outputId = ns('downloadIncon2'), label = "Download")
       )
@@ -170,7 +170,7 @@ frequentist_analysis_panel_server <- function(
     output$SFPUpdatingComp <- renderPlot({
       make_netComp(freq = freq_sub(), modelranfix = model_effects(), ref = reference_alter()$ref_sub,
                    min = input$freqmin_sub, max = input$freqmax_sub)
-      title("Results with studies excluded")
+      title("Results with selected studies excluded")
     })
 
     # Text output displayed under forest plot
@@ -260,7 +260,7 @@ frequentist_analysis_panel_server <- function(
     )
 
     output$downloadRankUpdate <- downloadHandler(
-      filename = 'RankUpdate.csv',
+      filename = 'Rank_sub.csv',
       content = function(file) {
         write.csv(make_netrank(freq_sub(), model_effects(), rank_option()), file)
       }

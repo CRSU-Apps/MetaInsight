@@ -11,7 +11,7 @@ nodesplit_panel_ui <- function(id) {
       you will need to re-run the primary and/or sensitivity analysis from the 'Forest Plot' page."
     ),
     p(
-      "Please note: This may take more than 10 minutes depending on the number of treatment options. The node splitting option for
+      "Please note: This may take more than 10 minutes depending on the number of treatment options. The node-splitting option for
       the Bayesian analysis is highly numerically intensive and using it on the app can cause the app to disconnect in some circumstances.  We have produced a",
       tags$a(href="https://github.com/CRSU-Apps/MetaInsight/wiki/Local-User-Guide", "guide",target="_blank"),
       "to running MetaInsight locally through RStudio on the user's own machine if they want to make use of this function."
@@ -19,15 +19,15 @@ nodesplit_panel_ui <- function(id) {
     fluidRow(
       column(
         width = 6,
-        p(tags$strong("Inconsistency test with notesplitting model for all studies")),
-        actionButton(inputId = ns("node"), label = "Click here to run the nodesplitting analysis for all studies"),
+        p(tags$strong("Inconsistency test with node-splitting model for all studies")),
+        actionButton(inputId = ns("node"), label = "Click here to run the node-splitting analysis for all studies"),
         tableOutput(outputId = ns("node_table")),
         downloadButton(outputId = ns('downloadnode'))
       ),
       column(
         width = 6,
-        p(tags$strong("Inconsistency test with notesplitting model with studies excluded")),
-        actionButton(inputId = ns("node_sub"), label = "Click here to run the nodesplitting analysis with studies excluded"),
+        p(tags$strong("Inconsistency test with node-splitting model with selected studies excluded")),
+        actionButton(inputId = ns("node_sub"), label = "Click here to run the node-splitting analysis with selected studies excluded"),
         tableOutput(outputId = ns("node_table_sub")),
         downloadButton(outputId = ns('downloadnode_sub'))
       )

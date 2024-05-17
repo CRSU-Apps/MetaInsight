@@ -20,9 +20,9 @@ result_details_panel_ui <- function(id) {
       ),
       column(
         width = 6,
-        p(tags$strong("Results details with studies excluded")),
+        p(tags$strong("Results details with selected studies excluded")),
         verbatimTextOutput(outputId = ns("gemtc_results_sub")),
-        p(tags$strong("Gelman convergence assessment plot with studies excluded")),
+        p(tags$strong("Gelman convergence assessment plot with selected studies excluded")),
         plotOutput(outputId = ns("gemtc_gelman_sub"))
       )
     )
