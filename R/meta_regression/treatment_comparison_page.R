@@ -83,12 +83,15 @@ treatment_comparisons_page_baseline_risk_server <- function(
     ns <- session$ns
     
     # Treatment effects for all studies
-    output$baye_comparison <- renderTable ({
-      BaselineRiskRelativeEffectsTable(
-        bnma::relative.effects.table(model(),
-                                     summary_stat = "ci")
-      )
-    }, rownames=TRUE, colnames = TRUE
+    output$baye_comparison <- renderTable(
+      {
+        BaselineRiskRelativeEffectsTable(
+          bnma::relative.effects.table(model(),
+                                       summary_stat = "ci")
+        )
+      },
+      rownames = TRUE,
+      colnames = TRUE
     )
     
     output$package <- reactive({"bnma"})
