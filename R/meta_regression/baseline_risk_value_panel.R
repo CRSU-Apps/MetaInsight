@@ -30,7 +30,7 @@ baseline_risk_value_panel_ui <- function(id) {
 baseline_risk_value_panel_server <- function(id, reference_outcomes) {
   shiny::moduleServer(id, function(input, output, session) {
     
-    output$mean_covariate_value <- reactive(
+    output$mean_covariate_value <- renderText(
       round(mean(reference_outcomes, na.rm = TRUE),
             digits = 3)
       )

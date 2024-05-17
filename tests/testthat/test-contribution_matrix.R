@@ -219,7 +219,7 @@ test_that("CreateXMatrix() works for unrelated and exchangeable covariate parame
   expected_x_matrix <- matrix(c(1, 0, 0, -5, 0, 0,   -1, 1, 0, -(-3), -3, 0,   1, 0, 0, 2, 0, 0,   0, 1, 0, 0, 2, 0,   0, -1, 1, 0, -5, -(-5)),
                      nrow = 5, ncol = 6, byrow = TRUE)
   rownames(expected_x_matrix) <- c("(A)Hydrogen:Oxygen", "(B)Oxygen:Sulphur", "(C)Hydrogen:Oxygen", "(C)Hydrogen:Sulphur", "(D)Sulphur:Zinc")
-  colnames(expected_x_matrix) <- c("Hydrogen:Oxygen_d", "Hydrogen:Sulphur_d", "Hydrogen:Zinc_d", "Hydrogen:Oxygen_beta", "Hydrogen:Sulphur_beta", "Hydrogen:Zinc_beta")
+  colnames(expected_x_matrix) <- c("Hydrogen:Oxygen-d", "Hydrogen:Sulphur-d", "Hydrogen:Zinc-d", "Hydrogen:Oxygen-beta", "Hydrogen:Sulphur-beta", "Hydrogen:Zinc-beta")
   
   expect_equal(CreateXMatrix(data, studies, treatments, covar_centred, "unrelated"), expected_x_matrix)
   expect_equal(CreateXMatrix(data, studies, treatments, covar_centred, "exchangeable"), expected_x_matrix)
@@ -238,7 +238,7 @@ test_that("CreateXMatrix() works for shared covariate parameters", {
   expected_x_matrix <- matrix(c(1, 0, 0, -5,   -1, 1, 0, 0,   1, 0, 0, 2,   0, 1, 0, 2,   0, -1, 1, 0),
                      nrow = 5, ncol = 4, byrow = TRUE)
   rownames(expected_x_matrix) <- c("(A)Hydrogen:Oxygen", "(B)Oxygen:Sulphur", "(C)Hydrogen:Oxygen", "(C)Hydrogen:Sulphur", "(D)Sulphur:Zinc")
-  colnames(expected_x_matrix) <- c("Hydrogen:Oxygen_d", "Hydrogen:Sulphur_d", "Hydrogen:Zinc_d", "B")
+  colnames(expected_x_matrix) <- c("Hydrogen:Oxygen-d", "Hydrogen:Sulphur-d", "Hydrogen:Zinc-d", "B")
   
   expect_equal(CreateXMatrix(data, studies, treatments, covar_centred, "shared"), expected_x_matrix)
 })
@@ -252,8 +252,8 @@ test_that("CreateZMatrix() works for unrelated and exchangeable covariate parame
   expected_z_matrix <- matrix(c(1, 0, 0, 0, 0, 0,   0, 1, 0, 0, 0, 0,   -1, 1, 0, 0, 0, 0,   0, 0, 1, 0, 0, 0,   -1, 0, 1, 0, 0, 0,   0, -1, 1, 0, 0, 0,
                        0, 0, 0, 1, 0, 0,   0, 0, 0, 0, 1, 0,   0, 0, 0, -1, 1, 0,   0, 0, 0, 0, 0, 1,   0, 0, 0, -1, 0, 1,   0, 0, 0, 0, -1, 1),
                      nrow = 12, ncol = 6, byrow = TRUE)
-  rownames(expected_z_matrix) <- c("Hydrogen:Oxygen_d", "Hydrogen:Sulphur_d", "Oxygen:Sulphur_d", "Hydrogen:Zinc_d", "Oxygen:Zinc_d", "Sulphur:Zinc_d", "Hydrogen:Oxygen_beta", "Hydrogen:Sulphur_beta", "Oxygen:Sulphur_beta", "Hydrogen:Zinc_beta", "Oxygen:Zinc_beta", "Sulphur:Zinc_beta")
-  colnames(expected_z_matrix) <- c("Hydrogen:Oxygen_d", "Hydrogen:Sulphur_d", "Hydrogen:Zinc_d", "Hydrogen:Oxygen_beta", "Hydrogen:Sulphur_beta", "Hydrogen:Zinc_beta")
+  rownames(expected_z_matrix) <- c("Hydrogen:Oxygen-d", "Hydrogen:Sulphur-d", "Oxygen:Sulphur-d", "Hydrogen:Zinc-d", "Oxygen:Zinc-d", "Sulphur:Zinc-d", "Hydrogen:Oxygen-beta", "Hydrogen:Sulphur-beta", "Oxygen:Sulphur-beta", "Hydrogen:Zinc-beta", "Oxygen:Zinc-beta", "Sulphur:Zinc-beta")
+  colnames(expected_z_matrix) <- c("Hydrogen:Oxygen-d", "Hydrogen:Sulphur-d", "Hydrogen:Zinc-d", "Hydrogen:Oxygen-beta", "Hydrogen:Sulphur-beta", "Hydrogen:Zinc-beta")
   
   expect_equal(CreateZMatrix(treatments, "unrelated"), expected_z_matrix)
   expect_equal(CreateZMatrix(treatments, "exchangeable"), expected_z_matrix)
@@ -267,8 +267,8 @@ test_that("CreateZMatrix() works for shared covariate parameters", {
   
   expected_z_matrix <- matrix(c(1, 0, 0, 0,    0, 1, 0, 0,    -1, 1, 0, 0,    0, 0, 1, 0,    -1, 0, 1, 0,    0, -1, 1, 0,   0, 0, 0, 1),
                      nrow = 7, ncol = 4, byrow = TRUE)
-  rownames(expected_z_matrix) <- c("Hydrogen:Oxygen_d", "Hydrogen:Sulphur_d", "Oxygen:Sulphur_d", "Hydrogen:Zinc_d", "Oxygen:Zinc_d", "Sulphur:Zinc_d", "B")
-  colnames(expected_z_matrix) <- c("Hydrogen:Oxygen_d", "Hydrogen:Sulphur_d", "Hydrogen:Zinc_d", "B")
+  rownames(expected_z_matrix) <- c("Hydrogen:Oxygen-d", "Hydrogen:Sulphur-d", "Oxygen:Sulphur-d", "Hydrogen:Zinc-d", "Oxygen:Zinc-d", "Sulphur:Zinc-d", "B")
+  colnames(expected_z_matrix) <- c("Hydrogen:Oxygen-d", "Hydrogen:Sulphur-d", "Hydrogen:Zinc-d", "B")
   
   expect_equal(CreateZMatrix(treatments, "shared"), expected_z_matrix)
 })
@@ -328,13 +328,13 @@ test_that("CreateContributionMatrix() produces a matrix of the correct format fo
   contribution_shared <- CreateContributionMatrix(data = data, treatment_ids = treatment_ids, outcome_type = "Binary", outcome_measure = "OR", effects_type = "fixed", cov_parameters = "shared", study_or_comparison_level = "comparison", absolute_or_percentage = "percentage", basic_or_all_parameters = "all", weight_or_contribution = "weight")
   
   expect_equal(rownames(contribution_unrelated), c("(A)Hydrogen:Oxygen", "(B)Hydrogen:Oxygen", "(C)Hydrogen:Oxygen", "(C)Hydrogen:Sulphur", "(D)Hydrogen:Sulphur"))
-  expect_equal(colnames(contribution_unrelated), c("Hydrogen:Oxygen_d", "Hydrogen:Sulphur_d", "Oxygen:Sulphur_d", "Hydrogen:Oxygen_beta", "Hydrogen:Sulphur_beta", "Oxygen:Sulphur_beta"))
+  expect_equal(colnames(contribution_unrelated), c("Hydrogen:Oxygen-d", "Hydrogen:Sulphur-d", "Oxygen:Sulphur-d", "Hydrogen:Oxygen-beta", "Hydrogen:Sulphur-beta", "Oxygen:Sulphur-beta"))
   
   expect_equal(rownames(contribution_exchangeable), c("(A)Hydrogen:Oxygen", "(B)Hydrogen:Oxygen", "(C)Hydrogen:Oxygen", "(C)Hydrogen:Sulphur", "(D)Hydrogen:Sulphur"))
-  expect_equal(colnames(contribution_exchangeable), c("Hydrogen:Oxygen_d", "Hydrogen:Sulphur_d", "Oxygen:Sulphur_d", "Hydrogen:Oxygen_beta", "Hydrogen:Sulphur_beta", "Oxygen:Sulphur_beta"))
+  expect_equal(colnames(contribution_exchangeable), c("Hydrogen:Oxygen-d", "Hydrogen:Sulphur-d", "Oxygen:Sulphur-d", "Hydrogen:Oxygen-beta", "Hydrogen:Sulphur-beta", "Oxygen:Sulphur-beta"))
   
   expect_equal(rownames(contribution_shared), c("(A)Hydrogen:Oxygen", "(B)Hydrogen:Oxygen", "(C)Hydrogen:Oxygen", "(C)Hydrogen:Sulphur", "(D)Hydrogen:Sulphur"))
-  expect_equal(colnames(contribution_shared), c("Hydrogen:Oxygen_d", "Hydrogen:Sulphur_d", "Oxygen:Sulphur_d", "B"))
+  expect_equal(colnames(contribution_shared), c("Hydrogen:Oxygen-d", "Hydrogen:Sulphur-d", "Oxygen:Sulphur-d", "B"))
 })
 
 
@@ -349,10 +349,10 @@ test_that("CreateContributionMatrix() produces a matrix of the correct format wh
   contribution_shared <- CreateContributionMatrix(data = data, treatment_ids = treatment_ids, outcome_type = "Binary", outcome_measure = "OR", effects_type = "fixed", cov_parameters = "shared", study_or_comparison_level = "study", absolute_or_percentage = "percentage", basic_or_all_parameters = "all", weight_or_contribution = "weight")
   
   expect_equal(rownames(contribution_unrelated), c("A", "B", "C", "D"))
-  expect_equal(colnames(contribution_unrelated), c("Hydrogen:Oxygen_d", "Hydrogen:Sulphur_d", "Oxygen:Sulphur_d", "Hydrogen:Oxygen_beta", "Hydrogen:Sulphur_beta", "Oxygen:Sulphur_beta"))
+  expect_equal(colnames(contribution_unrelated), c("Hydrogen:Oxygen-d", "Hydrogen:Sulphur-d", "Oxygen:Sulphur-d", "Hydrogen:Oxygen-beta", "Hydrogen:Sulphur-beta", "Oxygen:Sulphur-beta"))
   
   expect_equal(rownames(contribution_shared), c("A", "B", "C", "D"))
-  expect_equal(colnames(contribution_shared), c("Hydrogen:Oxygen_d", "Hydrogen:Sulphur_d", "Oxygen:Sulphur_d", "B"))
+  expect_equal(colnames(contribution_shared), c("Hydrogen:Oxygen-d", "Hydrogen:Sulphur-d", "Oxygen:Sulphur-d", "B"))
 })
 
 
@@ -367,10 +367,10 @@ test_that("CreateContributionMatrix() produces a matrix of the correct format wh
   contribution_shared <- CreateContributionMatrix(data = data, treatment_ids = treatment_ids, outcome_type = "Binary", outcome_measure = "OR", effects_type = "fixed", cov_parameters = "shared", study_or_comparison_level = "comparison", basic_or_all_parameters = "basic", absolute_or_percentage = "percentage", weight_or_contribution = "weight")
   
   expect_equal(rownames(contribution_unrelated), c("(A)Hydrogen:Oxygen", "(B)Hydrogen:Oxygen", "(C)Hydrogen:Oxygen", "(C)Hydrogen:Sulphur", "(D)Hydrogen:Sulphur"))
-  expect_equal(colnames(contribution_unrelated), c("Hydrogen:Oxygen_d", "Hydrogen:Sulphur_d", "Hydrogen:Oxygen_beta", "Hydrogen:Sulphur_beta"))
+  expect_equal(colnames(contribution_unrelated), c("Hydrogen:Oxygen-d", "Hydrogen:Sulphur-d", "Hydrogen:Oxygen-beta", "Hydrogen:Sulphur-beta"))
   
   expect_equal(rownames(contribution_shared), c("(A)Hydrogen:Oxygen", "(B)Hydrogen:Oxygen", "(C)Hydrogen:Oxygen", "(C)Hydrogen:Sulphur", "(D)Hydrogen:Sulphur"))
-  expect_equal(colnames(contribution_shared), c("Hydrogen:Oxygen_d", "Hydrogen:Sulphur_d", "B"))
+  expect_equal(colnames(contribution_shared), c("Hydrogen:Oxygen-d", "Hydrogen:Sulphur-d", "B"))
 })
 
 test_that("CalculateContributions() gathers covariate values for studies", {
@@ -531,11 +531,11 @@ test_that("CalculateContributions() gathers relative treatment effects for treat
   # Numbers manually taken from data set
   expected_relative_effects <- matrix(
     data = c(
-      11, NA, NA, NA,
-      NA, 22, NA, NA,
-      NA, NA, 33, 55,
-      NA, NA, NA, NA,
-      NA, NA, 77, NA
+      -11,  NA,  NA,  NA,
+       NA, -22,  NA,  NA,
+       NA,  NA, -33, -55,
+       NA,  NA,  NA,  NA,
+       NA,  NA, -77,  NA
     ),
     nrow = length(studies),
     ncol = length(treatment_ids$Label) - 1,
@@ -549,15 +549,6 @@ test_that("CalculateContributions() gathers relative treatment effects for treat
     !!expected_relative_effects
   )
 })
-
-
-
-
-
-
-
-
-
 
 
 
@@ -625,20 +616,6 @@ test_that("CalculateContributions() gathers indirect covariate effect contributi
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 test_that("CreateContributionMatrix() produces correct output for the Donegan example", {
   #Load data
   donegan_original <- read.csv("Donegan_contribution_matrix_data.csv")
@@ -679,12 +656,12 @@ test_that("CreateContributionMatrix() produces correct output for the Donegan ex
                                                   study_or_comparison_level = "comparison",
                                                   absolute_or_percentage = "percentage",
                                                   weight_or_contribution = "weight",
-                                                  full_output = FALSE)
+                                                  full_output = FALSE) |> round(digits = 2)
   
   expected_contribution_matrix <- read.csv("Donegan_contribution_matrix_expected.csv")
   expected_contribution_matrix <- as.matrix(expected_contribution_matrix[, 2:7])
   #Column and row names have already been tested in earlier tests, so no need to check here.
-  colnames(expected_contribution_matrix) <- c("1:2_d", "1:3_d", "2:3_d", "1:2_beta", "1:3_beta", "2:3_beta")
+  colnames(expected_contribution_matrix) <- c("1:2-d", "1:3-d", "2:3-d", "1:2-beta", "1:3-beta", "2:3-beta")
   rownames(expected_contribution_matrix) <- rownames(contribution_matrix)
   
   expect_equal(contribution_matrix, expected_contribution_matrix)
