@@ -87,13 +87,21 @@ covariate_value_panel_server <- function(id, covariate_type, covariate_data) {
       return(max(covariate_data()))
     })
     
+    # Mean covariate value in the data
+    mean_value <- reactive({
+      if (is.null(covariate_data())) {
+        return(NULL)
+      }
+      return(round(mean(covariate_data()), digits = 3))
+    })
+    
     # Update the numeric input to the centre of the range, or the default value,
     # and the step to be a reasonable size of roughly 100 steps
     observe({
       range <- max_value() - min_value()
       log_val <- round(log10(range))
       step <- 10 ** (log_val - 2)
-      value <- (min_value() + max_value()) / 2
+      value <- mean_value()
       shiny::updateNumericInput(inputId = "numeric", value = value, step = step)
     })
     

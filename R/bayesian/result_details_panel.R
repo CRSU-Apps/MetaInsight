@@ -8,9 +8,15 @@ result_details_panel_ui <- function(id, item_name) {
   ns <- NS(id)
   div(
     p(tags$strong(glue::glue("Results details for {item_name}"))),
-    verbatimTextOutput(outputId = ns("gemtc_results")),
+    shinycssloaders::withSpinner(
+      verbatimTextOutput(outputId = ns("gemtc_results")),
+      type = 6
+    ),
     p(tags$strong(glue::glue("Gelman convergence assessment plot for {item_name}"))),
-    plotOutput(outputId = ns("gemtc_gelman"), inline = TRUE)
+    shinycssloaders::withSpinner(
+      plotOutput(outputId = ns("gemtc_gelman"), inline = TRUE),
+      type = 6
+    )
   )
 }
 

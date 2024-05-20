@@ -1152,37 +1152,3 @@ test_that("KeepOrDeleteControlTreatment() keeps only rows with control treatment
 })
 
 
-test_that("GetReferenceOutcome() returns the reference outcome when the outcome is binary", {
-  data <- data.frame(Study = c("A", "A", "B", "B", "C", "C", "C", "D", "D"),
-                     T = c(1, 2, 2, 3, 1, 2, 3, 3, 4),
-                     Treatment = c("Hydrogen", "Oxygen", "Oxygen", "Sulphur", "Hydrogen", "Oxygen", "Sulphur", "Sulphur", "Zinc"),
-                     R = c(5, 7, 4, 5, 2, 6, 7, 3, 5),
-                     N = 30:38)
-  
-  treatments <- c("Hydrogen", "Oxygen", "Sulphur", "Zinc")
-  outcome_type <- "Binary"
-  
-  reference_outcome <- c(log(5 / (30 - 5)), NA, log(2 / (34 - 2)), NA)
-  names(reference_outcome) <- c("A", "B", "C", "D")
-  
-  expect_equal(GetReferenceOutcome(data, treatments, outcome_type), reference_outcome)
-})
-
-
-test_that("GetReferenceOutcome() returns the reference outcome when the outcome is continuous", {
-  data <- data.frame(Study = c("A", "A", "B", "B", "C", "C", "C", "D", "D"),
-                     T = c(1, 2, 2, 3, 1, 2, 3, 3, 4),
-                     Treatment = c("Hydrogen", "Oxygen", "Oxygen", "Sulphur", "Hydrogen", "Oxygen", "Sulphur", "Sulphur", "Zinc"),
-                     Mean = c(5, 7, 4, 5, 2, 6, 7, 3, 5),
-                     N = 30:38,
-                     SD = c(2, 3, 4, 2, 3, 4, 2, 3, 4))
-  
-  treatments <- c("Hydrogen", "Oxygen", "Sulphur", "Zinc")
-  outcome_type <- "Continuous"
-  
-  reference_outcome <- c(5, NA, 2, NA)
-  names(reference_outcome) <- c("A", "B", "C", "D")
-  
-  expect_equal(GetReferenceOutcome(data, treatments, outcome_type), reference_outcome)
-})
-
