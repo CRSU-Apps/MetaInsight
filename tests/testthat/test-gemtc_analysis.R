@@ -175,17 +175,17 @@ test_that("RunCovariateModel() gives reproducible output. Follow on: FindCovaria
   data <- WrangleUploadData(data, treatment_ids, "Binary")
   wrangled_treatment_list <- CleanTreatmentIds(treatment_ids)
   outcome_measure = "OR"
-  
+
   result_1 <- RunCovariateModel(data, wrangled_treatment_list, "Binary", outcome_measure, "covar.age", "age", 'random', 'unrelated', reference)
   result_2 <- RunCovariateModel(data, wrangled_treatment_list, "Binary", outcome_measure, "covar.age", "age", 'random', 'unrelated', reference)
-  
+
   expect_equal(result_1$samples[1], result_2$samples[1])
   expect_equal(result_1$samples[2], result_2$samples[2])
   expect_equal(result_1$samples[3], result_2$samples[3])
   expect_equal(result_1$samples[4], result_2$samples[4])
 
   default <- FindCovariateDefault(result_1)
-  
+
   covariate_value = 98
 
   expect_equal(default, covariate_value)
@@ -208,4 +208,123 @@ test_that("RunCovariateModel() gives reproducible output. Follow on: FindCovaria
   expect_equal(output_1$covariate_value, covariate_value)
   expect_equal(output_1$reference_name, reference)
   expect_equal(output_1$comparator_names, c("the_Butcher", "the_Dung_named", "the_Great", "the_Slit_nosed", "the_Younger"))
+})
+
+test_that("CalculateConfidenceRegions() gives nothing for NA evidence range", {
+  mtc_results <- list()
+  
+  model_output <- list(
+    mtcResults = mtc_results,
+    reference_name = "Placebo",
+    comparator_names = c("Ibuprofen"),
+    covariate_min = c(Ibuprofen = NA),
+    covariate_max = c(Ibuprofen = NA)
+  )
+  
+  result <- CalculateConfidenceRegions(model_output)
+  
+  expect_equal(length(result$intervals), 0)
+  expect_equal(length(result$regions), 0)
+})
+
+test_that("CalculateConfidenceRegions() gives interval for zero-width evidence range", {
+  mtc_results <- list()
+  
+  model_output <- list(
+    mtcResults = mtc_results,
+    reference_name = "Placebo",
+    comparator_names = c("Ibuprofen"),
+    covariate_min = c(Ibuprofen = 7),
+    covariate_max = c(Ibuprofen = 7)
+  )
+  
+  interval <- c("2.5%" = 11, "97.5%" = 11)
+  
+  rel_eff_summary <- list(
+    summaries = list(
+      quantiles = interval
+    )
+  )
+  
+  mockery::stub(CalculateConfidenceRegions, ".FindConfidenceInterval", interval)
+  
+  result <- CalculateConfidenceRegions(model_output)
+  
+  expect_equal(length(result$regions), 0)
+  expect_equal(names(result$intervals), c("Ibuprofen"))
+  
+  expect_equal(
+    result$intervals["Ibuprofen"],
+    list(
+      "Ibuprofen" = data.frame(cov_value = 7, lower = 11, upper = 11)
+    )
+  )
+})
+
+test_that("CalculateConfidenceRegions() gives region for non-zero-width evidence range", {
+  mtc_results <- list()
+  
+  model_output <- list(
+    mtcResults = mtc_results,
+    reference_name = "Placebo",
+    comparator_names = c("Ibuprofen"),
+    covariate_min = c(Ibuprofen = 7),
+    covariate_max = c(Ibuprofen = 17)
+  )
+  
+  interval <- matrix(
+    data = c(
+      11, 12,
+      12, 13,
+      13, 14,
+      14, 15,
+      15, 16,
+      16, 17,
+      17, 18,
+      18, 19,
+      19, 20,
+      20, 21,
+      21, 22
+    ),
+    nrow = 11,
+    ncol = 2,
+    dimnames = list(
+      NULL,
+      c("2.5%", "97.5%")
+    ),
+    byrow = TRUE
+  )
+  
+  rel_eff_summary <- list(
+    summaries = list(
+      quantiles = interval
+    )
+  )
+  
+  n <- 1
+  mockery::stub(
+    CalculateConfidenceRegions,
+    ".FindConfidenceInterval",
+    function(...) {
+      this_interval <- interval[n, c("2.5%", "97.5%")]
+      n <<- n + 1
+      return(this_interval)
+    }
+  )
+  
+  result <- CalculateConfidenceRegions(model_output)
+  
+  expect_equal(length(result$intervals), 0)
+  expect_equal(names(result$regions), c("Ibuprofen"))
+  
+  expect_equal(
+    result$regions["Ibuprofen"],
+    list(
+      "Ibuprofen" = data.frame(
+        cov_value = c(7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17),
+        lower = c(11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21),
+        upper = c(12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22)
+      )
+    )
+  )
 })
