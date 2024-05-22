@@ -203,6 +203,38 @@ BaselineRiskModelOutput <- function(data, treatment_ids, model, outcome_measure)
 
 
 
+#' An equivalent to {gemtc}'s relative.effect() function, for baseline risk in {bnma}.
+#' 
+#' @param model bnma model object created by BaselineRiskRegression().
+#' @param covariate_value The covariate value at which to calculate relative effects.
+#' @return Data frame with the median and 95% credible interval relative effect
+#'  - columns: '50%', '2.5%' and '97.5%'
+#'  - rows: one row per non-reference treatment, named by the corresponding treatment parameter (e.g. the first one is d[2]).
+BnmaRelativeEffects <- function(model, covariate_value) {
+  model_summary <- summary(model)
+  parameters <- rownames(model_summary$summary.samples$quantiles)
+  #Extract parameters that begin with "d[", except d[1]
+  treatment_parameters <- grep("d\\[([0-9][0-9]+|[2-9])\\]",
+                               parameters,
+                               value = TRUE)
+  #Extract parameters that begin with "b_bl[", except b_bl[1]
+  covariate_parameters <- grep("b_bl\\[([0-9][0-9]+|[2-9])\\]",
+                               parameters,
+                               value = TRUE)
+  centred_covariate_value <- covariate_value - model$network$mx_bl
+  
+  samples <- list()
+  #The number of chains is always left at the default 3
+  for (chain in 1:3) {
+    samples[[chain]] <- model$samples[[chain]][, treatment_parameters] + centred_covariate_value * model$samples[[chain]][, covariate_parameters]
+  }
+  
+  relative_effects <- MCMCvis::MCMCsummary(samples)
+  return(relative_effects[, c("50%", "2.5%", "97.5%")])
+}
+
+
+
 #' Get the outcome in the reference arm.
 #' 
 #' @param data Data in long format.
