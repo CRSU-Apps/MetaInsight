@@ -295,7 +295,7 @@ CreateMainRegressionPlot <- function(
 #' @param model_output GEMTC model results found by calling `CovariateModelOutput()`.
 #' @param reference Name of reference treatment.
 #' @param comparator Name of comparison treatment for which to find the contributions.
-#' @param model_output GEMTC model results found by calling `CovariateModelOutput()`.
+#' @param contribution_matrix Contributions from function `CalculateContributions()`.
 #' @param contribution_type Name of the type of contribution to find.
 #'
 #' @return Data frame containing contribution details. Each row represents a study contributing to a given treatment. Columns are:
