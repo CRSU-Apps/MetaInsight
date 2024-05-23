@@ -7,6 +7,7 @@
 #' @param comparators Vector of names of comparison treatments to plot in colour.
 #' @param contribution_matrix Contributions from function `CalculateContributions()`.
 #' @param contribution_type Name of the type of contribution, used to calculate sizes for the study contribution circles.
+#' @param confidence_regions List of confidence region data frames from function `CalculateConfidenceRegions()`.
 #' @param include_covariate TRUE if the value of the covariate is to be plotted as a vertical line. Defaults to FALSE.
 #' @param include_ghosts TRUE if all other comparator studies should be plotted in grey in the background of the plot. Defaults to FALSE.
 #' @param include_extrapolation TRUE if regression lines should be extrapolated beyond the range of the given data. These will appear as dashed lines.
@@ -31,6 +32,7 @@ CreateMainRegressionPlot <- function(
     comparators,
     contribution_matrix,
     contribution_type,
+    confidence_regions,
     include_covariate = FALSE,
     include_ghosts = FALSE,
     include_extrapolation = FALSE,
@@ -66,7 +68,7 @@ CreateMainRegressionPlot <- function(
   
   if (length(comparators) > 0) {
     if (include_confidence) {
-      plot <- .PlotConfidenceRegions(plot, model_output, treatment_df, reference, comparators)
+      plot <- .PlotConfidenceRegions(plot, confidence_regions, comparators, confidence_opacity)
     }
     if (include_contributions) {
       plot <- .PlotDirectContributionCircles(plot, model_output, treatment_df, reference, comparators, contribution_matrix, contribution_type, contribution_multiplier)
@@ -146,30 +148,39 @@ CreateMainRegressionPlot <- function(
   return(plot)
 }
 
-#' Plot the confidence regions on the plot.
+#' Plot the confidence regions and intervals on the plot.
 #'
 #' @param plot object to which to add elements.
-#' @param model_output GEMTC model results found by calling `CovariateModelOutput()`.
-#' @param treatment_df Data frame containing treatment IDs (Number), sanitised names (Label), and original names (RawLabel).
-#' @param reference Name of reference treatment.
+#' @param confidence_regions List of confidence region data frames from function `CalculateConfidenceRegions()`.
 #' @param comparators Vector of names of comparison treatments to plot.
 #'
 #' @return The modified ggplot2 object.
-.PlotConfidenceRegions <- function(plot, model_output, treatment_df, reference, comparators) {
-  confidence <- .FindRegressionConfidenceRegion(model_output, reference, comparators)
-  
-  confidence$Treatment <- sapply(confidence$Treatment, function(treatment) { treatment_df$RawLabel[treatment_df$Label == treatment] })
+.PlotConfidenceRegions <- function(plot, confidence_regions, comparators, confidence_opacity) {
+  regions <- .FormatRegressionConfidenceRegion(confidence_regions$regions, comparators)
+  intervals <- .FormatRegressionConfidenceRegion(confidence_regions$intervals, comparators)
   
   plot <- plot +
     geom_ribbon(
-      data = confidence,
+      data = regions,
       mapping = aes(
         x = covariate_value,
         ymin = y_min,
         ymax = y_max,
         fill = Treatment
       ),
-      show.legend = FALSE,
+      show.legend = FALSE
+    ) +
+    geom_linerange(
+      data = intervals,
+      mapping = aes(
+        x = covariate_value,
+        ymin = y_min,
+        ymax = y_max,
+        color = Treatment
+      ),
+      linewidth = 2,
+      alpha = confidence_opacity,
+      show.legend = FALSE
     )
   
   return(plot)
@@ -284,7 +295,7 @@ CreateMainRegressionPlot <- function(
 #' @param model_output GEMTC model results found by calling `CovariateModelOutput()`.
 #' @param reference Name of reference treatment.
 #' @param comparator Name of comparison treatment for which to find the contributions.
-#' @param model_output GEMTC model results found by calling `CovariateModelOutput()`.
+#' @param contribution_matrix Contributions from function `CalculateContributions()`.
 #' @param contribution_type Name of the type of contribution to find.
 #'
 #' @return Data frame containing contribution details. Each row represents a study contributing to a given treatment. Columns are:
@@ -323,42 +334,32 @@ CreateMainRegressionPlot <- function(
   )
 }
 
-#' Find the confidence regions for the regression analysis.
+#' Format the confidence regions for the regression analysis into a plottable data frame.
 #'
-#' @param model_output GEMTC model results found by calling `CovariateModelOutput()`.
-#' @param reference Name of reference treatment.
+#' @param confidence_regions List of confidence region data frames from function `CalculateConfidenceRegions()`.
 #' @param comparator Name of comparison treatment for which to find the contributions.
-#' @param divisions The number of divisions the confidence region should be drawn in. Defaults to 10.
 #'
 #' @return Data frame containing contribution details. Each row represents a confidence interval at a specific covariate value, for a given treatment. Columns are:
 #' - Treatment: The treatment for which this confidence interval relates.
 #' - covariate_value: Value of the covariate for this interval
 #' - y_min Relative effect of the lower end of this interval
 #' - y_max: Relative effect of the upper end of this interval
-.FindRegressionConfidenceRegion <- function(model_output, reference, comparator, divisions = 10) {
+.FormatRegressionConfidenceRegion <- function(confidence_regions, comparator) {
   
   treatments <- c()
   covariate_values <- c()
   y_mins <- c()
   y_maxs <- c()
   
-  for (treatment in c("the_Butcher", "the_Dung_named", "the_Great", "the_Slit_nosed", "the_Younger")) {
-    start_x <- .FindRegressionStartX(model_output, reference, treatment)
-    end_x <- .FindRegressionEndX(model_output, reference, treatment)
-    intercept <- model_output$intercepts[[treatment]]
-    gradient <- model_output$slopes[[treatment]]
-    for (covariate_value in seq(from = start_x, to = end_x, by = (end_x - start_x) / divisions)) {
-      treatments <- c(treatments, treatment)
-      covariate_values <- c(covariate_values, covariate_value)
-      y_mins <- c(
-        y_mins,
-        intercept + (gradient * covariate_value) - (0.04 * (((covariate_value - 97) - 5) ^ 2) + 1)
-      )
-      y_maxs <- c(
-        y_maxs,
-        intercept + (gradient * covariate_value) + 0.04 * (((covariate_value - 97) - 5) ^ 2) + 1
-      )
-    }
+  for (treatment_name in comparator) {
+    treatment_covariate_values <- confidence_regions[[treatment_name]]$cov_value
+    treatment_y_mins <- confidence_regions[[treatment_name]]$lower
+    treatment_y_maxs <- confidence_regions[[treatment_name]]$upper
+    
+    treatments <- c(treatments, rep(treatment_name, length(treatment_covariate_values)))
+    covariate_values <- c(covariate_values, treatment_covariate_values)
+    y_mins <- c(y_mins, treatment_y_mins)
+    y_maxs <- c(y_maxs, treatment_y_maxs)
   }
   
   confidence_df <- data.frame(
@@ -368,5 +369,10 @@ CreateMainRegressionPlot <- function(
     y_max = y_maxs
   )
   
-  return(confidence_df[confidence_df$Treatment %in% comparator, ])
+  # Return an empty data frame with correct column names if all of the rows are NA
+  if (all(is.na(confidence_df$covariate_value))) {
+    return(data.frame(matrix(nrow = 0, ncol = 4, dimnames = list(NULL, c("Treatment", "covariate_value", "y_min", "y_max")))))
+  }
+  
+  return(confidence_df)
 }

@@ -10,6 +10,7 @@ regression_ghost_name = "\u200BOther"
 #' @param comparators Vector of names of comparison treatments to plot in colour.
 #' @param contribution_matrix Contributions from function `CalculateContributions()`.
 #' @param contribution_type Type of contribution, used to calculate sizes for the study contribution circles.
+#' @param confidence_regions List of confidence region data frames from function `CalculateConfidenceRegions()`.
 #' @param include_covariate TRUE if the value of the covariate is to be plotted as a vertical line. Defaults to FALSE.
 #' @param include_ghosts TRUE if all other comparator studies should be plotted in grey in the background of the plot. Defaults to FALSE.
 #' @param include_extrapolation TRUE if regression lines should be extrapolated beyond the range of the given data. These will appear as dashed lines.
@@ -33,6 +34,7 @@ CreateCompositeMetaRegressionPlot <- function(
     comparators,
     contribution_matrix,
     contribution_type,
+    confidence_regions,
     include_covariate = FALSE,
     include_ghosts = FALSE,
     include_extrapolation = FALSE,
@@ -49,6 +51,7 @@ CreateCompositeMetaRegressionPlot <- function(
     comparators = comparators,
     contribution_matrix = contribution_matrix,
     contribution_type = contribution_type,
+    confidence_regions = confidence_regions,
     include_covariate = include_covariate,
     include_ghosts = include_ghosts,
     include_extrapolation = include_extrapolation,
