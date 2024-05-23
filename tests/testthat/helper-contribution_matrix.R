@@ -35,7 +35,7 @@ SetupAndCalculateContributionMatrix <- function(treatment_or_covariate_effect, c
   if (cov_parameters == "shared") {
     covariate_effect_columns <- "B"
   } else {
-    covariate_effect_columns <- paste0(reference_name, ":", non_reference_treatments, "_beta")
+    covariate_effect_columns <- paste0(reference_name, ":", non_reference_treatments, "-beta")
   }
   
   # Setup mocked contribution matrix
@@ -45,17 +45,17 @@ SetupAndCalculateContributionMatrix <- function(treatment_or_covariate_effect, c
     ncol = length(non_reference_treatments) + length(covariate_effect_columns)
   )
   row.names(mock_contribution_matrix) <- studies
-  colnames(mock_contribution_matrix) <- c(paste0(reference_name, ":", non_reference_treatments, "_d"), covariate_effect_columns)
+  colnames(mock_contribution_matrix) <- c(paste0(reference_name, ":", non_reference_treatments, "-d"), covariate_effect_columns)
   
-  mock_contribution_matrix["A", "Hydrogen:Oxygen_d"] <- 1.1
-  mock_contribution_matrix["A", "Hydrogen:Sulphur_d"] <- 2.2
-  mock_contribution_matrix["B", "Hydrogen:Oxygen_d"] <- 3.3
-  mock_contribution_matrix["B", "Hydrogen:Sulphur_d"] <- 4.4
-  mock_contribution_matrix["C", "Hydrogen:Zinc_d"] <- 5.5
-  mock_contribution_matrix["C", "Hydrogen:Einsteinium_d"] <- 6.6
-  mock_contribution_matrix["D", "Hydrogen:Oxygen_d"] <- 7.7
-  mock_contribution_matrix["D", "Hydrogen:Sulphur_d"] <- 8.8
-  mock_contribution_matrix["E", "Hydrogen:Zinc_d"] <- 9.9
+  mock_contribution_matrix["A", "Hydrogen:Oxygen-d"] <- 1.1
+  mock_contribution_matrix["A", "Hydrogen:Sulphur-d"] <- 2.2
+  mock_contribution_matrix["B", "Hydrogen:Oxygen-d"] <- 3.3
+  mock_contribution_matrix["B", "Hydrogen:Sulphur-d"] <- 4.4
+  mock_contribution_matrix["C", "Hydrogen:Zinc-d"] <- 5.5
+  mock_contribution_matrix["C", "Hydrogen:Einsteinium-d"] <- 6.6
+  mock_contribution_matrix["D", "Hydrogen:Oxygen-d"] <- 7.7
+  mock_contribution_matrix["D", "Hydrogen:Sulphur-d"] <- 8.8
+  mock_contribution_matrix["E", "Hydrogen:Zinc-d"] <- 9.9
   
   if (cov_parameters == "shared") {
     mock_contribution_matrix["A", "B"] <- 11
@@ -64,15 +64,15 @@ SetupAndCalculateContributionMatrix <- function(treatment_or_covariate_effect, c
     mock_contribution_matrix["D", "B"] <- 44
     mock_contribution_matrix["E", "B"] <- 55
   } else {
-    mock_contribution_matrix["A", "Hydrogen:Oxygen_beta"] <- 11
-    mock_contribution_matrix["A", "Hydrogen:Sulphur_beta"] <- 22
-    mock_contribution_matrix["B", "Hydrogen:Oxygen_beta"] <- 33
-    mock_contribution_matrix["B", "Hydrogen:Sulphur_beta"] <- 44
-    mock_contribution_matrix["C", "Hydrogen:Zinc_beta"] <- 55
-    mock_contribution_matrix["C", "Hydrogen:Einsteinium_beta"] <- 66
-    mock_contribution_matrix["D", "Hydrogen:Oxygen_beta"] <- 77
-    mock_contribution_matrix["D", "Hydrogen:Sulphur_beta"] <- 88
-    mock_contribution_matrix["E", "Hydrogen:Zinc_beta"] <- 99
+    mock_contribution_matrix["A", "Hydrogen:Oxygen-beta"] <- 11
+    mock_contribution_matrix["A", "Hydrogen:Sulphur-beta"] <- 22
+    mock_contribution_matrix["B", "Hydrogen:Oxygen-beta"] <- 33
+    mock_contribution_matrix["B", "Hydrogen:Sulphur-beta"] <- 44
+    mock_contribution_matrix["C", "Hydrogen:Zinc-beta"] <- 55
+    mock_contribution_matrix["C", "Hydrogen:Einsteinium-beta"] <- 66
+    mock_contribution_matrix["D", "Hydrogen:Oxygen-beta"] <- 77
+    mock_contribution_matrix["D", "Hydrogen:Sulphur-beta"] <- 88
+    mock_contribution_matrix["E", "Hydrogen:Zinc-beta"] <- 99
   }
   
   # Setup mocked frequentist analysis

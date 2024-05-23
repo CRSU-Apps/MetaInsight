@@ -28,8 +28,8 @@ covariate_analysis_panel_ui <- function(id, page_numbering) {
             style = "display: inline-block;"
           ),
           div(
-            # If binary data is poorly coded, then it will be identified as continuous.
-            # Show a warning to the user when data is identified as continuous to inform them.
+            # If a binary covariate is poorly coded, then it will be identified as continuous.
+            # Show a warning to the user when covariate is identified as continuous to inform them.
             conditionalPanel(
               condition = "output.inferred_type == 'Continuous'",
               ns = ns,

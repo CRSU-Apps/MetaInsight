@@ -8,10 +8,15 @@ baseline_risk_analysis_panel_ui <- function(id, page_numbering) {
   page_numbering$DiveLevel()
   
   ui = fluidPage(
+    div(
+      baseline_risk_value_panel_ui(id = ns("baseline_risk_value")),
+      style = "display: inline-block; vertical-align: 65%"
+    ),
     tabsetPanel(
       tabPanel(
         title = paste0(page_numbering$AddChild(), " Regression plot"),
-        covariate_run_model_ui(id = ns("baseline_risk_model"))
+        covariate_run_model_ui(id = ns("baseline_risk_model")),
+        regression_plot_panel_ui(id = ns("baseline_risk_regression_plot"))
       ),
       tabPanel(
         title = paste0(page_numbering$AddChild(), " Forest plot"),
@@ -61,6 +66,15 @@ baseline_risk_analysis_panel_ui <- function(id, page_numbering) {
 #' Create the baseline risk analysis server.
 #'
 #' @param id ID of the module
+#' @param all_data Study data including covariate columns, in wide or long format.
+#' @param treatment_df Reactive containing data frame containing treatment IDs (Number), sanitised names (Label), and original names (RawLabel).
+#' @param reference_treatment Reactive containing the sanitised name of the reference treatment.
+#' @param metaoutcome Reactive containing meta analysis outcome: "Continuous" or "Binary".
+#' @param outcome_measure Reactive containing meta analysis outcome measure: "MD", "OR, or "RR".
+#' @param model_effects Reactive containing model effects: either "random" or "fixed".
+#' @param rank_option Reactive containing ranking option: "good" or "bad" depending on whether small values are desirable or not.
+#' @param freq_all Reactive containing frequentist meta-analysis.
+#' @param bugsnetdt Reactive containing bugsnet meta-analysis.
 baseline_risk_analysis_panel_server <- function(    id, 
                                                     all_data,
                                                     treatment_df,
@@ -84,12 +98,6 @@ baseline_risk_analysis_panel_server <- function(    id,
       model_effects = model_effects
     )
     
-    #Outcome in the reference arm, needed for the graph
-    covariate_data <- reactive({GetReferenceOutcome(data = all_data(),
-                                                    treatments = treatment_df()$Label[order(treatment_df()$Number)],
-                                                    outcome_type = metaoutcome())
-      })
-    
     #Warn if the model did not converge
     output$convergence_warning <- renderText({
         ifelse(model_reactive()$max.gelman > 1.05,
@@ -98,6 +106,58 @@ baseline_risk_analysis_panel_server <- function(    id,
                       ". A value greater than 1.05 may indicate lack of convergence. Please check the Gelman plots in the <i>Result details</i> tab.</h3></b>"),
                "")
     })
+    
+    #Covariate value for displaying at the top of the page, calculated from the observed reference outcomes
+    covariate_value <- baseline_risk_value_panel_server(
+      id = "baseline_risk_value",
+      reference_outcomes = GetReferenceOutcome(data = all_data(),
+                                               treatment_ids = treatment_df(),
+                                               outcome_type = metaoutcome(),
+                                               observed = "Observed")
+    )
+    
+    #Obtain output to create the graph
+    model_output <- reactive({
+      BaselineRiskModelOutput(data = all_data(),
+                              treatment_ids = treatment_df(),
+                              model = model_reactive(),
+                              outcome_measure = outcome_measure()
+      )
+    })
+    
+    #The covariate values for use in the graph, including imputed reference outcomes
+    reference_outcome <- reactive({
+      GetReferenceOutcome(data = all_data(),
+                          treatment_ids = treatment_df(),
+                          outcome_type = metaoutcome(),
+                          observed = "Imputed",
+                          model = model_reactive())
+    })
+    
+    #Remove any covariates already in the data set and add the outcome in the reference arm as the unique covariate
+    data_with_covariate <- reactive({
+      data_with_covariates_removed <- dplyr::select(all_data(), !dplyr::starts_with("covar."))
+      return(merge(data_with_covariates_removed,
+                   data.frame(Study = names(reference_outcome()),
+                              covar.baseline_risk = reference_outcome(),
+                              row.names = NULL),
+                   by = "Study"
+                   )
+             )
+    })
+    
+    # 4b-1 Regression plot
+    regression_plot_panel_server(
+      id = "baseline_risk_regression_plot",
+      data = data_with_covariate,
+      covariate_title = reactive("covar.baseline_risk"),
+      model_output = model_output,
+      treatment_df = treatment_df,
+      outcome_type = metaoutcome,
+      outcome_measure = outcome_measure,
+      reference = reference_treatment,
+      package = "bnma"
+    )
     
     # 4b-2 Create forest plot and associated statistics
     bayesian_forest_plot_plus_stats_baseline_risk_server(

@@ -192,7 +192,8 @@ regression_plot_panel_ui <- function(id) {
 #' @param treatment_df Reactive containing data frame containing treatment IDs (Number), sanitised names (Label), and original names (RawLabel).
 #' @param outcome_type Reactive containing meta analysis outcome: "Continuous" or "Binary".
 #' @param outcome_measure Reactive type of outcome (OR, RR, RD, MD or SD).
-regression_plot_panel_server <- function(id, data, covariate_title, model_output, treatment_df, outcome_type, outcome_measure, reference) {
+#' @param package package used to create the model. Either "gemtc" (default) or "bnma".
+regression_plot_panel_server <- function(id, data, covariate_title, model_output, treatment_df, outcome_type, outcome_measure, reference, package = "gemtc") {
   shiny::moduleServer(id, function(input, output, session) {
     
     available_to_add <- reactive({
@@ -296,21 +297,45 @@ regression_plot_panel_server <- function(id, data, covariate_title, model_output
       )
     })
     
+    if (!(package %in% c("gemtc", "bnma"))) {
+      stop("'package' must be 'gemtc' or 'bnma'")
+    }
+    
     contribution_matrix <- reactive({
       tryCatch(
         expr = {
+          if (package == "gemtc") {
+            cov_parameters <- model_output()$mtcResults$model$regressor$coefficient
+          } else if (package == "bnma") {
+            if (model_output()$mtcResults$network$baseline == "common") {
+              cov_parameters <- "shared"
+            } else if (model_output()$mtcResults$network$baseline == "independent") {
+              cov_parameters <- "unrelated"
+            } else {
+              cov_parameters <- model_output()$mtcResults$network$baseline
+            }
+          }
+
           if (model_output()$model == "random") {
-            std_dev_d <- mtc_summary()$summaries$quantiles["sd.d", "50%"]
+            if (package == "gemtc") {
+              std_dev_d <- mtc_summary()$summaries$quantiles["sd.d", "50%"]
+            } else if (package == "bnma") {
+              std_dev_d <- mtc_summary()$summary.samples$quantiles["sd", "50%"]
+            }
           } else {
             std_dev_d <- NULL
           }
-          
-          if (model_output()$mtcResults$model$regressor$coefficient == "exchangeable") {
-            std_dev_beta <- mtc_summary()$summaries$quantiles["reg.sd", "50%"]
+
+          if (cov_parameters == "exchangeable") {
+            if (package == "gemtc") {
+              std_dev_beta <- mtc_summary()$summaries$quantiles["reg.sd", "50%"]
+            } else if (package == "bnma") {
+              std_dev_beta <- mtc_summary()$summary.samples$quantiles["sdB", "50%"]
+            }
           } else {
             std_dev_beta <- NULL
           }
-          
+
           CalculateContributions(
             data = data(),
             covariate_title = covariate_title(),
@@ -320,7 +345,7 @@ regression_plot_panel_server <- function(id, data, covariate_title, model_output
             effects_type = model_output()$model,
             std_dev_d = std_dev_d,
             std_dev_beta = std_dev_beta,
-            cov_parameters = model_output()$mtcResults$model$regressor$coefficient,
+            cov_parameters = cov_parameters,
             study_or_comparison_level = "study",
             absolute_or_percentage = input$absolute_relative_toggle,
             weight_or_contribution = input$contribution_weight_toggle,
@@ -332,9 +357,9 @@ regression_plot_panel_server <- function(id, data, covariate_title, model_output
         }
       )
     })
-    
+
     contributions_failed <- reactiveVal(NULL)
-    
+
     # Show warning when contribution matrix fails to calculate
     output$contributions_missing <- renderUI({
       if (!is.null(contributions_failed())) {
@@ -349,7 +374,7 @@ regression_plot_panel_server <- function(id, data, covariate_title, model_output
         return(NULL)
       }
     })
-    
+
     # Reset failed contributions when model recalculated
     observe({
       contributions_failed(NULL)
@@ -362,7 +387,7 @@ regression_plot_panel_server <- function(id, data, covariate_title, model_output
         contributions_failed(input$contributions)
       }
     })
-    
+
     output$regression_plot <- renderPlot({
       if (length(added_comparators()) == 0) {
         comparators = c()

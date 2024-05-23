@@ -100,7 +100,9 @@ treatment_comparisons_page_baseline_risk_server <- function(
     output$downloadbaye_comparison <- downloadHandler(
       filename = 'baseline_risk_comparison.csv',
       content = function(file) {
-        write.csv(baye_comp(model(), outcome_measure()), file)
+        write.csv(
+          BaselineRiskRelativeEffectsTable(bnma::relative.effects.table(model(), summary_stat = "ci")), file
+        )
       }
     )
   })

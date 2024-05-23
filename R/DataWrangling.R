@@ -375,18 +375,10 @@ GetFriendlyCovariateName <- function(column_name) {
 #' @param keep_delete "keep" or "delete".
 #' @return @param data with rows corresponding to the control treatment kept or deleted, and a new column 'Control'.
 KeepOrDeleteControlTreatment <- function(data, treatments, keep_delete){
-  #It is imperative that 'data' is sorted by 'Study', because tapply below will sort by 'Study', creating a misalignment between 'Study' and 'Control' in the 'control' data frame if 'data' is not sorted by 'Study' already.
-  data <- data[order(data$Study, data$T), ]
-  #The unique studies
-  studies <- unique(data$Study)
-  #Local function to find the control treatment in a single study
-  #When used in tapply it matches the treatments within a study to the ordered 'treatments' vector, and then finds the lowest
-  min_match <- function(x){
-    min(match(x, treatments))
+  #Add a Control column to the data set
+  for (i in 1:length(data$Study)) {
+    data$Control[i] <- treatments[min(match(data$Treatment[data$Study == data$Study[i]], treatments))]
   }
-  #Find the control treatment in each study
-  control <- data.frame(Study = studies, Control = treatments[tapply(data$Treatment, INDEX = data$Study, FUN = min_match)])
-  data <- merge(data, control, by = "Study", sort = FALSE)
   if (keep_delete == "keep"){
     return(data[data$Treatment == data$Control, ])
   } else if (keep_delete == "delete"){
@@ -396,33 +388,4 @@ KeepOrDeleteControlTreatment <- function(data, treatments, keep_delete){
   }
 }
 
-
-
-#' Get the outcome in the reference arm when it exists
-#' 
-#' @param data Data in long format, plus the column 'Treatment', a text version of 'T'.
-#' @param treatments Vector of treatments with the reference treatment first.
-#' @param outcome_type "Binary" or "Continuous".
-#' @return Vector of reference arm outcomes, named by study.
-GetReferenceOutcome <- function(data, treatments, outcome_type){
-  #Data with only control treatment rows kept
-  data_control <- KeepOrDeleteControlTreatment(data = data, treatments = treatments, keep_delete = "keep")
-  if (outcome_type == "Binary"){
-    data_control$R[data_control$Treatment != treatments[1]] <- NA
-    effect_sizes <- metafor::escalc(measure = "PLO",
-                                    xi = data_control$R,
-                                    ni = data_control$N)
-  } else if (outcome_type == "Continuous"){
-    data_control$Mean[data_control$Treatment != treatments[1]] <- NA
-    effect_sizes <- metafor::escalc(measure = "MN",
-                                    mi = data_control$Mean,
-                                    sdi = data_control$SD,
-                                    ni = data_control$N)
-  } else{
-    stop("'outcome_type' must be 'Continuous' or 'Binary'")
-  }
-  outcomes <- as.numeric(effect_sizes$yi)
-  names(outcomes) <- unique(data_control$Study)
-  return(outcomes)
-}
 
