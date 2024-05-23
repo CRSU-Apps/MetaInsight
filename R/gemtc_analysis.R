@@ -253,7 +253,8 @@ CalculateConfidenceRegions <- function(model_output) {
     cov_max <- model_output$covariate_max[treatment_name]
     
     if (is.na(cov_min)) {
-      next
+      confidence_intervals[[treatment_name]] <- data.frame(cov_value = NA, lower = NA, upper = NA)
+      confidence_regions[[treatment_name]] <- data.frame(cov_value = NA, lower = NA, upper = NA)
     } else if (cov_min == cov_max) {
       interval <- .FindConfidenceInterval(mtc_results, reference_name, cov_min, parameter_name)
       df <- data.frame(cov_value = cov_min, lower = interval["2.5%"], upper = interval["97.5%"])
@@ -263,6 +264,7 @@ CalculateConfidenceRegions <- function(model_output) {
       
       # Add to regions list
       confidence_intervals[[treatment_name]] <- df
+      confidence_regions[[treatment_name]] <- data.frame(cov_value = NA, lower = NA, upper = NA)
     } else {
       df <- data.frame()
       for (cov_value in seq(from = cov_min, to = cov_max, length.out = 11)) {
@@ -278,6 +280,7 @@ CalculateConfidenceRegions <- function(model_output) {
       
       # Add to regions list
       confidence_regions[[treatment_name]] <- df
+      confidence_intervals[[treatment_name]] <- data.frame(cov_value = NA, lower = NA, upper = NA)
     }
   }
   

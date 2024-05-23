@@ -369,5 +369,10 @@ CreateMainRegressionPlot <- function(
     y_max = y_maxs
   )
   
+  # Return an empty data frame with correct column names if all of the rows are NA
+  if (all(is.na(confidence_df$covariate_value))) {
+    return(data.frame(matrix(nrow = 0, ncol = 4, dimnames = list(NULL, c("Treatment", "covariate_value", "y_min", "y_max")))))
+  }
+  
   return(confidence_df)
 }

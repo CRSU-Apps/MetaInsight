@@ -223,8 +223,21 @@ test_that("CalculateConfidenceRegions() gives nothing for NA evidence range", {
   
   result <- CalculateConfidenceRegions(model_output)
   
-  expect_equal(length(result$intervals), 0)
-  expect_equal(length(result$regions), 0)
+  expect_equal(names(result$intervals), c("Ibuprofen"))
+  expect_equal(names(result$regions), c("Ibuprofen"))
+  
+  expect_equal(
+    result$intervals["Ibuprofen"],
+    list(
+      "Ibuprofen" = data.frame(cov_value = NA, lower = NA, upper = NA)
+    )
+  )
+  expect_equal(
+    result$regions["Ibuprofen"],
+    list(
+      "Ibuprofen" = data.frame(cov_value = NA, lower = NA, upper = NA)
+    )
+  )
 })
 
 test_that("CalculateConfidenceRegions() gives interval for zero-width evidence range", {
@@ -250,13 +263,19 @@ test_that("CalculateConfidenceRegions() gives interval for zero-width evidence r
   
   result <- CalculateConfidenceRegions(model_output)
   
-  expect_equal(length(result$regions), 0)
+  expect_equal(names(result$regions), c("Ibuprofen"))
   expect_equal(names(result$intervals), c("Ibuprofen"))
   
   expect_equal(
     result$intervals["Ibuprofen"],
     list(
       "Ibuprofen" = data.frame(cov_value = 7, lower = 11, upper = 11)
+    )
+  )
+  expect_equal(
+    result$regions["Ibuprofen"],
+    list(
+      "Ibuprofen" = data.frame(cov_value = NA, lower = NA, upper = NA)
     )
   )
 })
@@ -314,7 +333,7 @@ test_that("CalculateConfidenceRegions() gives region for non-zero-width evidence
   
   result <- CalculateConfidenceRegions(model_output)
   
-  expect_equal(length(result$intervals), 0)
+  expect_equal(names(result$intervals), c("Ibuprofen"))
   expect_equal(names(result$regions), c("Ibuprofen"))
   
   expect_equal(
@@ -325,6 +344,12 @@ test_that("CalculateConfidenceRegions() gives region for non-zero-width evidence
         lower = c(11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21),
         upper = c(12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22)
       )
+    )
+  )
+  expect_equal(
+    result$intervals["Ibuprofen"],
+    list(
+      "Ibuprofen" = data.frame(cov_value = NA, lower = NA, upper = NA)
     )
   )
 })
