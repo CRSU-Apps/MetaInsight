@@ -28,7 +28,21 @@ regression_plot_panel_ui <- function(id) {
     position = "right",
     mainPanel = mainPanel(
       width = 9,
-      plotOutput(outputId = ns("regression_plot"), height = "800px")
+      plotOutput(outputId = ns("regression_plot"), height = "800px"),
+      div(
+        radioButtons(
+          inputId = ns("format"), 
+          label = "Download format", 
+          choices = c(
+            "PDF" = "pdf",
+            "PNG" = "png",
+            "SVG" = "svg"
+          ),
+          inline = TRUE
+        ),
+        downloadButton(outputId = ns("download")),
+        style = "text-align: center;"
+      )
     ),
     sidebarPanel = sidebarPanel(
       width = 3,
@@ -188,12 +202,13 @@ regression_plot_panel_ui <- function(id) {
 #' @param id ID of the module.
 #' @param data Reactive containing study data including covariate columns, in wide or long format.
 #' @param covariate_title Reactive containing title of the covariate column in the data.
+#' @param covariate_name Friendly name of chosen covariate.
 #' @param model_output Reactive containing GEMTC model results found by calling `CovariateModelOutput()`.
 #' @param treatment_df Reactive containing data frame containing treatment IDs (Number), sanitised names (Label), and original names (RawLabel).
 #' @param outcome_type Reactive containing meta analysis outcome: "Continuous" or "Binary".
 #' @param outcome_measure Reactive type of outcome (OR, RR, RD, MD or SD).
 #' @param package package used to create the model. Either "gemtc" (default) or "bnma".
-regression_plot_panel_server <- function(id, data, covariate_title, model_output, treatment_df, outcome_type, outcome_measure, reference, package = "gemtc") {
+regression_plot_panel_server <- function(id, data, covariate_title, covariate_name, model_output, treatment_df, outcome_type, outcome_measure, reference, package = "gemtc") {
   shiny::moduleServer(id, function(input, output, session) {
     
     available_to_add <- reactive({
@@ -387,19 +402,21 @@ regression_plot_panel_server <- function(id, data, covariate_title, model_output
         contributions_failed(input$contributions)
       }
     })
-
-    output$regression_plot <- renderPlot({
+    
+    comparator_titles <- reactive({
       if (length(added_comparators()) == 0) {
-        comparators = c()
+        comparators <- c()
       } else {
         comparators <- sapply(added_comparators(), function(treatment) { treatment_df()$Label[treatment_df()$RawLabel == treatment] })
       }
-      
+    })
+    
+    output$regression_plot <- renderPlot({
       CreateCompositeMetaRegressionPlot(
         model_output = model_output(),
         treatment_df = treatment_df(),
         outcome_measure = outcome_measure(),
-        comparators = comparators,
+        comparators = comparator_titles(),
         contribution_matrix = contribution_matrix(),
         contribution_type = input$absolute_relative_toggle,
         confidence_regions = confidence_regions$result(),
@@ -413,5 +430,35 @@ regression_plot_panel_server <- function(id, data, covariate_title, model_output
         legend_position = input$legend_position_dropdown
       )
     })
+    
+    output$download <- downloadHandler(
+      filename = function() {
+        return(glue::glue("regression_plot_{covariate_name()}.{input$format}"))
+      },
+      content = function(file) {
+        ggsave(
+          filename = file, 
+          device = input$format,
+          bg = "#ffffff",
+          plot = CreateCompositeMetaRegressionPlot(
+            model_output = model_output(),
+            treatment_df = treatment_df(),
+            outcome_measure = outcome_measure(),
+            comparators = comparator_titles(),
+            contribution_matrix = contribution_matrix(),
+            contribution_type = input$absolute_relative_toggle,
+            confidence_regions = confidence_regions$result(),
+            include_covariate = input$covariate,
+            include_ghosts = input$ghosts,
+            include_extrapolation = input$extrapolate,
+            include_confidence = input$confidence,
+            confidence_opacity = input$confidence_opacity,
+            include_contributions = input$contributions != "None",
+            contribution_multiplier = input$circle_multipler,
+            legend_position = input$legend_position_dropdown
+          )
+        )
+      }
+    )
   })
 }
