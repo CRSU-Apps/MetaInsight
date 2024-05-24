@@ -439,6 +439,7 @@ regression_plot_panel_server <- function(id, data, covariate_title, covariate_na
         ggsave(
           filename = file, 
           device = input$format,
+          bg = "#ffffff",
           plot = CreateCompositeMetaRegressionPlot(
             model_output = model_output(),
             treatment_df = treatment_df(),
