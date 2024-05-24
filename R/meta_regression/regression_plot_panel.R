@@ -361,7 +361,7 @@ regression_plot_panel_server <- function(id, data, covariate_title, covariate_na
             std_dev_d = std_dev_d,
             std_dev_beta = std_dev_beta,
             cov_parameters = cov_parameters,
-            study_or_comparison_level = "study",
+            study_or_arm_level = "study",
             absolute_or_percentage = input$absolute_relative_toggle,
             weight_or_contribution = input$contribution_weight_toggle,
             treatment_or_covariate_effect = input$contributions

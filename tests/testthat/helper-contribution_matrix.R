@@ -100,7 +100,7 @@ SetupAndCalculateContributionMatrix <- function(treatment_or_covariate_effect, c
     cov_parameters = cov_parameters,
     cov_centre = NULL,
     std_dev_beta = NULL,
-    study_or_comparison_level = NULL,
+    study_or_arm_level = NULL,
     absolute_or_percentage = NULL,
     basic_or_all_parameters = NULL,
     weight_or_contribution = NULL,
