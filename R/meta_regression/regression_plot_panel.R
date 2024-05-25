@@ -266,22 +266,65 @@ regression_plot_panel_server <- function(id, data, covariate_title, covariate_na
       summary(model_output()$mtcResults)
     })
     
-    # Background process to calculate confidence regions
-    confidence_regions <- shiny::ExtendedTask$new(function(model_output) {
-      promises::future_promise({
-        return(CalculateConfidenceRegions(model_output))
-      })
-    })
+    if (!(package %in% c("gemtc", "bnma"))) {
+      stop("'package' must be 'gemtc' or 'bnma'")
+    }
+    
+    # This works if you remove all ExtendedTask code
+    # if (package == "gemtc") {
+    #   confidence_regions <- reactive(CalculateConfidenceRegions(model_output()))
+    # } else if (package == "bnma") {
+    #   confidence_regions <- reactive(CalculateConfidenceRegionsBnma(model_output()))
+    # }
+
+    # Background process to calculate confidence regions - attempt 1
+    # if (package == "gemtc") {
+    #   confidence_regions <- shiny::ExtendedTask$new(function(model_output) {
+    #     promises::future_promise({
+    #       return(CalculateConfidenceRegions(model_output))
+    #     })
+    #   })
+    # } else if (package == "bnma") {
+    #   confidence_regions <- shiny::ExtendedTask$new(function(model_output) {
+    #     promises::future_promise({
+    #       return(CalculateConfidenceRegionsBnma(model_output))
+    #     })
+    #   })
+    # }
+    
+    # Background process to calculate confidence regions - attempt 2
+    # confidence_regions <- shiny::ExtendedTask$new(function(model_output) {
+    #   if (package == "gemtc") {
+    #     promises::future_promise({
+    #       return(CalculateConfidenceRegions(model_output))
+    #     })
+    #   } else if (package == "bnma") {
+    #     promises::future_promise({
+    #       return(CalculateConfidenceRegionsBnma(model_output))
+    #     })
+    #   }
+    # })
+    
+    # Background process to calculate confidence regions - attempt 3
+    # confidence_regions <- shiny::ExtendedTask$new(function(model_output) {
+    #   promises::future_promise({
+    #     if (package == "gemtc") {
+    #       return(CalculateConfidenceRegions(model_output))
+    #     } else if (package == "bnma") {
+    #       return(CalculateConfidenceRegionsBnma(model_output))
+    #     }
+    #   })
+    # })
     
     # Start calculation of confidence regions when the model output changes
     observe({
       confidence_regions$invoke(model_output())
     }) |>
       bindEvent(model_output())
-    
+
     calculating_confidence_regions <- reactiveVal(FALSE)
     previous_confidence_regions_shown <- reactiveVal(FALSE)
-    
+
     # When model output changes, save the current state of the confidence region checkbox, then deselect and disable it
     observe({
       calculating_confidence_regions(TRUE)
@@ -290,7 +333,7 @@ regression_plot_panel_server <- function(id, data, covariate_title, covariate_na
       shinyjs::disable(id = "confidence_options")
     }) |>
       bindEvent(model_output())
-    
+
     # When the confidence regions have been calculated, reenable the checkbox, and reset its value
     observe({
       shinyjs::enable(id = "confidence_options")
@@ -298,23 +341,19 @@ regression_plot_panel_server <- function(id, data, covariate_title, covariate_na
       calculating_confidence_regions(FALSE)
     }) |>
       bindEvent(confidence_regions$result())
-    
+
     # Show a spinner when the confidence regions are being calculated
     output$confidence_info <- renderUI({
       if (!calculating_confidence_regions()) {
         return(NULL)
       }
-      
+
       .AddRegressionOptionTooltip(
         tags$i(class = "fa-solid fa-circle-notch fa-spin"),
         tooltip = "Calculating confidence regions",
         style = "color: blue;"
       )
     })
-    
-    if (!(package %in% c("gemtc", "bnma"))) {
-      stop("'package' must be 'gemtc' or 'bnma'")
-    }
     
     contribution_matrix <- reactive({
       tryCatch(
@@ -420,6 +459,7 @@ regression_plot_panel_server <- function(id, data, covariate_title, covariate_na
         contribution_matrix = contribution_matrix(),
         contribution_type = input$absolute_relative_toggle,
         confidence_regions = confidence_regions$result(),
+        # confidence_regions = confidence_regions(),
         include_covariate = input$covariate,
         include_ghosts = input$ghosts,
         include_extrapolation = input$extrapolate,
@@ -448,6 +488,7 @@ regression_plot_panel_server <- function(id, data, covariate_title, covariate_na
             contribution_matrix = contribution_matrix(),
             contribution_type = input$absolute_relative_toggle,
             confidence_regions = confidence_regions$result(),
+            # confidence_regions = confidence_regions(),
             include_covariate = input$covariate,
             include_ghosts = input$ghosts,
             include_extrapolation = input$extrapolate,
