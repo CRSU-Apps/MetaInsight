@@ -327,7 +327,6 @@ test_that("1. BaselineRiskRegression() sets RNGs correctly;
                                      quantile(rel_eff_samples[["d4"]], probs = c(0.5, 0.025, 0.975)),
                                      quantile(rel_eff_samples[["d5"]], probs = c(0.5, 0.025, 0.975)),
                                      quantile(rel_eff_samples[["d6"]], probs = c(0.5, 0.025, 0.975)))
-  expected_relative_effects <- as.data.frame(expected_relative_effects)
   rownames(expected_relative_effects) <- c("d[2]", "d[3]", "d[4]", "d[5]", "d[6]")
   
   #Unit test 4

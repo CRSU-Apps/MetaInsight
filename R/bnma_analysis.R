@@ -207,7 +207,7 @@ BaselineRiskModelOutput <- function(data, treatment_ids, model, outcome_measure)
 #' 
 #' @param model bnma model object created by BaselineRiskRegression().
 #' @param covariate_value The covariate value at which to calculate relative effects.
-#' @return Data frame with the median and 95% credible interval relative effect
+#' @return Matrix with the median and 95% credible interval relative effect
 #'  - columns: '50%', '2.5%' and '97.5%'
 #'  - rows: one row per non-reference treatment, named by the corresponding treatment parameter (e.g. the first one is d[2]).
 BnmaRelativeEffects <- function(model, covariate_value) {
@@ -230,7 +230,7 @@ BnmaRelativeEffects <- function(model, covariate_value) {
   }
   
   relative_effects <- MCMCvis::MCMCsummary(samples)
-  return(relative_effects[, c("50%", "2.5%", "97.5%")])
+  return(as.matrix(relative_effects[, c("50%", "2.5%", "97.5%")]))
 }
 
 
