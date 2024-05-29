@@ -213,7 +213,8 @@ test_that("GetReferenceOutcome() returns the reference outcome when the outcome 
 test_that("1. BaselineRiskRegression() sets RNGs correctly;
            2. BaselineRiskRegression() gives reproducible output;
            3. BaselineRiskModelOutput() gives correct output;
-           4. GetReferenceOutcome() obtains imputed outcomes.", {
+           4. BnmaRelativeEffects() calculates relative effects;
+           5. GetReferenceOutcome() obtains imputed outcomes;", {
   
   data <- list(ArmLevel = data.frame(
     Study = c(rep("Constantine", 3), rep("Leo", 3), rep("Justinian", 2)),
@@ -247,12 +248,14 @@ test_that("1. BaselineRiskRegression() sets RNGs correctly;
   expect_equal(result_1$inits[[2]]$.RNG.name, "base::Wichmann-Hill")
   expect_equal(result_1$inits[[3]]$.RNG.name, "base::Wichmann-Hill")
   expect_equal(result_1$inits[[4]]$.RNG.name, "base::Wichmann-Hill")
+  #-------------------------------------------------------------------
   
   #Unit test 2
   expect_equal(result_1$samples[1], result_2$samples[1])
   expect_equal(result_1$samples[2], result_2$samples[2])
   expect_equal(result_1$samples[3], result_2$samples[3])
   expect_equal(result_1$samples[4], result_2$samples[4])
+  #-------------------------------------------------------------------
   
   model_output <- BaselineRiskModelOutput(data = data$ArmLevel,
                                           treatment_ids = treatment_ids,
@@ -295,6 +298,40 @@ test_that("1. BaselineRiskRegression() sets RNGs correctly;
   
   #Unit test 3
   expect_equal(model_output, expected_model_output)
+  #-------------------------------------------------------------------
+  
+  relative_effects <- BnmaRelativeEffects(model = result_1, covariate_value = 5)
+  
+  #For each parameter, combine the chains into one vector
+  combined_samples <- list()
+  for (i in 2:6) {
+    combined_samples[[paste0("d", i)]] <- c(result_1$samples[[1]][, paste0("d[", i, "]")],
+                                            result_1$samples[[2]][, paste0("d[", i, "]")],
+                                            result_1$samples[[3]][, paste0("d[", i, "]")])
+    combined_samples[[paste0("b_bl", i)]] <- c(result_1$samples[[1]][, paste0("b_bl[", i, "]")],
+                                               result_1$samples[[2]][, paste0("b_bl[", i, "]")],
+                                               result_1$samples[[3]][, paste0("b_bl[", i, "]")])
+  }
+  
+  centred_covariate_value <- 5 - result_1$network$mx_bl
+  
+  #For each basic comparison, obtain the samples corresponding to the relative effect
+  rel_eff_samples <- list()
+  for (i in 2:6) {
+    rel_eff_samples[[paste0("d", i)]] <- 
+      combined_samples[[paste0("d", i)]] + centred_covariate_value * combined_samples[[paste0("b_bl", i)]]
+  }
+  
+  expected_relative_effects <- rbind(quantile(rel_eff_samples[["d2"]], probs = c(0.5, 0.025, 0.975)),
+                                     quantile(rel_eff_samples[["d3"]], probs = c(0.5, 0.025, 0.975)),
+                                     quantile(rel_eff_samples[["d4"]], probs = c(0.5, 0.025, 0.975)),
+                                     quantile(rel_eff_samples[["d5"]], probs = c(0.5, 0.025, 0.975)),
+                                     quantile(rel_eff_samples[["d6"]], probs = c(0.5, 0.025, 0.975)))
+  rownames(expected_relative_effects) <- c("d[2]", "d[3]", "d[4]", "d[5]", "d[6]")
+  
+  #Unit test 4
+  expect_equal(relative_effects, expected_relative_effects)
+  #-------------------------------------------------------------------
   
   outcome_type <- "Continuous"
   observed <- "Imputed"
@@ -302,7 +339,7 @@ test_that("1. BaselineRiskRegression() sets RNGs correctly;
   expected_reference_outcome <- c(-1, -1.4, imputed_outcome_study_3)
   names(expected_reference_outcome) <- c("Constantine", "Leo", "Justinian")
   
-  #Unit test 4  
+  #Unit test 5  
   expect_equal(GetReferenceOutcome(data$ArmLevel, treatment_ids, outcome_type, observed, result_1), expected_reference_outcome)
   
 })
