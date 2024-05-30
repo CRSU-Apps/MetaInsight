@@ -452,11 +452,8 @@ GetBnmaParameters <- function(all_parameters, effects_type, cov_parameters) {
 #'  - columns: '50%', '2.5%' and '97.5%'
 #'  - rows: one row per non-reference treatment, named by the corresponding treatment parameter (e.g. the first one is d[2]).
 BnmaRelativeEffects <- function(model, covariate_value) {
-  
-  # browser()
-  
-  model_summary <- summary(model)
-  parameters <- rownames(model_summary$summary.samples$quantiles)
+
+  parameters <- colnames(model$samples[[1]])
   #Extract parameters that begin with "d[", except d[1]
   treatment_parameters <- grep("d\\[([0-9][0-9]+|[2-9])\\]",
                                parameters,

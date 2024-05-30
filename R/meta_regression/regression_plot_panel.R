@@ -203,7 +203,7 @@ regression_plot_panel_ui <- function(id) {
 #' @param data Reactive containing study data including covariate columns, in wide or long format.
 #' @param covariate_title Reactive containing title of the covariate column in the data.
 #' @param covariate_name Friendly name of chosen covariate.
-#' @param model_output Reactive containing GEMTC model results found by calling `CovariateModelOutput()`.
+#' @param model_output Reactive containing model results found by calling `CovariateModelOutput()` or `BaselineRiskModelOutput()`.
 #' @param treatment_df Reactive containing data frame containing treatment IDs (Number), sanitised names (Label), and original names (RawLabel).
 #' @param outcome_type Reactive containing meta analysis outcome: "Continuous" or "Binary".
 #' @param outcome_measure Reactive type of outcome (OR, RR, RD, MD or SD).
@@ -270,51 +270,16 @@ regression_plot_panel_server <- function(id, data, covariate_title, covariate_na
       stop("'package' must be 'gemtc' or 'bnma'")
     }
     
-    # This works if you remove all ExtendedTask code
-    # if (package == "gemtc") {
-    #   confidence_regions <- reactive(CalculateConfidenceRegions(model_output()))
-    # } else if (package == "bnma") {
-    #   confidence_regions <- reactive(CalculateConfidenceRegionsBnma(model_output()))
-    # }
-
-    # Background process to calculate confidence regions - attempt 1
-    # if (package == "gemtc") {
-    #   confidence_regions <- shiny::ExtendedTask$new(function(model_output) {
-    #     promises::future_promise({
-    #       return(CalculateConfidenceRegions(model_output))
-    #     })
-    #   })
-    # } else if (package == "bnma") {
-    #   confidence_regions <- shiny::ExtendedTask$new(function(model_output) {
-    #     promises::future_promise({
-    #       return(CalculateConfidenceRegionsBnma(model_output))
-    #     })
-    #   })
-    # }
-    
-    # Background process to calculate confidence regions - attempt 2
-    # confidence_regions <- shiny::ExtendedTask$new(function(model_output) {
-    #   if (package == "gemtc") {
-    #     promises::future_promise({
-    #       return(CalculateConfidenceRegions(model_output))
-    #     })
-    #   } else if (package == "bnma") {
-    #     promises::future_promise({
-    #       return(CalculateConfidenceRegionsBnma(model_output))
-    #     })
-    #   }
-    # })
-    
-    # Background process to calculate confidence regions - attempt 3
-    # confidence_regions <- shiny::ExtendedTask$new(function(model_output) {
-    #   promises::future_promise({
-    #     if (package == "gemtc") {
-    #       return(CalculateConfidenceRegions(model_output))
-    #     } else if (package == "bnma") {
-    #       return(CalculateConfidenceRegionsBnma(model_output))
-    #     }
-    #   })
-    # })
+    # Background process to calculate confidence regions
+    confidence_regions <- shiny::ExtendedTask$new(function(model_output) {
+      promises::future_promise({
+        if (package == "gemtc") {
+          return(CalculateConfidenceRegions(model_output))
+        } else if (package == "bnma") {
+          return(CalculateConfidenceRegionsBnma(model_output))
+        }
+      })
+    })
     
     # Start calculation of confidence regions when the model output changes
     observe({
@@ -459,7 +424,6 @@ regression_plot_panel_server <- function(id, data, covariate_title, covariate_na
         contribution_matrix = contribution_matrix(),
         contribution_type = input$absolute_relative_toggle,
         confidence_regions = confidence_regions$result(),
-        # confidence_regions = confidence_regions(),
         include_covariate = input$covariate,
         include_ghosts = input$ghosts,
         include_extrapolation = input$extrapolate,
@@ -488,7 +452,6 @@ regression_plot_panel_server <- function(id, data, covariate_title, covariate_na
             contribution_matrix = contribution_matrix(),
             contribution_type = input$absolute_relative_toggle,
             confidence_regions = confidence_regions$result(),
-            # confidence_regions = confidence_regions(),
             include_covariate = input$covariate,
             include_ghosts = input$ghosts,
             include_extrapolation = input$extrapolate,
