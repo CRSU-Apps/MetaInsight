@@ -42,12 +42,21 @@ metaregression_summary_panel_server <- function(id, all_data, metaoutcome, treat
       })
     })
     
+    # Convert wide data to long format as needed for CreateCovariateSummaryPlot
+    long_data <- reactive({
+      if (FindDataShape(all_data()) == "wide") {
+        return(WideToLong(all_data(), metaoutcome()))
+      } else {
+        return(all_data())
+      }
+    })
+    
     # Render covariate summary plot
     # Needs observe wrapper due to height argument
     observe({
       output$covariate_plot <- renderPlot({
   
-        CreateCovariateSummaryPlot(all_data(), 
+        CreateCovariateSummaryPlot(long_data(), 
                                    metaoutcome(), 
                                    # Prevents momentary error in app when plotting
                                    ifelse(is.null(input$toggle_covariate_baseline), 'Baseline risk', input$toggle_covariate_baseline), 
@@ -56,7 +65,7 @@ metaregression_summary_panel_server <- function(id, all_data, metaoutcome, treat
         
   
       
-      }, height = calculate_plot_pixel(nrow(all_data()))
+      }, height = calculate_plot_pixel(nrow(long_data()))
       )
     })
 
@@ -67,14 +76,14 @@ metaregression_summary_panel_server <- function(id, all_data, metaoutcome, treat
       },
       content = function(file) {
         
-          ggsave(filename = file, 
-                 device = input$format_covariate_plot,
-                 plot = CreateCovariateSummaryPlot(all_data(), 
-                                                   metaoutcome(), 
-                                                   ifelse(is.null(input$toggle_covariate_baseline), 'Baseline risk', input$toggle_covariate_baseline), 
-                                                   treatment_df()
-                                                   )
-                 )
+        ggsave(filename = file, 
+               device = input$format_covariate_plot,
+               plot = CreateCovariateSummaryPlot(long_data(), 
+                                                 metaoutcome(), 
+                                                 ifelse(is.null(input$toggle_covariate_baseline), 'Baseline risk', input$toggle_covariate_baseline), 
+                                                 treatment_df()
+               )
+        )
       }
     )
   })

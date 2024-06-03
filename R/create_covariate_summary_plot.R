@@ -1,26 +1,19 @@
 #' Create the covariate summary plot using BUGSnet data.plot
 #' https://rdrr.io/github/audrey-b/BUGSnet/man/data.plot.html
 #'
-#' @param all_data Study data including covariate columns, in wide or long format
+#' @param long_data Study data including covariate columns in long format
 #' @param metaoutcome Meta-analysis outcome: "Continuous" or "Binary"
 #' @param covariate_or_baseline Output from widget to toggle between covariate and baseline risk for the plot type.
 #' @param treatment_df Data frame containing treatment IDs (Number) and names (Label)
 #' @return BUGSnet::data.plot plot
 
-CreateCovariateSummaryPlot <- function(all_data, metaoutcome, covariate_or_baseline, treatment_df) {
+CreateCovariateSummaryPlot <- function(long_data, metaoutcome, covariate_or_baseline, treatment_df) {
   
-  # Convert wide data to long format as needed for CreateCovariateSummaryPlot
-  if (FindDataShape(all_data) == "wide") {
-    long_data <- WideToLong(all_data, metaoutcome)
-  } else {
-    long_data <- all_data
-  }
-
   # Baseline risk version of plot
   if (covariate_or_baseline == "Baseline risk") {
     
     # Input settings for plot
-    plot_settings <- CreateCovariateSummaryPlotSettings("baseline", all_data) 
+    plot_settings <- CreateCovariateSummaryPlotSettings("baseline", long_data) 
     
     # Mutate data
     mutated_data <- MutateCovariateSummaryData(long_data, "baseline", metaoutcome)
@@ -44,7 +37,7 @@ CreateCovariateSummaryPlot <- function(all_data, metaoutcome, covariate_or_basel
   else {
     
     # Plot settings for covariate plot
-    plot_settings <- CreateCovariateSummaryPlotSettings("covariate", all_data)
+    plot_settings <- CreateCovariateSummaryPlotSettings("covariate", long_data)
     
     mutated_data <- long_data # Rename for input to BUGSnet::data.prep
   } 
