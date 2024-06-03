@@ -83,7 +83,7 @@ metaregression_summary_panel_server <- function(id, all_data, metaoutcome, treat
                                                  ifelse(is.null(input$toggle_covariate_baseline), 'Baseline risk', input$toggle_covariate_baseline), 
                                                  treatment_df()
                ),
-               height = PlotDownloadHeight(nrow(all_data())),
+               height = PlotDownloadHeight(nrow(long_data())),
                units = "px"
         )
       }
