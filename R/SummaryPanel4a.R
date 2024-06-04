@@ -84,7 +84,8 @@ metaregression_summary_panel_server <- function(id, all_data, metaoutcome, treat
                                                  treatment_df()
                ),
                height = PlotDownloadHeight(nrow(long_data())),
-               units = "px"
+               units = "px",
+               limitsize = FALSE
         )
       }
     )

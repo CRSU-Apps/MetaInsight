@@ -21,5 +21,5 @@ calculate_plot_pdf <- function(studies) {
 #' @param nrows The number of rows in the data (a positive int)
 #' @return Number of pixels (a positive int)
 PlotDownloadHeight <- function(n_rows) {
-  return(60 * max(25, n_rows))
+  return(80 * max(25, n_rows))
 }
