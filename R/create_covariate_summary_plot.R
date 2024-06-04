@@ -9,6 +9,11 @@
 
 CreateCovariateSummaryPlot <- function(all_data, metaoutcome, covariate_or_baseline, treatment_df) {
 
+  #Convert wide format data to long if necessary
+  if (FindDataShape(all_data) == "wide") {
+    all_data <- as.data.frame(WideToLong(wide_data = all_data, outcome_type = metaoutcome))
+  } 
+  
   # Baseline risk version of plot
   if (covariate_or_baseline == "Baseline risk") {
     

@@ -203,7 +203,7 @@ regression_plot_panel_ui <- function(id) {
 #' @param data Reactive containing study data including covariate columns, in wide or long format.
 #' @param covariate_title Reactive containing title of the covariate column in the data.
 #' @param covariate_name Friendly name of chosen covariate.
-#' @param model_output Reactive containing GEMTC model results found by calling `CovariateModelOutput()`.
+#' @param model_output Reactive containing model results found by calling `CovariateModelOutput()` or `BaselineRiskModelOutput()`.
 #' @param treatment_df Reactive containing data frame containing treatment IDs (Number), sanitised names (Label), and original names (RawLabel).
 #' @param outcome_type Reactive containing meta analysis outcome: "Continuous" or "Binary".
 #' @param outcome_measure Reactive type of outcome (OR, RR, RD, MD or SD).
@@ -266,10 +266,18 @@ regression_plot_panel_server <- function(id, data, covariate_title, covariate_na
       summary(model_output()$mtcResults)
     })
     
+    if (!(package %in% c("gemtc", "bnma"))) {
+      stop("'package' must be 'gemtc' or 'bnma'")
+    }
+    
     # Background process to calculate confidence regions
     confidence_regions <- shiny::ExtendedTask$new(function(model_output) {
       promises::future_promise({
-        return(CalculateConfidenceRegions(model_output))
+        if (package == "gemtc") {
+          return(CalculateConfidenceRegions(model_output))
+        } else if (package == "bnma") {
+          return(CalculateConfidenceRegionsBnma(model_output))
+        }
       })
     })
     
@@ -278,10 +286,10 @@ regression_plot_panel_server <- function(id, data, covariate_title, covariate_na
       confidence_regions$invoke(model_output())
     }) |>
       bindEvent(model_output())
-    
+
     calculating_confidence_regions <- reactiveVal(FALSE)
     previous_confidence_regions_shown <- reactiveVal(FALSE)
-    
+
     # When model output changes, save the current state of the confidence region checkbox, then deselect and disable it
     observe({
       calculating_confidence_regions(TRUE)
@@ -290,7 +298,7 @@ regression_plot_panel_server <- function(id, data, covariate_title, covariate_na
       shinyjs::disable(id = "confidence_options")
     }) |>
       bindEvent(model_output())
-    
+
     # When the confidence regions have been calculated, reenable the checkbox, and reset its value
     observe({
       shinyjs::enable(id = "confidence_options")
@@ -298,23 +306,19 @@ regression_plot_panel_server <- function(id, data, covariate_title, covariate_na
       calculating_confidence_regions(FALSE)
     }) |>
       bindEvent(confidence_regions$result())
-    
+
     # Show a spinner when the confidence regions are being calculated
     output$confidence_info <- renderUI({
       if (!calculating_confidence_regions()) {
         return(NULL)
       }
-      
+
       .AddRegressionOptionTooltip(
         tags$i(class = "fa-solid fa-circle-notch fa-spin"),
         tooltip = "Calculating confidence regions",
         style = "color: blue;"
       )
     })
-    
-    if (!(package %in% c("gemtc", "bnma"))) {
-      stop("'package' must be 'gemtc' or 'bnma'")
-    }
     
     contribution_matrix <- reactive({
       tryCatch(
