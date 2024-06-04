@@ -290,7 +290,7 @@ CalculateConfidenceRegionsBnma <- function(model_output) {
   confidence_intervals <- list()
   
   for (treatment_name in model_output$comparator_names) {
-    parameter_name <- glue::glue("d[", which(treatment_name == unname(treatments)), "]")
+    parameter_name <- glue::glue("d[{which(treatment_name == unname(treatments))}]")
     cov_min <- model_output$covariate_min[treatment_name]
     cov_max <- model_output$covariate_max[treatment_name]
     
