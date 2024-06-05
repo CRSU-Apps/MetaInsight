@@ -64,16 +64,16 @@ covariate_analysis_panel_ui <- function(id, page_numbering) {
         ns = ns,
         tabsetPanel(
           tabPanel(
-            title = paste0(page_numbering$AddChild(), " Forest plot"),
+            title = paste0(page_numbering$AddChild(), " Regression plot"),
             covariate_run_model_ui(id = ns("cov_model")),
             fixedRow(
               align = "center",
-              bayesian_forest_plot_plus_stats_ui(id = ns("cov_forest_plots"))
+              regression_plot_panel_ui(id = ns("regression_plot"))
             )
           ),
           tabPanel(
-            title = paste0(page_numbering$AddChild(), " Regression plot"),
-            regression_plot_panel_ui(id = ns("regression_plot"))
+            title = paste0(page_numbering$AddChild(), " Forest plot"),
+            bayesian_forest_plot_plus_stats_ui(id = ns("cov_forest_plots"))
           ),
           tabPanel(
             title = paste0(page_numbering$AddChild(), " Comparison of all treatment pairs"),
@@ -211,16 +211,6 @@ covariate_analysis_panel_server <- function(
       )
     })
     
-    # Create forest plot and associated statistics
-    bayesian_forest_plot_plus_stats_server(
-      id = "cov_forest_plots",
-      model_output = model_output,
-      analysis_type = "Regression",
-      metaoutcome = metaoutcome,
-      outcome_measure = outcome_measure,
-      bugsnetdt = bugsnetdt
-    )
-    
     # 4c-2 Regression plot
     regression_plot_panel_server(
       id = "regression_plot",
@@ -232,6 +222,16 @@ covariate_analysis_panel_server <- function(
       outcome_type = metaoutcome,
       outcome_measure = outcome_measure,
       reference = reference_treatment
+    )
+    
+    # Create forest plot and associated statistics
+    bayesian_forest_plot_plus_stats_server(
+      id = "cov_forest_plots",
+      model_output = model_output,
+      analysis_type = "Regression",
+      metaoutcome = metaoutcome,
+      outcome_measure = outcome_measure,
+      bugsnetdt = bugsnetdt
     )
     
     # 4c-3 Treatment comparisons
