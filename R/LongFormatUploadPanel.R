@@ -56,7 +56,14 @@ long_format_upload_panel_ui <- function(id) {
       ),
       p("N.B. Continuity corrections will need to be applied to cells containing 0 values")
     ),
-    p(tags$strong("Headings of columns are case sensitive.")),
+    p("The long format data file may also contain the following column:"),
+    tags$ul(
+      tags$li(
+        tags$strong("covar.<COVARIATE_NAME>"),
+        " contains the study-level covariate value, where <COVARIATE_NAME> is replaced by the name of the covariate. This must be identical for each arm of the study. The name of the covariate will be extracted and used in the analysis output."
+      )
+    ),
+    p(tags$strong("The maximum number of arms for each trial allowed in the MetaInsight app is 6.")),
     p("An example of this structure can be seen in the", tags$strong("'View Data'"), "tab."),
     p("The csv file that is used to produce the example dataset can be downloaded from here:"),
     downloadButton(
