@@ -108,7 +108,7 @@ baseline_risk_analysis_panel_server <- function(    id,
     })
     
     #Covariate value for displaying at the top of the page, calculated from the observed reference outcomes
-    covariate_value <- baseline_risk_value_panel_server(
+    baseline_risk_value_panel_server(
       id = "baseline_risk_value",
       model = model_reactive()
     )
