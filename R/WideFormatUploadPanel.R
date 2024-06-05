@@ -33,9 +33,16 @@ wide_format_upload_panel_ui <- function(id) {
       p(tags$ul(tags$li(tags$strong("R.1, R.2, ..., up to R.6"), "contains number of participants with the outcome of interest in study arm 1, 2, ..., up to 6, respectively"))),
       p(tags$ul(tags$li(tags$strong("N.1, N.2, ..., up to N.6"), "contains number of participants in study arm 1, 2, ..., up to 6, respectively")))
     ),
-    p(tags$strong("Headings of columns are case sensitive.")),
+    p("The wide format data file may also contain the following column:"),
+    tags$ul(
+      tags$li(
+        tags$strong("covar.<COVARIATE_NAME>"),
+        " contains the study-level covariate value, where <COVARIATE_NAME> is replaced by the name of the covariate. The name of the covariate will be extracted and used in the analysis output."
+      )
+    ),
     p(tags$strong("The maximum number of arms for each trial allowed in the MetaInsight app is 6.")),
-    p("Your data needs to have exactly the same variable names as in the example data which can be downloaded from here:"),
+    p("An example of this structure can be seen in the", tags$strong("'View Data'"), "tab."),
+    p("The csv file that is used to produce the example dataset can be downloaded from here:"),
     downloadButton(
       outputId = ns("downloadDataWide"),
       label = "Download the example dataset in wide format"
