@@ -110,10 +110,7 @@ baseline_risk_analysis_panel_server <- function(    id,
     #Covariate value for displaying at the top of the page, calculated from the observed reference outcomes
     covariate_value <- baseline_risk_value_panel_server(
       id = "baseline_risk_value",
-      reference_outcomes = GetReferenceOutcome(data = all_data(),
-                                               treatment_ids = treatment_df(),
-                                               outcome_type = metaoutcome(),
-                                               observed = "Observed")
+      model = model_reactive()
     )
     
     #Obtain output to create the graph

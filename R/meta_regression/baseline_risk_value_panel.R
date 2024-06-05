@@ -17,7 +17,7 @@ baseline_risk_value_panel_ui <- function(id) {
     title = "This value is used by all baseline risk analysis output",
     style = "padding-left: 5px;",
     .CreateInlineBlock(
-      h4("Covariate value:", textOutput(ns("mean_covariate_value"), inline = TRUE), tags$i(class="fa-regular fa-circle-question")),
+      h4("Covariate value:", textOutput(ns("centring_value"), inline = TRUE), tags$i(class="fa-regular fa-circle-question")),
       style = "padding-right: 5pt;"
     )
   )
@@ -26,15 +26,14 @@ baseline_risk_value_panel_ui <- function(id) {
 #' Create the covariate value panel server.
 #'
 #' @param id ID of the module.
-#' @param reference_outcomes Reactive containing the observed outcomes in the reference arm.
-baseline_risk_value_panel_server <- function(id, reference_outcomes) {
+#' @param The model, created by BaselineRiskRegression().
+baseline_risk_value_panel_server <- function(id, model) {
   shiny::moduleServer(id, function(input, output, session) {
     
-    output$mean_covariate_value <- renderText(
-      round(mean(reference_outcomes, na.rm = TRUE),
-            digits = 3)
-      )
-    outputOptions(x = output, name = "mean_covariate_value", suspendWhenHidden = FALSE)
+    output$centring_value <- renderText(
+      round(model$network$mx_bl, digits = 3)
+    )
+    outputOptions(x = output, name = "centring_value", suspendWhenHidden = FALSE)
     
   })
 }
