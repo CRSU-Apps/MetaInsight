@@ -211,7 +211,7 @@ covariate_analysis_panel_server <- function(
       )
     })
     
-    # 4c-2 Regression plot
+    # Regression plot
     regression_plot_panel_server(
       id = "regression_plot",
       data = all_data,
