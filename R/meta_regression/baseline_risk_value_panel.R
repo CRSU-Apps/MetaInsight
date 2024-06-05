@@ -26,7 +26,7 @@ baseline_risk_value_panel_ui <- function(id) {
 #' Create the covariate value panel server.
 #'
 #' @param id ID of the module.
-#' @param The model, created by BaselineRiskRegression().
+#' @param model The model, created by BaselineRiskRegression().
 baseline_risk_value_panel_server <- function(id, model) {
   shiny::moduleServer(id, function(input, output, session) {
     
