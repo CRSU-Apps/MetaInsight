@@ -24,174 +24,184 @@
 regression_plot_panel_ui <- function(id) {
   ns <- NS(id)
   
-  sidebarLayout(
-    position = "right",
-    mainPanel = mainPanel(
-      width = 9,
-      plotOutput(outputId = ns("regression_plot"), height = "800px"),
-      div(
-        radioButtons(
-          inputId = ns("format"), 
-          label = "Download format", 
-          choices = c(
-            "PDF" = "pdf",
-            "PNG" = "png",
-            "SVG" = "svg"
-          ),
-          inline = TRUE
-        ),
-        downloadButton(outputId = ns("download")),
-        style = "text-align: center;"
-      )
+  div(
+    # Spinner overlaid on the plot area to show model running
+    div(
+      shinycssloaders::withSpinner(
+        type = 6,
+        uiOutput(outputId = ns("spinner"))
+      ),
+      style = "height: 0px;  position: inherit;"
     ),
-    sidebarPanel = sidebarPanel(
-      width = 3,
-      # Add comparators
-      selectInput(
-        inputId = ns("add_comparator_dropdown"),
-        label = .AddRegressionOptionTooltip(
-          tags$html("Add Comparator", tags$i(class="fa-regular fa-circle-question")),
-          tooltip = "All treatments are compared to the reference treatment"
-        ),
-        choices = c(),
-        selectize = FALSE
-      ),
-      actionButton(inputId = ns("add_comparator_btn"), label = "Add to plot"),
-      div(
-        style = "float: right;",
-        actionButton(inputId = ns("add_all_btn"), label = "Add all")
-      ),
-      br(),
-      br(),
-      # Remove comparators
-      selectInput(inputId = ns("remove_comparator_dropdown"), label = "Remove Comparator", choices = c(), selectize = FALSE),
-      actionButton(inputId = ns("remove_comparator_btn"), label = "Remove"),
-      div(
-        style = "float: right;",
-        actionButton(inputId = ns("remove_all_btn"), label = "Remove all")
-      ),
-      
-      h3("Plot Options"),
-      # Covariate value
-      .AddRegressionOptionTooltip(
-        checkboxInput(
-          inputId = ns("covariate"),
-          label = tags$html("Show covariate value ", tags$i(class="fa-regular fa-circle-question")),
-          value = TRUE
-          ),
-        tooltip = "Show the covariate value as a vertical line at the current value"
-      ),
-      # Confidence regions
-      div(
-        id = ns("confidence_options"),
-          checkboxInput(
-          inputId = ns("confidence"),
-          label = div(
-            .AddRegressionOptionTooltip(
-              "Show confidence regions",
-              tags$i(class="fa-regular fa-circle-question"),
-              tooltip = "Show confidence regions for the added comparisons. This will not show if there is one or zero direct contributions"
+    sidebarLayout(
+      position = "right",
+      mainPanel = mainPanel(
+        width = 9,
+        plotOutput(outputId = ns("regression_plot"), height = "800px"),
+        div(
+          radioButtons(
+            inputId = ns("format"), 
+            label = "Download format", 
+            choices = c(
+              "PDF" = "pdf",
+              "PNG" = "png",
+              "SVG" = "svg"
             ),
-            uiOutput(outputId = ns("confidence_info")),
-            style = "display: -webkit-inline-box;"
-          )
-        ),
-        sliderInput(
-          inputId = ns("confidence_opacity"),
-          label = "Confidence Region Opacity",
-          min = 0,
-          max = 0.5,
-          step = 0.01,
-          value = 0.2
+            inline = TRUE
+          ),
+          downloadButton(outputId = ns("download")),
+          style = "text-align: center;"
         )
       ),
-      # Regression lines
-      .AddRegressionOptionTooltip(
-        checkboxInput(
-          inputId = ns("ghosts"),
-          label = tags$html("Show ghost comparisons", tags$i(class="fa-regular fa-circle-question")),
-          value = TRUE
-        ),
-        tooltip = "Show other available comparisons in light grey behind the main plot"
-      ),
-      .AddRegressionOptionTooltip(
-        checkboxInput(
-          inputId = ns("extrapolate"),
-          label = tags$html("Extrapolate regression lines", tags$i(class="fa-regular fa-circle-question")),
-          value = TRUE
-        ),
-        tooltip = "Extrapolate the regression lines beyond the range of the original data"
-      ),
-      # Contributions
-      .AddRegressionOptionTooltip(
+      sidebarPanel = sidebarPanel(
+        width = 3,
+        # Add comparators
         selectInput(
-          inputId = ns("contributions"),
-          label = tags$html("Show contributions", tags$i(class="fa-regular fa-circle-question")),
-          choices = c(
-            "None",
-            "Treatment Effect",
-            "Covariate Effect"
+          inputId = ns("add_comparator_dropdown"),
+          label = .AddRegressionOptionTooltip(
+            tags$html("Add Comparator", tags$i(class="fa-regular fa-circle-question")),
+            tooltip = "All treatments are compared to the reference treatment"
           ),
-          selected = "Treatment Effect",
+          choices = c(),
           selectize = FALSE
         ),
-        tooltip = "Show study contributions as circles, where a bigger circle represents a larger contribution"
-      ),
-      uiOutput(outputId = ns("contributions_missing")),
-      
-      div(
-        id = ns("contribution_options"),
-        radioButtons(
-          inputId = ns("absolute_relative_toggle"),
-          label = "Study circle sized by:",
-          choiceNames = list(
-            .AddRegressionOptionTooltip(
-              tags$html("% Contribution", tags$i(class="fa-regular fa-circle-question")),
-              tooltip = "Circles scaled by percentage contribution of each study to each treatment regression"
-            ),
-            .AddRegressionOptionTooltip(
-              tags$html("Absolute contribution", tags$i(class="fa-regular fa-circle-question")),
-              tooltip = "Circles scaled by absolute contribution of each study"
-            )
-          ),
-          choiceValues = c("percentage", "absolute")
+        actionButton(inputId = ns("add_comparator_btn"), label = "Add to plot"),
+        div(
+          style = "float: right;",
+          actionButton(inputId = ns("add_all_btn"), label = "Add all")
         ),
-        radioButtons(
-          inputId = ns("contribution_weight_toggle"),
-          label = "Contribution type:",
-          choiceNames = list(
-            .AddRegressionOptionTooltip(
-              tags$html("Contribution", tags$i(class="fa-regular fa-circle-question")),
-              tooltip = "Circles scaled by total contribution to the regression; both the weight and the value are taken into account"
+        br(),
+        br(),
+        # Remove comparators
+        selectInput(inputId = ns("remove_comparator_dropdown"), label = "Remove Comparator", choices = c(), selectize = FALSE),
+        actionButton(inputId = ns("remove_comparator_btn"), label = "Remove"),
+        div(
+          style = "float: right;",
+          actionButton(inputId = ns("remove_all_btn"), label = "Remove all")
+        ),
+        
+        h3("Plot Options"),
+        # Covariate value
+        .AddRegressionOptionTooltip(
+          checkboxInput(
+            inputId = ns("covariate"),
+            label = tags$html("Show covariate value ", tags$i(class="fa-regular fa-circle-question")),
+            value = TRUE
             ),
-            .AddRegressionOptionTooltip(
-              tags$html("Weight", tags$i(class="fa-regular fa-circle-question")),
-              tooltip = "Circles scaled by weight of each study; this does not take into account how much this study affects the regression"
+          tooltip = "Show the covariate value as a vertical line at the current value"
+        ),
+        # Confidence regions
+        div(
+          id = ns("confidence_options"),
+            checkboxInput(
+            inputId = ns("confidence"),
+            label = div(
+              .AddRegressionOptionTooltip(
+                "Show confidence regions",
+                tags$i(class="fa-regular fa-circle-question"),
+                tooltip = "Show confidence regions for the added comparisons. This will not show if there is one or zero direct contributions"
+              ),
+              uiOutput(outputId = ns("confidence_info")),
+              style = "display: -webkit-inline-box;"
             )
           ),
-          choiceValues = c("contribution", "weight")
+          sliderInput(
+            inputId = ns("confidence_opacity"),
+            label = "Confidence Region Opacity",
+            min = 0,
+            max = 0.5,
+            step = 0.01,
+            value = 0.2
+          )
+        ),
+        # Regression lines
+        .AddRegressionOptionTooltip(
+          checkboxInput(
+            inputId = ns("ghosts"),
+            label = tags$html("Show ghost comparisons", tags$i(class="fa-regular fa-circle-question")),
+            value = TRUE
+          ),
+          tooltip = "Show other available comparisons in light grey behind the main plot"
         ),
         .AddRegressionOptionTooltip(
-          numericInput(
-            inputId = ns("circle_multipler"),
-            label = tags$html("Circle Size Multiplier", tags$i(class="fa-regular fa-circle-question")),
-            min = 0,
-            value = 1,
-            step = 0.5
+          checkboxInput(
+            inputId = ns("extrapolate"),
+            label = tags$html("Extrapolate regression lines", tags$i(class="fa-regular fa-circle-question")),
+            value = TRUE
           ),
-          tooltip = "Multiply the size of every study contribution circle by this amount"
-        )
-      ),
-      selectInput(
-        inputId = ns("legend_position_dropdown"),
-        label = "Legend position",
-        choices = c(
-          "Bottom-Right" = "BR",
-          "Bottom-Left" = "BL",
-          "Top-Right" = "TR",
-          "Top-Left" = "TL"
+          tooltip = "Extrapolate the regression lines beyond the range of the original data"
         ),
-        selectize = FALSE
+        # Contributions
+        .AddRegressionOptionTooltip(
+          selectInput(
+            inputId = ns("contributions"),
+            label = tags$html("Show contributions", tags$i(class="fa-regular fa-circle-question")),
+            choices = c(
+              "None",
+              "Treatment Effect",
+              "Covariate Effect"
+            ),
+            selected = "Treatment Effect",
+            selectize = FALSE
+          ),
+          tooltip = "Show study contributions as circles, where a bigger circle represents a larger contribution"
+        ),
+        uiOutput(outputId = ns("contributions_missing")),
+        
+        div(
+          id = ns("contribution_options"),
+          radioButtons(
+            inputId = ns("absolute_relative_toggle"),
+            label = "Study circle sized by:",
+            choiceNames = list(
+              .AddRegressionOptionTooltip(
+                tags$html("% Contribution", tags$i(class="fa-regular fa-circle-question")),
+                tooltip = "Circles scaled by percentage contribution of each study to each treatment regression"
+              ),
+              .AddRegressionOptionTooltip(
+                tags$html("Absolute contribution", tags$i(class="fa-regular fa-circle-question")),
+                tooltip = "Circles scaled by absolute contribution of each study"
+              )
+            ),
+            choiceValues = c("percentage", "absolute")
+          ),
+          radioButtons(
+            inputId = ns("contribution_weight_toggle"),
+            label = "Contribution type:",
+            choiceNames = list(
+              .AddRegressionOptionTooltip(
+                tags$html("Contribution", tags$i(class="fa-regular fa-circle-question")),
+                tooltip = "Circles scaled by total contribution to the regression; both the weight and the value are taken into account"
+              ),
+              .AddRegressionOptionTooltip(
+                tags$html("Weight", tags$i(class="fa-regular fa-circle-question")),
+                tooltip = "Circles scaled by weight of each study; this does not take into account how much this study affects the regression"
+              )
+            ),
+            choiceValues = c("contribution", "weight")
+          ),
+          .AddRegressionOptionTooltip(
+            numericInput(
+              inputId = ns("circle_multipler"),
+              label = tags$html("Circle Size Multiplier", tags$i(class="fa-regular fa-circle-question")),
+              min = 0,
+              value = 1,
+              step = 0.5
+            ),
+            tooltip = "Multiply the size of every study contribution circle by this amount"
+          )
+        ),
+        selectInput(
+          inputId = ns("legend_position_dropdown"),
+          label = "Legend position",
+          choices = c(
+            "Bottom-Right" = "BR",
+            "Bottom-Left" = "BL",
+            "Top-Right" = "TR",
+            "Top-Left" = "TL"
+          ),
+          selectize = FALSE
+        )
       )
     )
   )
@@ -210,6 +220,12 @@ regression_plot_panel_ui <- function(id) {
 #' @param package package used to create the model. Either "gemtc" (default) or "bnma".
 regression_plot_panel_server <- function(id, data, covariate_title, covariate_name, model_output, treatment_df, outcome_type, outcome_measure, reference, package = "gemtc") {
   shiny::moduleServer(id, function(input, output, session) {
+    
+    # This will show a spinner while the model calculates, but will not render anything once it has completed
+    output$spinner <- renderUI({
+      model_output()
+      NULL
+    })
     
     available_to_add <- reactive({
       raw_labels = treatment_df()$RawLabel
