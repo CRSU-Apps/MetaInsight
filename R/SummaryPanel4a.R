@@ -7,13 +7,14 @@ metaregression_summary_panel_ui <- function(id) {
   fluidPage(
     h4('Summary Characteristic Plot'),
     uiOutput(ns('toggle')),
-    plotOutput(outputId = ns('covariate_plot')),
+    plotOutput(outputId = ns('covariate_plot'), height = "auto"), 
+    # height = "auto" prevents download button overlapping for longer plots
     textOutput(outputId = ns('covariate_info')),
-    radioButtons(inputId = ns('format_covariate_plot'), 
-                 label = 'Document format', 
-                 choices = c('PDF' = 'pdf', 'PNG' = 'png'), 
+    radioButtons(inputId = ns('format_covariate_plot'),
+                 label = 'Document format',
+                 choices = c('PDF' = 'pdf', 'PNG' = 'png'),
                  inline = TRUE),
-    downloadButton(outputId = ns('download_covariate_summary'))
+    downloadButton(outputId = ns('download_covariate_summary')),
   )
 }
 
@@ -41,12 +42,21 @@ metaregression_summary_panel_server <- function(id, all_data, metaoutcome, treat
       })
     })
     
+    # Convert wide data to long format as needed for CreateCovariateSummaryPlot
+    long_data <- reactive({
+      if (FindDataShape(all_data()) == "wide") {
+        return(WideToLong(all_data(), metaoutcome()))
+      } else {
+        return(all_data())
+      }
+    })
+    
     # Render covariate summary plot
-    # Needs observe wrapper due to width argument
+    # Needs observe wrapper due to height argument
     observe({
       output$covariate_plot <- renderPlot({
   
-        CreateCovariateSummaryPlot(all_data(), 
+        CreateCovariateSummaryPlot(long_data(), 
                                    metaoutcome(), 
                                    # Prevents momentary error in app when plotting
                                    ifelse(is.null(input$toggle_covariate_baseline), 'Baseline risk', input$toggle_covariate_baseline), 
@@ -54,7 +64,8 @@ metaregression_summary_panel_server <- function(id, all_data, metaoutcome, treat
                                    )
         
   
-      }, width = calculate_plot_pixel(nrow(all_data()))
+      
+      }, height = calculate_plot_pixel(nrow(long_data()))
       )
     })
 
@@ -65,14 +76,17 @@ metaregression_summary_panel_server <- function(id, all_data, metaoutcome, treat
       },
       content = function(file) {
         
-          ggsave(filename = file, 
-                 device = input$format_covariate_plot,
-                 plot = CreateCovariateSummaryPlot(all_data(), 
-                                                   metaoutcome(), 
-                                                   ifelse(is.null(input$toggle_covariate_baseline), 'Baseline risk', input$toggle_covariate_baseline), 
-                                                   treatment_df()
-                                                   )
-                 )
+        ggsave(filename = file, 
+               device = input$format_covariate_plot,
+               plot = CreateCovariateSummaryPlot(long_data(), 
+                                                 metaoutcome(), 
+                                                 ifelse(is.null(input$toggle_covariate_baseline), 'Baseline risk', input$toggle_covariate_baseline), 
+                                                 treatment_df()
+               ),
+               height = PlotDownloadHeight(nrow(long_data())),
+               units = "px",
+               limitsize = FALSE
+        )
       }
     )
   })

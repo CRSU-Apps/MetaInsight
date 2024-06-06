@@ -1,27 +1,22 @@
 #' Create the covariate summary plot using BUGSnet data.plot
 #' https://rdrr.io/github/audrey-b/BUGSnet/man/data.plot.html
 #'
-#' @param all_data Study data including covariate columns, in wide or long format
+#' @param long_data Study data including covariate columns in long format
 #' @param metaoutcome Meta-analysis outcome: "Continuous" or "Binary"
 #' @param covariate_or_baseline Output from widget to toggle between covariate and baseline risk for the plot type.
 #' @param treatment_df Data frame containing treatment IDs (Number) and names (Label)
 #' @return BUGSnet::data.plot plot
 
-CreateCovariateSummaryPlot <- function(all_data, metaoutcome, covariate_or_baseline, treatment_df) {
-
-  #Convert wide format data to long if necessary
-  if (FindDataShape(all_data) == "wide") {
-    all_data <- as.data.frame(WideToLong(wide_data = all_data, outcome_type = metaoutcome))
-  } 
+CreateCovariateSummaryPlot <- function(long_data, metaoutcome, covariate_or_baseline, treatment_df) {
   
   # Baseline risk version of plot
   if (covariate_or_baseline == "Baseline risk") {
     
     # Input settings for plot
-    plot_settings <- CreateCovariateSummaryPlotSettings("baseline", all_data) 
+    plot_settings <- CreateCovariateSummaryPlotSettings("baseline", long_data) 
     
     # Mutate data
-    mutated_data <- MutateCovariateSummaryData(all_data, "baseline", metaoutcome)
+    mutated_data <- MutateCovariateSummaryData(long_data, "baseline", metaoutcome)
     
     if (metaoutcome == "Continuous") {
         
@@ -42,11 +37,12 @@ CreateCovariateSummaryPlot <- function(all_data, metaoutcome, covariate_or_basel
   else {
     
     # Plot settings for covariate plot
-    plot_settings <- CreateCovariateSummaryPlotSettings("covariate", all_data)
+    plot_settings <- CreateCovariateSummaryPlotSettings("covariate", long_data)
     
-    mutated_data <- all_data # Rename for input to BUGSnet::data.prep
+    mutated_data <- long_data # Rename for input to BUGSnet::data.prep
   } 
   
+  # browser()
   # Add column with treatment labels
   mutated_data <- mutated_data %>%
     dplyr::inner_join(treatment_df, by = join_by(T == Number)) 
@@ -67,17 +63,18 @@ CreateCovariateSummaryPlot <- function(all_data, metaoutcome, covariate_or_basel
                                covariate.label = plot_settings$y_axis_label,
                                half.length = "baseline_error",
                                by = 'treatment',
-                               text.size = 16)
+                               text.size = 16,
+                               orientation = "portrait")
     
     # Add caption text under plot
     plot <- plot +
       labs(caption = PasteCaptionText(plot_settings$caption_setting, error_bar_text))
     
     if (metaoutcome == "Binary") {
-      
+
       # Plot in logit scale, label on probability scale
       plot <- plot +
-        scale_y_continuous(labels = function(x) signif(plogis(x), digits = 2))
+        scale_x_continuous(labels = function(x) signif(plogis(x), digits = 2))
     }
     
   # Covariate plot without error bars
@@ -87,7 +84,8 @@ CreateCovariateSummaryPlot <- function(all_data, metaoutcome, covariate_or_basel
                                covariate = plot_settings$covariate,
                                covariate.label = plot_settings$y_axis_label,
                                by = 'treatment',
-                               text.size = 16) 
+                               text.size = 16,
+                               orientation = "portrait") 
     
     # Add caption text under plot
     plot <- plot +
@@ -95,8 +93,9 @@ CreateCovariateSummaryPlot <- function(all_data, metaoutcome, covariate_or_basel
   }
   
   plot <- plot +
-    # Right aligned caption text
-    theme(plot.caption = element_text(hjust = 1)) 
+    theme(plot.caption = element_text(hjust = 1)) + # Right aligned caption text
+    # Centre x-axis text & increase spacing between tick and axis labels
+    theme(axis.text.x = element_text(angle = 1, vjust = 0, hjust = 0, margin = margin(b = 10))) 
 
   return(plot)
   
@@ -145,12 +144,12 @@ CreateCovariateSummaryPlotSettings <- function(plot_type, all_data) {
 #' Columns are created based on the reference treatment arm (where one is present)
 #' See continuous and baseline sections of function comments for specifics in each case
 #'
-#' @param all_data Study data including covariate columns, in wide or long format 
+#' @param long_data Study data including covariate columns in long format 
 #' @param plot_type Text string to describe type of plot. Can be "baseline" or "covariate"
 #' @param metaoutcome Meta-analysis outcome: "Continuous" or "Binary"
 #' @return Mutated data frame ready for BUGSnet data.prep function
 
-MutateCovariateSummaryData <- function(all_data, plot_type, metaoutcome) {
+MutateCovariateSummaryData <- function(long_data, plot_type, metaoutcome) {
   
   if (plot_type == "baseline") {
     
@@ -161,7 +160,7 @@ MutateCovariateSummaryData <- function(all_data, plot_type, metaoutcome) {
       # baseline_error column that is 1.96 * SD / sqrt(N)
       # of the reference arm for the study, or NA if there is no reference arm
       # Reference arm is always numbered 1 internally
-      mutated_data <- all_data %>% 
+      mutated_data <- long_data %>% 
         dplyr::group_by(Study) %>%
         dplyr::mutate(
           baseline = ifelse(is.null(Mean[T == 1]), NA, Mean[T == 1])
@@ -173,10 +172,10 @@ MutateCovariateSummaryData <- function(all_data, plot_type, metaoutcome) {
     } else if (metaoutcome == "Binary") {
       
       # Use escalc function with the logit transformed proportion (PLO) measure
-      effects <- metafor::escalc(measure="PLO", xi = all_data$R, ni = all_data$N)
+      effects <- metafor::escalc(measure="PLO", xi = long_data$R, ni = long_data$N)
       
-      # Merge effects and all_data into one df
-      mutated_data <- cbind(all_data, effects)
+      # Merge effects and long_data into one df
+      mutated_data <- cbind(long_data, effects)
       
       # Add baseline column that is yi column from escalc
       # baseline_error column that is 1.96 * sqrt(vi) column from escalc
@@ -207,7 +206,6 @@ MutateCovariateSummaryData <- function(all_data, plot_type, metaoutcome) {
 
 PasteCaptionText <- function(caption_setting, error_bar_text = NULL) {
   
-  # Short lines because the line lengths are not reactive to plot width and I haven't found a fix
   caption_text <- paste('The plotted', caption_setting, 'value is the same for all treatment arms across 
                               a study')
   

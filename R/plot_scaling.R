@@ -15,3 +15,11 @@ calculate_plot_pixel <- function(studies) {
 calculate_plot_pdf <- function(studies) {
   ifelse(studies <= 25, 6, 6 + 0.2 * (studies - 25))
 }
+
+#' Function to decide the height of pdf or png plot downloads, based on the number of rows in the data
+#' 
+#' @param nrows The number of rows in the data (a positive int)
+#' @return Number of pixels (a positive int)
+PlotDownloadHeight <- function(n_rows) {
+  return(80 * max(25, n_rows))
+}
