@@ -126,7 +126,7 @@ BaselineRiskRegression <- function(br_data, treatment_ids, outcome_type, ref,  e
 #' @param outcome_measure The outcome measure for the analysis: One of: "OR", "RR", "MD".
 #' @return List of bnma related output:
 #'  mtcResults = model object itself carried through (needed to match existing code).
-#'  covariate_value = The covariate value originally passed into this function.
+#'  covariate_value = The mean covariate value, used for centring.
 #'  reference_name = The name of the reference treatment.
 #'  comparator_names = Vector containing the names of the comparators.
 #'  a = text output stating whether fixed or random effects.
@@ -161,7 +161,8 @@ BaselineRiskModelOutput <- function(data, treatment_ids, model, outcome_measure)
   
   #Obtain intercept(s), which are named d[number]
   intercept_indices <- grep("^d\\[[0-9]+\\]$", rownames(model_summary$summary.samples$quantiles))
-  intercepts <- model_summary$summary.samples$quantiles[intercept_indices, "50%"]
+  intercepts_centred <- model_summary$summary.samples$quantiles[intercept_indices, "50%"]
+  intercepts <- intercepts_centred - slopes * mean_covariate_value
   names(intercepts) <- treatments
   
   #Drop the reference treatment, which always has a slope and intercept of 0
