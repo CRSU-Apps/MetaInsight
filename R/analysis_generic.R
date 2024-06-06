@@ -50,7 +50,6 @@ dataform.df <- function(newData1, treat_list, CONBI) {
   } else {
     data_wide <- newData1
     numbertreat = .FindTreatmentCount(data_wide)
-    
     long_pre <- reshape(
       data_wide,
       direction = "long",

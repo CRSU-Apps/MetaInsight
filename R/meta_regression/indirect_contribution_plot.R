@@ -1,8 +1,9 @@
 #' Create a covariate regression plot where multiple comparisons can be plotted, and the contributions from each study are shown as circles.
 #'
 #' @param model_output GEMTC model results found by calling `CovariateModelOutput()`.
-#' @param treatment_df Reactive containing data frame containing treatment IDs (Number), sanitised names (Label), and original names (RawLabel).
+#' @param treatment_df Data frame containing treatment IDs (Number), sanitised names (Label), and original names (RawLabel).
 #' @param comparators Vector of names of comparison treatments to plot in colour.
+#' @param contribution_matrix Contributions from function `CalculateContributions()`.
 #' @param contribution_type Type of contribution, used to calculate sizes for the study contribution circles.
 #' @param include_covariate TRUE if the value of the covariate is to be plotted as a vertical line. Defaults to FALSE.
 #' @param include_ghosts TRUE if all other comparator studies should be plotted in grey in the background of the plot. Defaults to FALSE.
@@ -13,6 +14,7 @@ CreateIndirectContributionPlot <- function(
     model_output,
     treatment_df,
     comparators,
+    contribution_matrix,
     contribution_type,
     include_covariate = FALSE,
     include_ghosts = FALSE,
@@ -32,11 +34,11 @@ CreateIndirectContributionPlot <- function(
   # Plot the ghost regression lines for the comparators
   if (include_ghosts) {
     ghosts <-  all_comparators[!all_comparators %in% comparators]
-    plot <- .PlotIndirectContributionCircles(plot, model_output, treatment_df, reference, ghosts, contribution_type, contribution_multiplier, ghosted = TRUE)
+    plot <- .PlotIndirectContributionCircles(plot, model_output, treatment_df, reference, ghosts, contribution_matrix, contribution_type, contribution_multiplier, ghosted = TRUE)
   }
   
   if (length(comparators) > 0) {
-    plot <- .PlotIndirectContributionCircles(plot, model_output, treatment_df, reference, comparators, contribution_type, contribution_multiplier)
+    plot <- .PlotIndirectContributionCircles(plot, model_output, treatment_df, reference, comparators, contribution_matrix, contribution_type, contribution_multiplier)
   }
   
   if (include_covariate) {
@@ -87,7 +89,7 @@ CreateIndirectContributionPlot <- function(
 #'
 #' @param plot object to which to add elements.
 #' @param model_output GEMTC model results found by calling `CovariateModelOutput()`.
-#' @param treatment_df Reactive containing data frame containing treatment IDs (Number), sanitised names (Label), and original names (RawLabel).
+#' @param treatment_df Data frame containing treatment IDs (Number), sanitised names (Label), and original names (RawLabel).
 #' @param reference Name of reference treatment.
 #' @param comparators Vector of names of comparison treatments to plot.
 #' @param contribution_type Type of contribution, used to calculate sizes for the study contribution circles.
@@ -95,13 +97,17 @@ CreateIndirectContributionPlot <- function(
 #' @param ghosted TRUE if studies should be plotted in grey. Defaults to FALSE.
 #'
 #' @return The modified ggplot2 object.
-.PlotIndirectContributionCircles <- function(plot, model_output, treatment_df, reference, comparators, contribution_type, contribution_multiplier, ghosted = FALSE) {
-  contributions = .FindIndirectRegressionContributions(model_output, reference, comparators, contribution_type)
+.PlotIndirectContributionCircles <- function(plot, model_output, treatment_df, reference, comparators, contribution_matrix, contribution_type, contribution_multiplier, ghosted = FALSE) {
+  contributions = .FindIndirectRegressionContributions(model_output, reference, comparators, contribution_matrix, contribution_type)
+  
+  if (nrow(contributions) == 0) {
+    return(plot)
+  }
   
   contributions$Treatment <- sapply(contributions$Treatment, function(treatment) { treatment_df$RawLabel[treatment_df$Label == treatment] })
   
   if (ghosted) {
-    contributions$Treatment <- rep("Other", length(contributions$Treatment))
+    contributions$Treatment <- rep(regression_ghost_name, length(contributions$Treatment))
   }
   
   plot <- plot +
@@ -131,66 +137,31 @@ CreateIndirectContributionPlot <- function(
 #' @return Data frame containing contribution details. Each row represents a study contributing to a given treatment. Columns are:
 #' - Treatment: The treatment for which this contribution relates.
 #' - covariate_value: Value of the covariate for this study.
-#' - relative_effect Relative effect for this study.
 #' - contribution: Size of contribution for this study.
-.FindIndirectRegressionContributions <- function(model_output, reference, comparator, contribution_type) {
-  
+.FindIndirectRegressionContributions <- function(model_output, reference, comparator, contribution_matrix, contribution_type) {
   treatments <- c()
   covariate_values <- c()
   contributions <- c()
   
-  treatments <- c(treatments, rep("the_Butcher", 3))
-  covariate_values <- c(covariate_values, c(3.4, 7, 1))
-  contributions <- c(contributions, c(2, 3, 1))
+  for (treatment in comparator) {
+    for (study in row.names(contribution_matrix$indirect)) {
+      indirect_contribution <- contribution_matrix$indirect[study, treatment]
+      
+      if (is.na(indirect_contribution)) {
+        next
+      }
+      
+      treatments <- c(treatments, treatment)
+      covariate_values <- c(covariate_values, contribution_matrix$covariate_value[study])
+      contributions <- c(contributions, indirect_contribution)
+    }
+  }
   
-  treatments <- c(treatments, rep("the_Dung_named", 2))
-  covariate_values <- c(covariate_values, c(1.8, 8))
-  contributions <- c(contributions, c(2, 5))
-  
-  treatments <- c(treatments, rep("the_Great", 3))
-  covariate_values <- c(covariate_values, c(1.5, 2.5, 3.5))
-  contributions <- c(contributions, c(2, 3, 1))
-  
-  # the_Little is the reference treatment
-  
-  treatments <- c(treatments, rep("the_Slit_nosed", 3))
-  covariate_values <- c(covariate_values, c(2, 4, 6))
-  contributions <- c(contributions, c(2, 3, 5))
-  
-  treatments <- c(treatments, rep("the_Younger", 3))
-  covariate_values <- c(covariate_values, c(5, 7.7, 4.9))
-  contributions <- c(contributions, c(6, 6, 2.6))
-  
-  contribution_df <- data.frame(
-    Treatment = treatments,
-    covariate_value = covariate_values + 97,
-    contribution = contributions
+  return(
+    data.frame(
+      Treatment = treatments,
+      covariate_value = covariate_values,
+      contribution = contributions
+    )
   )
-  
-  return(contribution_df[contribution_df$Treatment %in% comparator, ])
-}
-
-#' Example for the meta-regression main plot.
-#'
-#' @return Created ggplot2 object.
-.MetaRegressionIndirectContributionPlotExample <- function() {
-  data <- read.csv("tests/testthat/Cont_long_continuous_cov.csv")
-  treatment_ids <- CreateTreatmentIds(FindAllTreatments(data), reference_treatment = "the Little")
-  data <- WrangleUploadData(data, treatment_ids, "Continuous")
-  wrangled_treatment_list <- CleanTreatmentIds(treatment_ids)
-  
-  model <- RunCovariateModel(data, wrangled_treatment_list, "Continuous", 'MD', "covar.age", "age", 'random', 'unrelated', "the_Little")
-  model_output <<- CovariateModelOutput(model, 98)
-  
-  plot <- CreateIndirectContributionPlot(
-    model_output = model_output,
-    treatment_df = wrangled_treatment_list,
-    comparators = c("the_Butcher", "the_Dung_named"),
-    contribution_type = "percentage",
-    include_covariate = TRUE,
-    include_ghosts = TRUE,
-    contribution_multiplier = 3.5
-  )
-  
-  return(plot)
 }

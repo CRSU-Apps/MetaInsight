@@ -7,9 +7,9 @@
 covariate_nodesplit_page_ui <- function(id, package_name) {
   div(
     h2(
-      "Due to limitations with the underlying R package ",
-      tags$i(package_name),
-      " it is not currently possible to run a regression nodesplit model within MetaInsight."
+      paste0("Due to limitations with the underlying R package {",
+      package_name,
+      "} it is not currently possible to run a regression nodesplit model within MetaInsight.")
     ),
     h3(
       "When this functionality becomes available, it will be added here."

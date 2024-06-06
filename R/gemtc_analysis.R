@@ -113,7 +113,10 @@ RunCovariateModel <- function(data, treatment_ids, outcome_type, outcome, covari
 
 #' Function to collate all the model output to be used in other existing functions
 #' 
+#' @param data Data frame from which model was calculated
+#' @param treatment_ids Data frame containing treatment IDs (Number) and names (Label)
 #' @param model Completed model object after running RunCovariateRegression()
+#' @param covariate_title Covariate name as per uploaded data
 #' @param cov_value Value of covariate for which to give output (default value the mean of study covariates)
 #' @param outcome_measure The outcome measure for the analysis: One of: "OR", "RR", "MD"
 #' @return List of gemtc related output:
@@ -132,7 +135,9 @@ RunCovariateModel <- function(data, treatment_ids, outcome_type, outcome, covari
 #'  outcome = The outcome type for the analysis eg. "MD" or "OR"
 #'  mtcNetwork = The network object from GEMTC
 #'  model = The type of linear model, either "fixed" or "random"
-CovariateModelOutput <- function(model, cov_value, outcome_measure) {
+#'  covariate_min = Vector of minimum covariate values directly contributing to the regression.
+#'  covariate_max = Vector of maximum covariate values directly contributing to the regression.
+CovariateModelOutput <- function(data, treatment_ids, model, covariate_title, cov_value, outcome_measure) {
   
   model_levels = levels(model$model$data$reg.control)
   reference_name <- model_levels[model_levels %in% model$model$data$reg.control]
@@ -174,6 +179,13 @@ CovariateModelOutput <- function(model, cov_value, outcome_measure) {
   # Rename items for intercepts and slopes
   names(slopes) <- comparator_names
   names(intercepts) <- comparator_names
+  
+  min_max <- FindCovariateRanges(
+    data = data,
+    treatment_ids = treatment_ids,
+    reference = as.character(model$model$regressor$control),
+    covariate_title = covariate_title
+  )
 
   # naming conventions to match current Bayesian functions
   return(
@@ -192,7 +204,9 @@ CovariateModelOutput <- function(model, cov_value, outcome_measure) {
       intercepts = intercepts,
       outcome = outcome_measure,
       mtcNetwork = model$model$network,
-      model = model$model$linearModel
+      model = model$model$linearModel,
+      covariate_min = min_max$min,
+      covariate_max = min_max$max
     )
   )
 }
@@ -210,4 +224,84 @@ FindCovariateDefault <- function(model) {
     stop("regressor type needs to be 'continuous' or 'binary'")
   }
   return(cov_value)
+}
+
+#' Calculate the confidence regions within direct evidence for the regression model.
+#'
+#' @param model_output Return from `CovariateModelOutput()`.
+#'
+#' @return list of confidence region objects and confidence interval objects.
+#' Regions cover treatments with a non-zero covariate range of direct contributions,
+#' intervals cover treatments with a single covariate value from direct contributions.
+#' Any treatment with no direct contributions will not be present in either list.
+#' Each is a list of data frames for each treatment name. Each data frame contains 3 columns:
+#' - cov_value: The covariate value at which the confidence region is calculated.
+#' - lower: the 2.5% quantile.
+#' - upper: the 97.5% quantile.
+#' Each data frame in "regions" contains 11 rows creating a 10-polygon region.
+#' Each data frame in "intervals" contains a single row at the covariate value of that single contribution.
+CalculateConfidenceRegions <- function(model_output) {
+  mtc_results <- model_output$mtcResults
+  reference_name <- model_output$reference_name
+  
+  confidence_regions <- list()
+  confidence_intervals <- list()
+  
+  for (treatment_name in model_output$comparator_names) {
+    parameter_name <- glue::glue("d.{reference_name}.{treatment_name}")
+    cov_min <- model_output$covariate_min[treatment_name]
+    cov_max <- model_output$covariate_max[treatment_name]
+    
+    if (is.na(cov_min)) {
+      confidence_intervals[[treatment_name]] <- data.frame(cov_value = NA, lower = NA, upper = NA)
+      confidence_regions[[treatment_name]] <- data.frame(cov_value = NA, lower = NA, upper = NA)
+    } else if (cov_min == cov_max) {
+      interval <- .FindConfidenceInterval(mtc_results, reference_name, cov_min, parameter_name)
+      df <- data.frame(cov_value = cov_min, lower = interval["2.5%"], upper = interval["97.5%"])
+      
+      # Strip out the row names
+      rownames(df) <- NULL
+      
+      # Add to regions list
+      confidence_intervals[[treatment_name]] <- df
+      confidence_regions[[treatment_name]] <- data.frame(cov_value = NA, lower = NA, upper = NA)
+    } else {
+      df <- data.frame()
+      for (cov_value in seq(from = cov_min, to = cov_max, length.out = 11)) {
+        interval <- .FindConfidenceInterval(mtc_results, reference_name, cov_value, parameter_name)
+        df <- rbind(
+          df,
+          data.frame(cov_value = cov_value, lower = interval["2.5%"], upper = interval["97.5%"])
+        )
+      }
+      
+      # Strip out the row names
+      rownames(df) <- NULL
+      
+      # Add to regions list
+      confidence_regions[[treatment_name]] <- df
+      confidence_intervals[[treatment_name]] <- data.frame(cov_value = NA, lower = NA, upper = NA)
+    }
+  }
+  
+  return(
+    list(
+      regions = confidence_regions,
+      intervals = confidence_intervals
+    )
+  )
+}
+
+#' Find the confidence interval at a given covariate value.
+#'
+#' @param mtc_results Meta-analysis object from which to find confidence interval.
+#' @param reference_name Name of reference treatment.
+#' @param cov_value Covariate value at which to find the confidence interval.
+#' @param parameter_name Name of the parameter for which to get the confidence interval.
+#'
+#' @return Named vector of "2.5%" and "97.5" quantiles.
+.FindConfidenceInterval <- function(mtc_results, reference_name, cov_value, parameter_name) {
+  rel_eff <- gemtc::relative.effect(mtc_results, reference_name, covariate = cov_value)
+  rel_eff_summary <- summary(rel_eff)
+  return(rel_eff_summary$summaries$quantiles[parameter_name, c("2.5%", "97.5%")])
 }

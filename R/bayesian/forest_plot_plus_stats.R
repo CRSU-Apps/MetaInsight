@@ -6,7 +6,10 @@
 bayesian_forest_plot_plus_stats_ui <- function(id) {
   ns <- NS(id)
   div(
-    uiOutput(outputId = ns("bayesian_forest_plot")),
+    shinycssloaders::withSpinner(
+      uiOutput(outputId = ns("bayesian_forest_plot")),
+      type = 6
+    ),
     
     conditionalPanel(
       condition = "output.package == 'gemtc'",

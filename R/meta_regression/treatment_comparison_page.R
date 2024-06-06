@@ -74,7 +74,7 @@ covariate_treatment_comparisons_page_server <- function(
 #' @param id ID of the module
 #' @param model Reactive containing covariate regression meta-analysis for all studies
 #' @param outcome_measure Reactive containing meta analysis outcome measure: "MD" or "OR"
-baseline_risk_treatment_comparisons_page_server <- function(
+treatment_comparisons_page_baseline_risk_server <- function(
     id,
     model,
     outcome_measure
@@ -83,12 +83,15 @@ baseline_risk_treatment_comparisons_page_server <- function(
     ns <- session$ns
     
     # Treatment effects for all studies
-    output$baye_comparison <- renderTable ({
-      BaselineRiskRelativeEffectsTable(
-        bnma::relative.effects.table(model(),
-                                     summary_stat = "ci")
-      )
-    }, rownames=TRUE, colnames = TRUE
+    output$baye_comparison <- renderTable(
+      {
+        BaselineRiskRelativeEffectsTable(
+          bnma::relative.effects.table(model(),
+                                       summary_stat = "ci")
+        )
+      },
+      rownames = TRUE,
+      colnames = TRUE
     )
     
     output$package <- reactive({"bnma"})
@@ -97,7 +100,9 @@ baseline_risk_treatment_comparisons_page_server <- function(
     output$downloadbaye_comparison <- downloadHandler(
       filename = 'baseline_risk_comparison.csv',
       content = function(file) {
-        write.csv(baye_comp(model(), outcome_measure()), file)
+        write.csv(
+          BaselineRiskRelativeEffectsTable(bnma::relative.effects.table(model(), summary_stat = "ci")), file
+        )
       }
     )
   })

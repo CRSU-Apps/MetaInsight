@@ -28,8 +28,8 @@ covariate_analysis_panel_ui <- function(id, page_numbering) {
             style = "display: inline-block;"
           ),
           div(
-            # If binary data is poorly coded, then it will be identified as continuous.
-            # Show a warning to the user when data is identified as continuous to inform them.
+            # If a binary covariate is poorly coded, then it will be identified as continuous.
+            # Show a warning to the user when covariate is identified as continuous to inform them.
             conditionalPanel(
               condition = "output.inferred_type == 'Continuous'",
               ns = ns,
@@ -201,7 +201,14 @@ covariate_analysis_panel_server <- function(
     
     # obtain gemtc output types to be used in rest of page
     model_output <- reactive({
-      CovariateModelOutput(model = model_reactive(), cov_value = covariate_value(), outcome_measure = outcome_measure())
+      CovariateModelOutput(
+        data = all_data(),
+        treatment_ids = treatment_df(),
+        model = model_reactive(),
+        covariate_title = covariate_title(),
+        cov_value = covariate_value(),
+        outcome_measure = outcome_measure()
+      )
     })
     
     # Create forest plot and associated statistics
@@ -217,9 +224,13 @@ covariate_analysis_panel_server <- function(
     # 4c-2 Regression plot
     regression_plot_panel_server(
       id = "regression_plot",
+      data = all_data,
+      covariate_title = covariate_title,
+      covariate_name = covariate_name,
       model_output = model_output,
       treatment_df = treatment_df,
-      outcome_type = outcome_measure,
+      outcome_type = metaoutcome,
+      outcome_measure = outcome_measure,
       reference = reference_treatment
     )
     

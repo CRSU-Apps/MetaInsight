@@ -29,22 +29,28 @@ deviance_report_panel_ui <- function(id, item_name) {
 #' 
 #' @param id ID of the module
 #' @param model Reactive containing bayesian meta-analysis.
-deviance_report_panel_server <- function(id, model) {
+#' @param package "gemtc" (default) or "bnma".
+deviance_report_panel_server <- function(id, model, package = "gemtc") {
   moduleServer(id, function(input, output, session) {
 
     # Residual deviance from NMA model and UME inconsistency model
     output$dev_scat <- renderPlotly({
-      scat_plot(model())$p
+      if (package == "gemtc") {
+        return(scat_plot(model())$p)
+      } else if (package == "bnma") {
+        return(NULL)
+      }
     })
 
     # Per-arm residual deviance
     output$per_arm <- renderPlotly({
-      stemplot(model())
+      stemplot(model(), package = package)
     })
 
     # Leverage plot
     output$leverage <- renderPlotly({
-      levplot(model())
+      levplot(model(), package = package)
     })
   })
 }
+
