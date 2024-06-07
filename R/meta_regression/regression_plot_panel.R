@@ -213,7 +213,7 @@ regression_plot_panel_ui <- function(id) {
       ", 2018;",
       tags$b(9),
       ":243-260.",
-      tags$b("DOI: 10.1002/jrsm.1292")
+      tags$b(tags$a("DOI: 10.1002/jrsm.1292", href = "https://onlinelibrary.wiley.com/doi/10.1002/jrsm.1292", target = "_blank"))
       
     ),
   )
