@@ -90,9 +90,17 @@ baseline_risk_analysis_panel_server <- function(    id,
     
     ns <- session$ns
     
+    long_data <- reactive({
+      if (FindDataShape(all_data()) == "wide") {
+        return(WideToLong(all_data(), outcome_type = metaoutcome()))
+      } else {
+        return(all_data())
+      }
+    })
+    
     model_reactive <- baseline_risk_run_model_server(
       id = "baseline_risk_model",
-      data = all_data,
+      data = long_data,
       treatment_df = treatment_df,
       metaoutcome = metaoutcome,
       model_effects = model_effects
@@ -115,7 +123,7 @@ baseline_risk_analysis_panel_server <- function(    id,
     
     #Obtain output to create the graph
     model_output <- reactive({
-      BaselineRiskModelOutput(data = all_data(),
+      BaselineRiskModelOutput(data = long_data(),
                               treatment_ids = treatment_df(),
                               model = model_reactive(),
                               outcome_measure = outcome_measure()
@@ -124,7 +132,7 @@ baseline_risk_analysis_panel_server <- function(    id,
     
     #The covariate values for use in the graph, including imputed reference outcomes
     reference_outcome <- reactive({
-      GetReferenceOutcome(data = all_data(),
+      GetReferenceOutcome(data = long_data(),
                           treatment_ids = treatment_df(),
                           outcome_type = metaoutcome(),
                           observed = "Imputed",
@@ -133,7 +141,7 @@ baseline_risk_analysis_panel_server <- function(    id,
     
     #Remove any covariates already in the data set and add the outcome in the reference arm as the unique covariate
     data_with_covariate <- reactive({
-      data_with_covariates_removed <- dplyr::select(all_data(), !dplyr::starts_with("covar."))
+      data_with_covariates_removed <- dplyr::select(long_data(), !dplyr::starts_with("covar."))
       return(merge(data_with_covariates_removed,
                    data.frame(Study = names(reference_outcome()),
                               covar.baseline_risk = reference_outcome(),
@@ -176,7 +184,7 @@ baseline_risk_analysis_panel_server <- function(    id,
     covariate_ranking_page_server(
       id = "baseline_risk_ranking",
       model = model_reactive,
-      data = all_data,
+      data = long_data,
       treatment_df = treatment_df,
       metaoutcome = metaoutcome,
       model_effects = model_effects,
