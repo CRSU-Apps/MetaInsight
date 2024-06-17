@@ -383,7 +383,7 @@ regression_plot_panel_server <- function(id, data, covariate_title, covariate_na
 
           long_data <- reactive({
             if (FindDataShape(data()) == "wide") {
-              return(as.data.frame(WideToLong(data(), outcome_type = outcome_type())))
+              return(WideToLong(data(), outcome_type = outcome_type()))
             } else {
               return(data())
             }
