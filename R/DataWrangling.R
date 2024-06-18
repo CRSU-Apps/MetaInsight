@@ -320,6 +320,14 @@ ReorderColumns <- function(data, outcome_type) {
   return(data[, reordering_indices])
 }
 
+#' Sort the data by Study then T
+#' 
+#' @param data Data frame to sort
+#' @return Data frame ordered by Study then T
+SortByStudyThenT <- function(data) {
+  return(data[order(data$Study, data$T), ])
+}
+
 #' Wrangle the uploaded data into a form usable by the internals of the app, both for long and wide formats.
 #' 
 #' @param data Data frame to wrangle
@@ -331,7 +339,8 @@ WrangleUploadData <- function(data, treatment_ids, outcome_type) {
     .FixColumnNameCases(outcome_type) %>%
     ReplaceTreatmentIds(treatment_ids) %>%
     AddStudyIds() %>%
-    ReorderColumns(outcome_type)
+    ReorderColumns(outcome_type) %>%
+    SortByStudyThenT()
   
   return(new_df)
 }
