@@ -60,11 +60,10 @@ CreateCovariateSummaryPlot <- function(long_data, metaoutcome, covariate_or_base
     
     plot <- BUGSnet::data.plot(BUGSnet_data,
                                covariate = plot_settings$covariate,
-                               covariate.label = plot_settings$y_axis_label,
                                half.length = "baseline_error",
                                by = 'treatment',
                                text.size = 16,
-                               orientation = "portrait")
+                               coord.flip = TRUE)
     
     # Add caption text under plot
     plot <- plot +
@@ -82,10 +81,9 @@ CreateCovariateSummaryPlot <- function(long_data, metaoutcome, covariate_or_base
     
     plot <- BUGSnet::data.plot(BUGSnet_data,
                                covariate = plot_settings$covariate,
-                               covariate.label = plot_settings$y_axis_label,
                                by = 'treatment',
                                text.size = 16,
-                               orientation = "portrait") 
+                               coord.flip = TRUE) 
     
     # Add caption text under plot
     plot <- plot +
@@ -95,7 +93,8 @@ CreateCovariateSummaryPlot <- function(long_data, metaoutcome, covariate_or_base
   plot <- plot +
     theme(plot.caption = element_text(hjust = 1)) + # Right aligned caption text
     # Centre x-axis text & increase spacing between tick and axis labels
-    theme(axis.text.x = element_text(angle = 1, vjust = 0, hjust = 0, margin = margin(b = 10))) 
+    theme(axis.text.x = element_text(angle = 1, vjust = 0, hjust = 0, margin = margin(b = 10))) +
+    ylab(plot_settings$y_axis_label)
 
   return(plot)
   

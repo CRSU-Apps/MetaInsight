@@ -1,7 +1,7 @@
 ###### MetaInsight ######
 
-# The version of BUGSnet on the CRSU GitHub account needs to be used 
-# remotes::install_github("https://github.com/CRSU-Apps/BUGSnet")
+# The version of BUGSnet on GitHub needs to be used 
+# remotes::install_github("https://github.com/audrey-b/BUGSnet")
 # You may wish to remove this version of BUGSnet afterwards using
 # remove.packages("BUGSnet")
 
