@@ -61,7 +61,7 @@ data_input_panel_ui <- function(id) {
 #'   - 'is_default_data' is TRUE if data is an example data set, else FALSE if data has been uploaded
 #'   - 'treatment_list' is the data frame containing the treatment ID ('Number') and the treatment name ('Label')
 #'   - 'metaoutcome' is the outcome type selected
-data_input_panel_server <- function(id, continuous_file = 'Cont_long.csv', binary_file = 'Binary_long.csv') {
+data_input_panel_server <- function(id, continuous_file = 'Non_opioids_long.csv', binary_file = 'Certolizumab_long.csv') {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
     
