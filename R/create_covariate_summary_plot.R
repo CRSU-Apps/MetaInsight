@@ -73,7 +73,7 @@ CreateCovariateSummaryPlot <- function(long_data, metaoutcome, covariate_or_base
 
       # Plot in logit scale, label on probability scale
       plot <- plot +
-        scale_x_continuous(labels = function(x) signif(plogis(x), digits = 2))
+        scale_y_continuous(labels = function(x) signif(plogis(x), digits = 2))
     }
     
   # Covariate plot without error bars
