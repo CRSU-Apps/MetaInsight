@@ -1,0 +1,13 @@
+"Study","T.1","N.1","R.1","T.2","N.2","R.2","covar.duration"
+"Abe2006","Placebo",47,0,"Infliximab",49,15,8.3
+"ARMADA","Placebo",62,5,"Adalimumab",67,37,11.65
+"ATTEST","Placebo",110,22,"Infliximab",165,61,7.85
+"CHARISMA","Placebo",49,14,"Tocilizumab",50,26,0.915
+"DE019","Placebo",200,19,"Adalimumab",207,81,10.95
+"Kim2007","Placebo",63,9,"Adalimumab",65,28,6.85
+"OPTION","Placebo",204,22,"Tocilizumab",205,90,7.65
+"RAPID1","Placebo",199,15,"CZP",393,146,6.15
+"RAPID2","Placebo",127,4,"CZP",246,80,5.85
+"START","Placebo",363,33,"Infliximab",360,110,8.1
+"Strand2006","Placebo",40,5,"Rituximab",40,5,11.25
+"Weinblatt1999","Placebo",30,1,"Etanercept",59,23,13
