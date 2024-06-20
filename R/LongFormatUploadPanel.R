@@ -77,13 +77,13 @@ long_format_upload_panel_ui <- function(id) {
     conditionalPanel(
       condition = "output.metaoutcome=='Continuous'",
       ns = ns,
-      p("This default dataset for continuous outcome data is a reduced version of the data from Brett Doleman, Ole Mathiesen, Alex J Sutton, Nicola J Cooper, Jon N Lund, John P Williams (2023),", tags$em("Non-opioid analgesics for the prevention of chronic postsurgical pain: a systematic review and network meta-analysis"), "Br J Anaesth 2023 Jun;130(6):719-728. doi: 10.1016/j.bja.2023.02.041."
+      p("This default dataset for continuous outcome data is a reduced version of the data from Brett Doleman, Ole Mathiesen, Alex J Sutton, Nicola J Cooper, Jon N Lund, John P Williams (2023),", tags$em("Non-opioid analgesics for the prevention of chronic postsurgical pain: a systematic review and network meta-analysis"), "Br J Anaesth 2023 Jun;130(6):719-728. doi: 10.1016/j.bja.2023.02.041. The outcome is pain on a scale of 0 to 10 and the covariate is the mean age of the participants."
       )
     ),
     conditionalPanel(
       condition = "output.metaoutcome=='Binary'",
       ns = ns,
-      p("This default dataset for binary outcome data is from S. Dias, A.J. Sutton, N.J. Welton, and A.E. Ades (2013b),", tags$em("Heterogeneity - Subgroups, Meta-Regression, Bias, and Bias-Adjustment"), ", Medical Decision Making 33(5):618-640."
+      p("This default dataset for binary outcome data is from S. Dias, A.J. Sutton, N.J. Welton, and A.E. Ades (2013b),", tags$em("Heterogeneity - Subgroups, Meta-Regression, Bias, and Bias-Adjustment"), ", Medical Decision Making 33(5):618-640. The outcome is ACR-50, a reduction of at least 50% in the American College of Rhematology score, and the covariate is the mean disease duration of the participants."
       )
     ),
     br(),
