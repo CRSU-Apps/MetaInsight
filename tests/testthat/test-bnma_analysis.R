@@ -272,7 +272,8 @@ test_that("1. BaselineRiskRegression() sets RNGs correctly;
   expected_cov_value_sentence <- paste0("Value for baseline risk set at ", expected_covariate_value)
   expected_slopes <- summary_1$summary.samples$quantiles[c("b_bl[2]", "b_bl[3]", "b_bl[4]", "b_bl[5]", "b_bl[6]"), "50%"]
   names(expected_slopes) <- expected_comparator_names
-  expected_intercepts <- summary_1$summary.samples$quantiles[c("d[2]", "d[3]", "d[4]", "d[5]", "d[6]"), "50%"]
+  expected_centred_intercepts <- summary_1$summary.samples$quantiles[c("d[2]", "d[3]", "d[4]", "d[5]", "d[6]"), "50%"]
+  expected_intercepts <- expected_centred_intercepts - expected_slopes * expected_covariate_value
   names(expected_intercepts) <- expected_comparator_names
   expected_outcome <- "MD"
   expected_effects_type <- "random"
