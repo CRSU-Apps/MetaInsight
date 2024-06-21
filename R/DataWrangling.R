@@ -320,12 +320,21 @@ ReorderColumns <- function(data, outcome_type) {
   return(data[, reordering_indices])
 }
 
-#' Sort the data by Study then T
+#' Sort the data by StudyID then T (or T.1, T.2, etc.)
 #' 
 #' @param data Data frame to sort
-#' @return Data frame ordered by Study then T
-SortByStudyThenT <- function(data) {
-  return(data[order(data$Study, data$T), ])
+#' @return Data frame ordered by StudyID then T
+SortByStudyIDThenT <- function(data) {
+  #Get the T columns, which are "T" for long data and "T.<number>" for wide data
+  T_columns <- grep("^T.*$", colnames(data), value = TRUE)
+  #Sort one by one in reverse order, i.e. T then StudyID, or ..., T.3 then T.2 then T.1 then StudyID
+  for (column in rev(T_columns)) {
+    data <- data[order(data[, column]), ]
+  }
+  #Sort by StudyID last
+  data <- data[order(data$StudyID), ]
+  
+  return(data)
 }
 
 #' Wrangle the uploaded data into a form usable by the internals of the app, both for long and wide formats.
@@ -340,7 +349,7 @@ WrangleUploadData <- function(data, treatment_ids, outcome_type) {
     ReplaceTreatmentIds(treatment_ids) %>%
     AddStudyIds() %>%
     ReorderColumns(outcome_type) %>%
-    SortByStudyThenT()
+    SortByStudyIDThenT()
   
   return(new_df)
 }
