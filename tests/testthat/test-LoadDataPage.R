@@ -3,12 +3,13 @@ test_that("Data wrangled from default continuous long file", {
   testServer(load_data_page_server, {
     session$setInputs("data_input_panel-metaoutcome" = 'Continuous')
     
-    expect_equal(colnames(wrangled_data()), c("StudyID", colnames(data())),
+    expect_equal(colnames(wrangled_data()), c("StudyID", colnames(data())[c(1, 2, 5, 3, 4, 6)]),
                  label = format_vector_to_string(colnames(wrangled_data())))
     
-    expect_equal(wrangled_data()$StudyID, c(1, 1, 1, 2, 2, 2, 3, 3),
+    expect_equal(wrangled_data()$StudyID, rep(1:45, each = 2),
                  label = format_vector_to_string(wrangled_data()$StudyID))
-    expect_equal(wrangled_data()$T, c(1, 2, 3, 4, 1, 5, 1, 6),
+    expect_equal(wrangled_data()$T, c(rep(c(1, 2), times = 4), rep(c(3, 2), times = 18), rep(c(4, 2), times = 23)
+    ),
                  label = format_vector_to_string(wrangled_data()$T))
     
     expect_equal(nrow(wrangled_data()), nrow(data()),
@@ -31,16 +32,14 @@ test_that("Data wrangled from default continuous long file", {
 
 test_that("Continuous wide data wrangled with treatment IDs", {
   testServer(load_data_page_server, {
-    session$setInputs("data_input_panel-metaoutcome" = 'Continuous', "data_input_panel-data" = list(datapath = 'Cont_wide.csv'))
+    session$setInputs("data_input_panel-metaoutcome" = 'Continuous', "data_input_panel-data" = list(datapath = 'Non_opioids_wide.csv'))
     
-    expect_equal(wrangled_data()$StudyID, c(1, 2, 3),
+    expect_equal(wrangled_data()$StudyID, 1:45,
                  label = format_vector_to_string(wrangled_data()$StudyID))
-    expect_equal(wrangled_data()$T.1, c(1, 2, 1),
+    expect_equal(wrangled_data()$T.1, c(rep(1, times = 4), rep(2, times = 18), rep(3, times = 23)),
                  label = format_vector_to_string(wrangled_data()$T.1))
-    expect_equal(wrangled_data()$T.2, c(3, 1, 4),
+    expect_equal(wrangled_data()$T.2, rep(4, times = 45),
                  label = format_vector_to_string(wrangled_data()$T.2))
-    expect_equal(wrangled_data()$T.3, c(5, 6, NA),
-                 label = format_vector_to_string(wrangled_data()$T.3))
 
     expect_equal(nrow(wrangled_data()), nrow(data()),
                  label = nrow(wrangled_data()),
@@ -66,15 +65,6 @@ test_that("Continuous wide data wrangled with treatment IDs", {
     expect_equal(wrangled_data()$SD.2, data()$SD.2,
                  label = format_vector_to_string(wrangled_data()$SD.2),
                  expected.label = format_vector_to_string(data()$SD.2))
-    expect_equal(wrangled_data()$N.3, data()$N.3,
-                 label = format_vector_to_string(wrangled_data()$N.3),
-                 expected.label = format_vector_to_string(data()$N.3))
-    expect_equal(wrangled_data()$Mean.3, data()$Mean.3,
-                 label = format_vector_to_string(wrangled_data()$Mean.3),
-                 expected.label = format_vector_to_string(data()$Mean.3))
-    expect_equal(wrangled_data()$SD.3, data()$SD.3,
-                 label = format_vector_to_string(wrangled_data()$SD.3),
-                 expected.label = format_vector_to_string(data()$SD.3))
   })
 })
 
@@ -94,12 +84,12 @@ test_that("Data wrangled from default binary long file", {
   testServer(load_data_page_server, {
     session$setInputs("data_input_panel-metaoutcome" = 'Binary')
     
-    expect_equal(colnames(wrangled_data()), c("StudyID", colnames(data())),
+    expect_equal(colnames(wrangled_data()), c("StudyID", colnames(data())[c(1, 2, 4, 3, 5)]),
                  label = format_vector_to_string(colnames(wrangled_data())))
 
-    expect_equal(wrangled_data()$StudyID, c(1, 1, 1, 2, 2, 2, 3, 3),
+    expect_equal(wrangled_data()$StudyID, rep(1:12, each = 2),
                  label = format_vector_to_string(wrangled_data()$StudyID))
-    expect_equal(wrangled_data()$T, c(1, 2, 3, 4, 1, 5, 1, 6),
+    expect_equal(wrangled_data()$T, c(1, 2, 1, 3, 1, 2, 1, 4, 1, 3, 1, 3, 1, 4, 1, 5, 1, 5, 1, 2, 1, 6, 1, 7),
                  label = format_vector_to_string(wrangled_data()$T))
 
     expect_equal(nrow(wrangled_data()), nrow(data()),
@@ -119,16 +109,14 @@ test_that("Data wrangled from default binary long file", {
 
 test_that("Binary wide data wrangled with treatment IDs", {
   testServer(load_data_page_server, {
-    session$setInputs("data_input_panel-metaoutcome" = 'Binary', "data_input_panel-data" = list(datapath = 'Binary_wide.csv'))
+    session$setInputs("data_input_panel-metaoutcome" = 'Binary', "data_input_panel-data" = list(datapath = 'Certolizumab_wide.csv'))
     
-    expect_equal(wrangled_data()$StudyID, c(1, 2, 3),
+    expect_equal(wrangled_data()$StudyID, 1:12,
                  label = format_vector_to_string(wrangled_data()$StudyID))
-    expect_equal(wrangled_data()$T.1, c(1, 2, 1),
+    expect_equal(wrangled_data()$T.1, rep(1, times = 12),
                  label = format_vector_to_string(wrangled_data()$T.1))
-    expect_equal(wrangled_data()$T.2, c(3, 1, 4),
+    expect_equal(wrangled_data()$T.2, c(2, 3, 2, 4, 3, 3, 4, 5, 5, 2, 6, 7),
                  label = format_vector_to_string(wrangled_data()$T.2))
-    expect_equal(wrangled_data()$T.3, c(5, 6, NA),
-                 label = format_vector_to_string(wrangled_data()$T.3))
 
     expect_equal(nrow(wrangled_data()), nrow(data()),
                  label = nrow(wrangled_data()),
@@ -148,12 +136,6 @@ test_that("Binary wide data wrangled with treatment IDs", {
     expect_equal(wrangled_data()$N.2, data()$N.2,
                  label = format_vector_to_string(wrangled_data()$N.2),
                  expected.label = format_vector_to_string(data()$N.2))
-    expect_equal(wrangled_data()$R.3, data()$R.3,
-                 label = format_vector_to_string(wrangled_data()$R.3),
-                 expected.label = format_vector_to_string(data()$R.3))
-    expect_equal(wrangled_data()$N.3, data()$N.3,
-                 label = format_vector_to_string(wrangled_data()$N.3),
-                 expected.label = format_vector_to_string(data()$N.3))
   })
 })
 

@@ -381,8 +381,16 @@ regression_plot_panel_server <- function(id, data, covariate_title, covariate_na
             std_dev_beta <- NULL
           }
 
+          long_data <- reactive({
+            if (FindDataShape(data()) == "wide") {
+              return(WideToLong(data(), outcome_type = outcome_type()))
+            } else {
+              return(data())
+            }
+          })
+          
           CalculateContributions(
-            data = data(),
+            data = long_data(),
             covariate_title = covariate_title(),
             treatment_ids = treatment_df(),
             outcome_type = outcome_type(),
