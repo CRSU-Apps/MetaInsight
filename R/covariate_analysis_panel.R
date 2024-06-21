@@ -66,14 +66,14 @@ covariate_analysis_panel_ui <- function(id, page_numbering) {
           tabPanel(
             title = paste0(page_numbering$AddChild(), " Regression plot"),
             covariate_run_model_ui(id = ns("cov_model")),
-            fixedRow(
-              align = "center",
-              regression_plot_panel_ui(id = ns("regression_plot"))
-            )
+            regression_plot_panel_ui(id = ns("regression_plot"))
           ),
           tabPanel(
             title = paste0(page_numbering$AddChild(), " Forest plot"),
-            bayesian_forest_plot_plus_stats_ui(id = ns("cov_forest_plots"))
+            fixedRow(
+              align = "center",
+              bayesian_forest_plot_plus_stats_ui(id = ns("cov_forest_plots"))
+            )
           ),
           tabPanel(
             title = paste0(page_numbering$AddChild(), " Comparison of all treatment pairs"),
