@@ -40,9 +40,10 @@ test_that("FormatForBnma() gives correct data for long binary", {
 
   expected_ArmLevel <- data.frame(
     Study = c(rep("Constantine", 3), rep("Leo", 3), rep("Justinian", 2)),
-    Treat = c("the_Great", "the_Younger", "the_Dung_named", "the_Little", "the_Great", "the_Butcher", "the_Great", "the_Slit_nosed"),
-    Outcomes = 30:37,
-    N = 100:107)
+    Treat = c("the_Great", "the_Younger", "the_Dung_named", "the_Great", "the_Little", "the_Butcher", "the_Great", "the_Slit_nosed"),
+    Outcomes = as.integer(c(30, 31, 32, 34, 33, 35, 36, 37)),
+    N = as.integer(c(100, 101, 102, 104, 103, 105, 106,107)))
+  row.names(expected_ArmLevel) <- as.integer(c(1, 2, 3, 5, 4, 6, 7, 8))
 
   #The expected order is the reference first, followed by the rest in the order they appear in the data
   expected_Treat.order <-  VectorWithItemFirst(vector = wrangled_treatment_list$Label[unique(data$T)], first_item = "the_Little")
@@ -95,10 +96,11 @@ test_that("FormatForBnma() gives correct data for long continuous", {
   
   expected_ArmLevel <- data.frame(
     Study = c(rep("Constantine", 3), rep("Leo", 3), rep("Justinian", 2)),
-    Treat = c("the_Great", "the_Younger", "the_Dung_named", "the_Little", "the_Great", "the_Butcher", "the_Great", "the_Slit_nosed"),
-    Outcomes = c(-1, -1.1, -1.2, -1.3, -1.4, -1.5, -1.6, -1.7),
-    SD = c(11.1, 12.2, 13.3, 14.4, 15.5, 16.6, 17.7, 18.8),
-    N = 30:37)
+    Treat = c("the_Great", "the_Younger", "the_Dung_named", "the_Great", "the_Little", "the_Butcher", "the_Great", "the_Slit_nosed"),
+    Outcomes = c(-1, -1.1, -1.2, -1.4, -1.3, -1.5, -1.6, -1.7),
+    SD = c(11.1, 12.2, 13.3, 15.5, 14.4, 16.6, 17.7, 18.8),
+    N = c(30, 31, 32, 34, 33, 35, 36, 37))
+  row.names(expected_ArmLevel) <- as.integer(c(1, 2, 3, 5, 4, 6, 7, 8))
 
   #The expected order is the reference first, followed by the rest in the order they appear in the data
   expected_Treat.order <-  VectorWithItemFirst(vector = wrangled_treatment_list$Label[unique(data$T)], first_item = "the_Little")

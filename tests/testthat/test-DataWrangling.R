@@ -624,6 +624,11 @@ test_that("WrangleUploadData() wrangles continuous long data to be usable in the
   expect_equal(wrangled_data$StudyID, c(1, 1, 1, 2, 2, 2, 3, 3),
                label = format_vector_to_string(wrangled_data$StudyID))
   
+  # Order data to enable testing that the contents of columns have not changed
+  data$StudyID <- c(1, 1, 1, 2, 2, 2, 3, 3)
+  data$T <- c(1, 2, 3, 4, 1, 5, 1, 6)
+  data <- data[order(data$StudyID, data$T), ]
+  
   # Contents of columns unchanged
   for (col in colnames(data)) {
     if (col == "T") {
@@ -666,6 +671,13 @@ test_that("WrangleUploadData() wrangles continuous wide data to be usable in the
   
   ignored_columns <- paste0("T", c("", paste0(".", 1:6)))
 
+  # Order data to enable testing that the contents of columns have not changed
+  data$StudyID <- 1:3
+  data$T.1 <- c(1, 2, 1)
+  data$T.2 <- c(3, 1, 4)
+  data$T.3 <- c(5, 6, NA)
+  data <- data[order(data$StudyID, data$T.1, data$T.2, data$T.3), ]
+  
   # Contents of columns unchanged
   for (col in colnames(data)) {
     if (col %in% ignored_columns) {
@@ -688,6 +700,11 @@ test_that("WrangleUploadData() wrangles binary long data to be usable in the res
   
   expect_equal(wrangled_data$StudyID, c(1, 1, 1, 2, 2, 2, 3, 3),
                label = format_vector_to_string(wrangled_data$StudyID))
+  
+  # Order data to enable testing that the contents of columns have not changed
+  data$StudyID <- c(1, 1, 1, 2, 2, 2, 3, 3)
+  data$T <- c(1, 2, 3, 4, 1, 5, 1, 6)
+  data <- data[order(data$StudyID, data$T), ]
   
   # Contents of columns unchanged
   for (col in colnames(data)) {
@@ -727,6 +744,13 @@ test_that("WrangleUploadData() wrangles binary wide data to be usable in the res
                label = format_vector_to_string(wrangled_data$StudyID))
   
   ignored_columns <- paste0("T", c("", paste0(".", 1:6)))
+  
+  # Order data to enable testing that the contents of columns have not changed
+  data$StudyID <- 1:3
+  data$T.1 <- c(1, 2, 1)
+  data$T.2 <- c(3, 1, 4)
+  data$T.3 <- c(5, 6, NA)
+  data <- data[order(data$StudyID, data$T.1, data$T.2, data$T.3), ]
   
   # Contents of columns unchanged
   for (col in colnames(data)) {
