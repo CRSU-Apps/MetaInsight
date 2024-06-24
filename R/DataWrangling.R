@@ -320,16 +320,19 @@ ReorderColumns <- function(data, outcome_type) {
   return(data[, reordering_indices])
 }
 
+#' Sort long data by StudyID then T
+#' 
+#' @param long_data Data in long format.
+#' @return Long data sorted by StudyID then T.
+SortLong <- function(long_data) {
+  return(long_data[order(long_data$StudyID, long_data$T), ])
+}
+
 #' Sort the data by StudyID then T
 #' 
 #' @param data Data frame to sort
 #' @return Data frame ordered by StudyID, then T if applicable
 SortByStudyIDThenT <- function(data, outcome_type) {
-  #Local function to sort long data
-  SortLong <- function(long_data) {
-    long_data[order(long_data$StudyID, long_data$T), ]
-  }
-  
   if (FindDataShape(data) == "long") {
     return(SortLong(data))
   } else {

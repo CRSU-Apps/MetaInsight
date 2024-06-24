@@ -725,10 +725,6 @@ test_that("WrangleUploadData() wrangles continuous wide data to be usable in the
   data$T.1 <- c(1, 2, 1)
   data$T.2 <- c(3, 1, 4)
   data$T.3 <- c(5, 6, NA)
-  #Local function for sorting long data
-  SortLong <- function(long_data) {
-    long_data[order(long_data$StudyID, long_data$T), ]
-  }
   data <- data |> WideToLong("Continuous") |> SortLong() |> LongToWide("Continuous")
   
   # Contents of columns unchanged
@@ -803,10 +799,6 @@ test_that("WrangleUploadData() wrangles binary wide data to be usable in the res
   data$T.1 <- c(1, 2, 1)
   data$T.2 <- c(3, 1, 4)
   data$T.3 <- c(5, 6, NA)
-  #Local function for sorting long data
-  SortLong <- function(long_data) {
-    long_data[order(long_data$StudyID, long_data$T), ]
-  }
   data <- data |> WideToLong("Binary") |> SortLong() |> LongToWide("Binary")
   
   # Contents of columns unchanged
