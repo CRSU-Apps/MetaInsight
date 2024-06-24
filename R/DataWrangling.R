@@ -86,7 +86,7 @@ LongToWide <- function(long_data, outcome_type) {
   long_data <- long_data %>% dplyr::group_by(Study) %>% dplyr::mutate(arm = dplyr::row_number())
   # Transform to long
   wide_data <- long_data %>%
-    tidyr::pivot_wider(id_cols = c("Study", FindCovariateNames(long_data)),
+    tidyr::pivot_wider(id_cols = c("StudyID", "Study", FindCovariateNames(long_data)),
                        names_from = c("arm"),
                        values_from = names(change_cols),
                        names_sep = "."
@@ -324,11 +324,20 @@ ReorderColumns <- function(data, outcome_type) {
 #' 
 #' @param data Data frame to sort
 #' @return Data frame ordered by StudyID, then T if applicable
-SortByStudyIDThenT <- function(data) {
-  if (FindDataShape(data) == "wide") {
-    return(data[order(data$StudyID), ])
+SortByStudyIDThenT <- function(data, outcome_type) {
+  #Local function to sort long data
+  SortLong <- function(long_data) {
+    long_data[order(long_data$StudyID, long_data$T), ]
+  }
+  
+  if (FindDataShape(data) == "long") {
+    return(SortLong(data))
   } else {
-    return(data[order(data$StudyID, data$T), ])
+    return(data |>
+             WideToLong(outcome_type) |>
+             SortLong() |>
+             LongToWide(outcome_type)
+           )
   }
 }
 
@@ -344,7 +353,7 @@ WrangleUploadData <- function(data, treatment_ids, outcome_type) {
     ReplaceTreatmentIds(treatment_ids) %>%
     AddStudyIds() %>%
     ReorderColumns(outcome_type) %>%
-    SortByStudyIDThenT()
+    SortByStudyIDThenT(outcome_type)
   
   return(new_df)
 }
