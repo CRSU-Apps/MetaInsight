@@ -320,21 +320,16 @@ ReorderColumns <- function(data, outcome_type) {
   return(data[, reordering_indices])
 }
 
-#' Sort the data by StudyID then T (or T.1, T.2, etc.)
+#' Sort the data by StudyID then T
 #' 
 #' @param data Data frame to sort
-#' @return Data frame ordered by StudyID then T
+#' @return Data frame ordered by StudyID, then T if applicable
 SortByStudyIDThenT <- function(data) {
-  #Get the T columns, which are "T" for long data and "T.<number>" for wide data
-  T_columns <- grep("^T.*$", colnames(data), value = TRUE)
-  #Sort one by one in reverse order, i.e. T then StudyID, or ..., T.3 then T.2 then T.1 then StudyID
-  for (column in rev(T_columns)) {
-    data <- data[order(data[, column]), ]
+  if (FindDataShape(data) == "wide") {
+    return(data[order(data$StudyID), ])
+  } else {
+    return(data[order(data$StudyID, data$T), ])
   }
-  #Sort by StudyID last
-  data <- data[order(data$StudyID), ]
-  
-  return(data)
 }
 
 #' Wrangle the uploaded data into a form usable by the internals of the app, both for long and wide formats.
