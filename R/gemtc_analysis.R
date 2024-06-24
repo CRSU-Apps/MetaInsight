@@ -149,9 +149,6 @@ CovariateModelOutput <- function(data, treatment_ids, model, covariate_title, co
   # Relative Effects raw data
   rel_eff <- gemtc::relative.effect(model, as.character(model$model$regressor$control), covariate = cov_value)
   
-  # Summary of relative effects
-  rel_eff_summary <- summary(rel_eff)
-  
   # Relative Effects table of all comparisons
   rel_eff_tbl <- gemtc::relative.effect.table(model, covariate = cov_value)
   
@@ -186,7 +183,25 @@ CovariateModelOutput <- function(data, treatment_ids, model, covariate_title, co
     reference = as.character(model$model$regressor$control),
     covariate_title = covariate_title
   )
-
+  
+  # Summary of relative effects
+  rel_eff_summary <- summary(rel_eff)
+  
+  # Find indices of beta parameters
+  beta_indices <- grep("^B$|^beta\\[[0-9]+\\]$",
+                       model$model$monitors$enabled,
+                       value = TRUE)
+  # Add betas to relative effect summary
+  beta_statistics <- model_summary$summaries$statistics[beta_indices, ]
+  beta_quantiles <- model_summary$summaries$quantiles[beta_indices, ]
+  rel_eff_summary$summaries$statistics <- rbind(rel_eff_summary$summaries$statistics, beta_statistics)
+  rel_eff_summary$summaries$quantiles <- rbind(rel_eff_summary$summaries$quantiles, beta_quantiles)
+  # Correct parameter name in shared case, when only one row has been appended
+  if (model$model$regressor$coefficient == "shared") {
+    rownames(rel_eff_summary$summaries$statistics)[rownames(rel_eff_summary$summaries$statistics) == "beta_statistics"] <- "B"
+    rownames(rel_eff_summary$summaries$quantiles)[rownames(rel_eff_summary$summaries$quantiles) == "beta_quantiles"] <- "B"
+  }
+  
   # naming conventions to match current Bayesian functions
   return(
     list(

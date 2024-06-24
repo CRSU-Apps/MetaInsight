@@ -86,7 +86,7 @@ LongToWide <- function(long_data, outcome_type) {
   long_data <- long_data %>% dplyr::group_by(Study) %>% dplyr::mutate(arm = dplyr::row_number())
   # Transform to long
   wide_data <- long_data %>%
-    tidyr::pivot_wider(id_cols = c("Study", FindCovariateNames(long_data)),
+    tidyr::pivot_wider(id_cols = c("StudyID", "Study", FindCovariateNames(long_data)),
                        names_from = c("arm"),
                        values_from = names(change_cols),
                        names_sep = "."
@@ -320,12 +320,28 @@ ReorderColumns <- function(data, outcome_type) {
   return(data[, reordering_indices])
 }
 
-#' Sort the data by Study then T
+#' Sort long data by StudyID then T
+#' 
+#' @param long_data Data in long format.
+#' @return Long data sorted by StudyID then T.
+SortLong <- function(long_data) {
+  return(long_data[order(long_data$StudyID, long_data$T), ])
+}
+
+#' Sort the data by StudyID then T
 #' 
 #' @param data Data frame to sort
-#' @return Data frame ordered by Study then T
-SortByStudyThenT <- function(data) {
-  return(data[order(data$Study, data$T), ])
+#' @return Data frame ordered by StudyID, then T if applicable
+SortByStudyIDThenT <- function(data, outcome_type) {
+  if (FindDataShape(data) == "long") {
+    return(SortLong(data))
+  } else {
+    return(data |>
+             WideToLong(outcome_type) |>
+             SortLong() |>
+             LongToWide(outcome_type)
+           )
+  }
 }
 
 #' Wrangle the uploaded data into a form usable by the internals of the app, both for long and wide formats.
@@ -340,7 +356,7 @@ WrangleUploadData <- function(data, treatment_ids, outcome_type) {
     ReplaceTreatmentIds(treatment_ids) %>%
     AddStudyIds() %>%
     ReorderColumns(outcome_type) %>%
-    SortByStudyThenT()
+    SortByStudyIDThenT(outcome_type)
   
   return(new_df)
 }
