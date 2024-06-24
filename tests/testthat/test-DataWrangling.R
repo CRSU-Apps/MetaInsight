@@ -640,22 +640,21 @@ test_that("SortByStudyIDThenT() sorts wide data correctly", {
                           N.3 = c(NA, NA, 17),
                           T.1 = c(2, 1, 1),
                           T.2 = c(1, 3, 2),
-                          T.2 = c(NA, NA, 3))
+                          T.3 = c(NA, NA, 3))
   
   expected_sorted_data <- data.frame(StudyID = 1:3,
                                      Study = c("Cow", "Cat", "Dog"),
-                                     R.1 = c(5, 1, 3),
-                                     R.2 = c(6, 2, 4),
+                                     T.1 = c(1, 1, 1),
+                                     T.2 = c(2, 2, 3),
+                                     T.3 = c(3, NA, NA),
+                                     R.1 = c(5, 2, 3),
+                                     R.2 = c(6, 1, 4),
                                      R.3 = c(7, NA, NA),
-                                     N.1 = c(15, 11, 13),
-                                     N.2 = c(16, 12, 14),
-                                     N.3 = c(17, NA, NA),
-                                     T.1 = c(1, 2, 1),
-                                     T.2 = c(2, 1, 3),
-                                     T.2 = c(3, NA, NA))
-  rownames(expected_sorted_data) <- as.integer(c(3, 1, 2))
+                                     N.1 = c(15, 12, 13),
+                                     N.2 = c(16, 11, 14),
+                                     N.3 = c(17, NA, NA))
   
-  sorted_data <- SortByStudyIDThenT(data = wide_data)
+  sorted_data <- SortByStudyIDThenT(data = wide_data, outcome_type = "Binary")
   
   expect_equal(expected_sorted_data, sorted_data)
 })
@@ -700,16 +699,16 @@ test_that("WrangleUploadData() wrangles continuous wide data to be usable in the
     "StudyID",
     "Study",
     "T.1",
-    "N.1",
-    "Mean.1",
-    "SD.1",
     "T.2",
-    "N.2",
-    "Mean.2",
-    "SD.2",
     "T.3",
+    "N.1",
+    "N.2",
     "N.3",
+    "Mean.1",
+    "Mean.2",
     "Mean.3",
+    "SD.1",
+    "SD.2",
     "SD.3"
   )
 
@@ -726,7 +725,7 @@ test_that("WrangleUploadData() wrangles continuous wide data to be usable in the
   data$T.1 <- c(1, 2, 1)
   data$T.2 <- c(3, 1, 4)
   data$T.3 <- c(5, 6, NA)
-  data <- data[order(data$StudyID, data$T.1, data$T.2, data$T.3), ]
+  data <- data |> WideToLong("Continuous") |> SortByStudyIDThenT() |> LongToWide("Continuous")
   
   # Contents of columns unchanged
   for (col in colnames(data)) {
@@ -777,13 +776,13 @@ test_that("WrangleUploadData() wrangles binary wide data to be usable in the res
     "StudyID",
     "Study",
     "T.1",
-    "R.1",
-    "N.1",
     "T.2",
-    "R.2",
-    "N.2",
     "T.3",
+    "R.1",
+    "R.2",
     "R.3",
+    "N.1",
+    "N.2",
     "N.3"
   )
   
@@ -800,7 +799,7 @@ test_that("WrangleUploadData() wrangles binary wide data to be usable in the res
   data$T.1 <- c(1, 2, 1)
   data$T.2 <- c(3, 1, 4)
   data$T.3 <- c(5, 6, NA)
-  data <- data[order(data$StudyID, data$T.1, data$T.2, data$T.3), ]
+  data <- data |> WideToLong("Binary") |> SortByStudyIDThenT() |> LongToWide("Binary")
   
   # Contents of columns unchanged
   for (col in colnames(data)) {
@@ -1153,9 +1152,12 @@ test_that("WideToLong() correctly converts continuous wide data with continuous 
 
 test_that("LongToWide() correctly converts binary wide data with binary covariates", {
   long_data <- read.csv("Binary_long_binary_cov.csv")
+  long_data$StudyID <- c(1, 1, 1, 2, 2, 2, 3, 3)
   wide_data <- LongToWide(long_data, "Binary") %>% 
     dplyr::relocate(sort(names(.)))
-  expected_data <- read.csv("Binary_wide_binary_cov.csv") %>% 
+  expected_data <- read.csv("Binary_wide_binary_cov.csv")
+  expected_data$StudyID <- 1:3
+  expected_data <- expected_data %>% 
     dplyr::relocate(sort(names(.)))
   
   expect_equal(wide_data, expected_data)
@@ -1163,9 +1165,12 @@ test_that("LongToWide() correctly converts binary wide data with binary covariat
 
 test_that("LongToWide() correctly converts binary wide data with continuous covariates", {
   long_data <- read.csv("Binary_long_continuous_cov.csv")
+  long_data$StudyID <- c(1, 1, 1, 2, 2, 2, 3, 3)
   wide_data <- LongToWide(long_data, "Binary") %>% 
     dplyr::relocate(sort(names(.)))
-  expected_data <- read.csv("Binary_wide_continuous_cov.csv") %>% 
+  expected_data <- read.csv("Binary_wide_continuous_cov.csv")
+  expected_data$StudyID <- 1:3
+  expected_data <- expected_data %>% 
     dplyr::relocate(sort(names(.)))
   
   expect_equal(wide_data, expected_data)
@@ -1173,9 +1178,12 @@ test_that("LongToWide() correctly converts binary wide data with continuous cova
 
 test_that("LongToWide() correctly converts continuous wide data with binary covariates", {
   long_data <- read.csv("Cont_long_binary_cov.csv")
+  long_data$StudyID <- c(1, 1, 1, 2, 2, 2, 3, 3)
   wide_data <- LongToWide(long_data, "Continuous") %>% 
     dplyr::relocate(sort(names(.)))
-  expected_data <- read.csv("Cont_wide_binary_cov.csv") %>% 
+  expected_data <- read.csv("Cont_wide_binary_cov.csv")
+  expected_data$StudyID <- 1:3
+  expected_data <- expected_data %>% 
     dplyr::relocate(sort(names(.)))
   
   expect_equal(wide_data, expected_data)
@@ -1183,9 +1191,12 @@ test_that("LongToWide() correctly converts continuous wide data with binary cova
 
 test_that("LongToWide() correctly converts continuous wide data with continuous covariates", {
   long_data <- read.csv("Cont_long_continuous_cov.csv")
+  long_data$StudyID <- c(1, 1, 1, 2, 2, 2, 3, 3)
   wide_data <- LongToWide(long_data, "Continuous") %>% 
     dplyr::relocate(sort(names(.)))
-  expected_data <- read.csv("Cont_wide_continuous_cov.csv") %>% 
+  expected_data <- read.csv("Cont_wide_continuous_cov.csv")
+  expected_data$StudyID <- 1:3
+  expected_data <- expected_data %>% 
     dplyr::relocate(sort(names(.)))
   
   expect_equal(wide_data, expected_data)
