@@ -610,6 +610,56 @@ test_that("ReorderColumns() retains covariate columns for wide data", {
   }
 })
 
+test_that("SortByStudyIDThenT() sorts long data correctly", {
+  long_data <- data.frame(StudyID = c(2, 2, 3, 3, 1, 1, 1),
+                          Study = c("Cat", "Cat", "Dog", "Dog", "Cow", "Cow", "Cow"),
+                          R = 1:7,
+                          N = 11:17,
+                          T = c(2, 1, 1, 3, 1, 2, 3))
+  
+  expected_sorted_data <- data.frame(StudyID = c(1, 1, 1, 2, 2, 3, 3),
+                                     Study = c("Cow", "Cow", "Cow", "Cat", "Cat", "Dog", "Dog"),
+                                     R = c(5, 6, 7, 2, 1, 3, 4),
+                                     N = c(15, 16, 17, 12, 11, 13, 14),
+                                     T = c(1, 2, 3, 1, 2, 1, 3))
+  rownames(expected_sorted_data) <- as.integer(c(5, 6, 7, 2, 1, 3, 4))
+  
+  sorted_data <- SortByStudyIDThenT(data = long_data)
+  
+  expect_equal(expected_sorted_data, sorted_data)
+})
+
+test_that("SortByStudyIDThenT() sorts wide data correctly", {
+  wide_data <- data.frame(StudyID = c(2, 3, 1),
+                          Study = c("Cat", "Dog", "Cow"),
+                          R.1 = c(1, 3, 5),
+                          R.2 = c(2, 4, 6),
+                          R.3 = c(NA, NA, 7),
+                          N.1 = c(11, 13, 15),
+                          N.2 = c(12, 14, 16),
+                          N.3 = c(NA, NA, 17),
+                          T.1 = c(2, 1, 1),
+                          T.2 = c(1, 3, 2),
+                          T.2 = c(NA, NA, 3))
+  
+  expected_sorted_data <- data.frame(StudyID = 1:3,
+                                     Study = c("Cow", "Cat", "Dog"),
+                                     R.1 = c(5, 1, 3),
+                                     R.2 = c(6, 2, 4),
+                                     R.3 = c(7, NA, NA),
+                                     N.1 = c(15, 11, 13),
+                                     N.2 = c(16, 12, 14),
+                                     N.3 = c(17, NA, NA),
+                                     T.1 = c(1, 2, 1),
+                                     T.2 = c(2, 1, 3),
+                                     T.2 = c(3, NA, NA))
+  rownames(expected_sorted_data) <- as.integer(c(3, 1, 2))
+  
+  sorted_data <- SortByStudyIDThenT(data = wide_data)
+  
+  expect_equal(expected_sorted_data, sorted_data)
+})
+  
 test_that("WrangleUploadData() wrangles continuous long data to be usable in the rest of the app", {
   data <- CleanData(read.csv("Cont_long.csv"))
   treatment_ids <- data %>%
