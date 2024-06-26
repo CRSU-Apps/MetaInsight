@@ -8,7 +8,7 @@ test_that("Data wrangled from default continuous long file", {
     
     expect_equal(wrangled_data()$StudyID, rep(1:45, each = 2),
                  label = format_vector_to_string(wrangled_data()$StudyID))
-    expect_equal(wrangled_data()$T, c(rep(c(1, 2), times = 4), rep(c(3, 2), times = 18), rep(c(4, 2), times = 23)
+    expect_equal(wrangled_data()$T, c(rep(c(1, 2), times = 4), rep(c(1, 3), times = 18), rep(c(1, 4), times = 23)
     ),
                  label = format_vector_to_string(wrangled_data()$T))
     
@@ -36,9 +36,9 @@ test_that("Continuous wide data wrangled with treatment IDs", {
     
     expect_equal(wrangled_data()$StudyID, 1:45,
                  label = format_vector_to_string(wrangled_data()$StudyID))
-    expect_equal(wrangled_data()$T.1, c(rep(1, times = 4), rep(2, times = 18), rep(3, times = 23)),
+    expect_equal(wrangled_data()$T.1, c(rep(1, times = 45)),
                  label = format_vector_to_string(wrangled_data()$T.1))
-    expect_equal(wrangled_data()$T.2, rep(4, times = 45),
+    expect_equal(wrangled_data()$T.2, c(rep(2, times = 4), rep(3, times = 18), rep(4, times = 23)),
                  label = format_vector_to_string(wrangled_data()$T.2))
 
     expect_equal(nrow(wrangled_data()), nrow(data()),
