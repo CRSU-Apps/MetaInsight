@@ -202,6 +202,9 @@ CovariateModelOutput <- function(data, treatment_ids, model, covariate_title, co
     rownames(rel_eff_summary$summaries$quantiles)[rownames(rel_eff_summary$summaries$quantiles) == "beta_quantiles"] <- "B"
   }
   
+  # Add text about the scaling of covariate values
+  rel_eff_summary$covariate <- paste0(rel_eff_summary$covariate, "\nThe covariate values have been scaled (divided by ", round(model$model$regressor$scale, digits = 2), ") in order to have standard deviation 0.5. \n - The interpretation of covariate parameters should change accordingly.")
+  
   # naming conventions to match current Bayesian functions
   return(
     list(
