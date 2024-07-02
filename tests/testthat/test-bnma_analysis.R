@@ -1,7 +1,7 @@
 test_that("FormatForBnma() gives correct data for wide binary", {
   
   # process data as would be in app
-  data <- read.csv("Binary_wide_continuous_cov.csv")
+  data <- read.csv("data/Binary_wide_continuous_cov.csv")
   treatment_ids <- CreateTreatmentIds(FindAllTreatments(data))
   data <- WrangleUploadData(data, treatment_ids, "Binary")
   wrangled_treatment_list <- CleanTreatmentIds(treatment_ids)
@@ -28,7 +28,7 @@ test_that("FormatForBnma() gives correct data for wide binary", {
 
 test_that("FormatForBnma() gives correct data for long binary", {
   
-  data <- read.csv("Binary_long_continuous_cov.csv")
+  data <- read.csv("data/Binary_long_continuous_cov.csv")
   treatment_ids <- CreateTreatmentIds(FindAllTreatments(data))
   data <- WrangleUploadData(data, treatment_ids, "Binary")
   wrangled_treatment_list <- CleanTreatmentIds(treatment_ids)
@@ -56,7 +56,7 @@ test_that("FormatForBnma() gives correct data for long binary", {
 
 test_that("FormatForBnma() gives correct data for wide continuous", {
   
-  data <- read.csv("Cont_wide_continuous_cov.csv")
+  data <- read.csv("data/Cont_wide_continuous_cov.csv")
   treatment_ids <- CreateTreatmentIds(FindAllTreatments(data))
   data <- WrangleUploadData(data, treatment_ids, "Continuous")
   wrangled_treatment_list <- CleanTreatmentIds(treatment_ids)
@@ -84,7 +84,7 @@ test_that("FormatForBnma() gives correct data for wide continuous", {
 
 test_that("FormatForBnma() gives correct data for long continuous", {
   
-  data <- read.csv("Cont_long_continuous_cov.csv")
+  data <- read.csv("data/Cont_long_continuous_cov.csv")
   treatment_ids <- CreateTreatmentIds(FindAllTreatments(data))
   data <- WrangleUploadData(data, treatment_ids, "Continuous")
   wrangled_treatment_list <- CleanTreatmentIds(treatment_ids)

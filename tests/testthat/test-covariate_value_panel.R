@@ -1,6 +1,6 @@
 
 test_that("Covariate value taken from numeric input when continuous", {
-  df <- read.csv("Cont_long_continuous_cov.csv") %>%
+  df <- read.csv("data/Cont_long_continuous_cov.csv") %>%
     CleanData()
   testServer(
     covariate_value_panel_server,
@@ -21,7 +21,7 @@ test_that("Covariate value taken from numeric input when continuous", {
 })
 
 test_that("Covariate value taken from numeric input when binary", {
-  df <- read.csv("Cont_long_binary_cov.csv") %>%
+  df <- read.csv("data/Cont_long_binary_cov.csv") %>%
     CleanData()
   testServer(
     covariate_value_panel_server,

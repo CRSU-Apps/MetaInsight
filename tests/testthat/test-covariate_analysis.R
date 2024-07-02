@@ -1,6 +1,6 @@
 
 test_that("FindCovariateRanges() finds ranges for continuous long data", {
-  data <- CleanData(read.csv("Contribution_continuous_long_continuous_cov.csv"))
+  data <- CleanData(read.csv("data/Contribution_continuous_long_continuous_cov.csv"))
   all_treatments <- FindAllTreatments(data)
   treatment_ids <- CreateTreatmentIds(all_treatments, all_treatments[1])
   
@@ -32,7 +32,7 @@ test_that("FindCovariateRanges() finds ranges for continuous long data", {
 })
 
 test_that("FindCovariateRanges() finds ranges for continuous wide data", {
-  data <- CleanData(read.csv("Contribution_continuous_wide_continuous_cov.csv"))
+  data <- CleanData(read.csv("data/Contribution_continuous_wide_continuous_cov.csv"))
   all_treatments <- FindAllTreatments(data)
   treatment_ids <- CreateTreatmentIds(all_treatments, all_treatments[1])
   

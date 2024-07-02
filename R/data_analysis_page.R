@@ -107,12 +107,12 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, m
       return(frequentist(non_covariate_data(), metaoutcome(), treatment_df(), outcome_measure(), model_effects(), exclusions()))
     })
 
-    # Make bugsnetdata function (in fn_analysis.R) reactive - NVB
+    # Make bugsnetdata function (in analysis_generic.R) reactive - NVB
     bugsnetdt <- reactive({
       return(bugsnetdata(non_covariate_data(), metaoutcome(), treatment_df()))
     })
 
-    # Make ref_alter function (in fn_analysis.R) reactive - NVB
+    # Make ref_alter function (in analysis_generic.R) reactive - NVB
     reference_alter <- reactive({
       return(ref_alter(non_covariate_data(), metaoutcome(), exclusions(), treatment_df()))
     })

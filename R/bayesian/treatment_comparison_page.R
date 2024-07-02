@@ -21,7 +21,7 @@ bayesian_treatment_comparisons_page_ui <- function(id) {
     downloadButton(outputId = ns('downloadbaye_comparison')),
     br(),
     br(),
-    p(tags$strong("Treatment effects with studies excluded: comparison of all treatment pairs.")),
+    p(tags$strong("Treatment effects with selected studies excluded: comparison of all treatment pairs.")),
     tableOutput(outputId = ns("baye_comparison_sub")),
     downloadButton(outputId = ns('downloadbaye_comparison_sub'))
   )

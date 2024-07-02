@@ -1,11 +1,11 @@
-#' Bayesian analysis
+#' Bayesian analysis.
 #'
 #' @param data Data frame in long format, with 'se' instead of 'SD' and 'N' when the outcome is continuous.
 #' @param treat_list Data frame consisting of the treatment IDs ('Number') and the treatment names ('Label').
 #' @param model "random" or "fixed"
-#' @param outcome One of "MD", "OR" or "RR".
+#' @param outcome "MD", "OR" or "RR".
 #' @param CONBI "Continuous" or "Binary".
-#' @param ref Reference treatment
+#' @param ref Reference treatment.
 #' @return List:
 #'  - 'mtcResults' = Output from gemtc::mtc.run
 #'  - 'lstx' = Vector of treatment names
@@ -94,10 +94,7 @@ baye <- function(data, treat_list, model, outcome, CONBI, ref) {
 
 
 
-### 3a. tau of gemtc
-
-
-#' Create text with the point estimate and 95% CrI of between-trial SD of treatment effects
+#' Create text with the point estimate and 95% CrI of between-trial SD of treatment effects.
 #'
 #' @param results Output from the 'baye' function. These are the list elements that are relevant:
 #'  - 'mtcResults' = Output from gemtc::mtc.run
@@ -167,7 +164,7 @@ FormatForCreateTauSentence <- function(br_model){
 ### 3c. Ranking results 
 
 
-#' Get SUCRA data
+#' Get SUCRA data.
 #'
 #' @param NMAdata Output from 'baye' function or from bnma::network.run.
 #' @param rankdirection "good" or "bad" (referring to smaller outcome values).
@@ -300,8 +297,14 @@ relative_rank_text <- function(results) {
 
 
 
-### 3d. nodesplit models
-
+#' 3d. nodesplit models.
+#' 
+#' @param data Input data set.
+#' @param treat_list Data frame consisting of the treatment IDs ('Number') and the treatment names ('Label').
+#' @param model "random" or "fixed".
+#' @param outcome "MD", "SMD", "OR", "RR" or "RD".
+#' @param CONBI "Continuous" or "Binary".
+#' @return Results from nodeplit model.
 bayenode <- function(data, treat_list, model, outcome, CONBI) {
   if (!outcome %in% c('OR', 'RR', 'MD')) {
     stop(glue::glue("Outcome type '{outcome}' is not supported. Please use one of: 'MD', 'OR', 'RR'"))
@@ -310,48 +313,46 @@ bayenode <- function(data, treat_list, model, outcome, CONBI) {
   if (outcome=="SMD" ) {
     print("Please note: standardised mean difference currently cannot be analysed in Bayesian analysis", type = "warning")
   } 
-  else if (outcome=="RD") {
-    print("Please note: risk difference currently cannot be analysed in Bayesian analysis", type = "warning")
-  }
-  else {
+  else if (outcome == "RD") {
+    print("Please note: Bayesian analysis of risk differences is not currently implemented in MetaInsight", type = "warning")
+  } else if (outcome %in% c("MD", "OR", "RR")) {
     progress <- shiny::Progress$new()   # Adding progress bars
     on.exit(progress$close())
-    progress$set(message="Updating.This may take up to 20 minute", value=0)
-    treat_list2<-data.frame(treat_list)
+    progress$set(message = "Updating. This may take up to 20 minute", value = 0)
     lstx <- treat_list$Label
     ntx <- nrow(treat_list)
-    progress$inc(0.2, detail="Preparing to run simulation models")
-    if (CONBI=="Continuous") { 
-      armData <- data.frame(study=data$Study,       # Create arm level data set for gemtc
-                            treatment=data$T,
-                            mean=data$Mean,
-                            std.err=data$se)
+    progress$inc(0.2, detail = "Preparing to run simulation models")
+    if (CONBI == "Continuous") { 
+      armData <- data.frame(study = data$Study,       # Create arm level data set for gemtc
+                            treatment = data$T,
+                            mean = data$Mean,
+                            std.err = data$se)
+    } else {
+      armData <- data.frame(study = data$Study,
+                            treatment = data$T,
+                            responders = data$R,
+                            sampleSize = data$N)
     }
-    else {
-      armData <- data.frame(study=data$Study,
-                            treatment=data$T,
-                            responders=data$R,
-                            sampleSize=data$N)
-    }
-    mtcNetwork <- mtc.network(data.ab=armData,description="Network")
-    progress$inc(0.4, detail="Running simulation models")
+    mtcNetwork <- mtc.network(data.ab = armData, description = "Network")
+    progress$inc(0.4, detail = "Running simulation models")
     if (outcome == "MD") {
       like <- "normal"
       link <- "identity"
-    } 
-    else  {
+    } else  {
       like <- "binom"
-      link <- ifelse (outcome == "OR","logit", "log")
+      link <- ifelse (outcome == "OR", "logit", "log")
     }
-    nodeSplitResults <- mtc.nodesplit(network=mtcNetwork,
-                                      linearModel=model,
-                                      likelihood=like,
+    nodeSplitResults <- mtc.nodesplit(network = mtcNetwork,
+                                      linearModel = model,
+                                      likelihood = like,
                                       link = link,
-                                      comparisons=mtc.nodesplit.comparisons(mtcNetwork))  # nodesplitting
-    progress$inc(0.4, detail="Rendering results")
-    node<-as.data.frame(print(summary(nodeSplitResults)))
-    node
-  }}
+                                      comparisons = mtc.nodesplit.comparisons(mtcNetwork))  # nodesplitting
+    progress$inc(0.4, detail = "Rendering results")
+    return(as.data.frame(print(summary(nodeSplitResults))))
+  } else {
+    stop("outcome must be one of 'MD', 'SMD', 'OR', 'RR', or 'RD'") 
+  }
+}
 
 
 
@@ -380,7 +381,9 @@ umeplot.df <- function(c, mtcNetwork, model, outcome) {
     link <- "identity"
   } else if (outcome == "OR" || outcome == "RR") {
     like <- "binom"
-    link <- ifelse (outcome == "OR","logit", "log")
+    link <- ifelse (outcome == "OR", "logit", "log")
+  } else {
+    stop("outcome must be 'MD', 'OR', or 'RR'") 
   }
   
   ume <- mtc.model(network = mtcNetwork,
@@ -395,7 +398,7 @@ umeplot.df <- function(c, mtcNetwork, model, outcome) {
   y <- mtc.deviance({ume_results})
   inc <- data.frame(y$dev.ab)
   inc$names <- rownames(inc)
-  all <-merge(c,inc, by="names")
+  all <- merge(c, inc, by = "names")
   
   names(all)[names(all) == "X1.x"] <- "NMAmodel_arm1"
   names(all)[names(all) == "X1.y"] <- "UMEmodel_arm1"
@@ -494,53 +497,65 @@ umeplot.df <- function(c, mtcNetwork, model, outcome) {
 
 
 
-### Per-arm residual deviance 
-
-stemplot.df <- function(c,x) {
+#' Per-arm residual deviance plot.
+#' 
+#' @param c Deviance obtained from @param x.
+#' @param x gemtc::mtc.deviance() object.
+#' @return Creates a stemplot of residual deviances by arm.
+stemplot.df <- function(c, x) {
   tpl <- x[['dev.ab']]
-  study <- matrix(rep(1:nrow(tpl), times=ncol(tpl)), nrow=nrow(tpl), ncol=ncol(tpl))
+  study <- matrix(rep(1:nrow(tpl), times = ncol(tpl)), nrow = nrow(tpl), ncol = ncol(tpl))
   study <- t(study)[t(!is.na(tpl))]
   devbar <- t(x[['dev.ab']])[t(!is.na(tpl))]
   title <- "Per-arm residual deviance"
   xlab <- "Arm"
-  k<-rowSums(!is.na(tpl))
+  k <- rowSums(!is.na(tpl))
   studynames <- rep(c$names, k)
-  v<-1:length(devbar)
-  sep<-study%%2
-  d<- data.frame(v, devbar, sep, study, studynames)
-  xl<- list(
+  v <- 1:length(devbar)
+  sep <- study%%2
+  d <- data.frame(v, devbar, sep, study, studynames)
+  xl <- list(
     title = xlab,
-    range= c(0,length(devbar)+5),
+    range= c(0, length(devbar) + 5),
     tick0 = 0,
     dtick = 5,
     zeroline = TRUE,
     showline = TRUE
   )
   yl <- list(
-    title="Residual deviance",
-    range=c(0, ceiling(devbar)),
-    autorange=TRUE,
+    title = "Residual deviance",
+    range = c(0, ceiling(devbar)),
+    autorange = TRUE,
     tick0 = 0,
     dtick = 0.5,
     zeroline = TRUE,
     showline = TRUE
   )
-  p <- plot_ly(data=d, x=~v, y=~devbar)
+  p <- plot_ly(data = d, x = ~v, y = ~devbar)
   for (i in 1:length(devbar)) {
     p = p %>%
-      add_segments(x=i, xend=i, y=0, yend=devbar[i], marker=list(color='white', 
-                                                                 line=list(color='white')),
-                   line=list(color='black', width=1))
+      add_segments(x = i,
+                   xend = i,
+                   y = 0,
+                   yend = devbar[i],
+                   marker = list(color = 'white', 
+                                 line = list(color = 'white')
+                                 ),
+                   line = list(color = 'black',
+                               width = 1)
+                   )
   }
   p = p%>% 
-    add_trace(data=d, x=~v, y=~devbar, type = 'scatter', mode='markers', 
-              marker=list(size=4, color = '#CAEFD1',
-                          line = list(color = 'rgb(0,128,0)',
-                                      width = 2)),
-              symbol =~sep, symbols = c('circle','o'), 
-              hoverinfo='text',
-              text=~paste('</br> Study', d$studynames,
-                          '</br> Deviance from NMA model:',round(d$devbar, digits=2)
+    add_trace(data = d, x = ~v, y = ~devbar, type = 'scatter', mode = 'markers', 
+              marker = list(size = 4,
+                            color = '#CAEFD1',
+                            line = list(color = 'rgb(0,128,0)',
+                                        width = 2)
+                            ),
+              symbol = ~sep, symbols = c('circle', 'o'), 
+              hoverinfo = 'text',
+              text = ~paste('</br> Study', d$studynames,
+                            '</br> Deviance from NMA model:', round(d$devbar, digits = 2)
               )) %>%
     layout(
       xaxis = xl, yaxis = yl, showlegend = FALSE)
@@ -549,11 +564,13 @@ stemplot.df <- function(c,x) {
 
 
 
-### leverage
-
+#' Creates a plot of leverage versus residual deviance, by study.
+#' 
+#' @param x gemtc::mtc.deviance() object.
+#' @return Leverage vs residual deviance plot.
 levplot.df <- function(x) {
-  fit.ab <- apply(x[['fit.ab']], 1, sum, na.rm=TRUE)
-  dev.ab <- apply(x[['dev.ab']], 1, sum, na.rm=TRUE)
+  fit.ab <- apply(x[['fit.ab']], 1, sum, na.rm = TRUE)
+  dev.ab <- apply(x[['dev.ab']], 1, sum, na.rm = TRUE)
   lev.ab <- dev.ab - fit.ab
   fit.re <- x[['fit.re']]
   dev.re <- x[['dev.re']]
@@ -561,23 +578,23 @@ levplot.df <- function(x) {
   nd <- c(x[['nd.ab']], x[['nd.re']])
   w <- sqrt(c(dev.ab, dev.re) / nd)
   lev <- c(lev.ab, lev.re) / nd
-  d<-data.frame(w,lev)
+  d <- data.frame(w, lev)
   d$names <- rownames(d)
   
-  a<-seq(from=0, to=3, by=0.05)
-  b1 <- 1-a^2
-  b2 <- 2-a^2
-  b3 <- 3-a^2
-  b4<- 4-a^2
+  a <- seq(from = 0, to = 3, by = 0.05)
+  b1 <- 1 - a^2
+  b2 <- 2 - a^2
+  b3 <- 3 - a^2
+  b4 <- 4 - a^2
   parabola <- data.frame(a, b1, b2, b3, b4)
   
-  xlab="Square root of average residual deviance across the arms for each study"
+  xlab = "Square root of average residual deviance across the arms for each study"
   'sqrt(average(residual deviance for arm 1, residual deviance for arm 2...))'
-  ylab="Average leverage across the arms for each study"
+  ylab = "Average leverage across the arms for each study"
   
-  xl<- list(
+  xl <- list(
     title = xlab,
-    range= c(0,max(c(w,2.5))),
+    range = c(0, max(c(w, 2.5))),
     tick0 = 0,
     dtick = 0.5,
     zeroline = TRUE,
@@ -592,21 +609,23 @@ levplot.df <- function(x) {
     showgrid = TRUE
   )
   
-  p<- plot_ly(parabola, x=~a) %>%
-    add_trace(y=b1, mode='lines', line=list(color='black', width=1), hoverinfo='skip') %>%
-    add_trace(y=b2, mode='lines', line=list(color='black', width=1), hoverinfo='skip') %>%
-    add_trace(y=b3, mode='lines', line=list(color='black', width=1), hoverinfo='skip') %>%
-    add_trace(y=b4, mode='lines', line=list(color='black', width=1), hoverinfo='skip') %>%
-    add_trace(data=d, x=~w, y=~lev, 
-              marker=list(size=4, color = '#CAEFD1',
-                          line = list(color = 'rgb(0,128,0)',
-                                      width = 2)),
-              hoverinfo='text',
-              text=~paste('</br> Study:', d$names,
-                          '</br> Deviance',round(d$w, digits=2),
-                          '</br> Leverage',round(d$lev, digits=2)
+  p <- plot_ly(parabola, x = ~a) %>%
+    add_trace(y = b1, mode = 'lines', line = list(color = 'black', width = 1), hoverinfo = 'skip') %>%
+    add_trace(y = b2, mode = 'lines', line = list(color = 'black', width = 1), hoverinfo = 'skip') %>%
+    add_trace(y = b3, mode = 'lines', line = list(color = 'black', width = 1), hoverinfo = 'skip') %>%
+    add_trace(y = b4, mode = 'lines', line = list(color = 'black', width = 1), hoverinfo = 'skip') %>%
+    add_trace(data = d, x = ~w, y = ~lev, 
+              marker = list(size = 4,
+                            color = '#CAEFD1',
+                            line = list(color = 'rgb(0,128,0)',
+                                        width = 2)
+                            ),
+              hoverinfo = 'text',
+              text = ~paste('</br> Study:', d$names,
+                            '</br> Deviance',round(d$w, digits = 2),
+                            '</br> Leverage',round(d$lev, digits = 2)
               )) %>%
     layout(
-      xaxis = xl, yaxis = yl, showlegend = FALSE, title="Leverage versus residual deviance")
+      xaxis = xl, yaxis = yl, showlegend = FALSE, title = "Leverage versus residual deviance")
   return(p)
 }

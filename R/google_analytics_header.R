@@ -80,7 +80,6 @@ google_analytics_header_server <- function(id, app_name, google_analytics_id) {
       input$reject,
       {
         shiny::removeModal()
-          expiration = 365
         storage$SetStoredValue(
           id = cookie_name,
           value = list(

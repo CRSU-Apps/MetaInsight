@@ -1,7 +1,7 @@
 test_that(".FindTreatmentCount() finds number of treatment columns for binary data", {
   
   # process data as would be in app
-  data <- read.csv("Binary_wide_continuous_cov.csv")
+  data <- read.csv("data/Binary_wide_continuous_cov.csv")
   treatment_ids <- CreateTreatmentIds(FindAllTreatments(data))
   data <- WrangleUploadData(data, treatment_ids, "Binary")
   wrangled_treatment_list <- CleanTreatmentIds(treatment_ids)
@@ -12,7 +12,7 @@ test_that(".FindTreatmentCount() finds number of treatment columns for binary da
 test_that(".FindTreatmentCount() finds number of treatment columns for continuous data", {
   
   # process data as would be in app
-  data <- read.csv("Cont_wide_continuous_cov.csv")
+  data <- read.csv("data/Cont_wide_continuous_cov.csv")
   treatment_ids <- CreateTreatmentIds(FindAllTreatments(data))
   data <- WrangleUploadData(data, treatment_ids, "Continuous")
   wrangled_treatment_list <- CleanTreatmentIds(treatment_ids)
@@ -23,7 +23,7 @@ test_that(".FindTreatmentCount() finds number of treatment columns for continuou
 test_that(".FindVaryingColumnIndices() finds all varying columns for binary data", {
   
   # process data as would be in app
-  data <- read.csv("Binary_wide_continuous_cov.csv")
+  data <- read.csv("data/Binary_wide_continuous_cov.csv")
   treatment_ids <- CreateTreatmentIds(FindAllTreatments(data))
   data <- WrangleUploadData(data, treatment_ids, "Binary")
   
@@ -36,7 +36,7 @@ test_that(".FindVaryingColumnIndices() finds all varying columns for binary data
 test_that(".FindVaryingColumnIndices() finds all varying columns for continuous data", {
   
   # process data as would be in app
-  data <- read.csv("Cont_wide_continuous_cov.csv")
+  data <- read.csv("data/Cont_wide_continuous_cov.csv")
   treatment_ids <- CreateTreatmentIds(FindAllTreatments(data))
   data <- WrangleUploadData(data, treatment_ids, "Continuous")
   

@@ -1,6 +1,6 @@
 
 test_that("GetOutcomesAndVariances() and CreateVMatrix() work for binary outcomes and odds ratios", {
-  data <- read.csv("Binary_long_for_contribution_matrix.csv")
+  data <- read.csv("data/Binary_long_for_contribution_matrix.csv")
   
   studies <- c("A", "B", "C", "D")
   treatments <- c("Hydrogen", "Oxygen", "Sulphur", "Zinc")
@@ -48,7 +48,7 @@ test_that("GetOutcomesAndVariances() and CreateVMatrix() work for binary outcome
 
 
 test_that("GetOutcomesAndVariances() and CreateVMatrix() work for binary outcomes and risk ratios", {
-  data <- read.csv("Binary_long_for_contribution_matrix.csv")
+  data <- read.csv("data/Binary_long_for_contribution_matrix.csv")
   
   studies <- c("A", "B", "C", "D")
   treatments <- c("Hydrogen", "Oxygen", "Sulphur", "Zinc")
@@ -95,7 +95,7 @@ test_that("GetOutcomesAndVariances() and CreateVMatrix() work for binary outcome
 
 
 test_that("GetOutcomesAndVariances() and CreateVMatrix() work for binary outcomes and risk differences", {
-  data <- read.csv("Binary_long_for_contribution_matrix.csv")
+  data <- read.csv("data/Binary_long_for_contribution_matrix.csv")
   
   studies <- c("A", "B", "C", "D")
   treatments <- c("Hydrogen", "Oxygen", "Sulphur", "Zinc")
@@ -185,7 +185,7 @@ test_that("GetOutcomesAndVariances() and CreateVMatrix() work for continuous out
 
 
 test_that("CreateXMatrix() works for unrelated and exchangeable covariate parameters", {
-  data <- read.csv("Binary_long_for_contribution_matrix.csv")
+  data <- read.csv("data/Binary_long_for_contribution_matrix.csv")
   
   studies <- c("A", "B", "C", "D")
   treatments <- c("Hydrogen", "Oxygen", "Sulphur", "Zinc")
@@ -212,7 +212,7 @@ test_that("CreateXMatrix() works for unrelated and exchangeable covariate parame
 
 
 test_that("CreateXMatrix() works for shared covariate parameters", {
-  data <- read.csv("Binary_long_for_contribution_matrix.csv")
+  data <- read.csv("data/Binary_long_for_contribution_matrix.csv")
   
   studies <- c("A", "B", "C", "D")
   treatments <- c("Hydrogen", "Oxygen", "Sulphur", "Zinc")
@@ -294,7 +294,7 @@ test_that("CreateZMatrix() works for shared covariate parameters", {
 
 
 test_that("CreateLambdaTauMatrix() works", {
-  data <- read.csv("Binary_long_for_contribution_matrix.csv")
+  data <- read.csv("data/Binary_long_for_contribution_matrix.csv")
   
   studies <- c("A", "B", "C", "D")
   treatments <- c("Hydrogen", "Oxygen", "Sulphur", "Zinc")
@@ -310,7 +310,7 @@ test_that("CreateLambdaTauMatrix() works", {
 
 
 test_that("CreateLambdaBetaMatrix() works", {
-  data <- read.csv("Binary_long_for_contribution_matrix.csv")
+  data <- read.csv("data/Binary_long_for_contribution_matrix.csv")
   
   treatments <- c("Hydrogen", "Oxygen", "Sulphur", "Zinc")
   
@@ -334,7 +334,7 @@ test_that("CheckSingularMatrix() works", {
 
 
 test_that("CreateContributionMatrix() produces a matrix of the correct format for all three covariate parameter assumptions", {
-  data <- read.csv("Binary_long_cov_for_contribution_matrix.csv")
+  data <- read.csv("data/Binary_long_cov_for_contribution_matrix.csv")
   
   treatment_ids <- list(Number = 1:3, Label = c("Hydrogen", "Oxygen", "Sulphur"))
   
@@ -357,7 +357,7 @@ test_that("CreateContributionMatrix() produces a matrix of the correct format fo
 
 
 test_that("CreateContributionMatrix() produces a matrix of the correct format when study_or_arm_level = 'study'", {
-  data <- read.csv("Binary_long_cov_for_contribution_matrix.csv")
+  data <- read.csv("data/Binary_long_cov_for_contribution_matrix.csv")
   
   treatment_ids <- list(Number = 1:3, Label = c("Hydrogen", "Oxygen", "Sulphur"))
   
@@ -375,7 +375,7 @@ test_that("CreateContributionMatrix() produces a matrix of the correct format wh
 
 
 test_that("CreateContributionMatrix() produces a matrix of the correct format when basic_or_all_parameters = 'basic'", {
-  data <- read.csv("Binary_long_cov_for_contribution_matrix.csv")
+  data <- read.csv("data/Binary_long_cov_for_contribution_matrix.csv")
   
   treatment_ids <- list(Number = 1:3, Label = c("Hydrogen", "Oxygen", "Sulphur"))
   
@@ -649,8 +649,8 @@ test_that("CalculateContributions() gathers indirect covariate effect contributi
 
 test_that("CreateContributionMatrix() produces correct output for the Donegan example", {
   #Load data
-  donegan_original <- read.csv("Donegan_contribution_matrix_data.csv")
-  donegan <- read.csv("Donegan_for_MetaInsight.csv")
+  donegan_original <- read.csv("data/Donegan_contribution_matrix_data.csv")
+  donegan <- read.csv("data/Donegan_for_MetaInsight.csv")
   donegan_ids <- data.frame(Number = 1:3, Label = as.character(1:3))
   donegan_studies <- unique(donegan$Study)
 
@@ -687,7 +687,7 @@ test_that("CreateContributionMatrix() produces correct output for the Donegan ex
   #Drop the study-specific intercepts
   contribution_matrix <- contribution_matrix_full[, 25:30]
   
-  expected_contribution_matrix <- read.csv("Donegan_contribution_matrix_expected.csv")
+  expected_contribution_matrix <- read.csv("data/Donegan_contribution_matrix_expected.csv")
   expected_contribution_matrix <- as.matrix(expected_contribution_matrix[, 2:7])
   #Column and row names have already been tested in earlier tests, so no need to check here.
   colnames(expected_contribution_matrix) <- c("1:2-d", "1:3-d", "2:3-d", "1:2-beta", "1:3-beta", "2:3-beta")
@@ -699,7 +699,7 @@ test_that("CreateContributionMatrix() produces correct output for the Donegan ex
 
 
 test_that("CreateContributionMatrix() produces correct output for a fixed effects, shared model", {
-  data <- read.csv("Cont_long_cont_cov_small.csv")
+  data <- read.csv("data/Cont_long_cont_cov_small.csv")
 
   treatment_ids <- list(Number = 1:3, Label = c("Hydrogen", "Neon", "Carbon"))
   
@@ -732,7 +732,7 @@ test_that("CreateContributionMatrix() produces correct output for a fixed effect
 
 
 test_that("CreateContributionMatrix() produces correct output for a fixed effects, exchangeable model", {
-  data <- read.csv("Cont_long_cont_cov_small.csv")
+  data <- read.csv("data/Cont_long_cont_cov_small.csv")
   
   treatment_ids <- list(Number = 1:3, Label = c("Hydrogen", "Neon", "Carbon"))
   
@@ -777,7 +777,7 @@ test_that("CreateContributionMatrix() produces correct output for a fixed effect
 
 
 test_that("CreateContributionMatrix() produces correct output for a random effects, shared model", {
-  data <- read.csv("Cont_long_cont_cov_small.csv")
+  data <- read.csv("data/Cont_long_cont_cov_small.csv")
   
   treatment_ids <- list(Number = 1:3, Label = c("Hydrogen", "Neon", "Carbon"))
   
@@ -816,7 +816,7 @@ test_that("CreateContributionMatrix() produces correct output for a random effec
 
 
 test_that("CreateContributionMatrix() includes all parameters when 'basic_or_all_parameters' = 'all'", {
-  data <- read.csv("Cont_long_cont_cov_small.csv")
+  data <- read.csv("data/Cont_long_cont_cov_small.csv")
   
   treatment_ids <- list(Number = 1:3, Label = c("Hydrogen", "Neon", "Carbon"))
   
@@ -861,7 +861,7 @@ test_that("CreateContributionMatrix() includes all parameters when 'basic_or_all
 
 
 test_that("CreateContributionMatrix() adds up rows correctly when 'study_or_arm_level' = 'study'", {
-  data <- read.csv("Cont_long_cont_cov_small.csv")
+  data <- read.csv("data/Cont_long_cont_cov_small.csv")
   
   treatment_ids <- list(Number = 1:3, Label = c("Hydrogen", "Neon", "Carbon"))
   
@@ -897,7 +897,7 @@ test_that("CreateContributionMatrix() adds up rows correctly when 'study_or_arm_
 
 
 test_that("CreateContributionMatrix() calculates percentages correctly", {
-  data <- read.csv("Cont_long_cont_cov_small.csv")
+  data <- read.csv("data/Cont_long_cont_cov_small.csv")
   
   treatment_ids <- list(Number = 1:3, Label = c("Hydrogen", "Neon", "Carbon"))
   
@@ -933,7 +933,7 @@ test_that("CreateContributionMatrix() calculates percentages correctly", {
 
 
 test_that("CreateContributionMatrix() calculates contributions correctly when 'weight_or_contribution' = 'contribution'", {
-  data <- read.csv("Cont_long_cont_cov_small.csv")
+  data <- read.csv("data/Cont_long_cont_cov_small.csv")
   
   treatment_ids <- list(Number = 1:3, Label = c("Hydrogen", "Neon", "Carbon"))
   

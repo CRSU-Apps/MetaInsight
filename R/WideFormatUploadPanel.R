@@ -83,6 +83,6 @@ wide_format_upload_panel_server <- function(id, metaoutcome) {
     output$metaoutcome <- reactive({ metaoutcome() })
     shiny::outputOptions(output, "metaoutcome", suspendWhenHidden = FALSE)
     
-    output$downloadDataWide <- create_raw_data_download_handler(metaoutcome, "MetaInsightdataWIDE.csv", "Non_opioids_wide.csv", "Certolizumab_wide.csv")
+    output$downloadDataWide <- create_raw_data_download_handler(metaoutcome, "MetaInsightdataWIDE.csv", "data/Non_opioids_wide.csv", "data/Certolizumab_wide.csv")
   })
 }

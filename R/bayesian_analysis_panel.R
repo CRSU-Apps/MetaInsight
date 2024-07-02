@@ -139,7 +139,7 @@ bayesian_analysis_panel_server <- function(
     )
 
     # 3d. Nodesplit model
-    nodesplit_page_server(
+    nodesplit_panel_server(
       id = "nodesplit",
       data = data,
       treatment_df = treatment_df,

@@ -1,7 +1,7 @@
 
 test_that("Continuous data registered as initially not uploaded", {
   testServer(data_input_panel_server, {
-    session$setInputs(metaoutcome = 'Continuous')
+    session$setInputs(metaoutcome = "Continuous")
     
     expect_false(data_uploaded())
   })
@@ -9,17 +9,17 @@ test_that("Continuous data registered as initially not uploaded", {
 
 test_that("Continuous data registered as uploaded on upload", {
   testServer(data_input_panel_server, {
-    session$setInputs(metaoutcome = 'Continuous')
+    session$setInputs(metaoutcome = "Continuous")
     
-    session$setInputs(data = data.frame(datapath = 'Non_opioids_long.csv'))
+    session$setInputs(data = data.frame(datapath = "data/Non_opioids_long.csv"))
     expect_true(data_uploaded())
   })
 })
 
 test_that("Treatments extracted from default continuous file", {
   testServer(data_input_panel_server, {
-    session$setInputs(metaoutcome = 'Continuous')
-    
+    session$setInputs(metaoutcome = "Continuous")
+
     treatment_df <- data.frame(Number = seq(4),
                                Label = c('Placebo','Glucocorticoids','Ketamine','Gabapentinoids'))
     expect_equal(treatment_list(), treatment_df)
@@ -28,8 +28,8 @@ test_that("Treatments extracted from default continuous file", {
 
 test_that("Treatments reordered from default continuous file when reference selected", {
   testServer(data_input_panel_server, {
-    session$setInputs(metaoutcome = 'Continuous')
-    
+    session$setInputs(metaoutcome = "Continuous")
+
     session$setInputs(reference_treatment = 'Glucocorticoids')
     treatment_df <- data.frame(Number = seq(4),
                                Label = c('Glucocorticoids','Placebo','Ketamine','Gabapentinoids'))
@@ -40,13 +40,13 @@ test_that("Treatments reordered from default continuous file when reference sele
 
 test_that("Data extracted from default continuous file", {
   testServer(data_input_panel_server, {
-    session$setInputs(metaoutcome = 'Continuous')
+    session$setInputs(metaoutcome = "Continuous")
     
     expect_equal(colnames(data()), c('Study', 'T', 'Mean', 'SD', 'N', 'covar.age'),
                  label = format_vector_to_string(colnames(data())))
     expect_equal(nrow(data()), 90,
                  label = nrow(data()))
-    expect_equal(data()$Study, rep(1:45, each = 2),
+    expect_equal(data()$Study, paste0("Study", stringr::str_pad(string = rep(1:45, each = 2), width = 2, pad = "0")),
                  label = format_vector_to_string(data()$Study))
     expect_equal(data()$T, c(rep(c("Placebo", "Glucocorticoids"), times = 4),
                              rep(c("Placebo", "Ketamine"), times = 18),
@@ -65,7 +65,7 @@ test_that("Data extracted from default continuous file", {
 
 test_that("Continuous data passed back to module parent", {
   testServer(data_input_panel_server, {
-    session$setInputs(metaoutcome = 'Continuous')
+    session$setInputs(metaoutcome = "Continuous")
     
     expect_equal(length(session$returned), 4)
     expect_equal(session$returned$data(), data())
@@ -77,10 +77,10 @@ test_that("Continuous data passed back to module parent", {
 
 test_that("Continuous long data matches between .csv and .xlsx files", {
   testServer(data_input_panel_server, {
-    session$setInputs(data = data.frame(datapath = 'Non_opioids_long.csv'), metaoutcome = 'Continuous')
+    session$setInputs(data = data.frame(datapath = "data/Non_opioids_long.csv"), metaoutcome = "Continuous")
     csv_data = data()
     
-    session$setInputs(data = data.frame(datapath = 'Non_opioids_long.xlsx'))
+    session$setInputs(data = data.frame(datapath = "data/Non_opioids_long.xlsx"))
     xlsx_data = data()
     
     expect_equal(xlsx_data, csv_data)
@@ -89,10 +89,10 @@ test_that("Continuous long data matches between .csv and .xlsx files", {
 
 test_that("Continuous wide data matches between .csv and .xlsx files", {
   testServer(data_input_panel_server, {
-    session$setInputs(data = data.frame(datapath = 'Non_opioids_wide.csv'), metaoutcome = 'Continuous')
+    session$setInputs(data = data.frame(datapath = "data/Non_opioids_wide.csv"), metaoutcome = "Continuous")
     csv_data = data()
     
-    session$setInputs(data = data.frame(datapath = 'Non_opioids_wide.xlsx'))
+    session$setInputs(data = data.frame(datapath = "data/Non_opioids_wide.xlsx"))
     xlsx_data = data()
     
     expect_equal(xlsx_data, csv_data)
@@ -101,7 +101,7 @@ test_that("Continuous wide data matches between .csv and .xlsx files", {
 
 test_that("Binary data registered as initially not uploaded", {
   testServer(data_input_panel_server, {
-    session$setInputs(metaoutcome = 'Binary')
+    session$setInputs(metaoutcome = "Binary")
     
     expect_false(data_uploaded())
   })
@@ -109,17 +109,17 @@ test_that("Binary data registered as initially not uploaded", {
 
 test_that("Binary data registered as uploaded on upload", {
   testServer(data_input_panel_server, {
-    session$setInputs(metaoutcome = 'Binary')
+    session$setInputs(metaoutcome = "Binary")
     
-    session$setInputs(data = data.frame(datapath = 'Certolizumab_long.csv'))
+    session$setInputs(data = data.frame(datapath = "data/Certolizumab_long.csv"))
     expect_true(data_uploaded())
   })
 })
 
 test_that("Treatments extracted from default binary file", {
   testServer(data_input_panel_server, {
-    session$setInputs(metaoutcome = 'Binary')
-    
+    session$setInputs(metaoutcome = "Binary")
+
     treatment_df <- data.frame(Number = seq(7),
                                Label = c('Placebo','Infliximab','Adalimumab','Tocilizumab','CZP','Rituximab', 'Etanercept'))
 
@@ -129,8 +129,8 @@ test_that("Treatments extracted from default binary file", {
 
 test_that("Treatments reordered from default binary file when reference selected", {
   testServer(data_input_panel_server, {
-    session$setInputs(metaoutcome = 'Binary')
-    
+    session$setInputs(metaoutcome = "Binary")
+
     session$setInputs(reference_treatment = 'CZP')
     treatment_df <- data.frame(Number = seq(7),
                                Label = c('CZP', 'Placebo','Infliximab','Adalimumab','Tocilizumab','Rituximab', 'Etanercept'))
@@ -141,7 +141,7 @@ test_that("Treatments reordered from default binary file when reference selected
 
 test_that("Data extracted from default binary file", {
   testServer(data_input_panel_server, {
-    session$setInputs(metaoutcome = 'Binary')
+    session$setInputs(metaoutcome = "Binary")
     
     expect_equal(colnames(data()), c('Study', 'T', 'N', 'R', 'covar.duration'),
                  label = format_vector_to_string(colnames(data())))
@@ -161,7 +161,7 @@ test_that("Data extracted from default binary file", {
 
 test_that("Binary data passed back to module parent", {
   testServer(data_input_panel_server, {
-    session$setInputs(metaoutcome = 'Binary')
+    session$setInputs(metaoutcome = "Binary")
     
     expect_equal(length(session$returned), 4)
     expect_equal(session$returned$data(), data())
@@ -173,10 +173,10 @@ test_that("Binary data passed back to module parent", {
 
 test_that("Binary long data matches between .csv and .xlsx files", {
   testServer(data_input_panel_server, {
-    session$setInputs(data = data.frame(datapath = 'Certolizumab_long.csv'), metaoutcome = 'Binary')
+    session$setInputs(data = data.frame(datapath = "data/Certolizumab_long.csv"), metaoutcome = "Binary")
     csv_data = data()
     
-    session$setInputs(data = data.frame(datapath = 'Certolizumab_long.xlsx'))
+    session$setInputs(data = data.frame(datapath = "data/Certolizumab_long.xlsx"))
     xlsx_data = data()
     
     expect_equal(xlsx_data, csv_data)
@@ -185,10 +185,10 @@ test_that("Binary long data matches between .csv and .xlsx files", {
 
 test_that("Binary wide data matches between .csv and .xlsx files", {
   testServer(data_input_panel_server, {
-    session$setInputs(data = data.frame(datapath = 'Certolizumab_wide.csv'), metaoutcome = 'Binary')
+    session$setInputs(data = data.frame(datapath = "data/Certolizumab_wide.csv"), metaoutcome = "Binary")
     csv_data = data()
     
-    session$setInputs(data = data.frame(datapath = 'Certolizumab_wide.xlsx'))
+    session$setInputs(data = data.frame(datapath = "data/Certolizumab_wide.xlsx"))
     xlsx_data = data()
     
     expect_equal(xlsx_data, csv_data)

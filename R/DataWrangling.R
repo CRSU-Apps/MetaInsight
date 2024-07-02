@@ -36,10 +36,21 @@
 #' @param data Data frame to clean
 #' @return Cleaned data frame
 CleanData <- function(data) {
-  return(dplyr::mutate(data, across(where(is.character), stringr::str_squish)))
+  # return(dplyr::mutate(data, across(where(is.character), stringr::str_squish)))
+  return(dplyr::mutate(data, across(where(is.character), .TidyStringItem)))
 }
 
-#' Convert wide format to long format (including covariate columns)
+#' Tidy a character column.
+#' 
+#' @param string A character vector to be tidied.
+#' @return Tidied character vector.
+.TidyStringItem <- function(string) {
+  tidied <- stringr::str_squish(string)
+  tidied[tidied == ""] <- NA
+  return(tidied)
+}
+
+#' Find all of the treatment names in the data, both for long and wide formats.
 #' 
 #' @param wide_data Data frame of wide format
 #' @param outcome_type Indicator whether outcome is 'Binary' or 'Continuous'
@@ -115,6 +126,7 @@ RemoveCovariates <- function(data) {
 #' @return Either "wide" or "long"
 FindDataShape <- function(data) {
   if ('T' %in% colnames(data)) {
+  # Regular expression explanation:
     return("long")
   } else {
     return("wide")

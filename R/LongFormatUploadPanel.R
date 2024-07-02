@@ -100,6 +100,6 @@ long_format_upload_panel_server <- function(id, metaoutcome) {
     output$metaoutcome <- reactive({ metaoutcome() })
     shiny::outputOptions(output, "metaoutcome", suspendWhenHidden = FALSE)
     
-    output$download_long_data <- create_raw_data_download_handler(metaoutcome, "MetaInsightdataLONG.csv", "Non_opioids_long.csv", "Certolizumab_long.csv")
+    output$download_long_data <- create_raw_data_download_handler(metaoutcome, "MetaInsightdataLONG.csv", "data/Non_opioids_long.csv", "data/Certolizumab_long.csv")
   })
 }

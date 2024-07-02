@@ -1,6 +1,6 @@
 
 test_that("Covariate title NA when not available", {
-  df <- read.csv("Cont_long.csv") %>%
+  df <- read.csv("data/Cont_long.csv") %>%
     CleanData()
   testServer(
     covariate_analysis_panel_server,
@@ -12,7 +12,7 @@ test_that("Covariate title NA when not available", {
 })
 
 test_that("Covariate title extracted from data when available", {
-  df <- read.csv("Cont_long_continuous_cov.csv") %>%
+  df <- read.csv("data/Cont_long_continuous_cov.csv") %>%
     CleanData()
   testServer(
     covariate_analysis_panel_server,
@@ -23,7 +23,7 @@ test_that("Covariate title extracted from data when available", {
   )
 })
 test_that("Covariate name NA when not available", {
-  df <- read.csv("Cont_long.csv") %>%
+  df <- read.csv("data/Cont_long.csv") %>%
     CleanData()
   testServer(
     covariate_analysis_panel_server,
@@ -35,7 +35,7 @@ test_that("Covariate name NA when not available", {
 })
 
 test_that("Covariate name extracted from data when available", {
-  df <- read.csv("Cont_long_continuous_cov.csv") %>%
+  df <- read.csv("data/Cont_long_continuous_cov.csv") %>%
     CleanData()
   
   testServer(

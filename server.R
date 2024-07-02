@@ -35,4 +35,14 @@ shinyServer(function(input, output, session) {
   
   user_guide_page_server(id = "user_guide")
   
+  # Reset the top bar to show the previously selected tab when the "Troubleshooting" tab is selected
+  top_bar_selection <- reactiveVal()
+  observe({
+    if (input$top_bar != "Troubleshooting") {
+      top_bar_selection(input$top_bar)
+    } else {
+      shiny::updateNavbarPage(inputId = "top_bar", selected = top_bar_selection())
+    }
+  })
+  
 })

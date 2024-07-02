@@ -33,7 +33,7 @@ bayesian_forest_plots_page_ui <- function(id) {
       column(
         width = 6,
         align = "center",
-        p(tags$strong("Results with studies excluded")),
+        p(tags$strong("Results with selected studies excluded")),
         p("Please click the button below to run each time after you finish the selection of studies, or change the radiobutton selections."),
         actionButton(inputId = ns("sub_do"), label = "Click here to run the sensitivity analysis")
       )

@@ -18,7 +18,7 @@ data_input_panel_ui <- function(id) {
       status = "info",
       width = '400px'
     ),
-    h4(tags$strong("Select a data file (.csv) to upload")),
+    h4(tags$strong("Select a data file (.csv or .xlsx) to upload")),
     p(
       tags$strong(
         "Files used before version 5.0 are no longer compatible.",
@@ -61,7 +61,7 @@ data_input_panel_ui <- function(id) {
 #'   - 'is_default_data' is TRUE if data is an example data set, else FALSE if data has been uploaded
 #'   - 'treatment_list' is the data frame containing the treatment ID ('Number') and the treatment name ('Label')
 #'   - 'metaoutcome' is the outcome type selected
-data_input_panel_server <- function(id, continuous_file = 'Non_opioids_long.csv', binary_file = 'Certolizumab_long.csv') {
+data_input_panel_server <- function(id, continuous_file = 'data/Non_opioids_long.csv', binary_file = 'data/Certolizumab_long.csv') {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
     
@@ -112,7 +112,14 @@ data_input_panel_server <- function(id, continuous_file = 'Non_opioids_long.csv'
         # if data is triggered without reload, only load the default data
         df <- defaultD()
       } else {
-        df <- rio::import(file = file1$datapath)
+        df <- tryCatch(
+          {
+            rio::import(file = file1$datapath)
+          },
+          error = function(err) {
+            return(NULL)
+          }
+        )
       }
       
       result = ValidateUploadedData(df, input$metaoutcome)
