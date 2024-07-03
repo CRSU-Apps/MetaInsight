@@ -25,32 +25,25 @@ data_analysis_page_ui <- function(id) {
             style = "warning"
           )
         ),
-        tags$style(
-          HTML("
-            .tabbable > .nav > li > a                  {background-color: white;  color:#2196c4}
-            .tabbable > .nav > li > a[data-value='1. Data summary'] {background-color: #2196c4;  color:white; font-size: 18px}
-            .tabbable > .nav > li > a[data-value='2. Frequentist network meta-analysis'] {background-color: #2196c4;   color:white; font-size: 18px}
-            .tabbable > .nav > li > a[data-value='3. Bayesian network meta-analysis'] {background-color: #2196c4;   color:white; font-size: 18px}
-            .tabbable > .nav > li > a[data-value='4. Meta-regression'] {background-color: #2196c4;   color:white; font-size: 18px}
-            .tabbable > .nav > li[class=active]    > a {font-weight:900;font-style: italic;text-decoration: underline }
-            "
-          )
-        ),
         tabsetPanel(
           tabPanel(
             title = paste0(page_numbering$AddChild(), " Data summary"),
+            value = "data-summary",
             data_summary_panel_ui(id = ns("data_summary"), page_numbering)
           ),
           tabPanel(
             title = paste0(page_numbering$AddChild(), " Frequentist network meta-analysis"),
+            value = "frequentist-analysis",
             frequentist_analysis_panel_ui(id = ns("frequentist_analysis"), page_numbering)
           ),
           tabPanel(
             title = paste0(page_numbering$AddChild(), " Bayesian network meta-analysis"),
+            value = "bayesian-analysis",
             bayesian_analysis_panel_ui(id = ns("bayesian_analysis"), page_numbering)
           ),
           tabPanel(
-            title = paste0(page_numbering$AddChild(), " Meta-regression"),
+            title = span(page_numbering$AddChild(), " Meta-regression", tags$sup("beta")),
+            value = "meta-regression",
             meta_regression_tab_ui(id = ns("meta_regression"), page_numbering)
           )
         )
