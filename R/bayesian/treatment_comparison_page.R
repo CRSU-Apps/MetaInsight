@@ -33,13 +33,11 @@ bayesian_treatment_comparisons_page_ui <- function(id) {
 #' @param id ID of the module
 #' @param model Reactive containing bayesian meta-analysis for all studies
 #' @param model_sub Reactive containing meta-analysis with studies excluded
-#' @param metaoutcome Reactive containing meta analysis outcome: "Continuous" or "Binary"
 #' @param outcome_measure Reactive containing meta analysis outcome measure: "MD", "SMD", "OR, "RR", or "RD"
 bayesian_treatment_comparisons_page_server <- function(
     id,
     model,
     model_sub,
-    metaoutcome,
     outcome_measure
     ) {
   moduleServer(id, function(input, output, session) {
@@ -47,27 +45,27 @@ bayesian_treatment_comparisons_page_server <- function(
 
     # Treatment effects for all studies
     output$baye_comparison <- renderTable ({
-      baye_comp(model(), metaoutcome(), outcome_measure())
+      baye_comp(model(), outcome_measure())
     }, rownames=TRUE, colnames = TRUE
     )
 
     # Treatment effects with studies excluded
     output$baye_comparison_sub <- renderTable ({
-      baye_comp(model_sub(), metaoutcome(), outcome_measure())
+      baye_comp(model_sub(), outcome_measure())
     }, rownames=TRUE, colnames = TRUE
     )
 
     output$downloadbaye_comparison <- downloadHandler(
       filename = 'baye_comparison.csv',
       content = function(file) {
-        write.csv(baye_comp(model(), metaoutcome(), outcome_measure()), file)
+        write.csv(baye_comp(model(), outcome_measure()), file)
       }
     )
 
     output$downloadbaye_comparison_sub <- downloadHandler(
       filename = 'baye_comparison_sub.csv',
       content = function(file) {
-        write.csv(baye_comp(model_sub(), metaoutcome(), outcome_measure()), file)
+        write.csv(baye_comp(model_sub(), outcome_measure()), file)
       }
     )
   })

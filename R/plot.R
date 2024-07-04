@@ -155,7 +155,7 @@ make_Incon <- function(freq, modelranfix) {
 #' @param bayesmin x-axis limit minimum.
 #' @param bayesmax x-axis limit maximum.
 #' @return Forest plot created by gemtc::forest().
-make_Forest <- function(model, metaoutcome, bayesmin, bayesmax) {
+CreateForestPlot <- function(model, metaoutcome, bayesmin, bayesmax) {
   if (metaoutcome == "Binary") {
     return(gemtc::forest(model$mtcRelEffects, digits = 3, xlim = c(log(bayesmin), log(bayesmax))))
   } else if (metaoutcome == "Continuous") {
@@ -173,12 +173,14 @@ make_Forest <- function(model, metaoutcome, bayesmin, bayesmax) {
 #' @param metaoutcome "Continuous" or "Binary".
 #' @param outcome_measure "MD", "SMD", "OR", "RR", or "RD".
 #' @return Relative effects table created by gemtc::relative.effect.table().
-baye_comp <- function(model, metaoutcome, outcome_measure){
-  tbl <- gemtc::relative.effect.table(model$mtcResults)
-  if ((metaoutcome == "Binary") & (outcome_measure != "RD")) {
-    tbl <- exp(tbl)
-  } 
-  return(as.data.frame(round(tbl, digits = 2)))
+baye_comp <- function(model, outcome_measure){
+  if (outcome_measure %in% c('OR', 'RR')) {
+    return(as.data.frame(round(exp(model$rel_eff_tbl), digits = 2)))
+  } else if (outcome_measure %in% c('RD', 'MD', 'SMD')) {
+    return(as.data.frame(round(model$rel_eff_tbl, digits = 2)))
+  } else {
+    stop("outcome_measure has to be 'OR', 'RR', 'RD', 'MD', or 'SMD'.")
+  }
 }
 
 
@@ -208,8 +210,9 @@ make_netgraph_rank = function(freq, order) {
 #' @param SUCRAData SUCRA data, created by rankdata().
 #' @param ColourData Colour data, created by rankdata().
 #' @param colourblind TRUE for colourblind friendly colours (default = FALSE).
+#' @param regression_text Text to show for regression (default = "").
 #' @return Litmus rank-o-gram.
-LitmusRankOGram <- function(CumData, SUCRAData, ColourData, colourblind = FALSE) {
+LitmusRankOGram <- function(CumData, SUCRAData, ColourData, colourblind=FALSE, regression_text="") {    #CumData needs Treatment, Rank, Cumulative_Probability and SUCRA; SUCRAData needs Treatment & SUCRA; COlourData needs SUCRA & colour; colourblind friendly option; regression annotation text
   # Basic Rankogram #
   Rankogram <- ggplot(CumData, aes(x = Rank, y = Cumulative_Probability, group = Treatment)) +
     geom_line(aes(colour = SUCRA)) + theme_classic() + theme(legend.position = "none", aspect.ratio = 1) +
@@ -239,7 +242,11 @@ LitmusRankOGram <- function(CumData, SUCRAData, ColourData, colourblind = FALSE)
                                                values = c(0, 0.33, 0.66, 1), limits = c(0,100))
   }
   # Combo! #
-  Combo <- A + B    # '+' functionality from {patchwork}
+  if (regression_text != "") {
+    Combo <- A + B + patchwork::plot_annotation(caption = regression_text)
+  } else {
+    Combo <- A + B    # '+' functionality from {patchwork}
+  }
   Combo + theme(plot.margin = margin(t = 0, r = 0, b = 0, l = 0))
 }
 
@@ -251,8 +258,9 @@ LitmusRankOGram <- function(CumData, SUCRAData, ColourData, colourblind = FALSE)
 #' @param ColourData Colour data, created by rankdata().
 #' @param BUGSnetData Output created by BUGSnet functions in rankdata().
 #' @param colourblind TRUE for colourblind friendly colours (default = FALSE).
+#' @param regression_text Text to show for regression (default = "").
 #' @return Radial SUCRA plot.
-RadialSUCRA <- function(SUCRAData, ColourData, BUGSnetData, colourblind = FALSE) {
+RadialSUCRA <- function(SUCRAData, ColourData, BUGSnetData, colourblind=FALSE, regression_text="") {      # SUCRAData needs Treatment & Rank; ColourData needs SUCRA & colour; colourblind friendly option; regression annotation text
   n <- nrow(SUCRAData) # number of treatments
   # Add values to angle and adjust radial treatment labels
   SUCRAData <- SUCRAData[order(-SUCRAData$SUCRA), ]
@@ -400,6 +408,10 @@ RadialSUCRA <- function(SUCRAData, ColourData, BUGSnetData, colourblind = FALSE)
   Final <- magick::image_composite(Final,Points)
   Finalplot <- cowplot::ggdraw() +
     cowplot::draw_image(Final)
+  if (regression_text != "") {
+    Finalplot <- Finalplot + 
+      cowplot::draw_label(regression_text, x = 0.95, y = 0.05, hjust = 1, size = 10)
+  }
   Background <- magick::image_read('BackgroundA.png')
   Network <- magick::image_read('NetworkA.png')
   Points <- magick::image_read('PointsA.png')
@@ -407,6 +419,10 @@ RadialSUCRA <- function(SUCRAData, ColourData, BUGSnetData, colourblind = FALSE)
   Final <- magick::image_composite(Final,Points)
   Finalalt <- cowplot::ggdraw() +
     cowplot::draw_image(Final)
+  if (regression_text != "") {
+    Finalalt <- Finalalt + 
+      cowplot::draw_label(regression_text, x = 0.95, y = 0.05, hjust = 1, size = 10)
+  }
   
   file.remove('BackgroundO.png')
   file.remove('NetworkO.png')
@@ -438,8 +454,8 @@ rank_probs_table = function(data) {
 #' 
 #' @param model Various model output created by baye().
 #' @return UME scatter plot created by umeplot.df().
-scat_plot = function(model){   
-  x <- gemtc::mtc.deviance({model$mtcResults})
+scat_plot = function(model) {
+  x <- gemtc::mtc.deviance(model$mtcResults)
   c <- data.frame(x$dev.ab)
   umeplot.df(c = c, mtcNetwork = model$mtcNetwork, model = model$model, outcome = model$outcome)
 }
@@ -450,11 +466,21 @@ scat_plot = function(model){
 #' 
 #' @param model Various model output created by baye().
 #' @return Stemplot created by stemplot.df().
-stemplot <- function(model) {   
-  x <- gemtc::mtc.deviance({model$mtcResults})
-  c <- data.frame(x$dev.ab)
-  c$names <- rownames(c)
-  return(stemplot.df(c = c, x = x))
+stemplot <- function(model, package = "gemtc") {
+  if (package == "gemtc") {
+    x <- mtc.deviance(model$mtcResults)
+    c <- data.frame(x$dev.ab)
+    c$names <- rownames(c)
+  } else if (package == "bnma") {
+    #In gemtc the only element of mtc.deviance(model$mtcResults) that is used in the plot is $dev.ab, so this is the only thing that needs to be passed to x.
+    x <- list(dev.ab = model$deviance$dev_arm)
+    c <- data.frame(x$dev.ab)
+    #The arm-level deviances in bnma are not named, so the study names cannot come from rownames(c) as they do in gemtc.
+    c$names <- unname(model$network$Study.order)
+  } else {
+    stop("package must be 'gemtc' or 'bnma'")
+  }
+  return(stemplot.df(c, x))
 }
 
 
@@ -463,15 +489,50 @@ stemplot <- function(model) {
 #' 
 #' @param model Various model output created by baye().
 #' @return Leverage plot created by levplot.df().
-levplot <- function(model) {    
-  x <- gemtc::mtc.deviance({model$mtcResults})
+levplot <- function(model, package = "gemtc") {
+  if (package == "gemtc") {
+    x <- mtc.deviance(model$mtcResults)
+  } else if (package == "bnma") {
+    #These are the only elements of mtc.deviance(model$mtcResults) that are used in the plot, so these are the only things that needs to be passed to x.
+    x <- list(dev.ab = model$deviance$dev_arm,
+              fit.ab = model$deviance$devtilda_arm,
+              dev.re = NULL,
+              fit.re = NULL,
+              nd.ab = model$network$na,
+              nd.re = NULL
+              )
+  } else {
+    stop("package must be 'gemtc' or 'bnma'")
+  }
   return(levplot.df(x))
 }
 
 
+#' Creates a Gelman plot for a BNMA baseline-risk model.
+#' 
+#' @param gelman_plot Output from coda::gelman.plot(bnma_model$samples[, parm]), where parm is a parameter from 'bnma_model'.
+#' @param parameter The parameter from the previous argument, used as the title.
+#' @return Reproduces the Gelman plot mentioned in @param gelman_plot as a plot that can be put in a grid.
+BnmaGelmanPlot <- function(gelman_plot, parameter){
+  y_vals_median <- gelman_plot$shrink[, , "median"]
+  y_vals_975 <- gelman_plot$shrink[, , "97.5%"]
+  x_vals <- gelman_plot$last.iter
+  
+  plot(x_vals, y_vals_975, type = "l", col = "red", lty = 2, ylab = "shrink factor",
+       xlab = "last iteration in chain", cex.lab = 1.5, cex.main = 1.5, main = parameter)
+  lines(x_vals, y_vals_median, type = "l")
+  lines(c(-max(x_vals)/5, max(x_vals)), c(1, 1))
+  legend("topright", legend = c("median", "97.5%"), lty = c(1, 2), col = c("black", "red"))
+}
 
 
-
-
-
-
+#' Creates Gelman plots for a BNMA baseline-risk model.
+#' 
+#' @param gelman_plots List of outputs from coda::gelman.plot(bnma_model$samples[, parm]), where parm is a parameter from bnma_model.
+#' @param parameters Vector of parameters mentioned in the previous argument.
+#' @return Plots the Gelman plots mentioned in @param gelman_plots.
+BnmaGelmanPlots <- function(gelman_plots, parameters){
+  for (i in 1:length(parameters)) {
+    BnmaGelmanPlot(gelman_plot = gelman_plots[[i]], parameter = parameters[i])
+  }
+}

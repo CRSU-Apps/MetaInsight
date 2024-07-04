@@ -3,12 +3,15 @@
 #' 
 #' @param id ID of the module
 #' @return Div for the panel
-frequentist_analysis_panel_ui <- function(id) {
+frequentist_analysis_panel_ui <- function(id, page_numbering) {
   ns <- NS(id)
-  div(
+  
+  page_numbering$DiveLevel()
+  
+  ui = div(
     tabsetPanel(
       tabPanel(
-        title = "2a. Forest Plot",
+        title = paste0(page_numbering$AddChild(), " Forest Plot"),
         column(
           width = 6,
           uiOutput(outputId = ns("FreqForestPlot")),
@@ -17,12 +20,12 @@ frequentist_analysis_panel_ui <- function(id) {
             column(
               width = 6,
               align = 'center',
-              numericInput(inputId = ns('freqmin'), label = "Minimum", value = 0.1)
+              numericInput(inputId = ns('freqmin'), label = "Minimum", value = 0, step = 0.1)
             ),
             column(
               width = 6,
               align = 'center',
-              numericInput(inputId = ns('freqmax'), label = "Maximum", value = 5)
+              numericInput(inputId = ns('freqmax'), label = "Maximum", value = 5, step = 1)
             )
           ),
           textOutput(outputId = ns("textcomp")),
@@ -43,12 +46,12 @@ frequentist_analysis_panel_ui <- function(id) {
             column(
               width = 6,
               align = 'center',
-              numericInput(inputId = ns('freqmin_sub'), label = "Minimum", value = 0.1)
+              numericInput(inputId = ns('freqmin_sub'), label = "Minimum", value = 0, step = 0.1)
             ),
             column(
               width = 6,
               align = 'center',
-              numericInput(inputId = ns('freqmax_sub'), label = "Maximum", value = 5)
+              numericInput(inputId = ns('freqmax_sub'), label = "Maximum", value = 5, step = 1)
             )
           ),
 
@@ -74,7 +77,7 @@ frequentist_analysis_panel_ui <- function(id) {
         )
       ),
       tabPanel(
-        title = "2b. Comparison of all treatment pairs",
+        title = paste0(page_numbering$AddChild(), " Comparison of all treatment pairs"),
         helpText("Treatments are ranked from best to worst along the leading diagonal. Above the leading diagonal are estimates from pairwise meta-analyses, below the leading diagonal are estimates from network meta-analyses"),
         helpText("Relative treatment effects in ranked order for all studies"),
         tableOutput(outputId = ns("rankChartStatic")),
@@ -84,7 +87,7 @@ frequentist_analysis_panel_ui <- function(id) {
         downloadButton(outputId = ns('downloadRankUpdate'), label = "Download")
       ),
       tabPanel(
-        title = "2c. Inconsistency",
+        title = paste0(page_numbering$AddChild(), " Inconsistency"),
         helpText("Assessment of inconsistency for all studies"),
         tableOutput(outputId = ns("Incon1")),
         downloadButton(outputId = ns('downloadIncon'), label = "Download"),
@@ -94,6 +97,10 @@ frequentist_analysis_panel_ui <- function(id) {
       )
     )
   )
+  
+  page_numbering$FloatLevel()
+  
+  return(ui)
 }
 
 
@@ -134,17 +141,18 @@ frequentist_analysis_panel_server <- function(
     
     # forest min and max values different if continuous/binary
     observe({
-      x <- metaoutcome()
-      if (x =='Binary') {
-        updateNumericInput(inputId = "freqmin", value=0.1)
-        updateNumericInput(inputId = "freqmin_sub", value=0.1)
-        updateNumericInput(inputId = "freqmax", value=5)
-        updateNumericInput(inputId = "freqmax_sub", value=5)
+      if (outcome_measure() %in% c('OR', 'RR')) {
+        updateNumericInput(inputId = "freqmin", value = 0.1, step = 0.1)
+        updateNumericInput(inputId = "freqmin_sub", value = 0.1, step = 0.1)
+        updateNumericInput(inputId = "freqmax", value = 5)
+        updateNumericInput(inputId = "freqmax_sub", value = 5)
+      } else if (outcome_measure() %in% c('MD', 'SMD', 'RD')) {
+        updateNumericInput(inputId = "freqmin", value = -10, step = 1)
+        updateNumericInput(inputId = "freqmin_sub", value = -10, step = 1)
+        updateNumericInput(inputId = "freqmax", value = 10)
+        updateNumericInput(inputId = "freqmax_sub", value = 10)
       } else {
-        updateNumericInput(inputId = "freqmin", value=-10)
-        updateNumericInput(inputId = "freqmin_sub", value=-10)
-        updateNumericInput(inputId = "freqmax", value=10)
-        updateNumericInput(inputId = "freqmax_sub", value=10)
+        paste0("outcome_measure needs to be 'OR', 'RR', 'RD', 'MD', or 'SMD'")
       }
     })
 

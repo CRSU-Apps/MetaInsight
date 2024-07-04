@@ -34,7 +34,7 @@ frequentist <- function(data, metaoutcome, treatment_list, outcome_measure, mode
 #' @return Input data in long format.
 entry.df <- function(data, CONBI) {
   newData1 <- as.data.frame(data)
-  if (ncol(newData1)==6 | ncol(newData1)==5){
+  if (FindDataShape(newData1) == "long") {
     newData2<-newData1[order(newData1$StudyID, -newData1$T), ]
     newData2$number<- ave(as.numeric(newData2$StudyID),newData2$StudyID,FUN=seq_along)  # create counting variable for number of arms within each study.
     data_wide <- reshape(newData2, timevar = "number",idvar = c("Study", "StudyID"), direction = "wide") # reshape

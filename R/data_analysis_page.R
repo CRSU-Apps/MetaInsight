@@ -5,6 +5,9 @@
 #' @return Div for the data analysis page
 data_analysis_page_ui <- function(id) {
   ns <- NS(id)
+  
+  page_numbering <- PageNumbering$new()
+  
   div(
     sidebarLayout(
       sidebarPanel(
@@ -22,33 +25,26 @@ data_analysis_page_ui <- function(id) {
             style = "warning"
           )
         ),
-        tags$style(
-          HTML("
-            .tabbable > .nav > li > a                  {background-color: white;  color:#2196c4}
-            .tabbable > .nav > li > a[data-value='1. Data summary'] {background-color: #2196c4;  color:white; font-size: 18px}
-            .tabbable > .nav > li > a[data-value='1a. Study Results'] {background-color: white;}
-            .tabbable > .nav > li > a[data-value='1b. Network Plot'] {background-color: white;}
-            .tabbable > .nav > li > a[data-value='2. Frequentist network meta-analysis'] {background-color: #2196c4;   color:white; font-size: 18px}
-            .tabbable > .nav > li > a[data-value='2a. Forest Plot'] {background-color: white}
-            .tabbable > .nav > li > a[data-value='2b. Comparison of all treatment pairs'] {background-color: white;}
-            .tabbable > .nav > li > a[data-value='2c. Inconsistency'] {background-color: white;}
-            .tabbable > .nav > li > a[data-value='3. Bayesian network meta-analysis'] {background-color: #2196c4;   color:white; font-size: 18px}
-            .tabbable > .nav > li[class=active]    > a {font-weight:900;font-style: italic;text-decoration: underline }
-            "
-          )
-        ),
         tabsetPanel(
           tabPanel(
-            title = "1. Data summary",
-            data_summary_panel_ui(id = ns("data_summary"))
+            title = paste0(page_numbering$AddChild(), " Data summary"),
+            value = "data-summary",
+            data_summary_panel_ui(id = ns("data_summary"), page_numbering)
           ),
           tabPanel(
-            title = "2. Frequentist network meta-analysis",
-            frequentist_analysis_panel_ui(id = ns("frequentist_analysis"))
+            title = paste0(page_numbering$AddChild(), " Frequentist network meta-analysis"),
+            value = "frequentist-analysis",
+            frequentist_analysis_panel_ui(id = ns("frequentist_analysis"), page_numbering)
           ),
           tabPanel(
-            title = "3. Bayesian network meta-analysis",
-            bayesian_analysis_panel_ui(id = ns("bayesian_analysis"))
+            title = paste0(page_numbering$AddChild(), " Bayesian network meta-analysis"),
+            value = "bayesian-analysis",
+            bayesian_analysis_panel_ui(id = ns("bayesian_analysis"), page_numbering)
+          ),
+          tabPanel(
+            title = span(page_numbering$AddChild(), " Meta-regression", tags$sup("beta")),
+            value = "meta-regression",
+            meta_regression_tab_ui(id = ns("meta_regression"), page_numbering)
           )
         )
       )
@@ -68,6 +64,7 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, m
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
     
+    non_covariate_data <- reactive({ RemoveCovariates(data()) })
     
     OpenDataTable <- function() {
       updateCollapse(session, "collapse", open = "Data table (Click to open / hide this panel)")
@@ -95,28 +92,22 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, m
 
     # Make frequentist function (in fn_analysis.R) reactive - NVB
     freq_all <- reactive({
-      return(frequentist(data = data(), metaoutcome = metaoutcome(), treatment_list = treatment_df(),
-                         outcome_measure = outcome_measure(), modelranfix = model_effects())
-             )
+      return(frequentist(non_covariate_data(), metaoutcome(), treatment_df(), outcome_measure(), model_effects()))
     })
 
     # Make frequentist function (in fn_analysis.R) reactive with excluded studies - NVB
     freq_sub <- reactive({
-      return(frequentist(data = data(), metaoutcome = metaoutcome(), treatment_list = treatment_df(),
-                         outcome_measure = outcome_measure(), modelranfix = model_effects(), excluded = exclusions())
-             )
+      return(frequentist(non_covariate_data(), metaoutcome(), treatment_df(), outcome_measure(), model_effects(), exclusions()))
     })
 
     # Make bugsnetdata function (in analysis_generic.R) reactive - NVB
     bugsnetdt <- reactive({
-      return(bugsnetdata(data = data(), metaoutcome = metaoutcome(), treatment_list = treatment_df()))
+      return(bugsnetdata(non_covariate_data(), metaoutcome(), treatment_df()))
     })
 
     # Make ref_alter function (in analysis_generic.R) reactive - NVB
     reference_alter <- reactive({
-      return(ref_alter(data = data(), metaoutcome = metaoutcome(), excluded = exclusions(),
-                       treatment_list = treatment_df())
-             )
+      return(ref_alter(non_covariate_data(), metaoutcome(), exclusions(), treatment_df()))
     })
     
     ### Get data for data table
@@ -124,7 +115,7 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, m
     
     filtertable <- function() {
       label <- treatment_df()
-      dt <- data()
+      dt <- non_covariate_data()
       ntx <- nrow(label)
       dt$T <- factor(dt$T,
                      levels = c(1:ntx),
@@ -207,6 +198,22 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, m
       freq_sub = freq_sub,
       bugsnetdt = bugsnetdt,
       reference_alter = reference_alter
+    )
+    
+    ############################
+    #### 4. Meta-regression ####
+    ############################
+    meta_regression_tab_server(
+      id = "meta_regression",
+      all_data = data,
+      treatment_df = treatment_df,
+      reference_treatment = reactive({ reference_alter()$ref_all }),
+      metaoutcome = metaoutcome,
+      outcome_measure = outcome_measure,
+      model_effects = model_effects,
+      rank_option = rank_option,
+      freq_all = freq_all,
+      bugsnetdt = bugsnetdt
     )
   })
 }

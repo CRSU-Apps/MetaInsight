@@ -90,20 +90,22 @@ rankogram_panel_ui <- function(id, table_label) {
 #' @param id ID of the module.
 #' @param ranking_data Reactive containing ranking data.
 #' @param filename_prefix Prefix to add before file names.
+#' @param regression_text Regression annotation if needed
 rankogram_panel_server <- function(
     id,
     ranking_data,
-    filename_prefix
+    filename_prefix,
+    regression_text
     ) {
   moduleServer(id, function(input, output, session) {
 
     # All rank plots in one function for easier loading when switching options #
     Rankplots <- reactive({
       plots <- list()
-      plots$Litmus <- LitmusRankOGram(CumData = ranking_data()$Cumulative, SUCRAData = ranking_data()$SUCRA, ColourData = ranking_data()$Colour, colourblind = FALSE)
-      plots$Radial <- RadialSUCRA(SUCRAData = ranking_data()$SUCRA, ColourData = ranking_data()$Colour, BUGSnetData = ranking_data()$BUGSnetData, colourblind = FALSE)
-      plots$Litmus_blind <- LitmusRankOGram(CumData = ranking_data()$Cumulative, SUCRAData = ranking_data()$SUCRA, ColourData = ranking_data()$Colour, colourblind = TRUE)
-      plots$Radial_blind <- RadialSUCRA(SUCRAData = ranking_data()$SUCRA, ColourData = ranking_data()$Colour, BUGSnetData = ranking_data()$BUGSnetData, colourblind = TRUE)
+      plots$Litmus <- LitmusRankOGram(CumData = ranking_data()$Cumulative, SUCRAData = ranking_data()$SUCRA, ColourData = ranking_data()$Colour, colourblind = FALSE, regression_text = regression_text())
+      plots$Radial <- RadialSUCRA(SUCRAData = ranking_data()$SUCRA, ColourData = ranking_data()$Colour, BUGSnetData = ranking_data()$BUGSnetData, colourblind = FALSE, regression_text = regression_text())
+      plots$Litmus_blind <- LitmusRankOGram(CumData = ranking_data()$Cumulative, SUCRAData = ranking_data()$SUCRA, ColourData = ranking_data()$Colour, colourblind = TRUE, regression_text = regression_text())
+      plots$Radial_blind <- RadialSUCRA(SUCRAData = ranking_data()$SUCRA, ColourData = ranking_data()$Colour, BUGSnetData = ranking_data()$BUGSnetData, colourblind = TRUE, regression_text = regression_text())
       return(plots)
     })
 
@@ -161,7 +163,7 @@ rankogram_panel_server <- function(
       }
     )
 
-    # Table of Probabilities (need to include SUCRA and have it as a collapsible table)
+    # Table of Probabilities (need to include SUCRA and have it as a collapsable table)
     output$rank_probs <- renderTable(
       {
         rank_probs_table(ranking_data())
