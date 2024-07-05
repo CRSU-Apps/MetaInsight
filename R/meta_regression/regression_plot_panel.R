@@ -166,7 +166,7 @@ regression_plot_panel_ui <- function(id) {
             choiceNames = list(
               .AddRegressionOptionTooltip(
                 tags$html("% Contribution", tags$i(class="fa-regular fa-circle-question")),
-                tooltip = "Circles scaled by percentage contribution of each study to each treatment regression"
+                tooltip = "Circles scaled by percentage contribution of each study to each parameter"
               ),
               .AddRegressionOptionTooltip(
                 tags$html("Absolute contribution", tags$i(class="fa-regular fa-circle-question")),
@@ -418,7 +418,7 @@ regression_plot_panel_server <- function(id, data, covariate_title, covariate_na
       if (!is.null(contributions_failed())) {
         return(
           div(
-            glue::glue("{contributions_failed()} contribution matrix cannot be calculated"), tags$i(class="fa-regular fa-circle-question"),
+            glue::glue("Contribution matrix cannot be calculated"), tags$i(class="fa-regular fa-circle-question"),
             style = "color: #ff0000;",
             title = "This possibly indicates a poorly fitting model. Please check model diagnostics in the Result Details and Deviance Report tabs"
           )
