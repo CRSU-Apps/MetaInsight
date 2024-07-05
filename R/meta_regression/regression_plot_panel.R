@@ -65,26 +65,26 @@ regression_plot_panel_ui <- function(id) {
       ),
       sidebarPanel = sidebarPanel(
         width = 3,
-        # Add comparators
+        # Add treatments
         selectInput(
-          inputId = ns("add_comparator_dropdown"),
+          inputId = ns("add_treatment_dropdown"),
           label = .AddRegressionOptionTooltip(
-            tags$html("Add Comparator", tags$i(class="fa-regular fa-circle-question")),
+            tags$html("Add treatment", tags$i(class="fa-regular fa-circle-question")),
             tooltip = "All treatments are compared to the reference treatment"
           ),
           choices = c(),
           selectize = FALSE
         ),
-        actionButton(inputId = ns("add_comparator_btn"), label = "Add to plot"),
+        actionButton(inputId = ns("add_treatment_btn"), label = "Add to plot"),
         div(
           style = "float: right;",
           actionButton(inputId = ns("add_all_btn"), label = "Add all")
         ),
         br(),
         br(),
-        # Remove comparators
-        selectInput(inputId = ns("remove_comparator_dropdown"), label = "Remove Comparator", choices = c(), selectize = FALSE),
-        actionButton(inputId = ns("remove_comparator_btn"), label = "Remove"),
+        # Remove treatments
+        selectInput(inputId = ns("remove_treatment_dropdown"), label = "Remove treatment", choices = c(), selectize = FALSE),
+        actionButton(inputId = ns("remove_treatment_btn"), label = "Remove"),
         div(
           style = "float: right;",
           actionButton(inputId = ns("remove_all_btn"), label = "Remove all")
@@ -240,42 +240,42 @@ regression_plot_panel_server <- function(id, data, covariate_title, covariate_na
     available_to_add <- reactive({
       raw_labels = treatment_df()$RawLabel
       raw_reference = treatment_df()$RawLabel[treatment_df()$Label == model_output()$reference_name]
-      return(raw_labels[(raw_labels != raw_reference) & !(raw_labels %in% added_comparators())])
+      return(raw_labels[(raw_labels != raw_reference) & !(raw_labels %in% added_treatments())])
     })
     
-    added_comparators <- reactiveVal(c())
+    added_treatments <- reactiveVal(c())
     
-    # Add comparator on button click
+    # Add treatment on button click
     observe({
-      added = unique(c(added_comparators(), input$add_comparator_dropdown))
-      added_comparators(added)
+      added = unique(c(added_treatments(), input$add_treatment_dropdown))
+      added_treatments(added)
     }) |>
-      bindEvent(input$add_comparator_btn)
+      bindEvent(input$add_treatment_btn)
     
-    # Add all comparators on button click
+    # Add all treatments on button click
     observe({
-      added = unique(c(added_comparators(), available_to_add()))
-      added_comparators(added)
+      added = unique(c(added_treatments(), available_to_add()))
+      added_treatments(added)
     }) |>
       bindEvent(input$add_all_btn)
     
-    # Remove comparator on button click
+    # Remove treatment on button click
     observe({
-      added = added_comparators()[added_comparators() != input$remove_comparator_dropdown]
-      added_comparators(added)
+      added = added_treatments()[added_treatments() != input$remove_treatment_dropdown]
+      added_treatments(added)
     }) |>
-      bindEvent(input$remove_comparator_btn, ignoreNULL = FALSE)
+      bindEvent(input$remove_treatment_btn, ignoreNULL = FALSE)
     
-    # Remove all comparators on button click
+    # Remove all treatments on button click
     observe({
-      added_comparators(character())
+      added_treatments(character())
     }) |>
       bindEvent(input$remove_all_btn, ignoreNULL = FALSE)
     
-    # Update inputs on added comparators change
+    # Update inputs on added treatments change
     observe({
-      updateSelectInput(inputId = "add_comparator_dropdown", choices = available_to_add())
-      updateSelectInput(inputId = "remove_comparator_dropdown", choices = added_comparators())
+      updateSelectInput(inputId = "add_treatment_dropdown", choices = available_to_add())
+      updateSelectInput(inputId = "remove_treatment_dropdown", choices = added_treatments())
     })
     
     # Disable opacity when confidence regions not shown
@@ -441,11 +441,11 @@ regression_plot_panel_server <- function(id, data, covariate_title, covariate_na
       }
     })
     
-    comparator_titles <- reactive({
-      if (length(added_comparators()) == 0) {
-        comparators <- c()
+    treatment_titles <- reactive({
+      if (length(added_treatments()) == 0) {
+        treatments <- c()
       } else {
-        comparators <- sapply(added_comparators(), function(treatment) { treatment_df()$Label[treatment_df()$RawLabel == treatment] })
+        treatments <- sapply(added_treatments(), function(treatment) { treatment_df()$Label[treatment_df()$RawLabel == treatment] })
       }
     })
     
@@ -454,7 +454,7 @@ regression_plot_panel_server <- function(id, data, covariate_title, covariate_na
         model_output = model_output(),
         treatment_df = treatment_df(),
         outcome_measure = outcome_measure(),
-        comparators = comparator_titles(),
+        comparators = treatment_titles(),
         contribution_matrix = contribution_matrix(),
         contribution_type = input$absolute_relative_toggle,
         confidence_regions = confidence_regions$result(),
@@ -482,7 +482,7 @@ regression_plot_panel_server <- function(id, data, covariate_title, covariate_na
             model_output = model_output(),
             treatment_df = treatment_df(),
             outcome_measure = outcome_measure(),
-            comparators = comparator_titles(),
+            comparators = treatment_titles(),
             contribution_matrix = contribution_matrix(),
             contribution_type = input$absolute_relative_toggle,
             confidence_regions = confidence_regions$result(),
