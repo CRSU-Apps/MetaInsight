@@ -65,7 +65,7 @@ regression_plot_panel_ui <- function(id) {
       ),
       sidebarPanel = sidebarPanel(
         width = 3,
-        add_remove_panel_ui(id = ns("added_treatments")),
+        add_remove_panel_ui(id = ns("added_comparators")),
         
         h3("Plot Options"),
         # Covariate value
@@ -214,7 +214,7 @@ regression_plot_panel_server <- function(id, data, covariate_title, covariate_na
       NULL
     })
     
-    added_treatments <- add_remove_panel_server(id = "added_treatments", reactive({ treatment_df()$RawLabel }), reference)
+    added_comparators <- add_remove_panel_server(id = "added_comparators", reactive({ treatment_df()$RawLabel }), reference)
     
     # Disable opacity when confidence regions not shown
     observe({
@@ -379,11 +379,11 @@ regression_plot_panel_server <- function(id, data, covariate_title, covariate_na
       }
     })
     
-    treatment_titles <- reactive({
-      if (length(added_treatments()) == 0) {
-        treatments <- c()
+    comparator_titles <- reactive({
+      if (length(added_comparators()) == 0) {
+        comparators <- c()
       } else {
-        treatments <- sapply(added_treatments(), function(treatment) { treatment_df()$Label[treatment_df()$RawLabel == treatment] })
+        comparators <- sapply(added_comparators(), function(comparator) { treatment_df()$Label[treatment_df()$RawLabel == comparator] })
       }
     })
     
@@ -395,7 +395,7 @@ regression_plot_panel_server <- function(id, data, covariate_title, covariate_na
             model_output = model_output(),
             treatment_df = treatment_df(),
             outcome_measure = outcome_measure(),
-            comparators = treatment_titles(),
+            comparators = comparator_titles(),
             contribution_matrix = contribution_matrix(),
             contribution_type = input$absolute_relative_toggle,
             confidence_regions = confidence_regions$result(),
@@ -434,7 +434,7 @@ regression_plot_panel_server <- function(id, data, covariate_title, covariate_na
             model_output = model_output(),
             treatment_df = treatment_df(),
             outcome_measure = outcome_measure(),
-            comparators = treatment_titles(),
+            comparators = comparator_titles(),
             contribution_matrix = contribution_matrix(),
             contribution_type = input$absolute_relative_toggle,
             confidence_regions = confidence_regions$result(),
