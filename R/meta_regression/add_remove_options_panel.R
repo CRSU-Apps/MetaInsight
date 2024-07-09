@@ -49,6 +49,8 @@ add_remove_panel_server <- function(id, treatment_names, reference_name) {
   shiny::moduleServer(id, function(input, output, session) {
     
     added_treatments <- reactiveVal(c())
+    # These reactive values are here to prevent overly chatty reactives from repeatedly clearing the
+    # treatment drop-down boxes when not appropriate
     current_treatment_names <- reactiveVal()
     current_reference_name <- reactiveVal()
     
