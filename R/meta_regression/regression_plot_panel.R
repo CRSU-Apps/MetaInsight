@@ -65,30 +65,7 @@ regression_plot_panel_ui <- function(id) {
       ),
       sidebarPanel = sidebarPanel(
         width = 3,
-        # Add treatments
-        selectInput(
-          inputId = ns("add_treatment_dropdown"),
-          label = .AddRegressionOptionTooltip(
-            tags$html("Add treatment", tags$i(class="fa-regular fa-circle-question")),
-            tooltip = "All treatments are compared to the reference treatment"
-          ),
-          choices = c(),
-          selectize = FALSE
-        ),
-        actionButton(inputId = ns("add_treatment_btn"), label = "Add to plot"),
-        div(
-          style = "float: right;",
-          actionButton(inputId = ns("add_all_btn"), label = "Add all")
-        ),
-        br(),
-        br(),
-        # Remove treatments
-        selectInput(inputId = ns("remove_treatment_dropdown"), label = "Remove treatment", choices = c(), selectize = FALSE),
-        actionButton(inputId = ns("remove_treatment_btn"), label = "Remove"),
-        div(
-          style = "float: right;",
-          actionButton(inputId = ns("remove_all_btn"), label = "Remove all")
-        ),
+        add_remove_panel_ui(id = ns("added_treatments")),
         
         h3("Plot Options"),
         # Covariate value
@@ -237,46 +214,7 @@ regression_plot_panel_server <- function(id, data, covariate_title, covariate_na
       NULL
     })
     
-    available_to_add <- reactive({
-      raw_labels = treatment_df()$RawLabel
-      raw_reference = treatment_df()$RawLabel[treatment_df()$Label == model_output()$reference_name]
-      return(raw_labels[(raw_labels != raw_reference) & !(raw_labels %in% added_treatments())])
-    })
-    
-    added_treatments <- reactiveVal(c())
-    
-    # Add treatment on button click
-    observe({
-      added = unique(c(added_treatments(), input$add_treatment_dropdown))
-      added_treatments(added)
-    }) |>
-      bindEvent(input$add_treatment_btn)
-    
-    # Add all treatments on button click
-    observe({
-      added = unique(c(added_treatments(), available_to_add()))
-      added_treatments(added)
-    }) |>
-      bindEvent(input$add_all_btn)
-    
-    # Remove treatment on button click
-    observe({
-      added = added_treatments()[added_treatments() != input$remove_treatment_dropdown]
-      added_treatments(added)
-    }) |>
-      bindEvent(input$remove_treatment_btn, ignoreNULL = FALSE)
-    
-    # Remove all treatments on button click
-    observe({
-      added_treatments(character())
-    }) |>
-      bindEvent(input$remove_all_btn, ignoreNULL = FALSE)
-    
-    # Update inputs on added treatments change
-    observe({
-      updateSelectInput(inputId = "add_treatment_dropdown", choices = available_to_add())
-      updateSelectInput(inputId = "remove_treatment_dropdown", choices = added_treatments())
-    })
+    added_treatments <- add_remove_panel_server(id = "added_treatments", reactive({ treatment_df()$RawLabel }), reference)
     
     # Disable opacity when confidence regions not shown
     observe({
