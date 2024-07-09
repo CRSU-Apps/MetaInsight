@@ -388,24 +388,38 @@ regression_plot_panel_server <- function(id, data, covariate_title, covariate_na
     })
     
     output$regression_plot <- renderPlot({
-      CreateCompositeMetaRegressionPlot(
-        model_output = model_output(),
-        treatment_df = treatment_df(),
-        outcome_measure = outcome_measure(),
-        comparators = treatment_titles(),
-        contribution_matrix = contribution_matrix(),
-        contribution_type = input$absolute_relative_toggle,
-        confidence_regions = confidence_regions$result(),
-        include_covariate = input$covariate,
-        include_ghosts = input$ghosts,
-        include_extrapolation = input$extrapolate,
-        include_confidence = input$confidence,
-        confidence_opacity = input$confidence_opacity,
-        include_contributions = input$contributions != "None",
-        contribution_multiplier = input$circle_multipler,
-        legend_position = input$legend_position_dropdown
+      tryCatch(
+        expr = {
+          shinyjs::enable(id = "download")
+          CreateCompositeMetaRegressionPlot(
+            model_output = model_output(),
+            treatment_df = treatment_df(),
+            outcome_measure = outcome_measure(),
+            comparators = treatment_titles(),
+            contribution_matrix = contribution_matrix(),
+            contribution_type = input$absolute_relative_toggle,
+            confidence_regions = confidence_regions$result(),
+            include_covariate = input$covariate,
+            include_ghosts = input$ghosts,
+            include_extrapolation = input$extrapolate,
+            include_confidence = input$confidence,
+            confidence_opacity = input$confidence_opacity,
+            include_contributions = input$contributions != "None",
+            contribution_multiplier = input$circle_multipler,
+            legend_position = input$legend_position_dropdown
+          )
+        },
+        error = function(exptn) {
+          shinyjs::disable(id = "download")
+          ggplot(data = data.frame(text = c("Please rerun analysis"))) +
+            ggplot2::theme_void() +
+            ggplot2::geom_text(mapping = ggplot2::aes(label = text, x = 0, y = 0), size = 10)
+        }
       )
     })
+    
+    # Disable download button until the model has been run
+    shinyjs::disable(id = "download")
     
     output$download <- downloadHandler(
       filename = function() {
