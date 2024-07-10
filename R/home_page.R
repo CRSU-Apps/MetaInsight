@@ -21,7 +21,7 @@ home_page_ui <- function(id) {
         });'
       )
     ),
-    h2("MetaInsight v5.2.1", align = "left"),
+    h2("MetaInsight v6.0.0", align = "left"),
     fluidRow(
       column(
         width = 3,
@@ -51,11 +51,12 @@ home_page_ui <- function(id) {
           tags$li("Changed analytics cookie to use browser local storage."),
           tags$li("Updated funding statements.")
         ),
-        p(tags$strong("Major update (15 August 2023 v5.0.0):")),
+        p(tags$strong("Major update (10 July 2024 v6.0.0):")),
         p(tags$ul(
-          tags$li("MetaInsight has been changed to make it easier for users to upload their own datasets for analysis.
-         Study data and treatment labels can now be uploaded in a single file.
-         See the 'load data' tab for more guidance and the option to upgrade data files used in previous versions of MetaInsight ")
+          tags$li("Meta-regression has been added. One covariate is allowed, which can be a new continuous or binary variable,
+          or baseline risk. Two new graphs are available for meta-regression. The first displays the covariate values grouped by
+          treatment and study. The second plots the covariate against relative treatment effects, with confidence regions and
+          study-level contributions.")
         )),
         p(
           "The full update history for MetaInsight is available on",
