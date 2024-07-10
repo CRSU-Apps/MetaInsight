@@ -65,30 +65,7 @@ regression_plot_panel_ui <- function(id) {
       ),
       sidebarPanel = sidebarPanel(
         width = 3,
-        # Add comparators
-        selectInput(
-          inputId = ns("add_comparator_dropdown"),
-          label = .AddRegressionOptionTooltip(
-            tags$html("Add Comparator", tags$i(class="fa-regular fa-circle-question")),
-            tooltip = "All treatments are compared to the reference treatment"
-          ),
-          choices = c(),
-          selectize = FALSE
-        ),
-        actionButton(inputId = ns("add_comparator_btn"), label = "Add to plot"),
-        div(
-          style = "float: right;",
-          actionButton(inputId = ns("add_all_btn"), label = "Add all")
-        ),
-        br(),
-        br(),
-        # Remove comparators
-        selectInput(inputId = ns("remove_comparator_dropdown"), label = "Remove Comparator", choices = c(), selectize = FALSE),
-        actionButton(inputId = ns("remove_comparator_btn"), label = "Remove"),
-        div(
-          style = "float: right;",
-          actionButton(inputId = ns("remove_all_btn"), label = "Remove all")
-        ),
+        add_remove_panel_ui(id = ns("added_comparators")),
         
         h3("Plot Options"),
         # Covariate value
@@ -166,7 +143,7 @@ regression_plot_panel_ui <- function(id) {
             choiceNames = list(
               .AddRegressionOptionTooltip(
                 tags$html("% Contribution", tags$i(class="fa-regular fa-circle-question")),
-                tooltip = "Circles scaled by percentage contribution of each study to each treatment regression"
+                tooltip = "Circles scaled by percentage contribution of each study to each parameter"
               ),
               .AddRegressionOptionTooltip(
                 tags$html("Absolute contribution", tags$i(class="fa-regular fa-circle-question")),
@@ -237,46 +214,7 @@ regression_plot_panel_server <- function(id, data, covariate_title, covariate_na
       NULL
     })
     
-    available_to_add <- reactive({
-      raw_labels = treatment_df()$RawLabel
-      raw_reference = treatment_df()$RawLabel[treatment_df()$Label == model_output()$reference_name]
-      return(raw_labels[(raw_labels != raw_reference) & !(raw_labels %in% added_comparators())])
-    })
-    
-    added_comparators <- reactiveVal(c())
-    
-    # Add comparator on button click
-    observe({
-      added = unique(c(added_comparators(), input$add_comparator_dropdown))
-      added_comparators(added)
-    }) |>
-      bindEvent(input$add_comparator_btn)
-    
-    # Add all comparators on button click
-    observe({
-      added = unique(c(added_comparators(), available_to_add()))
-      added_comparators(added)
-    }) |>
-      bindEvent(input$add_all_btn)
-    
-    # Remove comparator on button click
-    observe({
-      added = added_comparators()[added_comparators() != input$remove_comparator_dropdown]
-      added_comparators(added)
-    }) |>
-      bindEvent(input$remove_comparator_btn, ignoreNULL = FALSE)
-    
-    # Remove all comparators on button click
-    observe({
-      added_comparators(character())
-    }) |>
-      bindEvent(input$remove_all_btn, ignoreNULL = FALSE)
-    
-    # Update inputs on added comparators change
-    observe({
-      updateSelectInput(inputId = "add_comparator_dropdown", choices = available_to_add())
-      updateSelectInput(inputId = "remove_comparator_dropdown", choices = added_comparators())
-    })
+    added_comparators <- add_remove_panel_server(id = "added_comparators", reactive({ treatment_df()$RawLabel }), reference)
     
     # Disable opacity when confidence regions not shown
     observe({
@@ -418,7 +356,7 @@ regression_plot_panel_server <- function(id, data, covariate_title, covariate_na
       if (!is.null(contributions_failed())) {
         return(
           div(
-            glue::glue("{contributions_failed()} contribution matrix cannot be calculated"), tags$i(class="fa-regular fa-circle-question"),
+            glue::glue("Contribution matrix cannot be calculated"), tags$i(class="fa-regular fa-circle-question"),
             style = "color: #ff0000;",
             title = "This possibly indicates a poorly fitting model. Please check model diagnostics in the Result Details and Deviance Report tabs"
           )
@@ -445,29 +383,43 @@ regression_plot_panel_server <- function(id, data, covariate_title, covariate_na
       if (length(added_comparators()) == 0) {
         comparators <- c()
       } else {
-        comparators <- sapply(added_comparators(), function(treatment) { treatment_df()$Label[treatment_df()$RawLabel == treatment] })
+        comparators <- sapply(added_comparators(), function(comparator) { treatment_df()$Label[treatment_df()$RawLabel == comparator] })
       }
     })
     
     output$regression_plot <- renderPlot({
-      CreateCompositeMetaRegressionPlot(
-        model_output = model_output(),
-        treatment_df = treatment_df(),
-        outcome_measure = outcome_measure(),
-        comparators = comparator_titles(),
-        contribution_matrix = contribution_matrix(),
-        contribution_type = input$absolute_relative_toggle,
-        confidence_regions = confidence_regions$result(),
-        include_covariate = input$covariate,
-        include_ghosts = input$ghosts,
-        include_extrapolation = input$extrapolate,
-        include_confidence = input$confidence,
-        confidence_opacity = input$confidence_opacity,
-        include_contributions = input$contributions != "None",
-        contribution_multiplier = input$circle_multipler,
-        legend_position = input$legend_position_dropdown
+      tryCatch(
+        expr = {
+          shinyjs::enable(id = "download")
+          CreateCompositeMetaRegressionPlot(
+            model_output = model_output(),
+            treatment_df = treatment_df(),
+            outcome_measure = outcome_measure(),
+            comparators = comparator_titles(),
+            contribution_matrix = contribution_matrix(),
+            contribution_type = input$absolute_relative_toggle,
+            confidence_regions = confidence_regions$result(),
+            include_covariate = input$covariate,
+            include_ghosts = input$ghosts,
+            include_extrapolation = input$extrapolate,
+            include_confidence = input$confidence,
+            confidence_opacity = input$confidence_opacity,
+            include_contributions = input$contributions != "None",
+            contribution_multiplier = input$circle_multipler,
+            legend_position = input$legend_position_dropdown
+          )
+        },
+        error = function(exptn) {
+          shinyjs::disable(id = "download")
+          ggplot(data = data.frame(text = c("Please rerun analysis"))) +
+            ggplot2::theme_void() +
+            ggplot2::geom_text(mapping = ggplot2::aes(label = text, x = 0, y = 0), size = 10)
+        }
       )
     })
+    
+    # Disable download button until the model has been run
+    shinyjs::disable(id = "download")
     
     output$download <- downloadHandler(
       filename = function() {
