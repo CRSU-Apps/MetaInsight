@@ -35,6 +35,13 @@ home_page_ui <- function(id) {
       column(
         width = 5,
         p(tags$strong("Latest Updates:")),
+        p(tags$strong("Major update (10 July 2024 v6.0.0):")),
+        p(tags$ul(
+          tags$li("Meta-regression has been added. One covariate is allowed, which can be a new continuous or binary variable,
+          or baseline risk. Two new graphs are available for meta-regression. The first displays the covariate values grouped by
+          treatment and study. The second plots the covariate against relative treatment effects, with confidence regions and
+          study-level contributions.")
+        )),
         p(tags$strong("Patch (16th April 2024 v5.2.1):")),
         tags$ul(
           tags$li("Troubleshooting tab now links to our troubleshooting wiki page."),
@@ -51,13 +58,6 @@ home_page_ui <- function(id) {
           tags$li("Changed analytics cookie to use browser local storage."),
           tags$li("Updated funding statements.")
         ),
-        p(tags$strong("Major update (10 July 2024 v6.0.0):")),
-        p(tags$ul(
-          tags$li("Meta-regression has been added. One covariate is allowed, which can be a new continuous or binary variable,
-          or baseline risk. Two new graphs are available for meta-regression. The first displays the covariate values grouped by
-          treatment and study. The second plots the covariate against relative treatment effects, with confidence regions and
-          study-level contributions.")
-        )),
         p(
           "The full update history for MetaInsight is available on",
           tags$a(href="https://github.com/CRSU-Apps/MetaInsight/wiki/Full-Update-History", "GitHub",target="_blank")
