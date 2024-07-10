@@ -16,6 +16,12 @@ user_guide_page_ui <- function(id) {
     downloadButton(outputId = ns("UG"), label = "Download User Guide"),
     br(),
     br(),
+    h4(tags$strong("NICE Technical Support Documents for Evidence Synthesis", style = "color: #2196c4")),
+    p("The University of Sheffield host a series of NICE Technical Support Documents on evidence synthesis: ", tags$a(href = "https://www.sheffield.ac.uk/nice-dsu/tsds/evidence-synthesis", "https://www.sheffield.ac.uk/nice-dsu/tsds/evidence-synthesis", target = "_blank")),
+    p("Some of the models described in TSD2 and TSD3 can be carried out in MetaInsight. A guide has been written with instructions to reproduce the relevant analyses, which can be downloaded here. The guide is based on MetaInsight version 6.0.0."),
+    downloadButton(outputId = ns("nice_tsd"), label = "Download NICE TSD instructions"),
+    br(),
+    br(),
     h4(tags$strong("ESMARConf 2023 Tutorial", style = "color: #2196c4")),
     p(tags$strong(" MetaInsight - an R Shiny web-app for conducting network meta-analysis")),
     p("A tutorial for MetaInsight v4.0.0 produced for ESMARConf 2023"),
@@ -52,6 +58,13 @@ user_guide_page_server <- function(id) {
       filename = "MetaInsightUserGuide.pdf",
       content = function(file) {
         file.copy("www/MetaInsightUserGuide.pdf", file)
+      }
+    )
+    
+    output$nice_tsd <- downloadHandler(
+      filename = "NICE-TSD-examples-in-MetaInsight.html",
+      content = function(file) {
+        file.copy("www/NICE-TSD-examples-in-MetaInsight.html", file)
       }
     )
   })

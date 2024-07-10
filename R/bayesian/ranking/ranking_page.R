@@ -26,7 +26,7 @@ ranking_page_ui <- function(id) {
       ranking_panel_ui(id = ns("rank_all"), title = "Ranking panel for all studies", table_label = "Ranking probabilities and SUCRA values for all treatments")
     ),
     fluidRow(
-      ranking_panel_ui(id = ns("rank_sub"), title = "Ranking panel with studies excluded", table_label = "Ranking probabilities and SUCRA values for all treatments")
+      ranking_panel_ui(id = ns("rank_sub"), title = "Ranking panel with selected studies excluded", table_label = "Ranking probabilities and SUCRA values for all treatments")
     )
   )
 }

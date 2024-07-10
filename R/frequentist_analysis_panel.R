@@ -3,12 +3,15 @@
 #' 
 #' @param id ID of the module
 #' @return Div for the panel
-frequentist_analysis_panel_ui <- function(id) {
+frequentist_analysis_panel_ui <- function(id, page_numbering) {
   ns <- NS(id)
-  div(
+  
+  page_numbering$DiveLevel()
+  
+  ui = div(
     tabsetPanel(
       tabPanel(
-        title = "2a. Forest Plot",
+        title = paste0(page_numbering$AddChild(), " Forest Plot"),
         column(
           width = 6,
           uiOutput(outputId = ns("FreqForestPlot")),
@@ -17,12 +20,12 @@ frequentist_analysis_panel_ui <- function(id) {
             column(
               width = 6,
               align = 'center',
-              numericInput(inputId = ns('freqmin'), label = "Minimum", value = 0.1)
+              numericInput(inputId = ns('freqmin'), label = "Minimum", value = 0, step = 0.1)
             ),
             column(
               width = 6,
               align = 'center',
-              numericInput(inputId = ns('freqmax'), label = "Maximum", value = 5)
+              numericInput(inputId = ns('freqmax'), label = "Maximum", value = 5, step = 1)
             )
           ),
           textOutput(outputId = ns("textcomp")),
@@ -43,12 +46,12 @@ frequentist_analysis_panel_ui <- function(id) {
             column(
               width = 6,
               align = 'center',
-              numericInput(inputId = ns('freqmin_sub'), label = "Minimum", value = 0.1)
+              numericInput(inputId = ns('freqmin_sub'), label = "Minimum", value = 0, step = 0.1)
             ),
             column(
               width = 6,
               align = 'center',
-              numericInput(inputId = ns('freqmax_sub'), label = "Maximum", value = 5)
+              numericInput(inputId = ns('freqmax_sub'), label = "Maximum", value = 5, step = 1)
             )
           ),
 
@@ -74,26 +77,30 @@ frequentist_analysis_panel_ui <- function(id) {
         )
       ),
       tabPanel(
-        title = "2b. Comparison of all treatment pairs",
+        title = paste0(page_numbering$AddChild(), " Comparison of all treatment pairs"),
         helpText("Treatments are ranked from best to worst along the leading diagonal. Above the leading diagonal are estimates from pairwise meta-analyses, below the leading diagonal are estimates from network meta-analyses"),
         helpText("Relative treatment effects in ranked order for all studies"),
         tableOutput(outputId = ns("rankChartStatic")),
         downloadButton(outputId = ns('downloadRank'), label = "Download"),
-        helpText("Relative treatment effects in ranked order with studies excluded"),
+        helpText("Relative treatment effects in ranked order with selected studies excluded"),
         tableOutput(outputId = ns("rankChartUpdating")),
         downloadButton(outputId = ns('downloadRankUpdate'), label = "Download")
       ),
       tabPanel(
-        title = "2c. Inconsistency",
+        title = paste0(page_numbering$AddChild(), " Inconsistency"),
         helpText("Assessment of inconsistency for all studies"),
         tableOutput(outputId = ns("Incon1")),
         downloadButton(outputId = ns('downloadIncon'), label = "Download"),
-        helpText("Assessment of inconsistency with studies excluded"),
+        helpText("Assessment of inconsistency with selected studies excluded"),
         tableOutput(outputId = ns("Incon2")),
         downloadButton(outputId = ns('downloadIncon2'), label = "Download")
       )
     )
   )
+  
+  page_numbering$FloatLevel()
+  
+  return(ui)
 }
 
 
@@ -134,23 +141,26 @@ frequentist_analysis_panel_server <- function(
     
     # forest min and max values different if continuous/binary
     observe({
-      x <- metaoutcome()
-      if (x =='Binary') {
-        updateNumericInput(inputId = "freqmin", value=0.1)
-        updateNumericInput(inputId = "freqmin_sub", value=0.1)
-        updateNumericInput(inputId = "freqmax", value=5)
-        updateNumericInput(inputId = "freqmax_sub", value=5)
+      if (outcome_measure() %in% c('OR', 'RR')) {
+        updateNumericInput(inputId = "freqmin", value = 0.1, step = 0.1)
+        updateNumericInput(inputId = "freqmin_sub", value = 0.1, step = 0.1)
+        updateNumericInput(inputId = "freqmax", value = 5)
+        updateNumericInput(inputId = "freqmax_sub", value = 5)
+      } else if (outcome_measure() %in% c('MD', 'SMD', 'RD')) {
+        updateNumericInput(inputId = "freqmin", value = -10, step = 1)
+        updateNumericInput(inputId = "freqmin_sub", value = -10, step = 1)
+        updateNumericInput(inputId = "freqmax", value = 10)
+        updateNumericInput(inputId = "freqmax_sub", value = 10)
       } else {
-        updateNumericInput(inputId = "freqmin", value=-10)
-        updateNumericInput(inputId = "freqmin_sub", value=-10)
-        updateNumericInput(inputId = "freqmax", value=10)
-        updateNumericInput(inputId = "freqmax_sub", value=10)
+        paste0("outcome_measure needs to be 'OR', 'RR', 'RD', 'MD', or 'SMD'")
       }
     })
 
     # Forest plot for all studies
     output$Comparison2<- renderPlot({
-      make_netComp(freq_all(), model_effects(), reference_alter()$ref_all, input$freqmin, input$freqmax)
+      make_netComp(freq = freq_all(), modelranfix = model_effects(), ref = reference_alter()$ref_all,
+                   min = input$freqmin, max = input$freqmax
+                   )
       title("Results for all studies")
     })
 
@@ -166,8 +176,9 @@ frequentist_analysis_panel_server <- function(
 
     # Forest plot with studies excluded
     output$SFPUpdatingComp <- renderPlot({
-      make_netComp(freq_sub(), model_effects(), reference_alter()$ref_sub, input$freqmin_sub, input$freqmax_sub)
-      title("Results with studies excluded")
+      make_netComp(freq = freq_sub(), modelranfix = model_effects(), ref = reference_alter()$ref_sub,
+                   min = input$freqmin_sub, max = input$freqmax_sub)
+      title("Results with selected studies excluded")
     })
 
     # Text output displayed under forest plot
@@ -242,11 +253,11 @@ frequentist_analysis_panel_server <- function(
 
     ### 2b. Comparison and rank table
 
-    output$rankChartStatic<- renderTable(colnames=FALSE,{
-      make_netrank(freq_all(), model_effects(), rank_option())
+    output$rankChartStatic <- renderTable(colnames=FALSE, {
+      make_netrank(freq = freq_all(), modelranfix = model_effects(), rankopts = rank_option())
     })
-    output$rankChartUpdating<- renderTable(colnames=FALSE,{
-      make_netrank(freq_sub(), model_effects(), rank_option())
+    output$rankChartUpdating <- renderTable(colnames=FALSE, {
+      make_netrank(freq = freq_sub(), modelranfix = model_effects(), rankopts = rank_option())
     })
 
     output$downloadRank <- downloadHandler(
@@ -257,7 +268,7 @@ frequentist_analysis_panel_server <- function(
     )
 
     output$downloadRankUpdate <- downloadHandler(
-      filename = 'RankUpdate.csv',
+      filename = 'Rank_sub.csv',
       content = function(file) {
         write.csv(make_netrank(freq_sub(), model_effects(), rank_option()), file)
       }

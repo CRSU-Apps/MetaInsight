@@ -12,9 +12,10 @@ dashboardPage(
       includeHTML("www/favicon/favicon.html"),
       tags$meta(name="description", content="A interactive web tool for network meta-analysis (NMA) that leverages established analysis routines"),
       tags$meta(name="keywords", content="MetaInsight, NMA, Network, Meta, Analysis, App"),
-      tags$meta(property="og:title", content="Meta Insight: v5.2.1"),
+      tags$meta(property="og:title", content="Meta Insight: v6.0.0"),
       tags$meta(property="og:description", content="An interactive web tool for network meta-analysis (NMA) that leverages established analysis routines"),
       tags$meta(property="og:image", content="https://raw.githubusercontent.com/CRSU-Apps/MetaInsight/main/www/images/MetaInsightLogo.png"),
+      tags$script(src = "https://kit.fontawesome.com/23f0e167ac.js", crossorigin = "anonymous"),
       google_analytics_header_ui(id = "analytics")
     ),
     navbarPage(
