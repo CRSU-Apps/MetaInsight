@@ -1,6 +1,6 @@
 
 # Zero-width space before "Other" to pin it to the first item in the list
-regression_ghost_name = "\u200BOther"
+regression_ghost_name = "\"Other\""
 
 #' Create a composite meta-regression plot which comprises plots showing direct and indirect evidence.
 #'
