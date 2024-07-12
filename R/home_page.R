@@ -21,7 +21,7 @@ home_page_ui <- function(id) {
         });'
       )
     ),
-    h2("MetaInsight v6.0.0", align = "left"),
+    h2("MetaInsight v6.0.1", align = "left"),
     fluidRow(
       column(
         width = 3,
@@ -35,6 +35,10 @@ home_page_ui <- function(id) {
       column(
         width = 5,
         p(tags$strong("Latest Updates:")),
+        p(tags$strong("Patch (12th July 2024 v6.0.1):")),
+        tags$ul(
+          tags$li("Hot fix for colouring in the regression plot."),
+        ),
         p(tags$strong("Major update (10 July 2024 v6.0.0):")),
         p(tags$ul(
           tags$li("Meta-regression has been added. One covariate is allowed, which can be a new continuous or binary variable,
@@ -46,17 +50,6 @@ home_page_ui <- function(id) {
         tags$ul(
           tags$li("Troubleshooting tab now links to our troubleshooting wiki page."),
           tags$li("Added logo to home page.")
-        ),
-        p(tags$strong("Minor update (15th February 2024 v5.2.0):")),
-        tags$ul(
-          tags$li("Bug fix where data upload instructions were hidden."),
-          tags$li("Update to data upload to allow for arbitrary letter casing of column titles."),
-          tags$li("Added validation for data column titles with helpful messages."),
-          tags$li("Bug fix for treatment names being truncated in ranking download."),
-          tags$li("Moved continuous/binary selection to data upload page."),
-          tags$li("Update to data upload to accept .xlsx files."),
-          tags$li("Changed analytics cookie to use browser local storage."),
-          tags$li("Updated funding statements.")
         ),
         p(
           "The full update history for MetaInsight is available on",
