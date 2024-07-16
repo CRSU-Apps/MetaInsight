@@ -17,14 +17,14 @@ CreateSummaryForestPlot <- function(data_to_plot, treatment_df, plot_title, outc
   ma <- list()
   mtc <- list()
   
-  # Update data in ma and mtc for plots
-  ma$lor <- matrix(0, nrow = sum(1:(ntx - 1)), ncol = 7)
-  ma$or <- matrix(0, nrow = sum(1:(ntx - 1)), ncol = 7)
-  ma$predint <- matrix(0, nrow = sum(1:(ntx - 1)), ncol = 7)
-  mtc$lor <- matrix(0, nrow = sum(1:(ntx - 1)), ncol = 7)
-  mtc$or <- matrix(0, nrow = sum(1:(ntx - 1)), ncol = 7)
+  # Update data in ma and mtc for plots. Include empty rownames, to be populated later.
+  ma$lor <- matrix(0, nrow = sum(1:(ntx - 1)), ncol = 7, dimnames = list(rep(NA, times = sum(1:(ntx - 1)))))
+  ma$or <- matrix(0, nrow = sum(1:(ntx - 1)), ncol = 7, dimnames = list(rep(NA, times = sum(1:(ntx - 1)))))
+  ma$predint <- matrix(0, nrow = sum(1:(ntx - 1)), ncol = 7, dimnames = list(rep(NA, times = sum(1:(ntx - 1)))))
+  mtc$lor <- matrix(0, nrow = sum(1:(ntx - 1)), ncol = 7, dimnames = list(rep(NA, times = sum(1:(ntx - 1)))))
+  mtc$or <- matrix(0, nrow = sum(1:(ntx - 1)), ncol = 7, dimnames = list(rep(NA, times = sum(1:(ntx - 1)))))
   mtc$rank <- matrix(0, nrow = ntx, ncol = 4)
-  mtc$predint <- matrix(0, nrow = sum(1:(ntx - 1)), ncol = 4)
+  mtc$predint <- matrix(0, nrow = sum(1:(ntx - 1)), ncol = 4, dimnames = list(rep(NA, times = sum(1:(ntx - 1)))))
   mtc$rkgram <- matrix(0, nrow = ntx * ntx, ncol = 2)
   
   small_value_desirability <- ifelse(desirability == "good", "desirable", "undesirable")
@@ -37,6 +37,7 @@ CreateSummaryForestPlot <- function(data_to_plot, treatment_df, plot_title, outc
     ranking <- rkgrm$ranking.common
     ranking_matrix <- rkgrm$ranking.matrix.common
   }
+
   ordered_treatment_names <- names(ranking[order(-ranking)])
   # The rankogram command seems to sort the treatments alphabetically first, so this line converts back to the original treatment IDs
   mtc$rank[, 3] <- match(treatment_df$Label, ordered_treatment_names)
@@ -47,21 +48,37 @@ CreateSummaryForestPlot <- function(data_to_plot, treatment_df, plot_title, outc
   
   mtc$type <- outcome_type
   
+  #Sort the rows and columns of the netmeta matrix output by the original treatment order
+  net1$lower.direct.random <- net1$lower.direct.random[treatment_df$Label, treatment_df$Label]
+  net1$TE.direct.random <- net1$TE.direct.random[treatment_df$Label, treatment_df$Label]
+  net1$upper.direct.random <- net1$upper.direct.random[treatment_df$Label, treatment_df$Label]
+  net1$lower.random <- net1$lower.random[treatment_df$Label, treatment_df$Label]
+  net1$TE.random <- net1$TE.random[treatment_df$Label, treatment_df$Label]
+  net1$upper.random <- net1$upper.random[treatment_df$Label, treatment_df$Label]
+  net1$lower.predict <- net1$lower.predict[treatment_df$Label, treatment_df$Label]
+  net1$upper.predict <- net1$upper.predict[treatment_df$Label, treatment_df$Label]
+
   count <- 1
   for (i in 1:(ntx - 1)) {
     for (j in (i + 1):ntx) {
       
+      #Include rownames for debugging
+      rownames(ma$lor)[count] <- paste0(rownames(net1$TE.direct.random)[i], "-", colnames(net1$TE.direct.random)[j])
       ma$lor[count, 5] <- net1$lower.direct.random[i, j]
       ma$lor[count, 6] <- net1$TE.direct.random[i, j]
       ma$lor[count, 7] <- net1$upper.direct.random[i, j]
       
+      rownames(mtc$lor)[count] <- paste0(rownames(net1$TE.random)[i], "-", colnames(net1$TE.random)[j])
       mtc$lor[count, 2] <- net1$lower.random[i, j]
       mtc$lor[count, 3] <- net1$TE.random[i, j]
       mtc$lor[count, 4] <- net1$upper.random[i, j]
       
+      rownames(mtc$predint)[count] <- paste0(rownames(net1$lower.predict)[i], "-", colnames(net1$lower.predict)[j])
       mtc$predint[count, 2] <- net1$lower.predict[i, j]
       mtc$predint[count, 4] <- net1$upper.predict[i, j]
       
+      rownames(ma$or) <- rownames(ma$lor)
+      rownames(mtc$or) <- rownames(mtc$lor)
       if (outcome_type == "RR" | outcome_type == "OR") {
         ma$or[count, 5:7] <- exp(ma$lor[count, 5:7])
         mtc$or[count, 2:4] <- exp(mtc$lor[count, 2:4])
@@ -73,7 +90,7 @@ CreateSummaryForestPlot <- function(data_to_plot, treatment_df, plot_title, outc
       count <- count + 1
     }
   }
-  
+
   prjtitle <- "Summary Forest Plot"
   mtcMatrixCont(
     prjtitle,
@@ -318,7 +335,7 @@ multiplot <- function(stytitle, ntx, lstx, mtc, ma, bpredd = TRUE, plt.adj, ucex
       side.xu <- ceiling(absside)
     }
   }
-  
+
   i.pt <- 0
   i.tx <- 0
   for (i in 1:tplot) {
@@ -417,7 +434,6 @@ multiplot <- function(stytitle, ntx, lstx, mtc, ma, bpredd = TRUE, plt.adj, ucex
 #'
 #' @return Sorting order matrix
 sortres.matrix <- function(ntx, po) {
-  
   #Correctly create corresponding treatment code no.
   txcode <- c(1:ntx)
   #Sorted tx code list
@@ -447,7 +463,6 @@ sortres.matrix <- function(ntx, po) {
 #'
 #' @return Rankgram matrix sorting order
 sortrkg.ord <- function(ntx, po) {
-  
   #Correctly create corresponding treatment code no.
   txcode <- c(1:ntx)
   #Sorted tx code list
@@ -649,7 +664,7 @@ mtcMatrixCont <- function(stytitle, ntx, lstx, mtc, ma, outcome_type, bpredd = T
     plt.adj <- 1
   }
   
-  sp.order <- "Interventions are displayed sorted by SUCRA value."
+  sp.order <- "Interventions are ranked and sorted by SUCRA value."
   po <- order(mtc$rank[, 3], decreasing = FALSE)
   mtso <- sortres.matrix(ntx, po)
   rkgmo <- sortrkg.ord(ntx, po)
@@ -681,7 +696,7 @@ mtcMatrixCont <- function(stytitle, ntx, lstx, mtc, ma, outcome_type, bpredd = T
       slgd <- "NMA results in black; Pairwise MA results in grey. 95% CI presented as error bars."
     }
     
-    srpinfo <- " Ranks shown along the diagonal are the SUCRA values."
+    srpinfo <- ""
     
     par(mfcol = c(ntx, 1), oma = c(0, 0, 2, 0), new = TRUE)
     par(mfg = c(ntx, 1), mar = c(0, 0, 0, 0))
