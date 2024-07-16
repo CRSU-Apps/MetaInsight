@@ -8,7 +8,7 @@
 summary_forest_plot_ui <- function(id) {
   ns <- NS(id)
   div(
-    plotOutput(outputId = ns('summaryForestPlot')),
+    plotOutput(outputId = ns('summaryForestPlot'), height = "700px"),
     radioButtons(inputId = ns('summaryForestPlotFormat'),
                  label = 'Document format',
                  choices = c('PDF', 'PNG'),

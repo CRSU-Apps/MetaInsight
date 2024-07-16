@@ -91,6 +91,9 @@ CreateSummaryForestPlot <- function(data_to_plot, treatment_df, plot_title, outc
     }
   }
 
+  #Dynamic text size for the means and confidence intervals
+  ucex <- max(1, 2 - 0.12 * ntx)
+  
   prjtitle <- "Summary Forest Plot"
   mtcMatrixCont(
     prjtitle,
@@ -102,7 +105,7 @@ CreateSummaryForestPlot <- function(data_to_plot, treatment_df, plot_title, outc
     bpredd = TRUE,
     bkey = TRUE,
     p.only = ntx,
-    ucex = 1.5
+    ucex = ucex
   )
 }
 
@@ -478,12 +481,12 @@ sortrkg.ord <- function(ntx, po) {
   return(rkgmo)
 }
 
-#' Conditiopnally invert the meta-analysis data based on the sorting order.
+#' Conditionally invert the meta-analysis data based on the sorting order.
 #'
 #' @param meta_analysis Meta-analysis data for direct and indirect evidence
 #' @param mtorg Sorting order matrix
 #' @param outcome_type Type of outcome being plotted
-#' @param indices Indeices of the meta-analysis data to invert
+#' @param indices Indices of the meta-analysis data to invert
 #'
 #' @return Inverted meta-analysis data
 InvertMetaAnalysis <- function(meta_analysis, mtorg, outcome_type, indices) {
