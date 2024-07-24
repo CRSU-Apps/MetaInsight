@@ -40,15 +40,15 @@ nodesplit_page_ui <- function(id) {
 #' @param metaoutcome Reactive containing meta analysis outcome: "Continuous" or "Binary"
 #' @param outcome_measure Reactive containing meta analysis outcome measure: "MD", "SMD", "OR, "RR", or "RD"
 #' @param model_effects Reactive containing model effects: either "random" or "fixed"
-#' @param exclusions Reactive containing names of studies excluded from the sensitivity analysis
 nodesplit_page_server <- function(
     id,
     data,
+    sensitivity_data,
     treatment_df,
+    sensitivity_treatment_df,
     metaoutcome,
     outcome_measure,
-    model_effects,
-    exclusions
+    model_effects
     ) {
   moduleServer(id, function(input, output, session) {
     nodesplit_panel_server(
@@ -62,12 +62,11 @@ nodesplit_page_server <- function(
     
     nodesplit_panel_server(
       id = "sub",
-      data = data,
-      treatment_df = treatment_df,
+      data = sensitivity_data,
+      treatment_df = sensitivity_treatment_df,
       metaoutcome = metaoutcome,
       outcome_measure = outcome_measure,
-      model_effects = model_effects,
-      exclusions = exclusions
+      model_effects = model_effects
     )
   })
 }

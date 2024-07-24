@@ -5,24 +5,21 @@
 #' @param treatment_list Data frame containing the treatment ID ('Number') and the treatment name ('Label').
 #' @param outcome_measure "MD", "SMD", "OR", "RR", or "RD".
 #' @param modelranfix "fixed" or "random".
-#' @param excluded = Vector of studies to be excluded for sensitivity analysis.
 #' @return See output from freq_wrap().
-frequentist <- function(data, metaoutcome, treatment_list, outcome_measure, modelranfix, excluded=c()){
+frequentist <- function(data, metaoutcome, treatment_list, outcome_measure, modelranfix, reference){
   data_wide <-  entry.df(data = data, CONBI = metaoutcome) # Transform data to wide form
   
-  # Subset of data when studies excluded
-  if (length(excluded) > 0) {
-    data_wide <- dplyr::filter(data_wide, !Study %in% excluded)
-  }
-  
-  altered_reference <- ref_alter(data = data, metaoutcome = metaoutcome, excluded = excluded,
-                                 treatment_list = treatment_list)$ref_sub
-  
   # Use the self-defined function, freq_wrap
-  return(freq_wrap(data = data_wide, treat_list = treatment_list, model = modelranfix,
-                   outcome = outcome_measure, CONBI = metaoutcome, ref = altered_reference
-                   )
-         )
+  return(
+    freq_wrap(
+      data = data_wide,
+      treat_list = treatment_list,
+      model = modelranfix,
+      outcome = outcome_measure,
+      CONBI = metaoutcome,
+      ref = reference
+    )
+  )
 }
 
 

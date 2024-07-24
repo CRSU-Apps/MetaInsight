@@ -62,7 +62,6 @@ bayesian_forest_plots_page_ui <- function(id) {
 #' @param metaoutcome Reactive containing meta analysis outcome: "Continuous" or "Binary"
 #' @param outcome_measure Reactive containing meta analysis outcome measure: "MD", "SMD", "OR, "RR", or "RD"
 #' @param model_effects Reactive containing model effects: either "random" or "fixed"
-#' @param exclusions Reactive containing names of studies excluded from the sensitivity analysis
 #' @param bugsnetdt Reactive containing bugsnet meta-analysis
 #' @param reference_alter Reactive containing the name of the reference treatment for the sensitivity
 #'  analysis accounting for if the chosen reference treatment has been excluded
@@ -71,12 +70,14 @@ bayesian_forest_plots_page_ui <- function(id) {
 bayesian_forest_plots_page_server <- function(
     id,
     data,
+    sensitivity_data,
     treatment_df,
+    sensitivity_treatment_df,
     metaoutcome,
     outcome_measure,
     model_effects,
-    exclusions,
     bugsnetdt,
+    bugsnetdt_sub,
     reference_alter
     ) {
   moduleServer(id, function(input, output, session) {
@@ -96,13 +97,13 @@ bayesian_forest_plots_page_server <- function(
     # Bayesian analysis
 
     model <- eventReactive(input$baye_do, {
-      bayesian_model(sub = FALSE, data(), treatment_df(), metaoutcome(), exclusions(),
-                     outcome_measure(), model_effects(), reference_alter())
+      bayesian_model(data(), treatment_df(), metaoutcome(),
+                     outcome_measure(), model_effects(), reference_alter()$ref_all)
     })
 
     model_sub <- eventReactive(input$sub_do, {
-      bayesian_model(sub = TRUE, data(), treatment_df(), metaoutcome(), exclusions(),
-                     outcome_measure(), model_effects(), reference_alter())
+      bayesian_model(sensitivity_data(), sensitivity_treatment_df(), metaoutcome(),
+                     outcome_measure(), model_effects(), reference_alter()$ref_sub)
     })
     
     # Create forest plot and associated statistics
@@ -122,7 +123,7 @@ bayesian_forest_plots_page_server <- function(
       analysis_type = "Sub",
       metaoutcome = metaoutcome,
       outcome_measure = outcome_measure,
-      bugsnetdt = bugsnetdt
+      bugsnetdt = bugsnetdt_sub
     )
     
 

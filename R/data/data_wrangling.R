@@ -173,6 +173,29 @@ FindAllTreatments <- function(data, treatment_ids = NULL, study = NULL) {
   }
 }
 
+#' Find all of the study names which include the given treatment names, both for long and wide formats.
+#' 
+#' @param data Data frame in which to search for study names
+#' @param treatments Vector of matching treatments
+#' @return Vector of all matching study names
+FindStudiesIncludingTreatments <- function(data, treatments) {
+  if ("T" %in% colnames(data)) {
+    # Long format
+    return(unique(data$Study[data$T %in% treatments]))
+  } else {
+    # Wide format
+    studies <- c()
+    index <- 1
+    col <- paste0("T.", index)
+    while (col %in% colnames(data)) {
+      studies <- c(studies, data$Study[data[[col]] %in% treatments])
+      index <- index + 1
+      col <- paste0("T.", index)
+    }
+    return(unique(studies))
+  }
+}
+
 #' Create a copy of a vector with the given item as the first element.
 #' 
 #' @param vector Vector to reorder
@@ -288,6 +311,28 @@ ReplaceTreatmentIds <- function(data, treatment_ids) {
       data[[col]] <- treatment_ids$Number[match(data[[col]], treatment_ids$Label)]
       index <- index + 1
       col <- paste0('T.', index)
+    }
+  }
+  return(data)
+}
+
+#' Replace all of the treatment IDs in the data with names, both for long and wide formats.
+#' 
+#' @param data Data frame in which to search for treatment IDs.
+#' @param treatent_ids Data frame containing treatment names (Label) and IDs (Number).
+#' @return Data frame where the treatments are given as names, not IDs.
+ReinstateTreatmentIds <- function(data, treatent_ids) {
+  if ("T" %in% colnames(data)) {
+    # Long format
+    data$T <- treatent_ids$Label[match(data$T, treatent_ids$Number)]
+  } else {
+    # Wide format
+    index <- 1
+    col <- paste0("T.", index)
+    while (col %in% colnames(data)) {
+      data[[col]] <- treatent_ids$Label[match(data[[col]], treatent_ids$Number)]
+      index <- index + 1
+      col <- paste0("T.", index)
     }
   }
   return(data)

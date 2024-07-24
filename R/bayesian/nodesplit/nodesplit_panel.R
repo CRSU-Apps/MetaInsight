@@ -30,26 +30,20 @@ nodesplit_panel_server <- function(
     treatment_df,
     metaoutcome,
     outcome_measure,
-    model_effects,
-    exclusions = NA
+    model_effects
     ) {
   moduleServer(id, function(input, output, session) {
     
     model_nodesplit <- eventReactive(
       input$node,
       {
-        excl <- NA
-        if (!is.na(exclusions)) {
-          excl <- exclusions()
-        }
         return(
           nodesplit(
             data(),
             treatment_df(),
             metaoutcome(),
             outcome_measure(),
-            model_effects(),
-            excl
+            model_effects()
           )
         )
       }
