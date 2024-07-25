@@ -61,6 +61,7 @@ data_analysis_options_panel_ui <- function(id) {
 #' @param id ID of the module
 #' @param data Reactive containing data to analyse
 #' @param is_default_data Reactive containing TRUE if data is an example dataset, loaded by default
+#' @param treatment_df Reactive containing data frame containing treatment IDs (Number) and names (Label)
 #' @param metaoutcome Reactive containing meta analysis outcome: "continuous" or "binary"
 #' @param OpenDataTable Function to open the data table
 #' 
@@ -74,6 +75,9 @@ data_analysis_options_panel_ui <- function(id) {
 #'   "MD" for mean difference, or "SMD" for standardised mean difference
 #' - "binary_outcome" contains acronym of the binary outcome:
 #'   "OR" for odds ratio, "RR" for risk ratio, or "RD" for risk difference
+#' - "initial_data" contains the data frame of the connected subnetwork of the uploaded data
+#' - "sensitivity_data" contains the data frame of the connected subnetwork for the sensitivity analysis
+#' - "sensitivity_treatment_list" contains the treatment names ("Label") and IDs ("Number") for the sensitivity analysis data
 data_analysis_options_server <- function(id, data, is_default_data, treatment_df, metaoutcome, OpenDataTable) {
   moduleServer(id, function(input, output, session) {
     continuous_outcome <- reactive({
@@ -132,9 +136,6 @@ data_analysis_options_server <- function(id, data, is_default_data, treatment_df
       list(
         outcome_measure = outcome_measure,
         model_effects = model_effects,
-        initial_connected_data = exclusions_reactives$initial_connected_data,
-        sensitivity_connected_data = exclusions_reactives$sensitivity_connected_data,
-        sensitivity_connected_treatment_list = exclusions_reactives$sensitivity_connected_treatment_list,
         rank_option = rank_option,
         continuous_outcome = continuous_outcome,
         binary_outcome = binary_outcome,

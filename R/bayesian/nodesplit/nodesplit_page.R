@@ -36,7 +36,9 @@ nodesplit_page_ui <- function(id) {
 #' 
 #' @param id ID of the module
 #' @param data Reactive containing data to analyse
+#' @param sensitivity_data Reactive containing data to analyse for sensitivity analysis
 #' @param treatment_df Reactive containing data frame containing treatment IDs (Number) and names (Label)
+#' @param sensitivity_treatment_df Reactive containing data frame containing treatment IDs (Number) and names (Label) for sensitivity analysis
 #' @param metaoutcome Reactive containing meta analysis outcome: "Continuous" or "Binary"
 #' @param outcome_measure Reactive containing meta analysis outcome measure: "MD", "SMD", "OR, "RR", or "RD"
 #' @param model_effects Reactive containing model effects: either "random" or "fixed"

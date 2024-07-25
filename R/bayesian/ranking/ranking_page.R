@@ -38,7 +38,9 @@ ranking_page_ui <- function(id) {
 #' @param model Reactive containing bayesian meta-analysis for all studies.
 #' @param model_sub Reactive containing meta-analysis with studies excluded.
 #' @param data Reactive containing data to analyse.
+#' @param sensitivity_data Reactive containing data to analyse for sensitivity analysis
 #' @param treatment_df Reactive containing data frame containing treatment IDs (Number) and names (Label).
+#' @param sensitivity_treatment_df Reactive containing data frame containing treatment IDs (Number) and names (Label) for sensitivity analysis
 #' @param metaoutcome Reactive containing meta analysis outcome: "Continuous" or "Binary".
 #' @param outcome_measure Reactive containing meta analysis outcome measure: "MD", "SMD", "OR, "RR", or "RD".
 #' @param model_effects Reactive containing model effects: either "random" or "fixed".
@@ -46,6 +48,7 @@ ranking_page_ui <- function(id) {
 #' @param freq_all Reactive containing frequentist meta-analysis.
 #' @param freq_sub Reactive containing frequentist meta-analysis for the sensitivity analysis.
 #' @param bugsnetdt Reactive containing bugsnet meta-analysis.
+#' @param bugsnetdt_sub Reactive containing bugsnet meta-analysis for sensitivity analysis
 ranking_page_server <- function(
     id,
     model,

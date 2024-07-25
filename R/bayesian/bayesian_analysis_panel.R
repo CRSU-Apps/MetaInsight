@@ -51,7 +51,9 @@ bayesian_analysis_panel_ui <- function(id, page_numbering) {
 #' 
 #' @param id ID of the module
 #' @param data Reactive containing data to analyse
+#' @param sensitivity_data Reactive containing data to analyse for sensitivity analysis
 #' @param treatment_df Reactive containing data frame containing treatment IDs (Number) and names (Label)
+#' @param sensitivity_treatment_df Reactive containing data frame containing treatment IDs (Number) and names (Label) for sensitivity analysis
 #' @param metaoutcome Reactive containing meta analysis outcome: "Continuous" or "Binary"
 #' @param outcome_measure Reactive containing meta analysis outcome measure: "MD", "SMD", "OR, "RR", or "RD"
 #' @param continuous_outcome Reactive containing acronym of the continuous outcome:
@@ -63,6 +65,7 @@ bayesian_analysis_panel_ui <- function(id, page_numbering) {
 #' @param freq_all Reactive containing frequentist meta-analysis
 #' @param freq_sub Reactive containing frequentist meta-analysis for the sensitivity analysis
 #' @param bugsnetdt Reactive containing bugsnet meta-analysis
+#' @param bugsnetdt_sub Reactive containing bugsnet meta-analysis for sensitivity analysis
 #' @param reference_alter Reactive containing the name of the reference treatment for the sensitivity
 #'  analysis accounting for if the chosen reference treatment has been excluded
 bayesian_analysis_panel_server <- function(

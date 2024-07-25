@@ -11,9 +11,7 @@
 #' @param metaoutcome "Continuous" or "Binary".
 #' @param outcome_measure "MD", "OR" or "RR".
 #' @param modelranfix "fixed" or "random".
-#' @param reference_alter List of reference treatments
-#'  - 'ref_all': Reference treatment for the full analysis.
-#'  - 'ref_sub': Reference treatment for the sensitivity analysis.
+#' @param reference Reference treatment
 #' @return Output created by baye().
 bayesian_model <- function(
     data,

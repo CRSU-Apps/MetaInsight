@@ -23,7 +23,6 @@ nodesplit_panel_ui <- function(id, item_name) {
 #' @param metaoutcome Reactive containing meta analysis outcome: "Continuous" or "Binary"
 #' @param outcome_measure Reactive containing meta analysis outcome measure: "MD", "SMD", "OR, "RR", or "RD"
 #' @param model_effects Reactive containing model effects: either "random" or "fixed"
-#' @param exclusions Reactive containing names of studies excluded from the sensitivity analysis. Optional.
 nodesplit_panel_server <- function(
     id,
     data,

@@ -24,11 +24,9 @@ study_exclusions_panel_ui <- function(id) {
 #' @param reference_treatment Reactive containing the ID of the selected reference treatment.
 #' 
 #' @return List of reactives:
-#' - "initial_connected_data" is a data frame containing only the studies which form a connected network, containing the reference treatment.
-#' - "initial_connected_treatment_list" is a data frame containing the updated treatment IDs for the connected data.
-#' - "filtered_connected_data" is a data frame containing only the filtered studies which form a connected network, containing the reference treatment.
-#' - "filtered_connected_treatment_list" is a data frame containing the updated treatment IDs for the connected filtered data.
-#' - "filtered_reference_treatment" is the name of the reference treatment for the sensitivity analysis.
+#' - "initial_data" contains the data frame of the connected subnetwork of the uploaded data
+#' - "sensitivity_data" contains the data frame of the connected subnetwork for the sensitivity analysis
+#' - "sensitivity_treatment_list" contains the treatment names ("Label") and IDs ("Number") for the sensitivity analysis data
 study_exclusions_panel_server <- function(id, data, treatment_df, reference_treatment) {
   moduleServer(id, function(input, output, session) {
     

@@ -5,8 +5,9 @@
 #' @param treatment_list Data frame containing the treatment ID ('Number') and the treatment name ('Label').
 #' @param outcome_measure "MD", "SMD", "OR", "RR", or "RD".
 #' @param modelranfix "fixed" or "random".
+#' @param reference Name of the reference treatment.
 #' @return See output from freq_wrap().
-frequentist <- function(data, metaoutcome, treatment_list, outcome_measure, modelranfix, reference){
+frequentist <- function(data, metaoutcome, treatment_list, outcome_measure, modelranfix, reference) {
   data_wide <-  entry.df(data = data, CONBI = metaoutcome) # Transform data to wide form
   
   # Use the self-defined function, freq_wrap
