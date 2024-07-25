@@ -83,9 +83,18 @@ study_exclusions_panel_server <- function(id, data, treatment_df, reference_trea
     observe({
       selections(main_subnetwork_exclusions())
     })
+    
+    recent_main_subnetwork_exclusions <- reactiveVal()
 
     # Inform the user that the uploaded data is disconnected
     observe({
+      # This prevents Duplicate notifications due to chatty reactives
+      if (!is.null(recent_main_subnetwork_exclusions()) && identical(recent_main_subnetwork_exclusions(), main_subnetwork_exclusions())) {
+        return()
+      }
+      
+      recent_main_subnetwork_exclusions(main_subnetwork_exclusions())
+      
       if (length(main_subnetwork_exclusions()) > 0) {
         shiny::showModal(
           modalDialog(

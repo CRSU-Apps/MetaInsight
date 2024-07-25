@@ -95,6 +95,30 @@ test_that("FindAllTreatments() finds all treatements for study for wide-format d
   expect_equal(!!treatments, c("Egg", "Butter", "Cinnamon"))
 })
 
+test_that("FindStudiesIncludingTreatments() finds all studies containing treatments for long data", {
+  data <- data.frame(
+    Study = c("A", "A", "B", "B", "C", "C", "C", "D", "D"),
+    T = c("Paracetamol", "Exercise", "Sleep", "Alcohol", "Bacon", "Denial", "Paracetamol", "Denial", "Exercise")
+  )
+  
+  studies <- FindStudiesIncludingTreatments(data = data, treatments = c("Paracetamol", "Exercise"))
+  
+  expect_equal(sort(studies), c("A", "C", "D"), label = format_vector_to_string(sort(studies)))
+})
+
+test_that("FindStudiesIncludingTreatments() finds all studies containing treatments for wide data", {
+  data <- data.frame(
+    Study = c("A", "B", "C", "D"),
+    T.1 = c("Paracetamol", "Sleep", "Bacon", "Denial"),
+    T.2 = c("Exercise", "Alcohol", "Denial", "Exercise"),
+    T.3 = c(NA, NA, "Paracetamol", NA)
+  )
+  
+  studies <- FindStudiesIncludingTreatments(data = data, treatments = c("Paracetamol", "Exercise"))
+  
+  expect_equal(sort(studies), c("A", "C", "D"), label = format_vector_to_string(sort(studies)))
+})
+
 test_that("VectorWithItemFirst() returns unchanged vector when intended first item not in vector", {
   vector <- c("Egg", "Flour", "Sugar", "Butter", "Cinnamon")
   
@@ -325,6 +349,48 @@ test_that("ReplaceTreatmentIds() updates treatment names to IDs for binary wide 
   # Other columns unchanged
   expect_equal(wrangled_data[, !(colnames(wrangled_data) %in% paste0("T.", 1:6))],
                data[, !(colnames(data) %in% paste0("T.", 1:6))])
+})
+
+test_that("ReinstateTreatmentIds() reinstates treatment IDs for long data", {
+  data <- data.frame(
+    Study = c("A", "A", "B", "B", "C", "C", "C", "D", "D"),
+    T = c(1, 2, 3, 4, 5, 6, 1, 6, 2)
+  )
+  treatment_ids = data.frame(
+    Label = c("Paracetamol", "Exercise", "Sleep", "Alcohol", "Bacon", "Denial"),
+    Number = 1:6
+  )
+  
+  new_data <- ReinstateTreatmentIds(data = data, treatment_ids = treatment_ids)
+  expected <- data.frame(
+    Study = c("A", "A", "B", "B", "C", "C", "C", "D", "D"),
+    T = c("Paracetamol", "Exercise", "Sleep", "Alcohol", "Bacon", "Denial", "Paracetamol", "Denial", "Exercise")
+  )
+  
+  expect_equal(!!new_data, !!expected)
+})
+
+test_that("ReinstateTreatmentIds() reinstates treatment IDs for wide data", {
+  data <- data.frame(
+    Study = c("A", "B", "C", "D"),
+    T.1 = c(1, 3, 5, 6),
+    T.2 = c(2, 4, 6, 2),
+    T.3 = c(NA, NA, 1, NA)
+  )
+  treatment_ids = data.frame(
+    Label = c("Paracetamol", "Exercise", "Sleep", "Alcohol", "Bacon", "Denial"),
+    Number = 1:6
+  )
+  
+  new_data <- ReinstateTreatmentIds(data = data, treatment_ids = treatment_ids)
+  expected <- data.frame(
+    Study = c("A", "B", "C", "D"),
+    T.1 = c("Paracetamol", "Sleep", "Bacon", "Denial"),
+    T.2 = c("Exercise", "Alcohol", "Denial", "Exercise"),
+    T.3 = c(NA, NA, "Paracetamol", NA)
+  )
+  
+  expect_equal(!!new_data, !!expected)
 })
 
 test_that("AddStudyIds() adds study IDs for continuous long data", {
