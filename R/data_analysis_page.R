@@ -90,15 +90,17 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, m
     # Reactive functions used in various places, based on the data
     #####
     
+    # Initial (uploaded) data with covariates removed
     inital_non_covariate_data <- reactive({
       RemoveCovariates(initial_data())
     })
     
+    # Sensitivity analysis data with covariates removed
     sensitivity_non_covariate_data <- reactive({
       RemoveCovariates(sensitivity_data())
     })
     
-    # Make ref_alter function (in analysis_generic.R) reactive - NVB
+    # Make ref_alter function (in analysis_generic.R) reactive
     reference_alter <- reactive({
       return(
         list(
@@ -108,7 +110,7 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, m
       )
     })
 
-    # Make frequentist function (in fn_analysis.R) reactive - NVB
+    # Make frequentist function (in fn_analysis.R) reactive
     freq_all <- reactive({
       return(
         frequentist(
@@ -122,7 +124,7 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, m
       )
     })
 
-    # Make frequentist function (in fn_analysis.R) reactive with excluded studies - NVB
+    # Make frequentist function (in fn_analysis.R) reactive with excluded studies
     freq_sub <- reactive({
       return(
         frequentist(
@@ -136,12 +138,12 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, m
       )
     })
     
-    # Make bugsnetdata function (in analysis_generic.R) reactive - NVB
+    # Make bugsnetdata function (in analysis_generic.R) reactive
     bugsnetdt <- reactive({
       return(bugsnetdata(inital_non_covariate_data(), metaoutcome(), treatment_df()))
     })
     
-    # Make bugsnetdata function (in analysis_generic.R) reactive - NVB
+    # Make bugsnetdata function (in analysis_generic.R) reactive
     bugsnetdt_sub <- reactive({
       return(bugsnetdata(sensitivity_non_covariate_data(), metaoutcome(), sensitivity_treatment_list()))
     })
