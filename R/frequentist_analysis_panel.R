@@ -110,11 +110,11 @@ frequentist_analysis_panel_ui <- function(id, page_numbering) {
 #' @param metaoutcome Reactive containing meta analysis outcome: "Continuous" or "Binary"
 #' @param outcome_measure Reactive containing meta analysis outcome measure: "MD", "SMD", "OR, "RR", or "RD"
 #' @param model_effects Reactive containing model effects: either "random" or "fixed"
-#' @param exclusions Reactive containing names of studies excluded from the sensitivity analysis
 #' @param rank_option Reactive containing ranking option: "good" or "bad" depending on whether small values are desirable or not
 #' @param freq_all Reactive containing frequentist meta-analysis
 #' @param freq_sub Reactive containing frequentist meta-analysis for the sensitivity analysis
 #' @param bugsnetdt Reactive containing bugsnet meta-analysis
+#' @param bugsnetdt_sub Reactive containing bugsnet meta-analysis for sensitivity analysis
 #' @param reference_alter Reactive containing the name of the reference treatment for the sensitivity
 #'  analysis accounting for if the chosen reference treatment has been excluded
 frequentist_analysis_panel_server <- function(
@@ -122,11 +122,11 @@ frequentist_analysis_panel_server <- function(
     metaoutcome,
     outcome_measure,
     model_effects,
-    exclusions,
     rank_option,
     freq_all,
     freq_sub,
     bugsnetdt,
+    bugsnetdt_sub,
     reference_alter
     ) {
   moduleServer(id, function(input, output, session) {
@@ -207,7 +207,7 @@ frequentist_analysis_panel_server <- function(
       plotOutput(
         outputId = ns("SFPUpdatingComp"),
         height = BayesPixels(
-          as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% exclusions()), metaoutcome())$Value[1]),
+          as.numeric(bugsnet_sumtb(bugsnetdt_sub(), metaoutcome())$Value[1]),
           title = TRUE
         ),
         width = "630px"
@@ -236,9 +236,9 @@ frequentist_analysis_panel_server <- function(
       },
       content = function(file) {
         if (input$format_freq4 == "PDF") {
-          pdf(file = file, width = 9, height=BayesInch(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% exclusions()), metaoutcome())$Value[1])))
+          pdf(file = file, width = 9, height=BayesInch(as.numeric(bugsnet_sumtb(bugsnetdt_sub(), metaoutcome())$Value[1])))
         } else {
-          png(file = file, width = 610, height = BayesPixels(as.numeric(bugsnet_sumtb(filter(bugsnetdt(), !Study %in% exclusions()), metaoutcome())$Value[1])))
+          png(file = file, width = 610, height = BayesPixels(as.numeric(bugsnet_sumtb(bugsnetdt_sub(), metaoutcome())$Value[1])))
         }
         make_netComp(freq_sub(), model_effects(), reference_alter()$ref_sub, input$freqmin_sub, input$freqmax_sub)
         dev.off()

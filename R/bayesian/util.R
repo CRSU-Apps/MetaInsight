@@ -6,51 +6,32 @@
 
 #' Bayesian analysis
 #' 
-#' @param sub TRUE for sensitivity analysis, FALSE for full analysis.
 #' @param data Input data set.
 #' @param treatment_list Data frame containing the treatment ID ('Number') and the treatment name ('Label').
 #' @param metaoutcome "Continuous" or "Binary".
-#' @param exclusionbox Vector of studies excluded from the sensitivity analysis.
 #' @param outcome_measure "MD", "OR" or "RR".
 #' @param modelranfix "fixed" or "random".
-#' @param reference_alter List of reference treatments
-#'  - 'ref_all': Reference treatment for the full analysis.
-#'  - 'ref_sub': Reference treatment for the sensitivity analysis.
+#' @param reference Reference treatment
 #' @return Output created by baye().
 bayesian_model <- function(
-    sub,
     data,
     treatment_list,
     metaoutcome,
-    exclusionbox,
     outcome_measure,
     modelranfix,
-    reference_alter) {
+    reference) {
   newData1 <- as.data.frame(data)
   longsort2 <- dataform.df(newData1, treatment_list, metaoutcome) 
-  if (sub) {
-    return(
-      baye(
-        filter(longsort2, !Study %in% exclusionbox),
-        treatment_list,
-        modelranfix,
-        outcome_measure,
-        metaoutcome,
-        reference_alter$ref_sub
-      )
+  return(
+    baye(
+      longsort2,
+      treatment_list,
+      modelranfix,
+      outcome_measure,
+      metaoutcome,
+      reference
     )
-  } else {
-    return(
-      baye(
-        longsort2,
-        treatment_list,
-        modelranfix,
-        outcome_measure,
-        metaoutcome,
-        reference_alter$ref_all
-      )
-    )
-  }
+  )
 }
 
 
@@ -103,15 +84,11 @@ obtain_rank_data <- function(data, metaoutcome, treatment_list, bayesmodel, rank
 #' @param metaoutcome The type of outcome being measured.
 #' @param outcome_measure The analysis outcome measure.
 #' @param modelranfix The type of model. Either "random" or "fixed"
-#' @param exclusions Vector of excluded studies. Defaults to empty vector.
 #'
 #' @return The created nodesplit model
-nodesplit <- function(data, treatment_list, metaoutcome, outcome_measure, modelranfix, exclusions = c()) {
+nodesplit <- function(data, treatment_list, metaoutcome, outcome_measure, modelranfix) {
   newData1 <- as.data.frame(data)
-  longsort2 <- filter(
-    dataform.df(newData1, treatment_list, metaoutcome),
-    !Study %in% exclusions
-  )
+  longsort2 <- dataform.df(newData1, treatment_list, metaoutcome)
   bayenode(data = longsort2, treat_list = treatment_list, model = modelranfix,
            outcome = outcome_measure, CONBI = metaoutcome)
 }

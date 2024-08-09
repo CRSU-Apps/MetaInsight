@@ -50,11 +50,7 @@ data_analysis_options_panel_ui <- function(id) {
     h3("Select studies to exclude:"),
     p("Tips: you can use the data table to help find the study that you want to exclude."),
     actionButton(inputId = ns("datatablebutton"), label = "Open the data table"),
-    checkboxGroupInput(
-      inputId = ns("exclusionbox"),
-      label = "",
-      choices = c()
-    ),
+    study_exclusions_panel_ui(id = ns("exclusions")),
     h5("NB: If a whole treatment is removed from the analysis the NMA will return an error message. To overcome this, please remove the treatment from the data.")
   )
 }
@@ -65,6 +61,7 @@ data_analysis_options_panel_ui <- function(id) {
 #' @param id ID of the module
 #' @param data Reactive containing data to analyse
 #' @param is_default_data Reactive containing TRUE if data is an example dataset, loaded by default
+#' @param treatment_df Reactive containing data frame containing treatment IDs (Number) and names (Label)
 #' @param metaoutcome Reactive containing meta analysis outcome: "continuous" or "binary"
 #' @param OpenDataTable Function to open the data table
 #' 
@@ -78,7 +75,10 @@ data_analysis_options_panel_ui <- function(id) {
 #'   "MD" for mean difference, or "SMD" for standardised mean difference
 #' - "binary_outcome" contains acronym of the binary outcome:
 #'   "OR" for odds ratio, "RR" for risk ratio, or "RD" for risk difference
-data_analysis_options_server <- function(id, data, is_default_data, metaoutcome, OpenDataTable) {
+#' - "initial_data" contains the data frame of the connected subnetwork of the uploaded data
+#' - "sensitivity_data" contains the data frame of the connected subnetwork for the sensitivity analysis
+#' - "sensitivity_treatment_list" contains the treatment names ("Label") and IDs ("Number") for the sensitivity analysis data
+data_analysis_options_server <- function(id, data, is_default_data, treatment_df, metaoutcome, OpenDataTable) {
   moduleServer(id, function(input, output, session) {
     continuous_outcome <- reactive({
       input$outcomeCont
@@ -101,7 +101,11 @@ data_analysis_options_server <- function(id, data, is_default_data, metaoutcome,
     })
     shiny::outputOptions(output, "metaoutcome", suspendWhenHidden = FALSE)
     
-    exclusions <- debounce(reactive({input$exclusionbox}), 1500)
+    exclusions_reactives <- study_exclusions_panel_server(
+      id = "exclusions",
+      data = data,
+      treatment_df = treatment_df
+    )
     
     ### Ranking defaults
     choice <- reactive({
@@ -111,15 +115,6 @@ data_analysis_options_server <- function(id, data, is_default_data, metaoutcome,
     observe({
       choice2 <- choice()
       shiny::updateRadioButtons(inputId = "rankopts", selected = choice2)
-    })
-    
-    ### Get studies for check box input
-    
-    observe({
-      shiny::updateCheckboxGroupInput(
-        inputId = "exclusionbox",
-        choices = unique(data()$Study)
-      )
     })
     
     model_effects <- reactive({
@@ -141,10 +136,12 @@ data_analysis_options_server <- function(id, data, is_default_data, metaoutcome,
       list(
         outcome_measure = outcome_measure,
         model_effects = model_effects,
-        exclusions = exclusions,
         rank_option = rank_option,
         continuous_outcome = continuous_outcome,
-        binary_outcome = binary_outcome
+        binary_outcome = binary_outcome,
+        initial_data = exclusions_reactives$initial_data,
+        sensitivity_data = exclusions_reactives$sensitivity_data,
+        sensitivity_treatment_list = exclusions_reactives$sensitivity_treatment_list
       )
     )
   })

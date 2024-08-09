@@ -15,33 +15,6 @@ bugsnetdata <- function(data, metaoutcome, treatment_list){
 
 
 
-#' Returns the reference treatment for the main analysis and the sensitivity analysis, which will be the same unless the main one is removed from the network in the sensitivity analysis.
-#' 
-#' @param data Input dataset.
-#' @param metaoutcome "Continuous" or "Binary".
-#' @param excluded Vector of excluded studies.
-#' @param treatment_list Data frame containing the treatment ID ('Number') and the treatment name ('Label').
-#' @return List of reference treatments.
-#'  - 'ref_all' = Main reference treatment.
-#'  - 'ref_sub' = Sensitivity analysis reference treatment.
-ref_alter <- function(data, metaoutcome, excluded, treatment_list){
-  newData1 <- as.data.frame(data)
-  lstx <- treatment_list$Label
-  ref_all <- as.character(lstx[1])
-  longsort2 <- dataform.df(newData1 = newData1,
-                           treat_list = treatment_list,
-                           CONBI = metaoutcome)
-  long_sort2_sub <- filter(longsort2, !Study %in% excluded)  # subgroup
-  if (lstx[1] %in% long_sort2_sub$T) {
-    ref_sub <- ref_all
-  } else {
-    ref_sub <- as.character(long_sort2_sub$T[1])
-  }
-  return(list(ref_all = ref_all, ref_sub = ref_sub))
-}
-
-
-
 ####################################
 # Function for choosing default ordering in example datasets #
 #####################################
