@@ -158,7 +158,7 @@ study_exclusions_panel_server <- function(id, data, treatment_df, reference_trea
     sensitivity_subnetworks <- eventReactive(
       selection_data(),
       {
-        if (is.null(reference_treatment()) || reference_treatment() == "" || !(reference_treatment() %in% treatment_df()$Label)) {
+        if (is.null(reference_treatment()) || reference_treatment() == "" || !(reference_treatment() %in% treatment_df()$Label) || nrow(selection_data()) == 0) {
           return(NULL)
         }
         return(IdentifySubNetworks(selection_data(), treatment_df(), reference_treatment()))
@@ -172,6 +172,9 @@ study_exclusions_panel_server <- function(id, data, treatment_df, reference_trea
         indices <- 1:length(selection_data()$Study)
         
         subnetworks <- sensitivity_subnetworks()
+        if (is.null(subnetworks)) {
+          return(data.frame())
+        }
         primary_network <- subnetworks$subnet_1
         
         connected_indices <- indices[selection_data()$Study %in% primary_network$studies]
