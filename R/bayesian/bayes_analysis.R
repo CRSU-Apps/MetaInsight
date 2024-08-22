@@ -68,7 +68,6 @@ baye <- function(data, treat_list, model, outcome, CONBI, ref) {
   rel_eff_tbl <- relative.effect.table(mtcResults) 
   sumresults <- summary(mtcRelEffects)
   a <- paste(model, "effect", sep = " ")   #Create text for random/fixed effect
-  cat(mtcResults$model$code, file = "codes.txt", fill = FALSE, labels = NULL, append = FALSE)  # write the code into a file for download
   lstx <- treat_list$Label # Treatment names
   ntx <- nrow(treat_list) # Number of treatments
   sumoverall <- summary(mtcResults)
