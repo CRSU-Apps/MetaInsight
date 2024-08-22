@@ -129,7 +129,6 @@ model_details_panel_server <- function(id, models, package = "gemtc") {
     output$download_code <- downloadHandler(
       filename = "code.txt",
       content = function(file) {
-        #file.copy("./codes.txt", file)
         cat(
           main_model()$mtcResults$model$code,
           file = file,
