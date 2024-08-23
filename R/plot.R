@@ -261,6 +261,8 @@ LitmusRankOGram <- function(CumData, SUCRAData, ColourData, colourblind=FALSE, r
 #' @param regression_text Text to show for regression (default = "").
 #' @return Radial SUCRA plot.
 RadialSUCRA <- function(SUCRAData, ColourData, BUGSnetData, colourblind=FALSE, regression_text="") {      # SUCRAData needs Treatment & Rank; ColourData needs SUCRA & colour; colourblind friendly option; regression annotation text
+  # Tempory Directory
+  temp_dir <- tempdir()
   n <- nrow(SUCRAData) # number of treatments
   # Add values to angle and adjust radial treatment labels
   SUCRAData <- SUCRAData[order(-SUCRAData$SUCRA), ]
@@ -287,14 +289,14 @@ RadialSUCRA <- function(SUCRAData, ColourData, BUGSnetData, colourblind=FALSE, r
     geom_point(aes(fill = SUCRA), size = 1, shape = 21, show.legend = FALSE) +  
     scale_y_continuous(breaks = c(0, 20, 40, 60, 80, 100), limits = c(-40, 115)) +
     annotate("text", x = rep(0.5, 7), y = c(-3, 17, 37, 57, 77, 97, 115), label = c("0", "20", "40", "60", "80", "100", "SUCRA (%)"), size = 2.5, family = "sans") # annotate has to be after geoms
-  ggsave(filename = 'BackgroundO.png', device = 'png', bg = 'transparent', width = 5, height = 5)
+  ggsave(filename = file.path(temp_dir, 'BackgroundO.png'), device = 'png', bg = 'transparent', width = 5, height = 5)
   
   Background +
     geom_segment(aes(xend = Treatment, y = -20, yend = 110), linetype = "dashed") +
     geom_point(aes(fill = SUCRA), size = 3, shape = 21, show.legend = FALSE) +
     scale_y_continuous(breaks = c(0, 20, 40, 60, 80, 100), limits = c(-80, 115)) +
     annotate("text", x = rep(0.5, 7), y = c(-3, 17, 37, 57, 77, 97, 115), label = c("0", "20", "40", "60", "80", "100", "SUCRA (%)"), size = 2.5, family = "sans") # annotate has to be after geoms
-  ggsave(filename = 'BackgroundA.png', device = 'png', bg = 'transparent', width = 5, height = 5)
+  ggsave(filename = file.path(temp_dir, 'BackgroundA.png'), device = 'png', bg = 'transparent', width = 5, height = 5)
   
   
   # Create my own network plot using ggplot polar coords #
@@ -359,10 +361,10 @@ RadialSUCRA <- function(SUCRAData, ColourData, BUGSnetData, colourblind=FALSE, r
   }
   
   Network <- CreateNetwork(Type = 'Original')
-  ggsave(filename = 'NetworkO.png', device = 'png', bg = 'transparent', width = 5, height = 5)
+  ggsave(filename = file.path(temp_dir, 'NetworkO.png'), device = 'png', bg = 'transparent', width = 5, height = 5)
   
   Network <- CreateNetwork(Type = 'Alternative')
-  ggsave(filename = "NetworkA.png", device = 'png', bg = 'transparent', width = 5, height = 5)
+  ggsave(filename = file.path(temp_dir, "NetworkA.png"), device = 'png', bg = 'transparent', width = 5, height = 5)
   
   
   #' Creates the nodes for the network part of the radial SUCRA plot.
@@ -395,15 +397,15 @@ RadialSUCRA <- function(SUCRAData, ColourData, BUGSnetData, colourblind=FALSE, r
   }
   
   Points <- CreatePoints(Type = 'Original', colourblind = colourblind)
-  ggsave(filename = 'PointsO.png', device = 'png', bg = 'transparent', width = 5, height = 5)
+  ggsave(filename = file.path(temp_dir, 'PointsO.png'), device = 'png', bg = 'transparent', width = 5, height = 5)
   
   Points <- CreatePoints(Type = 'Alternative', colourblind = colourblind)
-  ggsave(filename = 'PointsA.png', device = 'png', bg = 'transparent', width = 5, height = 5)
+  ggsave(filename = file.path(temp_dir, 'PointsA.png'), device = 'png', bg = 'transparent', width = 5, height = 5)
   
   # Overlay #
-  Background <- magick::image_read('BackgroundO.png')
-  Network <- magick::image_read('NetworkO.png')
-  Points <- magick::image_read('PointsO.png')
+  Background <- magick::image_read(file.path(temp_dir, 'BackgroundO.png'))
+  Network <- magick::image_read(file.path(temp_dir, 'NetworkO.png'))
+  Points <- magick::image_read(file.path(temp_dir, 'PointsO.png'))
   Final <- magick::image_composite(Background,Network)
   Final <- magick::image_composite(Final,Points)
   Finalplot <- cowplot::ggdraw() +
@@ -412,9 +414,9 @@ RadialSUCRA <- function(SUCRAData, ColourData, BUGSnetData, colourblind=FALSE, r
     Finalplot <- Finalplot + 
       cowplot::draw_label(regression_text, x = 0.95, y = 0.05, hjust = 1, size = 10)
   }
-  Background <- magick::image_read('BackgroundA.png')
-  Network <- magick::image_read('NetworkA.png')
-  Points <- magick::image_read('PointsA.png')
+  Background <- magick::image_read(file.path(temp_dir, 'BackgroundA.png'))
+  Network <- magick::image_read(file.path(temp_dir, 'NetworkA.png'))
+  Points <- magick::image_read(file.path(temp_dir, 'PointsA.png'))
   Final <- magick::image_composite(Background,Network)
   Final <- magick::image_composite(Final,Points)
   Finalalt <- cowplot::ggdraw() +
@@ -424,12 +426,12 @@ RadialSUCRA <- function(SUCRAData, ColourData, BUGSnetData, colourblind=FALSE, r
       cowplot::draw_label(regression_text, x = 0.95, y = 0.05, hjust = 1, size = 10)
   }
   
-  file.remove('BackgroundO.png')
-  file.remove('NetworkO.png')
-  file.remove('PointsO.png')
-  file.remove('BackgroundA.png')
-  file.remove('NetworkA.png')
-  file.remove('PointsA.png')
+  unlink(file.path(temp_dir, 'BackgroundO.png'))
+  unlink(file.path(temp_dir, 'NetworkO.png'))
+  unlink(file.path(temp_dir, 'PointsO.png'))
+  unlink(file.path(temp_dir, 'BackgroundA.png'))
+  unlink(file.path(temp_dir, 'NetworkA.png'))
+  unlink(file.path(temp_dir, 'PointsA.png'))
   
   return(list(Original = Finalplot, Alternative = Finalalt))
 }
