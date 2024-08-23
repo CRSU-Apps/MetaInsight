@@ -153,42 +153,11 @@ data_input_panel_server <- function(id, continuous_file = 'data/Non_opioids_long
         invalid_data(NULL)
       }
       
-      result = ValidateUploadedData(df, input$metaoutcome)
-
-      if (!result$valid) {
-        showModal(
-          modalDialog(
-            title = "Invalid Data",
-            easyClose = TRUE,
-            p("Uploaded data was invalid because:"),
-            p(tags$strong(result$message)),
-            p("Please check you data file and ensure that you have the correct outcome type selected on the home page"),
-            shinyBS::bsCollapse(
-              shinyBS::bsCollapsePanel(
-                title = "Show Data",
-                div(
-                  style = 'overflow-x: scroll',
-                  DT::dataTableOutput(outputId = ns("invalid_data"))
-                )
-              )
-            ),
-            modalButton(label = "OK"),
-            footer = NULL
-          )
-        )
-        invalid_data(df)
-        output$file_input_panel <- default_file_input
-        df <- defaultD()
-        data_uploaded(FALSE)
-      } else {
-        invalid_data(NULL)
-      }
-      
       return(CleanData(df))
     })
     
     output$invalid_data <- DT::renderDataTable({
-      invalid_data()
+      return(invalid_data())
     })
     
     all_treatments <- reactive({

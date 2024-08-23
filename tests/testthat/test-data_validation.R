@@ -204,3 +204,39 @@ test_that("ValidateUploadedData() identifies invalid binary wide data, with inco
   expect_false(validation_result$valid)
   expect_equal(validation_result$message, "For wide format data, numbered columns (T, R, N) must all have matching sequential indices, starting from 1")
 })
+
+test_that("ValidateUploadedData() identifies invalid binary wide data, with single-arm studies", {
+  data <- CleanData(read.csv("data/invalid_data/continuous-single-arm-wide.csv"))
+
+  validation_result <- ValidateUploadedData(data, "Continuous")
+
+  expect_false(validation_result$valid)
+  expect_equal(validation_result$message, "Some studies have single arms: Constantine, Justinian")
+})
+
+test_that("ValidateUploadedData() identifies invalid binary long data, with single-arm studies", {
+  data <- CleanData(read.csv("data/invalid_data/continuous-single-arm-long.csv"))
+
+  validation_result <- ValidateUploadedData(data, "Continuous")
+
+  expect_false(validation_result$valid)
+  expect_equal(validation_result$message, "Some studies have single arms: Constantine, Justinian")
+})
+
+test_that("ValidateUploadedData() identifies invalid binary wide data, with single-arm studies", {
+  data <- CleanData(read.csv("data/invalid_data/binary-single-arm-wide.csv"))
+
+  validation_result <- ValidateUploadedData(data, "Binary")
+
+  expect_false(validation_result$valid)
+  expect_equal(validation_result$message, "Some studies have single arms: Constantine, Justinian")
+})
+
+test_that("ValidateUploadedData() identifies invalid binary long data, with single-arm studies", {
+  data <- CleanData(read.csv("data/invalid_data/binary-single-arm-long.csv"))
+
+  validation_result <- ValidateUploadedData(data, "Binary")
+
+  expect_false(validation_result$valid)
+  expect_equal(validation_result$message, "Some studies have single arms: Constantine, Justinian")
+})
