@@ -49,14 +49,15 @@ ranking_forest_panel_server <- function(
     # Forest plots for ranking panel (different style due to using 'boxes' in UI) CRN
     # All studies #
     output$gemtc2 <- renderPlot({
-      png("forest.png")  # initialise image
+      temp_dir <- tempdir()
+      png(file.path(temp_dir, "forest.png"))  # initialise image
       gemtc::forest(model()$mtcRelEffects, digits = 3)
       dev.off()
-      ForestImg <- magick::image_read('forest.png')
+      ForestImg <- magick::image_read(file.path(temp_dir, 'forest.png'))
       Img <- cowplot::ggdraw() +
         cowplot::draw_image(ForestImg)
 
-      file.remove('forest.png')
+      unlink(file.path(temp_dir, 'forest.png'))
 
       return(Img)
     })
@@ -113,14 +114,15 @@ ranking_forest_panel_baseline_risk_server <- function(
     # Forest plots for ranking panel (different style due to using 'boxes' in UI) CRN
     # All studies #
     output$gemtc2 <- renderPlot({
-      png("forest.png")  # initialise image
+      temp_dir <- tempdir()
+      png(file.path(temp_dir, "forest.png"))  # initialise image
       bnma::network.forest.plot(model(), only.reference.treatment = TRUE)
       dev.off()
-      ForestImg <- magick::image_read('forest.png')
+      ForestImg <- magick::image_read(file.path(temp_dir, 'forest.png'))
       Img <- cowplot::ggdraw() +
         cowplot::draw_image(ForestImg)
 
-      file.remove('forest.png')
+      unlink(file.path(temp_dir, 'forest.png'))
 
       return(Img)
     })
