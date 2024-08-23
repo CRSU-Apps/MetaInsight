@@ -256,7 +256,7 @@ ValidateUploadedData <- function(data, outcome_type) {
       }
     )
   )
-  
+
   if (length(single_arm_studies) > 0) {
     return(
       list(
@@ -265,6 +265,6 @@ ValidateUploadedData <- function(data, outcome_type) {
       )
     )
   }
-  
+
   return(.valid_result)
 }
