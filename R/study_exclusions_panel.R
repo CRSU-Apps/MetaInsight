@@ -83,11 +83,37 @@ study_exclusions_panel_server <- function(id, data, treatment_df, reference_trea
       studies <- isolate(all_studies())
       return(studies[!studies %in% main_connected_data()$Study])
     })
-
-    # Update "selections" for the initial data to be those excluded by taking the subnetwork
+    
+    # Update the checkboxes to tick the excluded studies
     observe({
-      selections(main_subnetwork_exclusions())
-    })
+      # Select check boxes for disconnected studies
+      disconnected_indices <- which(all_studies() %in% main_subnetwork_exclusions())
+      selected = all_studies()[disconnected_indices]
+      shiny::updateCheckboxGroupInput(inputId = "exclusionbox", selected = selected)
+    }) |> bindEvent(main_subnetwork_exclusions())
+
+    # Update which studies can be selected from the sensitivity analysis by taking the initial data subnetwork
+    observe({
+      filtered_treatments <- FindAllTreatments(main_connected_data())
+      
+      lapply(
+        all_studies(),
+        function(study) {
+          index <- match(study, all_studies())
+          sub_element <- glue::glue("#{session$ns('exclusionbox')} .checkbox:nth-child({index}) label")
+          
+          study_treatments <- FindAllTreatments(data()[data()$Study == study, ])
+          
+          if (any(study_treatments %in% filtered_treatments)) {
+            # The 0ms delay is required to disable studies disconnected within the initial uploaded data
+            shinyjs::delay(0, shinyjs::enable(selector = sub_element))
+          } else {
+            # The 0ms delay is required to disable studies disconnected within the initial uploaded data
+            shinyjs::delay(0, shinyjs::disable(selector = sub_element))
+          }
+        }
+      )
+    }) |> bindEvent(main_connected_data())
     
     # Exclusions from the initial data, last time the data was checked
     recent_main_subnetwork_exclusions <- reactiveVal()
@@ -116,20 +142,6 @@ study_exclusions_panel_server <- function(id, data, treatment_df, reference_trea
     # Sensitivity analysis #
     ########################
     
-    # Selected studies to exclude
-    selections <- reactiveVal(c())
-    # Selected studies after analysing for network disconnection
-    filtered_selections <- reactiveVal(c())
-    # Studies excluded from the data
-    exclusions <- reactiveVal(c())
-    
-    # On data reset, reset the selections
-    observe({
-      selections(c())
-      filtered_selections(c())
-      exclusions(c())
-    }) |> bindEvent(data())
-    
     # This debouncing prevents an infinite loop of updating the selections
     ui_exclusions <- debounce(
       millis = 100,
@@ -138,146 +150,36 @@ study_exclusions_panel_server <- function(id, data, treatment_df, reference_trea
       })
     )
     
-    # Update "selections" reactive with those selected in the UI
-    observe({
-      selections(ui_exclusions())
-    })
-    
-    #############################
-    # Find connected subnetwork #
-    #############################
-    # vvvvvvvvvvvvvvvvvvvvvvvvvvv
-    
     # Sensitivity analysis data with studies excluded using "selections"
     selection_data <- reactive({
       data <- isolate(data())
-      return(data[!data$Study %in% selections(), ])
+      return(data[!data$Study %in% ui_exclusions(), ])
     })
     
-    # All subnetworks for the sensitivity analysis data
-    sensitivity_subnetworks <- eventReactive(
-      selection_data(),
-      {
-        if (is.null(reference_treatment()) || reference_treatment() == "" || !(reference_treatment() %in% treatment_df()$Label) || nrow(selection_data()) == 0) {
-          return(NULL)
-        }
-        return(IdentifySubNetworks(selection_data(), treatment_df(), reference_treatment()))
-      }
-    )
-    
-    # Main subnetwork for sensitivity analysis data
-    sensitivity_connected_data <- eventReactive(
-      sensitivity_subnetworks(),
-      {
-        indices <- 1:length(selection_data()$Study)
-        
-        subnetworks <- sensitivity_subnetworks()
-        if (is.null(subnetworks)) {
-          return(data.frame())
-        }
-        primary_network <- subnetworks$subnet_1
-        
-        connected_indices <- indices[selection_data()$Study %in% primary_network$studies]
-        return(selection_data()[connected_indices, ])
-      }
-    )
-    
-    # All exclusions from sensititvity analysis data
-    sensitivity_subnetwork_exclusions <- reactive({
-      studies <- isolate(all_studies())
-      return(studies[!studies %in% sensitivity_connected_data()$Study])
-    })
-    
-    # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    
-    # Update "filtered_selections" reactive
-    observe({
-      filtered_selections(sensitivity_subnetwork_exclusions())
-    })
-    
-    # If "filtered_selections" != "selections"
-    # update "selections"
-    observe({
-      if (!identical(filtered_selections(), selections())) {
-        selections(filtered_selections())
-      }
-    }) |> bindEvent(filtered_selections())
-    
-    # If "filtered_selections" == "selections"
-    # If "filtered_selections" != "exclusions"
-    # Update "exclusions"
-    observe({
-      if (identical(filtered_selections(), selections()) && !identical(filtered_selections(), exclusions())) {
-        exclusions(filtered_selections())
-      }
-    }) |> bindEvent(filtered_selections())
-    
-    # Update the checkboxes to tick the excluded studies
-    observe({
-      # Select check boxes for disconnected studies
-      disconnected_indices <- which(all_studies() %in% exclusions())
-      selected = all_studies()[disconnected_indices]
-      shiny::updateCheckboxGroupInput(inputId = "exclusionbox", selected = selected)
-    }) |> bindEvent(exclusions())
-    
-    sensitivity_analysis_data <- reactive({
-      return(data()[!data()$Study %in% exclusions(), ])
-    })
-    
-    # Disable check boxes for disconnected studies
-    observe({
-      filtered_treatments <- FindAllTreatments(sensitivity_analysis_data())
-      
-      lapply(
-        all_studies(),
-        function(study) {
-          index <- match(study, all_studies())
-          subElement <- glue::glue("#{session$ns('exclusionbox')} .checkbox:nth-child({index}) label")
-          
-          study_treatments <- FindAllTreatments(data()[data()$Study == study, ])
-          
-          if (any(study_treatments %in% filtered_treatments)) {
-            # The 0ms delay is required to disable studies disconnected within the initial uploaded data
-            shinyjs::delay(0, shinyjs::enable(selector = subElement))
-          } else {
-            # The 0ms delay is required to disable studies disconnected within the initial uploaded data
-            shinyjs::delay(0, shinyjs::disable(selector = subElement))
-          }
-        }
-      )
-    }) |> bindEvent(sensitivity_analysis_data())
-    
-    # Reactives to return to the rest of the app
-    
-    delayed_sensitivity_analysis_data <- shiny::debounce(
-      millis = 1500,
+
+    debounced_sensitivity_data <- debounce(
+      millis = 1200,
       r = reactive({
-        sensitivity_analysis_data()
+        selection_data()
       })
     )
     
-    sensitivity_analysis_connected_dewrangled_data <- reactive({
-      ReinstateTreatmentIds(delayed_sensitivity_analysis_data(), treatment_df())
+    sensitivity_dewrangled_data <- reactive({
+      return(ReinstateTreatmentIds(debounced_sensitivity_data(), treatment_df()))
     })
     
-    sensitivity_analysis_connected_treatment_list <- reactive({
-      treatments <- FindAllTreatments(sensitivity_analysis_connected_dewrangled_data())
+    sensitivity_treatment_list <- reactive({
+      treatments <- FindAllTreatments(sensitivity_dewrangled_data())
       return(CreateTreatmentIds(treatments, reference_treatment = reference_treatment()))
-    })
-    
-    sensitivity_analysis_reference_treatment <- reactive({
-      sensitivity_analysis_connected_treatment_list()$Label[1]
-    })
-    
-    sensitivity_analysis_connected_wrangled_data <- reactive({
-      ReplaceTreatmentIds(sensitivity_analysis_connected_dewrangled_data(), sensitivity_analysis_connected_treatment_list())
     })
     
     return(
       list(
         initial_data = main_connected_data,
-        sensitivity_data = sensitivity_analysis_connected_wrangled_data,
-        sensitivity_treatment_list = sensitivity_analysis_connected_treatment_list
+        sensitivity_data = reactive({
+          ReplaceTreatmentIds(sensitivity_dewrangled_data(), sensitivity_treatment_list())
+        }),
+        sensitivity_treatment_list = sensitivity_treatment_list
       )
     )
   })

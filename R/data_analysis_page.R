@@ -91,7 +91,7 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, m
     #####
     
     # Initial (uploaded) data with covariates removed
-    inital_non_covariate_data <- reactive({
+    initial_non_covariate_data <- reactive({
       RemoveCovariates(initial_data())
     })
     
@@ -114,7 +114,7 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, m
     freq_all <- reactive({
       return(
         frequentist(
-          inital_non_covariate_data(),
+          initial_non_covariate_data(),
           metaoutcome(),
           treatment_df(),
           outcome_measure(),
@@ -140,7 +140,7 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, m
     
     # Make bugsnetdata function (in analysis_generic.R) reactive
     bugsnetdt <- reactive({
-      return(bugsnetdata(inital_non_covariate_data(), metaoutcome(), treatment_df()))
+      return(bugsnetdata(initial_non_covariate_data(), metaoutcome(), treatment_df()))
     })
     
     # Make bugsnetdata function (in analysis_generic.R) reactive
@@ -171,17 +171,15 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, m
         )
       }}
 
-    output$datatb <- DT::renderDataTable(DT::datatable({
-      filtertable()
-    },editable=TRUE, rownames= FALSE,
-    colnames= colnames(),
-    filter = list(
-      position = 'top', clear = FALSE, stateSave = TRUE)
-
-    ))
-    
-    
-    
+    output$datatb <- DT::renderDataTable(
+      DT::datatable(
+        filtertable(),
+        editable = TRUE,
+        rownames = FALSE,
+        colnames = colnames(),
+        filter = list(position = 'top', clear = FALSE, stateSave = TRUE)
+      )
+    )
     
     #######################
     ### 1. Data Summary ###
