@@ -100,16 +100,16 @@ study_exclusions_panel_server <- function(id, data, treatment_df, reference_trea
         all_studies(),
         function(study) {
           index <- match(study, all_studies())
-          subElement <- glue::glue("#{session$ns('exclusionbox')} .checkbox:nth-child({index}) label")
+          sub_element <- glue::glue("#{session$ns('exclusionbox')} .checkbox:nth-child({index}) label")
           
           study_treatments <- FindAllTreatments(data()[data()$Study == study, ])
           
           if (any(study_treatments %in% filtered_treatments)) {
             # The 0ms delay is required to disable studies disconnected within the initial uploaded data
-            shinyjs::delay(0, shinyjs::enable(selector = subElement))
+            shinyjs::delay(0, shinyjs::enable(selector = sub_element))
           } else {
             # The 0ms delay is required to disable studies disconnected within the initial uploaded data
-            shinyjs::delay(0, shinyjs::disable(selector = subElement))
+            shinyjs::delay(0, shinyjs::disable(selector = sub_element))
           }
         }
       )
