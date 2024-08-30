@@ -64,8 +64,6 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, m
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
     
-    non_covariate_data <- reactive({ RemoveCovariates(data()) })
-    
     OpenDataTable <- function() {
       updateCollapse(session, "collapse", open = "Data table (Click to open / hide this panel)")
     }
@@ -74,14 +72,16 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, m
       id = "analysis_options",
       data = data,
       is_default_data = is_default_data,
+      treatment_df = treatment_df,
       metaoutcome = metaoutcome,
       OpenDataTable = OpenDataTable
     )
 
-
     outcome_measure = analysis_options_reactives$outcome_measure
     model_effects = analysis_options_reactives$model_effects
-    exclusions = analysis_options_reactives$exclusions
+    initial_data = analysis_options_reactives$initial_data
+    sensitivity_data = analysis_options_reactives$sensitivity_data
+    sensitivity_treatment_list = analysis_options_reactives$sensitivity_treatment_list
     rank_option = analysis_options_reactives$rank_option
     continuous_outcome = analysis_options_reactives$continuous_outcome
     binary_outcome = analysis_options_reactives$binary_outcome
@@ -89,25 +89,63 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, m
     #####
     # Reactive functions used in various places, based on the data
     #####
-
-    # Make frequentist function (in fn_analysis.R) reactive - NVB
-    freq_all <- reactive({
-      return(frequentist(non_covariate_data(), metaoutcome(), treatment_df(), outcome_measure(), model_effects()))
+    
+    # Initial (uploaded) data with covariates removed
+    initial_non_covariate_data <- reactive({
+      RemoveCovariates(initial_data())
     })
-
-    # Make frequentist function (in fn_analysis.R) reactive with excluded studies - NVB
-    freq_sub <- reactive({
-      return(frequentist(non_covariate_data(), metaoutcome(), treatment_df(), outcome_measure(), model_effects(), exclusions()))
+    
+    # Sensitivity analysis data with covariates removed
+    sensitivity_non_covariate_data <- reactive({
+      RemoveCovariates(sensitivity_data())
     })
-
-    # Make bugsnetdata function (in analysis_generic.R) reactive - NVB
-    bugsnetdt <- reactive({
-      return(bugsnetdata(non_covariate_data(), metaoutcome(), treatment_df()))
-    })
-
-    # Make ref_alter function (in analysis_generic.R) reactive - NVB
+    
+    # Make ref_alter function (in analysis_generic.R) reactive
     reference_alter <- reactive({
-      return(ref_alter(non_covariate_data(), metaoutcome(), exclusions(), treatment_df()))
+      return(
+        list(
+          ref_all = treatment_df()$Label[treatment_df()$Number == 1],
+          ref_sub = sensitivity_treatment_list()$Label[sensitivity_treatment_list()$Number == 1]
+        )
+      )
+    })
+
+    # Make frequentist function (in fn_analysis.R) reactive
+    freq_all <- reactive({
+      return(
+        frequentist(
+          initial_non_covariate_data(),
+          metaoutcome(),
+          treatment_df(),
+          outcome_measure(),
+          model_effects(),
+          reference_alter()$ref_all
+        )
+      )
+    })
+
+    # Make frequentist function (in fn_analysis.R) reactive with excluded studies
+    freq_sub <- reactive({
+      return(
+        frequentist(
+          sensitivity_non_covariate_data(),
+          metaoutcome(),
+          sensitivity_treatment_list(),
+          outcome_measure(),
+          model_effects(),
+          reference_alter()$ref_sub
+        )
+      )
+    })
+    
+    # Make bugsnetdata function (in analysis_generic.R) reactive
+    bugsnetdt <- reactive({
+      return(bugsnetdata(initial_non_covariate_data(), metaoutcome(), treatment_df()))
+    })
+    
+    # Make bugsnetdata function (in analysis_generic.R) reactive
+    bugsnetdt_sub <- reactive({
+      return(bugsnetdata(sensitivity_non_covariate_data(), metaoutcome(), sensitivity_treatment_list()))
     })
     
     ### Get data for data table
@@ -115,7 +153,7 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, m
     
     filtertable <- function() {
       label <- treatment_df()
-      dt <- non_covariate_data()
+      dt <- initial_non_covariate_data()
       ntx <- nrow(label)
       dt$T <- factor(dt$T,
                      levels = c(1:ntx),
@@ -133,17 +171,15 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, m
         )
       }}
 
-    output$datatb <- DT::renderDataTable(DT::datatable({
-      filtertable()
-    },editable=TRUE, rownames= FALSE,
-    colnames= colnames(),
-    filter = list(
-      position = 'top', clear = FALSE, stateSave = TRUE)
-
-    ))
-    
-    
-    
+    output$datatb <- DT::renderDataTable(
+      DT::datatable(
+        filtertable(),
+        editable = TRUE,
+        rownames = FALSE,
+        colnames = colnames(),
+        filter = list(position = 'top', clear = FALSE, stateSave = TRUE)
+      )
+    )
     
     #######################
     ### 1. Data Summary ###
@@ -153,8 +189,8 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, m
       id = "data_summary",
       metaoutcome = metaoutcome,
       outcome_measure = outcome_measure,
-      exclusions = exclusions,
       bugsnetdt = bugsnetdt,
+      bugsnetdt_sub = bugsnetdt_sub,
       freq_all = freq_all,
       freq_sub = freq_sub
     )
@@ -170,11 +206,11 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, m
       metaoutcome = metaoutcome,
       outcome_measure = outcome_measure,
       model_effects = model_effects,
-      exclusions = exclusions,
       rank_option = rank_option,
       freq_all = freq_all,
       freq_sub = freq_sub,
       bugsnetdt = bugsnetdt,
+      bugsnetdt_sub = bugsnetdt_sub,
       reference_alter = reference_alter
     )
 
@@ -185,18 +221,20 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, m
     
     bayesian_analysis_panel_server(
       id = "bayesian_analysis",
-      data = data,
+      data = initial_data,
+      sensitivity_data = sensitivity_data,
       treatment_df = treatment_df,
+      sensitivity_treatment_df = sensitivity_treatment_list,
       metaoutcome = metaoutcome,
       outcome_measure = outcome_measure,
       continuous_outcome = continuous_outcome,
       binary_outcome = binary_outcome,
       model_effects = model_effects,
-      exclusions = exclusions,
       rank_option = rank_option,
       freq_all = freq_all,
       freq_sub = freq_sub,
       bugsnetdt = bugsnetdt,
+      bugsnetdt_sub = bugsnetdt_sub,
       reference_alter = reference_alter
     )
     

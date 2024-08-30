@@ -51,7 +51,9 @@ bayesian_analysis_panel_ui <- function(id, page_numbering) {
 #' 
 #' @param id ID of the module
 #' @param data Reactive containing data to analyse
+#' @param sensitivity_data Reactive containing data to analyse for sensitivity analysis
 #' @param treatment_df Reactive containing data frame containing treatment IDs (Number) and names (Label)
+#' @param sensitivity_treatment_df Reactive containing data frame containing treatment IDs (Number) and names (Label) for sensitivity analysis
 #' @param metaoutcome Reactive containing meta analysis outcome: "Continuous" or "Binary"
 #' @param outcome_measure Reactive containing meta analysis outcome measure: "MD", "SMD", "OR, "RR", or "RD"
 #' @param continuous_outcome Reactive containing acronym of the continuous outcome:
@@ -59,27 +61,29 @@ bayesian_analysis_panel_ui <- function(id, page_numbering) {
 #' @param binary_outcome Reactive containing acronym of the binary outcome:
 #'   "OR" for odds ratio, "RR" for risk ratio, or "RD" for risk difference
 #' @param model_effects Reactive containing model effects: either "random" or "fixed"
-#' @param exclusions Reactive containing names of studies excluded from the sensitivity analysis
 #' @param rank_option Reactive containing ranking option: "good" or "bad" depending on whether small values are desirable or not
 #' @param freq_all Reactive containing frequentist meta-analysis
 #' @param freq_sub Reactive containing frequentist meta-analysis for the sensitivity analysis
 #' @param bugsnetdt Reactive containing bugsnet meta-analysis
+#' @param bugsnetdt_sub Reactive containing bugsnet meta-analysis for sensitivity analysis
 #' @param reference_alter Reactive containing the name of the reference treatment for the sensitivity
 #'  analysis accounting for if the chosen reference treatment has been excluded
 bayesian_analysis_panel_server <- function(
     id,
     data,
+    sensitivity_data,
     treatment_df,
+    sensitivity_treatment_df,
     metaoutcome,
     outcome_measure,
     continuous_outcome,
     binary_outcome,
     model_effects,
-    exclusions,
     rank_option,
     freq_all,
     freq_sub,
     bugsnetdt,
+    bugsnetdt_sub,
     reference_alter
     ) {
   moduleServer(id, function(input, output, session) {
@@ -100,12 +104,14 @@ bayesian_analysis_panel_server <- function(
     forest_plots_reactives <- bayesian_forest_plots_page_server(
       id = "forest_plots",
       data = data,
+      sensitivity_data = sensitivity_data,
       treatment_df = treatment_df,
+      sensitivity_treatment_df = sensitivity_treatment_df,
       metaoutcome = metaoutcome,
       outcome_measure = outcome_measure,
       model_effects = model_effects,
-      exclusions = exclusions,
       bugsnetdt = bugsnetdt,
+      bugsnetdt_sub = bugsnetdt_sub,
       reference_alter = reference_alter
     )
     
@@ -127,26 +133,29 @@ bayesian_analysis_panel_server <- function(
       model = model,
       model_sub = model_sub,
       data = data,
+      sensitivity_data = sensitivity_data,
       treatment_df = treatment_df,
+      sensitivity_treatment_df = sensitivity_treatment_df,
       metaoutcome = metaoutcome,
       outcome_measure = outcome_measure,
       model_effects = model_effects,
-      exclusions = exclusions,
       rank_option = rank_option,
       freq_all = freq_all,
       freq_sub = freq_sub,
-      bugsnetdt = bugsnetdt
+      bugsnetdt = bugsnetdt,
+      bugsnetdt_sub = bugsnetdt_sub
     )
 
     # 3d. Nodesplit model
-    nodesplit_panel_server(
+    nodesplit_page_server(
       id = "nodesplit",
       data = data,
+      sensitivity_data = sensitivity_data,
       treatment_df = treatment_df,
+      sensitivity_treatment_df = sensitivity_treatment_df,
       metaoutcome = metaoutcome,
       outcome_measure = outcome_measure,
-      model_effects = model_effects,
-      exclusions = exclusions
+      model_effects = model_effects
     )
 
     # 3e. Bayesian result details

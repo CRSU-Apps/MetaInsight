@@ -45,6 +45,11 @@ ValidateUploadedData <- function(data, outcome_type) {
     return(result)
   }
 
+  result <- .ValidateSingleArmStudies(data)
+  if (!result$valid) {
+    return(result)
+  }
+
   return(.valid_result)
 }
 
@@ -229,4 +234,37 @@ ValidateUploadedData <- function(data, outcome_type) {
     }
   )
   return(mistyped_columns)
+}
+
+#' Validate that all studies have at least 2 arms.
+#'
+#' @param data Data frame to validate.
+#'
+#' @return Validation result in the form of a list:
+#' - "valid" = TRUE or FALSE defining whether data is valid
+#' - "message" = String describing any issues causing the data to be invalid
+.ValidateSingleArmStudies <- function(data) {
+  all_studies <- unique(data$Study)
+  single_arm_studies <- unlist(
+    lapply(
+      all_studies,
+      function(study) {
+        if (length(FindAllTreatments(data = data, study = study)) < 2) {
+          return(study)
+        }
+        return()
+      }
+    )
+  )
+
+  if (length(single_arm_studies) > 0) {
+    return(
+      list(
+        valid = FALSE,
+        message = glue::glue("Some studies have single arms: {paste0(single_arm_studies, collapse = ', ')}")
+      )
+    )
+  }
+
+  return(.valid_result)
 }
