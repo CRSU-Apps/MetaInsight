@@ -427,9 +427,9 @@ multiplot <- function(stytitle, ntx, lstx, mtc, ma, bpredd = TRUE, plt.adj, ucex
   #Insert the graph title and x-axis title
   title(main = stytitle, outer = TRUE, cex.main = 1.5)
   
-  label_elements <- c(" with 95% CI")
+  label_elements <- c(" with 95% confidence interval")
   if (bpredd) {
-    label_elements <- c(label_elements, " & 95% PI")
+    label_elements <- c(label_elements, " & 95% prediction interval")
   }
   
   if (mtc$type == "OR") {
@@ -717,7 +717,7 @@ mtcMatrixCont <- function(stytitle, ntx, lstx, mtc, ma, outcome_type, bpredd = T
     if (!bpredd) {
       slgd <- "NMA results in black; Pairwise MA results in grey."
     } else {
-      slgd <- "NMA results in black; Pairwise MA results in grey. 95% CI presented as error bars."
+      slgd <- "NMA results in black; Pairwise MA results in grey. 95% confidence interval presented as error bars."
     }
     
     srpinfo <- ""
