@@ -49,12 +49,21 @@ CreateSummaryForestPlot <- function(data_to_plot, treatment_df, plot_title, outc
   mtc$type <- outcome_type
   
   #Sort the rows and columns of the netmeta matrix output by the original treatment order
-  net1$lower.direct.random <- net1$lower.direct.random[treatment_df$Label, treatment_df$Label]
-  net1$TE.direct.random <- net1$TE.direct.random[treatment_df$Label, treatment_df$Label]
-  net1$upper.direct.random <- net1$upper.direct.random[treatment_df$Label, treatment_df$Label]
-  net1$lower.random <- net1$lower.random[treatment_df$Label, treatment_df$Label]
-  net1$TE.random <- net1$TE.random[treatment_df$Label, treatment_df$Label]
-  net1$upper.random <- net1$upper.random[treatment_df$Label, treatment_df$Label]
+  if (model == "random") {
+    net1$lower.direct.random <- net1$lower.direct.random[treatment_df$Label, treatment_df$Label]
+    net1$TE.direct.random <- net1$TE.direct.random[treatment_df$Label, treatment_df$Label]
+    net1$upper.direct.random <- net1$upper.direct.random[treatment_df$Label, treatment_df$Label]
+    net1$lower.random <- net1$lower.random[treatment_df$Label, treatment_df$Label]
+    net1$TE.random <- net1$TE.random[treatment_df$Label, treatment_df$Label]
+    net1$upper.random <- net1$upper.random[treatment_df$Label, treatment_df$Label]
+  } else {
+    net1$lower.direct.common <- net1$lower.direct.common[treatment_df$Label, treatment_df$Label]
+    net1$TE.direct.common <- net1$TE.direct.common[treatment_df$Label, treatment_df$Label]
+    net1$upper.direct.common <- net1$upper.direct.common[treatment_df$Label, treatment_df$Label]
+    net1$lower.common <- net1$lower.common[treatment_df$Label, treatment_df$Label]
+    net1$TE.common <- net1$TE.common[treatment_df$Label, treatment_df$Label]
+    net1$upper.common <- net1$upper.common[treatment_df$Label, treatment_df$Label]
+  }
   net1$lower.predict <- net1$lower.predict[treatment_df$Label, treatment_df$Label]
   net1$upper.predict <- net1$upper.predict[treatment_df$Label, treatment_df$Label]
 
@@ -63,15 +72,27 @@ CreateSummaryForestPlot <- function(data_to_plot, treatment_df, plot_title, outc
     for (j in (i + 1):ntx) {
       
       #Include rownames for debugging
-      rownames(ma$lor)[count] <- paste0(rownames(net1$TE.direct.random)[i], "-", colnames(net1$TE.direct.random)[j])
-      ma$lor[count, 5] <- net1$lower.direct.random[i, j]
-      ma$lor[count, 6] <- net1$TE.direct.random[i, j]
-      ma$lor[count, 7] <- net1$upper.direct.random[i, j]
+      if (model == "random") {
+        rownames(ma$lor)[count] <- paste0(rownames(net1$TE.direct.random)[i], "-", colnames(net1$TE.direct.random)[j])
+        ma$lor[count, 5] <- net1$lower.direct.random[i, j]
+        ma$lor[count, 6] <- net1$TE.direct.random[i, j]
+        ma$lor[count, 7] <- net1$upper.direct.random[i, j]
       
-      rownames(mtc$lor)[count] <- paste0(rownames(net1$TE.random)[i], "-", colnames(net1$TE.random)[j])
-      mtc$lor[count, 2] <- net1$lower.random[i, j]
-      mtc$lor[count, 3] <- net1$TE.random[i, j]
-      mtc$lor[count, 4] <- net1$upper.random[i, j]
+        rownames(mtc$lor)[count] <- paste0(rownames(net1$TE.random)[i], "-", colnames(net1$TE.random)[j])
+        mtc$lor[count, 2] <- net1$lower.random[i, j]
+        mtc$lor[count, 3] <- net1$TE.random[i, j]
+        mtc$lor[count, 4] <- net1$upper.random[i, j]
+      } else {
+        rownames(ma$lor)[count] <- paste0(rownames(net1$TE.direct.common)[i], "-", colnames(net1$TE.direct.common)[j])
+        ma$lor[count, 5] <- net1$lower.direct.common[i, j]
+        ma$lor[count, 6] <- net1$TE.direct.common[i, j]
+        ma$lor[count, 7] <- net1$upper.direct.common[i, j]
+        
+        rownames(mtc$lor)[count] <- paste0(rownames(net1$TE.common)[i], "-", colnames(net1$TE.common)[j])
+        mtc$lor[count, 2] <- net1$lower.common[i, j]
+        mtc$lor[count, 3] <- net1$TE.common[i, j]
+        mtc$lor[count, 4] <- net1$upper.common[i, j]
+      }
       
       rownames(mtc$predint)[count] <- paste0(rownames(net1$lower.predict)[i], "-", colnames(net1$lower.predict)[j])
       mtc$predint[count, 2] <- net1$lower.predict[i, j]
