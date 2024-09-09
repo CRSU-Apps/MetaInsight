@@ -41,11 +41,12 @@ BayesInch <- function(notrt) {
 #' @param file The file to which to write
 #' @param type String containing the type of file to which to write
 #' @param renderFunction A function to render the plot
-write_to_pdf_or_png <- function(file, type, renderFunction) {
+write_to_pdf_or_png <- function(file, type, renderFunction, height = NULL, width = NULL, png_units = "px") {
+
   if (tolower(type) == "pdf") {
-    pdf(file = file)
+    pdf(file = file, height = height, width = width)
   } else {
-    png(file = file)
+    png(file = file, height = height, width = width, units = png_units, res = 72)
   }
   renderFunction()
   dev.off()

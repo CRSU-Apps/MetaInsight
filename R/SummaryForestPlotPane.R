@@ -42,6 +42,8 @@ summary_forest_plot_server <- function(id, sfp_data, treatment_df, outcome_type,
       )
     })
     
+    n_treatments <- reactive(length(treatment_df()$Label))
+
     # Setup download button
     output$downloadFreqSummaryForestPlot <- downloadHandler(
       filename = function() {
@@ -49,16 +51,19 @@ summary_forest_plot_server <- function(id, sfp_data, treatment_df, outcome_type,
       },
       content = function(file) {
         write_to_pdf_or_png(
-          file,
-          input$summaryForestPlotFormat,
-          function() {
+          file = file,
+          type = input$summaryForestPlotFormat,
+          renderFunction = function() {
             CreateSummaryForestPlot(data_to_plot = sfp_data(),
                                     treatment_df = treatment_df(),
                                     plot_title = plot_title,
                                     outcome_type = outcome_type(),
                                     desirability = desirability(),
                                     model = model())
-          }
+          },
+          height = 2.5 * n_treatments(),
+          width = 2.5 * n_treatments(),
+          png_units = "in"
         )
       }
     )
