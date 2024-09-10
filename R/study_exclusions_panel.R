@@ -34,12 +34,18 @@ study_exclusions_panel_server <- function(id, data, treatment_df, reference_trea
       unique(data()$Study)
     })
     
+    data_reset <- reactiveVal(FALSE)
+    
     # Create check boxes for studies in data
     observe({
       shiny::updateCheckboxGroupInput(
         inputId = "exclusionbox",
         choices = all_studies()
       )
+      
+      # Mark data as reset
+      data_reset(TRUE)
+      data_reset(FALSE)
     })
     
     reference_treatment <- reactive({
@@ -146,7 +152,10 @@ study_exclusions_panel_server <- function(id, data, treatment_df, reference_trea
     ui_exclusions <- debounce(
       millis = 100,
       r = reactive({
-        input$exclusionbox
+        # Reactive dependency on data being reset
+        data_reset()
+        
+        return(input$exclusionbox)
       })
     )
     

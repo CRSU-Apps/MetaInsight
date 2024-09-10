@@ -21,7 +21,7 @@ home_page_ui <- function(id) {
         });'
       )
     ),
-    h2("MetaInsight v6.1.0", align = "left"),
+    h2("MetaInsight v6.1.1", align = "left"),
     fluidRow(
       column(
         width = 3,
@@ -35,10 +35,9 @@ home_page_ui <- function(id) {
       column(
         width = 5,
         p(tags$strong("Latest Updates:")),
-        p(tags$strong("Minor update (30th August 2024 v6.1.0):")),
+        p(tags$strong("Patch update (10th September 2024 v6.1.1):")),
         tags$ul(
-          tags$li("Fixed nodesplit model run buttons."),
-          tags$li("Added disconnected network detection for uploaded data.")
+          tags$li("Fixed issue with sensitivity analysis failing on data upload.")
         ),
         p(tags$strong("Major update (10 July 2024 v6.0.0):")),
         p(
