@@ -310,6 +310,7 @@ shading.vec <- function(ntx) {
 #' @param bpredd TRUE if predictive interval to be plotted as error bars
 #' @param plt.adj Plot position adjustment
 #' @param ucex Text size
+#' @param key_text Vector of length 3 containing strings for the key underneath the plot.
 multiplot <- function(stytitle, ntx, lstx, mtc, ma, bpredd = TRUE, plt.adj, ucex, key_text = NULL) {
   
   #Start a matrix plot - define number of elements "squares" in Matrix

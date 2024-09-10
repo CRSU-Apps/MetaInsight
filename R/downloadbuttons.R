@@ -41,6 +41,9 @@ BayesInch <- function(notrt) {
 #' @param file The file to which to write
 #' @param type String containing the type of file to which to write
 #' @param renderFunction A function to render the plot
+#' @param height The height of the plot in inches for pdf, or user specified units for png.
+#' @param width The width of the plot in inches for pdf, or user specified units for png.
+#' @param png_units The units for @param height and @param width for png. Defaults to "px".
 write_to_pdf_or_png <- function(file, type, renderFunction, height = NULL, width = NULL, png_units = "px") {
 
   if (tolower(type) == "pdf") {
