@@ -14,7 +14,7 @@ bugsnet_sumtb <- function(data, metaoutcome){
   } else {
     stop("metaoutcome must be 'Binary' or 'Continuous'")
   }
-  network.char <- BUGSnet::net.tab(data = data.rh,                          
+  network.char <- BUGSnet::net.tab(data = data.rh,
                                    outcome = outcome,
                                    N = "N",
                                    type.outcome = typeO,
