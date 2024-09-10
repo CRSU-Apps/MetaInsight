@@ -310,7 +310,7 @@ shading.vec <- function(ntx) {
 #' @param bpredd TRUE if predictive interval to be plotted as error bars
 #' @param plt.adj Plot position adjustment
 #' @param ucex Text size
-multiplot <- function(stytitle, ntx, lstx, mtc, ma, bpredd = TRUE, plt.adj, ucex) {
+multiplot <- function(stytitle, ntx, lstx, mtc, ma, bpredd = TRUE, plt.adj, ucex, key_text = NULL) {
   
   #Start a matrix plot - define number of elements "squares" in Matrix
   tplot <- ntx * ntx
@@ -449,6 +449,9 @@ multiplot <- function(stytitle, ntx, lstx, mtc, ma, bpredd = TRUE, plt.adj, ucex
   } else {
     mtext(stringr::str_flatten(label_elements), side = 1, outer = TRUE, line = 1.5, cex = 0.75)
   }
+  mtext(paste("Key:", key_text[1]), side = 1, outer = TRUE, line = 3, cex = 0.75, adj = 0)
+  mtext(key_text[2], side = 1, outer = TRUE, line = 4, cex = 0.75, adj = 0)
+  mtext(key_text[3], side = 1, outer = TRUE, line = 5, cex = 0.75, adj = 0)
 }
 
 #' Function to create the matrix sorting order - to be used for the MTC & MA numerical results (Upper triangle results),
@@ -696,22 +699,6 @@ mtcMatrixCont <- function(stytitle, ntx, lstx, mtc, ma, outcome_type, bpredd = T
   st.mtc <- mtc.sortres(mtc, mtso, rkgmo, po, outcome_type)
   st.lstx <- lstx[po]
   
-  if (p.only == ntx) {
-    sp.only <- ""
-    key.ypos <- 1.3
-    
-    multiplot(stytitle, ntx, st.lstx, st.mtc, st.ma, bpredd, plt.adj, ucex)
-  } else {
-    sp.only <- sprintf("A total of %i interventions were compared in this NMA but only %i interventions were displayed in this plot.", ntx, p.only)
-    key.ypos <- 2.3
-    
-    #reduce the results matrices & vectors
-    mtred <- redu.matrix(ntx, po, p.only, mtso)
-    r.ma <- ma.redu(st.ma, mtred)
-    r.mtc <- mtc.redu(st.mtc, mtred, p.only, po)
-    r.lstx <- st.lstx[1:p.only]
-    multiplot(stytitle, p.only, r.lstx, r.mtc, r.ma, bpredd, plt.adj, ucex)
-  }
   
   if (bkey) {
     if (!bpredd) {
@@ -720,11 +707,25 @@ mtcMatrixCont <- function(stytitle, ntx, lstx, mtc, ma, outcome_type, bpredd = T
       slgd <- "NMA results in black; Pairwise MA results in grey. 95% confidence interval presented as error bars."
     }
     
-    srpinfo <- ""
+    if (p.only == ntx) {
+      sp.only <- ""
+    } else {
+      sp.only <- sprintf("A total of %i interventions were compared in this NMA but only %i interventions were displayed in this plot.", ntx, p.only)
+    }
     
-    par(mfcol = c(ntx, 1), oma = c(0, 0, 2, 0), new = TRUE)
-    par(mfg = c(ntx, 1), mar = c(0, 0, 0, 0))
-    plot(0:19, seq(0, 10, len = 20), type = "n", axes = FALSE, ylab = "", xlab = "")
-    text(-0.5, key.ypos, sprintf("Key:\n      %s\n      %s%s\n      %s", slgd, sp.order, srpinfo, sp.only), adj = 0, cex = 1)
+    key_text <- c(slgd, sp.order, sp.only)
   }
-}
+  
+  
+  if (p.only == ntx) {
+    multiplot(stytitle, ntx, st.lstx, st.mtc, st.ma, bpredd, plt.adj, ucex, key_text)
+  } else {
+
+    #reduce the results matrices & vectors
+    mtred <- redu.matrix(ntx, po, p.only, mtso)
+    r.ma <- ma.redu(st.ma, mtred)
+    r.mtc <- mtc.redu(st.mtc, mtred, p.only, po)
+    r.lstx <- st.lstx[1:p.only]
+    multiplot(stytitle, p.only, r.lstx, r.mtc, r.ma, bpredd, plt.adj, ucex, key_text)
+  }
+  }
