@@ -94,7 +94,10 @@ frequentist_analysis_panel_ui <- function(id, page_numbering) {
         helpText("Assessment of inconsistency with selected studies excluded"),
         tableOutput(outputId = ns("Incon2")),
         downloadButton(outputId = ns('downloadIncon2'), label = "Download")
-      )
+      ),
+      tabPanel(
+        title = paste0(page_numbering$AddChild(), " Summary forest plot"),
+        summary_forest_plots_ui(id = ns('summary_forest_plot')))
     )
   )
   
@@ -115,6 +118,7 @@ frequentist_analysis_panel_ui <- function(id, page_numbering) {
 #' @param freq_sub Reactive containing frequentist meta-analysis for the sensitivity analysis
 #' @param bugsnetdt Reactive containing bugsnet meta-analysis
 #' @param bugsnetdt_sub Reactive containing bugsnet meta-analysis for sensitivity analysis
+#' @param treatment_df Reactive data frame containing treatment IDs (Number) and names (Label)
 #' @param reference_alter Reactive containing the name of the reference treatment for the sensitivity
 #'  analysis accounting for if the chosen reference treatment has been excluded
 frequentist_analysis_panel_server <- function(
@@ -127,6 +131,7 @@ frequentist_analysis_panel_server <- function(
     freq_sub,
     bugsnetdt,
     bugsnetdt_sub,
+    treatment_df,
     reference_alter
     ) {
   moduleServer(id, function(input, output, session) {
@@ -292,5 +297,19 @@ frequentist_analysis_panel_server <- function(
         write.csv(make_Incon(freq_sub(), model_effects()), file)
       }
     )
+    
+    ### 2d. Summary Forest Plot
+    
+    summary_forest_plots_server(id = 'summary_forest_plot',
+                                all_data = freq_all,
+                                treatment_df = treatment_df,
+                                filtered_data = freq_sub,
+                                outcome_type = outcome_measure,
+                                desirability = rank_option,
+                                model = isolate({
+                                  model_effects
+                                })
+    )
+    
   })
 }
