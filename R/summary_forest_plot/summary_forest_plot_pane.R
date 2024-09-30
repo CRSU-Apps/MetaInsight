@@ -9,6 +9,7 @@ summary_forest_plot_ui <- function(id) {
   ns <- NS(id)
   div(
     plotOutput(outputId = ns('summaryForestPlot'), height = "700px"),
+    helpText("NOTE: If the forest plots display results opposite to those in the main forest plot, change the treatment ranking option on the left panel."),
     radioButtons(inputId = ns('summaryForestPlotFormat'),
                  label = 'Document format',
                  choices = c('PDF', 'PNG'),
