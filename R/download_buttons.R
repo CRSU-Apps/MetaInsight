@@ -3,6 +3,20 @@
 
 ## Sizing functions for forest plots ##
 
+#' Calculate the pixel height of a node-split forest plot for a given number of comparisons
+#' 
+#' @param ncomp The number of comparisons in the plot
+#' @return The height of the plot in pixels
+NodePixels <- function(ncomp) { 
+  if (ncomp <= 5) {
+    height <- 400        # default as 5 comparisons does fit
+  } else {
+    height <- 400 + (ncomp-5)*80   # an extra fifth per new comparison
+  }
+  return(height)
+}
+
+
 #' Calculate the pixel height of a forest plot for a given number of treatments
 #' 
 #' @param notrt The number of treatments in the plot

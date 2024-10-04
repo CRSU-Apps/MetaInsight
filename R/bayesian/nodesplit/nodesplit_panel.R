@@ -8,7 +8,13 @@ nodesplit_panel_ui <- function(id, item_name) {
   ns <- NS(id)
   div(
     actionButton(inputId = ns("node"), label = glue::glue("Click here to run the nodesplitting analysis for {item_name}")),
-    tableOutput(outputId = ns("node_table")),
+    uiOutput(outputId = ns("node_plot_placeholder")),
+    radioButtons(
+      inputId = ns('download_format'),
+      label = 'Document format',
+      choices = c('PDF', 'PNG'),
+      inline = TRUE
+    ),
     downloadButton(outputId = ns('downloadnode'))
      
   )
@@ -32,6 +38,7 @@ nodesplit_panel_server <- function(
     model_effects
     ) {
   moduleServer(id, function(input, output, session) {
+    ns <- session$ns
     
     model_nodesplit <- eventReactive(
       input$node,
@@ -47,19 +54,38 @@ nodesplit_panel_server <- function(
         )
       }
     )
-
-    output$node_table<- renderTable(
-      colnames = TRUE,
-      {
-        model_nodesplit()
-      }
+  
+    
+    output$node_plot_placeholder <- renderUI({
+      plotOutput(
+        outputId = ns("node_plot"),
+        height = NodePixels(
+          as.numeric(length(model_nodesplit())-1)
+        )
+      )
+    })
+    
+    output$node_plot<- renderPlot({
+      req(input$node)
+      plot(summary(model_nodesplit()), digits = 3)
+    }
     )
 
     output$downloadnode <- downloadHandler(
-      filename = 'Nodesplit.csv',
+      filename = function() {
+        paste0("Nodesplit.",
+               input$download_format)
+      },
       content = function(file) {
-        write.csv(model_nodesplit(), file)
-      }
+        if (input$download_format == "PDF") {
+          pdf(file = file, width = 9)
+        } else if (input$download_format == "PNG") {
+          png(file = file, width = 9)
+        }
+        plot(summary(model_nodesplit()), digits = 3)
+        dev.off()
+      },
+      contentType = "image/pdf"
     )
   })
 }
