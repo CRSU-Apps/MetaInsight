@@ -126,7 +126,7 @@ make_netrank <- function(freq, modelranfix, rankopts) {
                                )
   if (modelranfix == "random") {
     leaguedf <- as.data.frame(league$random)
-  } else if (modelranfix == "random") {
+  } else if (modelranfix == "fixed") {
     leaguedf <- as.data.frame(league$fixed)
   } else {
     stop("modelranfix must be 'fixed' or 'random'") 
