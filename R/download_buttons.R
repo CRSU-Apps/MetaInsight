@@ -7,13 +7,8 @@
 #' 
 #' @param ncomp The number of comparisons in the plot
 #' @return The height of the plot in pixels
-NodePixels <- function(ncomp) { 
-  if (ncomp <= 5) {
-    height <- 400        # default as 5 comparisons does fit
-  } else {
-    height <- 400 + (ncomp-5)*80   # an extra fifth per new comparison
-  }
-  return(height)
+NodePixels <- function(ncomp) {
+ return(max(400, ncomp*80)) # 5 comparisons fits within the default of 400 pixels 
 }
 
 

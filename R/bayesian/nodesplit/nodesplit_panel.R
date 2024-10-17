@@ -80,7 +80,7 @@ nodesplit_panel_server <- function(
         if (input$download_format == "PDF") {
           pdf(file = file, width = 9)
         } else if (input$download_format == "PNG") {
-          png(file = file, width = 9)
+          png(file = file, width = 850)
         }
         plot(summary(model_nodesplit()), digits = 3)
         dev.off()
