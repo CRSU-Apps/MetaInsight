@@ -3,6 +3,15 @@
 
 ## Sizing functions for forest plots ##
 
+#' Calculate the pixel height of a node-split forest plot for a given number of comparisons
+#' 
+#' @param ncomp The number of comparisons in the plot
+#' @return The height of the plot in pixels
+NodePixels <- function(ncomp) {
+ return(max(400, ncomp*80)) # 5 comparisons fits within the default of 400 pixels 
+}
+
+
 #' Calculate the pixel height of a forest plot for a given number of treatments
 #' 
 #' @param notrt The number of treatments in the plot
@@ -36,16 +45,19 @@ BayesInch <- function(notrt) {
   return(height)
 }
 
-#' Write some plot to a .pdf or .png file
+#' Write some plot to a .pdf or .png file.
 #' 
-#' @param file The file to which to write
-#' @param type String containing the type of file to which to write
-#' @param renderFunction A function to render the plot
-write_to_pdf_or_png <- function(file, type, renderFunction) {
+#' @param file The file to which to write.
+#' @param type String containing the type of file to which to write.
+#' @param renderFunction A function to render the plot.
+#' @param height The height of the plot in inches for pdf, or user specified units for png.
+#' @param width The width of the plot in inches for pdf, or user specified units for png.
+#' @param png_units The units for @param height and @param width for png. Defaults to "px".
+write_to_pdf_or_png <- function(file, type, renderFunction, height = NULL, width = NULL, png_units = "px") {
   if (tolower(type) == "pdf") {
-    pdf(file = file)
+    pdf(file = file, height = height, width = width)
   } else {
-    png(file = file)
+    png(file = file, height = height, width = width, units = png_units, res = 72)
   }
   renderFunction()
   dev.off()

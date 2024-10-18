@@ -303,7 +303,7 @@ relative_rank_text <- function(results) {
 #' @param model "random" or "fixed".
 #' @param outcome "MD", "SMD", "OR", "RR" or "RD".
 #' @param CONBI "Continuous" or "Binary".
-#' @return Results from nodeplit model.
+#' @return Nodesplit model in mtc.nodesplit object.
 bayenode <- function(data, treat_list, model, outcome, CONBI) {
   if (!outcome %in% c('OR', 'RR', 'MD')) {
     stop(glue::glue("Outcome type '{outcome}' is not supported. Please use one of: 'MD', 'OR', 'RR'"))
@@ -332,7 +332,8 @@ bayenode <- function(data, treat_list, model, outcome, CONBI) {
                             responders = data$R,
                             sampleSize = data$N)
     }
-    mtcNetwork <- mtc.network(data.ab = armData, description = "Network")
+    mtcNetwork <- mtc.network(data.ab = armData, description = "Network",
+                               treatments = data.frame(id = treat_list$Label, description = treat_list$Label)) # treatment argument needed so that it takes the reference treatment correctly
     progress$inc(0.4, detail = "Running simulation models")
     if (outcome == "MD") {
       like <- "normal"
@@ -344,10 +345,9 @@ bayenode <- function(data, treat_list, model, outcome, CONBI) {
     nodeSplitResults <- mtc.nodesplit(network = mtcNetwork,
                                       linearModel = model,
                                       likelihood = like,
-                                      link = link,
-                                      comparisons = mtc.nodesplit.comparisons(mtcNetwork))  # nodesplitting
+                                      link = link)  # nodesplitting
     progress$inc(0.4, detail = "Rendering results")
-    return(as.data.frame(print(summary(nodeSplitResults))))
+    return(nodeSplitResults)
   } else {
     stop("outcome must be one of 'MD', 'SMD', 'OR', 'RR', or 'RD'") 
   }

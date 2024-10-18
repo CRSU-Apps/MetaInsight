@@ -412,11 +412,35 @@ WrangleUploadData <- function(data, treatment_ids, outcome_type) {
     .FixColumnNameCases(outcome_type) %>%
     ReplaceTreatmentIds(treatment_ids) %>%
     AddStudyIds() %>%
+    CleanStudies() %>%
     ReorderColumns(outcome_type) %>%
     SortByStudyIDThenT(outcome_type)
   
   return(new_df)
 }
+
+
+#' Clean strings by replacing all characters that are not a number, letter, or underscore, with an underscore.
+#' 
+#' @param strings Vector of the strings to be cleaned.
+#' @return Cleaned version of the strings.
+CleanStrings <- function(strings) {
+  return(strings %>%
+           stringr::str_replace_all("(?![a-zA-Z0-9_]).", "_") %>%
+           stringr::str_replace_all("(_+)", "_")
+         )
+}
+
+
+#' Clean study names by replacing all characters that are not a number, letter, or underscore, with an underscore.
+#' @param data Data frame with the column 'Study' that contains study names.
+#' @return The data frame with 'Study' cleaned and a new column 'RawStudy' which is a copy of the original 'Study'.
+CleanStudies <- function(data) {
+  data$RawStudy <- data$Study
+  data$Study <- CleanStrings(data$Study)
+  return(data)
+}
+
 
 #' Clean the treatment labels to replace all characters which are not a number, letter, or underscore, with an underscore.
 #' 
@@ -425,12 +449,11 @@ WrangleUploadData <- function(data, treatment_ids, outcome_type) {
 CleanTreatmentIds <- function(treatment_ids) {
   new_treatment_ids <- treatment_ids
   new_treatment_ids$RawLabel <- treatment_ids$Label
-  new_treatment_ids$Label <- treatment_ids$Label %>%
-    stringr::str_replace_all("(?![a-zA-Z0-9_]).", "_") %>%
-    stringr::str_replace_all("(_+)", "_")
+  new_treatment_ids$Label <- CleanStrings(treatment_ids$Label)
   
   return(new_treatment_ids)
 }
+
 
 #' Find the names of all columns which contain a covariate.
 #'
