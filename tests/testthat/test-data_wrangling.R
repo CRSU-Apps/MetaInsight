@@ -927,6 +927,16 @@ test_that("CleanTreatmentIds() replaces multiple sequential special characters i
   expect_equal(!!CleanTreatmentIds(treatment_ids ), !!expected_treatment_ids)
 })
 
+test_that("CleanStudies() creates 'RawStudy' and modifies 'Study' as expected", {
+  data <- data.frame(Study = c("Flour", "1 Egg", "@Sugar", "Cinn*%?$@#!amon"),
+                     T = c("Treat1", "Treat2", "Treat1", "Treat2"))
+  expected_cleaned_data <- data.frame(Study = c("Flour", "1_Egg", "_Sugar", "Cinn_amon"),
+                                      T = c("Treat1", "Treat2", "Treat1", "Treat2"),
+                                      RawStudy = c("Flour", "1 Egg", "@Sugar", "Cinn*%?$@#!amon"))
+  cleaned_data <- CleanStudies(data)
+  expect_equal(cleaned_data, expected_cleaned_data)
+})
+
 test_that("FindCovariateNames() finds covariate columns for long data", {
   data <- CleanData(read.csv("data/Cont_long.csv"))
   

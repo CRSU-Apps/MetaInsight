@@ -1,0 +1,51 @@
+Study,T,R,N
+Cottraux,No_contact,9,140
+Cottraux,Individual_counselling,23,140
+Cottraux,Group_counselling,10,138
+Mothersill,Self_help,11,78
+Mothersill,Individual_counselling,12,85
+Mothersill,Group_counselling,29,170
+Reid,No_contact,75,731
+Reid,Individual_counselling,363,714
+Slama,No_contact,2,106
+Slama,Individual_counselling,9,205
+Jamrozik,No_contact,58,549
+Jamrozik,Individual_counselling,237,1561
+Rabkin,No_contact,0,33
+Rabkin,Individual_counselling,9,48
+Richmond,No_contact,3,100
+Richmond,Individual_counselling,31,98
+Leung,No_contact,1,31
+Leung,Individual_counselling,26,95
+Langford,No_contact,6,39
+Langford,Individual_counselling,17,77
+Gritz,No_contact,79,702
+Gritz,Self_help,77,694
+Campbell,No_contact,18,671
+Campbell,Self_help,21,535
+Sanders,No_contact,64,642
+Sanders,Individual_counselling,107,761
+Page,No_contact,5,62
+Page,Individual_counselling,8,90
+Ford,No_contact,20,234
+Ford,Individual_counselling,34,237
+Williams and Hall,No_contact,0,20
+Williams and Hall,Group_counselling,9,20
+Pallonen,No_contact,8,116
+Pallonen,Self_help,19,149
+Russel1,No_contact,95,1107
+Russel1,Individual_counselling,143,1031
+Stewart and Rosser,No_contact,15,187
+Stewart and Rosser,Individual_counselling,36,504
+Russel2,No_contact,78,584
+Russel2,Individual_counselling,73,675
+Kendrick,No_contact,69,1177
+Kendrick,Individual_counselling,54,888
+Decker and Evans,Self_help,20,49
+Decker and Evans,Individual_counselling,16,43
+Mogielnicki,Self_help,7,66
+Mogielnicki,Group_counselling,32,127
+Hilleman,Individual_counselling,12,76
+Hilleman,Group_counselling,20,74
+Gillams,Individual_counselling,9,55
+Gillams,Group_counselling,3,26

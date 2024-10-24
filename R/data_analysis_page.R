@@ -211,6 +211,7 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, m
       freq_sub = freq_sub,
       bugsnetdt = bugsnetdt,
       bugsnetdt_sub = bugsnetdt_sub,
+      treatment_df = treatment_df,
       reference_alter = reference_alter
     )
 

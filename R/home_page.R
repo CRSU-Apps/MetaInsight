@@ -21,7 +21,7 @@ home_page_ui <- function(id) {
         });'
       )
     ),
-    h2("MetaInsight v6.1.1", align = "left"),
+    h2("MetaInsight v6.2.0", align = "left"),
     fluidRow(
       column(
         width = 3,
@@ -35,9 +35,11 @@ home_page_ui <- function(id) {
       column(
         width = 5,
         p(tags$strong("Latest Updates:")),
-        p(tags$strong("Patch update (10th September 2024 v6.1.1):")),
+        p(tags$strong("Minor update (18th October 2024 v6.2.0):")),
         tags$ul(
-          tags$li("Fixed issue with sensitivity analysis failing on data upload.")
+          tags$li("New feature: summary forest plot as part of the frequentist analysis output"),
+          tags$li("Nodesplit model results are now presented as a plot with estimates being presented on the user-selected scale"),
+          tags$li("More flexibility in format of study names")
         ),
         p(tags$strong("Major update (10 July 2024 v6.0.0):")),
         p(
