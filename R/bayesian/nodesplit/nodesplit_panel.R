@@ -54,14 +54,14 @@ nodesplit_panel_server <- function(
         )
       }
     )
+    
+    ncomp <- reactive({as.numeric(length(model_nodesplit())-1)}) # number of comparisons
   
     
     output$node_plot_placeholder <- renderUI({
       plotOutput(
         outputId = ns("node_plot"),
-        height = NodePixels(
-          as.numeric(length(model_nodesplit())-1)
-        )
+        height = NodePixels(ncomp())
       )
     })
     
@@ -78,9 +78,9 @@ nodesplit_panel_server <- function(
       },
       content = function(file) {
         if (input$download_format == "PDF") {
-          pdf(file = file, width = 9)
+          pdf(file = file, width = 9, height = NodeDownloadHeight(ncomp(), 'in'))
         } else if (input$download_format == "PNG") {
-          png(file = file, width = 850)
+          png(file = file, width = 850, height = NodeDownloadHeight(ncomp(), 'px'))
         }
         plot(summary(model_nodesplit()), digits = 3)
         dev.off()
