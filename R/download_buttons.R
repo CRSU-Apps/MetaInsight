@@ -8,7 +8,7 @@
 #' @param ncomp The number of comparisons in the plot
 #' @return The height of the plot in pixels
 NodePixels <- function(ncomp) {
- return(max(400, ncomp*80)) # 5 comparisons fits within the default of 400 pixels 
+ return(max(400, ncomp * 80)) # 5 comparisons fits within the default of 400 pixels 
 }
 
 #' Calculate download height of a node-split forest plot for a given number of comparisons
@@ -18,9 +18,9 @@ NodePixels <- function(ncomp) {
 #' @return The height of the plot
 NodeDownloadHeight <- function(ncomp, type) {
   if (type == "in") {
-    height <- max(7, ncomp*1.25) # 6 comparisons fits within the default of 7 inches
+    height <- max(7, ncomp * 1.25) # 6 comparisons fits within the default of 7 inches
   } else if (type == "px") {
-    height <- max(480, ncomp*80) # 6 comparisons fits within the default of 480 pixels
+    height <- max(480, ncomp * 80) # 6 comparisons fits within the default of 480 pixels
   } else {
     return("Type needs to be 'in' or 'px'")
   }
@@ -37,7 +37,7 @@ BayesPixels <- function(notrt, title=FALSE) {    # input is total number of trea
   if (notrt <= 25) {
     height <- 420        # default for 25 or less treatments
   } else {
-    height <- 15*(notrt-1) + 60
+    height <- 15 * (notrt - 1) + 60
   }
   
   if (title) {
@@ -56,7 +56,7 @@ BayesInch <- function(notrt) {
   if (notrt <= 25) {
     height <- 6
   } else {
-    height <- 6 + 0.2*(notrt-25)
+    height <- 6 + 0.2 * (notrt - 25)
   }
   return(height)
 }

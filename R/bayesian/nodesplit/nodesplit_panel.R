@@ -55,7 +55,10 @@ nodesplit_panel_server <- function(
       }
     )
     
-    ncomp <- reactive({as.numeric(length(model_nodesplit())-1)}) # number of comparisons
+    # number of comparisons
+    ncomp <- reactive({
+      as.numeric(length(model_nodesplit()) - 1)
+    })
   
     
     output$node_plot_placeholder <- renderUI({
