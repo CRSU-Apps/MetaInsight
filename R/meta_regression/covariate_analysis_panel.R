@@ -207,7 +207,8 @@ covariate_analysis_panel_server <- function(
         model = model_reactive(),
         covariate_title = covariate_title(),
         cov_value = covariate_value(),
-        outcome_measure = outcome_measure()
+        outcome_measure = outcome_measure(),
+        covariate_type = covariate_type()
       )
     })
     

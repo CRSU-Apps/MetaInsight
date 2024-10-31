@@ -79,7 +79,7 @@ CreateIndirectContributionPlot <- function(
     plot = plot,
     comparators = comparators,
     include_ghosts = include_ghosts,
-    include_confidence = FALSE
+    include_credible = FALSE
   )
   
   return(plot)

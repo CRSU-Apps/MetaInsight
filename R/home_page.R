@@ -47,7 +47,7 @@ home_page_ui <- function(id) {
             tags$li(
               "Meta-regression has been added. One covariate is allowed, which can be a new continuous or binary variable,
               or baseline risk. Two new graphs are available for meta-regression. The first displays the covariate values grouped by
-              treatment and study. The second plots the covariate against relative treatment effects, with confidence regions and
+              treatment and study. The second plots the covariate against relative treatment effects, with credible regions and
               study-level contributions."
             )
           )
