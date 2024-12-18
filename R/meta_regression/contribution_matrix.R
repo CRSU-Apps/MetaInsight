@@ -587,8 +587,8 @@ CheckSingularMatrix <- function(matrix){
   CheckSingularMatrix(t(X_star) %*% solve(V_star) %*% X_star)
   
   A <- solve(t(X_star) %*% solve(V_star) %*% X_star) %*% t(X_star) %*% solve(V_star)
-  A_row2_left <- A[(ncol(X) + 1):(ncol(X) + ncol(X_d)), 1:nrow(X)]
-  A_row3_left <- A[(ncol(X) + ncol(X_d) + 1):(ncol(X) + ncol(X_d) + ncol(X_beta)), 1:nrow(X)]
+  A_row2_left <- A[(nrow(X) + 1):(nrow(X) + ncol(X_d)), 1:nrow(X)]
+  A_row3_left <- A[(nrow(X) + ncol(X_d) + 1):(nrow(X) + ncol(X_d) + ncol(X_beta)), 1:nrow(X)]
   
   if (basic_or_all_parameters == "all") {
     contribution <- Z %*% rbind(A_row2_left, A_row3_left)
