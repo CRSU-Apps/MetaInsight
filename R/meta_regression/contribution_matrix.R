@@ -14,7 +14,7 @@
 #' @param outcome_type "Continuous" or "Binary".
 #' @param outcome_measure "MD" (when outcome_type == "Continuous"), "OR", "RR" or "RD" (when outcome_type == "Binary").
 #' @return Data frame with columns 'Study', 'Treatment', 'Outcome', and 'Variance'.
-GetOutcomesAndVariances <- function(data, treatments, outcome_type, outcome_measure){
+GetOutcomesAndVariances <- function(data, treatments, outcome_type, outcome_measure) {
   
   if (outcome_type == "Binary") {
     
@@ -68,7 +68,7 @@ GetOutcomesAndVariances <- function(data, treatments, outcome_type, outcome_meas
 #' @param outcome_type "Continuous" or "Binary".
 #' @param outcome_measure "MD" (when outcome_type == "Continuous"), "OR", "RR" or "RD" (when outcome_type == "Binary")
 #' @return V matrix.
-CreateVMatrix <- function(data, studies, treatments, outcome_type, outcome_measure){
+CreateVMatrix <- function(data, studies, treatments, outcome_type, outcome_measure) {
   variances <- GetOutcomesAndVariances(data = data, treatments = treatments,
                                        outcome_type = outcome_type, outcome_measure = outcome_measure)
   
@@ -92,7 +92,7 @@ CreateVMatrix <- function(data, studies, treatments, outcome_type, outcome_measu
 #' @param covar_centred Vector of centred covariate values, named by study. Defaults to NULL. Must be specified unless @param cov_parameters == "none".
 #' @param cov_parameters "shared", "exchangeable", "unrelated", or "none".
 #' @return X matrix.
-CreateXMatrix <- function(data, studies, treatments, covar_centred = NULL, cov_parameters){
+CreateXMatrix <- function(data, studies, treatments, covar_centred = NULL, cov_parameters) {
   #Number of studies
   n_studies <- length(studies)
   #Number of treatments
@@ -116,12 +116,12 @@ CreateXMatrix <- function(data, studies, treatments, covar_centred = NULL, cov_p
     colnames(X) <- c(paste0(studies, "-eta"),
                      paste0(treatments[1], ":", treatments[-1], "-d"),
                      paste0(treatments[1], ":", treatments[-1], "-beta"))
-  } else if (cov_parameters == "shared"){
+  } else if (cov_parameters == "shared") {
     X <- matrix(0, nrow = length(study_treatment_label), ncol = n_studies + n_treatments)
     colnames(X) <- c(paste0(studies, "-eta"),
                      paste0(treatments[1], ":", treatments[-1], "-d"),
                      "B")
-  } else if (cov_parameters == "none"){
+  } else if (cov_parameters == "none") {
     X <- matrix(0, nrow = length(study_treatment_label), ncol = n_studies + n_treatments - 1)
     colnames(X) <- c(paste0(studies, "-eta"),
                      paste0(treatments[1], ":", treatments[-1], "-d"))
@@ -131,22 +131,22 @@ CreateXMatrix <- function(data, studies, treatments, covar_centred = NULL, cov_p
   rownames(X) <- study_treatment_label
   
   #Local function to extract the studies from a vector of strings that are in the format "(Study)Treatment"
-  GetStudies <- function(x){
+  GetStudies <- function(x) {
     substr(x, start = 2, stop = unlist(gregexpr(")", x)) - 1)
   }
   
   #Local function to extract the studies from a vector of strings that are in the format "Study-eta"
-  GetStudiesFromColumn <- function(x){
+  GetStudiesFromColumn <- function(x) {
     substr(x, start = 1, stop = unlist(gregexpr("-eta", x)) - 1)
   }
   
   #Local function to extract the treatments from a vector of strings that are in the format "(Study)Treatment"
-  GetTreatments <- function(x){
+  GetTreatments <- function(x) {
     substr(x, start = unlist(gregexpr(")", x)) + 1, stop = nchar(x))
   }
   
   #Local function to extract the treatments from a vector of strings that are in the format "Reference:Treatment"
-  GetTreatmentsFromColumn <- function(x){
+  GetTreatmentsFromColumn <- function(x) {
     substr(x, start = unlist(gregexpr(":", x)) + 1, stop = nchar(x))
   }
   
@@ -276,7 +276,7 @@ CreateXMatrix <- function(data, studies, treatments, covar_centred = NULL, cov_p
 #' @param treatments Vector of treatments with the reference treatment first.
 #' @param cov_parameters "shared", "exchangeable", "unrelated", or "none".
 #' @return Z matrix.
-CreateZMatrix <- function(studies, treatments, cov_parameters){
+CreateZMatrix <- function(studies, treatments, cov_parameters) {
   #Number of studies
   n_studies <- length(studies)
   #Number of treatments
@@ -375,7 +375,7 @@ CreateZMatrix <- function(studies, treatments, cov_parameters){
 #' @param treatments Vector of treatments with the reference treatment first.
 #' @param std_dev_d Between-study standard deviation.
 #' @return Lambda_tau matrix.
-CreateLambdaTauMatrix <- function(data, studies, treatments, std_dev_d){
+CreateLambdaTauMatrix <- function(data, studies, treatments, std_dev_d) {
   #Between study-variance
   var_d <- std_dev_d^2
   #Labels for the matrix rows and columns
@@ -395,7 +395,7 @@ CreateLambdaTauMatrix <- function(data, studies, treatments, std_dev_d){
 #' @param treatments Vector of treatments with the reference treatment first.
 #' @param std_dev_beta Standard deviation of covariate parameters.
 #' @return Lambda_beta matrix.
-CreateLambdaBetaMatrix <- function(treatments, std_dev_beta){
+CreateLambdaBetaMatrix <- function(treatments, std_dev_beta) {
   #Between study-variance
   var_beta <- std_dev_beta^2
   #Number of treatments
@@ -413,7 +413,7 @@ CreateLambdaBetaMatrix <- function(treatments, std_dev_beta){
 #' 
 #' @param matrix The matrix that needs to be inverted to obtain the contribution matrix.
 #' @return Error if the matrix is singular.
-CheckSingularMatrix <- function(matrix){
+CheckSingularMatrix <- function(matrix) {
   if (matrixcalc::is.singular.matrix(matrix)) {
     stop("Contribution matrix cannot be determined due to singular X^T V^{-1} X. Try changing fixed/random effects or shared/exchangeable/unrelated covariate parameter assumptions")
   }
@@ -428,7 +428,7 @@ CheckSingularMatrix <- function(matrix){
 #' @param Z Z matrix.
 #' @param basic_or_all_parameters "basic" for one column per basic parameter, "all" for one column per parameter.
 #' @return The weight matrix.
-.WeightMatrixFixedUnrelatedShared <- function(X, V, Z, basic_or_all_parameters){
+.WeightMatrixFixedUnrelatedShared <- function(X, V, Z, basic_or_all_parameters) {
   CheckSingularMatrix(t(X) %*% solve(V) %*% X)
 
   if (basic_or_all_parameters == "all") {
@@ -453,7 +453,7 @@ CheckSingularMatrix <- function(matrix){
 #' @param treatments Vector of treatments with the reference treatment first.
 #' @param std_dev_beta Standard deviation of covariate parameters.
 #' @return The weight matrix.
-.WeightMatrixFixedExchangeable <- function(X, V, Z, basic_or_all_parameters, studies, treatments, std_dev_beta){
+.WeightMatrixFixedExchangeable <- function(X, V, Z, basic_or_all_parameters, studies, treatments, std_dev_beta) {
   
   #Number of studies
   n_studies <- length(studies)
@@ -526,7 +526,7 @@ CheckSingularMatrix <- function(matrix){
 #' @param Lambda_tau Lambda_tau matrix.
 #' @param basic_or_all_parameters "basic" for one column per basic parameter, "all" for one column per parameter.
 #' @return The weight matrix.
-.WeightMatrixRandomUnrelatedShared <- function(X, V, Z, Lambda_tau, basic_or_all_parameters){
+.WeightMatrixRandomUnrelatedShared <- function(X, V, Z, Lambda_tau, basic_or_all_parameters) {
 
   #Create V_star with the correct dimensions and 0 everywhere
   V_star <- matrix(0, nrow = nrow(V) + nrow(Lambda_tau), ncol = ncol(V) + ncol(Lambda_tau))
@@ -581,7 +581,7 @@ CheckSingularMatrix <- function(matrix){
 #' @param treatments Vector of treatments with the reference treatment first.
 #' @param std_dev_beta Standard deviation of covariate parameters.
 #' @return The weight matrix.
-.WeightMatrixRandomExchangeable <- function(X, V, Z, Lambda_tau, basic_or_all_parameters, studies, treatments, std_dev_beta){
+.WeightMatrixRandomExchangeable <- function(X, V, Z, Lambda_tau, basic_or_all_parameters, studies, treatments, std_dev_beta) {
   if (is.null(std_dev_beta)) {
     stop("Must specify 'std_dev_beta' when cov_parameters == 'exchangeable'")
   }
@@ -831,7 +831,7 @@ CalculateContributions <- function(
 #'            - 'Z' = The Z matrix.
 #'            - 'Lambda_tau' = The Lambda_tau matrix (only included if @param effects_type == "random").
 #'            - 'Lambda_beta' = The Lambda_beta matrix (only included if @param cov_parameters == "exchangeable").
-CreateContributionMatrix <- function(data, treatment_ids, outcome_type, outcome_measure, effects_type, std_dev_d = NULL, cov_parameters, cov_centre = NULL, std_dev_beta = NULL, study_or_arm_level, absolute_or_percentage, basic_or_all_parameters = "basic", weight_or_contribution, full_output = FALSE){
+CreateContributionMatrix <- function(data, treatment_ids, outcome_type, outcome_measure, effects_type, std_dev_d = NULL, cov_parameters, cov_centre = NULL, std_dev_beta = NULL, study_or_arm_level, absolute_or_percentage, basic_or_all_parameters = "basic", weight_or_contribution, full_output = FALSE) {
   
   #Create a text version of the treatment
   data$Treatment <- treatment_ids$Label[match(data$T, treatment_ids$Number)]
@@ -941,7 +941,7 @@ CreateContributionMatrix <- function(data, treatment_ids, outcome_type, outcome_
     n_arms <- table(data$Study)
     
     #Local function to extract the studies from a vector of strings that are in the format "(Study)Treatment"
-    GetStudies <- function(x){
+    GetStudies <- function(x) {
       substr(x, start = 2, stop = unlist(gregexpr(")", x)) - 1)
     }
     
