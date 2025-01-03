@@ -9,9 +9,16 @@
 
 shinyServer(function(input, output, session) {
   
-  ### GDPR
+  # Current tab as a reactive
+  tab <- reactive(input$top_bar)
   
-  google_analytics_header_server(id = "analytics", app_name = "MetaInsight", google_analytics_id = "UA-135597033-7")
+  # GDPR Module Server (R/analytics_header.R)
+  GdprServer(
+    id = "cookies",
+    cookies = reactive(input$cookies),
+    google_analytics_id = "G-PZNQ39CJ15",
+    tab = tab
+  )
   
   #####
   # Reactive functions used in various places
@@ -24,7 +31,7 @@ shinyServer(function(input, output, session) {
   is_default_data = data_reactives$is_default_data
   treatment_df <- data_reactives$treatment_df
   metaoutcome <- data_reactives$metaoutcome
-  
+
   data_analysis_page_server(
     id = "data_analysis",
     data = data,
@@ -32,9 +39,9 @@ shinyServer(function(input, output, session) {
     treatment_df = treatment_df,
     metaoutcome = metaoutcome
   )
-  
+
   user_guide_page_server(id = "user_guide")
-  
+
   # Reset the top bar to show the previously selected tab when the "Troubleshooting" tab is selected
   top_bar_selection <- reactiveVal()
   observe({
