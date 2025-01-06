@@ -86,7 +86,12 @@ covariate_run_model_server <- function(
       )
     })
 
-    return(model)
+    return(
+      list(
+        model = model,
+        regressor = reactive({ input$select_regressor })
+      )
+    )
   })
 }
 
@@ -128,6 +133,11 @@ baseline_risk_run_model_server <- function(
                              cov_parameters = input$select_regressor)
     })
     
-    return(model)
+    return(
+      list(
+        model = model,
+        regressor = reactive({ input$select_regressor })
+      )
+    )
   })
 }
