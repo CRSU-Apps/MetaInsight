@@ -31,7 +31,14 @@ covariate_run_model_ui <- function(id) {
             style = "display:inline-block; vertical-align: top;"
         )
       ),
-      actionButton(inputId = ns("baye_do"), label = "Click here to run the main analysis for all studies")
+      actionButton(
+        inputId = ns("baye_do"),
+        label = span(
+          "Click here to run the main analysis for all studies",
+          uiOutput(outputId = ns("spinner")),
+          style="display: flex;"
+        )
+      )
     )
   )
 }
@@ -70,10 +77,26 @@ covariate_run_model_server <- function(
       "~ U(0,X), where X represents a very large difference in the analysis' outcome scale and is determined from the data."
     })
     
+    # Run model as a parallel process
+    model <- shiny::ExtendedTask$new(function(data, treatment_ids, outcome_type, outcome, covariate, cov_friendly, model_type, regressor_type, ref_choice) {
+      promises::future_promise({
+        RunCovariateModel(
+          data = data,
+          treatment_ids = treatment_ids,
+          outcome_type = outcome_type,
+          outcome = outcome,
+          covariate = covariate,
+          cov_friendly = cov_friendly,
+          model_type = model_type,
+          regressor_type = regressor_type,
+          ref_choice = ref_choice
+        )
+      })
+    })
     
-    #The model
-    model <- eventReactive(input$baye_do, {
-      RunCovariateModel(
+    # Kick off the model calculation when the button is pressed
+    observe({
+      model$invoke(
         data = data(),
         treatment_ids = treatment_df(),
         outcome_type = metaoutcome(),
@@ -84,11 +107,43 @@ covariate_run_model_server <- function(
         regressor_type = input$select_regressor,
         ref_choice = treatment_df()$Label[match(1, treatment_df()$Number)]
       )
+    }) |>
+      bindEvent(input$baye_do)
+    
+    # Keep track of whether the model is calculating
+    calculating_model <- reactiveVal(FALSE)
+    
+    # When button is clicked, mark model as calculating and disable the button
+    observe({
+      calculating_model(TRUE)
+      shinyjs::disable(id = "baye_do")
+    }) |>
+      bindEvent(input$baye_do)
+    
+    # When model calculation completes, mark model as not calculating and enable the button
+    observe({
+      calculating_model(FALSE)
+      shinyjs::enable(id = "baye_do")
+    }) |>
+      bindEvent(model$result())
+    
+    # Render the spinner when the model is calculating
+    output$spinner <- renderUI({
+      if (!calculating_model()) {
+        return(NULL)
+      }
+      
+      return(
+        div(
+          tags$i(class = "fa-solid fa-circle-notch fa-spin"),
+          style = "color: blue; padding-left: 5pt"
+        )
+      )
     })
-
+    
     return(
       list(
-        model = model,
+        model = reactive({ model$result() }),
         regressor = reactive({ input$select_regressor })
       )
     )
