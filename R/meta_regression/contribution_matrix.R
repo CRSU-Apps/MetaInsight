@@ -192,7 +192,7 @@ CreateXMatrix <- function(data, studies, treatments, covar_centred = NULL, cov_p
   }
   
   #Populate the design matrix for shared covariate parameters
-  if (cov_parameters == "shared") {
+  else if (cov_parameters == "shared") {
     
     col_index_beta <- which(GetTreatmentsFromColumn(colnames(X)) == "B")
     
@@ -232,7 +232,7 @@ CreateXMatrix <- function(data, studies, treatments, covar_centred = NULL, cov_p
   }
   
   #Populate the design matrix for NMA
-  if (cov_parameters == "none") {
+  else if (cov_parameters == "none") {
     
     for (i in 1:length(data$Study)) {
       
@@ -428,7 +428,7 @@ CheckSingularMatrix <- function(matrix) {
 #' @param Z Z matrix.
 #' @param basic_or_all_parameters "basic" for one column per basic parameter, "all" for one column per parameter.
 #' @return The weight matrix.
-.WeightMatrixFixedUnrelatedShared <- function(X, V, Z, basic_or_all_parameters) {
+.WeightMatrixFixedUnrelatedSharedNone <- function(X, V, Z, basic_or_all_parameters) {
   CheckSingularMatrix(t(X) %*% solve(V) %*% X)
 
   if (basic_or_all_parameters == "all") {
@@ -526,7 +526,7 @@ CheckSingularMatrix <- function(matrix) {
 #' @param Lambda_tau Lambda_tau matrix.
 #' @param basic_or_all_parameters "basic" for one column per basic parameter, "all" for one column per parameter.
 #' @return The weight matrix.
-.WeightMatrixRandomUnrelatedShared <- function(X, V, Z, Lambda_tau, basic_or_all_parameters) {
+.WeightMatrixRandomUnrelatedSharedNone <- function(X, V, Z, Lambda_tau, basic_or_all_parameters) {
 
   #Create V_star with the correct dimensions and 0 everywhere
   V_star <- matrix(0, nrow = nrow(V) + nrow(Lambda_tau), ncol = ncol(V) + ncol(Lambda_tau))
@@ -654,20 +654,20 @@ CheckSingularMatrix <- function(matrix) {
 #' Create the contribution matrix in a convenient format.
 #' 
 #' @param data Input data in long format.
-#' @param covariate_title Title of covariate column in data.
+#' @param covariate_title Title of covariate column in data. Enter NULL if there is no covariate.
 #' @param treatment_ids Data frame containing treatment IDs and names in columns named 'Number' and 'Label' respectively.
 #' @param outcome_type "Continuous" or "Binary".
 #' @param outcome_measure "MD", "OR", "RR" or "RD".
 #' @param effects_type "fixed" or "random".
 #' @param std_dev_d Between-study standard deviation. Only required when @param effects_type == "random". Defaults to NULL.
-#' @param cov_parameters Type of regression coefficient. One of: "shared", "exchangeable", or "unrelated".
-#' @param cov_centre Centring value for the covariate, defaults to the mean.
+#' @param cov_parameters Type of regression coefficient. One of: "shared", "exchangeable", "unrelated",  or "none".
+#' @param cov_centre Centring value for the covariate. Defaults to NULL when @param cov_parameters == "none". Defaults to the mean for any other value of @param cov_parameters.
 #' @param std_dev_beta Standard deviation of covariate parameters. Only required when @param cov_parameters == "exchangeable". Defaults to NULL.
 #' @param study_or_arm_level "study" for study-level contributions, "arm" for arm-level contributions.
 #' @param absolute_or_percentage "percentage" for percentage contributions, "absolute" for absolute contributions.
 #' @param basic_or_all_parameters "basic" for one column per basic parameter, "all" for one column per parameter. Defaults to "basic".
 #' @param weight_or_contribution "weight" for coefficients or "contribution" for coefficients multiplied by observed treatment effects.
-#' @param treatment_or_covariate_effect Whether contributions are for treatment effect or covariate effect. One of: "Treatment Effect", "Covariate Effect".
+#' @param treatment_or_covariate_effect Whether contributions are for treatment effect or covariate effect. One of: "Treatment Effect", "Covariate Effect". If @param cov_parameters == "none" then must be set to "Treatment Effect".
 #' @return List of contributions:
 #' - "direct"
 #'   - Matrix of direct contributions to the regression. Rows are studies, columns are treatments
@@ -756,6 +756,10 @@ CalculateContributions <- function(
     stop(glue::glue("Contribution type '{}' not recognised. Please use one of: 'Treatment Effect', 'Covariate Effect'"))
   }
   
+  if (cov_parameters == "none" & treatment_or_covariate_effect != "Treatment Effect") {
+    stop(glue::glue("Contribution type must be 'Treatment Effect' when cov_parameters is 'none'"))
+  }
+  
   if (treatment_or_covariate_effect == "Treatment Effect") {
     column_format <- "{reference}:{treatment}-d"
   } else {
@@ -792,8 +796,12 @@ CalculateContributions <- function(
     }
   }
   
-  covariate_values <- data[[covariate_title]][match(studies, data$Study)]
-  names(covariate_values) <- studies
+  if (cov_parameters %in% c("unrelated", "exchangeable", "shared")) {
+    covariate_values <- data[[covariate_title]][match(studies, data$Study)]
+    names(covariate_values) <- studies
+  } else {
+    covariate_values <- NULL
+  }
   
   return(
     list(
@@ -875,7 +883,7 @@ CreateContributionMatrix <- function(data, treatment_ids, outcome_type, outcome_
   
   if (effects_type == "fixed") {
     if (cov_parameters %in% c("unrelated", "shared", "none")) {
-      contribution <- .WeightMatrixFixedUnrelatedShared(X = X, V = V, Z = Z,
+      contribution <- .WeightMatrixFixedUnrelatedSharedNone(X = X, V = V, Z = Z,
                                                         basic_or_all_parameters = basic_or_all_parameters)
     } else if (cov_parameters == "exchangeable") {
       contribution <- .WeightMatrixFixedExchangeable(X = X, V = V, Z = Z,
@@ -893,7 +901,7 @@ CreateContributionMatrix <- function(data, treatment_ids, outcome_type, outcome_
     Lambda_tau <- CreateLambdaTauMatrix(data = data, studies = studies, treatments = treatments, std_dev_d = std_dev_d)
     
     if (cov_parameters %in% c("unrelated", "shared", "none")) {
-      contribution <- .WeightMatrixRandomUnrelatedShared(X = X, V = V, Z = Z,
+      contribution <- .WeightMatrixRandomUnrelatedSharedNone(X = X, V = V, Z = Z,
                                                          Lambda_tau = Lambda_tau,
                                                          basic_or_all_parameters = basic_or_all_parameters)
     } else if (cov_parameters == "exchangeable") {
@@ -968,7 +976,7 @@ CreateContributionMatrix <- function(data, treatment_ids, outcome_type, outcome_
     return(contribution_output)
   } else{
     if (effects_type == "fixed") {
-      if (cov_parameters %in% c("unrelated", "shared")) {
+      if (cov_parameters %in% c("unrelated", "shared", "none")) {
         return(list(contribution = contribution_output,
                     V = V,
                     X = X,
@@ -983,7 +991,7 @@ CreateContributionMatrix <- function(data, treatment_ids, outcome_type, outcome_
         )
       }
     } else if (effects_type == "random") {
-      if (cov_parameters %in% c("unrelated", "shared")) {
+      if (cov_parameters %in% c("unrelated", "shared", "none")) {
         return(list(contribution = contribution_output,
                     V = V,
                     X = X,
