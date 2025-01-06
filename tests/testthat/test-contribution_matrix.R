@@ -237,6 +237,30 @@ test_that("CreateXMatrix() works for shared covariate parameters", {
 
 
 
+test_that("CreateXMatrix() works for NMA", {
+  data <- read.csv("data/Binary_long_for_contribution_matrix.csv")
+  
+  studies <- c("A", "B", "C", "D")
+  treatments <- c("Hydrogen", "Oxygen", "Sulphur", "Zinc")
+
+  expected_x_matrix <- matrix(c(1, 0, 0, 0,  0,  0, 0,
+                                1, 0, 0, 0,  1,  0, 0,
+                                0, 1, 0, 0,  0,  0, 0,
+                                0, 1, 0, 0, -1,  1, 0,
+                                0, 0, 1, 0,  0,  0, 0,
+                                0, 0, 1, 0,  1,  0, 0,
+                                0, 0, 1, 0,  0,  1, 0,
+                                0, 0, 0, 1,  0,  0, 0,
+                                0, 0, 0, 1,  0, -1, 1),
+                              nrow = 9, ncol = 7, byrow = TRUE)
+  rownames(expected_x_matrix) <- c("(A)Hydrogen", "(A)Oxygen", "(B)Oxygen", "(B)Sulphur", "(C)Hydrogen", "(C)Oxygen", "(C)Sulphur", "(D)Sulphur", "(D)Zinc")
+  colnames(expected_x_matrix) <- c("A-eta", "B-eta", "C-eta", "D-eta", "Hydrogen:Oxygen-d", "Hydrogen:Sulphur-d", "Hydrogen:Zinc-d")
+  
+  expect_equal(CreateXMatrix(data, studies, treatments, NULL, "none"), expected_x_matrix)
+})
+
+
+
 test_that("CreateZMatrix() works for unrelated and exchangeable covariate parameters", {
 
   studies <- c("A", "B", "C", "D")
@@ -293,6 +317,31 @@ test_that("CreateZMatrix() works for shared covariate parameters", {
 
 
 
+test_that("CreateZMatrix() works for NMA", {
+  
+  studies <- c("A", "B", "C", "D")
+  treatments <- c("Hydrogen", "Oxygen", "Sulphur", "Zinc")
+  
+  expected_Z_top_left <- diag(1, nrow = 4)
+  expected_Z_middle <- matrix(c( 1,  0, 0,
+                                 0,  1, 0,
+                                 -1,  1, 0,
+                                 0,  0, 1,
+                                 -1,  0, 1,
+                                 0, -1, 1),
+                              nrow = 6, ncol = 3, byrow = TRUE)
+  expected_Z_matrix <- as.matrix(bdiag(expected_Z_top_left,
+                                       expected_Z_middle
+                                       )
+                                 )
+  rownames(expected_Z_matrix) <- c("A-eta", "B-eta", "C-eta", "D-eta", "Hydrogen:Oxygen-d", "Hydrogen:Sulphur-d", "Oxygen:Sulphur-d", "Hydrogen:Zinc-d", "Oxygen:Zinc-d", "Sulphur:Zinc-d")
+  colnames(expected_Z_matrix) <- c("A-eta", "B-eta", "C-eta", "D-eta", "Hydrogen:Oxygen-d", "Hydrogen:Sulphur-d", "Hydrogen:Zinc-d")
+  
+  expect_equal(CreateZMatrix(studies, treatments, "none"), expected_Z_matrix)
+})
+
+
+
 test_that("CreateLambdaTauMatrix() works", {
   data <- read.csv("data/Binary_long_for_contribution_matrix.csv")
   
@@ -333,7 +382,7 @@ test_that("CheckSingularMatrix() works", {
 
 
 
-test_that("CreateContributionMatrix() produces a matrix of the correct format for all three covariate parameter assumptions", {
+test_that("CreateContributionMatrix() produces a matrix of the correct format for all four covariate parameter assumptions", {
   data <- read.csv("data/Binary_long_cov_for_contribution_matrix.csv")
   
   treatment_ids <- list(Number = 1:3, Label = c("Hydrogen", "Oxygen", "Sulphur"))
@@ -344,6 +393,8 @@ test_that("CreateContributionMatrix() produces a matrix of the correct format fo
   
   contribution_shared <- CreateContributionMatrix(data = data, treatment_ids = treatment_ids, outcome_type = "Binary", outcome_measure = "OR", effects_type = "fixed", cov_parameters = "shared", study_or_arm_level = "arm", absolute_or_percentage = "percentage", basic_or_all_parameters = "all", weight_or_contribution = "weight")
   
+  contribution_none <- CreateContributionMatrix(data = data, treatment_ids = treatment_ids, outcome_type = "Binary", outcome_measure = "OR", effects_type = "fixed", cov_parameters = "none", study_or_arm_level = "arm", absolute_or_percentage = "percentage", basic_or_all_parameters = "all", weight_or_contribution = "weight")
+  
   expect_equal(rownames(contribution_unrelated), c("(A)Hydrogen", "(A)Oxygen", "(B)Hydrogen", "(B)Oxygen", "(C)Hydrogen", "(C)Oxygen", "(C)Sulphur", "(D)Hydrogen", "(D)Sulphur"))
   expect_equal(colnames(contribution_unrelated), c("A-eta", "B-eta", "C-eta", "D-eta", "Hydrogen:Oxygen-d", "Hydrogen:Sulphur-d", "Oxygen:Sulphur-d", "Hydrogen:Oxygen-beta", "Hydrogen:Sulphur-beta", "Oxygen:Sulphur-beta"))
   
@@ -352,6 +403,9 @@ test_that("CreateContributionMatrix() produces a matrix of the correct format fo
   
   expect_equal(rownames(contribution_shared), c("(A)Hydrogen", "(A)Oxygen", "(B)Hydrogen", "(B)Oxygen", "(C)Hydrogen", "(C)Oxygen", "(C)Sulphur", "(D)Hydrogen", "(D)Sulphur"))
   expect_equal(colnames(contribution_shared), c("A-eta", "B-eta", "C-eta", "D-eta", "Hydrogen:Oxygen-d", "Hydrogen:Sulphur-d", "Oxygen:Sulphur-d", "B"))
+  
+  expect_equal(rownames(contribution_none), c("(A)Hydrogen", "(A)Oxygen", "(B)Hydrogen", "(B)Oxygen", "(C)Hydrogen", "(C)Oxygen", "(C)Sulphur", "(D)Hydrogen", "(D)Sulphur"))
+  expect_equal(colnames(contribution_none), c("A-eta", "B-eta", "C-eta", "D-eta", "Hydrogen:Oxygen-d", "Hydrogen:Sulphur-d", "Oxygen:Sulphur-d"))
 })
 
 
@@ -365,11 +419,16 @@ test_that("CreateContributionMatrix() produces a matrix of the correct format wh
   
   contribution_shared <- CreateContributionMatrix(data = data, treatment_ids = treatment_ids, outcome_type = "Binary", outcome_measure = "OR", effects_type = "fixed", cov_parameters = "shared", study_or_arm_level = "study", absolute_or_percentage = "percentage", basic_or_all_parameters = "all", weight_or_contribution = "weight")
   
+  contribution_none <- CreateContributionMatrix(data = data, treatment_ids = treatment_ids, outcome_type = "Binary", outcome_measure = "OR", effects_type = "fixed", cov_parameters = "none", study_or_arm_level = "study", absolute_or_percentage = "percentage", basic_or_all_parameters = "all", weight_or_contribution = "weight")
+  
   expect_equal(rownames(contribution_unrelated), c("A", "B", "C", "D"))
   expect_equal(colnames(contribution_unrelated), c("A-eta", "B-eta", "C-eta", "D-eta", "Hydrogen:Oxygen-d", "Hydrogen:Sulphur-d", "Oxygen:Sulphur-d", "Hydrogen:Oxygen-beta", "Hydrogen:Sulphur-beta", "Oxygen:Sulphur-beta"))
   
   expect_equal(rownames(contribution_shared), c("A", "B", "C", "D"))
   expect_equal(colnames(contribution_shared), c("A-eta", "B-eta", "C-eta", "D-eta", "Hydrogen:Oxygen-d", "Hydrogen:Sulphur-d", "Oxygen:Sulphur-d", "B"))
+  
+  expect_equal(rownames(contribution_none), c("A", "B", "C", "D"))
+  expect_equal(colnames(contribution_none), c("A-eta", "B-eta", "C-eta", "D-eta", "Hydrogen:Oxygen-d", "Hydrogen:Sulphur-d", "Oxygen:Sulphur-d"))
 })
 
 
@@ -383,11 +442,16 @@ test_that("CreateContributionMatrix() produces a matrix of the correct format wh
   
   contribution_shared <- CreateContributionMatrix(data = data, treatment_ids = treatment_ids, outcome_type = "Binary", outcome_measure = "OR", effects_type = "fixed", cov_parameters = "shared", study_or_arm_level = "arm", basic_or_all_parameters = "basic", absolute_or_percentage = "percentage", weight_or_contribution = "weight")
   
+  contribution_none <- CreateContributionMatrix(data = data, treatment_ids = treatment_ids, outcome_type = "Binary", outcome_measure = "OR", effects_type = "fixed", cov_parameters = "none", study_or_arm_level = "arm", basic_or_all_parameters = "basic", absolute_or_percentage = "percentage", weight_or_contribution = "weight")
+  
   expect_equal(rownames(contribution_unrelated), c("(A)Hydrogen", "(A)Oxygen", "(B)Hydrogen", "(B)Oxygen", "(C)Hydrogen", "(C)Oxygen", "(C)Sulphur", "(D)Hydrogen", "(D)Sulphur"))
   expect_equal(colnames(contribution_unrelated), c("A-eta", "B-eta", "C-eta", "D-eta", "Hydrogen:Oxygen-d", "Hydrogen:Sulphur-d", "Hydrogen:Oxygen-beta", "Hydrogen:Sulphur-beta"))
   
   expect_equal(rownames(contribution_shared), c("(A)Hydrogen", "(A)Oxygen", "(B)Hydrogen", "(B)Oxygen", "(C)Hydrogen", "(C)Oxygen", "(C)Sulphur", "(D)Hydrogen", "(D)Sulphur"))
   expect_equal(colnames(contribution_shared), c("A-eta", "B-eta", "C-eta", "D-eta", "Hydrogen:Oxygen-d", "Hydrogen:Sulphur-d", "B"))
+  
+  expect_equal(rownames(contribution_none), c("(A)Hydrogen", "(A)Oxygen", "(B)Hydrogen", "(B)Oxygen", "(C)Hydrogen", "(C)Oxygen", "(C)Sulphur", "(D)Hydrogen", "(D)Sulphur"))
+  expect_equal(colnames(contribution_none), c("A-eta", "B-eta", "C-eta", "D-eta", "Hydrogen:Oxygen-d", "Hydrogen:Sulphur-d"))
 })
 
 
@@ -692,6 +756,39 @@ test_that("CreateContributionMatrix() produces correct output for the Donegan ex
   #Column and row names have already been tested in earlier tests, so no need to check here.
   colnames(expected_contribution_matrix) <- c("1:2-d", "1:3-d", "2:3-d", "1:2-beta", "1:3-beta", "2:3-beta")
   rownames(expected_contribution_matrix) <- rownames(contribution_matrix)
+  
+  expect_equal(contribution_matrix, expected_contribution_matrix)
+})
+
+
+
+test_that("CreateContributionMatrix() produces correct output for a fixed effects NMA", {
+  data <- read.csv("data/Cont_long_cont_cov_small.csv")
+  
+  treatment_ids <- list(Number = 1:3, Label = c("Hydrogen", "Neon", "Carbon"))
+  
+  contribution_matrix <- CreateContributionMatrix(data = data,
+                                                  treatment_ids = treatment_ids,
+                                                  outcome_type = "Continuous",
+                                                  outcome_measure = "MD",
+                                                  effects_type = "fixed",
+                                                  cov_parameters = "none",
+                                                  basic_or_all_parameters = "basic",
+                                                  study_or_arm_level = "arm",
+                                                  absolute_or_percentage = "absolute",
+                                                  weight_or_contribution = "weight") |> round(digits = 2)
+  
+  expected_V <- diag(c(2^2/50, 2^2/51, 3^2/60, 3^2/61, 3^2/62))
+  expected_X <- matrix(c(1, 0, 0, 0,
+                         1, 0, 1, 0,
+                         0, 1, 0, 0,
+                         0, 1, 1, 0,
+                         0, 1, 0, 1),
+                       byrow = TRUE, nrow = 5)
+  expected_XVX_matrix <- solve(t(expected_X)%*% solve(expected_V) %*% expected_X) %*% t(expected_X) %*% solve(expected_V)
+  expected_contribution_matrix <- round(t(abs(expected_XVX_matrix)), digits = 2)
+  rownames(expected_contribution_matrix) <- rownames(contribution_matrix)
+  colnames(expected_contribution_matrix) <- colnames(contribution_matrix)
   
   expect_equal(contribution_matrix, expected_contribution_matrix)
 })
