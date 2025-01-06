@@ -35,7 +35,12 @@ covariate_run_model_ui <- function(id) {
         inputId = ns("baye_do"),
         label = span(
           "Click here to run the main analysis for all studies",
-          uiOutput(outputId = ns("spinner")),
+          # Initially hidden spinner
+          div(
+            id = ns("spinner"),
+            tags$i(class = "fa-solid fa-circle-notch fa-spin"),
+            style = "color: blue; padding-left: 5pt; display: none;"
+          ),
           style="display: flex;"
         )
       )
@@ -110,36 +115,19 @@ covariate_run_model_server <- function(
     }) |>
       bindEvent(input$baye_do)
     
-    # Keep track of whether the model is calculating
-    calculating_model <- reactiveVal(FALSE)
-    
-    # When button is clicked, mark model as calculating and disable the button
+    # When button is clicked, show the spinnerand disable the button
     observe({
-      calculating_model(TRUE)
+      shinyjs::show(id = "spinner")
       shinyjs::disable(id = "baye_do")
     }) |>
       bindEvent(input$baye_do)
     
-    # When model calculation completes, mark model as not calculating and enable the button
+    # When model calculation completes, hide the spinner and enable the button
     observe({
-      calculating_model(FALSE)
+      shinyjs::hide(id = "spinner")
       shinyjs::enable(id = "baye_do")
     }) |>
       bindEvent(model$result())
-    
-    # Render the spinner when the model is calculating
-    output$spinner <- renderUI({
-      if (!calculating_model()) {
-        return(NULL)
-      }
-      
-      return(
-        div(
-          tags$i(class = "fa-solid fa-circle-notch fa-spin"),
-          style = "color: blue; padding-left: 5pt"
-        )
-      )
-    })
     
     return(
       list(
