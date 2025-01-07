@@ -37,7 +37,7 @@ ParameterMatcher <- R6::R6Class(
         if (!name %in% actual_names) {
           return(FALSE)
         }
-        if (!equals(private$parameters[[name]], actual[[name]])) {
+        if (!R.oo::equals(private$parameters[[name]], actual[[name]])) {
           return(FALSE)
         }
       }
