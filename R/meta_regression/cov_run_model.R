@@ -166,19 +166,48 @@ baseline_risk_run_model_server <- function(
       "~ U(0,5) or U(0,100) for a binary or continuous outcome respectively."
     })
     
-    #The model
-    model <- eventReactive(input$baye_do, {
-      BaselineRiskRegression(br_data = data(),
-                             treatment_ids = treatment_df(),
-                             outcome_type = metaoutcome(),
-                             ref = treatment_df()$Label[match(1, treatment_df()$Number)],
-                             effects_type = model_effects(),
-                             cov_parameters = input$select_regressor)
+    # Run model as a parallel process
+    model <- shiny::ExtendedTask$new(function(data, treatment_ids, outcome_type, ref, effects_type, cov_parameters) {
+      promises::future_promise({
+        BaselineRiskRegression(br_data = data,
+                               treatment_ids = treatment_ids,
+                               outcome_type = outcome_type,
+                               ref = ref,
+                               effects_type = effects_type,
+                               cov_parameters = cov_parameters)
+      })
     })
+    
+    # Kick off the model calculation when the button is pressed
+    observe({
+      model$invoke(
+        data = data(),
+        treatment_ids = treatment_df(),
+        outcome_type = metaoutcome(),
+        ref = treatment_df()$Label[match(1, treatment_df()$Number)],
+        effects_type = model_effects(),
+        cov_parameters = input$select_regressor
+      )
+    }) |>
+      bindEvent(input$baye_do)
+    
+    # When button is clicked, show the spinnerand disable the button
+    observe({
+      shinyjs::show(id = "spinner")
+      shinyjs::disable(id = "baye_do")
+    }) |>
+      bindEvent(input$baye_do)
+    
+    # When model calculation completes, hide the spinner and enable the button
+    observe({
+      shinyjs::hide(id = "spinner")
+      shinyjs::enable(id = "baye_do")
+    }) |>
+      bindEvent(model$result())
     
     return(
       list(
-        model = model,
+        model = reactive({ model$result() }),
         regressor = reactive({ input$select_regressor })
       )
     )
