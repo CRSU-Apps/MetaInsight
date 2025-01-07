@@ -214,20 +214,32 @@ covariate_analysis_panel_server <- function(
     })
     
     model_valid = reactiveVal(FALSE)
+    parameter_matcher <- ParameterMatcher$new()
     
     observe({
-      model_valid(FALSE)
-    }) |> bindEvent({
-      all_data()
-      metaoutcome()
-      outcome_measure()
-      model_effects()
-      rank_option()
-      model_reactives$regressor()
-      covariate_type()
+      model_valid(
+        parameter_matcher$Matches(
+          all_data=all_data(),
+          metaoutcome=metaoutcome(),
+          outcome_measure=outcome_measure(),
+          model_effects=model_effects(),
+          rank_option=rank_option(),
+          regressor=model_reactives$regressor(),
+          covariate_type=covariate_type()
+        )
+      )
     })
     
     observe({
+      parameter_matcher$SetParameters(
+        all_data=all_data(),
+        metaoutcome=metaoutcome(),
+        outcome_measure=outcome_measure(),
+        model_effects=model_effects(),
+        rank_option=rank_option(),
+        regressor=model_reactives$regressor(),
+        covariate_type=covariate_type()
+      )
       model_valid(TRUE)
     }) |> bindEvent(model_reactive())
     
