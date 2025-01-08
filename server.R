@@ -16,7 +16,7 @@ shinyServer(function(input, output, session) {
   GdprServer(
     id = "cookies",
     cookies = reactive(input$cookies),
-    google_analytics_id = "G-PZNQ39CJ15",
+    google_analytics_id = "G-H3241DM66M",
     tab = tab
   )
   

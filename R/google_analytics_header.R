@@ -190,11 +190,11 @@ GdprServer <- function(
       
       # Run once when cookies.js has been loaded
       shiny::observe({
-        # If the accept cookie is null show the GDPR notice
-        if (is.null(cookies()$accept)) {
+        # If the accept_analytics cookie is null show the GDPR notice
+        if (is.null(cookies()$accept_analytics)) {
           GdprAlert()
           # Else if the user has previously accepted the GDPR notice
-        } else if (as.logical(cookies()$accept)) {
+        } else if (as.logical(cookies()$accept_analytics)) {
           # Debug Message
           print("Previously Accepted")
           # Include the analytics sctipt
@@ -215,13 +215,13 @@ GdprServer <- function(
       shiny::observe({
         # Debug Message
         print(input$cookie_accept)
-        # List for 'accept cookie' either
+        # List for 'accept_analytics cookie' either
         # TRUE if GDPR notice accepted or
         # FALSE if GDPR notice declined
         # N.B. this is an essential cookie
-        # so exempt from a seperate cookie notice
+        # so exempt from a separate cookie notice
         msg <- list(
-          name = "accept",
+          name = "accept_analytics",
           value = input$cookie_accept
         )
         # Check if running in HTTPS or HTTP
