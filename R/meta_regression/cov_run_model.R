@@ -62,7 +62,9 @@ covariate_run_model_ui <- function(id) {
 #' @param cov_friendly Friendly name of chosen covariate
 #' @param model_effects Reactive containing model effects: either "random" or "fixed"
 #'
-#' @return List of reactives: "model_output" contains meta-regression model outputs
+#' @return List of reactives:
+#' - "model" contains meta-regression model outputs from `RunCovariateModel()`.
+#' - "regressor" caontins the type of the regression model. One of ["shared", "exchangeable", "unrelated"].
 covariate_run_model_server <- function(
     id,
     data,
@@ -115,7 +117,7 @@ covariate_run_model_server <- function(
     }) |>
       bindEvent(input$baye_do)
     
-    # When button is clicked, show the spinnerand disable the button
+    # When button is clicked, show the spinner and disable the button
     observe({
       shinyjs::show(id = "spinner")
       shinyjs::disable(id = "baye_do")
@@ -150,7 +152,9 @@ covariate_run_model_server <- function(
 #' @param metaoutcome Reactive containing meta analysis outcome: "Continuous" or "Binary"
 #' @param model_effects Reactive containing model effects: either "random" or "fixed"
 #'
-#' @return List of reactives: "model_output" contains meta-regression model outputs
+#' @return List of reactives:
+#' - "model" contains meta-regression model outputs from `BaselineRiskRegression()`.
+#' - "regressor" caontins the type of the regression model. One of ["shared", "exchangeable", "unrelated"].
 baseline_risk_run_model_server <- function(
     id,
     data,
@@ -191,7 +195,7 @@ baseline_risk_run_model_server <- function(
     }) |>
       bindEvent(input$baye_do)
     
-    # When button is clicked, show the spinnerand disable the button
+    # When button is clicked, show the spinner and disable the button
     observe({
       shinyjs::show(id = "spinner")
       shinyjs::disable(id = "baye_do")

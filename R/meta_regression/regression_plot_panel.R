@@ -205,7 +205,19 @@ regression_plot_panel_ui <- function(id) {
 #' @param outcome_type Reactive containing meta analysis outcome: "Continuous" or "Binary".
 #' @param outcome_measure Reactive type of outcome (OR, RR, RD, MD or SD).
 #' @param package package used to create the model. Either "gemtc" (default) or "bnma".
-regression_plot_panel_server <- function(id, data, covariate_title, covariate_name, model_output, treatment_df, outcome_type, outcome_measure, reference, package = "gemtc", model_valid = reactiveVal(TRUE)) {
+#' @param model_valid Reactive containing whether or not the model is valid to be displayed.
+regression_plot_panel_server <- function(
+    id,
+    data,
+    covariate_title,
+    covariate_name,
+    model_output,
+    treatment_df,
+    outcome_type,
+    outcome_measure,
+    reference,
+    package = "gemtc",
+    model_valid = reactiveVal(TRUE)) {
   shiny::moduleServer(id, function(input, output, session) {
     
     # This will show a spinner while the model calculates, but will not render anything once it has completed
