@@ -163,7 +163,7 @@ baseline_risk_analysis_panel_server <- function(    id,
           outcome_measure=outcome_measure(),
           model_effects=model_effects(),
           rank_option=rank_option(),
-          regressor=model_reactives$regressor()
+          regressor=model_reactives$regressor_type()
         )
       )
     })
@@ -175,7 +175,7 @@ baseline_risk_analysis_panel_server <- function(    id,
         outcome_measure=outcome_measure(),
         model_effects=model_effects(),
         rank_option=rank_option(),
-        regressor=model_reactives$regressor()
+        regressor=model_reactives$regressor_type()
       )
       model_valid(TRUE)
     }) |> bindEvent(model_reactive())

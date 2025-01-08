@@ -17,7 +17,7 @@ covariate_run_model_ui <- function(id) {
       p(tags$strong("Results for all studies")),
       p("Please choose your regressor type, then click the button below to run meta-regression analysis (and each time you subsequently change any options)."),
       fluidRow(
-        div(selectInput(inputId = ns("select_regressor"), 
+        div(selectInput(inputId = ns("select_regressor_type"), 
                   label = "Choose type of regression coefficient", 
                   choices = c("shared", "exchangeable", "unrelated")),
           style = "display: inline-block;"),
@@ -64,7 +64,7 @@ covariate_run_model_ui <- function(id) {
 #'
 #' @return List of reactives:
 #' - "model" contains meta-regression model outputs from `RunCovariateModel()`.
-#' - "regressor" caontins the type of the regression model. One of ["shared", "exchangeable", "unrelated"].
+#' - "regressor_type" contains the type of regression coefficient, either "shared", "unrelated", or "exchangeable".
 covariate_run_model_server <- function(
     id,
     data,
@@ -111,7 +111,7 @@ covariate_run_model_server <- function(
         covariate = covariate(),
         cov_friendly = cov_friendly(),
         model_type = model_effects(),
-        regressor_type = input$select_regressor,
+        regressor_type = input$select_regressor_type,
         ref_choice = treatment_df()$Label[match(1, treatment_df()$Number)]
       )
     }) |>
@@ -134,7 +134,7 @@ covariate_run_model_server <- function(
     return(
       list(
         model = reactive({ model$result() }),
-        regressor = reactive({ input$select_regressor })
+        regressor_type = reactive({ input$select_regressor_type })
       )
     )
   })
@@ -154,7 +154,7 @@ covariate_run_model_server <- function(
 #'
 #' @return List of reactives:
 #' - "model" contains meta-regression model outputs from `BaselineRiskRegression()`.
-#' - "regressor" caontins the type of the regression model. One of ["shared", "exchangeable", "unrelated"].
+#' - "regressor_type" contains the type of regression coefficient, either "shared", "unrelated", or "exchangeable".
 baseline_risk_run_model_server <- function(
     id,
     data,
@@ -190,7 +190,7 @@ baseline_risk_run_model_server <- function(
         outcome_type = metaoutcome(),
         ref = treatment_df()$Label[match(1, treatment_df()$Number)],
         effects_type = model_effects(),
-        cov_parameters = input$select_regressor
+        cov_parameters = input$select_regressor_type
       )
     }) |>
       bindEvent(input$baye_do)
@@ -212,7 +212,7 @@ baseline_risk_run_model_server <- function(
     return(
       list(
         model = reactive({ model$result() }),
-        regressor = reactive({ input$select_regressor })
+        regressor_type = reactive({ input$select_regressor_type })
       )
     )
   })

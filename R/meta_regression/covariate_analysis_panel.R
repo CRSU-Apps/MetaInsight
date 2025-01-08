@@ -224,7 +224,7 @@ covariate_analysis_panel_server <- function(
           outcome_measure=outcome_measure(),
           model_effects=model_effects(),
           rank_option=rank_option(),
-          regressor=model_reactives$regressor(),
+          regressor=model_reactives$regressor_type(),
           covariate_type=covariate_type()
         )
       )
@@ -237,7 +237,7 @@ covariate_analysis_panel_server <- function(
         outcome_measure=outcome_measure(),
         model_effects=model_effects(),
         rank_option=rank_option(),
-        regressor=model_reactives$regressor(),
+        regressor=model_reactives$regressor_type(),
         covariate_type=covariate_type()
       )
       model_valid(TRUE)
