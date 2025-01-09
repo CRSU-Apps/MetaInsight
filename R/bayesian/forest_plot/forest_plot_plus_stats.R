@@ -60,10 +60,19 @@ bayesian_forest_plot_plus_stats_server <- function(
     analysis_type,
     metaoutcome,
     outcome_measure,
-    bugsnetdt
+    bugsnetdt,
+    model_valid = reactiveVal(TRUE)
     ) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
+    
+    observe({
+      if (!model_valid()) {
+        shinyjs::disable(id="download_plot")
+      } else {
+        shinyjs::enable(id="download_plot")
+      }
+    })
 
     output$package <- reactive({"gemtc"})
     outputOptions(x = output, name = "package", suspendWhenHidden = FALSE)
@@ -85,6 +94,10 @@ bayesian_forest_plot_plus_stats_server <- function(
 
     # Forest plot for all studies
     output$forest_plot <- renderPlot({
+      if (!model_valid()) {
+        mtext("Please rerun model", side = 3, adj = 0, cex = 2)
+        return()
+      }
       CreateForestPlot(model_output(), metaoutcome(), input$axis_min, input$axis_max)
       title(paste(ifelse(analysis_type == "Full", "All studies:", 
                          ifelse(analysis_type == "Sub", "Results with studies excluded:",
@@ -100,12 +113,18 @@ bayesian_forest_plot_plus_stats_server <- function(
     
     # DIC table for all studies
     output$dic <- renderTable ({
+      if (!model_valid()) {
+        return()
+      }
       model_output()$dic
     }, digits=3, rownames=TRUE, colnames=FALSE
     )
     
     # Tau all studies
     output$tau_text <-renderText({
+      if (!model_valid()) {
+        return()
+      }
       CreateTauSentence(model_output(), outcome_measure())
     })
     

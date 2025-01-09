@@ -109,6 +109,80 @@ bayesian_forest_plots_page_server <- function(
                      outcome_measure(), model_effects(), reference_alter()$ref_sub)
     })
     
+    
+    
+    
+    
+    
+    
+    
+    
+    model_valid = reactiveVal(FALSE)
+    model_sub_valid = reactiveVal(FALSE)
+    parameter_matcher <- ParameterMatcher$new()
+    parameter_matcher_sub <- ParameterMatcher$new()
+    
+    observe({
+      model_valid(
+        parameter_matcher$Matches(
+          data = data(),
+          treatment_df = treatment_df(),
+          metaoutcome = metaoutcome(),
+          outcome_measure = outcome_measure(),
+          model_effects = model_effects(),
+          ref = reference_alter()$ref_all
+        )
+      )
+    })
+    
+    observe({
+      model_sub_valid(
+        parameter_matcher_sub$Matches(
+          data = sensitivity_data(),
+          treatment_df = sensitivity_treatment_df(),
+          metaoutcome = metaoutcome(),
+          outcome_measure = outcome_measure(),
+          model_effects = model_effects(),
+          ref = reference_alter()$ref_sub
+        )
+      )
+    })
+    
+    observe({
+      parameter_matcher$SetParameters(
+        data = data(),
+        treatment_df = treatment_df(),
+        metaoutcome = metaoutcome(),
+        outcome_measure = outcome_measure(),
+        model_effects = model_effects(),
+        ref = reference_alter()$ref_all
+      )
+      model_valid(TRUE)
+    }) |> bindEvent(model())
+    
+    observe({
+      parameter_matcher_sub$SetParameters(
+        data = sensitivity_data(),
+        treatment_df = sensitivity_treatment_df(),
+        metaoutcome = metaoutcome(),
+        outcome_measure = outcome_measure(),
+        model_effects = model_effects(),
+        ref = reference_alter()$ref_sub
+      )
+      model_sub_valid(TRUE)
+    }) |> bindEvent(model_sub())
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     # Create forest plot and associated statistics
     
     bayesian_forest_plot_plus_stats_server(
@@ -117,7 +191,8 @@ bayesian_forest_plots_page_server <- function(
       analysis_type = "Full",
       metaoutcome = metaoutcome,
       outcome_measure = outcome_measure,
-      bugsnetdt = bugsnetdt
+      bugsnetdt = bugsnetdt,
+      model_valid = model_valid
     )
     
     bayesian_forest_plot_plus_stats_server(
@@ -126,7 +201,8 @@ bayesian_forest_plots_page_server <- function(
       analysis_type = "Sub",
       metaoutcome = metaoutcome,
       outcome_measure = outcome_measure,
-      bugsnetdt = bugsnetdt_sub
+      bugsnetdt = bugsnetdt_sub,
+      model_valid = model_sub_valid
     )
     
 
