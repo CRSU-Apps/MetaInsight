@@ -292,7 +292,7 @@ covariate_analysis_panel_server <- function(
     covariate_nodesplit_page_server(id = "nodesplit")
     
     # 4c-6 Result details
-    result_details_page_server(id = "result_details", models = c(model_output))
+    result_details_page_server(id = "result_details", models = c(model_output), models_valid = c(model_valid))
     
     # 4c-7 Deviance report
     deviance_report_page_server(id = "deviance_report", models = c(model_output))

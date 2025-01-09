@@ -229,7 +229,7 @@ baseline_risk_analysis_panel_server <- function(    id,
     covariate_nodesplit_page_server(id = "baseline_risk_nodesplit")
     
     # 4b-6 Result details
-    result_details_page_server(id = "baseline_risk_result_details", models = c(model_reactive), package = "bnma")
+    result_details_page_server(id = "baseline_risk_result_details", models = c(model_reactive), models_valid = c(model_valid), package = "bnma")
     
     # 4b-7 Deviance report
     deviance_report_page_server(id = "baseline_risk_deviance_report", models = c(model_reactive), package = "bnma")

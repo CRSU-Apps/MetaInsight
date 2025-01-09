@@ -49,11 +49,17 @@ bayesian_treatment_comparisons_page_server <- function(
     
     observe({
       if (!model_valid()) {
-        shinyjs::disable(id="downloadbaye_comparison_sub")
         shinyjs::disable(id="downloadbaye_comparison")
       } else {
-        shinyjs::enable(id="downloadbaye_comparison_sub")
         shinyjs::enable(id="downloadbaye_comparison")
+      }
+    })
+    
+    observe({
+      if (!model_sub_valid()) {
+        shinyjs::disable(id="downloadbaye_comparison_sub")
+      } else {
+        shinyjs::enable(id="downloadbaye_comparison_sub")
       }
     })
 
@@ -74,7 +80,7 @@ bayesian_treatment_comparisons_page_server <- function(
       rownames = TRUE,
       colnames = TRUE,
       {
-        if (!model_valid()) {
+        if (!model_sub_valid()) {
           return()
         }
         baye_comp(model_sub(), outcome_measure())

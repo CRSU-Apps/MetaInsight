@@ -27,11 +27,15 @@ result_details_panel_ui <- function(id, item_name) {
 #' @param id ID of the module
 #' @param model Reactive containing bayesian meta-analysis
 #' @param package "gemtc" (default) or "bnma".
-result_details_panel_server <- function(id, model, package = "gemtc") {
+#' @param model_valid Reactive containing whether the model is valid
+result_details_panel_server <- function(id, model, model_valid, package = "gemtc") {
   moduleServer(id, function(input, output, session) {
     
     # Results details
     output$gemtc_results <- renderPrint ({
+      if (!model_valid()) {
+        return()
+      }
       if (package == "gemtc") {
         return(model()$sumresults)
       } else if (package == "bnma") {
@@ -82,15 +86,21 @@ result_details_panel_server <- function(id, model, package = "gemtc") {
     })
     
     # Gelman plots
-    output$gemtc_gelman <- renderPlot ({
-      if (package == "gemtc") {
-        return(gelman.plot(model()$mtcResults))
-      } else if (package == "bnma") {
-        par(mfrow = c(n_rows(), 2))
-        return(BnmaGelmanPlots(gelman_plots = gelman_plots(), parameters = parameters()))
+    output$gemtc_gelman <- renderPlot(
+      {
+        if (!model_valid()) {
+          return()
+        }
+        if (package == "gemtc") {
+          return(gelman.plot(model()$mtcResults))
+        } else if (package == "bnma") {
+          par(mfrow = c(n_rows(), 2))
+          return(BnmaGelmanPlots(gelman_plots = gelman_plots(), parameters = parameters()))
+        }
+      },
+      height = function() {
+        n_rows() * 300
       }
-    },
-    height = function(){n_rows() * 300}
     )
   })
 }
