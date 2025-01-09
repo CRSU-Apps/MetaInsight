@@ -282,13 +282,9 @@ test_that("CalculateCredibleRegions() gives interval for zero-width evidence ran
 })
 
 test_that("CalculateCredibleRegions() gives region for non-zero-width evidence range", {
-  mtc_results <- list(
-    model = list(
-      regressor = list(
-        type = "continuous"
-      )
-    )
-  )
+  mtc_results <- list()
+  mtc_results$model <- list()
+  mtc_results$model$regressor <- list(type="continuous")
   
   model_output <- list(
     mtcResults = mtc_results,
