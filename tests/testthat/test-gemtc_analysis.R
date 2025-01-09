@@ -196,7 +196,8 @@ test_that("RunCovariateModel() gives reproducible output. Follow on: FindCovaria
     model = result_1,
     covariate_title = "covar.age",
     cov_value = default,
-    outcome_measure = outcome_measure
+    outcome_measure = outcome_measure,
+    covariate_type = "Continuous"
   )
 
   expect_equal(length(output_1), 17)
@@ -282,6 +283,8 @@ test_that("CalculateCredibleRegions() gives interval for zero-width evidence ran
 
 test_that("CalculateCredibleRegions() gives region for non-zero-width evidence range", {
   mtc_results <- list()
+  mtc_results$model <- list()
+  mtc_results$model$regressor <- list(type="continuous")
   
   model_output <- list(
     mtcResults = mtc_results,

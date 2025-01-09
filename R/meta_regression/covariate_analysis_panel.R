@@ -182,7 +182,7 @@ covariate_analysis_panel_server <- function(
     
     # 4c-1 Forest plots
     # run model
-    model_reactive <- covariate_run_model_server(
+    model_reactives <- covariate_run_model_server(
       id = "cov_model",
       data = all_data,
       treatment_df = treatment_df,
@@ -192,6 +192,7 @@ covariate_analysis_panel_server <- function(
       cov_friendly = covariate_name,
       model_effects = model_effects
     )
+    model_reactive <- model_reactives$model
 
     covariate_value = covariate_value_panel_server(
       id = "covariate_value",
@@ -212,6 +213,36 @@ covariate_analysis_panel_server <- function(
       )
     })
     
+    model_valid = reactiveVal(FALSE)
+    parameter_matcher <- ParameterMatcher$new()
+    
+    observe({
+      model_valid(
+        parameter_matcher$Matches(
+          all_data=all_data(),
+          metaoutcome=metaoutcome(),
+          outcome_measure=outcome_measure(),
+          model_effects=model_effects(),
+          rank_option=rank_option(),
+          regressor_type=model_reactives$regressor_type(),
+          covariate_type=covariate_type()
+        )
+      )
+    })
+    
+    observe({
+      parameter_matcher$SetParameters(
+        all_data=all_data(),
+        metaoutcome=metaoutcome(),
+        outcome_measure=outcome_measure(),
+        model_effects=model_effects(),
+        rank_option=rank_option(),
+        regressor_type=model_reactives$regressor_type(),
+        covariate_type=covariate_type()
+      )
+      model_valid(TRUE)
+    }) |> bindEvent(model_reactive())
+    
     # Regression plot
     regression_plot_panel_server(
       id = "regression_plot",
@@ -222,7 +253,8 @@ covariate_analysis_panel_server <- function(
       treatment_df = treatment_df,
       outcome_type = metaoutcome,
       outcome_measure = outcome_measure,
-      reference = reference_treatment
+      reference = reference_treatment,
+      model_valid = model_valid
     )
     
     # Create forest plot and associated statistics

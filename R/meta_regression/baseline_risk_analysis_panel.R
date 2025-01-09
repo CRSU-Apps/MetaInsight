@@ -98,13 +98,14 @@ baseline_risk_analysis_panel_server <- function(    id,
       }
     })
     
-    model_reactive <- baseline_risk_run_model_server(
+    model_reactives <- baseline_risk_run_model_server(
       id = "baseline_risk_model",
       data = long_data,
       treatment_df = treatment_df,
       metaoutcome = metaoutcome,
       model_effects = model_effects
     )
+    model_reactive <- model_reactives$model
     
     #Warn if the model did not converge
     output$convergence_warning <- renderText({
@@ -151,6 +152,34 @@ baseline_risk_analysis_panel_server <- function(    id,
              )
     })
     
+    model_valid = reactiveVal(FALSE)
+    parameter_matcher <- ParameterMatcher$new()
+    
+    observe({
+      model_valid(
+        parameter_matcher$Matches(
+          all_data=all_data(),
+          metaoutcome=metaoutcome(),
+          outcome_measure=outcome_measure(),
+          model_effects=model_effects(),
+          rank_option=rank_option(),
+          regressor_type=model_reactives$regressor_type()
+        )
+      )
+    })
+    
+    observe({
+      parameter_matcher$SetParameters(
+        all_data=all_data(),
+        metaoutcome=metaoutcome(),
+        outcome_measure=outcome_measure(),
+        model_effects=model_effects(),
+        rank_option=rank_option(),
+        regressor_type=model_reactives$regressor_type()
+      )
+      model_valid(TRUE)
+    }) |> bindEvent(model_reactive())
+    
     # 4b-1 Regression plot
     regression_plot_panel_server(
       id = "baseline_risk_regression_plot",
@@ -162,7 +191,8 @@ baseline_risk_analysis_panel_server <- function(    id,
       outcome_type = metaoutcome,
       outcome_measure = outcome_measure,
       reference = reference_treatment,
-      package = "bnma"
+      package = "bnma",
+      model_valid = model_valid
     )
     
     # 4b-2 Create forest plot and associated statistics
