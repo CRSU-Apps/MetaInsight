@@ -815,6 +815,53 @@ test_that("CreateContributionMatrix() produces correct output for a random effec
 
 
 
+test_that("CreateContributionMatrix() produces correct output for a random effects, exchangeable model", {
+  data <- read.csv("data/Cont_long_cont_cov_small.csv")
+  
+  treatment_ids <- list(Number = 1:3, Label = c("Hydrogen", "Neon", "Carbon"))
+  
+  contribution_matrix <- CreateContributionMatrix(data = data,
+                                                  treatment_ids = treatment_ids,
+                                                  outcome_type = "Continuous",                           
+                                                  outcome_measure = "MD",
+                                                  effects_type = "fixed",
+                                                  cov_parameters = "exchangeable",
+                                                  std_dev_beta = 0.9,
+                                                  basic_or_all_parameters = "basic",
+                                                  study_or_arm_level = "arm",
+                                                  absolute_or_percentage = "absolute",
+                                                  weight_or_contribution = "weight") |> round(digits = 2)
+  
+  expected_V <- diag(c(2^2/50, 2^2/51, 3^2/60, 3^2/61, 3^2/62))
+  expected_lambda_tau <- diag(0.9^2, nrow = 5)
+  expected_lambda_beta <- diag(0.9^2, nrow = 2)
+  expected_V_star <- as.matrix(bdiag(expected_V, expected_lambda_tau, expected_lambda_beta))
+  expected_X_d <- matrix(c(1, 0, 0, 0,
+                           1, 0, 1, 0,
+                           0, 1, 0, 0,
+                           0, 1, 1, 0,
+                           0, 1, 0, 1),
+                         byrow = TRUE, nrow = 5)
+  expected_X_beta <- matrix(c(0,        0,
+                              1-1.25,   0,
+                              0,        0,
+                              1.5-1.25, 0,
+                              0,        1.5-1.25),
+                            byrow = TRUE, nrow = 5)
+  expected_X_star <- rbind(cbind(diag(1, nrow = 5), matrix(0, nrow = 5, ncol = 7)),
+                           cbind(diag(1, nrow = 5), -expected_X_d, -expected_X_beta, matrix(0, nrow = 5, ncol = 1)),
+                           cbind(matrix(0, nrow = 2, ncol = 9), diag(1, nrow = 2), matrix(1, nrow = 2, ncol = 1)))
+  expected_XVX_matrix <- solve(t(expected_X_star)%*% solve(expected_V_star) %*% expected_X_star) %*% t(expected_X_star) %*% solve(expected_V_star)
+  expected_A_matrix <- expected_XVX_matrix[6:11, 1:5]
+  expected_contribution_matrix <- round(t(abs(expected_A_matrix)), digits = 2)
+  rownames(expected_contribution_matrix) <- rownames(contribution_matrix)
+  colnames(expected_contribution_matrix) <- colnames(contribution_matrix)
+  
+  expect_equal(contribution_matrix, expected_contribution_matrix)
+})
+
+
+
 test_that("CreateContributionMatrix() includes all parameters when 'basic_or_all_parameters' = 'all'", {
   data <- read.csv("data/Cont_long_cont_cov_small.csv")
   
