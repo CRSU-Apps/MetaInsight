@@ -162,7 +162,9 @@ model_details_panel_server <- function(id, models, package = "gemtc") {
           filename = filename,
           content = function(file) {
             lapply(
-              inits(),
+              paste(names(inits()[[index]]),
+                    inits()[[index]],
+                    "\n"),
               write,
               file,
               append = TRUE,
