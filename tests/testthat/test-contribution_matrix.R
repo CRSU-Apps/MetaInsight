@@ -824,8 +824,9 @@ test_that("CreateContributionMatrix() produces correct output for a random effec
                                                   treatment_ids = treatment_ids,
                                                   outcome_type = "Continuous",                           
                                                   outcome_measure = "MD",
-                                                  effects_type = "fixed",
+                                                  effects_type = "random",
                                                   cov_parameters = "exchangeable",
+                                                  std_dev_d = 0.9,
                                                   std_dev_beta = 0.9,
                                                   basic_or_all_parameters = "basic",
                                                   study_or_arm_level = "arm",
@@ -1012,3 +1013,99 @@ test_that("CreateContributionMatrix() calculates contributions correctly when 'w
   
   expect_equal(contribution_matrix, expected_contribution_matrix)
 })
+
+
+
+test_that("CreateContributionMatrix() is not obviously wrong on study-level intercepts", {
+  data <- read.csv("data/Non_opioids_long.csv")
+  treatment_ids <- list(Number = 1:4, Label = c("Placebo", "Glucocorticoids", "Ketamine", "Gabapentinoids"))
+  data$T <- treatment_ids$Number[match(data$T, treatment_ids$Label)]
+  
+  fe_shared <- CreateContributionMatrix(data = data,
+                                        treatment_ids = treatment_ids,
+                                        outcome_type = "Continuous",                           
+                                        outcome_measure = "MD",
+                                        effects_type = "fixed",
+                                        cov_parameters = "shared",
+                                        basic_or_all_parameters = "basic",
+                                        study_or_arm_level = "study",
+                                        absolute_or_percentage = "absolute",
+                                        weight_or_contribution = "weight") |> round(digits = 2)
+  
+  fe_exchangeable <- CreateContributionMatrix(data = data,
+                                              treatment_ids = treatment_ids,
+                                              outcome_type = "Continuous",                           
+                                              outcome_measure = "MD",
+                                              effects_type = "fixed",
+                                              cov_parameters = "exchangeable",
+                                              std_dev_beta = 0.9,
+                                              basic_or_all_parameters = "basic",
+                                              study_or_arm_level = "study",
+                                              absolute_or_percentage = "absolute",
+                                              weight_or_contribution = "weight") |> round(digits = 2)
+  
+  fe_unrelated <- CreateContributionMatrix(data = data,
+                                           treatment_ids = treatment_ids,
+                                           outcome_type = "Continuous",                           
+                                           outcome_measure = "MD",
+                                           effects_type = "fixed",
+                                           cov_parameters = "unrelated",
+                                           basic_or_all_parameters = "basic",
+                                           study_or_arm_level = "study",
+                                           absolute_or_percentage = "absolute",
+                                           weight_or_contribution = "weight") |> round(digits = 2)
+  
+  re_shared <- CreateContributionMatrix(data = data,
+                                        treatment_ids = treatment_ids,
+                                        outcome_type = "Continuous",                           
+                                        outcome_measure = "MD",
+                                        effects_type = "random",
+                                        std_dev_d = 0.9,
+                                        cov_parameters = "shared",
+                                        basic_or_all_parameters = "basic",
+                                        study_or_arm_level = "study",
+                                        absolute_or_percentage = "absolute",
+                                        weight_or_contribution = "weight") |> round(digits = 2)
+  
+  re_exchangeable <- CreateContributionMatrix(data = data,
+                                              treatment_ids = treatment_ids,
+                                              outcome_type = "Continuous",                           
+                                              outcome_measure = "MD",
+                                              effects_type = "random",
+                                              std_dev_d = 0.9,
+                                              cov_parameters = "exchangeable",
+                                              std_dev_beta = 0.9,
+                                              basic_or_all_parameters = "basic",
+                                              study_or_arm_level = "study",
+                                              absolute_or_percentage = "absolute",
+                                              weight_or_contribution = "weight") |> round(digits = 2)
+  
+  re_unrelated <- CreateContributionMatrix(data = data,
+                                           treatment_ids = treatment_ids,
+                                           outcome_type = "Continuous",                           
+                                           outcome_measure = "MD",
+                                           effects_type = "random",
+                                           std_dev_d = 0.9,
+                                           cov_parameters = "unrelated",
+                                           basic_or_all_parameters = "basic",
+                                           study_or_arm_level = "study",
+                                           absolute_or_percentage = "absolute",
+                                           weight_or_contribution = "weight") |> round(digits = 2)
+  
+  #Extract the contribution of each study to its own study-level intercept
+  fe_shared_eta <- diag(fe_shared[, 1:45])
+  fe_exchangeable_eta <- diag(fe_exchangeable[, 1:45])
+  fe_unrelated_eta <- diag(fe_unrelated[, 1:45])
+  re_exchangeable_eta <- diag(re_exchangeable[, 1:45])
+  re_shared_eta <- diag(re_shared[, 1:45])
+  re_unrelated_eta <- diag(re_unrelated[, 1:45])
+  
+  #Check that none of these contributions are zero
+  expect_false(any(fe_shared_eta == 0))
+  expect_false(any(fe_exchangeable_eta == 0))
+  expect_false(any(fe_unrelated_eta == 0))
+  expect_false(any(re_shared_eta == 0))
+  expect_false(any(re_exchangeable_eta == 0))
+  expect_false(any(re_unrelated_eta == 0))
+})
+
