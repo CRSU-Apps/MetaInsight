@@ -34,25 +34,51 @@ bayesian_treatment_comparisons_page_ui <- function(id) {
 #' @param model Reactive containing bayesian meta-analysis for all studies
 #' @param model_sub Reactive containing meta-analysis with studies excluded
 #' @param outcome_measure Reactive containing meta analysis outcome measure: "MD", "SMD", "OR, "RR", or "RD"
+#' @param model_valid Reactive containing whether the model is valid
+#' @param model_sub_valid Reactive containing whether the sensitivity analysis model is valid
 bayesian_treatment_comparisons_page_server <- function(
     id,
     model,
     model_sub,
-    outcome_measure
+    outcome_measure,
+    model_valid = reactiveVal(TRUE),
+    model_sub_valid = reactiveVal(TRUE)
     ) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
+    
+    observe({
+      if (!model_valid()) {
+        shinyjs::disable(id="downloadbaye_comparison_sub")
+        shinyjs::disable(id="downloadbaye_comparison")
+      } else {
+        shinyjs::enable(id="downloadbaye_comparison_sub")
+        shinyjs::enable(id="downloadbaye_comparison")
+      }
+    })
 
     # Treatment effects for all studies
-    output$baye_comparison <- renderTable ({
-      baye_comp(model(), outcome_measure())
-    }, rownames=TRUE, colnames = TRUE
+    output$baye_comparison <- renderTable(
+      rownames = TRUE,
+      colnames = TRUE,
+      {
+        if (!model_valid()) {
+          return()
+        }
+        baye_comp(model(), outcome_measure())
+      }
     )
 
     # Treatment effects with studies excluded
-    output$baye_comparison_sub <- renderTable ({
-      baye_comp(model_sub(), outcome_measure())
-    }, rownames=TRUE, colnames = TRUE
+    output$baye_comparison_sub <- renderTable (
+      rownames = TRUE,
+      colnames = TRUE,
+      {
+        if (!model_valid()) {
+          return()
+        }
+        baye_comp(model_sub(), outcome_measure())
+      }
     )
 
     output$downloadbaye_comparison <- downloadHandler(

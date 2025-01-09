@@ -117,14 +117,17 @@ bayesian_analysis_panel_server <- function(
     
     model <- forest_plots_reactives$model
     model_sub <- forest_plots_reactives$model_sub
-
+    model_valid <- forest_plots_reactives$model_valid
+    model_sub_valid <- forest_plots_reactives$model_sub_valid
 
     # 3b. Comparison of all treatment pairs
     bayesian_treatment_comparisons_page_server(
       id = "treatment_comparisons",
       model = model,
       model_sub = model_sub,
-      outcome_measure = outcome_measure
+      outcome_measure = outcome_measure,
+      model_valid = model_valid,
+      model_sub_valid = model_sub_valid
     )
 
     # 3c. Ranking Panel

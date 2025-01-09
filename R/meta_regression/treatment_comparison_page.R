@@ -34,24 +34,43 @@ covariate_treatment_comparisons_page_ui <- function(id) {
 #' @param id ID of the module
 #' @param model Reactive containing covariate regression meta-analysis for all studies
 #' @param outcome_measure Reactive containing meta analysis outcome measure: "MD", "SMD", "OR, "RR", or "RD"
+#' @param model_valid Reactive containing whether the model is valid
 covariate_treatment_comparisons_page_server <- function(
     id,
     model,
-    outcome_measure
+    outcome_measure,
+    model_valid = reactiveVal(TRUE)
     ) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
+    
+    observe({
+      if (!model_valid()) {
+        shinyjs::disable(id="downloadbaye_comparison")
+      } else {
+        shinyjs::enable(id="downloadbaye_comparison")
+      }
+    })
 
     # Treatment effects for all studies
-    output$baye_comparison <- renderTable ({
-      baye_comp(model(), outcome_measure())
-    }, rownames=TRUE, colnames = TRUE
+    output$baye_comparison <- renderTable(
+      rownames = TRUE,
+      colnames = TRUE,
+      {
+        if (!model_valid()) {
+          return()
+        }
+        baye_comp(model(), outcome_measure())
+      }
     )
     
     output$package <- reactive({"gemtc"})
     outputOptions(x = output, name = "package", suspendWhenHidden = FALSE)
     
     output$cov_value_statement <- renderText({
+      if (!model_valid()) {
+        return()
+      }
       model()$cov_value_sentence
     })
 
@@ -74,20 +93,32 @@ covariate_treatment_comparisons_page_server <- function(
 #' @param id ID of the module
 #' @param model Reactive containing covariate regression meta-analysis for all studies
 #' @param outcome_measure Reactive containing meta analysis outcome measure: "MD" or "OR"
+#' @param model_valid Reactive containing whether the model is valid
 treatment_comparisons_page_baseline_risk_server <- function(
     id,
     model,
-    outcome_measure
+    outcome_measure,
+    model_valid = reactiveVal(TRUE)
 ) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
     
+    observe({
+      if (!model_valid()) {
+        shinyjs::disable(id="downloadbaye_comparison")
+      } else {
+        shinyjs::enable(id="downloadbaye_comparison")
+      }
+    })
+    
     # Treatment effects for all studies
     output$baye_comparison <- renderTable(
       {
+        if (!model_valid()) {
+          return()
+        }
         BaselineRiskRelativeEffectsTable(
-          bnma::relative.effects.table(model(),
-                                       summary_stat = "ci")
+          bnma::relative.effects.table(model(), summary_stat = "ci")
         )
       },
       rownames = TRUE,

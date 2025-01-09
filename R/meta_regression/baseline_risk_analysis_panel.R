@@ -207,7 +207,8 @@ baseline_risk_analysis_panel_server <- function(    id,
     treatment_comparisons_page_baseline_risk_server(
       id = "baseline_risk_treatment_comparisons",
       model = model_reactive,
-      outcome_measure = outcome_measure
+      outcome_measure = outcome_measure,
+      model_valid = model_valid
     )
     
     # 4b-4 Ranking Panel

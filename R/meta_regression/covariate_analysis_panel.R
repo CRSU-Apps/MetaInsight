@@ -270,7 +270,8 @@ covariate_analysis_panel_server <- function(
     covariate_treatment_comparisons_page_server(
       id = "cov_treatment_comparisons",
       model = model_output,
-      outcome_measure = outcome_measure
+      outcome_measure = outcome_measure,
+      model_valid = model_valid
     )
     
     # 4c-4 Ranking Panel
