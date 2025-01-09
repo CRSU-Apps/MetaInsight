@@ -136,10 +136,11 @@ deviance_report_page_ui <- function(id, item_names) {
 
 #' Module server for the deviance report page.
 #' 
-#' @param id ID of the module
+#' @param id ID of the module.
 #' @param models Vector of reactives containing bayesian meta-analyses.
+#' @param models_valid Vector of reactives containing whether each model is valid.
 #' @param package "gemtc" (default) or "bnma".
-deviance_report_page_server <- function(id, models, package = "gemtc") {
+deviance_report_page_server <- function(id, models, models_valid, package = "gemtc") {
   moduleServer(id, function(input, output, session) {
 
     output$package <- reactive(paste0("{", package, "}"))
@@ -155,14 +156,10 @@ deviance_report_page_server <- function(id, models, package = "gemtc") {
     outputOptions(x = output, name = "model_type", suspendWhenHidden = FALSE)
     
     # Create server for each model
-    index <- 0
     sapply(
-      models,
-      function(mod) {
-        deviance_report_panel_server(id = as.character(index), model = mod, package = package)
-        # Update the index variable in the outer scope with <<-
-        # This updates the variable defined above the `sapply` call instead of creating a new variable with the same name within this inner function
-        index <<- index + 1
+      1:length(models),
+      function(index) {
+        deviance_report_panel_server(id = as.character(index - 1), model = models[index][[1]], model_valid = models_valid[index][[1]], package = package)
       }
     )
   })

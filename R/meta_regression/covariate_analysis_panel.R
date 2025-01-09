@@ -295,7 +295,7 @@ covariate_analysis_panel_server <- function(
     result_details_page_server(id = "result_details", models = c(model_output), models_valid = c(model_valid))
     
     # 4c-7 Deviance report
-    deviance_report_page_server(id = "deviance_report", models = c(model_output))
+    deviance_report_page_server(id = "deviance_report", models = c(model_output), models_valid = c(model_valid))
     
     # 4c-8 Model details
     model_details_panel_server(id = "model_details", models = c(model_output))

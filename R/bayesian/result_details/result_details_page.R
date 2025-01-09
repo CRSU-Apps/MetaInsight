@@ -55,8 +55,6 @@ result_details_page_server <- function(id, models, models_valid, package = "gemt
           model_valid = models_valid[index][[1]],
           package = package
         )
-        # Update the index variable in the outer scope with <<-
-        # This updates the variable defined above the `sapply` call instead of creating a new variable with the same name within this inner function
         return(serv)
       }
     )

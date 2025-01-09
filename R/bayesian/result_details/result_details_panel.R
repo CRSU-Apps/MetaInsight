@@ -24,15 +24,15 @@ result_details_panel_ui <- function(id, item_name) {
 
 #' Module server for the result details panel.
 #' 
-#' @param id ID of the module
-#' @param model Reactive containing bayesian meta-analysis
+#' @param id ID of the module.
+#' @param model Reactive containing bayesian meta-analysis.
 #' @param package "gemtc" (default) or "bnma".
-#' @param model_valid Reactive containing whether the model is valid
+#' @param model_valid Reactive containing whether the model is valid.
 result_details_panel_server <- function(id, model, model_valid, package = "gemtc") {
   moduleServer(id, function(input, output, session) {
     
     # Results details
-    output$gemtc_results <- renderPrint ({
+    output$gemtc_results <- renderPrint({
       if (!model_valid()) {
         return()
       }

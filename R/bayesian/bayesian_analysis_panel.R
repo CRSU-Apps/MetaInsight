@@ -171,7 +171,8 @@ bayesian_analysis_panel_server <- function(
     # 3f. Deviance report
     deviance_report_page_server(
       id = "deviance_report",
-      models = c(model, model_sub)
+      models = c(model, model_sub),
+      models_valid = c(model_valid, model_sub_valid)
     )
 
     # 3g. Model details
