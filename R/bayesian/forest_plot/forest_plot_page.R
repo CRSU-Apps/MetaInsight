@@ -109,14 +109,6 @@ bayesian_forest_plots_page_server <- function(
                      outcome_measure(), model_effects(), reference_alter()$ref_sub)
     })
     
-    
-    
-    
-    
-    
-    
-    
-    
     model_valid = reactiveVal(FALSE)
     model_sub_valid = reactiveVal(FALSE)
     parameter_matcher <- ParameterMatcher$new()
@@ -173,16 +165,6 @@ bayesian_forest_plots_page_server <- function(
     }) |> bindEvent(model_sub())
     
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     # Create forest plot and associated statistics
     
     bayesian_forest_plot_plus_stats_server(
@@ -215,7 +197,9 @@ bayesian_forest_plots_page_server <- function(
     return(
       list(
         model = model,
-        model_sub = model_sub
+        model_sub = model_sub,
+        model_valid = model_valid,
+        model_sub_valid = model_sub_valid
       )
     )
   })

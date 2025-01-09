@@ -162,7 +162,6 @@ baseline_risk_analysis_panel_server <- function(    id,
           metaoutcome=metaoutcome(),
           outcome_measure=outcome_measure(),
           model_effects=model_effects(),
-          rank_option=rank_option(),
           regressor_type=model_reactives$regressor_type()
         )
       )
@@ -174,7 +173,6 @@ baseline_risk_analysis_panel_server <- function(    id,
         metaoutcome=metaoutcome(),
         outcome_measure=outcome_measure(),
         model_effects=model_effects(),
-        rank_option=rank_option(),
         regressor_type=model_reactives$regressor_type()
       )
       model_valid(TRUE)
@@ -201,7 +199,8 @@ baseline_risk_analysis_panel_server <- function(    id,
       model_reactive = model_reactive,
       metaoutcome = metaoutcome,
       outcome_measure = outcome_measure,
-      bugsnetdt = bugsnetdt
+      bugsnetdt = bugsnetdt,
+      model_valid = model_valid
     )
     
     # 4b-3 Treatment comparisons

@@ -223,7 +223,6 @@ covariate_analysis_panel_server <- function(
           metaoutcome=metaoutcome(),
           outcome_measure=outcome_measure(),
           model_effects=model_effects(),
-          rank_option=rank_option(),
           regressor_type=model_reactives$regressor_type(),
           covariate_type=covariate_type()
         )
@@ -236,7 +235,6 @@ covariate_analysis_panel_server <- function(
         metaoutcome=metaoutcome(),
         outcome_measure=outcome_measure(),
         model_effects=model_effects(),
-        rank_option=rank_option(),
         regressor_type=model_reactives$regressor_type(),
         covariate_type=covariate_type()
       )
@@ -264,7 +262,8 @@ covariate_analysis_panel_server <- function(
       analysis_type = "Regression",
       metaoutcome = metaoutcome,
       outcome_measure = outcome_measure,
-      bugsnetdt = bugsnetdt
+      bugsnetdt = bugsnetdt,
+      model_valid = model_valid
     )
     
     # 4c-3 Treatment comparisons
