@@ -182,6 +182,10 @@ freq_wrap <- function(data, treat_list, model, outcome, CONBI, ref) {
 #' @param TitleSize Multiplier for size of title.
 #' @return The forest plot, created using metafor::forest().
 groupforest.df <- function(d1, ntx, lstx, outcome, HeaderSize, TitleSize) {
+  
+  #Drop rows corresponding to NA treatment effects
+  d1 <- d1[!is.na(d1$TE), ]
+  
   text_label <- character()
   n_stud <- integer()
   for (i in 1:ntx) {
