@@ -9,7 +9,7 @@ model_details_panel_ui <- function(id, item_names, page_numbering) {
   page_numbering$DiveLevel()
   
   # Matrix containing plots for named items
-  index <- 0
+  index <- 1
   divs <- sapply(
     item_names,
     function(name) {
@@ -111,14 +111,36 @@ model_details_panel_ui <- function(id, item_names, page_numbering) {
 #' @param model Reactive containing bayesian meta-analysis for all studies
 #' @param model_sub Reactive containing meta-analysis with studies excluded
 #' @param package "gemtc" (default) or "bnma".
-model_details_panel_server <- function(id, models, package = "gemtc") {
+model_details_panel_server <- function(id, models, models_valid, package = "gemtc") {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
     
     main_model <- models[[1]]
+    main_model_valid <- models_valid[[1]]
+    
+    observe({
+      if (!main_model_valid()) {
+        fn <- shinyjs::disable
+      } else {
+        fn <- shinyjs::enable
+      }
+      
+      fn(id=glue::glue("download_code"))
+      
+      sapply(
+        1:4,
+        function(index) {
+          fn(id=glue::glue("download_inits_{index}"))
+          fn(id=glue::glue("download_data{index}"))
+        }
+      )
+    })
 
     # 3g-1 Model codes
     output$code <- renderPrint({
+      if (!main_model_valid()) {
+        return()
+      }
       if (package == "gemtc") {
         return(cat(main_model()$mtcResults$model$code, fill = FALSE, labels = NULL, append = FALSE))
       } else if (package == "bnma") {
@@ -141,6 +163,9 @@ model_details_panel_server <- function(id, models, package = "gemtc") {
     
     # 3g-2 Initial values
     inits <- reactive({
+      if (!main_model_valid()) {
+        return()
+      }
       if (package == "gemtc") {
         return(main_model()$mtcResults$model$inits)
       } else if (package == "bnma") {
@@ -149,88 +174,67 @@ model_details_panel_server <- function(id, models, package = "gemtc") {
     })
     
     output$inits <- renderPrint({inits()})
-
-    #' Create a download handler for the initial values for a given chain
-    #'
-    #' @param index the Index of the chain
-    #' @return The created download handler
-    create_chain_initial_data_download_handler <- function(index) {
-      filename <- paste0("initialvalues_chain", index, ".txt")
-      
-      return(
-        downloadHandler(
-          filename = filename,
-          content = function(file) {
-            lapply(
-              paste(names(inits()[[index]]),
-                    inits()[[index]],
-                    "\n"),
-              write,
-              file,
-              append = TRUE,
-              ncolumns = 1000
-            )
-          }
-        )
-      )
-    }
-
-    output$download_inits_1 <- create_chain_initial_data_download_handler(1)
-    output$download_inits_2 <- create_chain_initial_data_download_handler(2)
-    output$download_inits_3 <- create_chain_initial_data_download_handler(3)
-    output$download_inits_4 <- create_chain_initial_data_download_handler(4)
+    
+    sapply(
+      1:4,
+      function(index) {
+        output[[glue::glue("download_inits_{index}")]] <- .create_chain_initial_data_download_handler(index, inits)
+      }
+    )
 
     # 3g-3 Chain data.
 
     samples <- reactive({
+      if (!main_model_valid()) {
+        return()
+      }
       if (package == "gemtc") {
         return(main_model()$mtcResults$samples)
       } else if (package == "bnma") {
         return(main_model()$samples)
       }
     })
-    
-    #' Create a download handler for the data for a given chain
-    #'
-    #' @param index the Index of the chain
-    #' @return The created download handler
-    create_chain_data_download_handler <- function(index) {
-      return(
-        downloadHandler(
-          filename = paste0("data_for_chain_", index, ".csv"),
-          content = function(file) {
-            data <- as.data.frame(samples()[[index]])
-            write.csv(data, file)
-          }
-        )
-      )
-    }
 
-    output$download_data1 <- create_chain_data_download_handler(1)
-    output$download_data2 <- create_chain_data_download_handler(2)
-    output$download_data3 <- create_chain_data_download_handler(3)
-    output$download_data4 <- create_chain_data_download_handler(4)
+    sapply(
+      1:4,
+      function(index) {
+        output[[glue::glue("download_data{index}")]] <- .create_chain_data_download_handler(index, samples)
+      }
+    )
 
     # 3g-4 Output deviance
     
     model_type <- reactive({
-      if (package == "gemtc") {
-        return(main_model()$mtcResults$model$type)
-      } else if (package == "bnma") {
-        return("baseline risk")
+      for (index in 1:length(models)) {
+        if (!models_valid[[index]]()) {
+          next
+        }
+        if (package == "gemtc") {
+          return(models[[index]]()$mtcResults$model$type)
+        } else if (package == "bnma") {
+          return("baseline risk")
+        }
       }
+      
+      return("invalid")
     })
     
-    output$model_type <- reactive(model_type())
+    output$model_type <- reactive({
+      model_type()
+    })
     outputOptions(x = output, name = "model_type", suspendWhenHidden = FALSE)
     
     # Create server for each model
-    index <- 0
     sapply(
-      models,
-      function(mod) {
+      1:length(models),
+      function(index) {
+        mod = models[[index]]
+        mod_valid <- models_valid[[index]]
         # NMA consistency model
         output[[glue::glue("dev_{index}")]] <- renderPrint({
+          if (!mod_valid()) {
+            return()
+          }
           if (package == "gemtc") {
             return(mtc.deviance({mod()$mtcResults}))
           } else if (package == "bnma") {
@@ -240,6 +244,9 @@ model_details_panel_server <- function(id, models, package = "gemtc") {
         
         # UME inconsistency model
         output[[glue::glue("dev_ume_{index}")]] <- renderText({
+          if (!mod_valid()) {
+            return()
+          }
           if (model_type() != "consistency") {
             return(NULL)
           } else {
@@ -252,10 +259,49 @@ model_details_panel_server <- function(id, models, package = "gemtc") {
             return(paste0(printed_output, collapse = "\n"))
           }
         })
-        
-        index <<- index + 1
       }
     )
   })
+}
+
+#' Create a download handler for the initial values for a given chain
+#'
+#' @param index the Index of the chain
+#' @return The created download handler
+.create_chain_initial_data_download_handler <- function(index, inits) {
+  filename <- paste0("initialvalues_chain", index, ".txt")
+  
+  return(
+    downloadHandler(
+      filename = filename,
+      content = function(file) {
+        lapply(
+          paste(names(inits()[[index]]),
+                inits()[[index]],
+                "\n"),
+          write,
+          file,
+          append = TRUE,
+          ncolumns = 1000
+        )
+      }
+    )
+  )
+}
+
+#' Create a download handler for the data for a given chain
+#'
+#' @param index the Index of the chain
+#' @return The created download handler
+.create_chain_data_download_handler <- function(index, samples) {
+  return(
+    downloadHandler(
+      filename = paste0("data_for_chain_", index, ".csv"),
+      content = function(file) {
+        data <- as.data.frame(samples()[[index]])
+        write.csv(data, file)
+      }
+    )
+  )
 }
 

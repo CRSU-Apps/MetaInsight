@@ -51,8 +51,8 @@ result_details_page_server <- function(id, models, models_valid, package = "gemt
       function(index) {
         serv <- result_details_panel_server(
           id = as.character(index - 1),
-          model = models[index][[1]],
-          model_valid = models_valid[index][[1]],
+          model = models[[index]],
+          model_valid = models_valid[[index]],
           package = package
         )
         return(serv)

@@ -235,7 +235,7 @@ baseline_risk_analysis_panel_server <- function(    id,
     deviance_report_page_server(id = "baseline_risk_deviance_report", models = c(model_reactive), models_valid = c(model_valid), package = "bnma")
     
     # 4c-8 Model details
-    model_details_panel_server(id = "baseline_risk_model_details", models = c(model_reactive), package = "bnma")
+    model_details_panel_server(id = "baseline_risk_model_details", models = c(model_reactive), models_valid = c(model_valid), package = "bnma")
     
     })
 }

@@ -36,7 +36,7 @@ bayesian_analysis_panel_ui <- function(id, page_numbering) {
       ),
       tabPanel(
         title = paste0(page_numbering$AddChild(), " Model details"),
-        model_details_panel_ui(id = ns("model_details"), c("all studies", " the sensitivity analysis"), page_numbering)
+        model_details_panel_ui(id = ns("model_details"), c("all studies", "the sensitivity analysis"), page_numbering)
       )
     )
   )
@@ -178,7 +178,8 @@ bayesian_analysis_panel_server <- function(
     # 3g. Model details
     model_details_panel_server(
       id = "model_details",
-      models = c(model, model_sub)
+      models = c(model, model_sub),
+      models_valid = c(model_valid, model_sub_valid)
     )
   })
 }
