@@ -57,12 +57,24 @@ ranking_network_panel_server <- function(
     treat_order,
     frequentist_react,
     bugsnetdt_react,
+    model_valid,
     filename_prefix,
     title_prefix
     ) {
   moduleServer(id, function(input, output, session) {
     
+    observe({
+      if (!model_valid()) {
+        shinyjs::disable(id = "download_network_rank")
+      } else {
+        shinyjs::enable(id = "download_network_rank")
+      }
+    })
+    
     output$netGraphStatic1_rank <- renderPlot({
+      if (!model_valid()) {
+        return()
+      }
       if (input$networkstyle_rank == 'networkp1') {
         # Number of trials on line
         make_netgraph_rank(frequentist_react(), treat_order())

@@ -218,10 +218,12 @@ baseline_risk_analysis_panel_server <- function(    id,
       data = long_data,
       treatment_df = treatment_df,
       metaoutcome = metaoutcome,
+      outcome_measure = outcome_measure,
       model_effects = model_effects,
       rank_option = rank_option,
       freq_all = freq_all,
       bugsnetdt = bugsnetdt,
+      model_valid = model_valid,
       package = "bnma"
     )
       
@@ -237,6 +239,6 @@ baseline_risk_analysis_panel_server <- function(    id,
     # 4c-8 Model details
     model_details_panel_server(id = "baseline_risk_model_details", models = c(model_reactive), models_valid = c(model_valid), package = "bnma")
     
-    })
+  })
 }
 

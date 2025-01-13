@@ -41,14 +41,26 @@ ranking_forest_panel_server <- function(
     treat_order,
     frequentist_react,
     bugsnetdt_react,
+    model_valid,
     filename_prefix,
     title_prefix
     ) {
   moduleServer(id, function(input, output, session) {
+    
+    observe({
+      if (!model_valid()) {
+        shinyjs::disable(id = "download_rank_forest")
+      } else {
+        shinyjs::enable(id = "download_rank_forest")
+      }
+    })
 
     # Forest plots for ranking panel (different style due to using 'boxes' in UI) CRN
     # All studies #
     output$gemtc2 <- renderPlot({
+      if (!model_valid()) {
+        return()
+      }
       temp_dir <- tempdir()
       png(file.path(temp_dir, "forest.png"))  # initialise image
       gemtc::forest(model()$mtcRelEffects, digits = 3)
@@ -84,6 +96,9 @@ ranking_forest_panel_server <- function(
 
     # Text underneath
     output$relative_rank_text <- renderText({
+      if (!model_valid()) {
+        return()
+      }
       relative_rank_text(model())
     })
   })
@@ -106,14 +121,26 @@ ranking_forest_panel_baseline_risk_server <- function(
     model,
     treat_order,
     bugsnetdt_react,
+    model_valid,
     filename_prefix,
     title_prefix
 ) {
   moduleServer(id, function(input, output, session) {
     
+    observe({
+      if (!model_valid()) {
+        shinyjs::disable(id = "download_rank_forest")
+      } else {
+        shinyjs::enable(id = "download_rank_forest")
+      }
+    })
+    
     # Forest plots for ranking panel (different style due to using 'boxes' in UI) CRN
     # All studies #
     output$gemtc2 <- renderPlot({
+      if (!model_valid()) {
+        return()
+      }
       temp_dir <- tempdir()
       png(file.path(temp_dir, "forest.png"))  # initialise image
       bnma::network.forest.plot(model(), only.reference.treatment = TRUE)

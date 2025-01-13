@@ -146,7 +146,9 @@ bayesian_analysis_panel_server <- function(
       freq_all = freq_all,
       freq_sub = freq_sub,
       bugsnetdt = bugsnetdt,
-      bugsnetdt_sub = bugsnetdt_sub
+      bugsnetdt_sub = bugsnetdt_sub,
+      model_valid = model_valid,
+      model_sub_valid = model_sub_valid
     )
 
     # 3d. Nodesplit model

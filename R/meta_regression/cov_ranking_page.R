@@ -55,7 +55,8 @@ covariate_ranking_page_server <- function(
     rank_option,
     freq_all,
     bugsnetdt,
-    cov_value,
+    model_valid,
+    cov_value = reactive({NA}),
     package = "gemtc"
     ) {
   
@@ -71,6 +72,7 @@ covariate_ranking_page_server <- function(
         rank_option = rank_option,
         frequentist = freq_all,
         bugsnetdt = bugsnetdt,
+        model_valid = model_valid,
         filename_prefix = "regression_",
         title_prefix = "Regression analysis",
         cov_value = cov_value
@@ -85,8 +87,10 @@ covariate_ranking_page_server <- function(
         rank_option = rank_option,
         frequentist = freq_all,
         bugsnetdt = bugsnetdt,
+        model_valid = model_valid,
         filename_prefix = "baseline_risk_",
         title_prefix = "Baseline risk",
+        cov_value = cov_value,
         package = package
       )
     } else{

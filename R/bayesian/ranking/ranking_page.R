@@ -64,7 +64,9 @@ ranking_page_server <- function(
     freq_all,
     freq_sub,
     bugsnetdt,
-    bugsnetdt_sub
+    bugsnetdt_sub,
+    model_valid,
+    model_sub_valid
     ) {
   
   moduleServer(id, function(input, output, session) {
@@ -77,6 +79,7 @@ ranking_page_server <- function(
       rank_option = rank_option,
       frequentist = freq_all,
       bugsnetdt = bugsnetdt,
+      model_valid = model_valid,
       filename_prefix = "all_studies_",
       title_prefix = "All Studies"
     )
@@ -90,6 +93,7 @@ ranking_page_server <- function(
       rank_option = rank_option,
       frequentist = freq_sub,
       bugsnetdt = bugsnetdt_sub,
+      model_valid = model_sub_valid,
       filename_prefix = "filtered_studies_",
       title_prefix = "Filtered Studies"
     )

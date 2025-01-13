@@ -94,13 +94,27 @@ rankogram_panel_ui <- function(id, table_label) {
 rankogram_panel_server <- function(
     id,
     ranking_data,
+    model_valid,
     filename_prefix,
     regression_text
     ) {
   moduleServer(id, function(input, output, session) {
+    
+    observe({
+      if (!model_valid()) {
+        shinyjs::disable(id = "download_rank_plot")
+        shinyjs::disable(id = "download_rank_table")
+      } else {
+        shinyjs::enable(id = "download_rank_plot")
+        shinyjs::enable(id = "download_rank_table")
+      }
+    })
 
     # All rank plots in one function for easier loading when switching options #
     Rankplots <- reactive({
+      if (!model_valid()) {
+        return()
+      }
       plots <- list()
       plots$Litmus <- LitmusRankOGram(CumData = ranking_data()$Cumulative, SUCRAData = ranking_data()$SUCRA, ColourData = ranking_data()$Colour, colourblind = FALSE, regression_text = regression_text())
       plots$Radial <- RadialSUCRA(SUCRAData = ranking_data()$SUCRA, ColourData = ranking_data()$Colour, BUGSnetData = ranking_data()$BUGSnetData, colourblind = FALSE, regression_text = regression_text())
@@ -111,6 +125,9 @@ rankogram_panel_server <- function(
 
     # Litmus Rank-O-Gram
     output$Litmus <- renderPlot({
+      if (!model_valid()) {
+        return()
+      }
       if (!input$Colour_blind) {
         Rankplots()$Litmus
       } else {
@@ -120,6 +137,9 @@ rankogram_panel_server <- function(
 
     # Radial SUCRA
     output$Radial <- renderPlot({
+      if (!model_valid()) {
+        return()
+      }
       if (!input$Colour_blind) {
         Rankplots()$Radial$Original
       } else {
@@ -129,6 +149,9 @@ rankogram_panel_server <- function(
     
     # Alternative SUCRA plots
     output$RadialAlt <- renderPlot({
+      if (!model_valid()) {
+        return()
+      }
       if (!input$Colour_blind) {
         Rankplots()$Radial$Alternative
       } else {
@@ -166,6 +189,9 @@ rankogram_panel_server <- function(
     # Table of Probabilities (need to include SUCRA and have it as a collapsable table)
     output$rank_probs <- renderTable(
       {
+        if (!model_valid()) {
+          return()
+        }
         rank_probs_table(ranking_data())
       },
       digits = 2,

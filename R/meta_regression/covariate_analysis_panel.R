@@ -286,6 +286,7 @@ covariate_analysis_panel_server <- function(
       rank_option = rank_option,
       freq_all = freq_all,
       bugsnetdt = bugsnetdt,
+      model_valid = model_valid,
       cov_value = covariate_value
     )
     # 4c-5 Nodesplit model

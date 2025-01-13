@@ -57,6 +57,7 @@ ranking_panel_server <- function(
     rank_option,
     frequentist,
     bugsnetdt,
+    model_valid,
     filename_prefix,
     title_prefix,
     cov_value = reactive({NA}),
@@ -66,8 +67,12 @@ ranking_panel_server <- function(
   moduleServer(id, function(input, output, session) {
     
     ranking_data <- eventReactive(
-      model(),
+      model_valid(),
       {
+        if (!model_valid()) {
+          return()
+        }
+        
         obtain_rank_data(
           data(),
           metaoutcome(),
@@ -83,15 +88,24 @@ ranking_panel_server <- function(
 
     # Network plots for ranking panel (Bayesian) (they have slightly different formatting to those on tab1) CRN
     treat_order <- reactive({
+      if (is.null(ranking_data())) {
+        return()
+      }
       ranking_data()$SUCRA[order(ranking_data()$SUCRA$SUCRA), 1]
     }) # obtain treatments ordered by SUCRA #
     
     frequentist_react <- eventReactive(model(), {
+      if (is.null(ranking_data())) {
+        return()
+      }
       # These two lines are needed in case someone jumped to Bayesian page without running frequentist section, but am aware this can cause frequentist analysis to run twice (CRN)
       frequentist()
     })
     
     bugsnetdt_react <- eventReactive(model(), {
+      if (is.null(ranking_data())) {
+        return()
+      }
       bugsnetdt()
     })
     
@@ -102,6 +116,7 @@ ranking_panel_server <- function(
         treat_order = treat_order,
         frequentist_react = frequentist_react,
         bugsnetdt_react = bugsnetdt_react,
+        model_valid = model_valid,
         filename_prefix = filename_prefix,
         title_prefix = title_prefix
       )
@@ -111,6 +126,7 @@ ranking_panel_server <- function(
         model = model,
         treat_order = treat_order,
         bugsnetdt_react = bugsnetdt_react,
+        model_valid = model_valid,
         filename_prefix = filename_prefix,
         title_prefix = title_prefix
       )
@@ -119,6 +135,9 @@ ranking_panel_server <- function(
     }
     
     regression_text <- reactive({
+      if (!model_valid()) {
+        return()
+      }
       if (!is.na(cov_value())) {
         return(model()$cov_value_sentence)
       } else {
@@ -129,6 +148,7 @@ ranking_panel_server <- function(
     rankogram_panel_server(
       id = "rankogram",
       ranking_data = ranking_data,
+      model_valid = model_valid,
       filename_prefix = filename_prefix,
       regression_text = regression_text
     )
@@ -138,6 +158,7 @@ ranking_panel_server <- function(
       treat_order = treat_order,
       frequentist_react = frequentist_react,
       bugsnetdt_react = bugsnetdt_react,
+      model_valid = model_valid,
       filename_prefix = filename_prefix,
       title_prefix = title_prefix
     )
