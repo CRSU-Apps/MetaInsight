@@ -182,7 +182,7 @@ data_summary_panel_server <- function(id, metaoutcome, outcome_measure, bugsnetd
     
     #Determine the forest plot height in pixels
     forest_plot_height <- reactive({
-      #The rows that correspond to NA treatment effects
+      #The rows that don't correspond to NA treatment effects
       proper_comparison_rows <- !is.na(freq_sub()$d0$TE)
       #The number of comparisons, with NA rows dropped
       n_proper_comparisons <- length(freq_sub()$d0$TE[proper_comparison_rows])
