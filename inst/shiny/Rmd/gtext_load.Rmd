@@ -1,0 +1,10 @@
+---
+title: load
+output: html_document
+---
+
+### **Component: Load data**
+
+  **ORIENTATION**
+
+  **REFERENCES**

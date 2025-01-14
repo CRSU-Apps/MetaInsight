@@ -1,0 +1,32 @@
+Package: metainsight
+Version: 0.0.1
+Date: 2025-01-14
+Title: Add a title
+Description: Describe your application
+Authors@R: 
+    c(person("Simon E. H.", "Smart", email = "simon.smart@cantab.net", role = c("aut","cre")))
+Depends:
+    R (>= 3.5.0),
+    shiny (>= 1.8.1),
+    leaflet (>= 2.0.2),
+    R6,
+    gargoyle
+Imports:
+    DT (>= 0.5),
+    glue,
+    knitcitations,
+    magrittr,
+    markdown,
+    rmarkdown,
+    shinyalert,
+    shinyjs,
+    shinytest2,
+    shinyWidgets (>= 0.6.0),
+    tools,
+    zip
+Suggests: 
+    testthat
+License: GPL-3
+URL: 
+Encoding: UTF-8
+RoxygenNote: 7.2.3

@@ -1,0 +1,5 @@
+component: "load"
+short_name: "Load"
+long_name: "Load data"
+authors: "Rhiannon K. Owen, Naomi Bradbury, Yiqiao Xin, Tom Morris, Janion Nevill, Simon E. H. Smart"
+package: []
