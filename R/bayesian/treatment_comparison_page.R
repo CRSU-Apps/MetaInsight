@@ -16,11 +16,13 @@ bayesian_treatment_comparisons_page_ui <- function(id) {
       )
     ),
     br(),
+    invalid_model_panel_ui(id = ns("model_invalid")),
     p(tags$strong("Treatment effects for all studies: comparison of all treatment pairs.")),
     tableOutput(outputId = ns("baye_comparison")),
     downloadButton(outputId = ns('downloadbaye_comparison')),
     br(),
     br(),
+    invalid_model_panel_ui(id = ns("model_invalid_sub")),
     p(tags$strong("Treatment effects with selected studies excluded: comparison of all treatment pairs.")),
     tableOutput(outputId = ns("baye_comparison_sub")),
     downloadButton(outputId = ns('downloadbaye_comparison_sub'))
@@ -46,6 +48,9 @@ bayesian_treatment_comparisons_page_server <- function(
     ) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
+    
+    invalid_model_panel_server(id = "model_invalid", model_valid = model_valid)
+    invalid_model_panel_server(id = "model_invalid_sub", model_valid = model_sub_valid)
     
     observe({
       if (!model_valid()) {

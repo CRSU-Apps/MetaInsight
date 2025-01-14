@@ -37,12 +37,14 @@ model_details_panel_ui <- function(id, item_names, page_numbering) {
     tabsetPanel(
       tabPanel(
         title = paste0(page_numbering$AddChild(), " Model codes"),
+        invalid_model_panel_ui(id = ns("model_invalid_1")),
         p(tags$strong("Model codes for analysis of all studies")),
         downloadButton(outputId = ns('download_code')),
         verbatimTextOutput(outputId = ns("code"))
       ),
       tabPanel(
         title = paste0(page_numbering$AddChild(), " Initial values"),
+        invalid_model_panel_ui(id = ns("model_invalid_2")),
         p(tags$strong("Initial values")),
         downloadButton(outputId = ns('download_inits_1'), "Download initial values for chain 1"),
         downloadButton(outputId = ns('download_inits_2'), "Download initial values for chain 2"),
@@ -52,6 +54,7 @@ model_details_panel_ui <- function(id, item_names, page_numbering) {
       ),
       tabPanel(
         title = paste0(page_numbering$AddChild(), " Download simulations"),
+        invalid_model_panel_ui(id = ns("model_invalid_3")),
         p(tags$strong("Download simulated data")),
         downloadButton(outputId = ns('download_data1'), "Download data from chain 1"),
         br(),
@@ -68,10 +71,12 @@ model_details_panel_ui <- function(id, item_names, page_numbering) {
         do.call(
           fluidRow,
           lapply(
-            item_names,
-            function(name) {
+            1:length(item_names),
+            function(index) {
+              name <- item_names[[index]]
               column(
                 width = 12 / length(item_names),
+                invalid_model_panel_ui(id = ns(glue::glue("model_invalid_4_{index}"))),
                 divs["deviance", name]
               )
             }
@@ -117,6 +122,10 @@ model_details_panel_server <- function(id, models, models_valid, package = "gemt
     
     main_model <- models[[1]]
     main_model_valid <- models_valid[[1]]
+    
+    invalid_model_panel_server(id = "model_invalid_1", model_valid = main_model_valid)
+    invalid_model_panel_server(id = "model_invalid_2", model_valid = main_model_valid)
+    invalid_model_panel_server(id = "model_invalid_3", model_valid = main_model_valid)
     
     observe({
       if (!main_model_valid()) {
@@ -230,6 +239,9 @@ model_details_panel_server <- function(id, models, models_valid, package = "gemt
       function(index) {
         mod = models[[index]]
         mod_valid <- models_valid[[index]]
+        
+        invalid_model_panel_server(id = glue::glue("model_invalid_4_{index}"), model_valid = mod_valid)
+        
         # NMA consistency model
         output[[glue::glue("dev_{index}")]] <- renderPrint({
           if (!mod_valid()) {

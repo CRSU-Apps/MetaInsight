@@ -6,6 +6,7 @@
 bayesian_forest_plot_plus_stats_ui <- function(id) {
   ns <- NS(id)
   div(
+    invalid_model_panel_ui(id = ns("model_invalid")),
     shinycssloaders::withSpinner(
       uiOutput(outputId = ns("bayesian_forest_plot")),
       type = 6
@@ -67,6 +68,8 @@ bayesian_forest_plot_plus_stats_server <- function(
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
     
+    invalid_model_panel_server(id = "model_invalid", model_valid = model_valid)
+    
     observe({
       if (!model_valid()) {
         shinyjs::disable(id="download_plot")
@@ -96,7 +99,6 @@ bayesian_forest_plot_plus_stats_server <- function(
     # Forest plot for all studies
     output$forest_plot <- renderPlot({
       if (!model_valid()) {
-        mtext("Please rerun model", side = 3, adj = 0, cex = 2)
         return()
       }
       

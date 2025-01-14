@@ -7,6 +7,7 @@
 nodesplit_panel_ui <- function(id, item_name) {
   ns <- NS(id)
   div(
+    invalid_model_panel_ui(id = ns("model_invalid")),
     actionButton(inputId = ns("node"), label = glue::glue("Click here to run the nodesplitting analysis for {item_name}")),
     uiOutput(outputId = ns("node_plot_placeholder")),
     radioButtons(
@@ -93,6 +94,8 @@ nodesplit_panel_server <- function(
         shinyjs::disable(id = "downloadnode")
       }
     })
+    
+    invalid_model_panel_server(id = "model_invalid", model_valid = model_valid)
     
     # number of comparisons
     ncomp <- reactive({

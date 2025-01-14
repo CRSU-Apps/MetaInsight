@@ -13,6 +13,7 @@ ranking_panel_ui <- function(id, title, table_label) {
     solidHeader = TRUE,
     width = 12,
     collapsible = TRUE,
+    invalid_model_panel_ui(id = ns("model_invalid")),
     splitLayout(
       cellWidths = c("30%", "40%", "30%"),
       cellArgs = list(style = "height: 780px; padding: 16px; border: 2px solid gold; white-space: normal"),
@@ -65,6 +66,8 @@ ranking_panel_server <- function(
     package = "gemtc"
     ) {
   moduleServer(id, function(input, output, session) {
+    
+    invalid_model_panel_server(id = "model_invalid", model_valid = model_valid)
     
     ranking_data <- eventReactive(
       model_valid(),
