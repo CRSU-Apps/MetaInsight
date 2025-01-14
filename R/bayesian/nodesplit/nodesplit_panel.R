@@ -16,7 +16,6 @@ nodesplit_panel_ui <- function(id, item_name) {
       inline = TRUE
     ),
     downloadButton(outputId = ns('downloadnode'))
-     
   )
 }
 
@@ -43,36 +42,90 @@ nodesplit_panel_server <- function(
     model_nodesplit <- eventReactive(
       input$node,
       {
-        return(
-          nodesplit(
-            data(),
-            treatment_df(),
-            metaoutcome(),
-            outcome_measure(),
-            model_effects()
-          )
+        nodesplit_model <- tryCatch(
+          expr = {
+            nodesplit(
+              data(),
+              treatment_df(),
+              metaoutcome(),
+              outcome_measure(),
+              model_effects()
+            )
+          },
+          error = function(exptn) {
+            return(NULL)
+          }
         )
+        return(nodesplit_model)
       }
     )
     
+    model_valid = reactiveVal(FALSE)
+    parameter_matcher <- ParameterMatcher$new()
+    
+    observe({
+      model_valid(
+        parameter_matcher$Matches(
+          data = data(),
+          treatment_df = treatment_df(),
+          metaoutcome = metaoutcome(),
+          outcome_measure = outcome_measure(),
+          model_effects = model_effects()
+        )
+      )
+    })
+    
+    observe({
+      parameter_matcher$SetParameters(
+        data = data(),
+        treatment_df = treatment_df(),
+        metaoutcome = metaoutcome(),
+        outcome_measure = outcome_measure(),
+        model_effects = model_effects()
+      )
+      model_valid(!is.null(model_nodesplit()))
+    }) |> bindEvent(model_nodesplit())
+    
+    observe({
+      if (model_valid()) {
+        shinyjs::enable(id = "downloadnode")
+      } else {
+        shinyjs::disable(id = "downloadnode")
+      }
+    })
+    
     # number of comparisons
     ncomp <- reactive({
-      as.numeric(length(model_nodesplit()) - 1)
+      if (is.null(model_nodesplit())) {
+        return(0)
+      }
+      return(as.numeric(length(model_nodesplit()) - 1))
     })
   
     
     output$node_plot_placeholder <- renderUI({
-      plotOutput(
-        outputId = ns("node_plot"),
-        height = NodePixels(ncomp())
-      )
+      if (is.null(model_nodesplit())) {
+        return(
+          div(
+            p("Nodesplit model cannot be run, likely because there are no closed loops in the network"),
+            style = "color: red;"
+          )
+        )
+      } else {
+        plotOutput(
+          outputId = ns("node_plot"),
+          height = NodePixels(ncomp())
+        )
+      }
     })
     
     output$node_plot<- renderPlot({
+      if (!model_valid()) {
+        return()
+      }
       req(input$node)
       plot(summary(model_nodesplit()), digits = 3)
-    }
-    )
+    })
 
     output$downloadnode <- downloadHandler(
       filename = function() {
