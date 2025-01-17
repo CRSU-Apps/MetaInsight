@@ -112,9 +112,6 @@ rankogram_panel_server <- function(
 
     # All rank plots in one function for easier loading when switching options #
     Rankplots <- reactive({
-      if (!model_valid()) {
-        return()
-      }
       plots <- list()
       plots$Litmus <- LitmusRankOGram(CumData = ranking_data()$Cumulative, SUCRAData = ranking_data()$SUCRA, ColourData = ranking_data()$Colour, colourblind = FALSE, regression_text = regression_text())
       plots$Radial <- RadialSUCRA(SUCRAData = ranking_data()$SUCRA, ColourData = ranking_data()$Colour, BUGSnetData = ranking_data()$BUGSnetData, colourblind = FALSE, regression_text = regression_text())

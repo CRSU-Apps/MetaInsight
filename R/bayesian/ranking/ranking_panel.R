@@ -70,12 +70,8 @@ ranking_panel_server <- function(
     invalid_model_panel_server(id = "model_invalid", model_valid = model_valid)
     
     ranking_data <- eventReactive(
-      model_valid(),
+      model(),
       {
-        if (!model_valid()) {
-          return()
-        }
-        
         obtain_rank_data(
           data(),
           metaoutcome(),
@@ -91,24 +87,15 @@ ranking_panel_server <- function(
 
     # Network plots for ranking panel (Bayesian) (they have slightly different formatting to those on tab1) CRN
     treat_order <- reactive({
-      if (is.null(ranking_data())) {
-        return()
-      }
       ranking_data()$SUCRA[order(ranking_data()$SUCRA$SUCRA), 1]
     }) # obtain treatments ordered by SUCRA #
     
     frequentist_react <- eventReactive(model(), {
-      if (is.null(ranking_data())) {
-        return()
-      }
       # These two lines are needed in case someone jumped to Bayesian page without running frequentist section, but am aware this can cause frequentist analysis to run twice (CRN)
       frequentist()
     })
     
     bugsnetdt_react <- eventReactive(model(), {
-      if (is.null(ranking_data())) {
-        return()
-      }
       bugsnetdt()
     })
     
@@ -138,9 +125,6 @@ ranking_panel_server <- function(
     }
     
     regression_text <- reactive({
-      if (!model_valid()) {
-        return()
-      }
       if (!is.na(cov_value())) {
         return(model()$cov_value_sentence)
       } else {
