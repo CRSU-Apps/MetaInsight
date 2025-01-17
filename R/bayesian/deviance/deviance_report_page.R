@@ -8,15 +8,10 @@ deviance_report_page_ui <- function(id, item_names) {
   ns <- NS(id)
   
   # Matrix containing plots for named items
-  index <- 0
   divs <- sapply(
-    item_names,
-    function(name) {
-      div <- deviance_report_panel_ui(id = ns(as.character(index)), item_name = name)
-      # Update the index variable in the outer scope with <<-
-      # This updates the variable defined above the `sapply` call instead of creating a new variable with the same name within this inner function
-      index <<- index + 1
-      return(div)
+    1:length(item_names),
+    function(index) {
+      return(deviance_report_panel_ui(id = ns(glue::glue("deviance_{index}")), item_name = item_names[index]))
     }
   )
   
@@ -42,11 +37,12 @@ deviance_report_page_ui <- function(id, item_names) {
       do.call(
         fluidRow,
         lapply(
-          item_names,
-          function(name) {
+          1:length(item_names),
+          function(index) {
             column(
               width = 12 / length(item_names),
-              divs["residual", name]
+              divs["model_invalid", index],
+              divs["residual", index]
             )
           }
         )
@@ -72,11 +68,11 @@ deviance_report_page_ui <- function(id, item_names) {
     do.call(
       fluidRow,
       lapply(
-        item_names,
-        function(name) {
+        1:length(item_names),
+        function(index) {
           column(
             width = 12 / length(item_names),
-            divs["per_arm", name]
+            divs["per_arm", index]
           )
         }
       )
@@ -100,11 +96,11 @@ deviance_report_page_ui <- function(id, item_names) {
     do.call(
       fluidRow,
       lapply(
-        item_names,
-        function(name) {
+        1:length(item_names),
+        function(index) {
           column(
             width = 12 / length(item_names),
-            divs["leverage", name]
+            divs["leverage", index]
           )
         }
       )
@@ -159,7 +155,7 @@ deviance_report_page_server <- function(id, models, models_valid, package = "gem
     sapply(
       1:length(models),
       function(index) {
-        deviance_report_panel_server(id = as.character(index - 1), model = models[[index]], model_valid = models_valid[[index]], package = package)
+        deviance_report_panel_server(glue::glue("deviance_{index}"), model = models[[index]], model_valid = models_valid[[index]], package = package)
       }
     )
   })

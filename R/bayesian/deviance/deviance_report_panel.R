@@ -8,6 +8,9 @@ deviance_report_panel_ui <- function(id, item_name) {
   ns <- NS(id)
   return(
     list(
+      model_invalid = div(
+        invalid_model_panel_ui(id = ns("model_invalid"))
+      ),
       residual = div(
         p(tags$strong(glue::glue("Residual deviance from NMA model and UME inconsistency model for {item_name}"))),
         plotlyOutput(outputId = ns("dev_scat"))
@@ -33,6 +36,8 @@ deviance_report_panel_ui <- function(id, item_name) {
 #' @param model_valid Reactive containing whether the model is valid.
 deviance_report_panel_server <- function(id, model, model_valid, package = "gemtc") {
   moduleServer(id, function(input, output, session) {
+    
+    invalid_model_panel_server(id = "model_invalid", model_valid = model_valid)
 
     # Residual deviance from NMA model and UME inconsistency model
     output$dev_scat <- renderPlotly({
