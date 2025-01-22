@@ -152,10 +152,15 @@ baseline_risk_analysis_panel_server <- function(    id,
              )
     })
     
-    model_valid = reactiveVal(FALSE)
+    model_valid = reactiveVal(NULL)
     parameter_matcher <- ParameterMatcher$new()
     
     observe({
+      # Only assess the validity once the model has been run the first time
+      if (is.null(model_valid())) {
+        return()
+      }
+      
       model_valid(
         parameter_matcher$Matches(
           all_data=all_data(),

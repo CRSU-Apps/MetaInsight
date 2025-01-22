@@ -128,7 +128,7 @@ model_details_panel_server <- function(id, models, models_valid, package = "gemt
     invalid_model_panel_server(id = "model_invalid_3", model_valid = main_model_valid)
     
     observe({
-      if (!main_model_valid()) {
+      if (is.null(main_model_valid()) || !main_model_valid()) {
         fn <- shinyjs::disable
       } else {
         fn <- shinyjs::enable
@@ -147,7 +147,7 @@ model_details_panel_server <- function(id, models, models_valid, package = "gemt
 
     # 3g-1 Model codes
     output$code <- renderPrint({
-      if (!main_model_valid()) {
+      if (is.null(main_model_valid()) || !main_model_valid()) {
         return()
       }
       if (package == "gemtc") {
@@ -172,7 +172,7 @@ model_details_panel_server <- function(id, models, models_valid, package = "gemt
     
     # 3g-2 Initial values
     inits <- reactive({
-      if (!main_model_valid()) {
+      if (is.null(main_model_valid()) || !main_model_valid()) {
         return()
       }
       if (package == "gemtc") {
@@ -194,7 +194,7 @@ model_details_panel_server <- function(id, models, models_valid, package = "gemt
     # 3g-3 Chain data.
 
     samples <- reactive({
-      if (!main_model_valid()) {
+      if (is.null(main_model_valid()) || !main_model_valid()) {
         return()
       }
       if (package == "gemtc") {
@@ -215,7 +215,7 @@ model_details_panel_server <- function(id, models, models_valid, package = "gemt
     
     model_type <- reactive({
       for (index in 1:length(models)) {
-        if (!models_valid[[index]]()) {
+        if (is.null(models_valid[[index]]()) || !models_valid[[index]]()) {
           next
         }
         if (package == "gemtc") {
@@ -244,7 +244,7 @@ model_details_panel_server <- function(id, models, models_valid, package = "gemt
         
         # NMA consistency model
         output[[glue::glue("dev_{index}")]] <- renderPrint({
-          if (!mod_valid()) {
+          if (is.null(mod_valid()) || !mod_valid()) {
             return()
           }
           if (package == "gemtc") {
@@ -256,7 +256,7 @@ model_details_panel_server <- function(id, models, models_valid, package = "gemt
         
         # UME inconsistency model
         output[[glue::glue("dev_ume_{index}")]] <- renderText({
-          if (!mod_valid()) {
+          if (is.null(mod_valid()) || !mod_valid()) {
             return()
           }
           if (model_type() != "consistency") {

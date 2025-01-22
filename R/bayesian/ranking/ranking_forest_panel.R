@@ -48,7 +48,7 @@ ranking_forest_panel_server <- function(
   moduleServer(id, function(input, output, session) {
     
     observe({
-      if (!model_valid()) {
+      if (is.null(model_valid()) || !model_valid()) {
         shinyjs::disable(id = "download_rank_forest")
       } else {
         shinyjs::enable(id = "download_rank_forest")
@@ -58,7 +58,7 @@ ranking_forest_panel_server <- function(
     # Forest plots for ranking panel (different style due to using 'boxes' in UI) CRN
     # All studies #
     output$gemtc2 <- renderPlot({
-      if (!model_valid()) {
+      if (is.null(model_valid()) || !model_valid()) {
         return()
       }
       temp_dir <- tempdir()
@@ -96,7 +96,7 @@ ranking_forest_panel_server <- function(
 
     # Text underneath
     output$relative_rank_text <- renderText({
-      if (!model_valid()) {
+      if (is.null(model_valid()) || !model_valid()) {
         return()
       }
       relative_rank_text(model())
@@ -128,7 +128,7 @@ ranking_forest_panel_baseline_risk_server <- function(
   moduleServer(id, function(input, output, session) {
     
     observe({
-      if (!model_valid()) {
+      if (is.null(model_valid()) || !model_valid()) {
         shinyjs::disable(id = "download_rank_forest")
       } else {
         shinyjs::enable(id = "download_rank_forest")
@@ -138,7 +138,7 @@ ranking_forest_panel_baseline_risk_server <- function(
     # Forest plots for ranking panel (different style due to using 'boxes' in UI) CRN
     # All studies #
     output$gemtc2 <- renderPlot({
-      if (!model_valid()) {
+      if (is.null(model_valid()) || !model_valid()) {
         return()
       }
       temp_dir <- tempdir()

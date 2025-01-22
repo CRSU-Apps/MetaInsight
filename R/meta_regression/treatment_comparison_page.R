@@ -18,6 +18,7 @@ covariate_treatment_comparisons_page_ui <- function(id) {
       )
     ),
     br(),
+    invalid_model_panel_ui(id = ns("model_invalid")),
     p(tags$strong("Treatment effects for all studies: comparison of all treatment pairs.")),
     tableOutput(outputId = ns("baye_comparison")),
     conditionalPanel(condition = "output.package == 'gemtc'",
@@ -44,8 +45,10 @@ covariate_treatment_comparisons_page_server <- function(
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
     
+    invalid_model_panel_server(id = "model_invalid", model_valid = model_valid)
+    
     observe({
-      if (!model_valid()) {
+      if (is.null(model_valid()) || !model_valid()) {
         shinyjs::disable(id="downloadbaye_comparison")
       } else {
         shinyjs::enable(id="downloadbaye_comparison")
@@ -57,7 +60,7 @@ covariate_treatment_comparisons_page_server <- function(
       rownames = TRUE,
       colnames = TRUE,
       {
-        if (!model_valid()) {
+        if (is.null(model_valid()) || !model_valid()) {
           return()
         }
         baye_comp(model(), outcome_measure())
@@ -68,7 +71,7 @@ covariate_treatment_comparisons_page_server <- function(
     outputOptions(x = output, name = "package", suspendWhenHidden = FALSE)
     
     output$cov_value_statement <- renderText({
-      if (!model_valid()) {
+      if (is.null(model_valid()) || !model_valid()) {
         return()
       }
       model()$cov_value_sentence
@@ -103,8 +106,10 @@ treatment_comparisons_page_baseline_risk_server <- function(
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
     
+    invalid_model_panel_server(id = "model_invalid", model_valid = model_valid)
+    
     observe({
-      if (!model_valid()) {
+      if (is.null(model_valid()) || !model_valid()) {
         shinyjs::disable(id="downloadbaye_comparison")
       } else {
         shinyjs::enable(id="downloadbaye_comparison")
@@ -114,7 +119,7 @@ treatment_comparisons_page_baseline_risk_server <- function(
     # Treatment effects for all studies
     output$baye_comparison <- renderTable(
       {
-        if (!model_valid()) {
+        if (is.null(model_valid()) || !model_valid()) {
           return()
         }
         BaselineRiskRelativeEffectsTable(

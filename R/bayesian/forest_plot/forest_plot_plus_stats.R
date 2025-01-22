@@ -71,7 +71,7 @@ bayesian_forest_plot_plus_stats_server <- function(
     invalid_model_panel_server(id = "model_invalid", model_valid = model_valid)
     
     observe({
-      if (!model_valid()) {
+      if (is.null(model_valid()) || !model_valid()) {
         shinyjs::disable(id="download_plot")
       } else {
         shinyjs::enable(id="download_plot")
@@ -98,7 +98,7 @@ bayesian_forest_plot_plus_stats_server <- function(
 
     # Forest plot for all studies
     output$forest_plot <- renderPlot({
-      if (!model_valid()) {
+      if (is.null(model_valid()) || !model_valid()) {
         return()
       }
       
@@ -121,7 +121,7 @@ bayesian_forest_plot_plus_stats_server <- function(
       rownames = TRUE,
       colnames = FALSE,
       {
-        if (!model_valid()) {
+        if (is.null(model_valid()) || !model_valid()) {
           return()
         }
         model_output()$dic
@@ -130,7 +130,7 @@ bayesian_forest_plot_plus_stats_server <- function(
     
     # Tau all studies
     output$tau_text <-renderText({
-      if (!model_valid()) {
+      if (is.null(model_valid()) || !model_valid()) {
         return()
       }
       CreateTauSentence(model_output(), outcome_measure())
@@ -204,8 +204,10 @@ bayesian_forest_plot_plus_stats_baseline_risk_server <- function(
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
     
+    invalid_model_panel_server(id = "model_invalid", model_valid = model_valid)
+    
     observe({
-      if (!model_valid()) {
+      if (is.null(model_valid()) || !model_valid()) {
         shinyjs::disable(id="download_plot")
       } else {
         shinyjs::enable(id="download_plot")
@@ -217,8 +219,7 @@ bayesian_forest_plot_plus_stats_baseline_risk_server <- function(
     
     # Forest plot for all studies
     output$forest_plot <- renderPlot({
-      if (!model_valid()) {
-        mtext("Please rerun model", side = 3, adj = 0, cex = 2)
+      if (is.null(model_valid()) || !model_valid()) {
         return()
       }
       
@@ -231,7 +232,7 @@ bayesian_forest_plot_plus_stats_baseline_risk_server <- function(
       rownames = TRUE,
       colnames = FALSE,
       {
-        if (!model_valid()) {
+        if (is.null(model_valid()) || !model_valid()) {
           return()
         }
         BaselineRiskDicTable(model_reactive())
@@ -240,7 +241,7 @@ bayesian_forest_plot_plus_stats_baseline_risk_server <- function(
     
     # Tau all studies
     output$tau_text <-renderText({
-      if (!model_valid()) {
+      if (is.null(model_valid()) || !model_valid()) {
         return()
       }
       CreateTauSentence(

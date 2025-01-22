@@ -18,16 +18,17 @@ invalid_model_panel_server <- function(id, model_valid) {
     id,
     function(input, output, session) {
       output$invalid_model <- renderUI({
-        if (model_valid()) {
-          return()
-        } else {
+        if (is.null(model_valid())) {
           return(
-            div(
-              h3("Please rerun model"),
-              style = ""
-            )
+            h3("Please run model")
+          )
+        } else if (!model_valid()) {
+          return(
+            h3("Please rerun model")
           )
         }
+        
+        return()
       })
     }
   )

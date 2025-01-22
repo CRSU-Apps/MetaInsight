@@ -61,10 +61,15 @@ nodesplit_panel_server <- function(
       }
     )
     
-    model_valid = reactiveVal(FALSE)
+    model_valid = reactiveVal(NULL)
     parameter_matcher <- ParameterMatcher$new()
     
     observe({
+      # Only assess the validity once the model has been run the first time
+      if (is.null(model_valid())) {
+        return()
+      }
+      
       model_valid(
         parameter_matcher$Matches(
           data = data(),
@@ -88,10 +93,10 @@ nodesplit_panel_server <- function(
     }) |> bindEvent(model_nodesplit())
     
     observe({
-      if (model_valid()) {
-        shinyjs::enable(id = "downloadnode")
-      } else {
+      if (is.null(model_valid()) || !model_valid()) {
         shinyjs::disable(id = "downloadnode")
+      } else {
+        shinyjs::enable(id = "downloadnode")
       }
     })
     
@@ -123,7 +128,7 @@ nodesplit_panel_server <- function(
     })
     
     output$node_plot<- renderPlot({
-      if (!model_valid()) {
+      if (is.null(model_valid()) || !model_valid()) {
         return()
       }
       req(input$node)

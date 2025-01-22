@@ -64,7 +64,7 @@ ranking_network_panel_server <- function(
   moduleServer(id, function(input, output, session) {
     
     observe({
-      if (!model_valid()) {
+      if (is.null(model_valid()) || !model_valid()) {
         shinyjs::disable(id = "download_network_rank")
       } else {
         shinyjs::enable(id = "download_network_rank")
@@ -72,7 +72,7 @@ ranking_network_panel_server <- function(
     })
     
     output$netGraphStatic1_rank <- renderPlot({
-      if (!model_valid()) {
+      if (is.null(model_valid()) || !model_valid()) {
         return()
       }
       if (input$networkstyle_rank == 'networkp1') {

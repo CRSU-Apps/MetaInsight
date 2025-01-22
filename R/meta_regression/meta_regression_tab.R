@@ -162,7 +162,6 @@ meta_regression_tab_server <- function(
             )
           }
         )
-        
       }
     )
   })

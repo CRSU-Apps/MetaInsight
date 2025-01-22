@@ -195,8 +195,6 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, m
       freq_sub = freq_sub
     )
 
-
-
     ######################
     ### 2. Frequentist ###
     ######################
@@ -214,7 +212,6 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, m
       treatment_df = treatment_df,
       reference_alter = reference_alter
     )
-
 
     #####################
     #### 3. Bayesian ####
@@ -242,6 +239,7 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, m
     ############################
     #### 4. Meta-regression ####
     ############################
+    
     meta_regression_tab_server(
       id = "meta_regression",
       all_data = data,

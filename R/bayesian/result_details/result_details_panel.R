@@ -36,7 +36,7 @@ result_details_panel_server <- function(id, model, model_valid, package = "gemtc
     
     # Results details
     output$gemtc_results <- renderPrint({
-      if (!model_valid()) {
+      if (is.null(model_valid()) || !model_valid()) {
         return()
       }
       if (package == "gemtc") {
@@ -91,7 +91,7 @@ result_details_panel_server <- function(id, model, model_valid, package = "gemtc
     # Gelman plots
     output$gemtc_gelman <- renderPlot(
       {
-        if (!model_valid()) {
+        if (is.null(model_valid()) || !model_valid()) {
           return()
         }
         if (package == "gemtc") {

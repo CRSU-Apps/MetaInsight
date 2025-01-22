@@ -41,7 +41,7 @@ deviance_report_panel_server <- function(id, model, model_valid, package = "gemt
 
     # Residual deviance from NMA model and UME inconsistency model
     output$dev_scat <- renderPlotly({
-      if (!model_valid()) {
+      if (is.null(model_valid()) || !model_valid()) {
         return()
       }
       if (package == "gemtc") {
@@ -53,7 +53,7 @@ deviance_report_panel_server <- function(id, model, model_valid, package = "gemt
 
     # Per-arm residual deviance
     output$per_arm <- renderPlotly({
-      if (!model_valid()) {
+      if (is.null(model_valid()) || !model_valid()) {
         return()
       }
       stemplot(model(), package = package)
@@ -61,7 +61,7 @@ deviance_report_panel_server <- function(id, model, model_valid, package = "gemt
 
     # Leverage plot
     output$leverage <- renderPlotly({
-      if (!model_valid()) {
+      if (is.null(model_valid()) || !model_valid()) {
         return()
       }
       levplot(model(), package = package)
