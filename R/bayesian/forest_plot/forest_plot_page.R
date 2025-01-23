@@ -109,11 +109,13 @@ bayesian_forest_plots_page_server <- function(
                      outcome_measure(), model_effects(), reference_alter()$ref_sub)
     })
     
+    # ReactiveVals contain validity state of the model. NULL if the model has not yet been run.
     model_valid = reactiveVal(NULL)
     model_sub_valid = reactiveVal(NULL)
     parameter_matcher <- ParameterMatcher$new()
     parameter_matcher_sub <- ParameterMatcher$new()
     
+    # Set validity when model input change
     observe({
       # Only assess the validity once the model has been run the first time
       if (is.null(model_valid())) {
@@ -132,6 +134,7 @@ bayesian_forest_plots_page_server <- function(
       )
     })
     
+    # Set validity when model input change
     observe({
       # Only assess the validity once the model has been run the first time
       if (is.null(model_sub_valid())) {
@@ -150,6 +153,7 @@ bayesian_forest_plots_page_server <- function(
       )
     })
     
+    # Record inputs when model run
     observe({
       parameter_matcher$SetParameters(
         data = data(),
@@ -162,6 +166,7 @@ bayesian_forest_plots_page_server <- function(
       model_valid(TRUE)
     }) |> bindEvent(model())
     
+    # Record inputs when model run
     observe({
       parameter_matcher_sub$SetParameters(
         data = sensitivity_data(),

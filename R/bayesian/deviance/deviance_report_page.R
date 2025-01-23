@@ -7,7 +7,9 @@
 deviance_report_page_ui <- function(id, item_names) {
   ns <- NS(id)
   
-  # Matrix containing plots for named items
+  # Matrix containing ui items:
+  # - Deviance plots
+  # - Invalid model notification
   divs <- sapply(
     1:length(item_names),
     function(index) {

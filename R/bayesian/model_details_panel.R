@@ -128,19 +128,21 @@ model_details_panel_server <- function(id, models, models_valid, package = "gemt
     invalid_model_panel_server(id = "model_invalid_3", model_valid = main_model_valid)
     
     observe({
+      # Get either enble or disable function to apply to relevant UI elements
       if (is.null(main_model_valid()) || !main_model_valid()) {
         fn <- shinyjs::disable
       } else {
         fn <- shinyjs::enable
       }
       
-      fn(id=glue::glue("download_code"))
+      # Apply enable or disable function
+      fn(id = glue::glue("download_code"))
       
       sapply(
         1:4,
         function(index) {
-          fn(id=glue::glue("download_inits_{index}"))
-          fn(id=glue::glue("download_data{index}"))
+          fn(id = glue::glue("download_inits_{index}"))
+          fn(id = glue::glue("download_data{index}"))
         }
       )
     })
@@ -184,6 +186,7 @@ model_details_panel_server <- function(id, models, models_valid, package = "gemt
     
     output$inits <- renderPrint({inits()})
     
+    # Download handlers for download buttons
     sapply(
       1:4,
       function(index) {
@@ -203,7 +206,8 @@ model_details_panel_server <- function(id, models, models_valid, package = "gemt
         return(main_model()$samples)
       }
     })
-
+    
+    # Download handlers for download buttons
     sapply(
       1:4,
       function(index) {

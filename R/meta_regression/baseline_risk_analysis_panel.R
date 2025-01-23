@@ -152,9 +152,11 @@ baseline_risk_analysis_panel_server <- function(    id,
              )
     })
     
+    # ReactiveVal contains validity state of the model. NULL if the model has not yet been run.
     model_valid = reactiveVal(NULL)
     parameter_matcher <- ParameterMatcher$new()
     
+    # Set validity when model input change
     observe({
       # Only assess the validity once the model has been run the first time
       if (is.null(model_valid())) {
@@ -172,6 +174,7 @@ baseline_risk_analysis_panel_server <- function(    id,
       )
     })
     
+    # Record inputs when model run
     observe({
       parameter_matcher$SetParameters(
         all_data=all_data(),

@@ -43,6 +43,8 @@ nodesplit_panel_server <- function(
     model_nodesplit <- eventReactive(
       input$node,
       {
+        # Run nodesplit model, returning NULL if an error occurs.
+        # Errors will occur if there are no closed loops in the network.
         nodesplit_model <- tryCatch(
           expr = {
             nodesplit(
@@ -61,9 +63,11 @@ nodesplit_panel_server <- function(
       }
     )
     
+    # ReactiveVal contains validity state of the model. NULL if the model has not yet been run.
     model_valid = reactiveVal(NULL)
     parameter_matcher <- ParameterMatcher$new()
     
+    # Set validity when model input change
     observe({
       # Only assess the validity once the model has been run the first time
       if (is.null(model_valid())) {
@@ -81,6 +85,7 @@ nodesplit_panel_server <- function(
       )
     })
     
+    # Record inputs when model run
     observe({
       parameter_matcher$SetParameters(
         data = data(),
