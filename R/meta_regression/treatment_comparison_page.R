@@ -40,7 +40,7 @@ covariate_treatment_comparisons_page_server <- function(
     id,
     model,
     outcome_measure,
-    model_valid = reactiveVal(TRUE)
+    model_valid
     ) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
