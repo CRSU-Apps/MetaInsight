@@ -49,6 +49,8 @@ ranking_page_ui <- function(id) {
 #' @param freq_sub Reactive containing frequentist meta-analysis for the sensitivity analysis.
 #' @param bugsnetdt Reactive containing bugsnet meta-analysis.
 #' @param bugsnetdt_sub Reactive containing bugsnet meta-analysis for sensitivity analysis
+#' @param model_valid Reactive containing whether the full model is valid.
+#' @param model_sub_valid Reactive containing whether the sensitivity analysis model is valid.
 ranking_page_server <- function(
     id,
     model,

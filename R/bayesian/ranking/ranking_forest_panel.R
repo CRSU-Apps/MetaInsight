@@ -33,6 +33,7 @@ ranking_forest_panel_ui <- function(id) {
 #' @param treat_order Reactive containing treatments ordered by SUCRA
 #' @param frequentist_react Reactive containing frequentist meta-analysis
 #' @param bugsnetdt_react Reactive containing bugsnet meta-analysis
+#' @param model_valid Reactive containing whether the model is valid.
 #' @param filename_prefix Prefix to add before file names.
 #' @param title_prefix Prefix to add before plot titles.
 ranking_forest_panel_server <- function(
@@ -114,6 +115,7 @@ ranking_forest_panel_server <- function(
 #' @param model Reactive containing bayesian meta-analysis for all studies
 #' @param treat_order Reactive containing treatments ordered by SUCRA
 #' @param bugsnetdt_react Reactive containing bugsnet meta-analysis
+#' @param model_valid Reactive containing whether the model is valid.
 #' @param filename_prefix Prefix to add before file names.
 #' @param title_prefix Prefix to add before plot titles.
 ranking_forest_panel_baseline_risk_server <- function(

@@ -41,6 +41,7 @@ covariate_ranking_page_ui <- function(id) {
 #' @param rank_option Reactive containing ranking option: "good" or "bad" depending on whether small values are desirable or not.
 #' @param freq_all Reactive containing frequentist meta-analysis.
 #' @param bugsnetdt Reactive containing bugsnet meta-analysis.
+#' @param model_valid Reactive containing whether the model is valid.
 #' @param cov_value Value of covariate for regression analysis.
 #' @param package "gemtc" or "bnma". Defaults to "gemtc".
 #' regression_text Annotation text for regression model plots.

@@ -46,10 +46,11 @@ ranking_network_panel_ui <- function(id) {
 
 #' Module server for the ranking network panel.
 #' 
-#' @param id ID of the module
-#' @param treat_order Reactive containing treatments ordered by SUCRA
-#' @param frequentist_react Reactive containing frequentist meta-analysis
-#' @param bugsnetdt_react Reactive containing bugsnet meta-analysis
+#' @param id ID of the module.
+#' @param treat_order Reactive containing treatments ordered by SUCRA.
+#' @param frequentist_react Reactive containing frequentist meta-analysis.
+#' @param bugsnetdt_react Reactive containing bugsnet meta-analysis.
+#' @param model_valid Reactive containing whether the model is valid.
 #' @param filename_prefix Prefix to add before file names.
 #' @param title_prefix Prefix to add beofre plot titles.
 ranking_network_panel_server <- function(

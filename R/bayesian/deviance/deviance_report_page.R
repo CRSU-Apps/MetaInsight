@@ -2,7 +2,7 @@
 #' Module UI for the deviance report page.
 #' 
 #' @param id ID of the module.
-#' @param item_names Vector of item names to be shown side-by-side in the page.
+#' @param item_names Vector of analysis titles to be shown side-by-side in the page.
 #' @return Div for the page
 deviance_report_page_ui <- function(id, item_names) {
   ns <- NS(id)

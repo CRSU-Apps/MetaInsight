@@ -2,6 +2,8 @@
 #' Module UI for the model details panel
 #' 
 #' @param id ID of the module
+#' @param item_names Vector of analysis titles to be shown side-by-side in the page.
+#' @param page_numbering PageNumbering object for giving each page a unique identifier in the UI
 #' @return Div for the panel
 model_details_panel_ui <- function(id, item_names, page_numbering) {
   ns <- NS(id)
@@ -113,8 +115,8 @@ model_details_panel_ui <- function(id, item_names, page_numbering) {
 #' Module server for the model details panel.
 #' 
 #' @param id ID of the module
-#' @param model Reactive containing bayesian meta-analysis for all studies
-#' @param model_sub Reactive containing meta-analysis with studies excluded
+#' @param models Vector of reactives containing bayesian meta-analyses.
+#' @param models_valid Vector of reactives containing whether each model is valid.
 #' @param package "gemtc" (default) or "bnma".
 model_details_panel_server <- function(id, models, models_valid, package = "gemtc") {
   moduleServer(id, function(input, output, session) {

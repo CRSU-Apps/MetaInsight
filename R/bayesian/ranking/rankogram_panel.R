@@ -89,8 +89,9 @@ rankogram_panel_ui <- function(id, table_label) {
 #' 
 #' @param id ID of the module.
 #' @param ranking_data Reactive containing ranking data.
+#' @param model_valid Reactive containing whether the model is valid.
 #' @param filename_prefix Prefix to add before file names.
-#' @param regression_text Regression annotation if needed
+#' @param regression_text Regression annotation if needed.
 rankogram_panel_server <- function(
     id,
     ranking_data,

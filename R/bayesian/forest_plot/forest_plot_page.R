@@ -69,7 +69,11 @@ bayesian_forest_plots_page_ui <- function(id) {
 #' @param reference_alter Reactive containing the name of the reference treatment for the sensitivity
 #'  analysis accounting for if the chosen reference treatment has been excluded
 #'
-#' @return List of reactives: "model" contains the full bayesian meta-analysis, "model_sub" contains the bayesian meta-analysis with studies excluded
+#' @return List of reactives:
+#' - "model" contains the full bayesian meta-analysis
+#' - "model_sub" contains the bayesian meta-analysis with studies excluded
+#' - "model_valid" contains the validity of the full bayesian meta-analysis, NULL if the analysis has not been run yet
+#' - "model_sub_valid" contains the validity of the bayesian meta-analysis with studies excluded, NULL if the analysis has not been run yet
 bayesian_forest_plots_page_server <- function(
     id,
     data,

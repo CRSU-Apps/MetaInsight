@@ -1,6 +1,7 @@
 #' Create the baseline risk analysis panel.
 #'
 #' @param id ID of the module
+#' @param page_numbering PageNumbering object for giving each page a unique identifier in the UI
 #' @return Div containing the module UI
 baseline_risk_analysis_panel_ui <- function(id, page_numbering) {
   ns <- NS(id)

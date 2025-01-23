@@ -44,6 +44,7 @@ ranking_panel_ui <- function(id, title, table_label) {
 #' @param rank_option Reactive containing ranking option: "good" or "bad" depending on whether small values are desirable or not
 #' @param frequentist Reactive containing frequentist meta-analysis
 #' @param bugsnetdt Reactive containing bugsnet meta-analysis
+#' @param model_valid Reactive containing whether the model is valid.
 #' @param filename_prefix Text to prefix the filename of all the downloads
 #' @param title_prefix Text to prefix the title of plots
 #' @param cov_value Value of covariate for regression analysis
