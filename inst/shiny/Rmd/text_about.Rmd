@@ -3,36 +3,48 @@ title: "intro"
 output: html_document
 ---
 
-### **What is *shinyscholar*?**  
+### **What is *MetaInsight*?**  
 
-<img src="logo.png" alt="logo" style="width: 150px; float:right; padding:10px;"/>
+<img src="logo.png" alt="logo" style="width: 300px; float:right; padding:10px;"/>
 
-Welcome to *shinyscholar* a template for creating applications that are modular, meet academic standards of attribution and are reproducible outside of the application. By using *shinyscholar*, to create a template application, developers will be encouraged to produce applications that are maintainable and run reliably without having to learn software development best-practices from scratch. *shinyscholar* was <a href="https://github.com/wallaceEcoMod/wallace/tree/51a3ebe10ffd797fc36ad2d2cf8245b014d11b41" target="_blank">forked</a> from `{wallace}` v2.0.5 (<a href="https://cran.r-project.org/package=wallace" target="_blank">CRAN</a>, <a href="https://wallaceecomod.github.io/wallace/index.html" target="_blank">website</a>) a modular platform for reproducible modelling of species distributions (Kass et. al 2018; Kass et al. 2022). Specifically, it harnesses the higher-level structure and core attributes of Wallace but removes its discipline-specific features, yielding a generic template for developers to make their own applications. 
+### **Attributes of _MetaInsight_**
 
-*Shinyscholar* contains four components (Select, Plot, Reproduce, Template) each of which contain one to three modules (`select_query`, `select_async`, `select_user`, `plot_hist`, `plot_scatter`, `rep_markdown`, `rep_renv`, `rep_refPackages` and `template_create`). Each of the modules in the Select and Plot components calls a function with the same name. The `select_query` module and underlying function is the most complex, containing various elements for handling errors, both in the module and in the function. The `select_async` module has the same functionality as `select_query` but the module runs in the background and the rest of the app remains usable. The other modules are very simple but included to demonstrate how multiple components and modules can be used. The Reproduce component is used to generate an rmarkdown document that reproduces the analysis conducted in the application, download a list of packages that the application uses and download citations to those packages. The Template component can be used to produce and download a template version of an app with the same features.
+This version of *MetaInsight* was built using *shinyscholar* and has these attributes:
 
-### **Attributes of _shinyscholar_**
-
-Many of these attributes derive from `{wallace}`, but others are new to *shinyscholar* as described in <a href="https://github.com/simon-smart88/shinyscholar/blob/master/NEWS.md" target="_blank">NEWS</a>. Apps built using *shinyscholar* should maintain these attributes:
-
-* **accessible**: lowers barriers to implementing complex modular `{shiny}` apps for scientific analysis by providing an intuitive graphical user interface
+* **accessible**: lowers barriers to conducting complex meta-analysis by providing an intuitive graphical user interface
 * **open**: the code is free to use and modify (GPL 3.0) and can be viewed from inside the application
 * **expandable**: users can author and contribute modules that enable new methodological options
 * **flexible**: options for user uploads and downloads of results
-* **interactive**: includes an embedded zoomable `{leaflet}` map, sortable `{DF}` data tables, and visualizations of results
+* **interactive**: includes an embedded sortable `{DF}` data tables, and visualizations of results
 * **instructive**: features guidance text that educates users about theoretical and analytical aspects of each step in the workflow
 * **reproducible**: users can download an `{rmarkdown}` .Rmd file that when run reproduces the analysis, and also save sessions and load them later
 * **reliable**: modules and their underlying functions are tested using `{testthat}` and `{shinytest2}`
 
 ### **Contact us**
 
-Please <a href="mailto:simon.smart@cantab.net" target="_blank">email us</a> with any other questions.
+Please <a href="mailto:info@crsu.org.uk" target="_blank">email us</a> with any other questions.
 
-#### **Acknowledgments**
-shinyscholar was developed as part of a project to develop digital tools for modelling infectious diseases <a href="https://wellcome.org/news/digital-tools-climate-sensitive-infectious-disease" target="_blank">funded by Wellcome</a> at the <a href="https://le.ac.uk/" target="_blank">University of Leicester</a>. The version of Wallace that shinyscholar was derived from was funded by the <a href="https://www.gbif.org/" target="_blank">Global Biodiversity Information Facility</a>, <a href="https://www.nsf.gov/" target="_blank">National Science Foundation</a> and <a href="https://www.nasa.gov/" target="_blank">NASA</a>.
+#### **Funding and Support Acknowledgement**
+
+<div style="display: inline;">
+  <img src="funded-by-nihr-logo.png" width="55%">
+</div>
+<div style="display: inline;">
+  <img src="CRSU_logo.png" width="40%">
+</div>
+<div>
+  <p>
+    MetaInsight is part of the Complex Reviews Synthesis Unit (CRSU) suite of evidence synthesis apps.
+The development of these apps are currently funded (majority) and overseen by the Evidence Synthesis Group @ CRSU (NIHR153934).
+Further details of other funders and support, current and past, can be found 
+<a href="https://github.com/CRSU-Apps/.github/blob/main/DetailedFundingStatement.pdf">on our GitHub page</a>
+. The views expressed are those of the author(s) and not necessarily those of the NIHR or the Department of Health and Social Care.
+</p>
+<p>
+More information about the UK NIHR Complex Reviews Synthesis Unit (CRSU) can be found 
+<a href="https://www.gla.ac.uk/research/az/evidencesynthesis/apps-materials-guidence/" target="_blank">on our website</a>
+</p>
+</div>
+                  
 
 #### **References**
-
-1. Kass J. M., Vilela B., Aiello-Lammens M. E., Muscarella R., Merow C., Anderson R. P. (2018). *Wallace*: A flexible platform for reproducible modeling of species niches and distributions built for community expansion. *Methods in Ecology and Evolution*, 9(4): 1151-1156. <a href="https://doi.org/10.1111/2041-210X.12945" target="_blank">DOI: 10.1111/2041-210X.12945</a>
-
-2. Kass, J.M., Pinilla-Buitrago, G.E, Paz, A., Johnson, B.A., Grisales-Betancur, V.,  Meenan, S.I., Attali, D., Broennimann, O., Galante, P.J., Maitner, B.S., Owens, H.L., Varela, S., Aiello-Lammens, M.E., Merow, C., Blair, M.E., Anderson R.P. (2022). *wallace* 2: a shiny app for modeling species niches and distributions redesigned to facilitate expansion via module contributions. *Ecography*, 2023(3): e06547. <a href="https://doi.org/10.1111/ecog.06547" target="_blank">DOI: 10.1111/ecog.06547</a>.  

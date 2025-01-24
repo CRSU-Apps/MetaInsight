@@ -15,7 +15,7 @@
       }
     }
   }
-  
+
   # Build network (Mathematical structure is called a 'graph')
   return(igraph::graph(links, directed = FALSE))
 }
@@ -30,6 +30,7 @@
 #' @return List of subnetworks, where each subnetwork is a list containing:
 #' - "treatments" = The IDs of the treatments included in the given network
 #' - "studies" = The names of the studies included in the given subnetwork
+#' @export
 IdentifySubNetworks <- function(data, treatment_df, reference_treatment_name = NULL, subnet_name_prefix = "subnet_") {
   if (is.null(reference_treatment_name)) {
     reference_treatment <- 1
@@ -41,7 +42,7 @@ IdentifySubNetworks <- function(data, treatment_df, reference_treatment_name = N
   } else {
     reference_treatment <- treatment_df$Number[treatment_df$Label == reference_treatment_name]
   }
-  
+
   # Check that reference treatment is also in the data, not just in the treatment list
   all_treatments <- FindAllTreatments(data)
   if (!(reference_treatment %in% all_treatments)) {
@@ -61,7 +62,7 @@ IdentifySubNetworks <- function(data, treatment_df, reference_treatment_name = N
   for (membership_index in unique(membership)) {
     subnet_treatments <- treatment_df$Number[membership == membership_index]
     subnet_studies <- FindStudiesIncludingTreatments(data, subnet_treatments)
-    
+
     if (length(subnet_studies) == 0) {
       next
     }
@@ -78,7 +79,7 @@ IdentifySubNetworks <- function(data, treatment_df, reference_treatment_name = N
 
     subnet_list[[subnet_name]] <- list(treatments = subnet_treatments, studies = subnet_studies)
   }
-  
+
   subnet_list <- subnet_list[order(names(subnet_list))]
 
   return(subnet_list)

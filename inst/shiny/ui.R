@@ -18,14 +18,14 @@ tagList(
     ),
     title = img(src = "logo.png", height = "50", width = "50",
                 style = "margin-top: -15px"),
-    windowTitle = "metainsight",
+    windowTitle = "MetaInsight",
     tabPanel("Intro", value = "intro"),
-tabPanel("Load data", value = "load"),
-tabPanel("Data summary", value = "summary"),
+    tabPanel("Load data", value = "load"),
+    tabPanel("Data summary", value = "summary"),
     tabPanel("Reproduce", value = "rep"),
     navbarMenu("Support", icon = icon("life-ring"),
-               HTML('<a href="https://github.com/simon-smart88/shinyscholar/issues" target="_blank">GitHub Issues</a>'),
-               HTML('<a href="mailto: simon.smart@cantab.net" target="_blank">Send Email</a>')),
+               HTML('<a href="https://github.com/CRSU-Apps/MetaInsight/issues" target="_blank">GitHub Issues</a>'),
+               HTML('<a href="mailto: info@crsu.org.uk" target="_blank">Send Email</a>')),
     tabPanel(NULL, icon = icon("power-off"), value = "_stopapp")
   ),
   tags$div(
@@ -36,6 +36,8 @@ tabPanel("Data summary", value = "summary"),
         wellPanel(
           conditionalPanel(
             "input.tabs == 'intro'",
+            actionButton("debug_button", "debug"),
+            textOutput("debug"),
             includeMarkdown("Rmd/text_intro_tab.Rmd")
           ),
           # LOAD DATA ####
@@ -43,10 +45,12 @@ tabPanel("Data summary", value = "summary"),
           "input.tabs == 'load'",
           div("Component: Load data", class = "componentName"),
           help_comp_ui("loadHelp"),
-          radioButtons(
-          "loadSel", "Modules Available:",
-          choices = insert_modules_options("load"),
-          selected = character(0)
+          shinyWidgets::radioGroupButtons(
+            "loadSel", "Modules Available:",
+            choices = insert_modules_options("load"),
+            direction = "vertical",
+            status = "outline-secondary",
+            width = "100%"
           ),
           tags$hr(),
           insert_modules_ui("load")
@@ -56,10 +60,12 @@ tabPanel("Data summary", value = "summary"),
           "input.tabs == 'summary'",
           div("Component: Data summary", class = "componentName"),
           help_comp_ui("summaryHelp"),
-          radioButtons(
-          "summarySel", "Modules Available:",
-          choices = insert_modules_options("summary"),
-          selected = character(0)
+          shinyWidgets::radioGroupButtons(
+            "summarySel", "Modules Available:",
+            choices = insert_modules_options("summary"),
+            direction = "vertical",
+            status = "outline-secondary",
+            width = "100%"
           ),
           tags$hr(),
           insert_modules_ui("summary")
@@ -68,10 +74,12 @@ tabPanel("Data summary", value = "summary"),
           conditionalPanel(
             "input.tabs == 'rep'",
             div("Component: Reproduce", class = "componentName"),
-            radioButtons(
+            shinyWidgets::radioGroupButtons(
               "repSel", "Modules Available:",
               choices = insert_modules_options("rep"),
-              selected = character(0)
+              direction = "vertical",
+              status = "outline-secondary",
+              width = "100%"
             ),
             tags$hr(),
             insert_modules_ui("rep")
@@ -97,20 +105,16 @@ tabPanel("Data summary", value = "summary"),
               )
             )
           )
-
-
-),
+        ),
         br(),
         conditionalPanel(
           "input.tabs != 'intro' & input.tabs != 'rep'",
           tabsetPanel(
             id = 'main',
 
-
             tabPanel(
-              'Table', br(),
-              DT::dataTableOutput('table'),
-              downloadButton('dl_table', "CSV file")
+              "Data table", br(),
+              DT::dataTableOutput("table"),
             ),
 
             tabPanel(
@@ -130,7 +134,6 @@ tabPanel("Data summary", value = "summary"),
               'Module Guidance', icon = icon("circle-info", class = "mod_icon"),
               uiOutput('gtext_module')
             ),
-
 
             tabPanel(
               'Save', icon = icon("floppy-disk", class = "save_icon"),

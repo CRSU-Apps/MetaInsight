@@ -2,9 +2,6 @@ library(glue)
 library(gargoyle)
 
 
-
-
-
 MB <- 1024^2
 UPLOAD_SIZE_MB <- 5000
 options(shiny.maxRequestSize = UPLOAD_SIZE_MB*MB)
@@ -22,12 +19,12 @@ COMPONENT_MODULES <- list()
 
 # Loadbase modules
 base_module_configs <- c(
-"modules/summary_network.yml",
-"modules/summary_study.yml",
-"modules/summary_char.yml",
-"modules/load_define.yml",
-"modules/load_update.yml",
-"modules/load_load.yml",
+  "modules/load_load.yml",
+  "modules/load_update.yml",
+  "modules/load_define.yml",
+  "modules/summary_char.yml",
+  "modules/summary_study.yml",
+  "modules/summary_network.yml",
   "modules/rep_markdown.yml",
   "modules/rep_renv.yml",
   "modules/rep_refPackages.yml"

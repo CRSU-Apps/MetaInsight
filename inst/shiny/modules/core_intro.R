@@ -21,7 +21,7 @@ core_intro_module_server <- function(id, common, parent_session) {
 
                       c("div[class=\"form-group shiny-input-container\"]", "Choose from the list of options", "bottom", "$('a[data-value=\"Table\"]').trigger('click');"),
                       c("#load_load-run", "Click the button to run the module", "bottom", NA),
-                      c("a[data-value=\"Table\"]", "Outputs will be loaded onto the Table...", "bottom", NA),
+                      c("a[data-value=\"Data table\"]", "Outputs will be loaded onto the Table...", "bottom", NA),
                       c("a[data-value=\"Results\"]", "or the Results tabs depending on the module", "bottom", "$('a[data-value=\"Results\"]').trigger('click');"),
 
 
@@ -37,12 +37,12 @@ core_intro_module_server <- function(id, common, parent_session) {
                       c("a[data-value=\"intro\"]", "Next time you visit...", "bottom", "$('a[data-value=\"intro\"]').trigger('click');"),
                       c("a[data-value=\"Load Prior Session\"]", "you can upload the file to restore the app", "left","$('a[data-value=\"Load Prior Session\"]').trigger('click');"),
                       c(NA, "You are ready to go!", NA, "$('a[data-value=\"About\"]').trigger('click');")
-                                                         
+
   )
   #transpose and add columns names
   steps <- as.data.frame(t(steps))
   colnames(steps) <- c("element", "intro", "position", "javascript")
-  
+
   #extract the javascript into one string
   intro_js <- ""
   for (r in 1:nrow(steps)){
@@ -51,7 +51,7 @@ core_intro_module_server <- function(id, common, parent_session) {
     }
   }
   intro_js <- gsub("[\r\n]", "", intro_js)
-  
+
   #launch intro if the button is clicked
   observeEvent(input$intro,{
     rintrojs::introjs(session, options = list(steps = steps, "showBullets" = "true", "showProgress" = "true",

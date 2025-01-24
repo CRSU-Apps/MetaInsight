@@ -2,40 +2,16 @@
 # MISC #
 ####################### #
 #' @title printVecAsis
-#' @description For internal use. Print vector as character string
-#' @param x vector
-#' @param asChar exclude c notation at the beginning of string
+#' @description For internal use. Print objects as character string
+#' @param x object to print
+#' @return A character string to reproduce the object
 #' @keywords internal
 #' @export
-printVecAsis <- function(x, asChar = FALSE) {
-  if (is.character(x)) {
-    if (length(x) == 1) {
-      return(paste0("\"", x, "\""))
-    } else {
-      if (asChar == FALSE) {
-        return(paste0("c(", paste(sapply(x, function(a) paste0("\"", a, "\"")),
-                                  collapse = ", "), ")"))
-      } else {
-        return(paste0("(", paste(sapply(x, function(a) paste0("\"", a, "\"")),
-                                 collapse = ", "), ")"))
-      }
-    }
-  } else if (class(x) == "Date"){
-    if (length(x) == 1) {
-      return(paste0("as.Date(\"", x ,"\")"))
-    } else {
-      return(paste0("c(", paste(paste0("as.Date(\"", x ,"\")"), collapse = ", "), ")"))
-    }
+printVecAsis <- function(x) {
+  if (is.numeric(x) && length(x) == 1){
+    return(x)
   } else {
-    if (length(x) == 1) {
-      return(x)
-    } else {
-      if (asChar == FALSE) {
-        return(paste0("c(", paste(x, collapse = ", "), ")"))
-      } else {
-        return(paste0("(", paste(x, collapse = ", "), ")"))
-      }
-    }
+    utils::capture.output(dput(x))
   }
 }
 
@@ -46,8 +22,6 @@ printVecAsis <- function(x, asChar = FALSE) {
 #' @export
 spurious <- function(x) {
   DT::renderDataTable(x)
-  RColorBrewer::brewer.pal(x)
-  leaflet.extras::removeDrawToolbar(x)
   rmarkdown::github_document(x)
   shinyWidgets::pickerInput(x)
   shinyjs::disable(x)
@@ -82,7 +56,7 @@ writeLog <- function(logger, ..., type = "default") {
     } else if (type == "complete") {
       pre <- paste0(icon("check", class = "log_end"), " ")
     } else if (type == "info") {
-      if (nchar(...) < 80){
+      if (nchar(...) < 200){
         shinyalert::shinyalert(..., type = "info")
       } else {
         shinyalert::shinyalert("Please, check Log window for more information ",
@@ -90,7 +64,7 @@ writeLog <- function(logger, ..., type = "default") {
       }
       pre <- paste0(icon("info", class = "log_info"), " ")
     } else if (type == "error") {
-      if (nchar(...) < 80){
+      if (nchar(...) < 200){
         shinyalert::shinyalert(...,
                                type = "error")
       } else {
@@ -99,7 +73,7 @@ writeLog <- function(logger, ..., type = "default") {
       }
       pre <- paste0(icon("xmark", class = "log_error"), " ")
     } else if (type == "warning") {
-      if (nchar(...) < 80){
+      if (nchar(...) < 200){
         shinyalert::shinyalert(...,
                                type = "warning")
       } else {
@@ -150,15 +124,6 @@ close_loading_modal <- function (session = getDefaultReactiveDomain())
 # CHANGING TABS #
 ####################### #
 
-#' @title show_map
-#' @description For internal use. Switches the view to the Map tab
-#' @param parent_session Session object of the main server function
-#' @keywords internal
-#' @export
-show_map <- function(parent_session){
-  updateTabsetPanel(parent_session, "main", selected = "Map")
-}
-
 #' @title show_results
 #' @description For internal use. Switches the view to the Results tab
 #' @param parent_session Session object of the main server function
@@ -174,5 +139,5 @@ show_results <- function(parent_session){
 #' @keywords internal
 #' @export
 show_table <- function(parent_session){
-  updateTabsetPanel(parent_session, "main", selected = "Table")
+  updateTabsetPanel(parent_session, "main", selected = "Data table")
 }

@@ -1,38 +1,171 @@
 load_load_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
-    # UI
-    actionButton(ns("run"), "Run module load_load")
+    div(
+      h4(tags$strong("Select outcome type")),
+      radioButtons(ns("metaoutcome"), NULL, choices = c(
+          "Continuous (e.g. mean difference) " = "Continuous",
+          "Binary (e.g. Odds Ratio)" = "Binary"
+        ),
+      ),
+      h4(tags$strong("Select data format")),
+      radioButtons(ns("format"), NULL, choices = c(
+        "Long" = "long",
+        "Wide" = "wide"
+      ),
+      ),
+      h4(tags$strong("Select a data file (.csv or .xlsx) to upload")),
+      p(tags$strong("Default maximum file size is 5MB.")),
+      uiOutput(ns("data_out")),
+      actionButton(ns("run"), "Load example data"),
+      uiOutput(ns("reset_out")),
+      br(),
+      uiOutput(ns("download_out"))
+    )
   )
 }
 
 load_load_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
+  ns <- session$ns
+
+  # Toggle visibility of guidance depending on selection
+  observe({
+    selection <- paste0(tolower(input$metaoutcome),"_guidance")
+      shinyjs::runjs(sprintf("
+                     document.querySelectorAll('.continuous_guidance, .binary_guidance').forEach(el => el.style.display = 'none');
+                     document.querySelectorAll('.%s').forEach(el => el.style.display = 'block');
+                     ", selection))
+  })
+
+  observe({
+    selection <- paste0(input$format,"_guidance")
+    shinyjs::runjs(sprintf("
+                     document.querySelectorAll('.long_guidance, .wide_guidance').forEach(el => el.style.display = 'none');
+                     document.querySelectorAll('.%s').forEach(el => el.style.display = 'block');
+                     ", selection))
+  })
+
+
+  # Create a definable reactive value to allow reloading of data
+  gargoyle::init("load_reset")
+
+  # Render function for file input dynamically to allow the button to be set to Null
+  output$data_out <- renderUI({
+    gargoyle::watch("load_reset")
+    fileInput(ns("data"), label = NULL, buttonLabel = "Select", accept = c(".csv", ".xlsx"))
+  })
+
+  # Update run button if a file has been uploaded
+  observe({
+    if (!is.null(input$data)){
+      updateActionButton(session, "run", label = "Load data")
+    }
+  })
+
+  output$reset_out <- renderUI({
+    gargoyle::watch("load_load")
+    gargoyle::watch("load_reset")
+    req(common$is_data_uploaded)
+    div(
+      style = "float:right",
+      actionButton(ns("reset"), "Delete data",
+                   icon = icon("trash"),
+                   style = "color: #fff; background-color: #dc3545; border-color: #dc3545")
+    )
+  })
+
+  observeEvent(input$reset, {
+    common$reset()
+    updateActionButton(session, "run", label = "Load example data")
+    gargoyle::trigger("load_reset")
+   })
+
+  output$download_out <- renderUI({
+    gargoyle::watch("load_load")
+    gargoyle::watch("load_reset")
+    if (is.null(common$is_data_uploaded) || !common$is_data_uploaded){
+      downloadButton(ns("download"), "Download example data")
+    }
+  })
+
+  # this needs to be a separate operation so that input$data is NULL first
+  # observe({
+  #   gargoyle::watch("load_reset")
+  #   if (is.null(common$data)){
+  #     shinyjs::click("run")
+  #   }
+  # })
+
   observeEvent(input$run, {
     # WARNING ####
+    # none for this module
 
     # FUNCTION CALL ####
+    result <- load_load(input$data$datapath, input$metaoutcome, common$logger)
+
+    if (result$uploaded){
+      common$logger %>% writeLog(type= "complete", "Data was uploaded successfully")
+    } else {
+      common$logger %>% writeLog(type= "complete", glue::glue("Default {tolower(input$metaoutcome)} data has been loaded"))
+    }
 
     # LOAD INTO COMMON ####
+    common$data <- result$data
+    common$default_data <- result$default_data
+    common$valid_data <- result$valid
+    common$is_data_uploaded <- result$uploaded
+    common$treatment_list <- result$treatments
+    common$metaoutcome <- input$metaoutcome
 
     # METADATA ####
+    common$meta$load_load$used <- TRUE
+    common$meta$load_load$data <- common$data
+    common$meta$load_load$metaoutcome <- input$metaoutcome
+    common$meta$load_load$format <- input$format
 
     # TRIGGER
     gargoyle::trigger("load_load")
+
+    if (result$valid){
+      show_table(parent_session)
+    } else {
+      show_results(parent_session)
+    }
+
   })
 
-  output$result <- renderText({
+  output$download <- downloadHandler(
+    filename = glue::glue("MetaInsight_{tolower(input$metaoutcome)}_{input$format}.csv"),
+    content = function(file) {
+      file.copy(
+        system.file("extdata",
+                    glue::glue("{tolower(input$metaoutcome)}_{input$format}.csv"),
+                    package = "metainsight"),
+        file)
+    }
+  )
+
+  output$invalid_data <- DT::renderDataTable({
     gargoyle::watch("load_load")
-    # Result
+    req(common$data)
+    req(!common$valid_data)
+    common$data
   })
 
   return(list(
-    save = function() {
-      # Save any values that should be saved when the current session is saved
+    save = function() {list(
+      ### Manual save start
+      ### Manual save end
+      metaoutcome = input$metaoutcome,
+      format = input$format)
     },
     load = function(state) {
-      # Load
+      ### Manual load start
+      ### Manual load end
+      updateRadioButtons(session, "metaoutcome", selected = state$metaoutcome)
+      updateRadioButtons(session, "format", selected = state$format)
     }
   ))
 })
@@ -41,11 +174,14 @@ load_load_module_server <- function(id, common, parent_session) {
 load_load_module_result <- function(id) {
   ns <- NS(id)
 
-  # Result UI
-  verbatimTextOutput(ns("result"))
+  DT::dataTableOutput(ns("invalid_data"))
+
 }
 
-load_load_module_rmd <- function(common) {
-  # Variables used in the module's Rmd code
+load_load_module_rmd <- function(common){ list(
+  load_load_knit = !is.null(common$meta$load_load$used),
+  load_load_data = common$meta$load_load$data,
+  load_load_metaoutcome = common$meta$load_load$metaoutcome,
+  load_load_format = common$meta$load_load$format)
 }
 

@@ -2,13 +2,13 @@ library(metainsight)
 library(shinyscholar)
 
 function(input, output, session) {
- 
+
   ########################## #
   # INTRODUCTION ####
   ########################## #
-  
+
   core_intro_module_server("core_intro")
-  
+
   ########################## #
   # LOGGING ####
   ########################## #
@@ -28,10 +28,7 @@ function(input, output, session) {
     shinyjs::js$scrollLogger()
   })
 
-
-
-
-########################## #
+  ########################## #
   # REACTIVE VALUES LISTS ####
   ########################## #
 
@@ -84,29 +81,27 @@ function(input, output, session) {
       })})
 
 
-
-
   ############################################# #
   ### TABLE TAB ####
   ############################################# #
 
-  sample_table <- reactive({
-  sample_table <- data.frame('a' = c(1:10), b = c(11:20))
-  sample_table
-  })
-
   # TABLE
   output$table <- DT::renderDataTable({
-    sample_table()
+    gargoyle::watch("load_load")
+    gargoyle::watch("load_reset")
+    req(common$valid_data)
+    if (common$valid_data){
+      return(common$data)
+    }
   }, rownames = FALSE, options = list(scrollX = TRUE))
 
   # DOWNLOAD
   output$dl_table <- downloadHandler(
     filename = function() {
-      "metainsight_sample_table.csv"
+      "metainsight_data_table.csv"
     },
     content = function(file) {
-      write.csv(sample_table(), file, row.names = FALSE)
+      write.csv(common$data, file, row.names = FALSE)
     }
   )
 
@@ -142,7 +137,16 @@ function(input, output, session) {
 
   core_save_module_server("core_save", common, modules, COMPONENTS, input)
   core_load_module_server("core_load", common, modules, map, COMPONENT_MODULES, parent_session = session)
-  
+
+  ################################
+  ### DEBUGGING ####
+  ################################
+
+  output$debug <- renderPrint({
+    browser()
+  }) |> bindEvent(input$debug_button)
+
+
   ################################
   ### EXPORT TEST VALUES ####
   ################################
