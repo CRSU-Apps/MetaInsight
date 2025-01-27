@@ -54,8 +54,11 @@ jobs:
       # Deploy using rsconnect
       - name: Capture dependencies
         run: |
+          # Install renv
+          install.packages("renv")
           # Create lockfile
           renv::snapshot()
+        shell: Rscript {0}
       # Setup and install dependencies using renv
       - uses: r-lib/actions/setup-renv@v2
       # Deploy using rsconnect
