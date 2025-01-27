@@ -3,12 +3,12 @@
 LoadOrInstall <- function(package_name) {
   tryCatch(
     {
-      library(package_name)
+      library(package_name, character.only = TRUE)
     },
     error = function(exptn) {
       if (class(exptn)[1] == "packageNotFoundError") {
         install.packages(package_name)
-        library(package_name)
+        library(package_name, character.only = TRUE)
       } else {
         stop(exptn)
       }
