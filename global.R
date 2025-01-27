@@ -1,13 +1,13 @@
 ###### MetaInsight ######
 
-LoadOrInstall <- function(package_name) {
+LoadOrInstall <- function(package_name, install_function = install.packages) {
   tryCatch(
     {
       library(package_name, character.only = TRUE)
     },
     error = function(exptn) {
       if (class(exptn)[1] == "packageNotFoundError") {
-        install.packages(package_name)
+        install_function(package_name)
         library(package_name, character.only = TRUE)
       } else {
         stop(exptn)
@@ -20,7 +20,7 @@ LoadOrInstall <- function(package_name) {
 LoadOrInstall("plyr")
 
 LoadOrInstall("bnma")
-LoadOrInstall("BUGSnet")
+LoadOrInstall("BUGSnet", install_function = function(ignored) { remotes::install_github("audrey-b/BUGSnet") })
 LoadOrInstall("combinat")
 LoadOrInstall("cookies")
 LoadOrInstall("cowplot")
