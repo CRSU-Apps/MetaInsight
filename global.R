@@ -20,7 +20,13 @@ LoadOrInstall <- function(package_name, install_function = install.packages) {
 LoadOrInstall("plyr")
 
 LoadOrInstall("bnma")
-LoadOrInstall("BUGSnet", install_function = function(ignored) { remotes::install_github("audrey-b/BUGSnet") })
+LoadOrInstall(
+  "BUGSnet",
+  install_function = function(ignored) {
+    LoadOrInstall("remotes")
+    remotes::install_github("audrey-b/BUGSnet")
+  }
+)
 LoadOrInstall("combinat")
 LoadOrInstall("cookies")
 LoadOrInstall("cowplot")
