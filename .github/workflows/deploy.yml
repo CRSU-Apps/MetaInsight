@@ -54,12 +54,11 @@ jobs:
       # Capture dependencies
       - name: Capture dependencies
         run: |
-          # Setup new GitHub PAT (personal access token)
-          install.packages("gitcreds")
-          gitcreds::gitcreds_delete()
           # Install packages
           source("global.R")
         shell: Rscript {0}
+        env:
+          GITHUB_PAT: ${{ secrets.PAT }}
       # Deploy using rsconnect
       - name: Deploy
         run: |
