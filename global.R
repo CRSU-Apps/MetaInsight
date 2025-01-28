@@ -16,17 +16,16 @@ LoadOrInstall <- function(package_name, install_function = install.packages) {
   )
 }
 
+InstallBugsNet <- function(ignored) {
+  LoadOrInstall("remotes")
+  remotes::install_github("audrey-b/BUGSnet")
+}
+
 # plyr is recommended to be loaded before dplyr for better performance
 LoadOrInstall("plyr")
 
 LoadOrInstall("bnma")
-LoadOrInstall(
-  "BUGSnet",
-  install_function = function(ignored) {
-    LoadOrInstall("remotes")
-    remotes::install_github("audrey-b/BUGSnet")
-  }
-)
+LoadOrInstall("BUGSnet", install_function = InstallBugsNet)
 LoadOrInstall("combinat")
 LoadOrInstall("cookies")
 LoadOrInstall("cowplot")
