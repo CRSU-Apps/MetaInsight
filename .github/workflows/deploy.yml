@@ -56,7 +56,7 @@ jobs:
         run: |
           # Setup new GitHub PAT (personal access token)
           install.packages("gitcreds")
-          gitcreds::gitcreds_set()
+          gitcreds::gitcreds_delete()
           # Install packages
           source("global.R")
         shell: Rscript {0}
