@@ -7,14 +7,14 @@
 #' @param comparators Vector of names of comparison treatments to plot in colour.
 #' @param contribution_matrix Contributions from function `CalculateContributions()`.
 #' @param contribution_type Name of the type of contribution, used to calculate sizes for the study contribution circles.
-#' @param confidence_regions List of confidence region data frames from function `CalculateConfidenceRegions()`.
+#' @param credible_regions List of credible region data frames from function `CalculateCredibleRegions()`.
 #' @param include_covariate TRUE if the value of the covariate is to be plotted as a vertical line. Defaults to FALSE.
 #' @param include_ghosts TRUE if all other comparator studies should be plotted in grey in the background of the plot. Defaults to FALSE.
 #' @param include_extrapolation TRUE if regression lines should be extrapolated beyond the range of the given data. These will appear as dashed lines.
 #' Defaults to FALSE.
-#' @param include_confidence TRUE if the confidence regions should be plotted for the specified comparators. These will be partially transparent regions.
+#' @param include_credible TRUE if the credible regions should be plotted for the specified comparators. These will be partially transparent regions.
 #' Defaults to FALSE.
-#' @param confidence_opacity The opacity of the confidence regions. Can be any value between 0 and 1, inclusive. Defaults to 0.2.
+#' @param credible_opacity The opacity of the credible regions. Can be any value between 0 and 1, inclusive. Defaults to 0.2.
 #' @param include_contributions TRUE if the contributions should be plotted as a circle for each study. Defaults to TRUE.
 #' @param contribution_multiplier Multiplication factor by which to scale the sizes of the study contribution circles. Defaults to 1.0.
 #' @param legend_position String informing the position of the legend. Acceptable values are:
@@ -32,12 +32,12 @@ CreateMainRegressionPlot <- function(
     comparators,
     contribution_matrix,
     contribution_type,
-    confidence_regions,
+    credible_regions,
     include_covariate = FALSE,
     include_ghosts = FALSE,
     include_extrapolation = FALSE,
-    include_confidence = FALSE,
-    confidence_opacity = 0.2,
+    include_credible = FALSE,
+    credible_opacity = 0.2,
     include_contributions = TRUE,
     contribution_multiplier = 1.0,
     legend_position = "BR") {
@@ -52,7 +52,7 @@ CreateMainRegressionPlot <- function(
     comparators = comparators,
     outcome_measure = outcome_measure,
     include_ghosts = include_ghosts && length(comparators) < length(all_comparators),
-    confidence_opacity = confidence_opacity,
+    credible_opacity = credible_opacity,
     legend_position = legend_position
   )
   
@@ -67,8 +67,8 @@ CreateMainRegressionPlot <- function(
   }
   
   if (length(comparators) > 0) {
-    if (include_confidence) {
-      plot <- .PlotConfidenceRegions(plot, confidence_regions, comparators, confidence_opacity)
+    if (include_credible) {
+      plot <- .PlotCredibleRegions(plot, credible_regions, comparators, credible_opacity)
     }
     if (include_contributions) {
       plot <- .PlotDirectContributionCircles(plot, model_output, treatment_df, reference, comparators, contribution_matrix, contribution_type, contribution_multiplier)
@@ -94,7 +94,7 @@ CreateMainRegressionPlot <- function(
 #' @param comparators Vector of names of comparison treatments to plot.
 #' @param outcome_measure Outcome measure of analysis (OR, RR, RD, MD)
 #' @param include_ghosts TRUE if all other comparator studies should be plotted in grey in the background of the plot. Defaults to FALSE.
-#' @param confidence_opacity The opacity of the confidence regions. Can be any value between 0 and 1, inclusive. Defaults to 0.2.
+#' @param credible_opacity The opacity of the credible regions. Can be any value between 0 and 1, inclusive. Defaults to 0.2.
 #' @param legend_position String informing the position of the legend. Acceptable values are:
 #' - "BR" - Bottom-right of the plot area
 #' - "BL" - Bottom-left of the plot area
@@ -102,7 +102,7 @@ CreateMainRegressionPlot <- function(
 #' - "TL" - Top-left of the plot area
 #'
 #' @return Created ggplot2 object.
-.SetupMainRegressionPlot <- function(reference, comparators, outcome_measure, include_ghosts, confidence_opacity, legend_position) {
+.SetupMainRegressionPlot <- function(reference, comparators, outcome_measure, include_ghosts, credible_opacity, legend_position) {
   # Set up basic plot
   plot <- ggplot() +
     theme_minimal() +
@@ -141,23 +141,23 @@ CreateMainRegressionPlot <- function(
     plot = plot,
     comparators = comparators,
     include_ghosts = include_ghosts,
-    include_confidence = TRUE,
-    confidence_opacity = confidence_opacity
+    include_credible = TRUE,
+    credible_opacity = credible_opacity
   )
   
   return(plot)
 }
 
-#' Plot the confidence regions and intervals on the plot.
+#' Plot the credible regions and intervals on the plot.
 #'
 #' @param plot object to which to add elements.
-#' @param confidence_regions List of confidence region data frames from function `CalculateConfidenceRegions()`.
+#' @param credible_regions List of credible region data frames from function `CalculateCredibleRegions()`.
 #' @param comparators Vector of names of comparison treatments to plot.
 #'
 #' @return The modified ggplot2 object.
-.PlotConfidenceRegions <- function(plot, confidence_regions, comparators, confidence_opacity) {
-  regions <- .FormatRegressionConfidenceRegion(confidence_regions$regions, comparators)
-  intervals <- .FormatRegressionConfidenceRegion(confidence_regions$intervals, comparators)
+.PlotCredibleRegions <- function(plot, credible_regions, comparators, credible_opacity) {
+  regions <- .FormatRegressionCredibleRegion(credible_regions$regions, comparators)
+  intervals <- .FormatRegressionCredibleRegion(credible_regions$intervals, comparators)
   
   plot <- plot +
     geom_ribbon(
@@ -179,7 +179,7 @@ CreateMainRegressionPlot <- function(
         color = Treatment
       ),
       linewidth = 2,
-      alpha = confidence_opacity,
+      alpha = credible_opacity,
       show.legend = FALSE
     )
   
@@ -334,17 +334,17 @@ CreateMainRegressionPlot <- function(
   )
 }
 
-#' Format the confidence regions for the regression analysis into a plottable data frame.
+#' Format the credible regions for the regression analysis into a plottable data frame.
 #'
-#' @param confidence_regions List of confidence region data frames from function `CalculateConfidenceRegions()`.
+#' @param credible_regions List of credible region data frames from function `CalculateCredibleRegions()`.
 #' @param comparator Name of comparison treatment for which to find the contributions.
 #'
-#' @return Data frame containing contribution details. Each row represents a confidence interval at a specific covariate value, for a given treatment. Columns are:
-#' - Treatment: The treatment for which this confidence interval relates.
+#' @return Data frame containing contribution details. Each row represents a credible interval at a specific covariate value, for a given treatment. Columns are:
+#' - Treatment: The treatment for which this credible interval relates.
 #' - covariate_value: Value of the covariate for this interval
 #' - y_min Relative effect of the lower end of this interval
 #' - y_max: Relative effect of the upper end of this interval
-.FormatRegressionConfidenceRegion <- function(confidence_regions, comparator) {
+.FormatRegressionCredibleRegion <- function(credible_regions, comparator) {
   
   treatments <- c()
   covariate_values <- c()
@@ -352,9 +352,9 @@ CreateMainRegressionPlot <- function(
   y_maxs <- c()
   
   for (treatment_name in comparator) {
-    treatment_covariate_values <- confidence_regions[[treatment_name]]$cov_value
-    treatment_y_mins <- confidence_regions[[treatment_name]]$lower
-    treatment_y_maxs <- confidence_regions[[treatment_name]]$upper
+    treatment_covariate_values <- credible_regions[[treatment_name]]$cov_value
+    treatment_y_mins <- credible_regions[[treatment_name]]$lower
+    treatment_y_maxs <- credible_regions[[treatment_name]]$upper
     
     treatments <- c(treatments, rep(treatment_name, length(treatment_covariate_values)))
     covariate_values <- c(covariate_values, treatment_covariate_values)
@@ -362,7 +362,7 @@ CreateMainRegressionPlot <- function(
     y_maxs <- c(y_maxs, treatment_y_maxs)
   }
   
-  confidence_df <- data.frame(
+  credible_df <- data.frame(
     Treatment = treatments,
     covariate_value = covariate_values,
     y_min = y_mins,
@@ -370,9 +370,9 @@ CreateMainRegressionPlot <- function(
   )
   
   # Return an empty data frame with correct column names if all of the rows are NA
-  if (all(is.na(confidence_df$covariate_value))) {
+  if (all(is.na(credible_df$covariate_value))) {
     return(data.frame(matrix(nrow = 0, ncol = 4, dimnames = list(NULL, c("Treatment", "covariate_value", "y_min", "y_max")))))
   }
   
-  return(confidence_df)
+  return(credible_df)
 }

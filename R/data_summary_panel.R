@@ -27,7 +27,7 @@ data_summary_panel_ui <- function(id, page_numbering) {
       tabPanel(
         title = paste0(page_numbering$AddChild(), " Study Results"),
         p("If the formatting of the text for this plot needs adjusting please see options at the bottom."),
-        plotOutput(outputId = ns("forestPlot"), height = "1000px", width = "800px"),
+        plotOutput(outputId = ns("forestPlot"), height = "auto", width = "800px"),
         h5("If the formatting of the text in the above plot needs adjusting (for on screen or download) please use the following options:"),
         column(
           width = 4,
@@ -179,9 +179,24 @@ data_summary_panel_server <- function(id, metaoutcome, outcome_measure, bugsnetd
     # 1b. Study Results
 
     # Forest plot
+    
+    #Determine the forest plot height in pixels
+    forest_plot_height <- reactive({
+      #The rows that don't correspond to NA treatment effects
+      proper_comparison_rows <- !is.na(freq_sub()$d0$TE)
+      #The number of comparisons, with NA rows dropped
+      n_proper_comparisons <- length(freq_sub()$d0$TE[proper_comparison_rows])
+      #The number of unique treatments, with NA rows dropped
+      n_proper_treatments <- length(unique(c(freq_sub()$d0$treat1[proper_comparison_rows],
+                                             freq_sub()$d0$treat2[proper_comparison_rows])))
+      return(n_proper_comparisons * 25 + n_proper_treatments * 35)
+    })
+    
     output$forestPlot <- renderPlot({
       make_netStudy(freq_sub(), outcome_measure(), input$ForestHeader, input$ForestTitle)$fplot
-    })
+    },
+      height = function(){forest_plot_height()}
+    )
 
     output$downloadStudy <- downloadHandler(
       filename = function() {

@@ -196,7 +196,8 @@ test_that("RunCovariateModel() gives reproducible output. Follow on: FindCovaria
     model = result_1,
     covariate_title = "covar.age",
     cov_value = default,
-    outcome_measure = outcome_measure
+    outcome_measure = outcome_measure,
+    covariate_type = "Continuous"
   )
 
   expect_equal(length(output_1), 17)
@@ -210,7 +211,7 @@ test_that("RunCovariateModel() gives reproducible output. Follow on: FindCovaria
   expect_equal(output_1$comparator_names, c("the_Butcher", "the_Dung_named", "the_Great", "the_Slit_nosed", "the_Younger"))
 })
 
-test_that("CalculateConfidenceRegions() gives nothing for NA evidence range", {
+test_that("CalculateCredibleRegions() gives nothing for NA evidence range", {
   mtc_results <- list()
   
   model_output <- list(
@@ -221,7 +222,7 @@ test_that("CalculateConfidenceRegions() gives nothing for NA evidence range", {
     covariate_max = c(Ibuprofen = NA)
   )
   
-  result <- CalculateConfidenceRegions(model_output)
+  result <- CalculateCredibleRegions(model_output)
   
   expect_equal(names(result$intervals), c("Ibuprofen"))
   expect_equal(names(result$regions), c("Ibuprofen"))
@@ -240,7 +241,7 @@ test_that("CalculateConfidenceRegions() gives nothing for NA evidence range", {
   )
 })
 
-test_that("CalculateConfidenceRegions() gives interval for zero-width evidence range", {
+test_that("CalculateCredibleRegions() gives interval for zero-width evidence range", {
   mtc_results <- list()
   
   model_output <- list(
@@ -259,9 +260,9 @@ test_that("CalculateConfidenceRegions() gives interval for zero-width evidence r
     )
   )
   
-  mockery::stub(CalculateConfidenceRegions, ".FindConfidenceInterval", interval)
+  mockery::stub(CalculateCredibleRegions, ".FindCredibleInterval", interval)
   
-  result <- CalculateConfidenceRegions(model_output)
+  result <- CalculateCredibleRegions(model_output)
   
   expect_equal(names(result$regions), c("Ibuprofen"))
   expect_equal(names(result$intervals), c("Ibuprofen"))
@@ -280,8 +281,10 @@ test_that("CalculateConfidenceRegions() gives interval for zero-width evidence r
   )
 })
 
-test_that("CalculateConfidenceRegions() gives region for non-zero-width evidence range", {
+test_that("CalculateCredibleRegions() gives region for non-zero-width evidence range", {
   mtc_results <- list()
+  mtc_results$model <- list()
+  mtc_results$model$regressor <- list(type="continuous")
   
   model_output <- list(
     mtcResults = mtc_results,
@@ -322,8 +325,8 @@ test_that("CalculateConfidenceRegions() gives region for non-zero-width evidence
   
   n <- 1
   mockery::stub(
-    CalculateConfidenceRegions,
-    ".FindConfidenceInterval",
+    CalculateCredibleRegions,
+    ".FindCredibleInterval",
     function(...) {
       this_interval <- interval[n, c("2.5%", "97.5%")]
       n <<- n + 1
@@ -331,7 +334,7 @@ test_that("CalculateConfidenceRegions() gives region for non-zero-width evidence
     }
   )
   
-  result <- CalculateConfidenceRegions(model_output)
+  result <- CalculateCredibleRegions(model_output)
   
   expect_equal(names(result$intervals), c("Ibuprofen"))
   expect_equal(names(result$regions), c("Ibuprofen"))

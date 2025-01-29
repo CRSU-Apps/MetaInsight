@@ -119,6 +119,7 @@ RunCovariateModel <- function(data, treatment_ids, outcome_type, outcome, covari
 #' @param covariate_title Covariate name as per uploaded data
 #' @param cov_value Value of covariate for which to give output (default value the mean of study covariates)
 #' @param outcome_measure The outcome measure for the analysis: One of: "OR", "RR", "MD"
+#' @param covariate_type "Binary" or "Continuous"
 #' @return List of gemtc related output:
 #'  mtcResults = model object itself carried through (needed to match existing code)
 #'  mtcRelEffects = data relating to presenting relative effects;
@@ -137,11 +138,16 @@ RunCovariateModel <- function(data, treatment_ids, outcome_type, outcome, covari
 #'  model = The type of linear model, either "fixed" or "random"
 #'  covariate_min = Vector of minimum covariate values directly contributing to the regression.
 #'  covariate_max = Vector of maximum covariate values directly contributing to the regression.
-CovariateModelOutput <- function(data, treatment_ids, model, covariate_title, cov_value, outcome_measure) {
-  
+CovariateModelOutput <- function(data, treatment_ids, model, covariate_title, cov_value, outcome_measure, covariate_type) {
+
   model_levels = levels(model$model$data$reg.control)
   reference_name <- model_levels[model_levels %in% model$model$data$reg.control]
   comparator_names <- model_levels[!model_levels %in% model$model$data$reg.control]
+  
+  # If the covariate type has been selected as continuous and gemtc has inferred it as binary, overwrite it
+  if (covariate_type == "Continuous" & model$model$regressor$type == "binary") {
+    model$model$regressor$type <- "continuous"
+  }
   
   # Create text for random/fixed effect
   model_text <- paste(model$model$linearModel, "effect", sep = " ")
@@ -244,26 +250,26 @@ FindCovariateDefault <- function(model) {
   return(cov_value)
 }
 
-#' Calculate the confidence regions within direct evidence for the regression model.
+#' Calculate the credible regions within direct evidence for the regression model.
 #'
 #' @param model_output Return from `CovariateModelOutput()`.
 #'
-#' @return list of confidence region objects and confidence interval objects.
+#' @return list of credible region objects and credible interval objects.
 #' Regions cover treatments with a non-zero covariate range of direct contributions,
 #' intervals cover treatments with a single covariate value from direct contributions.
 #' Any treatment with no direct contributions will not be present in either list.
 #' Each is a list of data frames for each treatment name. Each data frame contains 3 columns:
-#' - cov_value: The covariate value at which the confidence region is calculated.
+#' - cov_value: The covariate value at which the credible region is calculated.
 #' - lower: the 2.5% quantile.
 #' - upper: the 97.5% quantile.
 #' Each data frame in "regions" contains 11 rows creating a 10-polygon region.
 #' Each data frame in "intervals" contains a single row at the covariate value of that single contribution.
-CalculateConfidenceRegions <- function(model_output) {
+CalculateCredibleRegions <- function(model_output) {
   mtc_results <- model_output$mtcResults
   reference_name <- model_output$reference_name
   
-  confidence_regions <- list()
-  confidence_intervals <- list()
+  credible_regions <- list()
+  credible_intervals <- list()
   
   for (treatment_name in model_output$comparator_names) {
     parameter_name <- glue::glue("d.{reference_name}.{treatment_name}")
@@ -271,54 +277,74 @@ CalculateConfidenceRegions <- function(model_output) {
     cov_max <- model_output$covariate_max[treatment_name]
     
     if (is.na(cov_min)) {
-      confidence_intervals[[treatment_name]] <- data.frame(cov_value = NA, lower = NA, upper = NA)
-      confidence_regions[[treatment_name]] <- data.frame(cov_value = NA, lower = NA, upper = NA)
+      
+      credible_intervals[[treatment_name]] <- data.frame(cov_value = NA, lower = NA, upper = NA)
+      credible_regions[[treatment_name]] <- data.frame(cov_value = NA, lower = NA, upper = NA)
+      
     } else if (cov_min == cov_max) {
-      interval <- .FindConfidenceInterval(mtc_results, reference_name, cov_min, parameter_name)
+      
+      interval <- .FindCredibleInterval(mtc_results, reference_name, cov_min, parameter_name)
       df <- data.frame(cov_value = cov_min, lower = interval["2.5%"], upper = interval["97.5%"])
       
       # Strip out the row names
       rownames(df) <- NULL
       
       # Add to regions list
-      confidence_intervals[[treatment_name]] <- df
-      confidence_regions[[treatment_name]] <- data.frame(cov_value = NA, lower = NA, upper = NA)
+      credible_intervals[[treatment_name]] <- df
+      credible_regions[[treatment_name]] <- data.frame(cov_value = NA, lower = NA, upper = NA)
+      
     } else {
+      
       df <- data.frame()
-      for (cov_value in seq(from = cov_min, to = cov_max, length.out = 11)) {
-        interval <- .FindConfidenceInterval(mtc_results, reference_name, cov_value, parameter_name)
+      
+      #Set the covariate values along the x-axis
+      if (model_output$mtcResults$model$regressor$type == "continuous") {
+        cov_value_sequence <- seq(from = cov_min, to = cov_max, length.out = 11)
+      } else if (model_output$mtcResults$model$regressor$type == "binary") {
+        cov_value_sequence <- 0:1 
+      }
+      
+      for (cov_value in cov_value_sequence) {
+        interval <- .FindCredibleInterval(mtc_results, reference_name, cov_value, parameter_name)
         df <- rbind(
           df,
           data.frame(cov_value = cov_value, lower = interval["2.5%"], upper = interval["97.5%"])
         )
       }
-      
+
       # Strip out the row names
       rownames(df) <- NULL
       
       # Add to regions list
-      confidence_regions[[treatment_name]] <- df
-      confidence_intervals[[treatment_name]] <- data.frame(cov_value = NA, lower = NA, upper = NA)
+      if (model_output$mtcResults$model$regressor$type == "continuous") {
+        credible_regions[[treatment_name]] <- df
+        credible_intervals[[treatment_name]] <- data.frame(cov_value = NA, lower = NA, upper = NA)
+      } else if (model_output$mtcResults$model$regressor$type == "binary") {
+        credible_regions[[treatment_name]] <- data.frame(cov_value = NA, lower = NA, upper = NA)
+        credible_intervals[[treatment_name]] <- df
+      }
     }
   }
-  
+
+
+
   return(
     list(
-      regions = confidence_regions,
-      intervals = confidence_intervals
+      regions = credible_regions,
+      intervals = credible_intervals
     )
   )
 }
 
-#' Find the confidence interval at a given covariate value.
+#' Find the credible interval at a given covariate value.
 #'
-#' @param mtc_results Meta-analysis object from which to find confidence interval.
+#' @param mtc_results Meta-analysis object from which to find credible interval.
 #' @param reference_name Name of reference treatment.
-#' @param cov_value Covariate value at which to find the confidence interval.
-#' @param parameter_name Name of the parameter for which to get the confidence interval.
+#' @param cov_value Covariate value at which to find the credible interval.
+#' @param parameter_name Name of the parameter for which to get the credible interval.
 #'
 #' @return Named vector of "2.5%" and "97.5" quantiles.
-.FindConfidenceInterval <- function(mtc_results, reference_name, cov_value, parameter_name) {
+.FindCredibleInterval <- function(mtc_results, reference_name, cov_value, parameter_name) {
   rel_eff <- gemtc::relative.effect(mtc_results, reference_name, covariate = cov_value)
   rel_eff_summary <- summary(rel_eff)
   return(rel_eff_summary$summaries$quantiles[parameter_name, c("2.5%", "97.5%")])

@@ -17,7 +17,7 @@ covariate_run_model_ui <- function(id) {
       p(tags$strong("Results for all studies")),
       p("Please choose your regressor type, then click the button below to run meta-regression analysis (and each time you subsequently change any options)."),
       fluidRow(
-        div(selectInput(inputId = ns("select_regressor"), 
+        div(selectInput(inputId = ns("select_regressor_type"), 
                   label = "Choose type of regression coefficient", 
                   choices = c("shared", "exchangeable", "unrelated")),
           style = "display: inline-block;"),
@@ -31,7 +31,19 @@ covariate_run_model_ui <- function(id) {
             style = "display:inline-block; vertical-align: top;"
         )
       ),
-      actionButton(inputId = ns("baye_do"), label = "Click here to run the main analysis for all studies")
+      actionButton(
+        inputId = ns("baye_do"),
+        label = span(
+          "Click here to run the main analysis for all studies",
+          # Initially hidden spinner
+          div(
+            id = ns("spinner"),
+            tags$i(class = "fa-solid fa-circle-notch fa-spin"),
+            style = "color: blue; padding-left: 5pt; display: none;"
+          ),
+          style="display: flex;"
+        )
+      )
     )
   )
 }
@@ -50,7 +62,9 @@ covariate_run_model_ui <- function(id) {
 #' @param cov_friendly Friendly name of chosen covariate
 #' @param model_effects Reactive containing model effects: either "random" or "fixed"
 #'
-#' @return List of reactives: "model_output" contains meta-regression model outputs
+#' @return List of reactives:
+#' - "model" contains meta-regression model outputs from `RunCovariateModel()`.
+#' - "regressor_type" contains the type of regression coefficient, either "shared", "unrelated", or "exchangeable".
 covariate_run_model_server <- function(
     id,
     data,
@@ -70,10 +84,26 @@ covariate_run_model_server <- function(
       "~ U(0,X), where X represents a very large difference in the analysis' outcome scale and is determined from the data."
     })
     
+    # Run model as a parallel process
+    model <- shiny::ExtendedTask$new(function(data, treatment_ids, outcome_type, outcome, covariate, cov_friendly, model_type, regressor_type, ref_choice) {
+      promises::future_promise({
+        RunCovariateModel(
+          data = data,
+          treatment_ids = treatment_ids,
+          outcome_type = outcome_type,
+          outcome = outcome,
+          covariate = covariate,
+          cov_friendly = cov_friendly,
+          model_type = model_type,
+          regressor_type = regressor_type,
+          ref_choice = ref_choice
+        )
+      })
+    })
     
-    #The model
-    model <- eventReactive(input$baye_do, {
-      RunCovariateModel(
+    # Kick off the model calculation when the button is pressed
+    observe({
+      model$invoke(
         data = data(),
         treatment_ids = treatment_df(),
         outcome_type = metaoutcome(),
@@ -81,12 +111,32 @@ covariate_run_model_server <- function(
         covariate = covariate(),
         cov_friendly = cov_friendly(),
         model_type = model_effects(),
-        regressor_type = input$select_regressor,
+        regressor_type = input$select_regressor_type,
         ref_choice = treatment_df()$Label[match(1, treatment_df()$Number)]
       )
-    })
-
-    return(model)
+    }) |>
+      bindEvent(input$baye_do)
+    
+    # When button is clicked, show the spinner and disable the button
+    observe({
+      shinyjs::show(id = "spinner")
+      shinyjs::disable(id = "baye_do")
+    }) |>
+      bindEvent(input$baye_do)
+    
+    # When model calculation completes, hide the spinner and enable the button
+    observe({
+      shinyjs::hide(id = "spinner")
+      shinyjs::enable(id = "baye_do")
+    }) |>
+      bindEvent(model$result())
+    
+    return(
+      list(
+        model = reactive({ model$result() }),
+        regressor_type = reactive({ input$select_regressor_type })
+      )
+    )
   })
 }
 
@@ -102,7 +152,9 @@ covariate_run_model_server <- function(
 #' @param metaoutcome Reactive containing meta analysis outcome: "Continuous" or "Binary"
 #' @param model_effects Reactive containing model effects: either "random" or "fixed"
 #'
-#' @return List of reactives: "model_output" contains meta-regression model outputs
+#' @return List of reactives:
+#' - "model" contains meta-regression model outputs from `BaselineRiskRegression()`.
+#' - "regressor_type" contains the type of regression coefficient, either "shared", "unrelated", or "exchangeable".
 baseline_risk_run_model_server <- function(
     id,
     data,
@@ -118,16 +170,50 @@ baseline_risk_run_model_server <- function(
       "~ U(0,5) or U(0,100) for a binary or continuous outcome respectively."
     })
     
-    #The model
-    model <- eventReactive(input$baye_do, {
-      BaselineRiskRegression(br_data = data(),
-                             treatment_ids = treatment_df(),
-                             outcome_type = metaoutcome(),
-                             ref = treatment_df()$Label[match(1, treatment_df()$Number)],
-                             effects_type = model_effects(),
-                             cov_parameters = input$select_regressor)
+    # Run model as a parallel process
+    model <- shiny::ExtendedTask$new(function(data, treatment_ids, outcome_type, ref, effects_type, cov_parameters) {
+      promises::future_promise({
+        BaselineRiskRegression(br_data = data,
+                               treatment_ids = treatment_ids,
+                               outcome_type = outcome_type,
+                               ref = ref,
+                               effects_type = effects_type,
+                               cov_parameters = cov_parameters)
+      })
     })
     
-    return(model)
+    # Kick off the model calculation when the button is pressed
+    observe({
+      model$invoke(
+        data = data(),
+        treatment_ids = treatment_df(),
+        outcome_type = metaoutcome(),
+        ref = treatment_df()$Label[match(1, treatment_df()$Number)],
+        effects_type = model_effects(),
+        cov_parameters = input$select_regressor_type
+      )
+    }) |>
+      bindEvent(input$baye_do)
+    
+    # When button is clicked, show the spinner and disable the button
+    observe({
+      shinyjs::show(id = "spinner")
+      shinyjs::disable(id = "baye_do")
+    }) |>
+      bindEvent(input$baye_do)
+    
+    # When model calculation completes, hide the spinner and enable the button
+    observe({
+      shinyjs::hide(id = "spinner")
+      shinyjs::enable(id = "baye_do")
+    }) |>
+      bindEvent(model$result())
+    
+    return(
+      list(
+        model = reactive({ model$result() }),
+        regressor_type = reactive({ input$select_regressor_type })
+      )
+    )
   })
 }

@@ -21,7 +21,7 @@ home_page_ui <- function(id) {
         });'
       )
     ),
-    h2("MetaInsight v6.2.0", align = "left"),
+    h2("MetaInsight v6.2.1", align = "left"),
     fluidRow(
       column(
         width = 3,
@@ -35,11 +35,9 @@ home_page_ui <- function(id) {
       column(
         width = 5,
         p(tags$strong("Latest Updates:")),
-        p(tags$strong("Minor update (18th October 2024 v6.2.0):")),
+        p(tags$strong("Minor update (29 January 2025 v6.2.1):")),
         tags$ul(
-          tags$li("New feature: summary forest plot as part of the frequentist analysis output"),
-          tags$li("Nodesplit model results are now presented as a plot with estimates being presented on the user-selected scale"),
-          tags$li("More flexibility in format of study names")
+          tags$li("Various bug fixes, and improvements to displays."),
         ),
         p(tags$strong("Major update (10 July 2024 v6.0.0):")),
         p(
@@ -47,7 +45,7 @@ home_page_ui <- function(id) {
             tags$li(
               "Meta-regression has been added. One covariate is allowed, which can be a new continuous or binary variable,
               or baseline risk. Two new graphs are available for meta-regression. The first displays the covariate values grouped by
-              treatment and study. The second plots the covariate against relative treatment effects, with confidence regions and
+              treatment and study. The second plots the covariate against relative treatment effects, with credible regions and
               study-level contributions."
             )
           )
@@ -70,7 +68,7 @@ home_page_ui <- function(id) {
     ),
     p(
       "For feedback/questions about this app please email the CRSU team at apps@crsu.org.uk. If you encounter any errors with using the app, please check the",
-      actionLink("tsp", "trouble shooting page"),
+      tags$a(href = "https://github.com/CRSU-Apps/MetaInsight/wiki/Troubleshooting", "trouble shooting page"),
       "first before contacting us."
     ),
     br(),
@@ -83,12 +81,20 @@ home_page_ui <- function(id) {
     ),
     br(),
     p(
-      "App powered by R and Shiny. All frequentist statistical calculations are performed using R package netmeta (Gerta Rücker, Guido Schwarzer, Ulrike Krahn and Jochem König 2017).",
-      tags$a(href="http://CRAN.R-project.org/package=netmeta", "netmeta: Network Meta-Analysis using Frequentist Methods. R package version 0.9-8.",target="_blank"),
-      "All Bayesian statistical calculations are performed using R package gemtc (Gert van Valkenhoef, Joel Kuiper 2016)",
-      tags$a(href="https://cran.r-project.org/web/packages/gemtc/gemtc.pdf", "gemtc: Network Meta-Analysis Using Bayesian Methods R package version 0.8-2.",target="_blank"),
-      "and R package BUGSNET (Audrey Beliveau, Devon J. Boyne, Justin Slater, Darren Brenner & Paul Arora)",
-      tags$a(href="https://bugsnetsoftware.github.io/", "BUGSnet: Bayesian inference Using Gibbs Sampling to conduct NETwork meta-analysis version 1.0.3.",target="_blank")
+      "App powered by R and Shiny. All frequentist statistical calculations are performed using R package ",
+      tags$b("netmeta"),
+      " (Gerta Rücker, Guido Schwarzer, Ulrike Krahn and Jochem König 2017)",
+      tags$a(href = "http://CRAN.R-project.org/package=netmeta","netmeta: Network Meta-Analysis using Frequentist Methods. R package version 0.9-8.",target = "_blank"),
+      "All Bayesian statistical calculations are performed using R packages ",
+      tags$b("gemtc"),
+      " (Gert van Valkenhoef, Joel Kuiper 2016)",
+      tags$a(href = "https://cran.r-project.org/web/packages/gemtc/gemtc.pdf", "gemtc: Network Meta-Analysis Using Bayesian Methods R package version 0.8-2.",target = "_blank"),
+      ", ", tags$b("BUGSNET"),
+      " (Audrey Beliveau, Devon J. Boyne, Justin Slater, Darren Brenner & Paul Arora)",
+      tags$a(href = "https://bugsnetsoftware.github.io/", "BUGSnet: Bayesian inference Using Gibbs Sampling to conduct NETwork meta-analysis version 1.0.3.",target =  "_blank"),
+      " , and ", tags$b("bnma"),
+      " (Michael Seo, Christopher Schmid 2024)",
+      tags$a(href = "https://CRAN.R-project.org/package=bnma", "bnma: Bayesian Network Meta-Analysis using 'JAGS'. R package version 1.6.0.",target = "_blank")
     ),
     p(
       "For users wishing to analyse large treatment networks or fit complex network meta-analysis models, please seek advice from technical experts."
@@ -107,13 +113,13 @@ home_page_ui <- function(id) {
       div(
         tags$strong("Funding and Support Acknowledgement:"),
         tags$p("MetaInsight is part of the Complex Reviews Synthesis Unit (CRSU) suite of evidence synthesis apps.
-        The development of these apps are currently funded (majority) and overseen by the Evidence Synthesis Group @ CRSU (NIHR153934).
+        The development of these apps was (majority) funded and overseen by the Evidence Synthesis Group @ CRSU (NIHR153934).
         Further details of other funders and support, current and past, can be found ",
-          tags$a(href="https://github.com/CRSU-Apps/.github/blob/main/DetailedFundingStatement.pdf", "on our GitHub page"),
+          tags$a(href = "https://github.com/CRSU-Apps/.github/wiki/Detailed-Funding-Statement", "on our GitHub page"),
         ". The views expressed are those of the author(s) and not necessarily those of the NIHR or the Department of Health and Social Care."),
         tags$p(
           "More information about the UK NIHR Complex Reviews Synthesis Unit (CRSU) can be found ",
-          tags$a(href="https://www.gla.ac.uk/research/az/evidencesynthesis/apps-materials-guidence/", "on our website", target="_blank"),
+          tags$a(href = "https://www.gla.ac.uk/research/az/crsu/", "on our website", target = "_blank"),
         )
       )
     )

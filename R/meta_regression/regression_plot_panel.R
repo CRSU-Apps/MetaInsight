@@ -77,24 +77,24 @@ regression_plot_panel_ui <- function(id) {
             ),
           tooltip = "Show the covariate value as a vertical line at the current value"
         ),
-        # Confidence regions
+        # Credible regions
         div(
-          id = ns("confidence_options"),
+          id = ns("credible_options"),
             checkboxInput(
-            inputId = ns("confidence"),
+            inputId = ns("credible"),
             label = div(
               .AddRegressionOptionTooltip(
-                "Show confidence regions",
+                "Show credible regions",
                 tags$i(class="fa-regular fa-circle-question"),
-                tooltip = "Show confidence regions for the added comparisons. This will not show if there is one or zero direct contributions"
+                tooltip = "Show credible regions for the added comparisons. This will not show if there is one or zero direct contributions"
               ),
-              uiOutput(outputId = ns("confidence_info")),
+              uiOutput(outputId = ns("credible_info")),
               style = "display: -webkit-inline-box;"
             )
           ),
           sliderInput(
-            inputId = ns("confidence_opacity"),
-            label = "Confidence Region Opacity",
+            inputId = ns("credible_opacity"),
+            label = "Credible Region Opacity",
             min = 0,
             max = 0.5,
             step = 0.01,
@@ -205,7 +205,19 @@ regression_plot_panel_ui <- function(id) {
 #' @param outcome_type Reactive containing meta analysis outcome: "Continuous" or "Binary".
 #' @param outcome_measure Reactive type of outcome (OR, RR, RD, MD or SD).
 #' @param package package used to create the model. Either "gemtc" (default) or "bnma".
-regression_plot_panel_server <- function(id, data, covariate_title, covariate_name, model_output, treatment_df, outcome_type, outcome_measure, reference, package = "gemtc") {
+#' @param model_valid Reactive containing whether or not the model is valid to be displayed.
+regression_plot_panel_server <- function(
+    id,
+    data,
+    covariate_title,
+    covariate_name,
+    model_output,
+    treatment_df,
+    outcome_type,
+    outcome_measure,
+    reference,
+    package = "gemtc",
+    model_valid = reactiveVal(TRUE)) {
   shiny::moduleServer(id, function(input, output, session) {
     
     # This will show a spinner while the model calculates, but will not render anything once it has completed
@@ -216,9 +228,9 @@ regression_plot_panel_server <- function(id, data, covariate_title, covariate_na
     
     added_comparators <- add_remove_panel_server(id = "added_comparators", reactive({ treatment_df()$RawLabel }), reference)
     
-    # Disable opacity when confidence regions not shown
+    # Disable opacity when credible regions not shown
     observe({
-      shinyjs::toggleState(id = "confidence_opacity", condition = input$confidence)
+      shinyjs::toggleState(id = "credible_opacity", condition = input$credible)
     })
     
     # Disable contribution options when contributions not shown
@@ -234,52 +246,52 @@ regression_plot_panel_server <- function(id, data, covariate_title, covariate_na
       stop("'package' must be 'gemtc' or 'bnma'")
     }
     
-    # Background process to calculate confidence regions
-    confidence_regions <- shiny::ExtendedTask$new(function(model_output) {
+    # Background process to calculate credible regions
+    credible_regions <- shiny::ExtendedTask$new(function(model_output) {
       promises::future_promise({
         if (package == "gemtc") {
-          return(CalculateConfidenceRegions(model_output))
+          return(CalculateCredibleRegions(model_output))
         } else if (package == "bnma") {
-          return(CalculateConfidenceRegionsBnma(model_output))
+          return(CalculateCredibleRegionsBnma(model_output))
         }
       })
     })
     
-    # Start calculation of confidence regions when the model output changes
+    # Start calculation of credible regions when the model output changes
     observe({
-      confidence_regions$invoke(model_output())
+      credible_regions$invoke(model_output())
     }) |>
       bindEvent(model_output())
 
-    calculating_confidence_regions <- reactiveVal(FALSE)
-    previous_confidence_regions_shown <- reactiveVal(FALSE)
+    calculating_credible_regions <- reactiveVal(FALSE)
+    previous_credible_regions_shown <- reactiveVal(FALSE)
 
-    # When model output changes, save the current state of the confidence region checkbox, then deselect and disable it
+    # When model output changes, save the current state of the credible region checkbox, then deselect and disable it
     observe({
-      calculating_confidence_regions(TRUE)
-      previous_confidence_regions_shown(input$confidence)
-      updateCheckboxInput(inputId = "confidence", value = FALSE)
-      shinyjs::disable(id = "confidence_options")
+      calculating_credible_regions(TRUE)
+      previous_credible_regions_shown(input$credible)
+      updateCheckboxInput(inputId = "credible", value = FALSE)
+      shinyjs::disable(id = "credible_options")
     }) |>
       bindEvent(model_output())
 
-    # When the confidence regions have been calculated, reenable the checkbox, and reset its value
+    # When the credible regions have been calculated, reenable the checkbox, and reset its value
     observe({
-      shinyjs::enable(id = "confidence_options")
-      updateCheckboxInput(inputId = "confidence", value = previous_confidence_regions_shown())
-      calculating_confidence_regions(FALSE)
+      shinyjs::enable(id = "credible_options")
+      updateCheckboxInput(inputId = "credible", value = previous_credible_regions_shown())
+      calculating_credible_regions(FALSE)
     }) |>
-      bindEvent(confidence_regions$result())
+      bindEvent(credible_regions$result())
 
-    # Show a spinner when the confidence regions are being calculated
-    output$confidence_info <- renderUI({
-      if (!calculating_confidence_regions()) {
+    # Show a spinner when the credible regions are being calculated
+    output$credible_info <- renderUI({
+      if (!calculating_credible_regions()) {
         return(NULL)
       }
 
       .AddRegressionOptionTooltip(
         tags$i(class = "fa-solid fa-circle-notch fa-spin"),
-        tooltip = "Calculating confidence regions",
+        tooltip = "Calculating credible regions",
         style = "color: blue;"
       )
     })
@@ -390,6 +402,9 @@ regression_plot_panel_server <- function(id, data, covariate_title, covariate_na
     output$regression_plot <- renderPlot({
       tryCatch(
         expr = {
+          if (!model_valid()) {
+            stop()
+          }
           shinyjs::enable(id = "download")
           CreateCompositeMetaRegressionPlot(
             model_output = model_output(),
@@ -398,12 +413,12 @@ regression_plot_panel_server <- function(id, data, covariate_title, covariate_na
             comparators = comparator_titles(),
             contribution_matrix = contribution_matrix(),
             contribution_type = input$absolute_relative_toggle,
-            confidence_regions = confidence_regions$result(),
+            credible_regions = credible_regions$result(),
             include_covariate = input$covariate,
             include_ghosts = input$ghosts,
             include_extrapolation = input$extrapolate,
-            include_confidence = input$confidence,
-            confidence_opacity = input$confidence_opacity,
+            include_credible = input$credible,
+            credible_opacity = input$credible_opacity,
             include_contributions = input$contributions != "None",
             contribution_multiplier = input$circle_multipler,
             legend_position = input$legend_position_dropdown
@@ -437,12 +452,12 @@ regression_plot_panel_server <- function(id, data, covariate_title, covariate_na
             comparators = comparator_titles(),
             contribution_matrix = contribution_matrix(),
             contribution_type = input$absolute_relative_toggle,
-            confidence_regions = confidence_regions$result(),
+            credible_regions = credible_regions$result(),
             include_covariate = input$covariate,
             include_ghosts = input$ghosts,
             include_extrapolation = input$extrapolate,
-            include_confidence = input$confidence,
-            confidence_opacity = input$confidence_opacity,
+            include_credible = input$credible,
+            credible_opacity = input$credible_opacity,
             include_contributions = input$contributions != "None",
             contribution_multiplier = input$circle_multipler,
             legend_position = input$legend_position_dropdown

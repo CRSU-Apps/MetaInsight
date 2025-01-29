@@ -10,14 +10,14 @@ regression_ghost_name = "\"Other\""
 #' @param comparators Vector of names of comparison treatments to plot in colour.
 #' @param contribution_matrix Contributions from function `CalculateContributions()`.
 #' @param contribution_type Type of contribution, used to calculate sizes for the study contribution circles.
-#' @param confidence_regions List of confidence region data frames from function `CalculateConfidenceRegions()`.
+#' @param credible_regions List of credible region data frames from function `CalculateCredibleRegions()`.
 #' @param include_covariate TRUE if the value of the covariate is to be plotted as a vertical line. Defaults to FALSE.
 #' @param include_ghosts TRUE if all other comparator studies should be plotted in grey in the background of the plot. Defaults to FALSE.
 #' @param include_extrapolation TRUE if regression lines should be extrapolated beyond the range of the given data. These will appear as dashed lines.
 #' Defaults to FALSE.
-#' @param include_confidence TRUE if the confidence regions should be plotted for the specified comparators. These will be partially transparent regions.
+#' @param include_credible TRUE if the credible regions should be plotted for the specified comparators. These will be partially transparent regions.
 #' Defaults to FALSE.
-#' @param confidence_opacity The opacity of the confidence regions. Can be any value between 0 and 1, inclusive. Defaults to 0.2.
+#' @param credible_opacity The opacity of the credible regions. Can be any value between 0 and 1, inclusive. Defaults to 0.2.
 #' @param include_contributions TRUE if the contributions should be plotted as a circle for each study. Defaults to TRUE.
 #' @param contribution_multiplier Factor by which to scale the sizes of the study contribution circles. Defaults to 1.0.
 #' @param legend_position String informing the position of the legend. Acceptable values are:
@@ -34,12 +34,12 @@ CreateCompositeMetaRegressionPlot <- function(
     comparators,
     contribution_matrix,
     contribution_type,
-    confidence_regions,
+    credible_regions,
     include_covariate = FALSE,
     include_ghosts = FALSE,
     include_extrapolation = FALSE,
-    include_confidence = FALSE,
-    confidence_opacity = 0.2,
+    include_credible = FALSE,
+    credible_opacity = 0.2,
     include_contributions = TRUE,
     contribution_multiplier = 1.0,
     legend_position = "BR") {
@@ -51,12 +51,12 @@ CreateCompositeMetaRegressionPlot <- function(
     comparators = comparators,
     contribution_matrix = contribution_matrix,
     contribution_type = contribution_type,
-    confidence_regions = confidence_regions,
+    credible_regions = credible_regions,
     include_covariate = include_covariate,
     include_ghosts = include_ghosts,
     include_extrapolation = include_extrapolation,
-    include_confidence = include_confidence,
-    confidence_opacity = confidence_opacity,
+    include_credible = include_credible,
+    credible_opacity = credible_opacity,
     include_contributions = include_contributions,
     contribution_multiplier = contribution_multiplier,
     legend_position = legend_position
