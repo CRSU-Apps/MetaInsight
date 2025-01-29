@@ -21,7 +21,7 @@ home_page_ui <- function(id) {
         });'
       )
     ),
-    h2("MetaInsight v6.2.0", align = "left"),
+    h2("MetaInsight v6.2.1", align = "left"),
     fluidRow(
       column(
         width = 3,
@@ -35,11 +35,9 @@ home_page_ui <- function(id) {
       column(
         width = 5,
         p(tags$strong("Latest Updates:")),
-        p(tags$strong("Minor update (18th October 2024 v6.2.0):")),
+        p(tags$strong("Minor update (29 January 2025 v6.2.1):")),
         tags$ul(
-          tags$li("New feature: summary forest plot as part of the frequentist analysis output"),
-          tags$li("Nodesplit model results are now presented as a plot with estimates being presented on the user-selected scale"),
-          tags$li("More flexibility in format of study names")
+          tags$li("Various bug fixes, and improvements to displays."),
         ),
         p(tags$strong("Major update (10 July 2024 v6.0.0):")),
         p(
@@ -95,6 +93,7 @@ home_page_ui <- function(id) {
       " (Audrey Beliveau, Devon J. Boyne, Justin Slater, Darren Brenner & Paul Arora)",
       tags$a(href = "https://bugsnetsoftware.github.io/", "BUGSnet: Bayesian inference Using Gibbs Sampling to conduct NETwork meta-analysis version 1.0.3.",target =  "_blank"),
       " , and ", tags$b("bnma"),
+      " (Michael Seo, Christopher Schmid 2024)",
       tags$a(href = "https://CRAN.R-project.org/package=bnma", "bnma: Bayesian Network Meta-Analysis using 'JAGS'. R package version 1.6.0.",target = "_blank")
     ),
     p(
