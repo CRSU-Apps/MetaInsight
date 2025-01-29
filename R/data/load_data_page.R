@@ -19,7 +19,7 @@ load_data_page_ui <- function(id) {
             title = "View Data",
             div(
               style = 'overflow-x: scroll',
-              uiOutput(outputId = ns("tb"))
+              tableOutput(outputId = ns("tb"))
             )
           )
         )

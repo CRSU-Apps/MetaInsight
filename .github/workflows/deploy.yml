@@ -56,14 +56,9 @@ jobs:
         run: |
           # Install packages
           source("global.R")
-          # Create lockfile
-          install.packages("renv")
-          renv::snapshot()
         shell: Rscript {0}
         env:
           GITHUB_PAT: ${{ secrets.PAT }}
-      # Setup and install dependencies using renv
-      - uses: r-lib/actions/setup-renv@v2
       # Deploy using rsconnect
       - name: Deploy
         run: |
