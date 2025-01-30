@@ -1,13 +1,13 @@
 ###### MetaInsight ######
 
 LoadOrInstall <- function(package_name, install_function = install.packages) {
-  print(glue::glue("*** - *** Loading package: '{package_name}' *** - ***"))
+  print("*** - *** Loading package: '" + package_name + "' *** - ***")
   tryCatch(
     {
       library(package_name, character.only = TRUE)
     },
     error = function(exptn) {
-      print(glue::glue("*** - *** Installing package: '{package_name}' *** - ***"))
+      print("*** - *** Installing package: '" + package_name + "' *** - ***")
       if (class(exptn)[1] == "packageNotFoundError") {
         install_function(package_name)
         library(package_name, character.only = TRUE)
