@@ -1,6 +1,6 @@
 ###### MetaInsight ######
 
-LoadOrInstall <- function(package_name, install_function = install.packages) {
+LoadOrInstall <- function(package_name, install_function = InstallFromCran) {
   print(paste0("*** - *** Loading package: '", package_name, "' *** - ***"))
   tryCatch(
     {
@@ -16,6 +16,10 @@ LoadOrInstall <- function(package_name, install_function = install.packages) {
       }
     }
   )
+}
+
+InstallFromCran <- function(package_name) {
+  install.packages(package_name, repos = "https://cran.rstudio.com/")
 }
 
 InstallBugsNet <- function(ignored) {
