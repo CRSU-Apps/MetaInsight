@@ -152,8 +152,13 @@ data_analysis_page_server <- function(id, data, is_default_data, treatment_df, m
     
     
     filtertable <- function() {
-      label <- treatment_df()
       dt <- initial_non_covariate_data()
+      
+      if (FindDataShape(dt) == "wide") {
+        dt <- WideToLong(dt, metaoutcome())
+      }
+      
+      label <- treatment_df()
       ntx <- nrow(label)
       dt$T <- factor(dt$T,
                      levels = c(1:ntx),
