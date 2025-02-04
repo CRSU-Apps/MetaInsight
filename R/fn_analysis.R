@@ -55,7 +55,8 @@ contrastform.df <- function(data, outcome, CONBI) {
                          mean = mean_list,
                          sd = sd_list,
                          data = data,                
-                         sm = outcome)
+                         sm = outcome,
+                         studlab = data$Study)
   } else if (CONBI == 'Binary') {
     
     event_list <-  CreateListOfWideColumns(wide_data = data, column_prefix = "R")
@@ -64,7 +65,8 @@ contrastform.df <- function(data, outcome, CONBI) {
                          event = event_list,
                          n = n_list,
                          data = data,
-                         sm = outcome)
+                         sm = outcome,
+                         studlab = data$Study)
   } else {
     stop("CONBI must be 'Continuous' or 'Binary'")
   }
