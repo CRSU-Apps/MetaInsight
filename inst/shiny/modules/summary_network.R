@@ -23,6 +23,12 @@ summary_network_module_server <- function(id, common, parent_session) {
     # LOAD INTO COMMON ####
 
     # METADATA ####
+      common$meta$summary_network$used <- TRUE 
+      common$meta$summary_network$label_all <- as.numeric(input$label_all) 
+      common$meta$summary_network$label_excluded <- as.numeric(input$label_excluded) 
+      common$meta$summary_network$networkstyle <- input$networkstyle 
+      common$meta$summary_network$format_freq1 <- input$format_freq1 
+      common$meta$summary_network$format_freq2 <- input$format_freq2
 
     # TRIGGER
     gargoyle::trigger("summary_network")
@@ -121,11 +127,23 @@ summary_network_module_server <- function(id, common, parent_session) {
   )
 
   return(list(
-    save = function() {
-      # Save any values that should be saved when the current session is saved
+    save = function() {list(
+      ### Manual save start
+      ### Manual save end
+      label_all = input$label_all, 
+      label_excluded = input$label_excluded, 
+      networkstyle = input$networkstyle, 
+      format_freq1 = input$format_freq1, 
+      format_freq2 = input$format_freq2)
     },
     load = function(state) {
-      # Load
+      ### Manual load start
+      ### Manual load end
+      updateNumericInput(session, "label_all", value = state$label_all) 
+      updateNumericInput(session, "label_excluded", value = state$label_excluded) 
+      updateRadioButtons(session, "networkstyle", selected = state$networkstyle) 
+      updateRadioButtons(session, "format_freq1", selected = state$format_freq1) 
+      updateRadioButtons(session, "format_freq2", selected = state$format_freq2)
     }
   ))
 })
@@ -169,7 +187,13 @@ summary_network_module_result <- function(id) {
   )
 }
 
-summary_network_module_rmd <- function(common) {
+summary_network_module_rmd <- function(common){ list(
+  summary_network_knit = !is.null(common$meta$summary_network$used), 
+  summary_network_label_all = common$meta$summary_network$label_all, 
+  summary_network_label_excluded = common$meta$summary_network$label_excluded, 
+  summary_network_networkstyle = common$meta$summary_network$networkstyle, 
+  summary_network_format_freq1 = common$meta$summary_network$format_freq1, 
+  summary_network_format_freq2 = common$meta$summary_network$format_freq2)
   # Variables used in the module's Rmd code
 }
 

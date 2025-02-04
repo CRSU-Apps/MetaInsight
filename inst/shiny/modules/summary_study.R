@@ -36,6 +36,11 @@ summary_study_module_server <- function(id, common, parent_session) {
     # LOAD INTO COMMON ####
 
     # METADATA ####
+      common$meta$summary_study$used <- TRUE
+      common$meta$summary_study$ForestContent <- as.numeric(input$ForestContent)
+      common$meta$summary_study$ForestTitle <- as.numeric(input$ForestTitle)
+      common$meta$summary_study$ForestHeader <- as.numeric(input$ForestHeader)
+      common$meta$summary_study$format_freq0 <- input$format_freq0
 
     # TRIGGER
     gargoyle::trigger("summary_study")
@@ -65,11 +70,21 @@ summary_study_module_server <- function(id, common, parent_session) {
 
 
   return(list(
-    save = function() {
-      # Save any values that should be saved when the current session is saved
+    save = function() {list(
+      ### Manual save start
+      ### Manual save end
+      ForestContent = input$ForestContent,
+      ForestTitle = input$ForestTitle,
+      ForestHeader = input$ForestHeader,
+      format_freq0 = input$format_freq0)
     },
     load = function(state) {
-      # Load
+      ### Manual load start
+      ### Manual load end
+      updateNumericInput(session, "ForestContent", value = state$ForestContent)
+      updateNumericInput(session, "ForestTitle", value = state$ForestTitle)
+      updateNumericInput(session, "ForestHeader", value = state$ForestHeader)
+      updateRadioButtons(session, "format_freq0", selected = state$format_freq0)
     }
   ))
 })
@@ -82,7 +97,12 @@ summary_study_module_result <- function(id) {
   plotOutput(ns("forestPlot"), height = "1000px", width = "800px")
 }
 
-summary_study_module_rmd <- function(common) {
+summary_study_module_rmd <- function(common){ list(
+  summary_study_knit = !is.null(common$meta$summary_study$used),
+  summary_study_ForestContent = common$meta$summary_study$ForestContent,
+  summary_study_ForestTitle = common$meta$summary_study$ForestTitle,
+  summary_study_ForestHeader = common$meta$summary_study$ForestHeader,
+  summary_study_format_freq0 = common$meta$summary_study$format_freq0)
   # Variables used in the module's Rmd code
 }
 

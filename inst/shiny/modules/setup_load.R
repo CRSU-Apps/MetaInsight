@@ -148,13 +148,13 @@ setup_load_module_server <- function(id, common, parent_session) {
     save = function() {list(
       ### Manual save start
       ### Manual save end
-      metaoutcome = input$metaoutcome,
+      metaoutcome = input$metaoutcome, 
       format = input$format)
     },
     load = function(state) {
       ### Manual load start
       ### Manual load end
-      updateRadioButtons(session, "metaoutcome", selected = state$metaoutcome)
+      updateRadioButtons(session, "metaoutcome", selected = state$metaoutcome) 
       updateRadioButtons(session, "format", selected = state$format)
     }
   ))

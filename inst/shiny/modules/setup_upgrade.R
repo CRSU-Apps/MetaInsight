@@ -43,6 +43,9 @@ setup_upgrade_module_server <- function(id, common, parent_session) {
       common$logger %>% writeLog(type= "complete", "Data was upgraded successfully and can now be downloaded")
       common$upgraded_data <- result
       # METADATA ####
+      common$meta$setup_upgrade$used <- TRUE 
+      common$meta$setup_upgrade$uploaded_data <- input$uploaded_data$name 
+      common$meta$setup_upgrade$treatment_names <- input$treatment_names
 
       # TRIGGER
       gargoyle::trigger("setup_upgrade")
@@ -66,11 +69,15 @@ setup_upgrade_module_server <- function(id, common, parent_session) {
 
 
   return(list(
-    save = function() {
-      # Save any values that should be saved when the current session is saved
+    save = function() {list(
+      ### Manual save start
+      ### Manual save end
+      treatment_names = input$treatment_names)
     },
     load = function(state) {
-      # Load
+      ### Manual load start
+      ### Manual load end
+      updateTextInput(session, "treatment_names", value = state$treatment_names)
     }
   ))
 })
@@ -78,7 +85,10 @@ setup_upgrade_module_server <- function(id, common, parent_session) {
 
 
 
-setup_upgrade_module_rmd <- function(common) {
+setup_upgrade_module_rmd <- function(common){ list(
+  setup_upgrade_knit = !is.null(common$meta$setup_upgrade$used), 
+  setup_upgrade_uploaded_data = common$meta$setup_upgrade$uploaded_data, 
+  setup_upgrade_treatment_names = common$meta$setup_upgrade$treatment_names)
   # Variables used in the module's Rmd code
 }
 

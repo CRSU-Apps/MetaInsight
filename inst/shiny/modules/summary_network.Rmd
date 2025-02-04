@@ -3,5 +3,10 @@ Description of what the code will do {{var1}}
 ```
 
 ```{r, echo = {{summary_network_knit}}, include = {{summary_network_knit}}}
+{{summary_network_label_all}}
+{{summary_network_label_excluded}}
+{{summary_network_networkstyle}}
+{{summary_network_format_freq1}}
+{{summary_network_format_freq2}}
 # R code to run {{var2}}
 ```

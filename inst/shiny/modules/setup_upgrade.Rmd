@@ -3,5 +3,7 @@ Description of what the code will do {{var1}}
 ```
 
 ```{r, echo = {{setup_upgrade_knit}}, include = {{setup_upgrade_knit}}}
+{{setup_upgrade_uploaded_data}}
+{{setup_upgrade_treatment_names}}
 # R code to run {{var2}}
 ```

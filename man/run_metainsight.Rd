@@ -4,13 +4,20 @@
 \alias{run_metainsight}
 \title{Run \emph{"metainsight"} Application}
 \usage{
-run_metainsight(launch.browser = TRUE, port = getOption("shiny.port"))
+run_metainsight(
+  launch.browser = TRUE,
+  port = getOption("shiny.port"),
+  load_file = NULL
+)
 }
 \arguments{
 \item{launch.browser}{Whether or not to launch a new browser window.}
 
 \item{port}{The port for the shiny server to listen on. Defaults to a
 random available port.}
+
+\item{load_file}{Path to a saved session file which will be loaded when the
+app is opened}
 }
 \description{
 This function runs the \emph{"metainsight"} application in the user's

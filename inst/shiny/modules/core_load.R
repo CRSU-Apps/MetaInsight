@@ -15,12 +15,25 @@ core_load_module_server <- function(id, common, modules, map, COMPONENT_MODULES,
       shinyjs::toggleState("goLoad_session", !is.null(input$load_session$datapath))
     })
 
-    observeEvent(input$goLoad_session, {
-      temp <- readRDS(input$load_session$datapath)
+
+    load_session <- function(temp){
+
+      if (!("common" %in% class(temp))){
+        close_loading_modal()
+        common$logger %>% writeLog(type = "error", "That is not a valid MetaInsight save file")
+        return()
+      }
+
+      if (temp$state$main$version != as.character(packageVersion("metainsight"))){
+        current_version <- as.character(packageVersion("metainsight"))
+        common$logger %>% writeLog(type = "warning",
+                                   glue::glue("The save file was created using MetaInsight v{temp$state$main$version},
+                                 but you are using MetaInsight v{current_version}"))
+      }
 
       temp_names <- names(temp)
       #exclude the non-public and function objects
-      temp_names  <- temp_names[!temp_names %in% c("clone", ".__enclos_env__", "logger")]
+      temp_names  <- temp_names[!temp_names %in% c("clone", ".__enclos_env__", "logger", "reset")]
       for (name in temp_names){
         common[[name]] <- temp[[name]]
       }
@@ -36,17 +49,34 @@ core_load_module_server <- function(id, common, modules, map, COMPONENT_MODULES,
         updateRadioButtons(parent_session, glue("{component}Sel"), selected = value)
       }
 
-      #restore map and results for used modules
+      #restore results for used modules
       for (used_module in names(common$meta)){
-        gargoyle::trigger(used_module) # to replot results
-        component <- strsplit(used_module, "_")[[1]][1]
-        map_fx <- COMPONENT_MODULES[[component]][[used_module]]$map_function
-        if (!is.null(map_fx)) {
-          do.call(map_fx, list(map, common = common))
-        }
+        gargoyle::trigger(used_module)
       }
+    }
 
+    observeEvent(input$goLoad_session, {
+      temp <- readRDS(input$load_session$datapath)
+      load_session(temp)
       common$logger %>% writeLog(type="info", "The previous session has been loaded successfully")
+    })
+
+
+
+    # load file if run_app function has a load_file parameter
+    load_file_path <- reactive({if (exists("load_file_path", envir = .GlobalEnv)) {
+      get("load_file_path", envir = .GlobalEnv)
+    } else {
+      NULL
+    }})
+
+    load_on_start <- observe({
+      req(load_file_path())
+      show_loading_modal("Loading previous session")
+      load_session(readRDS(load_file_path()))
+      close_loading_modal()
+      common$logger %>% writeLog(type="info", "The previous session has been loaded successfully")
+      load_on_start$destroy()
     })
 
   }

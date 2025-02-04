@@ -3,8 +3,7 @@ setup_define_module_ui <- function(id) {
   tagList(
     selectizeInput(ns("reference_treatment"), "Select reference treatment", choices = c()),
     uiOutput(ns("outcome_out")),
-    radioButtons(
-      inputId = ns("rankopts"),
+    radioButtons(ns("rankopts"),
       label = 'For treatment rankings, smaller outcome values (e.g. smaller mean values for continuous data, or ORs less than 1 for binary data) are:',
       choices = c(
         "Desirable" = "good",
@@ -77,6 +76,10 @@ setup_define_module_server <- function(id, common, parent_session) {
     common$logger %>% writeLog(type = "complete", "Data has been defined")
 
     # METADATA ####
+    common$meta$setup_define$used <- TRUE
+    common$meta$setup_define$reference_treatment <- input$reference_treatment
+    common$meta$setup_define$rankopts <- input$rankopts
+    common$meta$setup_define$outcome <- input$outcome
 
     # TRIGGER
     gargoyle::trigger("setup_define")
@@ -84,18 +87,30 @@ setup_define_module_server <- function(id, common, parent_session) {
   })
 
   return(list(
-    save = function() {
-      # Save any values that should be saved when the current session is saved
+    save = function() {list(
+      ### Manual save start
+      ### Manual save end
+      reference_treatment = input$reference_treatment,
+      rankopts = input$rankopts,
+      outcome = input$outcome)
     },
     load = function(state) {
-      # Load
+      ### Manual load start
+      ### Manual load end
+      updateSelectizeInput(session, "reference_treatment", selected = state$reference_treatment)
+      updateRadioButtons(session, "rankopts", selected = state$rankopts)
+      updateRadioButtons(session, "outcome", selected = state$outcome)
     }
   ))
 })
 }
 
 
-setup_define_module_rmd <- function(common) {
+setup_define_module_rmd <- function(common){ list(
+  setup_define_knit = !is.null(common$meta$setup_define$used),
+  setup_define_reference_treatment = common$meta$setup_define$reference_treatment,
+  setup_define_rankopts = common$meta$setup_define$rankopts,
+  setup_define_outcome = common$meta$setup_define$outcome)
   # Variables used in the module's Rmd code
 }
 

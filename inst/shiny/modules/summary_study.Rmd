@@ -3,5 +3,9 @@ Description of what the code will do {{var1}}
 ```
 
 ```{r, echo = {{summary_study_knit}}, include = {{summary_study_knit}}}
+{{summary_study_ForestContent}}
+{{summary_study_ForestTitle}}
+{{summary_study_ForestHeader}}
+{{summary_study_format_freq0}}
 # R code to run {{var2}}
 ```

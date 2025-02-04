@@ -3,5 +3,8 @@ Description of what the code will do {{var1}}
 ```
 
 ```{r, echo = {{setup_define_knit}}, include = {{setup_define_knit}}}
+{{setup_define_reference_treatment}}
+{{setup_define_rankopts}}
+{{setup_define_outcome}}
 # R code to run {{var2}}
 ```
