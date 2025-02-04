@@ -8,7 +8,11 @@
 #' @param reference Name of the reference treatment.
 #' @return See output from freq_wrap().
 frequentist <- function(data, metaoutcome, treatment_list, outcome_measure, modelranfix, reference) {
-  data_wide <-  entry.df(data = data, CONBI = metaoutcome) # Transform data to wide form
+  if (FindDataShape(data) == "long") {
+    data_wide <- LongToWide(long_data = data, outcome_type = metaoutcome)
+  } else {
+    data_wide <- data
+  }
   
   # Use the self-defined function, freq_wrap
   return(
@@ -25,38 +29,6 @@ frequentist <- function(data, metaoutcome, treatment_list, outcome_measure, mode
 
 
 
-#' Converts long data to wide, leaves wide data unchanged.
-#' 
-#' @param data Input dataset.
-#' @param CONBI "Continuous" or "Binary".
-#' @return Input data in long format.
-entry.df <- function(data, CONBI) {
-  newData1 <- as.data.frame(data)
-  if (FindDataShape(newData1) == "long") {
-    newData2<-newData1[order(newData1$StudyID, -newData1$T), ]
-    newData2$number<- ave(as.numeric(newData2$StudyID),newData2$StudyID,FUN=seq_along)  # create counting variable for number of arms within each study.
-    data_wide <- reshape(newData2, timevar = "number",idvar = c("Study", "StudyID"), direction = "wide") # reshape
-    numbertreat=max(newData2$number)
-  }
-  else {
-    data_wide<- newData1
-    a<- ifelse(CONBI=='Continuous', 4, 3)
-    numbertreat=(ncol(newData1)-2)/a
-  }
-  if (numbertreat < 6) {  # generate additional columns if less than 6 arms.
-    for (k in (numbertreat+1):6) {
-      if (CONBI=='Continuous') {
-        data_wide[c(paste0("T.",k),paste0("N.",k),paste0("Mean.",k),paste0("SD.",k))]<-NA
-      } else {
-        data_wide[c(paste0("T.",k),paste0("R.",k),paste0("N.",k))]<-NA
-      }
-    }
-  }
-  return(data_wide)
-}
-
-
-
 #########################
 ##### function for transforming data to contrast form
 #########################
@@ -68,17 +40,29 @@ entry.df <- function(data, CONBI) {
 #' @param CONBI "Continuous" or "Binary".
 #' @return Input data in contrast form.
 contrastform.df <- function(data, outcome, CONBI) {
+
+  #Create a list of columns of the variables to be passed to netmeta::pairwise()
+  treat_list <- CreateListOfWideColumns(wide_data = data, column_prefix = "T")
+  n_list <-  CreateListOfWideColumns(wide_data = data, column_prefix = "N")
+  
   if (CONBI == 'Continuous') {
-    d1 <- netmeta::pairwise(treat = list(T.1, T.2, T.3, T.4, T.5, T.6),
-                            n = list(N.1, N.2, N.3, N.4, N.5, N.6),
-                            mean = list(Mean.1, Mean.2, Mean.3, Mean.4, Mean.5, Mean.6),
-                            sd = list(SD.1, SD.2, SD.3, SD.4, SD.5, SD.6),
+    
+    mean_list <-  CreateListOfWideColumns(wide_data = data, column_prefix = "Mean")
+    sd_list <-  CreateListOfWideColumns(wide_data = data, column_prefix = "SD")
+    
+    d1 <- netmeta::pairwise(treat = treat_list,
+                            n = n_list,
+                            mean = mean_list,
+                            sd = sd_list,
                             data = data,                
                             sm = outcome)
   } else if (CONBI == 'Binary') {
-    d1 <- netmeta::pairwise(treat = list(T.1, T.2, T.3, T.4, T.5, T.6),
-                            event = list(R.1, R.2, R.3, R.4, R.5, R.6),
-                            n = list(N.1, N.2, N.3, N.4, N.5, N.6),
+    
+    event_list <-  CreateListOfWideColumns(wide_data = data, column_prefix = "R")
+    
+    d1 <- netmeta::pairwise(treat = treat_list,
+                            event = event_list,
+                            n = n_list,
                             data = data,
                             sm = outcome)
   } else {
