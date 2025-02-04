@@ -15,12 +15,12 @@ core_intro_module_server <- function(id, common, parent_session) {
                       c("a[data-value=\"load\"]", "Click on the tabs to move between components", "bottom", "$('a[data-value=\"load\"]').trigger('click');"),
                       c("#loadHelp", "Click on the question mark to view instructions for the component", "bottom", "$('a[data-value=\"Component Guidance\"]').trigger('click');"),
                       c("#loadSel", "Select a module to load the options", "bottom", "$('a[data-value=\"Map\"]').trigger('click');
-                                                                                                     $('input[value=\"load_load\"]').trigger('click');"),
-                      c("#load_loadHelp", "Click on the question mark to view instructions for the module", "bottom", "$('a[data-value=\"Module Guidance\"]').trigger('click');"),
+                                                                                                     $('input[value=\"setup_load\"]').trigger('click');"),
+                      c("#setup_loadHelp", "Click on the question mark to view instructions for the module", "bottom", "$('a[data-value=\"Module Guidance\"]').trigger('click');"),
 
 
                       c("div[class=\"form-group shiny-input-container\"]", "Choose from the list of options", "bottom", "$('a[data-value=\"Table\"]').trigger('click');"),
-                      c("#load_load-run", "Click the button to run the module", "bottom", NA),
+                      c("#setup_load-run", "Click the button to run the module", "bottom", NA),
                       c("a[data-value=\"Data table\"]", "Outputs will be loaded onto the Table...", "bottom", NA),
                       c("a[data-value=\"Results\"]", "or the Results tabs depending on the module", "bottom", "$('a[data-value=\"Results\"]').trigger('click');"),
 

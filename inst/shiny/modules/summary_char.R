@@ -24,7 +24,7 @@ summary_char_module_server <- function(id, common, parent_session) {
 
     # Characteristics table of all studies
     output$sumtb <- renderTable({
-      gargoyle::watch("load_define")
+      gargoyle::watch("setup_define")
       req(common$bugsnetdt)
       summary_char(common$bugsnetdt, common$metaoutcome)
     })
@@ -32,7 +32,7 @@ summary_char_module_server <- function(id, common, parent_session) {
     # Characteristics table with studies excluded
     output$sumtb_sub <- renderTable({
       gargoyle::watch("exclude")
-      gargoyle::watch("load_define")
+      gargoyle::watch("setup_define")
       req(common$bugsnetdt)
       if (is.null(common$excluded_studies)){
         summary_char(common$bugsnetdt, common$metaoutcome)

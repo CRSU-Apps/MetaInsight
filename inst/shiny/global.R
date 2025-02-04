@@ -15,16 +15,16 @@ source("helpers.R")
 
 # The components that have modules. These names must match the values of the
 # tabs of the components in the UI.
-COMPONENTS <- c("load", "summary", "rep")
+COMPONENTS <- c("setup", "summary", "rep")
 
 # Information about modules that various parts of the app need access to
 COMPONENT_MODULES <- list()
 
 # Loadbase modules
 base_module_configs <- c(
-  "modules/load_load.yml",
-  "modules/load_update.yml",
-  "modules/load_define.yml",
+  "modules/setup_load.yml",
+  "modules/setup_upgrade.yml",
+  "modules/setup_define.yml",
   "modules/summary_char.yml",
   "modules/summary_study.yml",
   "modules/summary_network.yml",

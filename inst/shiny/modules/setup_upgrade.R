@@ -1,4 +1,4 @@
-load_update_module_ui <- function(id) {
+setup_upgrade_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
     h4(tags$strong("Select a data file (.csv) to upload")),
@@ -16,7 +16,7 @@ load_update_module_ui <- function(id) {
   )
 }
 
-load_update_module_server <- function(id, common, parent_session) {
+setup_upgrade_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
   observeEvent(input$run, {
@@ -36,7 +36,7 @@ load_update_module_server <- function(id, common, parent_session) {
     }
 
     # FUNCTION CALL ####
-    result <- load_update(input$uploaded_data$datapath, input$treatment_names, common$logger)
+    result <- setup_upgrade(input$uploaded_data$datapath, input$treatment_names, common$logger)
 
     # LOAD INTO COMMON ####
     if (!is.null(result)){
@@ -45,12 +45,12 @@ load_update_module_server <- function(id, common, parent_session) {
       # METADATA ####
 
       # TRIGGER
-      gargoyle::trigger("load_update")
+      gargoyle::trigger("setup_upgrade")
     }
   })
 
   output$download_out <- renderUI({
-    gargoyle::watch("load_update")
+    gargoyle::watch("setup_upgrade")
     req(common$upgraded_data)
     downloadButton(session$ns("download"))
   })
@@ -78,7 +78,7 @@ load_update_module_server <- function(id, common, parent_session) {
 
 
 
-load_update_module_rmd <- function(common) {
+setup_upgrade_module_rmd <- function(common) {
   # Variables used in the module's Rmd code
 }
 

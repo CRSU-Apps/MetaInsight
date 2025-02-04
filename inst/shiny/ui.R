@@ -26,7 +26,7 @@ tagList(
                 style = "margin-top: -15px"),
     windowTitle = "MetaInsight",
     tabPanel("Intro", value = "intro"),
-    tabPanel("Load data", value = "load"),
+    tabPanel("Setup", value = "setup"),
     tabPanel("Data summary", value = "summary"),
     tabPanel("Reproduce", value = "rep"),
     navbarMenu("Support", icon = icon("life-ring"),
@@ -46,20 +46,20 @@ tagList(
             textOutput("debug"),
             includeMarkdown("Rmd/text_intro_tab.Rmd")
           ),
-          # LOAD DATA ####
+          # SETUP ####
            conditionalPanel(
-          "input.tabs == 'load'",
-          div("Component: Load data", class = "componentName"),
-          help_comp_ui("loadHelp"),
+          "input.tabs == 'setup'",
+          div("Component: Setup", class = "componentName"),
+          help_comp_ui("setupHelp"),
           shinyWidgets::radioGroupButtons(
-            "loadSel", "Modules Available:",
-            choices = insert_modules_options("load"),
+            "setupSel", "Modules Available:",
+            choices = insert_modules_options("setup"),
             direction = "vertical",
             status = "outline-secondary",
             width = "100%"
           ),
           tags$hr(),
-          insert_modules_ui("load")
+          insert_modules_ui("setup")
           ),
           # DATA SUMMARY ####
            conditionalPanel(

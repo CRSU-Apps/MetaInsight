@@ -15,7 +15,7 @@ summary_study_module_server <- function(id, common, parent_session) {
 
   # it doesn't make much sense to calculate this here, but it relies on the model definition in core_exclude
   observe({
-    gargoyle::watch("load_define")
+    gargoyle::watch("setup_define")
     gargoyle::watch("model")
     req(common$initial_non_covariate_data)
 

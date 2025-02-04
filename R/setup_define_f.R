@@ -5,7 +5,7 @@
 #' @param reference_treatment character. The reference treatment
 #' @return list
 #' @export
-load_define <- function(data, treatment_df, outcome_type, reference_treatment, logger = NULL){
+setup_define <- function(data, treatment_df, outcome_type, reference_treatment, logger = NULL){
 
   # update using the selected reference treatment
   treatment_df <- CreateTreatmentIds(treatment_df$Label, reference_treatment)

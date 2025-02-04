@@ -24,7 +24,7 @@ core_exclude_module_server <- function(id, common, parent_session) {
     gargoyle::init("model")
 
     observe({
-      gargoyle::watch("load_load")
+      gargoyle::watch("setup_load")
       req(common$data)
       updateCheckboxGroupInput(session, "exclusions", choices = unique(common$data$Study))
     })
@@ -32,7 +32,7 @@ core_exclude_module_server <- function(id, common, parent_session) {
 
     # Update which studies can be selected from the sensitivity analysis by taking the initial data subnetwork
     observe({
-      gargoyle::watch("load_define")
+      gargoyle::watch("setup_define")
       req(common$disconnected_indices)
 
       all_studies <- unique(common$data$Study)
@@ -60,7 +60,7 @@ core_exclude_module_server <- function(id, common, parent_session) {
       )
     })
 
-    observeEvent(list(input$exclusions, input$model, gargoyle::watch("load_define")), {
+    observeEvent(list(input$exclusions, input$model, gargoyle::watch("setup_define")), {
       req(common$bugsnetdt)
       common$excluded_studies <- input$exclusions
       result <- core_exclude(common$main_connected_data,

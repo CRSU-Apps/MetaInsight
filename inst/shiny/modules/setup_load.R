@@ -1,4 +1,4 @@
-load_load_module_ui <- function(id) {
+setup_load_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
     div(
@@ -25,7 +25,7 @@ load_load_module_ui <- function(id) {
   )
 }
 
-load_load_module_server <- function(id, common, parent_session) {
+setup_load_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
   ns <- session$ns
@@ -65,7 +65,7 @@ load_load_module_server <- function(id, common, parent_session) {
   })
 
   output$reset_out <- renderUI({
-    gargoyle::watch("load_load")
+    gargoyle::watch("setup_load")
     gargoyle::watch("load_reset")
     req(common$is_data_uploaded)
     div(
@@ -83,7 +83,7 @@ load_load_module_server <- function(id, common, parent_session) {
    })
 
   output$download_out <- renderUI({
-    gargoyle::watch("load_load")
+    gargoyle::watch("setup_load")
     gargoyle::watch("load_reset")
     if (is.null(common$is_data_uploaded) || !common$is_data_uploaded){
       downloadButton(ns("download"), "Download example data")
@@ -95,7 +95,7 @@ load_load_module_server <- function(id, common, parent_session) {
     # none for this module
 
     # FUNCTION CALL ####
-    result <- load_load(input$data$datapath, input$metaoutcome, common$logger)
+    result <- setup_load(input$data$datapath, input$metaoutcome, common$logger)
 
     if (result$is_data_valid){
       if (result$is_data_uploaded){
@@ -113,13 +113,13 @@ load_load_module_server <- function(id, common, parent_session) {
     common$metaoutcome <- input$metaoutcome
 
     # METADATA ####
-    common$meta$load_load$used <- TRUE
-    common$meta$load_load$data <- common$data
-    common$meta$load_load$metaoutcome <- input$metaoutcome
-    common$meta$load_load$format <- input$format
+    common$meta$setup_load$used <- TRUE
+    common$meta$setup_load$data <- common$data
+    common$meta$setup_load$metaoutcome <- input$metaoutcome
+    common$meta$setup_load$format <- input$format
 
     # TRIGGER
-    gargoyle::trigger("load_load")
+    gargoyle::trigger("setup_load")
 
     show_results(parent_session)
 
@@ -139,7 +139,7 @@ load_load_module_server <- function(id, common, parent_session) {
 
   # show the loaded data in the results tab
   output$data <- DT::renderDataTable({
-    gargoyle::watch("load_load")
+    gargoyle::watch("setup_load")
     req(common$data)
     common$data
   })
@@ -161,15 +161,15 @@ load_load_module_server <- function(id, common, parent_session) {
 })
 }
 
-load_load_module_result <- function(id) {
+setup_load_module_result <- function(id) {
   ns <- NS(id)
   DT::dataTableOutput(ns("data"))
 }
 
-load_load_module_rmd <- function(common){ list(
-  load_load_knit = !is.null(common$meta$load_load$used),
-  load_load_data = common$meta$load_load$data,
-  load_load_metaoutcome = common$meta$load_load$metaoutcome,
-  load_load_format = common$meta$load_load$format)
+setup_load_module_rmd <- function(common){ list(
+  setup_load_knit = !is.null(common$meta$setup_load$used),
+  setup_load_data = common$meta$setup_load$data,
+  setup_load_metaoutcome = common$meta$setup_load$metaoutcome,
+  setup_load_format = common$meta$setup_load$format)
 }
 

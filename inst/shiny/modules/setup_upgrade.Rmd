@@ -1,0 +1,7 @@
+```{asis, echo = {{setup_upgrade_knit}}, eval = {{setup_upgrade_knit}}, include = {{setup_upgrade_knit}}}
+Description of what the code will do {{var1}}
+```
+
+```{r, echo = {{setup_upgrade_knit}}, include = {{setup_upgrade_knit}}}
+# R code to run {{var2}}
+```

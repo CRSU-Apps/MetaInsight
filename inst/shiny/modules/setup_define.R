@@ -1,4 +1,4 @@
-load_define_module_ui <- function(id) {
+setup_define_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
     selectizeInput(ns("reference_treatment"), "Select reference treatment", choices = c()),
@@ -15,11 +15,11 @@ load_define_module_ui <- function(id) {
   )
 }
 
-load_define_module_server <- function(id, common, parent_session) {
+setup_define_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
   output$outcome_out <- renderUI({
-    gargoyle::watch("load_load")
+    gargoyle::watch("setup_load")
     req(common$metaoutcome)
     if (common$metaoutcome == "Continuous"){
       radioButtons(session$ns("outcome"),
@@ -40,7 +40,7 @@ load_define_module_server <- function(id, common, parent_session) {
   })
 
   observe({
-    gargoyle::watch("load_load")
+    gargoyle::watch("setup_load")
     req(common$treatment_df)
     treatments <- common$treatment_df$Label
     updateSelectInput(session, "reference_treatment", choices = treatments,
@@ -49,7 +49,7 @@ load_define_module_server <- function(id, common, parent_session) {
   })
 
   output$metaoutcome <- reactive({
-    gargoyle::watch("load_load")
+    gargoyle::watch("setup_load")
     common$metaoutcome
   })
   shiny::outputOptions(output, "metaoutcome", suspendWhenHidden = FALSE)
@@ -60,7 +60,7 @@ load_define_module_server <- function(id, common, parent_session) {
     # need data to exist
 
     # FUNCTION CALL ####
-    result <- load_define(common$data,
+    result <- setup_define(common$data,
                           common$treatment_df,
                           common$metaoutcome,
                           input$reference_treatment,
@@ -79,7 +79,7 @@ load_define_module_server <- function(id, common, parent_session) {
     # METADATA ####
 
     # TRIGGER
-    gargoyle::trigger("load_define")
+    gargoyle::trigger("setup_define")
     show_table(parent_session)
   })
 
@@ -95,7 +95,7 @@ load_define_module_server <- function(id, common, parent_session) {
 }
 
 
-load_define_module_rmd <- function(common) {
+setup_define_module_rmd <- function(common) {
   # Variables used in the module's Rmd code
 }
 

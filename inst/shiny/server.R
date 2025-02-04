@@ -84,7 +84,7 @@ function(input, output, session) {
 
   # TABLE
   output$table <- DT::renderDataTable({
-    gargoyle::watch("load_define")
+    gargoyle::watch("setup_define")
     req(common$initial_non_covariate_data)
 
     if (common$metaoutcome == "Continuous") {

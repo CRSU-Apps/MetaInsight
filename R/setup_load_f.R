@@ -9,7 +9,7 @@
 #'  \item{data}{Dataframe. The data that was uploaded, `NULL` if none was uploaded}
 #'  \item{treatments}{Vector of all treatment names either in the data if it is valid or in the default data if not}
 #' @export
-load_load <- function(data_path = NULL, outcome_type, logger = NULL){
+setup_load <- function(data_path = NULL, outcome_type, logger = NULL){
 
   # TO DO add input checks
   # data_path is string, ends in .csv or .xlsx

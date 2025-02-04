@@ -5,7 +5,7 @@
 #'
 #' @return Dataframe containing the upgraded data
 #' @export
-load_update <- function(data_path, treatments, logger = NULL){
+setup_upgrade <- function(data_path, treatments, logger = NULL){
 
   # TO DO add input checks
   # data_path is string, ends in .csv

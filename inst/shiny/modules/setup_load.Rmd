@@ -1,0 +1,8 @@
+```{asis, echo = {{setup_load_knit}}, eval = {{setup_load_knit}}, include = {{setup_load_knit}}}
+Load the data
+```
+
+```{r, echo = {{setup_load_knit}}, include = {{setup_load_knit}}}
+data <- {{setup_load_data}}
+outcome <- {{setup_load_metaoutcome}}
+```
