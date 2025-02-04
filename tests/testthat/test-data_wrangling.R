@@ -461,6 +461,18 @@ test_that("AddStudyIds() adds study IDs for binary wide data", {
                data[, colnames(data) != "StudyID"])
 })
 
+test_that(".ContinuousOrder() creates the correct ordering", {
+  expected_order <- c("StudyID", "Study", "T", "N", "Mean", "SD", "T.1", "N.1", "Mean.1", "SD.1",
+                      "T.2", "N.2", "Mean.2", "SD.2", "T.3", "N.3", "Mean.3", "SD.3")
+  expect_equal(expected_order, .ContinuousOrder(3))
+})
+
+test_that(".BinaryOrder() creates the correct ordering", {
+  expected_order <- c("StudyID", "Study", "T", "R", "N", "T.1", "R.1", "N.1",
+                      "T.2", "R.2", "N.2", "T.3", "R.3", "N.3")
+  expect_equal(expected_order, .BinaryOrder(3))
+})
+
 test_that("ReorderColumns() reorders columns for continuous long data", {
   data <- CleanData(read.csv("data/Cont_long.csv"))
   
@@ -1313,3 +1325,22 @@ test_that("KeepOrDeleteControlTreatment() keeps only rows with control treatment
 })
 
 
+test_that("CreateListOfWideColumns() creates the correct list", {
+  data <- read.csv("data\\Cont_wide.csv")
+  expected_list_T <- list(T.1 = data$T.1, T.2 = data$T.2, T.3 = data$T.3)
+  expected_list_Mean <- list(Mean.1 = data$Mean.1, Mean.2 = data$Mean.2, Mean.3 = data$Mean.3)
+  expect_equal(CreateListOfWideColumns(data, "T"), expected_list_T)
+  expect_equal(CreateListOfWideColumns(data, "Mean"), expected_list_Mean)
+})
+
+
+test_that("FindMaxArms() returns the correct number of arms for long data", {
+  data <- read.csv("data\\Cont_long.csv")
+  expect_equal(FindMaxArms(data), 3)
+})
+
+
+test_that("FindMaxArms() returns the correct number of arms for wide data", {
+  data <- read.csv("data\\Cont_wide.csv")
+  expect_equal(FindMaxArms(data), 3)
+})
