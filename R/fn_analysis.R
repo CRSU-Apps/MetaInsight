@@ -33,7 +33,7 @@ frequentist <- function(data, metaoutcome, treatment_list, outcome_measure, mode
 ##### function for transforming data to contrast form
 #########################
 
-#' Puts data in contrast form using netmeta::pairwise().
+#' Puts data in contrast form using meta::pairwise().
 #' 
 #' @param data Input dataset.
 #' @param outcome "MD", "SMD", "OR", "RR", or "RD".
@@ -41,7 +41,7 @@ frequentist <- function(data, metaoutcome, treatment_list, outcome_measure, mode
 #' @return Input data in contrast form.
 contrastform.df <- function(data, outcome, CONBI) {
 
-  #Create a list of columns of the variables to be passed to netmeta::pairwise()
+  #Create a list of columns of the variables to be passed to meta::pairwise()
   treat_list <- CreateListOfWideColumns(wide_data = data, column_prefix = "T")
   n_list <-  CreateListOfWideColumns(wide_data = data, column_prefix = "N")
   
@@ -50,21 +50,21 @@ contrastform.df <- function(data, outcome, CONBI) {
     mean_list <-  CreateListOfWideColumns(wide_data = data, column_prefix = "Mean")
     sd_list <-  CreateListOfWideColumns(wide_data = data, column_prefix = "SD")
     
-    d1 <- netmeta::pairwise(treat = treat_list,
-                            n = n_list,
-                            mean = mean_list,
-                            sd = sd_list,
-                            data = data,                
-                            sm = outcome)
+    d1 <- meta::pairwise(treat = treat_list,
+                         n = n_list,
+                         mean = mean_list,
+                         sd = sd_list,
+                         data = data,                
+                         sm = outcome)
   } else if (CONBI == 'Binary') {
     
     event_list <-  CreateListOfWideColumns(wide_data = data, column_prefix = "R")
     
-    d1 <- netmeta::pairwise(treat = treat_list,
-                            event = event_list,
-                            n = n_list,
-                            data = data,
-                            sm = outcome)
+    d1 <- meta::pairwise(treat = treat_list,
+                         event = event_list,
+                         n = n_list,
+                         data = data,
+                         sm = outcome)
   } else {
     stop("CONBI must be 'Continuous' or 'Binary'")
   }
