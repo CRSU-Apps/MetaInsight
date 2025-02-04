@@ -79,9 +79,8 @@ writeLog <- function(logger, ..., type = "default") {
       } else {
         shinyalert::shinyalert("Please, check Log window for more information ",
                                type = "warning")
-
-        pre <- paste0(icon("triangle-exclamation", class = "log_warn"), " ")
       }
+      pre <- paste0(icon("triangle-exclamation", class = "log_warn"), " ")
     }
     newEntries <- paste0("<br>", pre, ..., collapse = "")
     logger(paste0(logger(), newEntries))

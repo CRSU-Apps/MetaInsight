@@ -3,10 +3,11 @@
 #####
 
 #' 1a Summary table plot
-#' 
+#'
 #' @param bugsnetdt Long format data.
 #' @param metaoutcome "Continuous" or "Binary".
 #' @return Network created by BUGSnet::net.tab().
+#' @export
 summary_table_plot <- function(bugsnetdt, metaoutcome) {
   return(bugsnet_sumtb(data = bugsnetdt, metaoutcome = metaoutcome))
 }
@@ -14,12 +15,13 @@ summary_table_plot <- function(bugsnetdt, metaoutcome) {
 
 
 #' 1b Forest plot
-#' 
+#'
 #' @param freq List of NMA results created by freq_wrap().
 #' @param outcome_measure "MD", "SMD", "OR", "RR", or "RD".
 #' @param ForestHeader Multiplier for size of text in treatment contrast headers.
 #' @param ForestTitle Multiplier for size of title.
 #' @return Plot created by groupforest.df().
+#' @export
 make_netStudy <- function(freq, outcome_measure, ForestHeader, ForestTitle) {
   return(groupforest.df(d1 = freq$d0, ntx = freq$ntx, lstx = freq$lstx, outcome = outcome_measure,
                         HeaderSize = ForestHeader, TitleSize = ForestTitle
@@ -34,7 +36,8 @@ make_netStudy <- function(freq, outcome_measure, ForestHeader, ForestTitle) {
 #' @param freq List of NMA results created by freq_wrap().
 #' @param label_size Label size multiplier.
 #' @return Network plot created by netmeta::netgraph().
-make_netgraph <- function(freq, label_size) {  
+#' @export
+make_netgraph <- function(freq, label_size) {
   return(netmeta::netgraph(freq$net1, lwd = 2, number.of.studies = TRUE, plastic = FALSE, points = TRUE,
                            cex = label_size, cex.points = 2, col.points = 1, col = 8, pos.number.of.studies = 0.43,
                            col.number.of.studies = "forestgreen", col.multiarm = "white",
@@ -46,12 +49,13 @@ make_netgraph <- function(freq, label_size) {
 
 
 #' 1c Network plot - number of trials by nodesize and line thickness
-#' 
+#'
 #' @param bugsnetdt Long format data.
 #' @param label_size Node label size (default = 1).
 #' @param order Order of nodes (default = NULL).
 #' @return Network plot created by BUGSnet::net.plot().
-make_netplot <- function(bugsnetdt, label_size = 1, order = NULL) {    # added default values and extra option for ordering the nodes (CRN)  
+#' @export
+make_netplot <- function(bugsnetdt, label_size = 1, order = NULL) {    # added default values and extra option for ordering the nodes (CRN)
   data.rh <- BUGSnet::data.prep(arm.data = bugsnetdt, varname.t = "T", varname.s = "Study")
   return(BUGSnet::net.plot(data.rh, node.scale = 3, edge.scale = 1.5, node.lab.cex = label_size,
                            layout.params = order
@@ -61,11 +65,12 @@ make_netplot <- function(bugsnetdt, label_size = 1, order = NULL) {    # added d
 
 
 
-#' 1c Creates network connectivity info displayed under network plots 
-#' 
+#' 1c Creates network connectivity info displayed under network plots
+#'
 #' @param freq List of NMA results created by freq_wrap().
 #' @return Network connectivity created by netmeta::netconnection().
-make_netconnect <- function(freq) {   
+#' @export
+make_netconnect <- function(freq) {
   d1 <- freq$d1
   nc1 <- netmeta::netconnection(treat1 = d1$treat1, treat2 = d1$treat2, studLab = d1$studlab, data = NULL)
   print(nc1)
@@ -74,14 +79,14 @@ make_netconnect <- function(freq) {
 
 
 #' 2a. Frequentist forest Plot
-#' 
+#'
 #' @param freq List of NMA results created by freq_wrap().
 #' @param modelranfix "fixed" or "random".
 #' @param ref Reference treatment.
 #' @param min Minimum x-axis limit.
 #' @param max Maximum x-axis limit.
 #' @return Forest plot created by forest.df().
-make_netComp <- function(freq, modelranfix, ref, min, max) {    
+make_netComp <- function(freq, modelranfix, ref, min, max) {
   return(forest.df(netresult = freq$net1, model = modelranfix, lstx = freq$lstx, ref = ref,
                    min = min, max = max
                    )
@@ -91,12 +96,12 @@ make_netComp <- function(freq, modelranfix, ref, min, max) {
 
 
 #' 2a. Creates text displayed under frequentist forest plots
-#' 
+#'
 #' @param freq List of NMA results created by freq_wrap().
 #' @param outcome_measure "MD", "SMD", "OR", "RR", or "RD".
 #' @param modelranfix "fixed" or "random".
 #' @return Text created by tau.df().
-texttau <- function(freq, outcome_measure, modelranfix){      
+texttau <- function(freq, outcome_measure, modelranfix){
   tau <- round(freq$net1$tau, 2)
   return(tau.df(tau = tau, k = freq$net1$k, n = freq$net1$n, model = modelranfix, outcome = outcome_measure))
 }
@@ -114,7 +119,7 @@ make_refText = function(ref) {
 
 
 #' 2b Treatment comparison and rank table
-#' 
+#'
 #' @param freq List of NMA results created by freq_wrap().
 #' @param modelranfix "fixed" or "random".
 #' @param rankopts "good" or "bad", referring to smaller outcome values.
@@ -129,7 +134,7 @@ make_netrank <- function(freq, modelranfix, rankopts) {
   } else if (modelranfix == "fixed") {
     leaguedf <- as.data.frame(league$fixed)
   } else {
-    stop("modelranfix must be 'fixed' or 'random'") 
+    stop("modelranfix must be 'fixed' or 'random'")
   }
   return(leaguedf)
 }
@@ -148,8 +153,8 @@ make_Incon <- function(freq, modelranfix) {
 
 
 
-#' 3a Bayesian forest plot 
-#' 
+#' 3a Bayesian forest plot
+#'
 #' @param model Various model output created by baye().
 #' @param metaoutcome "Continuous" or "Binary".
 #' @param bayesmin x-axis limit minimum.
@@ -161,14 +166,14 @@ CreateForestPlot <- function(model, metaoutcome, bayesmin, bayesmax) {
   } else if (metaoutcome == "Continuous") {
     return(gemtc::forest(model$mtcRelEffects, digits = 3, xlim = c(bayesmin, bayesmax)))
   } else {
-    stop("metaoutcome must be 'Continuous' or 'Binary'") 
+    stop("metaoutcome must be 'Continuous' or 'Binary'")
   }
 }
 
 
 
 #' 3b Creates a table of comparisons of all treatment pairs
-#' 
+#'
 #' @param model Various model output created by baye().
 #' @param metaoutcome "Continuous" or "Binary".
 #' @param outcome_measure "MD", "SMD", "OR", "RR", or "RD".
@@ -186,11 +191,11 @@ baye_comp <- function(model, outcome_measure){
 
 
 #' 3c Create network plot for the ranking panel
-#' 
+#'
 #' @param freq List of NMA results created by freq_wrap().
 #' @param order Vector of treatments in SUCRA order.
 #' @return Network plot created by netmeta::netgraph() with each line containing the number of trials.
-make_netgraph_rank = function(freq, order) {  
+make_netgraph_rank = function(freq, order) {
   return(netmeta::netgraph(freq$net1, labels = str_wrap(gsub("_", " ", freq$net1$trts), width = 10),
                            lwd=2, number.of.studies = TRUE, plastic = FALSE, points = TRUE, cex = 1,
                            cex.points = 2, col.points = 1, col = 8, pos.number.of.studies = 0.43,
@@ -199,13 +204,13 @@ make_netgraph_rank = function(freq, order) {
                            seq = gsub(" ", "_", str_wrap(order, width = 1000))
                            )#freq$net1$trts has not been formatted but 'order' has
          )
-  
+
 }
 
 
 
 #' Litmus Rank-O-Gram
-#' 
+#'
 #' @param CumData Cumulative ranking probabilities, created by rankdata().
 #' @param SUCRAData SUCRA data, created by rankdata().
 #' @param ColourData Colour data, created by rankdata().
@@ -253,7 +258,7 @@ LitmusRankOGram <- function(CumData, SUCRAData, ColourData, colourblind=FALSE, r
 
 
 #' Radial SUCRA Plot
-#' 
+#'
 #' @param SUCRAData SUCRA data, created by rankdata().
 #' @param ColourData Colour data, created by rankdata().
 #' @param BUGSnetData Output created by BUGSnet functions in rankdata().
@@ -271,8 +276,8 @@ RadialSUCRA <- function(SUCRAData, ColourData, BUGSnetData, colourblind=FALSE, r
   # Background #
   Background <- ggplot(SUCRAData, aes(x = reorder(Treatment, -SUCRA), y = SUCRA, group = 1)) +
     geom_segment(data = ColourData, aes(x = -Inf, xend = Inf, y = SUCRA, yend = SUCRA, colour = colour), show.legend = FALSE, alpha=0.05) +
-    theme_classic() + 
-    theme(panel.grid.major.y = element_line(colour = c(rep("black", 6), "white")), axis.title = element_blank(), axis.text.y = element_blank(), axis.ticks = element_blank(), axis.line = element_blank(), 
+    theme_classic() +
+    theme(panel.grid.major.y = element_line(colour = c(rep("black", 6), "white")), axis.title = element_blank(), axis.text.y = element_blank(), axis.ticks = element_blank(), axis.line = element_blank(),
           aspect.ratio = 1, axis.text.x = element_blank()) +
     coord_polar() +
     geom_text(aes(label=reorder(str_wrap(gsub("_", " ", Treatment), width = 10), -SUCRA), y = 110, angle = Angle, hjust = Adjust),
@@ -284,21 +289,21 @@ RadialSUCRA <- function(SUCRAData, ColourData, BUGSnetData, colourblind=FALSE, r
     Background <- Background + scale_colour_gradientn(colours = c("#7b3294", "#c2a5cf", "#a6dba0", "#008837"), values = c(0, 0.33, 0.66, 1), limits = c(0, 100)) +
       scale_fill_gradientn(colours = c("#7b3294", "#c2a5cf", "#a6dba0", "#008837"), values = c(0, 0.33, 0.66, 1), limits = c(0, 100))
   }
-  
+
   Background +
-    geom_point(aes(fill = SUCRA), size = 1, shape = 21, show.legend = FALSE) +  
+    geom_point(aes(fill = SUCRA), size = 1, shape = 21, show.legend = FALSE) +
     scale_y_continuous(breaks = c(0, 20, 40, 60, 80, 100), limits = c(-40, 115)) +
     annotate("text", x = rep(0.5, 7), y = c(-3, 17, 37, 57, 77, 97, 115), label = c("0", "20", "40", "60", "80", "100", "SUCRA (%)"), size = 2.5, family = "sans") # annotate has to be after geoms
   ggsave(filename = file.path(temp_dir, 'BackgroundO.png'), device = 'png', bg = 'transparent', width = 5, height = 5)
-  
+
   Background +
     geom_segment(aes(xend = Treatment, y = -20, yend = 110), linetype = "dashed") +
     geom_point(aes(fill = SUCRA), size = 3, shape = 21, show.legend = FALSE) +
     scale_y_continuous(breaks = c(0, 20, 40, 60, 80, 100), limits = c(-80, 115)) +
     annotate("text", x = rep(0.5, 7), y = c(-3, 17, 37, 57, 77, 97, 115), label = c("0", "20", "40", "60", "80", "100", "SUCRA (%)"), size = 2.5, family = "sans") # annotate has to be after geoms
   ggsave(filename = file.path(temp_dir, 'BackgroundA.png'), device = 'png', bg = 'transparent', width = 5, height = 5)
-  
-  
+
+
   # Create my own network plot using ggplot polar coords #
   SUCRA <- SUCRAData %>% dplyr::arrange(-SUCRA)
   edges <- network.structure(BUGSnetData, my_order = SUCRA$Treatment)  # from file 'network_structure.R'
@@ -309,7 +314,7 @@ RadialSUCRA <- function(SUCRAData, ColourData, BUGSnetData, colourblind=FALSE, r
                           adj = NA,
                           col = "",
                           lwd = NA)
-  
+
   lwd.maxO <- 4
   lwd.maxA <- 3
   lwd.minO <- 0.5
@@ -336,9 +341,9 @@ RadialSUCRA <- function(SUCRAData, ColourData, BUGSnetData, colourblind=FALSE, r
     comp.i <- comp.i + 2
     ID <- ID + 1
   }
-  
+
   #' Creates the network part of the radical SUCRA plot, excluding the nodes.
-  #' 
+  #'
   #' @param Type "Original" or "Alternative.
   #' @return ggplot object.
   CreateNetwork <- function(Type) {
@@ -352,23 +357,23 @@ RadialSUCRA <- function(SUCRAData, ColourData, BUGSnetData, colourblind=FALSE, r
         scale_y_continuous(limits = c(-80, 115))
     }
     g +
-      ggiraphExtra::coord_radar() + 
-      theme(panel.background = element_rect(fill = "transparent"), plot.background = element_rect(fill = "transparent", color = NA), 
-            axis.title = element_blank(), axis.text.y = element_blank(), axis.ticks = element_blank(), 
-            axis.line = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), aspect.ratio = 1, 
+      ggiraphExtra::coord_radar() +
+      theme(panel.background = element_rect(fill = "transparent"), plot.background = element_rect(fill = "transparent", color = NA),
+            axis.title = element_blank(), axis.text.y = element_blank(), axis.ticks = element_blank(),
+            axis.line = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), aspect.ratio = 1,
             axis.text.x = element_blank()) +
       annotate("text", x = rep(0.5, 7), y = c(-3, 17, 37, 57, 77, 97, 115), label = c("0", "20", "40", "60", "80", "100", "SUCRA (%)"), size = 2.5, family = "sans")
   }
-  
+
   Network <- CreateNetwork(Type = 'Original')
   ggsave(filename = file.path(temp_dir, 'NetworkO.png'), device = 'png', bg = 'transparent', width = 5, height = 5)
-  
+
   Network <- CreateNetwork(Type = 'Alternative')
   ggsave(filename = file.path(temp_dir, "NetworkA.png"), device = 'png', bg = 'transparent', width = 5, height = 5)
-  
-  
+
+
   #' Creates the nodes for the network part of the radial SUCRA plot.
-  #' 
+  #'
   #' @param Type "Original" or "Alternative".
   #' @param colourblind TRUE for colourblind-friendly colours (default = FALSE).
   #' @return ggplot object.
@@ -388,20 +393,20 @@ RadialSUCRA <- function(SUCRAData, ColourData, BUGSnetData, colourblind=FALSE, r
       g <- g + scale_fill_gradientn(colours = c("#7b3294", "#c2a5cf", "#a6dba0", "#008837"), values = c(0, 0.33, 0.66, 1), limits = c(0, 100))
     }
     g +
-      theme(panel.background = element_rect(fill = "transparent"), plot.background = element_rect(fill = "transparent", color = NA), 
-            axis.title = element_blank(), axis.text.y = element_blank(), axis.ticks = element_blank(), 
+      theme(panel.background = element_rect(fill = "transparent"), plot.background = element_rect(fill = "transparent", color = NA),
+            axis.title = element_blank(), axis.text.y = element_blank(), axis.ticks = element_blank(),
             axis.line = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), aspect.ratio = 1,
             axis.text.x = element_blank()) +
       coord_polar() +
       annotate("text", x = rep(0.5, 7), y = c(-3, 17, 37, 57, 77, 97, 115), label = c("0", "20", "40", "60", "80", "100", "SUCRA (%)"), size = 2.5, family = "sans")
   }
-  
+
   Points <- CreatePoints(Type = 'Original', colourblind = colourblind)
   ggsave(filename = file.path(temp_dir, 'PointsO.png'), device = 'png', bg = 'transparent', width = 5, height = 5)
-  
+
   Points <- CreatePoints(Type = 'Alternative', colourblind = colourblind)
   ggsave(filename = file.path(temp_dir, 'PointsA.png'), device = 'png', bg = 'transparent', width = 5, height = 5)
-  
+
   # Overlay #
   Background <- magick::image_read(file.path(temp_dir, 'BackgroundO.png'))
   Network <- magick::image_read(file.path(temp_dir, 'NetworkO.png'))
@@ -411,7 +416,7 @@ RadialSUCRA <- function(SUCRAData, ColourData, BUGSnetData, colourblind=FALSE, r
   Finalplot <- cowplot::ggdraw() +
     cowplot::draw_image(Final)
   if (regression_text != "") {
-    Finalplot <- Finalplot + 
+    Finalplot <- Finalplot +
       cowplot::draw_label(regression_text, x = 0.95, y = 0.05, hjust = 1, size = 10)
   }
   Background <- magick::image_read(file.path(temp_dir, 'BackgroundA.png'))
@@ -422,17 +427,17 @@ RadialSUCRA <- function(SUCRAData, ColourData, BUGSnetData, colourblind=FALSE, r
   Finalalt <- cowplot::ggdraw() +
     cowplot::draw_image(Final)
   if (regression_text != "") {
-    Finalalt <- Finalalt + 
+    Finalalt <- Finalalt +
       cowplot::draw_label(regression_text, x = 0.95, y = 0.05, hjust = 1, size = 10)
   }
-  
+
   unlink(file.path(temp_dir, 'BackgroundO.png'))
   unlink(file.path(temp_dir, 'NetworkO.png'))
   unlink(file.path(temp_dir, 'PointsO.png'))
   unlink(file.path(temp_dir, 'BackgroundA.png'))
   unlink(file.path(temp_dir, 'NetworkA.png'))
   unlink(file.path(temp_dir, 'PointsA.png'))
-  
+
   return(list(Original = Finalplot, Alternative = Finalalt))
 }
 
@@ -453,7 +458,7 @@ rank_probs_table = function(data) {
 # 3f Deviance report
 
 #' UME scatter plot
-#' 
+#'
 #' @param model Various model output created by baye().
 #' @return UME scatter plot created by umeplot.df().
 scat_plot = function(model) {
@@ -465,7 +470,7 @@ scat_plot = function(model) {
 
 
 #' Stemplot
-#' 
+#'
 #' @param model Various model output created by baye().
 #' @return Stemplot created by stemplot.df().
 stemplot <- function(model, package = "gemtc") {
@@ -488,7 +493,7 @@ stemplot <- function(model, package = "gemtc") {
 
 
 #' Leverage plot
-#' 
+#'
 #' @param model Various model output created by baye().
 #' @return Leverage plot created by levplot.df().
 levplot <- function(model, package = "gemtc") {
@@ -511,7 +516,7 @@ levplot <- function(model, package = "gemtc") {
 
 
 #' Creates a Gelman plot for a BNMA baseline-risk model.
-#' 
+#'
 #' @param gelman_plot Output from coda::gelman.plot(bnma_model$samples[, parm]), where parm is a parameter from 'bnma_model'.
 #' @param parameter The parameter from the previous argument, used as the title.
 #' @return Reproduces the Gelman plot mentioned in @param gelman_plot as a plot that can be put in a grid.
@@ -519,7 +524,7 @@ BnmaGelmanPlot <- function(gelman_plot, parameter){
   y_vals_median <- gelman_plot$shrink[, , "median"]
   y_vals_975 <- gelman_plot$shrink[, , "97.5%"]
   x_vals <- gelman_plot$last.iter
-  
+
   plot(x_vals, y_vals_975, type = "l", col = "red", lty = 2, ylab = "shrink factor",
        xlab = "last iteration in chain", cex.lab = 1.5, cex.main = 1.5, main = parameter)
   lines(x_vals, y_vals_median, type = "l")
@@ -529,7 +534,7 @@ BnmaGelmanPlot <- function(gelman_plot, parameter){
 
 
 #' Creates Gelman plots for a BNMA baseline-risk model.
-#' 
+#'
 #' @param gelman_plots List of outputs from coda::gelman.plot(bnma_model$samples[, parm]), where parm is a parameter from bnma_model.
 #' @param parameters Vector of parameters mentioned in the previous argument.
 #' @return Plots the Gelman plots mentioned in @param gelman_plots.

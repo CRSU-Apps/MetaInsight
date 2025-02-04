@@ -30,8 +30,7 @@
 #' @return List of subnetworks, where each subnetwork is a list containing:
 #' - "treatments" = The IDs of the treatments included in the given network
 #' - "studies" = The names of the studies included in the given subnetwork
-#' @export
-IdentifySubNetworks <- function(data, treatment_df, reference_treatment_name = NULL, subnet_name_prefix = "subnet_") {
+IdentifySubNetworks_old <- function(data, treatment_df, reference_treatment_name = NULL, subnet_name_prefix = "subnet_") {
   if (is.null(reference_treatment_name)) {
     reference_treatment <- 1
   } else if (!(reference_treatment_name %in% treatment_df$Label)) {

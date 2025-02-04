@@ -1,5 +1,5 @@
 #' Converts long data to wide if necessary, then applies freq_wrap().
-#' 
+#'
 #' @param data Input dataset.
 #' @param metaoutcome "Continuous" or "Binary".
 #' @param treatment_list Data frame containing the treatment ID ('Number') and the treatment name ('Label').
@@ -7,9 +7,10 @@
 #' @param modelranfix "fixed" or "random".
 #' @param reference Name of the reference treatment.
 #' @return See output from freq_wrap().
+#' @export
 frequentist <- function(data, metaoutcome, treatment_list, outcome_measure, modelranfix, reference) {
   data_wide <-  entry.df(data = data, CONBI = metaoutcome) # Transform data to wide form
-  
+
   # Use the self-defined function, freq_wrap
   return(
     freq_wrap(
@@ -26,7 +27,7 @@ frequentist <- function(data, metaoutcome, treatment_list, outcome_measure, mode
 
 
 #' Converts long data to wide, leaves wide data unchanged.
-#' 
+#'
 #' @param data Input dataset.
 #' @param CONBI "Continuous" or "Binary".
 #' @return Input data in long format.
@@ -62,7 +63,7 @@ entry.df <- function(data, CONBI) {
 #########################
 
 #' Puts data in contrast form using netmeta::pairwise().
-#' 
+#'
 #' @param data Input dataset.
 #' @param outcome "MD", "SMD", "OR", "RR", or "RD".
 #' @param CONBI "Continuous" or "Binary".
@@ -73,7 +74,7 @@ contrastform.df <- function(data, outcome, CONBI) {
                             n = list(N.1, N.2, N.3, N.4, N.5, N.6),
                             mean = list(Mean.1, Mean.2, Mean.3, Mean.4, Mean.5, Mean.6),
                             sd = list(SD.1, SD.2, SD.3, SD.4, SD.5, SD.6),
-                            data = data,                
+                            data = data,
                             sm = outcome)
   } else if (CONBI == 'Binary') {
     d1 <- netmeta::pairwise(treat = list(T.1, T.2, T.3, T.4, T.5, T.6),
@@ -94,7 +95,7 @@ contrastform.df <- function(data, outcome, CONBI) {
 #########################
 
 #' Adds treatment labels to contrast data.
-#' 
+#'
 #' @param d1 Data in contrast form, typically created by contrastform.df().
 #' @param ntx = Number of treatments.
 #' @param treat_list  Data frame containing the treatment ID ('Number') and the treatment name ('Label').
@@ -116,7 +117,7 @@ labelmatching.df <- function(d1, ntx, treat_list) {
 ##########################
 
 #' Frequentist NMA.
-#' 
+#'
 #' @param model "fixed" or "random".
 #' @param outcome "MD", "SMD", "OR", "RR", or "RD".
 #' @param dataf Data in contrast form with treatment labels, typically output from labelmatching.df().
@@ -124,11 +125,11 @@ labelmatching.df <- function(d1, ntx, treat_list) {
 #' @param ref Reference treatment.
 #' @return NMA results from netmeta::netmeta().
 freq.df <- function(model, outcome, dataf, lstx, ref) {
-  net1 <- netmeta(TE = TE, seTE = seTE, treat1 = treat1, treat2 = treat2, studlab = studlab, data = dataf, subset=NULL,
+  net1 <- netmeta::netmeta(TE = TE, seTE = seTE, treat1 = treat1, treat2 = treat2, studlab = studlab, data = dataf, subset=NULL,
                   sm = outcome, level = 0.95, level.comb=0.95, comb.random = (model == "random"),
                   comb.fixed = (model == "fixed"), reference.group = ref, all.treatments = NULL, seq = NULL,
                   tau.preset = NULL, tol.multiarm = 0.05, tol.multiarm.se = 0.2, warn = TRUE)
-  return(net1) 
+  return(net1)
 }
 
 
@@ -139,7 +140,7 @@ freq.df <- function(model, outcome, dataf, lstx, ref) {
 
 
 #' Calls preliminary functions, finishing with frequentist analysis in freq.df(), then outputs the model results and related objects.
-#' 
+#'
 #' @param data Input dataset in wide format.
 #' @param treat_list Data frame containing the treatment ID ('Number') and the treatment name ('Label').
 #' @param model "fixed" or "random".
@@ -205,7 +206,7 @@ groupforest.df <- function(d1, ntx, lstx, outcome, HeaderSize, TitleSize) {
   lines <- rev(c(1:(nrow(d1) + 2 * length(text_label) - 1)))
   lines <- lines[!lines %in% gaps]
   lines <- lines[!lines %in% (gaps + 1)]
-  
+
   if (max(lines) < 28) {size = 7
   } else if (max(lines) >= 28 & max(lines) <= 40) {size = max(lines) / 4
   } else if (max(lines) > 40 & max(lines) <= 70) {size = max(lines) / 5
@@ -213,9 +214,9 @@ groupforest.df <- function(d1, ntx, lstx, outcome, HeaderSize, TitleSize) {
   } else if (max(lines) > 100 & max(lines) <= 130) {size = max(lines) / 7
   } else {size = max(lines) / 8
   } # sizing for output
-  
+
   d1 <- d1[order(d1$treat1, d1$treat2, d1$StudyID), ] #ensuring the ordering is correct
-  
+
   if (outcome == "OR" | outcome =="RR" ){
     fplot <- metafor::forest(d1$TE, sei = d1$seTE, slab = paste(d1$Study), subset = order(d1$treat1, d1$treat2),
                              ylim = c(1, nrow(d1) + 2 * length(text_label) + 2), rows = lines, atransf = exp,
@@ -325,7 +326,7 @@ tau.df <- function(tau, k, n, model, outcome) {
 netsplitresult.df <- function(incona, model) {
   Comparison <- incona$comparison
   No.Studies <- as.integer(incona$k)
-  
+
   if (model == "random") {
     Direct <- incona$direct.random$TE
     Indirect <- incona$indirect.random$TE

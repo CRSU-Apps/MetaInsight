@@ -1,6 +1,3 @@
-library(metainsight)
-library(shinyscholar)
-
 function(input, output, session) {
 
   ########################## #
@@ -87,13 +84,33 @@ function(input, output, session) {
 
   # TABLE
   output$table <- DT::renderDataTable({
-    gargoyle::watch("load_load")
-    gargoyle::watch("load_reset")
-    req(common$valid_data)
-    if (common$valid_data){
-      return(common$data)
+    gargoyle::watch("load_define")
+    req(common$initial_non_covariate_data)
+
+    if (common$metaoutcome == "Continuous") {
+      colnames <- c('StudyID', 'Author', 'Treatment', 'Number of participants in each arm',
+                    'Mean value of the outcome in each arm', 'Standard deviation of the outcome in each arm')
+
+    } else {
+      colnames <- c('StudyID', 'Author', 'Treatment', 'Number of participants with the outcome of interest in each arm',
+                    'Number of participants in each arm')
     }
-  }, rownames = FALSE, options = list(scrollX = TRUE))
+
+    label <- common$treatment_df
+    dt <- common$initial_non_covariate_data
+    ntx <- nrow(label)
+    dt$T <- factor(dt$T,
+                   levels = c(1:ntx),
+                   labels = as.character(label$Label))
+
+    DT::datatable(
+      dt,
+      editable = TRUE, # is this supposed to be?
+      rownames = FALSE,
+      colnames = colnames,
+      filter = list(position = 'top', clear = FALSE, stateSave = TRUE)
+    )
+  })
 
   # DOWNLOAD
   output$dl_table <- downloadHandler(
@@ -130,6 +147,16 @@ function(input, output, session) {
     })
   })
 
+  core_exclude_module_server("core_exclude", common, parent_session = session)
+
+
+  ############################################# #
+  ### RUN MODULE ON ENTER ####
+  ############################################# #
+  observeEvent(input$run_module, {
+    req(module())
+    shinyjs::runjs(glue::glue("document.getElementById('{module()}-run').click();"))
+  })
 
   ################################
   ### SAVE / LOAD FUNCTIONALITY ####

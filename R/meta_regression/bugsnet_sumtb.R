@@ -3,6 +3,7 @@
 #' @param data Long format data.
 #' @param metaoutcome "Continuous" or "Binary".
 #' @return Network created by BUGSnet::net.tab().
+#' @export
 bugsnet_sumtb <- function(data, metaoutcome){
   data.rh <- BUGSnet::data.prep(arm.data = data, varname.t = "T", varname.s = "Study")
   if (metaoutcome == "Continuous") {

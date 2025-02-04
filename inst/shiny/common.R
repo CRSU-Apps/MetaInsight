@@ -2,14 +2,20 @@ common_class <- R6::R6Class(
   classname = "common",
   public = list(
    data = NULL,
-   default_data = NULL,
    upgraded_data = NULL,
-   valid_data = NULL,
+   is_data_valid = NULL,
    is_data_uploaded = NULL,
-   treatment_list = NULL,
    metaoutcome = NULL,
    treatment_df = NULL,
    outcome_measure = NULL,
+   reference_treatment = NULL,
+   disconnected_indices = NULL,
+   main_connected_data = NULL,
+   initial_non_covariate_data = NULL,
+   model_type = NULL,
+   excluded_studies = NULL,
+   sensitivity_data = NULL,
+   sensitivity_treatment_df = NULL,
    bugsnetdt = NULL,
    bugsnetdt_sub = NULL,
    freq_all = NULL,
@@ -27,6 +33,10 @@ common_class <- R6::R6Class(
      self$metaoutcome <- NULL
      self$treatment_df <- NULL
      self$outcome_measure <- NULL
+     self$reference_treatment <- NULL
+     self$initial_data <- NULL
+     self$sensitivity_data <- NULL
+     self$sensitivity_treatment_list <- NULL
      self$bugsnetdt <- NULL
      self$bugsnetdt_sub <- NULL
      self$freq_all <- NULL

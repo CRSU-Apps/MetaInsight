@@ -7,7 +7,6 @@
 #'  \item{valid}{logical. Whether the data is valid}
 #'  \item{uploaded}{logical. Whether the data is uploaded}
 #'  \item{data}{Dataframe. The data that was uploaded, `NULL` if none was uploaded}
-#'  \item{default_data}{Dataframe. The default data if none was uploaded or it is not valid. `NULL` if data was uploaded and it is valid}
 #'  \item{treatments}{Vector of all treatment names either in the data if it is valid or in the default data if not}
 #' @export
 load_load <- function(data_path = NULL, outcome_type, logger = NULL){
@@ -16,50 +15,49 @@ load_load <- function(data_path = NULL, outcome_type, logger = NULL){
   # data_path is string, ends in .csv or .xlsx
   # outcome_type is continuous or binary
 
-  # Load the default data
-  # Not ideal always loading it, but can't see how to only load it once whilst also making it available when
-  # the uploaded data is invalid
-  if (outcome_type == "Continuous"){
-    default_data <- rio::import(system.file("extdata", "continuous_long.csv", package = "metainsight"))
-  } else {
-    default_data <- rio::import(system.file("extdata", "binary_long.csv", package = "metainsight"))
-  }
-
-  # Try to load the uploaded data if a path is provided otherwise use the default
+  # Use the default data if no path is provided
   if (!is.null(data_path)){
-    uploaded_data <- TRUE
-    data <- tryCatch(
-      {
-        rio::import(data_path)
-      },
-      error = function(err) {
-        return(NULL)
-      }
-    )
+    is_uploaded <- TRUE
   } else {
-    uploaded_data <- FALSE
-    data <- default_data
+    is_uploaded <- FALSE
+    if (outcome_type == "Continuous"){
+      data_path <- system.file("extdata", "continuous_long.csv", package = "metainsight")
+    } else {
+      data_path <- system.file("extdata", "binary_long.csv", package = "metainsight")
+    }
   }
 
-  validate <- ValidateUploadedData(data, outcome_type, logger)
+  data <- tryCatch(
+    {
+      rio::import(data_path)
+    },
+    error = function(err) {
+      return(NULL)
+    }
+  )
 
-  # If the uploaded data is invalid, return that and a copy of the default data
-  if (!validate$valid){
-    uploaded_data <- FALSE
+  is_valid <- ValidateUploadedData(data, outcome_type, logger)
+
+  # If the uploaded data is invalid, return that
+  if (!is_valid$valid){
     logger %>% writeLog(type = "error",
-                              glue::glue("Uploaded data was invalid because: {validate$message}.
+                              glue::glue("Uploaded data was invalid because: {is_valid$message}.
                                 Please check you data file and ensure that you have the correct outcome type selected."))
-    return(list(valid = validate$valid,
-                uploaded = uploaded_data,
+    return(list(is_valid = is_valid$valid,
+                is_uploaded = is_uploaded,
                 data = data,
-                default_data = default_data,
-                treatments = FindAllTreatments(default_data)))
+                treatment_df = NULL))
   } else {
-    return(list(valid = validate$valid,
-                uploaded = uploaded_data,
-                data = CleanData(data),
-                default_data = NULL,
-                treatments = FindAllTreatments(data)))
+
+    data <- CleanData(data)
+    treatment_list <- FindAllTreatments(data)
+
+    treatment_df <- CreateTreatmentIds(treatment_list)
+
+    return(list(is_data_valid = is_valid$valid,
+                is_data_uploaded = is_uploaded,
+                data = data,
+                treatment_df = treatment_df))
   }
 
 }
@@ -536,6 +534,7 @@ LongToWide <- function(long_data, outcome_type) {
 #'
 #' @param data Data from which to remove covariate columns
 #' @return Data without covariate columns
+#' @export
 RemoveCovariates <- function(data) {
   covariate_column_names <- FindCovariateNames(data)
 
@@ -569,6 +568,7 @@ FindDataShape <- function(data) {
 #' This is only needed if the "T" column in the data frame contains IDs instead of names. Defaults to NULL.
 #' @param study Name of study for which to find treatment names. Defaults to NULL.
 #' @return Vector of all treatment names.
+#' @export
 FindAllTreatments <- function(data, treatment_ids = NULL, study = NULL) {
   # Regular expression explanation:
   # ^ = Start of string
@@ -733,6 +733,7 @@ ReplaceTreatmentIds <- function(data, treatment_ids) {
 #' @param data Data frame in which to search for treatment IDs.
 #' @param treatment_ids Data frame containing treatment names (Label) and IDs (Number).
 #' @return Data frame where the treatments are given as names, not IDs.
+#' @export
 ReinstateTreatmentIds <- function(data, treatment_ids) {
   if ("T" %in% colnames(data)) {
     # Long format

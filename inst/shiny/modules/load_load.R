@@ -90,14 +90,6 @@ load_load_module_server <- function(id, common, parent_session) {
     }
   })
 
-  # this needs to be a separate operation so that input$data is NULL first
-  # observe({
-  #   gargoyle::watch("load_reset")
-  #   if (is.null(common$data)){
-  #     shinyjs::click("run")
-  #   }
-  # })
-
   observeEvent(input$run, {
     # WARNING ####
     # none for this module
@@ -105,18 +97,19 @@ load_load_module_server <- function(id, common, parent_session) {
     # FUNCTION CALL ####
     result <- load_load(input$data$datapath, input$metaoutcome, common$logger)
 
-    if (result$uploaded){
-      common$logger %>% writeLog(type= "complete", "Data was uploaded successfully")
-    } else {
-      common$logger %>% writeLog(type= "complete", glue::glue("Default {tolower(input$metaoutcome)} data has been loaded"))
+    if (result$is_data_valid){
+      if (result$is_data_uploaded){
+        common$logger %>% writeLog(type= "complete", "Data was uploaded successfully")
+      } else {
+        common$logger %>% writeLog(type= "complete", glue::glue("Default {tolower(input$metaoutcome)} data has been loaded"))
+      }
     }
 
     # LOAD INTO COMMON ####
     common$data <- result$data
-    common$default_data <- result$default_data
-    common$valid_data <- result$valid
-    common$is_data_uploaded <- result$uploaded
-    common$treatment_list <- result$treatments
+    common$is_data_valid <- result$is_data_valid
+    common$is_data_uploaded <- result$is_data_uploaded
+    common$treatment_df <- result$treatment_df
     common$metaoutcome <- input$metaoutcome
 
     # METADATA ####
@@ -128,11 +121,8 @@ load_load_module_server <- function(id, common, parent_session) {
     # TRIGGER
     gargoyle::trigger("load_load")
 
-    if (result$valid){
-      show_table(parent_session)
-    } else {
-      show_results(parent_session)
-    }
+    show_results(parent_session)
+
 
   })
 
@@ -147,10 +137,10 @@ load_load_module_server <- function(id, common, parent_session) {
     }
   )
 
-  output$invalid_data <- DT::renderDataTable({
+  # show the loaded data in the results tab
+  output$data <- DT::renderDataTable({
     gargoyle::watch("load_load")
     req(common$data)
-    req(!common$valid_data)
     common$data
   })
 
@@ -173,9 +163,7 @@ load_load_module_server <- function(id, common, parent_session) {
 
 load_load_module_result <- function(id) {
   ns <- NS(id)
-
-  DT::dataTableOutput(ns("invalid_data"))
-
+  DT::dataTableOutput(ns("data"))
 }
 
 load_load_module_rmd <- function(common){ list(

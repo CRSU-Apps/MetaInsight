@@ -22,10 +22,25 @@ summary_char_module_server <- function(id, common, parent_session) {
     gargoyle::trigger("summary_char")
   })
 
-  output$result <- renderText({
-    gargoyle::watch("summary_char")
-    # Result
-  })
+    # Characteristics table of all studies
+    output$sumtb <- renderTable({
+      gargoyle::watch("load_define")
+      req(common$bugsnetdt)
+      summary_char(common$bugsnetdt, common$metaoutcome)
+    })
+
+    # Characteristics table with studies excluded
+    output$sumtb_sub <- renderTable({
+      gargoyle::watch("exclude")
+      gargoyle::watch("load_define")
+      req(common$bugsnetdt)
+      if (is.null(common$excluded_studies)){
+        summary_char(common$bugsnetdt, common$metaoutcome)
+      } else {
+        summary_char(common$bugsnetdt_sub, common$metaoutcome)
+      }
+    })
+
 
   return(list(
     save = function() {
@@ -41,8 +56,18 @@ summary_char_module_server <- function(id, common, parent_session) {
 summary_char_module_result <- function(id) {
   ns <- NS(id)
 
-  # Result UI
-  verbatimTextOutput(ns("result"))
+  fluidRow(
+  column(
+    width = 6,
+    h4("Characteristics table of all studies"),
+    tableOutput(ns("sumtb"))
+  ),
+  column(
+    width = 6,
+    h4("Characteristics table with selected studies excluded"),
+    tableOutput(ns("sumtb_sub"))
+  )
+  )
 }
 
 summary_char_module_rmd <- function(common) {

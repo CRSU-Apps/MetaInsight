@@ -1,6 +1,9 @@
 library(glue)
 library(gargoyle)
+library(metainsight)
 
+# shouldn't be necessary, but ..?
+library(magrittr)
 
 MB <- 1024^2
 UPLOAD_SIZE_MB <- 5000

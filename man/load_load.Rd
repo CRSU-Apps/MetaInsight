@@ -16,7 +16,6 @@ List containing:
  \item{valid}{logical. Whether the data is valid}
  \item{uploaded}{logical. Whether the data is uploaded}
  \item{data}{Dataframe. The data that was uploaded, `NULL` if none was uploaded}
- \item{default_data}{Dataframe. The default data if none was uploaded or it is not valid. `NULL` if data was uploaded and it is valid}
  \item{treatments}{Vector of all treatment names either in the data if it is valid or in the default data if not}
 }
 \description{
