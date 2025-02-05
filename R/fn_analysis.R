@@ -106,10 +106,9 @@ labelmatching.df <- function(d1, ntx, treat_list) {
 #' @param model "fixed" or "random".
 #' @param outcome "MD", "SMD", "OR", "RR", or "RD".
 #' @param dataf Data in contrast form with treatment labels, typically output from labelmatching.df().
-#' @param lstx Vector of treatment labels. (TM: this parameter is not used. Removing it has knock on effects due to parameters not being named when this function is called. To be removed in a later task).
 #' @param ref Reference treatment.
 #' @return NMA results from netmeta::netmeta().
-freq.df <- function(model, outcome, dataf, lstx, ref) {
+freq.df <- function(model, outcome, dataf, ref) {
   net1 <- netmeta::netmeta(TE = TE,
                            seTE = seTE,
                            treat1 = treat1,
@@ -162,7 +161,7 @@ freq_wrap <- function(data, treat_list, model, outcome, CONBI, ref) {
   ntx <- length(lstx)     #count treatment numbers
   d1 <- labelmatching.df(d1 = d0, ntx = ntx, treat_list = treat_list) #matching treatment labels to treatment code
   progress$inc(0.6, detail = "Updating")
-  net1 <- freq.df(model = model, outcome = outcome, dataf = d1, lstx = lstx, ref = ref) # NMA of all studies
+  net1 <- freq.df(model = model, outcome = outcome, dataf = d1, ref = ref) # NMA of all studies
   progress$inc(0.4, detail = "Rendering results")
   return(list(net1 = net1, lstx = lstx, ntx = ntx, d0 = d0, d1 = d1))
 }
