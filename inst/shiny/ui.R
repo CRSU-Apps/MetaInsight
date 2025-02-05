@@ -27,7 +27,7 @@ tagList(
     windowTitle = "MetaInsight",
     tabPanel("Intro", value = "intro"),
     tabPanel("Setup", value = "setup"),
-    tabPanel("Data summary", value = "summary"),
+    tabPanel("Summary", value = "summary"),
     tabPanel("Reproduce", value = "rep"),
     navbarMenu("Support", icon = icon("life-ring"),
                HTML('<a href="https://github.com/CRSU-Apps/MetaInsight/issues" target="_blank">GitHub Issues</a>'),
@@ -64,11 +64,11 @@ tagList(
           # DATA SUMMARY ####
            conditionalPanel(
           "input.tabs == 'summary'",
-          div("Component: Data summary", class = "componentName"),
+          div("Component: Summary", class = "componentName"),
           help_comp_ui("summaryHelp"),
           shinyWidgets::radioGroupButtons(
             "summarySel", "Modules Available:",
-            choices = insert_modules_options("summary"),
+            choices = insert_modules_options("summary")[!names(insert_modules_options("summary")) %in% "exclude"],
             direction = "vertical",
             status = "outline-secondary",
             width = "100%"
@@ -76,7 +76,7 @@ tagList(
           tags$hr(),
           tags$details(
             tags$summary("Select model and exclude studies"),
-            core_exclude_module_ui("core_exclude"),
+            summary_exclude_module_ui("summary_exclude"),
           ),
           insert_modules_ui("summary")
           ),

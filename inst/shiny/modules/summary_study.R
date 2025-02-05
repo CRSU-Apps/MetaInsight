@@ -28,7 +28,7 @@ summary_study_module_server <- function(id, common, parent_session) {
   })
 
 
-  observeEvent(list(input$run, gargoyle::watch("exclude")), {
+  observeEvent(list(input$run, gargoyle::watch("summary_exclude")), {
     # WARNING ####
 
     # FUNCTION CALL ####
@@ -94,6 +94,7 @@ summary_study_module_result <- function(id) {
   ns <- NS(id)
 
   # Result UI
+  # the size of this should adjust depending on the number of studies
   plotOutput(ns("forestPlot"), height = "1000px", width = "800px")
 }
 
@@ -103,6 +104,5 @@ summary_study_module_rmd <- function(common){ list(
   summary_study_ForestTitle = common$meta$summary_study$ForestTitle,
   summary_study_ForestHeader = common$meta$summary_study$ForestHeader,
   summary_study_format_freq0 = common$meta$summary_study$format_freq0)
-  # Variables used in the module's Rmd code
 }
 

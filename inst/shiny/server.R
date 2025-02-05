@@ -147,8 +147,6 @@ function(input, output, session) {
     })
   })
 
-  core_exclude_module_server("core_exclude", common, parent_session = session)
-
 
   ############################################# #
   ### RUN MODULE ON ENTER ####

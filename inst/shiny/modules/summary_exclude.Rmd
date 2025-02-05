@@ -1,0 +1,11 @@
+```{asis, echo = {{summary_exclude_knit}}, eval = {{summary_exclude_knit}}, include = {{summary_exclude_knit}}}
+Description of what the code will do {{var1}}
+```
+
+```{r, echo = {{summary_exclude_knit}}, include = {{summary_exclude_knit}}}
+{{summary_exclude_exclusions}}
+{{summary_exclude_model}}
+
+# R code to run {{var2}}
+# Populate using metadata()
+```

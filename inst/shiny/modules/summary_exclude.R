@@ -1,26 +1,15 @@
-core_exclude_module_ui <- function(id) {
+summary_exclude_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
-    radioButtons(
-      inputId = ns("model"),
-      label = "Model:",
-      choices = c(
-        "Random effect (RE)" = "random",
-        "Fixed effect (FE)" = "fixed"
-      )
-    ),
-    checkboxGroupInput(
-      inputId = ns("exclusions"),
-      label = "Studies to exclude:",
-      choices = c()
-    ),
+    radioButtons(ns("model"), label = "Model:",
+                 choices = c("Random effect (RE)" = "random", "Fixed effect (FE)" = "fixed")),
+    checkboxGroupInput(ns("exclusions"), label = "Studies to exclude:", choices = c())
   )
 }
 
-core_exclude_module_server <- function(id, common, parent_session) {
+summary_exclude_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
-    gargoyle::init("exclude")
     gargoyle::init("model")
 
     observe({
@@ -28,7 +17,6 @@ core_exclude_module_server <- function(id, common, parent_session) {
       req(common$data)
       updateCheckboxGroupInput(session, "exclusions", choices = unique(common$data$Study))
     })
-
 
     # Update which studies can be selected from the sensitivity analysis by taking the initial data subnetwork
     observe({
@@ -60,10 +48,15 @@ core_exclude_module_server <- function(id, common, parent_session) {
       )
     })
 
-    observeEvent(list(input$exclusions, input$model, gargoyle::watch("setup_define")), {
+    observeEvent(list(debounce(input$exclusions, 1200),
+                      input$model,
+                      gargoyle::watch("setup_define")), {
+      # WARNING ####
+      # Something if a whole treatment becomes excluded?
       req(common$bugsnetdt)
-      common$excluded_studies <- input$exclusions
-      result <- core_exclude(common$main_connected_data,
+
+      # FUNCTION CALL ####
+      result <- summary_exclude(common$main_connected_data,
                              common$treatment_df,
                              common$reference_treatment,
                              common$metaoutcome,
@@ -72,10 +65,19 @@ core_exclude_module_server <- function(id, common, parent_session) {
                              input$exclusions,
                              common$logger)
 
+      # LOAD INTO COMMON ####
+      common$excluded_studies <- input$exclusions
       common$bugsnetdt_sub <- result$bugsnetdt_sub
       common$freq_sub <- result$freq_sub
 
-      gargoyle::trigger("exclude")
+      # METADATA ####
+      common$meta$summary_exclude$used <- TRUE
+      common$meta$summary_exclude$exclusions <- input$exclusions
+      common$meta$summary_exclude$model <- input$model
+      # Populate using metadata()
+
+      # TRIGGER
+      gargoyle::trigger("summary_exclude")
     })
 
     observeEvent(input$model, {
@@ -83,5 +85,26 @@ core_exclude_module_server <- function(id, common, parent_session) {
       gargoyle::trigger("model")
     })
 
-  })
+  return(list(
+    save = function() {list(
+      ### Manual save start
+      ### Manual save end
+      exclusions = input$exclusions, 
+      model = input$model)
+    },
+    load = function(state) {
+      ### Manual load start
+      ### Manual load end
+      updateCheckboxGroupInput(session, "exclusions", selected = state$exclusions) 
+      updateRadioButtons(session, "model", selected = state$model)
+    }
+  ))
+})
 }
+
+summary_exclude_module_rmd <- function(common){ list(
+  summary_exclude_knit = !is.null(common$meta$summary_exclude$used),
+  summary_exclude_exclusions = common$meta$summary_exclude$exclusions,
+  summary_exclude_model = common$meta$summary_exclude$model)
+}
+

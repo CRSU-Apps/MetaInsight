@@ -25,6 +25,7 @@ base_module_configs <- c(
   "modules/setup_load.yml",
   "modules/setup_upgrade.yml",
   "modules/setup_define.yml",
+  "modules/summary_exclude.yml",
   "modules/summary_char.yml",
   "modules/summary_study.yml",
   "modules/summary_network.yml",

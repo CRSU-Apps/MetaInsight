@@ -5,10 +5,11 @@
 #' @param reference_treatment character. The reference treatment
 #' @return list
 #' @export
-core_exclude <- function(data, treatment_df, reference_treatment, metaoutcome, outcome_measure, model_type, exclusions, logger = NULL){
+summary_exclude <- function(data, treatment_df, reference_treatment, metaoutcome, outcome_measure, model_type, exclusions, logger = NULL){
 
   selected_data <- data[!data$Study %in% exclusions,]
 
+  # I find this baffling - why not just add the IDs once when data is loaded?
   sensitivity_dewrangled_data <- ReinstateTreatmentIds(selected_data, treatment_df)
   sensitivity_treatments <- FindAllTreatments(sensitivity_dewrangled_data)
   sensitivity_treatments <- unique(sensitivity_dewrangled_data$T)

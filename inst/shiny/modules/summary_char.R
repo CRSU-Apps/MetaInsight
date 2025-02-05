@@ -26,19 +26,16 @@ summary_char_module_server <- function(id, common, parent_session) {
     output$sumtb <- renderTable({
       gargoyle::watch("setup_define")
       req(common$bugsnetdt)
+      common$meta$summary_char$used <- TRUE
       summary_char(common$bugsnetdt, common$metaoutcome)
     })
 
     # Characteristics table with studies excluded
     output$sumtb_sub <- renderTable({
-      gargoyle::watch("exclude")
+      gargoyle::watch("summary_exclude")
       gargoyle::watch("setup_define")
       req(common$bugsnetdt)
-      if (is.null(common$excluded_studies)){
-        summary_char(common$bugsnetdt, common$metaoutcome)
-      } else {
-        summary_char(common$bugsnetdt_sub, common$metaoutcome)
-      }
+      summary_char(common$bugsnetdt_sub, common$metaoutcome)
     })
 
 
@@ -71,6 +68,6 @@ summary_char_module_result <- function(id) {
 }
 
 summary_char_module_rmd <- function(common) {
-  # Variables used in the module's Rmd code
+  summary_char_knit <- common$meta$summary_char$used
 }
 
