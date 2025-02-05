@@ -478,7 +478,7 @@ umeplot.df <- function(residual_deviance, mtcNetwork, model, outcome) {
                 text = ~paste('</br>', all$names,
                               '</br> Arm', arm_number, 
                               '</br> Deviance from NMA model:', round(all[, x_column], digits = 2),
-                              '</br> Deviance from UME model:', round(all[, x_column], digits = 2))
+                              '</br> Deviance from UME model:', round(all[, y_column], digits = 2))
                 )
   )
 }
