@@ -110,13 +110,31 @@ study_exclusions_panel_server <- function(id, data, treatment_df, reference_trea
           
           study_treatments <- FindAllTreatments(data()[data()$Study == study, ])
           
+          # Set function to enable/disable checkbox, and set tooltip for each checkbox
           if (any(study_treatments %in% filtered_treatments)) {
-            # The 0ms delay is required to disable studies disconnected within the initial uploaded data
-            shinyjs::delay(0, shinyjs::enable(selector = sub_element))
+            enable_function <- shinyjs::enable
+            tooltip <- ""
           } else {
-            # The 0ms delay is required to disable studies disconnected within the initial uploaded data
-            shinyjs::delay(0, shinyjs::disable(selector = sub_element))
+            enable_function <- shinyjs::disable
+            tooltip <- "Study not included in main subnetwork"
           }
+          
+          # The 0ms delay is required to disable studies disconnected within the initial uploaded data
+          shinyjs::delay(
+            ms = 0,
+            expr = {
+              enable_function(selector = sub_element)
+              shinyjs::runjs(
+                # document.getElementById(\"{session$ns('exclusionbox')}\") -> Find the exclusion box
+                # .childNodes[4]                                            -> Find the list of checkboxes
+                # .childNodes[{2 * index - 1}]                              -> Find the checkbox div (all even-numbered elements are newlines to make into a vertical list)
+                # .title = \"{tooltip}\"                                    -> Set the tooltip
+                glue::glue("
+                  document.getElementById(\"{session$ns('exclusionbox')}\").childNodes[4].childNodes[{2 * index - 1}].title = \"{tooltip}\"
+                ")
+              )
+            }
+          )
         }
       )
     }) |> bindEvent(main_connected_data())
