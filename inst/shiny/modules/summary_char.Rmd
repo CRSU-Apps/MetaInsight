@@ -1,7 +1,8 @@
 ```{asis, echo = {{summary_char_knit}}, eval = {{summary_char_knit}}, include = {{summary_char_knit}}}
-Description of what the code will do {{var1}}
+Summarise the characteristics of the uploaded dataset and the dataset with excluded studies
 ```
 
 ```{r, echo = {{summary_char_knit}}, include = {{summary_char_knit}}}
-# R code to run {{var2}}
+
+
 ```

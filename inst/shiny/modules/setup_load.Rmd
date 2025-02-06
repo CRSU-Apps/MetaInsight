@@ -1,8 +1,11 @@
 ```{asis, echo = {{setup_load_knit}}, eval = {{setup_load_knit}}, include = {{setup_load_knit}}}
-Load the data
+Read the data in and display a table
 ```
 
 ```{r, echo = {{setup_load_knit}}, include = {{setup_load_knit}}}
-data <- {{setup_load_data}}
-outcome <- {{setup_load_metaoutcome}}
+uploaded_data <- {{setup_load_data}}
+treatments <- {{setup_load_treatment_df}}
+metaoutcome <- {{setup_load_metaoutcome}}
+
+DT::datatable(data)
 ```

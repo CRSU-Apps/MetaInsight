@@ -49,7 +49,6 @@ summary_study_module_server <- function(id, common, parent_session) {
   output$forestPlot <- renderPlot({
     gargoyle::watch("summary_study")
     req(common$freq_sub)
-    # can't be made into a reactive as it creates a plot
     make_netStudy(common$freq_sub, common$outcome_measure, input$ForestHeader, input$ForestTitle)
   })
 
@@ -75,8 +74,7 @@ summary_study_module_server <- function(id, common, parent_session) {
       ### Manual save end
       ForestContent = input$ForestContent,
       ForestTitle = input$ForestTitle,
-      ForestHeader = input$ForestHeader,
-      format_freq0 = input$format_freq0)
+      ForestHeader = input$ForestHeader)
     },
     load = function(state) {
       ### Manual load start
@@ -102,7 +100,6 @@ summary_study_module_rmd <- function(common){ list(
   summary_study_knit = !is.null(common$meta$summary_study$used),
   summary_study_ForestContent = common$meta$summary_study$ForestContent,
   summary_study_ForestTitle = common$meta$summary_study$ForestTitle,
-  summary_study_ForestHeader = common$meta$summary_study$ForestHeader,
-  summary_study_format_freq0 = common$meta$summary_study$format_freq0)
+  summary_study_ForestHeader = common$meta$summary_study$ForestHeader)
 }
 

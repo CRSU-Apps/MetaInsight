@@ -114,7 +114,6 @@ setup_load_module_server <- function(id, common, parent_session) {
 
     # METADATA ####
     common$meta$setup_load$used <- TRUE
-    common$meta$setup_load$data <- common$data
     common$meta$setup_load$metaoutcome <- input$metaoutcome
     common$meta$setup_load$format <- input$format
 
@@ -148,13 +147,13 @@ setup_load_module_server <- function(id, common, parent_session) {
     save = function() {list(
       ### Manual save start
       ### Manual save end
-      metaoutcome = input$metaoutcome, 
+      metaoutcome = input$metaoutcome,
       format = input$format)
     },
     load = function(state) {
       ### Manual load start
       ### Manual load end
-      updateRadioButtons(session, "metaoutcome", selected = state$metaoutcome) 
+      updateRadioButtons(session, "metaoutcome", selected = state$metaoutcome)
       updateRadioButtons(session, "format", selected = state$format)
     }
   ))
@@ -168,8 +167,9 @@ setup_load_module_result <- function(id) {
 
 setup_load_module_rmd <- function(common){ list(
   setup_load_knit = !is.null(common$meta$setup_load$used),
-  setup_load_data = common$meta$setup_load$data,
-  setup_load_metaoutcome = common$meta$setup_load$metaoutcome,
-  setup_load_format = common$meta$setup_load$format)
+  setup_load_data = common$data,
+  setup_load_treatment_df = common$treatment_df,
+  setup_load_metaoutcome = common$meta$setup_load$metaoutcome
+  )
 }
 

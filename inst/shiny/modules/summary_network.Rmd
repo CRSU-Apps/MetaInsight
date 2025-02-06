@@ -1,12 +1,20 @@
 ```{asis, echo = {{summary_network_knit}}, eval = {{summary_network_knit}}, include = {{summary_network_knit}}}
-Description of what the code will do {{var1}}
+Display the networks for the original data and data with excluded studies.
 ```
 
 ```{r, echo = {{summary_network_knit}}, include = {{summary_network_knit}}}
-{{summary_network_label_all}}
-{{summary_network_label_excluded}}
-{{summary_network_networkstyle}}
-{{summary_network_format_freq1}}
-{{summary_network_format_freq2}}
-# R code to run {{var2}}
+network_style <- {{summary_network_networkstyle}}
+network_style_label_all <- {{summary_network_label_all}}
+network_style_label_sub <- {{summary_network_label_excluded}}
+
+if (network_style == "networkp1") {
+make_netgraph(frequentist, network_style_label_all)
+make_netgraph(frequentist_sub, network_style_label_sub)
+}
+
+if (network_style == "networkp2") {
+make_netplot(bugsnet, network_style_label_all)
+make_netplot(bugsnet_sub, network_style_label_sub)
+}
+
 ```

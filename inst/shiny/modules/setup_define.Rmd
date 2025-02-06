@@ -1,10 +1,18 @@
 ```{asis, echo = {{setup_define_knit}}, eval = {{setup_define_knit}}, include = {{setup_define_knit}}}
-Description of what the code will do {{var1}}
+Define the type of the uploaded data and process it into suitable formats for later analyses
 ```
 
 ```{r, echo = {{setup_define_knit}}, include = {{setup_define_knit}}}
-{{setup_define_reference_treatment}}
-{{setup_define_rankopts}}
-{{setup_define_outcome}}
-# R code to run {{var2}}
+reference_treatment <- {{setup_define_reference_treatment}}
+ranking_options <- {{setup_define_rankopts}}
+outcome_measure <- {{setup_define_outcome}}
+
+defined_data <- setup_define(uploaded_data, treatments, metaoutcome, reference_treatment)
+
+data <- defined_data$wrangled_data
+treatment_df <- defined_data$treatment_df
+disconnected_indices <- defined_data$disconnected_indices
+main_connected_data <- defined_data$main_connected_data
+initial_non_covariate_data <- defined_data$initial_non_covariate_data
+bugsnet <- defined_data$bugsnetdt
 ```

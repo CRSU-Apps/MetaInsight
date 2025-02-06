@@ -27,8 +27,6 @@ summary_network_module_server <- function(id, common, parent_session) {
       common$meta$summary_network$label_all <- as.numeric(input$label_all)
       common$meta$summary_network$label_excluded <- as.numeric(input$label_excluded)
       common$meta$summary_network$networkstyle <- input$networkstyle
-      common$meta$summary_network$format_freq1 <- input$format_freq1
-      common$meta$summary_network$format_freq2 <- input$format_freq2
 
     # TRIGGER
     gargoyle::trigger("summary_network")
@@ -41,7 +39,6 @@ summary_network_module_server <- function(id, common, parent_session) {
     if (input$networkstyle == 'networkp1') {
       # Number of trials on line
       req(common$freq_all)
-      browser()
       make_netgraph(common$freq_all, input$label_all)
     } else {
       # Number of trials by nodesize and line thickness
@@ -191,9 +188,7 @@ summary_network_module_rmd <- function(common){ list(
   summary_network_knit = !is.null(common$meta$summary_network$used),
   summary_network_label_all = common$meta$summary_network$label_all,
   summary_network_label_excluded = common$meta$summary_network$label_excluded,
-  summary_network_networkstyle = common$meta$summary_network$networkstyle,
-  summary_network_format_freq1 = common$meta$summary_network$format_freq1,
-  summary_network_format_freq2 = common$meta$summary_network$format_freq2)
+  summary_network_networkstyle = common$meta$summary_network$networkstyle)
   # Variables used in the module's Rmd code
 }
 

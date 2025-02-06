@@ -1,9 +1,13 @@
 ```{asis, echo = {{setup_upgrade_knit}}, eval = {{setup_upgrade_knit}}, include = {{setup_upgrade_knit}}}
-Description of what the code will do {{var1}}
+Upgrade data from previous versions of app
 ```
 
 ```{r, echo = {{setup_upgrade_knit}}, include = {{setup_upgrade_knit}}}
-{{setup_upgrade_uploaded_data}}
-{{setup_upgrade_treatment_names}}
-# R code to run {{var2}}
+
+# need to have a think about how to do this.
+
+old_data <- {{setup_upgrade_uploaded_data}}
+old_treatment_names <- {{setup_upgrade_treatment_names}}
+
+# upgraded_data <- setup_upgrade()
 ```

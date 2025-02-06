@@ -1,11 +1,13 @@
 ```{asis, echo = {{summary_exclude_knit}}, eval = {{summary_exclude_knit}}, include = {{summary_exclude_knit}}}
-Description of what the code will do {{var1}}
+Exclude studies from the analysis
 ```
 
 ```{r, echo = {{summary_exclude_knit}}, include = {{summary_exclude_knit}}}
-{{summary_exclude_exclusions}}
-{{summary_exclude_model}}
+excluded_studies <- {{summary_exclude_exclusions}}
+model_type <- {{summary_exclude_model}}
 
-# R code to run {{var2}}
-# Populate using metadata()
+excluded_data <- summary_exclude(data, treatment_df, reference_treatment, metaoutcome, outcome_measure, model_type, excluded_studies)
+
+frequentist_sub <- excluded_data$freq_sub
+bugsnet_sub <- excluded_data$bugsnetdt_sub
 ```

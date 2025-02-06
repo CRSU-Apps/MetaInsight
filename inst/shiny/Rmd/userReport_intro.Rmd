@@ -1,5 +1,5 @@
 ---
-title: shinyscholar Session `r Sys.Date()`
+title: metainsight Session `r Sys.Date()`
 ---
 
 ```{r, include=FALSE}
@@ -10,7 +10,7 @@ knit_engines$set(asis = function(options) {
 knitr::opts_chunk$set(message = FALSE, warning = FALSE, eval = FALSE)
 ```
 
-Please find below the R code history from your *shinyscholar* v0.2.2 session. 
+Please find below the R code history from your *metainsight* v0.0.1 session. 
 
 You can reproduce your session results by running this R Markdown file in RStudio. 
 
@@ -20,14 +20,12 @@ For more detailed information see <http://rmarkdown.rstudio.com>.
 
 ### Package installation
 
-shinyscholar uses the following R packages that must be installed and loaded before starting.
+metainsight uses the following R packages that must be installed and loaded before starting.
 ```{r}
-library(terra)
-library(leaflet)
-library(shinyscholar)
+library(metainsight)
 ```
 
-The *shinyscholar* session code .Rmd file is composed of a chain of module functions that are internal to *shinyscholar*. Each of these functions corresponds to a single module that the user ran during the session. To see the internal code for these module functions, click on the links in the .Rmd file. Users are encouraged to write custom code in the .Rmd directly to modify their analysis, and even modify the module function code to further customize. To see the source code for any module function, just type its name into the R console and press Return.
+The *metainsight* session code .Rmd file is composed of a chain of module functions that are internal to *metainsight*. Each of these functions corresponds to a single module that the user ran during the session. To see the internal code for these module functions, click on the links in the .Rmd file. Users are encouraged to write custom code in the .Rmd directly to modify their analysis, and even modify the module function code to further customize. To see the source code for any module function, just type its name into the R console and press Return.
 
 Your analyses are below.
 

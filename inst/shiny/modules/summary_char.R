@@ -38,7 +38,6 @@ summary_char_module_server <- function(id, common, parent_session) {
       summary_char(common$bugsnetdt_sub, common$metaoutcome)
     })
 
-
   return(list(
     save = function() {
       # Save any values that should be saved when the current session is saved
@@ -68,6 +67,6 @@ summary_char_module_result <- function(id) {
 }
 
 summary_char_module_rmd <- function(common) {
-  summary_char_knit <- common$meta$summary_char$used
+  list(summary_char_knit = !is.null(common$meta$summary_char$used))
 }
 
