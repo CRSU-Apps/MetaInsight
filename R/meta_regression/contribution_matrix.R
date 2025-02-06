@@ -753,7 +753,7 @@ CalculateContributions <- function(
   )
   
   if (!treatment_or_covariate_effect %in% c("Treatment Effect", "Covariate Effect")) {
-    stop(glue::glue("Contribution type '{}' not recognised. Please use one of: 'Treatment Effect', 'Covariate Effect'"))
+    stop(glue::glue("Contribution type '{treatment_or_covariate_effect}' not recognised. Please use one of: 'Treatment Effect', 'Covariate Effect'"))
   }
   
   if (cov_parameters == "none" & treatment_or_covariate_effect != "Treatment Effect") {
