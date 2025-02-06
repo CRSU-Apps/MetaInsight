@@ -359,21 +359,21 @@ bayenode <- function(data, treat_list, model, outcome, CONBI) {
 
 #' Create unrelated mean effects (UME) plot.
 #'
-#' @param c Arm data for model.
+#' @param residual_deviance Data frame of residual deviance by arm, from a gemtc mtc.result object.
 #' @param mtcNetwork GEMTC network object.
 #' @param model Model effects type. "random" or "fixed".
 #' @param outcome Outcome measure being analysed: one of "OR". "RR", "MD".
 #'
 #' @return Plot and deviance report object in a list of "p" and "y" respectively.
-umeplot.df <- function(c, mtcNetwork, model, outcome) {
+umeplot.df <- function(residual_deviance, mtcNetwork, model, outcome) {
   if (!outcome %in% c('OR', 'RR', 'MD')) {
     stop(glue::glue("Outcome type '{outcome}' is not supported. Please use one of: 'MD', 'OR', 'RR'"))
   }
-  
+
   progress <- shiny::Progress$new()
   on.exit(progress$close())
   progress$set(message = "Updating.", value = 0)
-  c$names <- rownames(c)
+  residual_deviance$names <- rownames(residual_deviance)
   
   if (outcome == "MD") {
     like <- "normal"
@@ -397,7 +397,7 @@ umeplot.df <- function(c, mtcNetwork, model, outcome) {
   y <- mtc.deviance({ume_results})
   inc <- data.frame(y$dev.ab)
   inc$names <- rownames(inc)
-  all <- merge(c, inc, by = "names")
+  all <- merge(residual_deviance, inc, by = "names")
   
   names(all)[names(all) == "X1.x"] <- "NMAmodel_arm1"
   names(all)[names(all) == "X1.y"] <- "UMEmodel_arm1"
@@ -411,6 +411,9 @@ umeplot.df <- function(c, mtcNetwork, model, outcome) {
   
   dline <- data.frame(m, n)
   
+  #The maximum number of arms
+  max_arms <- ncol(residual_deviance) - 1
+
   p = plot_ly() %>%   # plot
     add_trace(data = dline, x = ~m, y = ~n, type = 'scatter', mode = 'lines',
               line = list(color = '#45171D'))
@@ -441,59 +444,44 @@ umeplot.df <- function(c, mtcNetwork, model, outcome) {
     layout(showlegend = FALSE, xaxis = list(title = "Deviance from NMA model"), 
            yaxis = list(title = "Deviance from UME inconsistency model"))
   
-  if (ncol(c) > 3) { 
-    p = p %>% 
-      add_trace(data = all,
-                x = ~X3.x, y = ~X3.y, type = 'scatter', mode = 'markers', 
-                marker = list(size = 4, color = '#CAEFD1',
-                            line = list(color = 'rgb(0,128,0)',
-                                        width = 2)),
-                hoverinfo = 'text',
-                text = ~paste('</br>', all$names,
-                            '</br> Arm 3',
-                            '</br> Deviance from NMA model:', round(X3.x, digits = 2),
-                            '</br> Deviance from UME model:', round(X3.y, digits = 2)))}
-  if (ncol(c) > 4) { 
-    p = p %>% 
-      add_trace(data = all,
-                x = ~X4.x, y = ~X4.y, type = 'scatter', mode = 'markers', 
-                marker = list(size = 4, color = '#CAEFD1',
-                            line = list(color = 'rgb(0,128,0)',
-                                        width = 2)),
-                hoverinfo = 'text',
-                text = ~paste('</br>', all$names,
-                            '</br> Arm 4',
-                            '</br> Deviance from NMA model:', round(X4.x, digits = 2),
-                            '</br> Deviance from UME model:', round(X4.y, digits = 2)))}
-  if (ncol(c) > 5) { 
-    p = p %>% 
-      add_trace(data = all,
-                x = ~X5.x, y = ~X5.y, type = 'scatter', mode = 'markers', 
-                marker = list(size = 4, color = '#CAEFD1',
-                            line = list(color = 'rgb(0,128,0)',
-                                        width = 2)),
-                hoverinfo = 'text',
-                text = ~paste('</br>', all$names,
-                            '</br> Arm 5',
-                            '</br> Deviance from NMA model:', round(X5.x, digits = 2),
-                            '</br> Deviance from UME model:', round(X5.y, digits = 2)))}
-  if (ncol(c) > 6) { 
-    p = p %>% 
-      add_trace(data = all,
-                x = ~X6.x, y = ~X6.y, type = 'scatter', mode = 'markers', 
-                marker = list(size = 4, color = '#CAEFD1',
-                            line = list(color = 'rgb(0,128,0)',
-                                        width = 2)),
-                hoverinfo = 'text',
-                text = ~paste('</br>', all$names,
-                            '</br> Arm 6',
-                            '</br> Deviance from NMA model:', round(X6.x, digits = 2),
-                            '</br> Deviance from UME model:', round(X6.y, digits = 2)))}
+  if (max_arms >= 3) {
+    for (arm_number in 3:max_arms) {
+      p <- .AddTraceToUmePlot(ume_plot = p, all = all, arm_number = arm_number)
+    }
+  }
+
   progress$inc(0.2, detail = "Exporting results")
   
   return(list(p = p, y = y))
 }
 
+
+
+#' Apply plotly::add_trace to the UME plot when there are more than two arms.
+#'
+#' @param ume_plot The current UME plot.
+#' @param all The full data frame of residual deviances.
+#' @param arm_number Current arm number.
+#' @return 'ume_plot' with additional points added, corresponding to 'arm_number'.
+.AddTraceToUmePlot <- function(ume_plot, all, arm_number) {
+  x_column <- paste0("X", arm_number, ".x")
+  y_column <- paste0("X", arm_number, ".y")
+  
+  return(
+    ume_plot %>% 
+      add_trace(data = all,
+                x = ~all[, x_column], y = ~all[, y_column], type = 'scatter', mode = 'markers', 
+                marker = list(size = 4, color = '#CAEFD1',
+                              line = list(color = 'rgb(0,128,0)',
+                                          width = 2)),
+                hoverinfo = 'text',
+                text = ~paste('</br>', all$names,
+                              '</br> Arm', arm_number, 
+                              '</br> Deviance from NMA model:', round(all[, x_column], digits = 2),
+                              '</br> Deviance from UME model:', round(all[, y_column], digits = 2))
+                )
+  )
+}
 
 
 #' Per-arm residual deviance plot.
