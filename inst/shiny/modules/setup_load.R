@@ -137,7 +137,7 @@ setup_load_module_server <- function(id, common, parent_session) {
   )
 
   # show the loaded data in the results tab
-  output$data <- DT::renderDataTable({
+  output$table <- DT::renderDataTable({
     watch("setup_load")
     req(common$data)
     common$data
@@ -162,7 +162,7 @@ setup_load_module_server <- function(id, common, parent_session) {
 
 setup_load_module_result <- function(id) {
   ns <- NS(id)
-  DT::dataTableOutput(ns("data"))
+  DT::dataTableOutput(ns("table"))
 }
 
 setup_load_module_rmd <- function(common){ list(
