@@ -2,4 +2,4 @@ component: "setup"
 short_name: "Upgrade"
 long_name: "Upgrade old file formats"
 authors: "Rhiannon K. Owen, Naomi Bradbury, Yiqiao Xin, Tom Morris, Janion Nevill, Simon E. H. Smart"
-package: []
+package: [dplyr]

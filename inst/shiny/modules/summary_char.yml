@@ -2,4 +2,4 @@ component: "summary"
 short_name: "Char"
 long_name: "Data characteristics"
 authors: "Rhiannon K. Owen, Naomi Bradbury, Yiqiao Xin, Tom Morris, Janion Nevill, Simon E. H. Smart"
-package: []
+package: [BUGSnet]

@@ -2,4 +2,4 @@ component: "setup"
 short_name: "Define"
 long_name: "Define data type"
 authors: "Rhiannon K. Owen, Naomi Bradbury, Yiqiao Xin, Tom Morris, Janion Nevill, Simon E. H. Smart"
-package: []
+package: [BUGSnet, igraph]
