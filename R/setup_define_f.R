@@ -27,7 +27,12 @@ setup_define <- function(data, treatment_df, outcome_type, reference_treatment, 
 
   if (length(main_subnetwork_exclusions) > 0){
     logger %>% writeLog(type = "warning", glue::glue("The uploaded data comprises a disconnected network.
-                                                     Only the subnetwork containing the reference treatment ({reference_treatment}) will be displayed"))
+                                                     Only the subnetwork containing the reference treatment
+                                                     ({reference_treatment}) will be displayed and disconnected
+                                                     studies are shown in the logger."))
+    for (s in main_subnetwork_exclusions){
+      logger %>% writeLog(s)
+    }
   }
 
   disconnected_indices <- which(studies %in% main_subnetwork_exclusions)

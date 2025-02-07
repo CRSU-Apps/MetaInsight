@@ -1,9 +1,13 @@
 summary_exclude_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
-    radioButtons(ns("model"), label = "Model:",
-                 choices = c("Random effect (RE)" = "random", "Fixed effect (FE)" = "fixed")),
-    checkboxGroupInput(ns("exclusions"), label = "Studies to exclude:", choices = c())
+    bslib::accordion(
+      bslib::accordion_panel("Select model and exclude studies",
+         radioButtons(ns("model"), label = "Model:",
+                      choices = c("Random effect (RE)" = "random", "Fixed effect (FE)" = "fixed")),
+         checkboxGroupInput(ns("exclusions"), label = "Studies to exclude:", choices = c())
+      )
+    )
   )
 }
 
@@ -74,7 +78,6 @@ summary_exclude_module_server <- function(id, common, parent_session) {
       common$meta$summary_exclude$used <- TRUE
       common$meta$summary_exclude$exclusions <- input$exclusions
       common$meta$summary_exclude$model <- input$model
-      # Populate using metadata()
 
       # TRIGGER
       trigger("summary_exclude")
@@ -89,13 +92,13 @@ summary_exclude_module_server <- function(id, common, parent_session) {
     save = function() {list(
       ### Manual save start
       ### Manual save end
-      exclusions = input$exclusions, 
+      exclusions = input$exclusions,
       model = input$model)
     },
     load = function(state) {
       ### Manual load start
       ### Manual load end
-      updateCheckboxGroupInput(session, "exclusions", selected = state$exclusions) 
+      updateCheckboxGroupInput(session, "exclusions", selected = state$exclusions)
       updateRadioButtons(session, "model", selected = state$model)
     }
   ))

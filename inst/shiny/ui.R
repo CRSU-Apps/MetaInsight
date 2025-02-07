@@ -74,10 +74,7 @@ tagList(
             width = "100%"
           ),
           tags$hr(),
-          tags$details(
-            tags$summary("Select model and exclude studies"),
-            summary_exclude_module_ui("summary_exclude"),
-          ),
+          summary_exclude_module_ui("summary_exclude"),
           insert_modules_ui("summary", exclude = "summary_exclude")
           ),
           # REPRODUCIBILITY
