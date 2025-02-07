@@ -2,4 +2,4 @@ component: "summary"
 short_name: "Network"
 long_name: "Network plot"
 authors: "Rhiannon K. Owen, Naomi Bradbury, Yiqiao Xin, Tom Morris, Janion Nevill, Simon E. H. Smart"
-package: []
+package: [BUGSnet, netmeta]

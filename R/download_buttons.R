@@ -4,15 +4,15 @@
 ## Sizing functions for forest plots ##
 
 #' Calculate the pixel height of a node-split forest plot for a given number of comparisons for on screen
-#' 
+#'
 #' @param ncomp The number of comparisons in the plot
 #' @return The height of the plot in pixels
 NodePixels <- function(ncomp) {
- return(max(400, ncomp * 80)) # 5 comparisons fits within the default of 400 pixels 
+ return(max(400, ncomp * 80)) # 5 comparisons fits within the default of 400 pixels
 }
 
 #' Calculate download height of a node-split forest plot for a given number of comparisons
-#' 
+#'
 #' @param ncomp The number of comparisons in the plot
 #' @param type Type of measure, "in" for inches, "px" for pixels
 #' @return The height of the plot
@@ -29,7 +29,7 @@ NodeDownloadHeight <- function(ncomp, type) {
 
 
 #' Calculate the pixel height of a forest plot for a given number of treatments
-#' 
+#'
 #' @param notrt The number of treatments in the plot
 #' @param title TRUE if the title is included in the plot
 #' @return The height of the plot in pixels
@@ -39,17 +39,17 @@ BayesPixels <- function(notrt, title=FALSE) {    # input is total number of trea
   } else {
     height <- 15 * (notrt - 1) + 60
   }
-  
+
   if (title) {
     height <- height + 100
   }
-  
+
   return(height)
 }
 
 
 #' Calculate the inch height of a forest plot for a given number of treatments
-#' 
+#'
 #' @param notrt The number of treatments in the plot
 #' @return The height of the plot in inches
 BayesInch <- function(notrt) {
@@ -62,13 +62,14 @@ BayesInch <- function(notrt) {
 }
 
 #' Write some plot to a .pdf or .png file.
-#' 
+#'
 #' @param file The file to which to write.
 #' @param type String containing the type of file to which to write.
 #' @param renderFunction A function to render the plot.
 #' @param height The height of the plot in inches for pdf, or user specified units for png.
 #' @param width The width of the plot in inches for pdf, or user specified units for png.
 #' @param png_units The units for @param height and @param width for png. Defaults to "px".
+#' @export
 write_to_pdf_or_png <- function(file, type, renderFunction, height = NULL, width = NULL, png_units = "px") {
   if (tolower(type) == "pdf") {
     pdf(file = file, height = height, width = width)
@@ -83,9 +84,9 @@ write_to_pdf_or_png <- function(file, type, renderFunction, height = NULL, width
 #########################
 ### Tab 2 - Load data ###
 #########################
-  
+
 #' Create a download handler for raw data
-#' 
+#'
 #' @param metaoutcome function to get th outcome to decide which file to download
 #' @param filename Name of file to which to download
 #' @param continuous_file File to download if continuous

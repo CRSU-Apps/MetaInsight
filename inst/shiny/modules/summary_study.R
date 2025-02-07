@@ -49,7 +49,7 @@ summary_study_module_server <- function(id, common, parent_session) {
   output$forestPlot <- renderPlot({
     gargoyle::watch("summary_study")
     req(common$freq_sub)
-    make_netStudy(common$freq_sub, common$outcome_measure, input$ForestHeader, input$ForestTitle)
+    summary_study(common$freq_sub, common$outcome_measure, input$ForestHeader, input$ForestTitle)
   })
 
   output$downloadStudy <- downloadHandler(
@@ -58,15 +58,14 @@ summary_study_module_server <- function(id, common, parent_session) {
     },
     content = function(file) {
       if (input$format_freq0 == "pdf") {
-        pdf(file = file, pointsize = input$ForestContent, width = 8, height =  make_netStudy(common$freq_sub, common$outcome_measure, input$ForestHeader, input$ForestTitle)$size)
+        pdf(file = file, pointsize = input$ForestContent, width = 8, height = summary_study(common$freq_sub, common$outcome_measure, input$ForestHeader, input$ForestTitle)$size)
       } else {
-        svg(file = file, pointsize = input$ForestContent, width = 8, height =  make_netStudy(common$freq_sub, common$outcome_measure, input$ForestHeader, input$ForestTitle)$size)
+        svg(file = file, pointsize = input$ForestContent, width = 8, height = summary_study(common$freq_sub, common$outcome_measure, input$ForestHeader, input$ForestTitle)$size)
       }
-      make_netStudy(common$freq_sub, common$outcome_measure, input$ForestHeader, input$ForestTitle)
+      summary_study(common$freq_sub, common$outcome_measure, input$ForestHeader, input$ForestTitle)
       dev.off()
       }
   )
-
 
   return(list(
     save = function() {list(

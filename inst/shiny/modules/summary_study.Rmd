@@ -7,6 +7,6 @@ summary_plot_content_size <- {{summary_study_ForestContent}}
 summary_plot_title_size <- {{summary_study_ForestTitle}}
 summary_plot_header_size <- {{summary_study_ForestHeader}}
 
-make_netStudy(frequentist_sub, outcome_measure, summary_plot_header_size, summary_plot_title_size)
+summary_study(frequentist_sub, outcome_measure, summary_plot_header_size, summary_plot_title_size)
 
 ```
