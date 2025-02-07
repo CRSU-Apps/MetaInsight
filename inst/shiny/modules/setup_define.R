@@ -2,14 +2,10 @@ setup_define_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
     selectizeInput(ns("reference_treatment"), "Select reference treatment", choices = c()),
-    uiOutput(ns("outcome_out")),
-    radioButtons(ns("rankopts"),
-      label = 'For treatment rankings, smaller outcome values (e.g. smaller mean values for continuous data, or ORs less than 1 for binary data) are:',
-      choices = c(
-        "Desirable" = "good",
-        "Undesirable" = "bad"
-      )
-    ),
+    radioButtons(ns("outcome"), label = "Outcome for continuous data:",
+                 choices = c("Mean Difference (MD)" = "MD", "Standardised Mean Difference (SMD)" = "SMD")),
+    radioButtons(ns("rankopts"), label = "For treatment rankings, values lower than the mean are:",
+                 choices = c("Desirable" = "good", "Undesirable" = "bad")),
     actionButton(ns("run"), "Define data")
   )
 }
@@ -17,41 +13,27 @@ setup_define_module_ui <- function(id) {
 setup_define_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
-  output$outcome_out <- renderUI({
-    gargoyle::watch("setup_load")
-    req(common$metaoutcome)
-    if (common$metaoutcome == "Continuous"){
-      radioButtons(session$ns("outcome"),
-                   label = "Outcome for continuous data:",
-                   choices = c(
-                     "Mean Difference (MD)" = "MD",
-                     "Standardised Mean Difference (SMD)" = "SMD"
-                   ))
-    } else {
-      radioButtons(session$ns("outcome"),
-                   label = "Outcome for binary data:",
-                   choices = c(
-                     "Odds Ratio (OR)" = "OR",
-                     "Risk Ratio (RR)" = "RR",
-                     "Risk Difference (RD)" = "RD"
-                   ))
-    }
-  })
-
+  # Update UI depending on selections in previous module
   observe({
     gargoyle::watch("setup_load")
     req(common$treatment_df)
     treatments <- common$treatment_df$Label
+    if (common$metaoutcome == "Continuous"){
+      outcome_label <- "Outcome for continuous data:"
+      outcome_choices <- c("Mean Difference (MD)" = "MD", "Standardised Mean Difference (SMD)" = "SMD")
+      rank_label <- "For treatment rankings, values lower than the mean are:"
+    } else {
+      outcome_label <- "Outcome for binary data:"
+      outcome_choices <- c("Odds Ratio (OR)" = "OR", "Risk Ratio (RR)" = "RR", "Risk Difference (RD)" = "RD")
+      # I've just edited the previous text, but what about RR or RD?
+      rank_label <- "For treatment rankings, ORs less than 1 are:"
+    }
     updateSelectInput(session, "reference_treatment", choices = treatments,
                       selected = FindExpectedReferenceTreatment(treatments))
-    updateRadioButtons(session, "rankopts", selected = RankingOrder(common$metaoutcome, !common$is_data_uploaded))
+    updateRadioButtons(session, "outcome", outcome_label, outcome_choices)
+    updateRadioButtons(session, "rankopts", rank_label,
+                       selected = RankingOrder(common$metaoutcome, !common$is_data_uploaded))
   })
-
-  output$metaoutcome <- reactive({
-    gargoyle::watch("setup_load")
-    common$metaoutcome
-  })
-  shiny::outputOptions(output, "metaoutcome", suspendWhenHidden = FALSE)
 
   observeEvent(input$run, {
     # WARNING ####
