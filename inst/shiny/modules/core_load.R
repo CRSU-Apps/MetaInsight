@@ -51,7 +51,7 @@ core_load_module_server <- function(id, common, modules, map, COMPONENT_MODULES,
 
       #restore results for used modules
       for (used_module in names(common$meta)){
-        gargoyle::trigger(used_module)
+        trigger(used_module)
       }
     }
 

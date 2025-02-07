@@ -10,17 +10,17 @@ summary_exclude_module_ui <- function(id) {
 summary_exclude_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
-    gargoyle::init("model")
+    init("model")
 
     observe({
-      gargoyle::watch("setup_load")
+      watch("setup_load")
       req(common$data)
       updateCheckboxGroupInput(session, "exclusions", choices = unique(common$data$Study))
     })
 
     # Update which studies can be selected from the sensitivity analysis by taking the initial data subnetwork
     observe({
-      gargoyle::watch("setup_define")
+      watch("setup_define")
       req(common$disconnected_indices)
 
       all_studies <- unique(common$data$Study)
@@ -50,7 +50,7 @@ summary_exclude_module_server <- function(id, common, parent_session) {
 
     observeEvent(list(debounce(input$exclusions, 1200),
                       input$model,
-                      gargoyle::watch("setup_define")), {
+                      watch("setup_define")), {
       # WARNING ####
       # Something if a whole treatment becomes excluded?
       req(common$bugsnetdt)
@@ -77,12 +77,12 @@ summary_exclude_module_server <- function(id, common, parent_session) {
       # Populate using metadata()
 
       # TRIGGER
-      gargoyle::trigger("summary_exclude")
+      trigger("summary_exclude")
     })
 
     observeEvent(input$model, {
       common$model_type <- input$model
-      gargoyle::trigger("model")
+      trigger("model")
     })
 
   return(list(

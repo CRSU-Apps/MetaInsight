@@ -84,7 +84,7 @@ function(input, output, session) {
 
   # TABLE
   output$table <- DT::renderDataTable({
-    gargoyle::watch("setup_define")
+    watch("setup_define")
     req(common$initial_non_covariate_data)
 
     if (common$metaoutcome == "Continuous") {
@@ -128,12 +128,12 @@ function(input, output, session) {
   ###################
 
   # Initialize all modules
-  gargoyle::init("intro")
+  init("intro")
   modules <- list()
   lapply(names(COMPONENT_MODULES), function(component) {
     lapply(COMPONENT_MODULES[[component]], function(module) {
       # Initialize event triggers for each module
-      gargoyle::init(module$id)
+      init(module$id)
        if (module$id == "rep_markdown"){
         return <- do.call(get(module$server_function), args = list(id = module$id, common = common, parent_session = session, COMPONENT_MODULES))
       } else {

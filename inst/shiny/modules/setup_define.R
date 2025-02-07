@@ -15,7 +15,7 @@ setup_define_module_server <- function(id, common, parent_session) {
 
   # Update UI depending on selections in previous module
   observe({
-    gargoyle::watch("setup_load")
+    watch("setup_load")
     req(common$treatment_df)
     treatments <- common$treatment_df$Label
     if (common$metaoutcome == "Continuous"){
@@ -64,7 +64,7 @@ setup_define_module_server <- function(id, common, parent_session) {
     common$meta$setup_define$outcome <- input$outcome
 
     # TRIGGER
-    gargoyle::trigger("setup_define")
+    trigger("setup_define")
     show_table(parent_session)
   })
 

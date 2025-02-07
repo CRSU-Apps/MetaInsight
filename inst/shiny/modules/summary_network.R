@@ -15,7 +15,7 @@ summary_network_module_ui <- function(id) {
 summary_network_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
-  observeEvent(list(input$run, gargoyle::watch("summary_exclude")), {
+  observeEvent(list(input$run, watch("summary_exclude")), {
     # WARNING ####
 
     # FUNCTION CALL ####
@@ -29,12 +29,12 @@ summary_network_module_server <- function(id, common, parent_session) {
       common$meta$summary_network$networkstyle <- input$networkstyle
 
     # TRIGGER
-    gargoyle::trigger("summary_network")
+    trigger("summary_network")
   })
 
   # Network plot of all studies
   output$plot_all <- renderPlot({
-    gargoyle::watch("summary_network")
+    watch("summary_network")
     req(common$freq_all)
     summary_network(common$freq_all, common$bugsnetdt, input$style, input$label_all, common$logger)
     title("Network plot of all studies")
@@ -42,14 +42,14 @@ summary_network_module_server <- function(id, common, parent_session) {
 
   # Network connectivity all studies
   output$netconnect_all <- renderPrint({
-    gargoyle::watch("summary_network")
+    watch("summary_network")
     req(common$freq_all)
     make_netconnect(common$freq_all)
   })
 
   # Network plot with studies excluded
   output$plot_sub <- renderPlot({
-    gargoyle::watch("summary_network")
+    watch("summary_network")
     req(common$freq_sub)
     summary_network(common$freq_sub, common$bugsnetdt_sub, input$style, input$label_all, common$logger)
     title("Network plot with selected studies excluded")
@@ -57,7 +57,7 @@ summary_network_module_server <- function(id, common, parent_session) {
 
   # Network connectivity with studies excluded
   output$netconnect_sub <- renderPrint({
-    gargoyle::watch("summary_network")
+    watch("summary_network")
     req(common$freq_sub)
     make_netconnect(common$freq_sub)
   })

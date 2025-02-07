@@ -15,8 +15,8 @@ summary_study_module_server <- function(id, common, parent_session) {
 
   # it doesn't make much sense to calculate this here, but it relies on the model definition in core_exclude
   observe({
-    gargoyle::watch("setup_define")
-    gargoyle::watch("model")
+    watch("setup_define")
+    watch("model")
     req(common$initial_non_covariate_data)
 
     common$freq_all <- frequentist(common$initial_non_covariate_data,
@@ -28,7 +28,7 @@ summary_study_module_server <- function(id, common, parent_session) {
   })
 
 
-  observeEvent(list(input$run, gargoyle::watch("summary_exclude")), {
+  observeEvent(list(input$run, watch("summary_exclude")), {
     # WARNING ####
 
     # FUNCTION CALL ####
@@ -43,11 +43,11 @@ summary_study_module_server <- function(id, common, parent_session) {
       common$meta$summary_study$format_freq0 <- input$format_freq0
 
     # TRIGGER
-    gargoyle::trigger("summary_study")
+    trigger("summary_study")
   })
 
   output$forestPlot <- renderPlot({
-    gargoyle::watch("summary_study")
+    watch("summary_study")
     req(common$freq_sub)
     summary_study(common$freq_sub, common$outcome_measure, input$ForestHeader, input$ForestTitle)
   })

@@ -49,11 +49,11 @@ setup_load_module_server <- function(id, common, parent_session) {
 
 
   # Create a definable reactive value to allow reloading of data
-  gargoyle::init("load_reset")
+  init("load_reset")
 
   # Render function for file input dynamically to allow the button to be set to Null
   output$data_out <- renderUI({
-    gargoyle::watch("load_reset")
+    watch("load_reset")
     fileInput(ns("data"), label = NULL, buttonLabel = "Select", accept = c(".csv", ".xlsx"))
   })
 
@@ -65,8 +65,8 @@ setup_load_module_server <- function(id, common, parent_session) {
   })
 
   output$reset_out <- renderUI({
-    gargoyle::watch("setup_load")
-    gargoyle::watch("load_reset")
+    watch("setup_load")
+    watch("load_reset")
     req(common$is_data_uploaded)
     div(
       style = "float:right",
@@ -79,12 +79,12 @@ setup_load_module_server <- function(id, common, parent_session) {
   observeEvent(input$reset, {
     common$reset()
     updateActionButton(session, "run", label = "Load example data")
-    gargoyle::trigger("load_reset")
+    trigger("load_reset")
    })
 
   output$download_out <- renderUI({
-    gargoyle::watch("setup_load")
-    gargoyle::watch("load_reset")
+    watch("setup_load")
+    watch("load_reset")
     if (is.null(common$is_data_uploaded) || !common$is_data_uploaded){
       downloadButton(ns("download"), "Download example data")
     }
@@ -118,7 +118,7 @@ setup_load_module_server <- function(id, common, parent_session) {
     common$meta$setup_load$format <- input$format
 
     # TRIGGER
-    gargoyle::trigger("setup_load")
+    trigger("setup_load")
 
     show_results(parent_session)
 
@@ -138,7 +138,7 @@ setup_load_module_server <- function(id, common, parent_session) {
 
   # show the loaded data in the results tab
   output$data <- DT::renderDataTable({
-    gargoyle::watch("setup_load")
+    watch("setup_load")
     req(common$data)
     common$data
   })

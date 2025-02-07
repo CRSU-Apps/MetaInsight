@@ -48,12 +48,12 @@ setup_upgrade_module_server <- function(id, common, parent_session) {
       common$meta$setup_upgrade$treatment_names <- input$treatment_names
 
       # TRIGGER
-      gargoyle::trigger("setup_upgrade")
+      trigger("setup_upgrade")
     }
   })
 
   output$download_out <- renderUI({
-    gargoyle::watch("setup_upgrade")
+    watch("setup_upgrade")
     req(common$upgraded_data)
     downloadButton(session$ns("download"))
   })
