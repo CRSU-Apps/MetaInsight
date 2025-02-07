@@ -70,16 +70,20 @@ infoGenerator <- function(pkgName, modName, modAuts, modID) {
 join <- function(v) paste(v, collapse = ", ")
 
 # Add radio buttons for all modules in a component
-insert_modules_options <- function(component) {
+insert_modules_options <- function(component, exclude = NULL) {
+  modules <- COMPONENT_MODULES[[component]]
+  modules <- modules[!names(modules) %in% exclude]
   unlist(setNames(
-    lapply(COMPONENT_MODULES[[component]], `[[`, "id"),
-    lapply(COMPONENT_MODULES[[component]], `[[`, "short_name")
+    lapply(modules, `[[`, "id"),
+    lapply(modules, `[[`, "short_name")
   ))
 }
 
 # Add the UI for a module
-insert_modules_ui <- function(component) {
-  lapply(COMPONENT_MODULES[[component]], function(module) {
+insert_modules_ui <- function(component, exclude = NULL) {
+  modules <- COMPONENT_MODULES[[component]]
+  modules <- modules[!names(modules) %in% exclude]
+  lapply(modules, function(module) {
     conditionalPanel(
       glue("input.{component}Sel == '{module$id}'"),
       ui_top(

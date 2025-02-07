@@ -68,7 +68,7 @@ tagList(
           help_comp_ui("summaryHelp"),
           shinyWidgets::radioGroupButtons(
             "summarySel", "Modules Available:",
-            choices = insert_modules_options("summary")[!names(insert_modules_options("summary")) %in% "exclude"],
+            choices = insert_modules_options("summary", exclude = "summary_exclude"),
             direction = "vertical",
             status = "outline-secondary",
             width = "100%"
@@ -78,7 +78,7 @@ tagList(
             tags$summary("Select model and exclude studies"),
             summary_exclude_module_ui("summary_exclude"),
           ),
-          insert_modules_ui("summary")
+          insert_modules_ui("summary", exclude = "summary_exclude")
           ),
           # REPRODUCIBILITY
           conditionalPanel(
