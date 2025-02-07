@@ -27,3 +27,16 @@ summary_network <- function(freq, bugsnetdt, style, label_size = 1, logger = NUL
     return()
   }
 }
+
+#' Creates network connectivity info displayed under network plots
+#'
+#' @param freq List of NMA results created by freq_wrap().
+#' @return Vector summarising network connectivity created by netmeta::netconnection().
+#' @export
+make_netconnect <- function(freq) {
+  d1 <- freq$d1
+  nc <- netmeta::netconnection(treat1 = d1$treat1, treat2 = d1$treat2, studLab = d1$studlab, data = NULL)
+  # keep only the parts we want, match ensures the order
+  summary <- nc[match(c("k", "m", "n", "d", "n.subnets"), names(nc))]
+  return(unlist(summary))
+}
