@@ -1,8 +1,14 @@
 ```{asis, echo = {{summary_char_knit}}, eval = {{summary_char_knit}}, include = {{summary_char_knit}}}
-Summarise the characteristics of the uploaded dataset and the dataset with excluded studies
+Summarise the characteristics of the original data and data with excluded studies.
 ```
 
 ```{r, echo = {{summary_char_knit}}, include = {{summary_char_knit}}}
+summary_df_all <- summary_char(bugsnet_all, outcome)
+summary_df_sub <- summary_char(bugsnet_sub, outcome)
+summary_df_compare <- data.frame(summary_df_all$Value, summary_df_sub$Value)
+colnames(summary_df_compare) <- c("All studies", "With selected studies excluded")
+rownames(summary_df_compare) <- summary_df_all$Characteristic
 
-
+knitr::kable(summary_df_compare, row.names = TRUE, caption = "Comparison of study characteristics")
 ```
+

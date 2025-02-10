@@ -9,60 +9,36 @@ summary_char_module_ui <- function(id) {
 summary_char_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
-  observeEvent(input$run, {
-    # WARNING ####
-
-    # FUNCTION CALL ####
-
-    # LOAD INTO COMMON ####
-
-    # METADATA ####
-
-    # TRIGGER
-    trigger("summary_char")
-  })
-
-    # Characteristics table of all studies
-    output$sumtb <- renderTable({
+    summary_all <- reactive({
       watch("setup_define")
       req(common$bugsnet_all)
       common$meta$summary_char$used <- TRUE
       summary_char(common$bugsnet_all, common$outcome)
     })
 
-    # Characteristics table with studies excluded
-    output$sumtb_sub <- renderTable({
+    summary_sub <- reactive({
       watch("summary_exclude")
       watch("setup_define")
-      req(common$bugsnet_all)
+      req(common$bugsnet_sub)
       summary_char(common$bugsnet_sub, common$outcome)
     })
 
-  return(list(
-    save = function() {
-      # Save any values that should be saved when the current session is saved
-    },
-    load = function(state) {
-      # Load
-    }
-  ))
+    # Characteristics table of all studies
+    output$table <- renderTable({
+      req(summary_all())
+      df <- data.frame(summary_all()$Value, summary_sub()$Value)
+      colnames(df) <- c("All studies", "With selected studies excluded")
+      rownames(df) <- summary_all()$Characteristic
+      df
+    }, rownames = TRUE)
+
 })
 }
 
 summary_char_module_result <- function(id) {
   ns <- NS(id)
-
   fluidRow(
-  column(
-    width = 6,
-    h4("Characteristics table of all studies"),
-    tableOutput(ns("sumtb"))
-  ),
-  column(
-    width = 6,
-    h4("Characteristics table with selected studies excluded"),
-    tableOutput(ns("sumtb_sub"))
-  )
+    div(style = "display: flex; justify-content: center; padding-top: 50px", tableOutput(ns("table")))
   )
 }
 
