@@ -227,7 +227,6 @@ covariate_analysis_panel_server <- function(
       
       model_valid(
         parameter_matcher$Matches(
-          all_data=all_data(),
           metaoutcome=metaoutcome(),
           outcome_measure=outcome_measure(),
           model_effects=model_effects(),
@@ -237,10 +236,14 @@ covariate_analysis_panel_server <- function(
       )
     })
     
+    # Clear validity when data changes
+    observe({
+      model_valid(NULL)
+    }) |> bindEvent(all_data())
+    
     # Record inputs when model run
     observe({
       parameter_matcher$SetParameters(
-        all_data=all_data(),
         metaoutcome=metaoutcome(),
         outcome_measure=outcome_measure(),
         model_effects=model_effects(),

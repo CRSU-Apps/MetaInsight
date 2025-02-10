@@ -76,7 +76,6 @@ nodesplit_panel_server <- function(
       
       model_valid(
         parameter_matcher$Matches(
-          data = data(),
           treatment_df = treatment_df(),
           metaoutcome = metaoutcome(),
           outcome_measure = outcome_measure(),
@@ -85,10 +84,14 @@ nodesplit_panel_server <- function(
       )
     })
     
+    # Clear validity when data changes
+    observe({
+      model_valid(NULL)
+    }) |> bindEvent(data())
+    
     # Record inputs when model run
     observe({
       parameter_matcher$SetParameters(
-        data = data(),
         treatment_df = treatment_df(),
         metaoutcome = metaoutcome(),
         outcome_measure = outcome_measure(),

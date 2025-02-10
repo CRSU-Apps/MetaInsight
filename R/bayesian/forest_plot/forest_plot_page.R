@@ -128,7 +128,6 @@ bayesian_forest_plots_page_server <- function(
       
       model_valid(
         parameter_matcher$Matches(
-          data = data(),
           treatment_df = treatment_df(),
           metaoutcome = metaoutcome(),
           outcome_measure = outcome_measure(),
@@ -147,7 +146,6 @@ bayesian_forest_plots_page_server <- function(
       
       model_sub_valid(
         parameter_matcher_sub$Matches(
-          data = sensitivity_data(),
           treatment_df = sensitivity_treatment_df(),
           metaoutcome = metaoutcome(),
           outcome_measure = outcome_measure(),
@@ -157,10 +155,19 @@ bayesian_forest_plots_page_server <- function(
       )
     })
     
+    # Clear validity when data changes
+    observe({
+      model_valid(NULL)
+    }) |> bindEvent(data())
+    
+    # Clear validity when data changes
+    observe({
+      model_sub_valid(NULL)
+    }) |> bindEvent(sensitivity_data())
+    
     # Record inputs when model run
     observe({
       parameter_matcher$SetParameters(
-        data = data(),
         treatment_df = treatment_df(),
         metaoutcome = metaoutcome(),
         outcome_measure = outcome_measure(),
@@ -173,7 +180,6 @@ bayesian_forest_plots_page_server <- function(
     # Record inputs when model run
     observe({
       parameter_matcher_sub$SetParameters(
-        data = sensitivity_data(),
         treatment_df = sensitivity_treatment_df(),
         metaoutcome = metaoutcome(),
         outcome_measure = outcome_measure(),
