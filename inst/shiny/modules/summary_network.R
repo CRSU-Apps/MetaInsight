@@ -19,8 +19,8 @@ summary_network_module_server <- function(id, common, parent_session) {
     # METADATA ####
       common$meta$summary_network$used <- TRUE
       common$meta$summary_network$label_all <- as.numeric(input$label_all)
-      common$meta$summary_network$label_excluded <- as.numeric(input$label_excluded)
-      common$meta$summary_network$networkstyle <- input$networkstyle
+      common$meta$summary_network$label_sub <- as.numeric(input$label_sub)
+      common$meta$summary_network$style <- input$style
 
     # TRIGGER
     trigger("summary_network")

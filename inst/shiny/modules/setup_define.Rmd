@@ -7,7 +7,7 @@ reference_treatment <- {{setup_define_reference_treatment}}
 ranking_options <- {{setup_define_rankopts}}
 outcome_measure <- {{setup_define_outcome_measure}}
 
-defined_data <- setup_define(uploaded_data, treatments, outcome, reference_treatment)
+defined_data <- setup_define(uploaded_data, treatments, outcome, outcome_measure, reference_treatment)
 
 wrangled_data <- defined_data$wrangled_data
 treatment_df <- defined_data$treatment_df
@@ -15,5 +15,5 @@ disconnected_indices <- defined_data$disconnected_indices
 main_connected_data <- defined_data$main_connected_data
 initial_non_covariate_data <- defined_data$initial_non_covariate_data
 bugsnet_all <- defined_data$bugsnet_all
-freq_all <- defined_data$freq_all
+frequentist_all <- defined_data$freq_all
 ```

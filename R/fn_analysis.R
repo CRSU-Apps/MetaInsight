@@ -154,16 +154,17 @@ freq.df <- function(model, outcome, dataf, lstx, ref) {
 #'  - 'd0': Data in contrast form.
 #'  - 'd1': Same as 'd0' but with treatment labels.
 freq_wrap <- function(data, treat_list, model, outcome, CONBI, ref) {
-  progress <- shiny::Progress$new()   # Adding progress bars
-  on.exit(progress$close())
-  progress$set(message = "Updating", value = 0)
+  # disabled progress for now as can't run outside shiny (SS)
+  # progress <- shiny::Progress$new()   # Adding progress bars
+  # on.exit(progress$close())
+  # progress$set(message = "Updating", value = 0)
   d0 <- contrastform.df(data, outcome, CONBI)    # transform data to contrast form
   lstx <- treat_list$Label      #obtain treatment labels
   ntx <- length(lstx)     #count treatment numbers
   d1 <- labelmatching.df(d1 = d0, ntx = ntx, treat_list = treat_list) #matching treatment labels to treatment code
-  progress$inc(0.6, detail = "Updating")
+  # progress$inc(0.6, detail = "Updating")
   net1 <- freq.df(model = model, outcome = outcome, dataf = d1, lstx = lstx, ref = ref) # NMA of all studies
-  progress$inc(0.4, detail = "Rendering results")
+  # progress$inc(0.4, detail = "Rendering results")
   return(list(net1 = net1, lstx = lstx, ntx = ntx, d0 = d0, d1 = d1))
 }
 

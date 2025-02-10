@@ -74,6 +74,7 @@ rep_markdown_module_server <- function(id, common, parent_session, COMPONENT_MOD
         result_file <- tempfile(pattern = "result_", fileext = input$rmdFileType)
         if (input$rmdFileType == ".Rmd") {
           combined_rmd <- gsub("``` r", "```{r}", combined_md)
+          combined_rmd <- unlist(strsplit(combined_rmd , "\n"))
 
           # fix any very long lines
           long_lines <- which(nchar(combined_rmd) > 4000)

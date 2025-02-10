@@ -7,5 +7,5 @@ uploaded_data <- {{setup_load_data}}
 treatments <- {{setup_load_treatment_df}}
 outcome <- {{setup_load_outcome}}
 
-DT::datatable(data)
+DT::datatable(uploaded_data)
 ```

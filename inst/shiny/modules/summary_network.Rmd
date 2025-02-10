@@ -7,7 +7,23 @@ network_style <- {{summary_network_style}}
 network_style_label_all <- {{summary_network_label_all}}
 network_style_label_sub <- {{summary_network_label_sub}}
 
+par(mfrow = c(1, 2))
 summary_network(frequentist_all, bugsnet_all, network_style, network_style_label_all)
+title("Network plot of all studies")
 summary_network(frequentist_sub, bugsnet_sub, network_style, network_style_label_sub)
+title("Network plot with selected studies excluded")
+```
 
+```{asis, echo = {{summary_network_knit}}, eval = {{summary_network_knit}}, include = {{summary_network_knit}}}
+Display a table summarising the network characteristics of the original data and data with excluded studies.
+```
+
+```{r, echo = {{summary_network_knit}}, include = {{summary_network_knit}}}
+network_df_all <- make_netconnect(frequentist_all)
+network_df_sub <- make_netconnect(frequentist_sub)
+network_df_compare <- data.frame(network_df_all, network_df_sub)
+colnames(network_df_compare) <- c("All studies", "With selected studies excluded")
+rownames(network_df_compare) <- c("Studies", "Pairwise comparisons", "Treatments", "Designs", "Subnetworks")
+
+knitr::kable(network_df_compare, row.names = TRUE, caption = "Comparison of network characteristics")
 ```
