@@ -5,7 +5,7 @@ Define the type of the uploaded data and process it into suitable formats for la
 ```{r, echo = {{setup_define_knit}}, include = {{setup_define_knit}}}
 reference_treatment <- {{setup_define_reference_treatment}}
 ranking_options <- {{setup_define_rankopts}}
-outcome_measure <- {{setup_define_outcome}}
+outcome_measure <- {{setup_define_outcome_measure}}
 
 defined_data <- setup_define(uploaded_data, treatments, outcome, reference_treatment)
 

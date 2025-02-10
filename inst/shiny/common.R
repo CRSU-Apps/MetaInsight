@@ -29,16 +29,19 @@ common_class <- R6::R6Class(
      self$upgraded_data <- NULL
      self$valid_data <- NULL
      self$is_data_uploaded <- NULL
-     self$treatment_list <- NULL
-     self$metaoutcome <- NULL
+     self$outcome <- NULL
      self$treatment_df <- NULL
      self$outcome_measure <- NULL
      self$reference_treatment <- NULL
-     self$initial_data <- NULL
+     self$disconnected_indices <- NULL
+     self$main_connected_data <- NULL
+     self$initial_non_covariate_data <- NULL
+     self$model_type <- NULL
+     self$excluded_studies <- NULL
      self$sensitivity_data <- NULL
-     self$sensitivity_treatment_list <- NULL
-     self$bugsnetdt <- NULL
-     self$bugsnetdt_sub <- NULL
+     self$sensitivity_treatment_df <- NULL
+     self$bugsnet_all <- NULL
+     self$bugsnet_sub <- NULL
      self$freq_all <- NULL
      self$freq_sub <- NULL
      self$meta <- NULL

@@ -1,7 +1,7 @@
 #' Produce either a netgraph or netplot
 #'
 #' @param freq dataframe. Created by `frequentist()`
-#' @param bugsnet_all dataframe. Created by `bugsnetdata()`
+#' @param bugsnet dataframe. Created by `bugsnetdata()`
 #' @param style character. The plot to produce, either `netgraph` or `netplot`
 #' @param label_size numeric. The size of labels in the plots. Default of 1.
 #' @param logger Stores all notification messages to be displayed in the Log
@@ -10,7 +10,7 @@
 #' @return The plotting function
 #' @export
 
-summary_network <- function(freq, bugsnet_all, style, label_size = 1, logger = NULL){
+summary_network <- function(freq, bugsnet, style, label_size = 1, logger = NULL){
   if (style == "netgraph"){
     return(netmeta::netgraph(freq$net1, lwd = 2, number.of.studies = TRUE, plastic = FALSE, points = TRUE,
                              cex = label_size, cex.points = 2, col.points = 1, col = 8, pos.number.of.studies = 0.43,
@@ -19,7 +19,7 @@ summary_network <- function(freq, bugsnet_all, style, label_size = 1, logger = N
 
   } else if (style == "netplot"){
     # I have removed an order = NULL parameter here (SS)
-    data.rh <- BUGSnet::data.prep(arm.data = bugsnet_all, varname.t = "T", varname.s = "Study")
+    data.rh <- BUGSnet::data.prep(arm.data = bugsnet, varname.t = "T", varname.s = "Study")
     return(BUGSnet::net.plot(data.rh, node.scale = 3, edge.scale = 1.5, node.lab.cex = label_size,
                              layout.params = NULL))
   } else {
