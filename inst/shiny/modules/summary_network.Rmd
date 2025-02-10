@@ -7,7 +7,7 @@ network_style <- {{summary_network_style}}
 network_style_label_all <- {{summary_network_label_all}}
 network_style_label_sub <- {{summary_network_label_sub}}
 
-summary_network(frequentist, bugsnet, network_style, network_style_label_all)
+summary_network(frequentist_all, bugsnet_all, network_style, network_style_label_all)
 summary_network(frequentist_sub, bugsnet_sub, network_style, network_style_label_sub)
 
 ```

@@ -5,17 +5,17 @@
 #' @param reference_treatment character. The reference treatment
 #' @return list
 #' @export
-summary_char <- function(data, metaoutcome) {
+summary_char <- function(data, outcome) {
 
   data.rh <- BUGSnet::data.prep(arm.data = data, varname.t = "T", varname.s = "Study")
-  if (metaoutcome == "Continuous") {
+  if (outcome == "Continuous") {
     outcome = "Mean"
     typeO = "continuous"
-  } else if (metaoutcome == "Binary") {
+  } else if (outcome == "Binary") {
     outcome = "R"
     typeO = "binomial"
   } else {
-    stop("metaoutcome must be 'Binary' or 'Continuous'")
+    stop("outcome must be 'Binary' or 'Continuous'")
   }
   network.char <- BUGSnet::net.tab(data = data.rh,
                                    outcome = outcome,

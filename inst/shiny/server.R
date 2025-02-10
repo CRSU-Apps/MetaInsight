@@ -87,7 +87,7 @@ function(input, output, session) {
     watch("setup_define")
     req(common$initial_non_covariate_data)
 
-    if (common$metaoutcome == "Continuous") {
+    if (common$outcome == "Continuous") {
       colnames <- c('StudyID', 'Author', 'Treatment', 'Number of participants in each arm',
                     'Mean value of the outcome in each arm', 'Standard deviation of the outcome in each arm')
 

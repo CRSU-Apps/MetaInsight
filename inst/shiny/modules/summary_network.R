@@ -29,14 +29,14 @@ summary_network_module_server <- function(id, common, parent_session) {
   output$plot_all <- renderPlot({
     watch("summary_network")
     req(common$freq_all)
-    summary_network(common$freq_all, common$bugsnetdt, input$style, input$label_all, common$logger)
+    summary_network(common$freq_all, common$bugsnet_all, input$style, input$label_all, common$logger)
     title("Network plot of all studies")
   })
 
   output$plot_sub <- renderPlot({
     watch("summary_network")
     req(common$freq_sub)
-    summary_network(common$freq_sub, common$bugsnetdt_sub, input$style, input$label_sub, common$logger)
+    summary_network(common$freq_sub, common$bugsnet_sub, input$style, input$label_sub, common$logger)
     title("Network plot with selected studies excluded")
   })
 
@@ -67,7 +67,7 @@ summary_network_module_server <- function(id, common, parent_session) {
     },
     content = function(file) {
       draw_network <- function() {
-        summary_network(common$freq_all, common$bugsnetdt, input$style, input$label_all, common$logger)
+        summary_network(common$freq_all, common$bugsnet_all, input$style, input$label_all, common$logger)
         title("Network plot of all studies")
       }
       write_to_pdf_or_png(
@@ -84,7 +84,7 @@ summary_network_module_server <- function(id, common, parent_session) {
     },
     content = function(file) {
       draw_network <- function() {
-        summary_network(common$freq_sub, common$bugsnetdt_sub, input$style, input$label_sub, common$logger)
+        summary_network(common$freq_sub, common$bugsnet_sub, input$style, input$label_sub, common$logger)
         title("Network plot with selected studies excluded")
       }
       write_to_pdf_or_png(

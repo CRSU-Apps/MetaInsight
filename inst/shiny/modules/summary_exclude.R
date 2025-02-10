@@ -52,18 +52,29 @@ summary_exclude_module_server <- function(id, common, parent_session) {
       )
     })
 
+    # update freq_all if model selection changes
+    observeEvent(input$model, {
+      req(common$initial_non_covariate_data)
+      common$freq_all <- frequentist(common$initial_non_covariate_data,
+                                     common$outcome,
+                                     common$treatment_df,
+                                     common$outcome_measure,
+                                     common$model_type,
+                                     common$treatment_df$Label[common$treatment_df$Number == 1])
+    })
+
     observeEvent(list(debounce(input$exclusions, 1200),
                       input$model,
                       watch("setup_define")), {
       # WARNING ####
       # Something if a whole treatment becomes excluded?
-      req(common$bugsnetdt)
+      req(common$bugsnet_all)
 
       # FUNCTION CALL ####
       result <- summary_exclude(common$main_connected_data,
                              common$treatment_df,
                              common$reference_treatment,
-                             common$metaoutcome,
+                             common$outcome,
                              common$outcome_measure,
                              input$model,
                              input$exclusions,
@@ -71,7 +82,7 @@ summary_exclude_module_server <- function(id, common, parent_session) {
 
       # LOAD INTO COMMON ####
       common$excluded_studies <- input$exclusions
-      common$bugsnetdt_sub <- result$bugsnetdt_sub
+      common$bugsnet_sub <- result$bugsnet_sub
       common$freq_sub <- result$freq_sub
 
       # METADATA ####

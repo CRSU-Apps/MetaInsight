@@ -13,21 +13,6 @@ summary_study_module_ui <- function(id) {
 summary_study_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
-  # it doesn't make much sense to calculate this here, but it relies on the model definition in core_exclude
-  observe({
-    watch("setup_define")
-    watch("model")
-    req(common$initial_non_covariate_data)
-
-    common$freq_all <- frequentist(common$initial_non_covariate_data,
-                        common$metaoutcome,
-                        common$treatment_df,
-                        common$outcome_measure,
-                        common$model_type,
-                        common$treatment_df$Label[common$treatment_df$Number == 1])
-  })
-
-
   observeEvent(list(input$run, watch("summary_exclude")), {
     # WARNING ####
 

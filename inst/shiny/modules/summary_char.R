@@ -25,17 +25,17 @@ summary_char_module_server <- function(id, common, parent_session) {
     # Characteristics table of all studies
     output$sumtb <- renderTable({
       watch("setup_define")
-      req(common$bugsnetdt)
+      req(common$bugsnet_all)
       common$meta$summary_char$used <- TRUE
-      summary_char(common$bugsnetdt, common$metaoutcome)
+      summary_char(common$bugsnet_all, common$outcome)
     })
 
     # Characteristics table with studies excluded
     output$sumtb_sub <- renderTable({
       watch("summary_exclude")
       watch("setup_define")
-      req(common$bugsnetdt)
-      summary_char(common$bugsnetdt_sub, common$metaoutcome)
+      req(common$bugsnet_all)
+      summary_char(common$bugsnet_sub, common$outcome)
     })
 
   return(list(

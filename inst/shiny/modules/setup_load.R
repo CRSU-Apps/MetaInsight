@@ -3,7 +3,7 @@ setup_load_module_ui <- function(id) {
   tagList(
     div(
       h4(tags$strong("Select outcome type")),
-      radioButtons(ns("metaoutcome"), NULL, choices = c(
+      radioButtons(ns("outcome"), NULL, choices = c(
           "Continuous (e.g. mean difference) " = "Continuous",
           "Binary (e.g. Odds Ratio)" = "Binary"
         ),
@@ -32,7 +32,7 @@ setup_load_module_server <- function(id, common, parent_session) {
 
   # Toggle visibility of guidance depending on selection
   observe({
-    selection <- paste0(tolower(input$metaoutcome),"_guidance")
+    selection <- paste0(tolower(input$outcome),"_guidance")
       shinyjs::runjs(sprintf("
                      document.querySelectorAll('.continuous_guidance, .binary_guidance').forEach(el => el.style.display = 'none');
                      document.querySelectorAll('.%s').forEach(el => el.style.display = 'block');
@@ -95,13 +95,13 @@ setup_load_module_server <- function(id, common, parent_session) {
     # none for this module
 
     # FUNCTION CALL ####
-    result <- setup_load(input$data$datapath, input$metaoutcome, common$logger)
+    result <- setup_load(input$data$datapath, input$outcome, common$logger)
 
     if (result$is_data_valid){
       if (result$is_data_uploaded){
         common$logger %>% writeLog(type= "complete", "Data was uploaded successfully")
       } else {
-        common$logger %>% writeLog(type= "complete", glue::glue("Default {tolower(input$metaoutcome)} data has been loaded"))
+        common$logger %>% writeLog(type= "complete", glue::glue("Default {tolower(input$outcome)} data has been loaded"))
       }
     }
 
@@ -110,11 +110,11 @@ setup_load_module_server <- function(id, common, parent_session) {
     common$is_data_valid <- result$is_data_valid
     common$is_data_uploaded <- result$is_data_uploaded
     common$treatment_df <- result$treatment_df
-    common$metaoutcome <- input$metaoutcome
+    common$outcome <- input$outcome
 
     # METADATA ####
     common$meta$setup_load$used <- TRUE
-    common$meta$setup_load$metaoutcome <- input$metaoutcome
+    common$meta$setup_load$outcome <- input$outcome
     common$meta$setup_load$format <- input$format
 
     # TRIGGER
@@ -126,11 +126,11 @@ setup_load_module_server <- function(id, common, parent_session) {
   })
 
   output$download <- downloadHandler(
-    filename = glue::glue("MetaInsight_{tolower(input$metaoutcome)}_{input$format}.csv"),
+    filename = glue::glue("MetaInsight_{tolower(input$outcome)}_{input$format}.csv"),
     content = function(file) {
       file.copy(
         system.file("extdata",
-                    glue::glue("{tolower(input$metaoutcome)}_{input$format}.csv"),
+                    glue::glue("{tolower(input$outcome)}_{input$format}.csv"),
                     package = "metainsight"),
         file)
     }
@@ -147,13 +147,13 @@ setup_load_module_server <- function(id, common, parent_session) {
     save = function() {list(
       ### Manual save start
       ### Manual save end
-      metaoutcome = input$metaoutcome,
+      outcome = input$outcome,
       format = input$format)
     },
     load = function(state) {
       ### Manual load start
       ### Manual load end
-      updateRadioButtons(session, "metaoutcome", selected = state$metaoutcome)
+      updateRadioButtons(session, "outcome", selected = state$outcome)
       updateRadioButtons(session, "format", selected = state$format)
     }
   ))
@@ -169,7 +169,7 @@ setup_load_module_rmd <- function(common){ list(
   setup_load_knit = !is.null(common$meta$setup_load$used),
   setup_load_data = common$data,
   setup_load_treatment_df = common$treatment_df,
-  setup_load_metaoutcome = common$meta$setup_load$metaoutcome
+  setup_load_outcome = common$meta$setup_load$outcome
   )
 }
 

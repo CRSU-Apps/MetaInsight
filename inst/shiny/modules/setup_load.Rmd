@@ -5,7 +5,7 @@ Read the data in and display a table
 ```{r, echo = {{setup_load_knit}}, include = {{setup_load_knit}}}
 uploaded_data <- {{setup_load_data}}
 treatments <- {{setup_load_treatment_df}}
-metaoutcome <- {{setup_load_metaoutcome}}
+outcome <- {{setup_load_outcome}}
 
 DT::datatable(data)
 ```

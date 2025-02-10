@@ -6,8 +6,8 @@ Exclude studies from the analysis
 excluded_studies <- {{summary_exclude_exclusions}}
 model_type <- {{summary_exclude_model}}
 
-excluded_data <- summary_exclude(data, treatment_df, reference_treatment, metaoutcome, outcome_measure, model_type, excluded_studies)
+excluded_data <- summary_exclude(data, treatment_df, reference_treatment, outcome, outcome_measure, model_type, excluded_studies)
 
 frequentist_sub <- excluded_data$freq_sub
-bugsnet_sub <- excluded_data$bugsnetdt_sub
+bugsnet_sub <- excluded_data$bugsnet_sub
 ```

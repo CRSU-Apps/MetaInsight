@@ -1,7 +1,7 @@
 #' Assess the data for validity. this checks the column names for required columns, and balanced wide format numbered columns.
 #'
 #' @param data_path character. Path to the file to be loaded or if `NULL` load the default data
-#' @param outcome_type character. Outcome type selected for the data. Either `Binary` or `Continuous`.
+#' @param outcome character. Outcome type selected for the data. Either `Binary` or `Continuous`.
 #'
 #' @return List containing:
 #'  \item{valid}{logical. Whether the data is valid}
@@ -9,18 +9,18 @@
 #'  \item{data}{Dataframe. The data that was uploaded, `NULL` if none was uploaded}
 #'  \item{treatments}{Vector of all treatment names either in the data if it is valid or in the default data if not}
 #' @export
-setup_load <- function(data_path = NULL, outcome_type, logger = NULL){
+setup_load <- function(data_path = NULL, outcome, logger = NULL){
 
   # TO DO add input checks
   # data_path is string, ends in .csv or .xlsx
-  # outcome_type is continuous or binary
+  # outcome is continuous or binary
 
   # Use the default data if no path is provided
   if (!is.null(data_path)){
     is_uploaded <- TRUE
   } else {
     is_uploaded <- FALSE
-    if (outcome_type == "Continuous"){
+    if (outcome == "Continuous"){
       data_path <- system.file("extdata", "continuous_long.csv", package = "metainsight")
     } else {
       data_path <- system.file("extdata", "binary_long.csv", package = "metainsight")
@@ -36,7 +36,7 @@ setup_load <- function(data_path = NULL, outcome_type, logger = NULL){
     }
   )
 
-  is_valid <- ValidateUploadedData(data, outcome_type, logger)
+  is_valid <- ValidateUploadedData(data, outcome, logger)
 
   # If the uploaded data is invalid, return that
   if (!is_valid$valid){
@@ -67,30 +67,30 @@ setup_load <- function(data_path = NULL, outcome_type, logger = NULL){
 #' Assess the data for validity. this checks the column names for required columns, and balanced wide format numbered columns.
 #'
 #' @param data Data frame to validate.
-#' @param outcome_type Outcome type selected for the data. Either "Binary" or "Continuous".
+#' @param outcome Outcome type selected for the data. Either "Binary" or "Continuous".
 #'
 #' @return Validation result in the form of a list:
 #' - "valid" = TRUE or FALSE defining whether data is valid
 #' - "message" = String describing any issues causing the data to be invalid
-ValidateUploadedData <- function(data, outcome_type, logger = NULL) {
+ValidateUploadedData <- function(data, outcome, logger = NULL) {
   if (is.null(data) || nrow(data) == 0) {
     logger |> writeLog(type = "error", "File is empty")
     return()
   }
 
-  if (outcome_type == "Continuous") {
+  if (outcome == "Continuous") {
     outcome_columns <- continuous_column_names
-  } else if (outcome_type == "Binary") {
+  } else if (outcome == "Binary") {
     outcome_columns <- binary_column_names
   } else {
-    logger |> writeLog(type = "error", glue::glue("Outcome type {outcome_type} is not recognised. Please use 'Continuous' or 'Binary'"))
+    logger |> writeLog(type = "error", glue::glue("Outcome type {outcome} is not recognised. Please use 'Continuous' or 'Binary'"))
     return()
   }
 
   required_columns <- outcome_columns %>%
     dplyr::filter(required)
 
-  result <- .ValidateMissingColumns(data, required_columns, outcome_type)
+  result <- .ValidateMissingColumns(data, required_columns, outcome)
   if (!result$valid) {
     return(result)
   }
@@ -117,19 +117,19 @@ ValidateUploadedData <- function(data, outcome_type, logger = NULL) {
 #'
 #' @param data Data frame to validate.
 #' @param required_columns Data frame containing data definitions.
-#' @param outcome_type Outcome type selected for the data. Either "Binary" or "Continuous".
+#' @param outcome Outcome type selected for the data. Either "Binary" or "Continuous".
 #'
 #' @return Validation result in the form of a list:
 #' - "valid" = TRUE or FALSE defining whether data is valid
 #' - "message" = String describing any issues causing the data to be invalid
-.ValidateMissingColumns <- function(data, required_columns, outcome_type) {
+.ValidateMissingColumns <- function(data, required_columns, outcome) {
   missing_names <- .FindMissingColumns(data, required_columns)
 
   if (length(missing_names) > 0) {
     return(
       list(
         valid = FALSE,
-        message = glue::glue("Missing columns for {outcome_type} data: {paste0(missing_names, collapse = ', ')}")
+        message = glue::glue("Missing columns for {outcome} data: {paste0(missing_names, collapse = ', ')}")
       )
     )
   }
@@ -478,18 +478,18 @@ CleanData <- function(data) {
 #' Find all of the treatment names in the data, both for long and wide formats.
 #'
 #' @param wide_data Data frame of wide format
-#' @param outcome_type Indicator whether outcome is 'Binary' or 'Continuous'
+#' @param outcome Indicator whether outcome is 'Binary' or 'Continuous'
 #' @return Data frame in long format
-WideToLong <- function(wide_data, outcome_type) {
+WideToLong <- function(wide_data, outcome) {
   # Specify columns that contain wide data
-  if (outcome_type == "Continuous") {
+  if (outcome == "Continuous") {
     change_cols <- wide_data %>%
       dplyr::select(tidyselect::starts_with(c("T", "N", "Mean", "SD")))
-  } else if (outcome_type == "Binary") {
+  } else if (outcome == "Binary") {
     change_cols <- wide_data %>%
       dplyr::select(tidyselect::starts_with(c("T", "R", "N")))
   } else {
-    paste0("outcome_type needs to be 'Binary' or 'Continuous'")
+    paste0("outcome needs to be 'Binary' or 'Continuous'")
   }
   # Transform to long
   long_data <- wide_data %>%
@@ -505,18 +505,18 @@ WideToLong <- function(wide_data, outcome_type) {
 #' Convert long format to wide format (including covariate columns)
 #'
 #' @param long_data Data frame of long format
-#' @param outcome_type Indicator whether outcome is 'Binary' or 'Continuous'
+#' @param outcome Indicator whether outcome is 'Binary' or 'Continuous'
 #' @return Data frame in wide format
-LongToWide <- function(long_data, outcome_type) {
+LongToWide <- function(long_data, outcome) {
   # Specify columns that contain wide data
-  if (outcome_type == "Continuous") {
+  if (outcome == "Continuous") {
     change_cols <- long_data %>%
       dplyr::select(c("T", "N", "Mean", "SD"))
-  } else if (outcome_type == "Binary") {
+  } else if (outcome == "Binary") {
     change_cols <- long_data %>%
       dplyr::select(c("T", "R", "N"))
   } else {
-    paste0("outcome_type needs to be 'Binary' or 'Continuous'")
+    paste0("outcome needs to be 'Binary' or 'Continuous'")
   }
   # Add arms
   long_data <- long_data %>% dplyr::group_by(Study) %>% dplyr::mutate(arm = dplyr::row_number())
@@ -648,16 +648,16 @@ CreateTreatmentIds <- function(all_treatments, reference_treatment = all_treatme
 #' Rename the columns of a data frame to match the expected letter casing.
 #'
 #' @param data Data frame to fix
-#' @param outcome_type Type of outcome for which to reorder, either 'Continuous' or 'Binary'
+#' @param outcome Type of outcome for which to reorder, either 'Continuous' or 'Binary'
 #'
 #' @return Data frame with renamed columns.
-.FixColumnNameCases <- function(data, outcome_type) {
-  if (outcome_type == "Continuous") {
+.FixColumnNameCases <- function(data, outcome) {
+  if (outcome == "Continuous") {
     column_names <- continuous_column_names
-  } else if (outcome_type == "Binary") {
+  } else if (outcome == "Binary") {
     column_names <- binary_column_names
   } else {
-    stop(glue::glue("Outcome type {outcome_type} is not recognised. Please use 'Continuous' or 'Binary'"))
+    stop(glue::glue("Outcome type {outcome} is not recognised. Please use 'Continuous' or 'Binary'"))
   }
 
   corrected_names <- unlist(
@@ -767,15 +767,15 @@ AddStudyIds <- function(data) {
 #' Reorder data frame columns to the correct order, both for long and wide formats.
 #'
 #' @param data Data frame to reorder
-#' @param outcome_type Type of outcome for which to reorder, either 'Continuous' or 'Binary'
+#' @param outcome Type of outcome for which to reorder, either 'Continuous' or 'Binary'
 #' @return Data frame with columns reordered
-ReorderColumns <- function(data, outcome_type) {
-  if (tolower(outcome_type) == "continuous") {
+ReorderColumns <- function(data, outcome) {
+  if (tolower(outcome) == "continuous") {
     expected_order <- .continuous_order
-  } else if (tolower(outcome_type) == "binary") {
+  } else if (tolower(outcome) == "binary") {
     expected_order <- .binary_order
   } else {
-    stop(paste0("Outcome type ", outcome_type, " not recognised. Use either 'Continuous' or 'Binary'"))
+    stop(paste0("Outcome type ", outcome, " not recognised. Use either 'Continuous' or 'Binary'"))
   }
 
   actual_order <- colnames(data)
@@ -802,14 +802,14 @@ SortLong <- function(long_data) {
 #'
 #' @param data Data frame to sort
 #' @return Data frame ordered by StudyID, then T if applicable
-SortByStudyIDThenT <- function(data, outcome_type) {
+SortByStudyIDThenT <- function(data, outcome) {
   if (FindDataShape(data) == "long") {
     return(SortLong(data))
   } else {
     return(data |>
-             WideToLong(outcome_type) |>
+             WideToLong(outcome) |>
              SortLong() |>
-             LongToWide(outcome_type)
+             LongToWide(outcome)
     )
   }
 }
@@ -818,16 +818,16 @@ SortByStudyIDThenT <- function(data, outcome_type) {
 #'
 #' @param data Data frame to wrangle
 #' @param treatment_ids Data frame containing treatment IDs and names in columns named 'Number' and 'Label' respectively
-#' @param outcome_type Type of outcome for which to reorder, either 'Continuous' or 'Binary'
+#' @param outcome Type of outcome for which to reorder, either 'Continuous' or 'Binary'
 #' @return Data frame which is uasable by the rest of the app
-WrangleUploadData <- function(data, treatment_ids, outcome_type) {
+WrangleUploadData <- function(data, treatment_ids, outcome) {
   new_df <- data %>%
-    .FixColumnNameCases(outcome_type) %>%
+    .FixColumnNameCases(outcome) %>%
     ReplaceTreatmentIds(treatment_ids) %>%
     AddStudyIds() %>%
     CleanStudies() %>%
-    ReorderColumns(outcome_type) %>%
-    SortByStudyIDThenT(outcome_type)
+    ReorderColumns(outcome) %>%
+    SortByStudyIDThenT(outcome)
 
   return(new_df)
 }

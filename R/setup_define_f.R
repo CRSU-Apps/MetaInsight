@@ -5,12 +5,12 @@
 #' @param reference_treatment character. The reference treatment
 #' @return list
 #' @export
-setup_define <- function(data, treatment_df, outcome_type, reference_treatment, logger = NULL){
+setup_define <- function(data, treatment_df, outcome, outcome_measure, reference_treatment, logger = NULL){
 
   # update using the selected reference treatment
   treatment_df <- CreateTreatmentIds(treatment_df$Label, reference_treatment)
 
-  data <- WrangleUploadData(data, treatment_df, outcome_type)
+  data <- WrangleUploadData(data, treatment_df, outcome)
 
   main_subnetworks <- IdentifySubNetworks(data, treatment_df, reference_treatment)
 
@@ -39,14 +39,23 @@ setup_define <- function(data, treatment_df, outcome_type, reference_treatment, 
 
   initial_non_covariate_data <- RemoveCovariates(main_connected_data)
 
-  bugsnetdt <- bugsnetdata(initial_non_covariate_data, outcome_type, treatment_df)
+  bugsnet_all <- bugsnetdata(initial_non_covariate_data, outcome, treatment_df)
+
+  # random is the default model type, this structure is updated in summary_exclude if the model type changes
+  freq_all <- frequentist(initial_non_covariate_data,
+                          outcome,
+                          treatment_df,
+                          outcome_measure,
+                          "random",
+                          treatment_df$Label[treatment_df$Number == 1])
 
   return(list(wrangled_data = data,
               treatment_df = treatment_df,
               disconnected_indices = disconnected_indices,
               main_connected_data = main_connected_data,
               initial_non_covariate_data = initial_non_covariate_data,
-              bugsnetdt = bugsnetdt))
+              bugsnet_all = bugsnet_all,
+              freq_all = freq_all))
 }
 
 #' Identify all of the disconnected subnetworks contained in the data.
