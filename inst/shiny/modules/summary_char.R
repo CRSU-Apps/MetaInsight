@@ -1,8 +1,6 @@
 summary_char_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
-    # UI
-    actionButton(ns("run"), "Run module summary_char")
   )
 }
 
