@@ -22,5 +22,5 @@ summary_char <- function(data, metaoutcome) {
                                    N = "N",
                                    type.outcome = typeO,
                                    time = NULL)
-  network.char$network
+  return(network.char$network)
 }

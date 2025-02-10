@@ -171,7 +171,6 @@ function(input, output, session) {
     browser()
   }) |> bindEvent(input$debug_button)
 
-
   ################################
   ### EXPORT TEST VALUES ####
   ################################

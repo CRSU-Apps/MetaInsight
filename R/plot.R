@@ -70,10 +70,11 @@ make_netplot <- function(bugsnetdt, label_size = 1, order = NULL) {    # added d
 #' @param freq List of NMA results created by freq_wrap().
 #' @return Network connectivity created by netmeta::netconnection().
 #' @export
-make_netconnect <- function(freq) {
+make_netconnect_old <- function(freq) {
   d1 <- freq$d1
-  nc1 <- netmeta::netconnection(treat1 = d1$treat1, treat2 = d1$treat2, studLab = d1$studlab, data = NULL)
-  print(nc1)
+  nc <- netmeta::netconnection(treat1 = d1$treat1, treat2 = d1$treat2, studLab = d1$studlab, data = NULL)
+  summary <- nc[names(nc) %in% c("k", "m", "n", "n.subnets", "d")]
+  return(unlist(summary))
 }
 
 
