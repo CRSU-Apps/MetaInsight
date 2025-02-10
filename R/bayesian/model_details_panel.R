@@ -130,7 +130,7 @@ model_details_panel_server <- function(id, models, models_valid, package = "gemt
     invalid_model_panel_server(id = "model_invalid_3", model_valid = main_model_valid)
     
     observe({
-      # Get either enble or disable function to apply to relevant UI elements
+      # Get either enable or disable function to apply to relevant UI elements
       if (is.null(main_model_valid()) || !main_model_valid()) {
         fn <- shinyjs::disable
       } else {
