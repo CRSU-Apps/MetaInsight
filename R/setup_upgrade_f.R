@@ -1,15 +1,30 @@
 #' Assess the data for validity. this checks the column names for required columns, and balanced wide format numbered columns.
 #'
-#' @param data_path character. path to the file to be upgraded
-#' @param treatments character vector. List of the treatments in the data
+#' @param data_path character. Path to the file to be upgraded
+#' @param treatments character. The treatments in the data seperated by commas.
+#' @param logger Stores all notification messages to be displayed in the Log
+#'   Window. Insert the logger reactive list here for running in
+#'   shiny, otherwise leave the default `NULL`
 #'
 #' @return Dataframe containing the upgraded data
 #' @export
 setup_upgrade <- function(data_path, treatments, logger = NULL){
 
-  # TO DO add input checks
-  # data_path is string, ends in .csv
-  # treatments is character vector
+  check_param_classes(c("data_path", "treatments"),
+                      c("character", "character"), logger = logger)
+
+  if (!tools::file_ext(data_path) %in% c("csv")){
+    logger %>% writeLog(type = "error", "data_path must link to either a .csv file")
+    return()
+  }
+  if (!file.exists(data_path)){
+    logger %>% writeLog(type = "error", "The specified file does not exist")
+    return()
+  }
+  if (!grepl("^[a-zA-Z_]+(,[a-zA-Z_]+)*$", treatments)){
+    logger %>% writeLog(type = "error", "The treatment names must only contain words separated by commas")
+    return()
+  }
 
   data <- read.table(
     file = data_path,
@@ -35,7 +50,7 @@ setup_upgrade <- function(data_path, treatments, logger = NULL){
 
   updated_data <- UpgradeData(data, treatments_df)
 
-  updated_data
+  return(updated_data)
 }
 
 #' Replace treatment IDs with treatment names.

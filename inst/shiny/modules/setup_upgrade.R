@@ -31,10 +31,6 @@ setup_upgrade_module_server <- function(id, common, parent_session) {
       return()
     }
 
-    if (!grepl("^[a-zA-Z_]+(,[a-zA-Z_]+)*$", input$treatment_names)){
-      common$logger %>% writeLog(type = "error", "The treatment names must only contain words separated by commas")
-    }
-
     # FUNCTION CALL ####
     result <- setup_upgrade(input$uploaded_data$datapath, input$treatment_names, common$logger)
 
@@ -43,8 +39,8 @@ setup_upgrade_module_server <- function(id, common, parent_session) {
       common$logger %>% writeLog(type= "complete", "Data was upgraded successfully and can now be downloaded")
       common$upgraded_data <- result
       # METADATA ####
-      common$meta$setup_upgrade$used <- TRUE 
-      common$meta$setup_upgrade$uploaded_data <- input$uploaded_data$name 
+      common$meta$setup_upgrade$used <- TRUE
+      common$meta$setup_upgrade$uploaded_data <- input$uploaded_data$name
       common$meta$setup_upgrade$treatment_names <- input$treatment_names
 
       # TRIGGER
@@ -86,8 +82,8 @@ setup_upgrade_module_server <- function(id, common, parent_session) {
 
 
 setup_upgrade_module_rmd <- function(common){ list(
-  setup_upgrade_knit = !is.null(common$meta$setup_upgrade$used), 
-  setup_upgrade_uploaded_data = common$meta$setup_upgrade$uploaded_data, 
+  setup_upgrade_knit = !is.null(common$meta$setup_upgrade$used),
+  setup_upgrade_uploaded_data = common$meta$setup_upgrade$uploaded_data,
   setup_upgrade_treatment_names = common$meta$setup_upgrade$treatment_names)
   # Variables used in the module's Rmd code
 }
