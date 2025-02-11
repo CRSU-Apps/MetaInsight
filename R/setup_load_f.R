@@ -2,18 +2,43 @@
 #'
 #' @param data_path character. Path to the file to be loaded or if `NULL` load the default data
 #' @param outcome character. Outcome type selected for the data. Either `Binary` or `Continuous`.
+#' @param logger Stores all notification messages to be displayed in the Log
+#'   Window. Insert the logger reactive list here for running in
+#'   shiny, otherwise leave the default `NULL`
 #'
 #' @return List containing:
-#'  \item{valid}{logical. Whether the data is valid}
-#'  \item{uploaded}{logical. Whether the data is uploaded}
-#'  \item{data}{Dataframe. The data that was uploaded, `NULL` if none was uploaded}
-#'  \item{treatments}{Vector of all treatment names either in the data if it is valid or in the default data if not}
+#'  \item{is_data_valid}{logical. Whether the data is valid}
+#'  \item{is_data_uploaded}{logical. Whether the data is uploaded}
+#'  \item{data}{dataframe. The data that was uploaded or the default data if no data_path was provided}
+#'  \item{treatment_df}{Dataframe of the treatments in the data. `NULL` if `is_data_valid` is `FALSE`}
 #' @export
 setup_load <- function(data_path = NULL, outcome, logger = NULL){
 
-  # TO DO add input checks
-  # data_path is string, ends in .csv or .xlsx
-  # outcome is continuous or binary
+  # check inputs
+  if (!is.null(data_path)){
+    if (!inherits(data_path, "character")){
+      logger %>% writeLog(type = "error", "data_path must be a character string")
+      return()
+    }
+    if (!tools::file_ext(data_path) %in% c("csv", "xlsx")){
+      logger %>% writeLog(type = "error", "data_path must link to either a .csv or .xlsx file")
+      return()
+    }
+    if (!file.exists(data_path)){
+      logger %>% writeLog(type = "error", "The specified file does not exist")
+      return()
+    }
+  }
+
+  if (!inherits(outcome, "character")){
+    logger %>% writeLog(type = "error", "outcome must be a character string")
+    return()
+  }
+
+  if (!outcome %in% c("Binary", "Continuous")){
+    logger %>% writeLog(type = "error", "outcome must be either Binary or Continuous")
+    return()
+  }
 
   # Use the default data if no path is provided
   if (!is.null(data_path)){
@@ -43,15 +68,15 @@ setup_load <- function(data_path = NULL, outcome, logger = NULL){
     logger %>% writeLog(type = "error",
                               glue::glue("Uploaded data was invalid because: {is_valid$message}.
                                 Please check you data file and ensure that you have the correct outcome type selected."))
-    return(list(is_valid = is_valid$valid,
-                is_uploaded = is_uploaded,
+    return(list(is_data_valid = is_valid$valid,
+                is_data_uploaded = is_uploaded,
                 data = data,
                 treatment_df = NULL))
   } else {
 
+    # Process the data further if valid
     data <- CleanData(data)
     treatment_list <- FindAllTreatments(data)
-
     treatment_df <- CreateTreatmentIds(treatment_list)
 
     return(list(is_data_valid = is_valid$valid,

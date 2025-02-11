@@ -15,7 +15,7 @@ setup_load_module_ui <- function(id) {
       ),
       ),
       h4(tags$strong("Select a data file (.csv or .xlsx) to upload")),
-      p(tags$strong("Default maximum file size is 5MB.")),
+      p(tags$strong("Maximum file size is 5MB.")),
       uiOutput(ns("data_out")),
       actionButton(ns("run"), "Load example data"),
       uiOutput(ns("reset_out")),
@@ -49,11 +49,11 @@ setup_load_module_server <- function(id, common, parent_session) {
 
 
   # Create a definable reactive value to allow reloading of data
-  init("load_reset")
+  init("setup_reset")
 
   # Render function for file input dynamically to allow the button to be set to Null
   output$data_out <- renderUI({
-    watch("load_reset")
+    watch("setup_reset")
     fileInput(ns("data"), label = NULL, buttonLabel = "Select", accept = c(".csv", ".xlsx"))
   })
 
@@ -66,7 +66,7 @@ setup_load_module_server <- function(id, common, parent_session) {
 
   output$reset_out <- renderUI({
     watch("setup_load")
-    watch("load_reset")
+    watch("setup_reset")
     req(common$is_data_uploaded)
     div(
       style = "float:right",
@@ -79,12 +79,12 @@ setup_load_module_server <- function(id, common, parent_session) {
   observeEvent(input$reset, {
     common$reset()
     updateActionButton(session, "run", label = "Load example data")
-    trigger("load_reset")
+    trigger("setup_reset")
    })
 
   output$download_out <- renderUI({
     watch("setup_load")
-    watch("load_reset")
+    watch("setup_reset")
     if (is.null(common$is_data_uploaded) || !common$is_data_uploaded){
       downloadButton(ns("download"), "Download example data")
     }

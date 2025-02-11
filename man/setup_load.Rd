@@ -4,12 +4,16 @@
 \alias{setup_load}
 \title{Assess the data for validity. this checks the column names for required columns, and balanced wide format numbered columns.}
 \usage{
-setup_load(data_path = NULL, outcome_type, logger = NULL)
+setup_load(data_path = NULL, outcome, logger = NULL)
 }
 \arguments{
 \item{data_path}{character. Path to the file to be loaded or if `NULL` load the default data}
 
-\item{outcome_type}{character. Outcome type selected for the data. Either `Binary` or `Continuous`.}
+\item{outcome}{character. Outcome type selected for the data. Either `Binary` or `Continuous`.}
+
+\item{logger}{Stores all notification messages to be displayed in the Log
+Window. Insert the logger reactive list here for running in
+shiny, otherwise leave the default `NULL`}
 }
 \value{
 List containing:
