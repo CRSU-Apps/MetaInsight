@@ -17,7 +17,7 @@ setup_load <- function(data_path = NULL, outcome, logger = NULL){
   # check inputs
   if (!is.null(data_path)){
     if (!inherits(data_path, "character")){
-      logger %>% writeLog(type = "error", "data_path must be a character string")
+      logger %>% writeLog(type = "error", "data_path must be of class character")
       return()
     }
     if (!tools::file_ext(data_path) %in% c("csv", "xlsx")){
@@ -31,7 +31,7 @@ setup_load <- function(data_path = NULL, outcome, logger = NULL){
   }
 
   if (!inherits(outcome, "character")){
-    logger %>% writeLog(type = "error", "outcome must be a character string")
+    logger %>% writeLog(type = "error", "outcome must be of class character")
     return()
   }
 
