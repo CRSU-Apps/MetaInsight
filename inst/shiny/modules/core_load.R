@@ -24,6 +24,9 @@ core_load_module_server <- function(id, common, modules, map, COMPONENT_MODULES,
         return()
       }
 
+      # reload old logs, minus header
+      common$logger %>% writeLog(strsplit(temp$logger(), "-----<br>")[[1]][3])
+
       if (temp$state$main$version != as.character(packageVersion("metainsight"))){
         current_version <- as.character(packageVersion("metainsight"))
         common$logger %>% writeLog(type = "warning",
