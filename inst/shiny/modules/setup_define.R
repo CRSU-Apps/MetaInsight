@@ -25,12 +25,12 @@ setup_define_module_server <- function(id, common, parent_session) {
     } else {
       outcome_label <- "Outcome for binary data:"
       outcome_choices <- c("Odds Ratio (OR)" = "OR", "Risk Ratio (RR)" = "RR", "Risk Difference (RD)" = "RD")
-      # I've just edited the previous text, but what about RR or RD?
+      # I've just edited the previous text, but what about RR or RD (SS)?
       rank_label <- "For treatment rankings, ORs less than 1 are:"
     }
     updateSelectInput(session, "reference_treatment", choices = treatments,
                       selected = FindExpectedReferenceTreatment(treatments))
-    updateRadioButtons(session, "outcome", outcome_label, outcome_choices)
+    updateRadioButtons(session, "outcome_measure", outcome_label, outcome_choices)
     updateRadioButtons(session, "rankopts", rank_label,
                        selected = RankingOrder(common$outcome, !common$is_data_uploaded))
   })
@@ -38,7 +38,15 @@ setup_define_module_server <- function(id, common, parent_session) {
   observeEvent(input$run, {
     # WARNING ####
 
-    # need data to exist
+    if (is.null(common$data)) {
+      common$logger %>% writeLog(type = "error", "Please load data first")
+      return()
+    }
+
+    if (!common$is_data_valid) {
+      common$logger %>% writeLog(type = "error", "Please upload valid data first")
+      return()
+    }
 
     # FUNCTION CALL ####
     result <- setup_define(common$data,
@@ -49,6 +57,7 @@ setup_define_module_server <- function(id, common, parent_session) {
                           common$logger)
 
     # LOAD INTO COMMON ####
+    common$data <- result$wrangled_data
     common$disconnected_indices <- result$disconnected_indices
     common$main_connected_data <- result$main_connected_data
     common$initial_non_covariate_data <- result$initial_non_covariate_data

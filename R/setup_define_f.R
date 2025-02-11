@@ -1,11 +1,51 @@
-#' Assess the data for validity. this checks the column names for required columns, and balanced wide format numbered columns.
+#' Checks the connectivity of the uploaded data and converts it into formats for
+#' bugsnet and frequentist analyses
 #'
 #' @param data dataframe. Uploaded data
-#' @param treatment_df vector of treatments
-#' @param reference_treatment character. The reference treatment
-#' @return list
+#' @param treatment_df dataframe. Treatments
+#' @param outcome character. Outcome type for the dataset. Either `Binary` or
+#' `Continuous`.
+#' @param outcome_measure character. Outcome measure of the dataset. Either
+#' `OR`, `RR` or `RD` when `outcome` is `Binary` or `MD` or `SMD` when
+#' `outcome` is `Continuous`
+#' @param reference_treatment character. The reference treatment of the dataset
+#' @param logger Stores all notification messages to be displayed in the Log
+#'   Window. Insert the logger reactive list here for running in
+#'   shiny, otherwise leave the default `NULL`
+#' @return List containing:
+#'  \item{wrangled_data}{dataframe. To be presented in the data table}
+#'  \item{treatment_df}{dataframe. Updated version of the input parameter}
+#'  \item{disconnected_indices}{vector. Indices of studies that are not connected to the main network}
+#'  \item{main_connected_data}{dataframe. A subset of the data containing only connected studies}
+#'  \item{initial_non_covariate_data}{dataframe. The uploaded data with covariates removed}
+#'  \item{bugsnet_all}{dataframe. Processed data for bugsnet analyses created by `bugsnetdata`}
+#'  \item{freq_all}{list. Processed data for frequentist analyses created by `frequentist()`}
 #' @export
+#'
+
 setup_define <- function(data, treatment_df, outcome, outcome_measure, reference_treatment, logger = NULL){
+
+  check_param_classes(c("data", "treatment_df", "outcome", "outcome_measure", "reference_treatment"),
+                      c("data.frame", "data.frame", "character", "character", "character"), logger = logger)
+
+  if (!outcome %in% c("Binary", "Continuous")){
+    logger %>% writeLog(type = "error", "outcome must be either Binary or Continuous")
+    return()
+  }
+
+  if (outcome == "Binary"){
+    if (!outcome_measure %in% c("OR", "RR", "RD")){
+      logger %>% writeLog(type = "error", "When outcome is Binary, outcome_measure must be either OR, RR or RD")
+      return()
+    }
+  }
+
+  if (outcome == "Continuous"){
+    if (!outcome_measure %in% c("MD", "SMD")){
+      logger %>% writeLog(type = "error", "When outcome is Continuous, outcome_measure must be either MD or SMD")
+      return()
+    }
+  }
 
   # update using the selected reference treatment
   treatment_df <- CreateTreatmentIds(treatment_df$Label, reference_treatment)
@@ -26,10 +66,12 @@ setup_define <- function(data, treatment_df, outcome, outcome_measure, reference
   main_subnetwork_exclusions <- studies[!studies %in% main_connected_data$Study]
 
   if (length(main_subnetwork_exclusions) > 0){
-    logger %>% writeLog(type = "warning", glue::glue("The uploaded data comprises a disconnected network.
-                                                     Only the subnetwork containing the reference treatment
-                                                     ({reference_treatment}) will be displayed and disconnected
-                                                     studies are shown in the logger."))
+    logger %>% writeLog(type = "warning",
+      glue::glue("The uploaded data comprises a disconnected network.
+                 Only the subnetwork containing the reference treatment
+                 ({reference_treatment}) will be displayed and disconnected
+                 studies are shown in the logger."))
+
     for (s in main_subnetwork_exclusions){
       logger %>% writeLog(s)
     }
@@ -42,12 +84,13 @@ setup_define <- function(data, treatment_df, outcome, outcome_measure, reference
   bugsnet_all <- bugsnetdata(initial_non_covariate_data, outcome, treatment_df)
 
   # random is the default model type, this structure is updated in summary_exclude if the model type changes
-  freq_all <- frequentist(initial_non_covariate_data,
+  # suppressWarnings deprecation temporarily
+  freq_all <- suppressWarnings(frequentist(initial_non_covariate_data,
                           outcome,
                           treatment_df,
                           outcome_measure,
                           "random",
-                          treatment_df$Label[treatment_df$Number == 1])
+                          treatment_df$Label[treatment_df$Number == 1]))
 
   return(list(wrangled_data = data,
               treatment_df = treatment_df,

@@ -17,7 +17,7 @@
   }
 
   # Build network (Mathematical structure is called a 'graph')
-  return(igraph::graph(links, directed = FALSE))
+  return(suppressWarnings(igraph::graph(links, directed = FALSE)))
 }
 
 #' Identify all of the disconnected subnetworks contained in the data.
