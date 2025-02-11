@@ -1,29 +1,64 @@
 Package: metainsight
 Version: 0.0.1
-Date: 2025-01-14
-Title: Add a title
+Title: A 'shiny' Application for Metaanalysis
 Description: Describe your application
 Authors@R: 
     c(person("Simon E. H.", "Smart", email = "simon.smart@cantab.net", role = c("aut","cre")))
 Depends:
     R (>= 3.5.0),
-    shiny (>= 1.8.1),
-    R6,
-    gargoyle
+    gargoyle,
+    shiny (>= 1.8.1)
 Imports:
+    BUGSnet,
+    bnma,
+    combinat,
+    cookies,
+    cowplot,
     DT (>= 0.5),
+    data.table,
+    data.tree,
+    dplyr,
+    future,
+    gemtc,
+    ggiraphExtra,
+    ggplot2,
+    ggrepel,
     glue,
+    igraph,
+    jsonlite,
     knitcitations,
+    knitr,
+    lubridate,
+    MCMCvis,
+    magick,
     magrittr,
     markdown,
+    matrixcalc,
+    metafor,
+    mvtnorm,
+    netmeta,
+    patchwork,
+    plotly,
+    plotrix,
+    plyr,
+    promises,
+    R6,
+    R.utils,
+    rio,
     rmarkdown,
+    shinyAce,
+    shinyBS,
     shinyalert,
+    shinycssloaders,
+    shinydashboard,
     shinyjs,
-    shinytest2,
+    stringr,
     shinyWidgets (>= 0.6.0),
+    tidyr,
     tools,
     zip
-Suggests: 
+Suggests:
+    shinytest2,
     testthat
 License: GPL-3
 URL: 
