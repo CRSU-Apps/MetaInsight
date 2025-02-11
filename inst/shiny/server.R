@@ -169,11 +169,13 @@ function(input, output, session) {
 
   output$debug <- renderPrint({
     browser()
+    "debug"
   }) |> bindEvent(input$debug_button)
 
   ################################
   ### EXPORT TEST VALUES ####
   ################################
-  exportTestValues(common = common)
+  exportTestValues(common = common,
+                   logger = common$logger())
 }
 
