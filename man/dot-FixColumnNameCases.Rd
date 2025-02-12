@@ -4,12 +4,12 @@
 \alias{.FixColumnNameCases}
 \title{Rename the columns of a data frame to match the expected letter casing.}
 \usage{
-.FixColumnNameCases(data, outcome_type)
+.FixColumnNameCases(data, outcome)
 }
 \arguments{
 \item{data}{Data frame to fix}
 
-\item{outcome_type}{Type of outcome for which to reorder, either 'Continuous' or 'Binary'}
+\item{outcome}{Type of outcome for which to reorder, either 'Continuous' or 'Binary'}
 }
 \value{
 Data frame with renamed columns.

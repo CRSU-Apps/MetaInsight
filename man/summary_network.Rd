@@ -4,12 +4,12 @@
 \alias{summary_network}
 \title{Produce either a netgraph or netplot}
 \usage{
-summary_network(freq, bugsnetdt, style, label_size = 1, logger = NULL)
+summary_network(freq, bugsnet, style, label_size = 1, logger = NULL)
 }
 \arguments{
-\item{freq}{dataframe. Created by `frequentist()`}
+\item{freq}{list. Created by `frequentist()`}
 
-\item{bugsnetdt}{dataframe. Created by `bugsnetdata()`}
+\item{bugsnet}{dataframe. Created by `bugsnetdata()`}
 
 \item{style}{character. The plot to produce, either `netgraph` or `netplot`}
 
@@ -17,7 +17,7 @@ summary_network(freq, bugsnetdt, style, label_size = 1, logger = NULL)
 
 \item{logger}{Stores all notification messages to be displayed in the Log
 Window. Insert the logger reactive list here for running in
-shiny, otherwise leave the default NULL}
+shiny, otherwise leave the default `NULL`}
 }
 \value{
 The plotting function

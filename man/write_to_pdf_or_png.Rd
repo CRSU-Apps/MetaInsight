@@ -4,14 +4,7 @@
 \alias{write_to_pdf_or_png}
 \title{Write some plot to a .pdf or .png file.}
 \usage{
-write_to_pdf_or_png(
-  file,
-  type,
-  renderFunction,
-  height = NULL,
-  width = NULL,
-  png_units = "px"
-)
+write_to_pdf_or_png(file, type, renderFunction, height = NULL, width = NULL)
 }
 \arguments{
 \item{file}{The file to which to write.}
@@ -23,8 +16,6 @@ write_to_pdf_or_png(
 \item{height}{The height of the plot in inches for pdf, or user specified units for png.}
 
 \item{width}{The width of the plot in inches for pdf, or user specified units for png.}
-
-\item{png_units}{The units for @param height and @param width for png. Defaults to "px".}
 }
 \description{
 Write some plot to a .pdf or .png file.

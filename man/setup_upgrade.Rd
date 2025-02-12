@@ -7,9 +7,13 @@
 setup_upgrade(data_path, treatments, logger = NULL)
 }
 \arguments{
-\item{data_path}{character. path to the file to be upgraded}
+\item{data_path}{character. Path to the file to be upgraded}
 
-\item{treatments}{character vector. List of the treatments in the data}
+\item{treatments}{character. The treatments in the data seperated by commas.}
+
+\item{logger}{Stores all notification messages to be displayed in the Log
+Window. Insert the logger reactive list here for running in
+shiny, otherwise leave the default `NULL`}
 }
 \value{
 Dataframe containing the upgraded data

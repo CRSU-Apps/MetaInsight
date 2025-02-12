@@ -4,12 +4,12 @@
 \alias{WideToLong}
 \title{Find all of the treatment names in the data, both for long and wide formats.}
 \usage{
-WideToLong(wide_data, outcome_type)
+WideToLong(wide_data, outcome)
 }
 \arguments{
 \item{wide_data}{Data frame of wide format}
 
-\item{outcome_type}{Indicator whether outcome is 'Binary' or 'Continuous'}
+\item{outcome}{Indicator whether outcome is 'Binary' or 'Continuous'}
 }
 \value{
 Data frame in long format

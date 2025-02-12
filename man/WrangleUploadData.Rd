@@ -4,14 +4,14 @@
 \alias{WrangleUploadData}
 \title{Wrangle the uploaded data into a form usable by the internals of the app, both for long and wide formats.}
 \usage{
-WrangleUploadData(data, treatment_ids, outcome_type)
+WrangleUploadData(data, treatment_ids, outcome)
 }
 \arguments{
 \item{data}{Data frame to wrangle}
 
 \item{treatment_ids}{Data frame containing treatment IDs and names in columns named 'Number' and 'Label' respectively}
 
-\item{outcome_type}{Type of outcome for which to reorder, either 'Continuous' or 'Binary'}
+\item{outcome}{Type of outcome for which to reorder, either 'Continuous' or 'Binary'}
 }
 \value{
 Data frame which is uasable by the rest of the app

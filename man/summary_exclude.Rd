@@ -2,13 +2,14 @@
 % Please edit documentation in R/summary_exclude_f.R
 \name{summary_exclude}
 \alias{summary_exclude}
-\title{Assess the data for validity. this checks the column names for required columns, and balanced wide format numbered columns.}
+\title{Takes the uploaded data, removes any excluded studies and returns
+subsets of the data in formats for bugsnet and frequentist analyses}
 \usage{
 summary_exclude(
-  data,
+  non_covariate_data,
   treatment_df,
   reference_treatment,
-  metaoutcome,
+  outcome,
   outcome_measure,
   model_type,
   exclusions,
@@ -16,15 +17,33 @@ summary_exclude(
 )
 }
 \arguments{
-\item{data}{dataframe. Uploaded data}
+\item{non_covariate_data}{dataframe. Data processed by setup_define()}
 
-\item{treatment_df}{vector of treatments}
+\item{treatment_df}{dataframe. Treatments and their IDs}
 
-\item{reference_treatment}{character. The reference treatment}
+\item{reference_treatment}{character. The reference treatment of the dataset}
+
+\item{outcome}{character. Outcome type for the dataset. Either `Binary` or
+`Continuous`.}
+
+\item{outcome_measure}{character. Outcome measure of the dataset. Either
+`OR`, `RR` or `RD` when `outcome` is `Binary` or `MD` or `SMD` when
+`outcome` is `Continuous`}
+
+\item{model_type}{character. Type of model to fit, either `random` or `fixed`}
+
+\item{exclusions}{character. Vector of study names to exclude.}
+
+\item{logger}{Stores all notification messages to be displayed in the Log
+Window. Insert the logger reactive list here for running in
+shiny, otherwise leave the default `NULL`}
 }
 \value{
-list
+List containing:
+ \item{bugsnet_sub}{dataframe. Processed data for bugsnet analyses created by `bugsnetdata()`}
+ \item{freq_sub}{list. Processed data for frequentist analyses created by `frequentist()`}
 }
 \description{
-Assess the data for validity. this checks the column names for required columns, and balanced wide format numbered columns.
+Takes the uploaded data, removes any excluded studies and returns
+subsets of the data in formats for bugsnet and frequentist analyses
 }

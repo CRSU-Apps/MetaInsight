@@ -17,10 +17,10 @@ shiny, otherwise leave the default `NULL`}
 }
 \value{
 List containing:
- \item{valid}{logical. Whether the data is valid}
- \item{uploaded}{logical. Whether the data is uploaded}
- \item{data}{Dataframe. The data that was uploaded, `NULL` if none was uploaded}
- \item{treatments}{Vector of all treatment names either in the data if it is valid or in the default data if not}
+ \item{is_data_valid}{logical. Whether the data is valid}
+ \item{is_data_uploaded}{logical. Whether the data is uploaded}
+ \item{data}{dataframe. The data that was uploaded or the default data if no data_path was provided}
+ \item{treatment_df}{Dataframe of the treatments in the data. `NULL` if `is_data_valid` is `FALSE`}
 }
 \description{
 Assess the data for validity. this checks the column names for required columns, and balanced wide format numbered columns.

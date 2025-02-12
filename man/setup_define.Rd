@@ -2,12 +2,14 @@
 % Please edit documentation in R/setup_define_f.R
 \name{setup_define}
 \alias{setup_define}
-\title{Assess the data for validity. this checks the column names for required columns, and balanced wide format numbered columns.}
+\title{Checks the connectivity of the uploaded data and converts it into formats for
+bugsnet and frequentist analyses}
 \usage{
 setup_define(
   data,
   treatment_df,
-  outcome_type,
+  outcome,
+  outcome_measure,
   reference_treatment,
   logger = NULL
 )
@@ -15,13 +17,32 @@ setup_define(
 \arguments{
 \item{data}{dataframe. Uploaded data}
 
-\item{treatment_df}{vector of treatments}
+\item{treatment_df}{dataframe. Treatments}
 
-\item{reference_treatment}{character. The reference treatment}
+\item{outcome}{character. Outcome type for the dataset. Either `Binary` or
+`Continuous`.}
+
+\item{outcome_measure}{character. Outcome measure of the dataset. Either
+`OR`, `RR` or `RD` when `outcome` is `Binary` or `MD` or `SMD` when
+`outcome` is `Continuous`}
+
+\item{reference_treatment}{character. The reference treatment of the dataset}
+
+\item{logger}{Stores all notification messages to be displayed in the Log
+Window. Insert the logger reactive list here for running in
+shiny, otherwise leave the default `NULL`}
 }
 \value{
-list
+List containing:
+ \item{wrangled_data}{dataframe. To be presented in the data table}
+ \item{treatment_df}{dataframe. Updated version of the input parameter}
+ \item{disconnected_indices}{vector. Indices of studies that are not connected to the main network}
+ \item{main_connected_data}{dataframe. A subset of the data containing only connected studies}
+ \item{non_covariate_data_all}{dataframe. The uploaded data with covariates removed}
+ \item{bugsnet_all}{dataframe. Processed data for bugsnet analyses created by `bugsnetdata`}
+ \item{freq_all}{list. Processed data for frequentist analyses created by `frequentist()`}
 }
 \description{
-Assess the data for validity. this checks the column names for required columns, and balanced wide format numbered columns.
+Checks the connectivity of the uploaded data and converts it into formats for
+bugsnet and frequentist analyses
 }

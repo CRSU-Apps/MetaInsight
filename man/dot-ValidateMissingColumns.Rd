@@ -4,14 +4,14 @@
 \alias{.ValidateMissingColumns}
 \title{Validate that there are no missing columns in the data.}
 \usage{
-.ValidateMissingColumns(data, required_columns, outcome_type)
+.ValidateMissingColumns(data, required_columns, outcome)
 }
 \arguments{
 \item{data}{Data frame to validate.}
 
 \item{required_columns}{Data frame containing data definitions.}
 
-\item{outcome_type}{Outcome type selected for the data. Either "Binary" or "Continuous".}
+\item{outcome}{Outcome type selected for the data. Either "Binary" or "Continuous".}
 }
 \value{
 Validation result in the form of a list:

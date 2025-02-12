@@ -4,12 +4,12 @@
 \alias{ValidateUploadedData}
 \title{Assess the data for validity. this checks the column names for required columns, and balanced wide format numbered columns.}
 \usage{
-ValidateUploadedData(data, outcome_type, logger = NULL)
+ValidateUploadedData(data, outcome, logger = NULL)
 }
 \arguments{
 \item{data}{Data frame to validate.}
 
-\item{outcome_type}{Outcome type selected for the data. Either "Binary" or "Continuous".}
+\item{outcome}{Outcome type selected for the data. Either "Binary" or "Continuous".}
 }
 \value{
 Validation result in the form of a list:

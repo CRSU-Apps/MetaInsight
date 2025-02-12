@@ -2,20 +2,23 @@
 % Please edit documentation in R/summary_char_f.R
 \name{summary_char}
 \alias{summary_char}
-\title{Assess the data for validity. this checks the column names for required columns, and balanced wide format numbered columns.}
+\title{Takes bugsnet data and produces a summary dataframe of the studies}
 \usage{
-summary_char(data, metaoutcome)
+summary_char(bugsnet_data, outcome, logger = NULL)
 }
 \arguments{
-\item{data}{dataframe. Uploaded data}
+\item{bugsnet_data}{dataframe. Dataframe produced by `bugsnetdata()`}
 
-\item{treatment_df}{vector of treatments}
+\item{outcome}{character. Outcome type for the dataset. Either `Binary` or
+`Continuous`.}
 
-\item{reference_treatment}{character. The reference treatment}
+\item{logger}{Stores all notification messages to be displayed in the Log
+Window. Insert the logger reactive list here for running in
+shiny, otherwise leave the default `NULL`}
 }
 \value{
-list
+dataframe of characteristics
 }
 \description{
-Assess the data for validity. this checks the column names for required columns, and balanced wide format numbered columns.
+Takes bugsnet data and produces a summary dataframe of the studies
 }

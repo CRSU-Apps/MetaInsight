@@ -4,7 +4,7 @@
 \alias{SortByStudyIDThenT}
 \title{Sort the data by StudyID then T}
 \usage{
-SortByStudyIDThenT(data, outcome_type)
+SortByStudyIDThenT(data, outcome)
 }
 \arguments{
 \item{data}{Data frame to sort}
