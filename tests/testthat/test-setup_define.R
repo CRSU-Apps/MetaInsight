@@ -41,7 +41,7 @@ test_that("setup_define returns correctly structured objects", {
 
 test_that("setup_define loads data into common correctly for continuous long data", {
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_setup_load")
-  app$set_inputs(tabs = "load")
+  app$set_inputs(tabs = "setup")
   app$set_inputs(setupSel = "setup_load")
   app$upload_file("setup_load-data" = "data/Cont_long_continuous_cov.csv")
   app$click("setup_load-run")
@@ -64,7 +64,7 @@ test_that("setup_define loads data into common correctly for continuous long dat
 
 test_that("setup_define loads data into common correctly for wide binary data", {
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_setup_load")
-  app$set_inputs(tabs = "load")
+  app$set_inputs(tabs = "setup")
   app$set_inputs(setupSel = "setup_load")
   app$upload_file("setup_load-data" = system.file("extdata", "binary_wide.csv", package = "metainsight"))
   app$set_inputs("setup_load-outcome" = "Binary")
@@ -88,7 +88,7 @@ test_that("setup_define loads data into common correctly for wide binary data", 
 
 test_that("setup_define logs errors when disconnected data is uploaded", {
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_setup_load")
-  app$set_inputs(tabs = "load")
+  app$set_inputs(tabs = "setup")
   app$set_inputs(setupSel = "setup_load")
   app$upload_file("setup_load-data" = "data/continuous_long_disconnected.csv")
   app$click("setup_load-run")
@@ -117,7 +117,7 @@ test_that("setup_define logs errors when disconnected data is uploaded", {
 # These could be refactored further as there's no need to be E2E
 test_that("Data wrangled from default continuous long file", {
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_setup_load")
-  app$set_inputs(tabs = "load")
+  app$set_inputs(tabs = "setup")
   app$set_inputs(setupSel = "setup_load")
   app$click("setup_load-run")
   app$set_inputs(setupSel = "setup_define")
@@ -153,7 +153,7 @@ test_that("Data wrangled from default continuous long file", {
 
 test_that("Continuous wide data wrangled with treatment IDs", {
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_setup_load")
-  app$set_inputs(tabs = "load")
+  app$set_inputs(tabs = "setup")
   app$set_inputs(setupSel = "setup_load")
   app$upload_file("setup_load-data" = system.file("extdata", "continuous_wide.csv", package = "metainsight"))
   app$click("setup_load-run")
@@ -199,7 +199,7 @@ test_that("Continuous wide data wrangled with treatment IDs", {
 
 test_that("Data wrangled from default binary long file", {
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_setup_load")
-  app$set_inputs(tabs = "load")
+  app$set_inputs(tabs = "setup")
   app$set_inputs(setupSel = "setup_load")
   app$set_inputs("setup_load-outcome" = "Binary")
   app$click("setup_load-run")
@@ -232,7 +232,7 @@ test_that("Data wrangled from default binary long file", {
 
 test_that("Binary wide data wrangled with treatment IDs", {
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_setup_load")
-  app$set_inputs(tabs = "load")
+  app$set_inputs(tabs = "setup")
   app$set_inputs(setupSel = "setup_load")
   app$set_inputs("setup_load-outcome" = "Binary")
   app$upload_file("setup_load-data" = system.file("extdata", "binary_wide.csv", package = "metainsight"))

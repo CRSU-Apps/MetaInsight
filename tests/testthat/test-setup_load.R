@@ -80,7 +80,7 @@ test_that("Treatments and data extracted from default binary file", {
 
 test_that("Check setup_load loads data into common correctly for default data", {
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_setup_load")
-  app$set_inputs(tabs = "load")
+  app$set_inputs(tabs = "setup")
   app$set_inputs(setupSel = "setup_load")
   app$click("setup_load-run")
   common <- app$get_value(export = "common")
@@ -118,7 +118,7 @@ test_that("Check setup_load loads data into common correctly for default data", 
 
 test_that("Check setup_load loads data into common correctly for an uploaded file", {
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_setup_load")
-  app$set_inputs(tabs = "load")
+  app$set_inputs(tabs = "setup")
   app$set_inputs(setupSel = "setup_load")
   app$upload_file("setup_load-data" = data_path)
   app$click("setup_load-run")
@@ -135,7 +135,7 @@ test_that("Check setup_load loads data into common correctly for an uploaded fil
 
 test_that("Invalid data is loaded into common correctly and errors are passed to the logger", {
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_setup_load")
-  app$set_inputs(tabs = "load")
+  app$set_inputs(tabs = "setup")
   app$set_inputs(setupSel = "setup_load")
   app$set_inputs("setup_load-outcome" = "Binary")
   app$upload_file("setup_load-data" = invalid_data_path)
