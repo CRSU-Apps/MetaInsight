@@ -33,18 +33,14 @@ setup_define <- function(data, treatment_df, outcome, outcome_measure, reference
     return()
   }
 
-  if (outcome == "Binary"){
-    if (!outcome_measure %in% c("OR", "RR", "RD")){
-      logger %>% writeLog(type = "error", "When outcome is Binary, outcome_measure must be either OR, RR or RD")
-      return()
-    }
+  if (outcome == "Binary" && !outcome_measure %in% c("OR", "RR", "RD")){
+    logger %>% writeLog(type = "error", "When outcome is Binary, outcome_measure must be either OR, RR or RD")
+    return()
   }
 
-  if (outcome == "Continuous"){
-    if (!outcome_measure %in% c("MD", "SMD")){
-      logger %>% writeLog(type = "error", "When outcome is Continuous, outcome_measure must be either MD or SMD")
-      return()
-    }
+  if (outcome == "Continuous" && !outcome_measure %in% c("MD", "SMD")){
+    logger %>% writeLog(type = "error", "When outcome is Continuous, outcome_measure must be either MD or SMD")
+    return()
   }
 
   # update using the selected reference treatment
