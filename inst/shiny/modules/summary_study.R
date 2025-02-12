@@ -13,6 +13,7 @@ summary_study_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
   observeEvent(list(watch("summary_exclude"), input$content, input$title, input$header), {
+    req(common$freq_sub)
 
     # METADATA ####
       common$meta$summary_study$used <- TRUE
