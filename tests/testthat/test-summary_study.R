@@ -8,7 +8,7 @@ test_that("summary_study produces errors for incorrect data types", {
 
 # add something to test the production of the plot
 
-test_that("{shinytest2} recording: e2e_summary_study", {
+test_that("summary_study produces a downloadable file", {
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_setup_load")
   app$set_inputs(tabs = "setup")
   app$set_inputs(setupSel = "setup_load")
@@ -19,8 +19,12 @@ test_that("{shinytest2} recording: e2e_summary_study", {
   app$set_inputs("summary_exclude-exclusions" = c("Study01", "Study25"))
   app$set_inputs(summarySel = "summary_study")
   app$set_inputs(main = "Results")
-  plot_file <- app$get_download("summary_study-download")
-  expect_gt(file.info(plot_file)$size, 1000)
+  plot_pdf <- app$get_download("summary_study-download")
+  expect_gt(file.info(plot_pdf)$size, 1000)
+  app$set_inputs("summary_study-format" = "svg")
+  plot_svg <- app$get_download("summary_study-download")
+  expect_gt(file.info(plot_svg)$size, 1000)
+
   app$stop()
 })
 
