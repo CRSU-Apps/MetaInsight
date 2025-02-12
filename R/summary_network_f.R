@@ -1,16 +1,20 @@
 #' Produce either a netgraph or netplot
 #'
-#' @param freq dataframe. Created by `frequentist()`
+#' @param freq list. Created by `frequentist()`
 #' @param bugsnet dataframe. Created by `bugsnetdata()`
 #' @param style character. The plot to produce, either `netgraph` or `netplot`
 #' @param label_size numeric. The size of labels in the plots. Default of 1.
 #' @param logger Stores all notification messages to be displayed in the Log
 #'   Window. Insert the logger reactive list here for running in
-#'   shiny, otherwise leave the default NULL
+#'   shiny, otherwise leave the default `NULL`
 #' @return The plotting function
 #' @export
 
 summary_network <- function(freq, bugsnet, style, label_size = 1, logger = NULL){
+
+  check_param_classes(c("freq", "bugsnet", "style", "label_size"),
+                      c("list", "data.frame", "character", "numeric"), logger)
+
   if (style == "netgraph"){
     return(netmeta::netgraph(freq$net1, lwd = 2, number.of.studies = TRUE, plastic = FALSE, points = TRUE,
                              cex = label_size, cex.points = 2, col.points = 1, col = 8, pos.number.of.studies = 0.43,
@@ -23,7 +27,7 @@ summary_network <- function(freq, bugsnet, style, label_size = 1, logger = NULL)
     return(BUGSnet::net.plot(data.rh, node.scale = 3, edge.scale = 1.5, node.lab.cex = label_size,
                              layout.params = NULL))
   } else {
-    logger %>% writeLog(type = "error", "The style must be either netgraph or netplot")
+    logger %>% writeLog(type = "error", "style must be either netgraph or netplot")
     return()
   }
 }

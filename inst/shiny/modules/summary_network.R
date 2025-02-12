@@ -73,7 +73,9 @@ summary_network_module_server <- function(id, common, parent_session) {
       write_to_pdf_or_png(
         file,
         input$format_all,
-        draw_network
+        draw_network,
+        height = 6,
+        width = 9
       )
     }
   )
@@ -90,7 +92,9 @@ summary_network_module_server <- function(id, common, parent_session) {
       write_to_pdf_or_png(
         file,
         input$format_sub,
-        draw_network
+        draw_network,
+        height = 6,
+        width = 9
       )
     }
   )
@@ -101,7 +105,7 @@ summary_network_module_server <- function(id, common, parent_session) {
       ### Manual save end
       label_all = input$label_all,
       label_sub = input$label_sub,
-      networkstyle = input$style,
+      style = input$style,
       format_all = input$format_all,
       format_sub = input$format_sub)
     },
