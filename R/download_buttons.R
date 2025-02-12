@@ -68,13 +68,12 @@ BayesInch <- function(notrt) {
 #' @param renderFunction A function to render the plot.
 #' @param height The height of the plot in inches for pdf, or user specified units for png.
 #' @param width The width of the plot in inches for pdf, or user specified units for png.
-#' @param png_units The units for @param height and @param width for png. Defaults to "px".
 #' @export
-write_to_pdf_or_png <- function(file, type, renderFunction, height = NULL, width = NULL, png_units = "px") {
+write_to_pdf_or_png <- function(file, type, renderFunction, height = NULL, width = NULL) {
   if (tolower(type) == "pdf") {
     pdf(file = file, height = height, width = width)
   } else {
-    png(file = file, height = height, width = width, units = png_units, res = 72)
+    png(file = file, height = height, width = width, units = "in", res = 216)
   }
   renderFunction()
   dev.off()
