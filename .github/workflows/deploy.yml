@@ -44,7 +44,7 @@ jobs:
           echo "Deploying to: $appName"
       - name: Install package system dependencies
         run: |
-          sudo apt-get update
+          sudo apt update
           sudo apt install libcurl4-openssl-dev jags libharfbuzz-dev libfribidi-dev libfreetype6-dev libpng-dev libtiff5-dev libjpeg-dev libglpk-dev libmagick++-dev -y
       # Checkout the repo
       - uses: actions/checkout@v4
