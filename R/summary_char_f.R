@@ -1,13 +1,23 @@
-#' Assess the data for validity. this checks the column names for required columns, and balanced wide format numbered columns.
+#' Takes bugsnet data and produces a summary dataframe of the studies
 #'
-#' @param data dataframe. Uploaded data
-#' @param treatment_df vector of treatments
-#' @param reference_treatment character. The reference treatment
-#' @return list
+#' @param bugsnet_data dataframe. Dataframe produced by `bugsnetdata()`
+#' @param outcome character. Outcome type for the dataset. Either `Binary` or
+#' `Continuous`.
+#' @param logger Stores all notification messages to be displayed in the Log
+#'   Window. Insert the logger reactive list here for running in
+#'   shiny, otherwise leave the default `NULL`
+#' @return dataframe of characteristics
 #' @export
-summary_char <- function(data, outcome) {
+summary_char <- function(bugsnet_data, outcome, logger = NULL) {
 
-  data.rh <- BUGSnet::data.prep(arm.data = data, varname.t = "T", varname.s = "Study")
+  check_param_classes(c("bugsnet_data", "outcome"), c("data.frame", "character"), logger = logger)
+
+  if (!outcome %in% c("Binary", "Continuous")){
+    logger %>% writeLog(type = "error", "outcome must be either Binary or Continuous")
+    return()
+  }
+
+  data.rh <- BUGSnet::data.prep(arm.data = bugsnet_data, varname.t = "T", varname.s = "Study")
   if (outcome == "Continuous") {
     outcome = "Mean"
     typeO = "continuous"
@@ -15,7 +25,8 @@ summary_char <- function(data, outcome) {
     outcome = "R"
     typeO = "binomial"
   } else {
-    stop("outcome must be 'Binary' or 'Continuous'")
+    logger %>% writeLog(type = "error", "outcome must be either Binary or Continuous")
+    return()
   }
   network.char <- BUGSnet::net.tab(data = data.rh,
                                    outcome = outcome,
