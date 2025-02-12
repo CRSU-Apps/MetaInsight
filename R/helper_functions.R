@@ -96,12 +96,10 @@ writeLog <- function(logger, ..., type = "default") {
 #' @param params character. Vector of parameters to check
 #' @param classes character. Vector of classes for each parameter
 #' @param logger Stores all notification messages to be displayed in the Log
-#'   Window or returned as errors. Inherited from the function it is called
-#'   from
+#'   Window or returned as errors.
 #' @return None - called for side effects
 #' @keywords internal
-#' @export
-check_param_classes <- function(params, classes, logger = logger){
+check_param_classes <- function(params, classes, logger){
   for (i in seq_along(params)) {
     if (!inherits(get(params[i], envir = parent.frame()), classes[i])) {
       logger %>% writeLog(type = "error", paste0(params[i], " must be of class ", classes[i]))

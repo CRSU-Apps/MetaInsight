@@ -22,7 +22,7 @@
 summary_exclude <- function(non_covariate_data, treatment_df, reference_treatment, outcome, outcome_measure, model_type, exclusions, logger = NULL){
 
   check_param_classes(c("non_covariate_data", "treatment_df", "outcome", "outcome_measure", "reference_treatment", "model_type"),
-                      c("data.frame", "data.frame", "character", "character", "character", "character"), logger = logger)
+                      c("data.frame", "data.frame", "character", "character", "character", "character"), logger)
 
   if (!is.null(exclusions) && !inherits(exclusions, "character")){
     logger %>% writeLog(type = "error", "exclusions must be of class character")

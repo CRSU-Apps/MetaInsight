@@ -26,7 +26,7 @@
 setup_define <- function(data, treatment_df, outcome, outcome_measure, reference_treatment, logger = NULL){
 
   check_param_classes(c("data", "treatment_df", "outcome", "outcome_measure", "reference_treatment"),
-                      c("data.frame", "data.frame", "character", "character", "character"), logger = logger)
+                      c("data.frame", "data.frame", "character", "character", "character"), logger)
 
   if (!outcome %in% c("Binary", "Continuous")){
     logger %>% writeLog(type = "error", "outcome must be either Binary or Continuous")
