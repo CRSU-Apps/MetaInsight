@@ -54,8 +54,8 @@ summary_exclude_module_server <- function(id, common, parent_session) {
 
     # update freq_all if model selection changes
     observeEvent(input$model, {
-      req(common$initial_non_covariate_data)
-      common$freq_all <- frequentist(common$initial_non_covariate_data,
+      req(common$non_covariate_data_all)
+      common$freq_all <- frequentist(common$non_covariate_data_all,
                                      common$outcome,
                                      common$treatment_df,
                                      common$outcome_measure,

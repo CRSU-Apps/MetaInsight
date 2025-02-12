@@ -12,7 +12,7 @@ common_class <- R6::R6Class(
    reference_treatment = NULL,
    disconnected_indices = NULL,
    main_connected_data = NULL,
-   initial_non_covariate_data = NULL,
+   non_covariate_data_all = NULL,
    model_type = NULL,
    excluded_studies = NULL,
    sensitivity_data = NULL,
@@ -36,7 +36,7 @@ common_class <- R6::R6Class(
      self$reference_treatment <- NULL
      self$disconnected_indices <- NULL
      self$main_connected_data <- NULL
-     self$initial_non_covariate_data <- NULL
+     self$non_covariate_data_all <- NULL
      self$model_type <- NULL
      self$excluded_studies <- NULL
      self$sensitivity_data <- NULL

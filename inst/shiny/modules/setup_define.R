@@ -60,7 +60,7 @@ setup_define_module_server <- function(id, common, parent_session) {
     common$wrangled_data <- result$wrangled_data
     common$disconnected_indices <- result$disconnected_indices
     common$main_connected_data <- result$main_connected_data
-    common$initial_non_covariate_data <- result$initial_non_covariate_data
+    common$non_covariate_data_all <- result$non_covariate_data_all
     common$bugsnet_all <- result$bugsnet_all
     common$freq_all <- result$freq_all
     common$reference_treatment <- input$reference_treatment

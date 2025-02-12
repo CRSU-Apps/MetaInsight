@@ -13,7 +13,7 @@ wrangled_data <- defined_data$wrangled_data
 treatment_df <- defined_data$treatment_df
 disconnected_indices <- defined_data$disconnected_indices
 main_connected_data <- defined_data$main_connected_data
-initial_non_covariate_data <- defined_data$initial_non_covariate_data
+non_covariate_data_all <- defined_data$non_covariate_data_all
 bugsnet_all <- defined_data$bugsnet_all
 frequentist_all <- defined_data$freq_all
 ```

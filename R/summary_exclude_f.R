@@ -1,33 +1,77 @@
-#' Assess the data for validity. this checks the column names for required columns, and balanced wide format numbered columns.
+#' Takes the uploaded data, removes any excluded studies and returns
+#' subsets of the data in formats for bugsnet and frequentist analyses
 #'
-#' @param data dataframe. Uploaded data
-#' @param treatment_df vector of treatments
-#' @param reference_treatment character. The reference treatment
-#' @return list
+#' @param non_covariate_data dataframe. Data processed by setup_define()
+#' @param treatment_df dataframe. Treatments and their IDs
+#' @param reference_treatment character. The reference treatment of the dataset
+#' @param outcome character. Outcome type for the dataset. Either `Binary` or
+#' `Continuous`.
+#' @param outcome_measure character. Outcome measure of the dataset. Either
+#' `OR`, `RR` or `RD` when `outcome` is `Binary` or `MD` or `SMD` when
+#' `outcome` is `Continuous`
+#' @param model_type character. Type of model to fit, either `random` or `fixed`
+#' @param exclusions character. Vector of study names to exclude.
+#' @param logger Stores all notification messages to be displayed in the Log
+#'   Window. Insert the logger reactive list here for running in
+#'   shiny, otherwise leave the default `NULL`
+#' @return List containing:
+#'  \item{bugsnet_sub}{dataframe. Processed data for bugsnet analyses created by `bugsnetdata()`}
+#'  \item{freq_sub}{list. Processed data for frequentist analyses created by `frequentist()`}
 #' @export
-summary_exclude <- function(data, treatment_df, reference_treatment, outcome, outcome_measure, model_type, exclusions, logger = NULL){
+#'
+summary_exclude <- function(non_covariate_data, treatment_df, reference_treatment, outcome, outcome_measure, model_type, exclusions, logger = NULL){
 
-  selected_data <- data[!data$Study %in% exclusions,]
+  check_param_classes(c("non_covariate_data", "treatment_df", "outcome", "outcome_measure", "reference_treatment", "model_type"),
+                      c("data.frame", "data.frame", "character", "character", "character", "character"), logger = logger)
 
-  # I find this baffling - why not just add the IDs once when data is loaded?
-  sensitivity_dewrangled_data <- ReinstateTreatmentIds(selected_data, treatment_df)
-  sensitivity_treatments <- FindAllTreatments(sensitivity_dewrangled_data)
-  sensitivity_treatments <- unique(sensitivity_dewrangled_data$T)
+  if (!is.null(exclusions) && !inherits(exclusions, "character")){
+    logger %>% writeLog(type = "error", "exclusions must be of class character")
+    return()
+  }
 
-  sensitivity_treatment_df <- CreateTreatmentIds(sensitivity_treatments, reference_treatment)
-  sensitivity_data <- ReplaceTreatmentIds(sensitivity_dewrangled_data, sensitivity_treatment_df)
-  sensitivity_non_covariate_data <- RemoveCovariates(sensitivity_data)
+  if (!outcome %in% c("Binary", "Continuous")){
+    logger %>% writeLog(type = "error", "outcome must be either Binary or Continuous")
+    return()
+  }
 
-  bugsnet_sub <- bugsnetdata(sensitivity_non_covariate_data,
-                               outcome,
-                               sensitivity_treatment_df)
+  if (outcome == "Binary" && !outcome_measure %in% c("OR", "RR", "RD")){
+    logger %>% writeLog(type = "error", "When outcome is Binary, outcome_measure must be either OR, RR or RD")
+    return()
+  }
 
-  freq_sub <- frequentist(sensitivity_non_covariate_data,
+  if (outcome == "Continuous" && !outcome_measure %in% c("MD", "SMD")){
+    logger %>% writeLog(type = "error", "When outcome is Continuous, outcome_measure must be either MD or SMD")
+    return()
+  }
+
+  if (!model_type %in% c("random", "fixed")){
+    logger %>% writeLog(type = "error", "model_type must be either random or fixed")
+    return()
+  }
+
+  subsetted_data <- non_covariate_data[!non_covariate_data$Study %in% exclusions,]
+
+  # I find this baffling - why not just add the IDs once when data is loaded (SS)?
+  dewrangled_data_sub <- ReinstateTreatmentIds(subsetted_data, treatment_df)
+  treatments_sub <- FindAllTreatments(dewrangled_data_sub)
+  treatments_sub <- unique(dewrangled_data_sub$T)
+
+  treatment_df_sub <- CreateTreatmentIds(treatments_sub, reference_treatment)
+  data_sub <- ReplaceTreatmentIds(dewrangled_data_sub, treatment_df_sub)
+  non_covariate_data_sub <- RemoveCovariates(data_sub)
+
+  bugsnet_sub <- bugsnetdata(non_covariate_data_sub,
+                             outcome,
+                             treatment_df_sub)
+
+  freq_sub <- suppressWarnings(
+                frequentist(non_covariate_data_sub,
                           outcome,
-                          sensitivity_treatment_df,
+                          treatment_df_sub,
                           outcome_measure,
                           model_type,
-                          sensitivity_treatment_df$Label[sensitivity_treatment_df$Number == 1]) #this should be handled inside the function!
+                          treatment_df_sub$Label[treatment_df_sub$Number == 1]) # this should be handled inside the function (SS)
+              )
 
   list(bugsnet_sub = bugsnet_sub,
        freq_sub = freq_sub)

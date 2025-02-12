@@ -17,7 +17,7 @@
 #'  \item{treatment_df}{dataframe. Updated version of the input parameter}
 #'  \item{disconnected_indices}{vector. Indices of studies that are not connected to the main network}
 #'  \item{main_connected_data}{dataframe. A subset of the data containing only connected studies}
-#'  \item{initial_non_covariate_data}{dataframe. The uploaded data with covariates removed}
+#'  \item{non_covariate_data_all}{dataframe. The uploaded data with covariates removed}
 #'  \item{bugsnet_all}{dataframe. Processed data for bugsnet analyses created by `bugsnetdata`}
 #'  \item{freq_all}{list. Processed data for frequentist analyses created by `frequentist()`}
 #' @export
@@ -75,13 +75,13 @@ setup_define <- function(data, treatment_df, outcome, outcome_measure, reference
 
   disconnected_indices <- which(studies %in% main_subnetwork_exclusions)
 
-  initial_non_covariate_data <- RemoveCovariates(main_connected_data)
+  non_covariate_data_all <- RemoveCovariates(main_connected_data)
 
-  bugsnet_all <- bugsnetdata(initial_non_covariate_data, outcome, treatment_df)
+  bugsnet_all <- bugsnetdata(non_covariate_data_all, outcome, treatment_df)
 
   # random is the default model type, this structure is updated in summary_exclude if the model type changes
   # suppressWarnings deprecation temporarily
-  freq_all <- suppressWarnings(frequentist(initial_non_covariate_data,
+  freq_all <- suppressWarnings(frequentist(non_covariate_data_all,
                           outcome,
                           treatment_df,
                           outcome_measure,
@@ -92,7 +92,7 @@ setup_define <- function(data, treatment_df, outcome, outcome_measure, reference
               treatment_df = treatment_df,
               disconnected_indices = disconnected_indices,
               main_connected_data = main_connected_data,
-              initial_non_covariate_data = initial_non_covariate_data,
+              non_covariate_data_all = non_covariate_data_all,
               bugsnet_all = bugsnet_all,
               freq_all = freq_all))
 }
