@@ -1,3 +1,5 @@
+#' Creates a summary forest plot of all the studies.
+#'
 #' @param freq list. NMA results created by freq_wrap().
 #' @param outcome_measure character. "MD", "SMD", "OR", "RR", or "RD".
 #' @param header numeric. Multiplier for size of text in treatment contrast headers.
