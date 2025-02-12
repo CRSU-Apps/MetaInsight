@@ -3,6 +3,7 @@ common_class <- R6::R6Class(
   public = list(
    data = NULL,
    upgraded_data = NULL,
+   wrangled_data = NULL,
    is_data_valid = NULL,
    is_data_uploaded = NULL,
    outcome = NULL,
@@ -25,8 +26,8 @@ common_class <- R6::R6Class(
    state = NULL,
    reset = function(){
      self$data <- NULL
-     self$default_data <- NULL
      self$upgraded_data <- NULL
+     self$wrangled_data <- NULL
      self$valid_data <- NULL
      self$is_data_uploaded <- NULL
      self$outcome <- NULL

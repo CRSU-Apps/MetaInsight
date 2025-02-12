@@ -57,7 +57,7 @@ setup_define_module_server <- function(id, common, parent_session) {
                           common$logger)
 
     # LOAD INTO COMMON ####
-    common$data <- result$wrangled_data
+    common$wrangled_data <- result$wrangled_data
     common$disconnected_indices <- result$disconnected_indices
     common$main_connected_data <- result$main_connected_data
     common$initial_non_covariate_data <- result$initial_non_covariate_data
