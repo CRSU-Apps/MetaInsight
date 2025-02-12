@@ -85,7 +85,7 @@ function(input, output, session) {
   # TABLE
   output$table <- DT::renderDataTable({
     watch("setup_define")
-    req(common$initial_non_covariate_data)
+    req(common$non_covariate_data_all)
 
     if (common$outcome == "Continuous") {
       colnames <- c('StudyID', 'Author', 'Treatment', 'Number of participants in each arm',
@@ -97,7 +97,7 @@ function(input, output, session) {
     }
 
     label <- common$treatment_df
-    dt <- common$initial_non_covariate_data
+    dt <- common$non_covariate_data_all
     ntx <- nrow(label)
     dt$T <- factor(dt$T,
                    levels = c(1:ntx),
