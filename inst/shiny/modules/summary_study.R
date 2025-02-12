@@ -42,7 +42,7 @@ summary_study_module_server <- function(id, common, parent_session) {
   output$plot <- renderPlot({
     watch("summary_study")
     req(common$freq_sub)
-    summary_study(common$freq_sub, common$outcome_measure, input$header, input$title)
+    summary_study(common$freq_sub, common$outcome_measure, as.numeric(input$header), as.numeric(input$title))
   }, height = function(){plot_height()})
 
   output$download <- downloadHandler(
@@ -51,11 +51,17 @@ summary_study_module_server <- function(id, common, parent_session) {
     },
     content = function(file) {
       if (input$format == "pdf") {
-        pdf(file = file, pointsize = input$content, width = 8, height = summary_study(common$freq_sub, common$outcome_measure, input$header, input$title)$size)
+        pdf(file = file, pointsize = input$content, width = 8, height = summary_study(common$freq_sub,
+                                                                                      common$outcome_measure,
+                                                                                      as.numeric(input$header),
+                                                                                      as.numeric(input$title))$size)
       } else {
-        svg(file = file, pointsize = input$content, width = 8, height = summary_study(common$freq_sub, common$outcome_measure, input$header, input$title)$size)
+        svg(file = file, pointsize = input$content, width = 8, height = summary_study(common$freq_sub,
+                                                                                      common$outcome_measure,
+                                                                                      as.numeric(input$header),
+                                                                                      as.numeric(input$title))$size)
       }
-      summary_study(common$freq_sub, common$outcome_measure, input$header, input$title)
+      summary_study(common$freq_sub, common$outcome_measure, as.numeric(input$header), as.numeric(input$title))
       dev.off()
       }
   )
