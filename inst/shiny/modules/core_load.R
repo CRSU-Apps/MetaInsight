@@ -18,7 +18,7 @@ core_load_module_server <- function(id, common, modules, map, COMPONENT_MODULES,
 
     load_session <- function(temp){
 
-      if (!("common" %in% class(temp))){
+      if (!inherits(temp, "common") || temp$state$main$app != "metainsight"){
         close_loading_modal()
         common$logger %>% writeLog(type = "error", "That is not a valid MetaInsight save file")
         return()
@@ -64,9 +64,7 @@ core_load_module_server <- function(id, common, modules, map, COMPONENT_MODULES,
       common$logger %>% writeLog(type="info", "The previous session has been loaded successfully")
     })
 
-
-
-    # load file if run_app function has a load_file parameter
+    # load file if run_shinyscholar has a load_file parameter
     load_file_path <- reactive({if (exists("load_file_path", envir = .GlobalEnv)) {
       get("load_file_path", envir = .GlobalEnv)
     } else {
@@ -75,12 +73,18 @@ core_load_module_server <- function(id, common, modules, map, COMPONENT_MODULES,
 
     load_on_start <- observe({
       req(load_file_path())
+      if (!file.exists(load_file_path())){
+        common$logger %>% writeLog(type = "error", "The specified load file cannot be found - please check the path")
+        load_on_start$destroy()
+        return()
+      }
       show_loading_modal("Loading previous session")
       load_session(readRDS(load_file_path()))
       close_loading_modal()
-      common$logger %>% writeLog(type="info", "The previous session has been loaded successfully")
+      common$logger %>% writeLog(type = "info", "The previous session has been loaded successfully")
       load_on_start$destroy()
     })
+
 
   }
 )}

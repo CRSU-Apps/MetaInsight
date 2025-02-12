@@ -24,11 +24,6 @@ core_save_module_ui <- function(id) {
 core_save_module_server <- function(id, common, modules, COMPONENTS, main_input) {
   moduleServer(id, function(input, output, session) {
 
-    observe({
-      common_size <- as.numeric(utils::object.size(common))
-      shinyjs::toggle("save_warning", condition = (common_size >= SAVE_SESSION_SIZE_MB_WARNING * MB))
-    })
-
     output$save_session <- downloadHandler(
       filename = function() {
         paste0("metainsight-session-", Sys.Date(), ".rds")
@@ -38,8 +33,9 @@ core_save_module_server <- function(id, common, modules, COMPONENTS, main_input)
           selected_module = sapply(COMPONENTS, function(x) main_input[[glue("{x}Sel")]], simplify = FALSE)
         )
 
-        # Store app version
+        # Store app version and name
         common$state$main$version <- as.character(packageVersion("metainsight"))
+        common$state$main$app <- "metainsight"
 
         # Ask each module to save whatever data it wants
         for (module_id in names(modules)) {
