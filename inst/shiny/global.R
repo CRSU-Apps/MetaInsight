@@ -1,7 +1,5 @@
 library(glue)
-library(gargoyle)
 library(metainsight)
-
 # shouldn't be necessary, but ..?
 library(magrittr)
 
