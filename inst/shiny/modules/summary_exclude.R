@@ -64,9 +64,14 @@ summary_exclude_module_server <- function(id, common, parent_session) {
                                      common$treatment_df$Label[common$treatment_df$Number == 1])
     })
 
-    observeEvent(list(debounce(input$exclusions, 1200),
-                      input$model,
-                      watch("setup_define")), {
+    # listen to all the triggers but only fire once they're static for 1200ms
+    exclusion_triggers <- reactive({
+      list(input$exclusions,
+           input$model,
+           watch("setup_define"))
+    }) %>% debounce(1200)
+
+    observeEvent(exclusion_triggers(), {
       # WARNING ####
       # Something if a whole treatment becomes excluded (SS)?
       req(common$bugsnet_all)
