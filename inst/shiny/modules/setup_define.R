@@ -48,6 +48,8 @@ setup_define_module_server <- function(id, common, parent_session) {
       return()
     }
 
+    show_loading_modal("Processing data...")
+
     # FUNCTION CALL ####
     result <- setup_define(common$data,
                           common$treatment_df,
@@ -77,6 +79,7 @@ setup_define_module_server <- function(id, common, parent_session) {
     # TRIGGER
     trigger("setup_define")
     show_table(parent_session)
+    close_loading_modal()
   })
 
   return(list(
