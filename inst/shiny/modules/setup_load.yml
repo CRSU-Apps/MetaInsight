@@ -1,5 +1,5 @@
 component: "setup"
-short_name: "Load"
+short_name: "Load data"
 long_name: "Load data"
 authors: "Rhiannon K. Owen, Naomi Bradbury, Yiqiao Xin, Tom Morris, Janion Nevill, Simon E. H. Smart"
 package: [dplyr, rio]

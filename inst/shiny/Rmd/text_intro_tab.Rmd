@@ -8,12 +8,12 @@ output: html_document
 *metainsight* (v0.0.1) includes two components, or steps of a possible workflow. Each component includes one or more modules, which are possible analyses for that step.
 
 **Components:**  
-**1.** *Load data*
+**1.** *Setup*
 - Load data
-- Update old file formats
+- Upgrade old file formats
 - Define data type
 
-**2.** *Data summary*
+**2.** *Summary*
 - Data characteristics
 - Study results
 - Network plot
