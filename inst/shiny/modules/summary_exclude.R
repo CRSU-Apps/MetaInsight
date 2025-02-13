@@ -19,7 +19,8 @@ summary_exclude_module_server <- function(id, common, parent_session) {
     observe({
       watch("setup_load")
       req(common$data)
-      updateCheckboxGroupInput(session, "exclusions", choices = unique(common$data$Study))
+      # selected = is required to restore selections on reload
+      updateCheckboxGroupInput(session, "exclusions", choices = unique(common$data$Study), selected = common$excluded_studies)
     })
 
     # Update which studies can be selected from the sensitivity analysis by taking the initial data subnetwork
@@ -67,7 +68,7 @@ summary_exclude_module_server <- function(id, common, parent_session) {
                       input$model,
                       watch("setup_define")), {
       # WARNING ####
-      # Something if a whole treatment becomes excluded?
+      # Something if a whole treatment becomes excluded (SS)?
       req(common$bugsnet_all)
 
       # FUNCTION CALL ####

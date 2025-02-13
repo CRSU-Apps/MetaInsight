@@ -16,8 +16,6 @@ summary_network_module_server <- function(id, common, parent_session) {
 
   on("summary_exclude", {
 
-    print("firing")
-
     # METADATA ####
       common$meta$summary_network$used <- TRUE
       common$meta$summary_network$label_all <- as.numeric(input$label_all)

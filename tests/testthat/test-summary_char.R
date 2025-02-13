@@ -28,6 +28,10 @@ test_that("summary_char produces a merged table that can be downloaded", {
   app$set_inputs("summary_exclude-exclusions" = c("Study01", "Study25"))
   app$set_inputs(summarySel = "summary_char")
   app$set_inputs(main = "Results")
+
+  # don't know why, but the downloads fail without this
+  common <- app$get_value(export = "common")
+
   result_table <- app$get_download("summary_char-download")
   df <- read.csv(result_table)
   expect_equal(ncol(df), 3) # names are now a column

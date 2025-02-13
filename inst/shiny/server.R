@@ -98,6 +98,13 @@ function(input, output, session) {
 
     label <- common$treatment_df
     dt <- common$non_covariate_data_all
+    # browser()
+
+    # reformat wide data
+    if ("T.1" %in% colnames(dt)){
+      dt <- WideToLong(dt, common$outcome)
+    }
+
     ntx <- nrow(label)
     dt$T <- factor(dt$T,
                    levels = c(1:ntx),

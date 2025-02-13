@@ -22,7 +22,7 @@ test_that("setup_upgrade returns errors for faulty inputs", {
 test_that("setup_define returns correctly structured objects", {
 
   expected_items <- c("wrangled_data", "treatment_df", "disconnected_indices", "main_connected_data",
-    "initial_non_covariate_data", "bugsnet_all", "freq_all")
+    "non_covariate_data_all", "bugsnet_all", "freq_all")
 
   result <- setup_define(mock_data, mock_treatment_df, "Continuous", "MD", "the Great")
   expect_type(result, "list")
@@ -32,7 +32,7 @@ test_that("setup_define returns correctly structured objects", {
   expect_s3_class(result$treatment_df, "data.frame")
   expect_length(result$disconnected_indices, 0)
   expect_s3_class(result$main_connected_data, "data.frame")
-  expect_s3_class(result$initial_non_covariate_data, "data.frame")
+  expect_s3_class(result$non_covariate_data_all, "data.frame")
   expect_s3_class(result$bugsnet_all, "data.frame")
   expect_type(result$freq_all, "list")
 })
@@ -40,7 +40,7 @@ test_that("setup_define returns correctly structured objects", {
 # this and the next are equivalent to the 3rd and 6th in test-load_data_page.R
 
 test_that("setup_define loads data into common correctly for continuous long data", {
-  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_setup_load")
+  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"))
   app$set_inputs(tabs = "setup")
   app$set_inputs(setupSel = "setup_load")
   app$upload_file("setup_load-data" = "data/Cont_long_continuous_cov.csv")
@@ -53,7 +53,7 @@ test_that("setup_define loads data into common correctly for continuous long dat
   expect_s3_class(common$treatment_df, "data.frame")
   expect_length(common$disconnected_indices, 0)
   expect_s3_class(common$main_connected_data, "data.frame")
-  expect_s3_class(common$initial_non_covariate_data, "data.frame")
+  expect_s3_class(common$non_covariate_data_all, "data.frame")
   expect_s3_class(common$bugsnet_all, "data.frame")
   expect_type(common$freq_all, "list")
   expect_equal(common$reference_treatment, "the Great")
@@ -63,7 +63,7 @@ test_that("setup_define loads data into common correctly for continuous long dat
 })
 
 test_that("setup_define loads data into common correctly for wide binary data", {
-  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_setup_load")
+  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"))
   app$set_inputs(tabs = "setup")
   app$set_inputs(setupSel = "setup_load")
   app$upload_file("setup_load-data" = system.file("extdata", "binary_wide.csv", package = "metainsight"))
@@ -77,7 +77,7 @@ test_that("setup_define loads data into common correctly for wide binary data", 
   expect_s3_class(common$treatment_df, "data.frame")
   expect_length(common$disconnected_indices, 0)
   expect_s3_class(common$main_connected_data, "data.frame")
-  expect_s3_class(common$initial_non_covariate_data, "data.frame")
+  expect_s3_class(common$non_covariate_data_all, "data.frame")
   expect_s3_class(common$bugsnet_all, "data.frame")
   expect_type(common$freq_all, "list")
   expect_equal(common$reference_treatment, "Placebo")
@@ -87,7 +87,7 @@ test_that("setup_define loads data into common correctly for wide binary data", 
 })
 
 test_that("setup_define logs errors when disconnected data is uploaded", {
-  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_setup_load")
+  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"))
   app$set_inputs(tabs = "setup")
   app$set_inputs(setupSel = "setup_load")
   app$upload_file("setup_load-data" = "data/continuous_long_disconnected.csv")
@@ -101,7 +101,7 @@ test_that("setup_define logs errors when disconnected data is uploaded", {
   expect_type(common$disconnected_indices, "integer")
   expect_gt(length(common$disconnected_indices), 0)
   expect_s3_class(common$main_connected_data, "data.frame")
-  expect_s3_class(common$initial_non_covariate_data, "data.frame")
+  expect_s3_class(common$non_covariate_data_all, "data.frame")
   expect_s3_class(common$bugsnet_all, "data.frame")
   expect_type(common$freq_all, "list")
   expect_equal(common$reference_treatment, "A")
@@ -116,7 +116,7 @@ test_that("setup_define logs errors when disconnected data is uploaded", {
 # From here on, refactored from test-load_data_page.R
 # These could be refactored further as there's no need to be E2E
 test_that("Data wrangled from default continuous long file", {
-  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_setup_load")
+  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"))
   app$set_inputs(tabs = "setup")
   app$set_inputs(setupSel = "setup_load")
   app$click("setup_load-run")
@@ -152,7 +152,7 @@ test_that("Data wrangled from default continuous long file", {
 })
 
 test_that("Continuous wide data wrangled with treatment IDs", {
-  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_setup_load")
+  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"))
   app$set_inputs(tabs = "setup")
   app$set_inputs(setupSel = "setup_load")
   app$upload_file("setup_load-data" = system.file("extdata", "continuous_wide.csv", package = "metainsight"))
@@ -198,7 +198,7 @@ test_that("Continuous wide data wrangled with treatment IDs", {
 
 
 test_that("Data wrangled from default binary long file", {
-  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_setup_load")
+  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"))
   app$set_inputs(tabs = "setup")
   app$set_inputs(setupSel = "setup_load")
   app$set_inputs("setup_load-outcome" = "Binary")
@@ -231,7 +231,7 @@ test_that("Data wrangled from default binary long file", {
 })
 
 test_that("Binary wide data wrangled with treatment IDs", {
-  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_setup_load")
+  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"))
   app$set_inputs(tabs = "setup")
   app$set_inputs(setupSel = "setup_load")
   app$set_inputs("setup_load-outcome" = "Binary")

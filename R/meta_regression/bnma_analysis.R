@@ -9,7 +9,7 @@
 #'  - 'Treat.order' = Vector of (unique) treatments, with the reference treatment first
 FormatForBnma <- function(br_data, treatment_ids, outcome_type, ref) {
   if (FindDataShape(br_data) == "wide") {
-    br_data2 <- as.data.frame(WideToLong(br_data, outcome_type=outcome_type))
+    br_data2 <- as.data.frame(WideToLong(br_data, outcome=outcome_type))
   } else if (FindDataShape(br_data) == "long") {
     br_data2 <- br_data
   } else {
@@ -19,10 +19,10 @@ FormatForBnma <- function(br_data, treatment_ids, outcome_type, ref) {
   #Use wrangled treatment names
   br_data3 <- br_data2
   br_data3$Treat <- treatment_ids$Label[match(br_data2$T, treatment_ids$Number)]
-  
+
   #Treatment order (put 'ref' first)
   Treat.order <- VectorWithItemFirst(vector = unique(br_data3$Treat), first_item = ref)
-  
+
   #Arm-level data
    if (outcome_type == "Binary") {
      ArmLevel <- dplyr::rename(br_data3, "Outcomes" = "R")
@@ -33,7 +33,7 @@ FormatForBnma <- function(br_data, treatment_ids, outcome_type, ref) {
    } else {
      stop("outcome_type has to be 'Continuous' or 'Binary'")
    }
-  
+
    return(list(ArmLevel = ArmLevel, Treat.order = Treat.order))
 }
 
@@ -55,7 +55,7 @@ BaselineRiskNetwork <- function(br_data, outcome_type, effects_type, cov_paramet
   } else if (cov_parameters != "exchangeable") {
     stop("cov_parameters must be 'shared', 'exchangeable', or 'unrelated'")
   }
-  
+
   if(outcome_type == "Binary") {
     network <- with(br_data, bnma::network.data(Outcomes = ArmLevel$Outcomes,
                                                 Study = ArmLevel$Study,
@@ -119,7 +119,7 @@ BaselineRiskRegression <- function(br_data, treatment_ids, outcome_type, ref,  e
 
 
 #' Function to collate model output to be used in the novel graph.
-#' 
+#'
 #' @param data Data frame from which model was calculated.
 #' @param treatment_ids Data frame containing treatment IDs (Number) and names (Label).
 #' @param model Completed model object after running BaselineRiskRegression().
@@ -143,39 +143,39 @@ BaselineRiskModelOutput <- function(data, treatment_ids, model, outcome_measure)
   reference <- unname(treatments[1])
   comparator_names <- unname(treatments[-1])
   model_summary <- summary(model)
-  
+
   data$Treatment <- treatment_ids$Label[match(data$T, treatment_ids$Number)]
-  
+
   #Create text for random/fixed effect
   model_text <- paste(model$network$type, "effect", sep = " ")
-  
+
   mean_covariate_value <- model$network$mx_bl
-  
+
   #Summary sentence of where covariate value has been set for results
   cov_value_sentence <- paste0("Value for baseline risk set at ", mean_covariate_value)
-  
+
   #Obtain slope(s), which are named b_bl[number]
   slope_indices <- grep("^b_bl\\[[0-9]+\\]$", rownames(model_summary$summary.samples$quantiles))
   slopes <- model_summary$summary.samples$quantiles[slope_indices, "50%"]
   names(slopes) <- treatments
-  
+
   #Obtain intercept(s), which are named d[number]
   intercept_indices <- grep("^d\\[[0-9]+\\]$", rownames(model_summary$summary.samples$quantiles))
   intercepts_centred <- model_summary$summary.samples$quantiles[intercept_indices, "50%"]
   intercepts <- intercepts_centred - slopes * mean_covariate_value
   names(intercepts) <- treatments
-  
+
   #Drop the reference treatment, which always has a slope and intercept of 0
   slopes <- slopes[-1]
   intercepts <- intercepts[-1]
-  
+
   #Convert bnma outcome type into MetaInsight language
   if (model$network$response == "binomial") {
     outcome_type <- "Binary"
   } else if (model$network$response == "normal") {
     outcome_type <- "Continuous"
   }
-  
+
   min_max <- FindCovariateRanges(
     data = data,
     treatment_ids = treatment_ids,
@@ -185,7 +185,7 @@ BaselineRiskModelOutput <- function(data, treatment_ids, model, outcome_measure)
     outcome_type = outcome_type,
     model = model
   )
-  
+
   return(list(mtcResults = model,
               covariate_value = mean_covariate_value,
               reference_name = reference,
@@ -205,7 +205,7 @@ BaselineRiskModelOutput <- function(data, treatment_ids, model, outcome_measure)
 
 
 #' An equivalent to {gemtc}'s relative.effect() function, for baseline risk in {bnma}.
-#' 
+#'
 #' @param model bnma model object created by BaselineRiskRegression().
 #' @param covariate_value The covariate value at which to calculate relative effects.
 #' @return Matrix with the median and 95% credible interval relative effect
@@ -223,13 +223,13 @@ BnmaRelativeEffects <- function(model, covariate_value) {
                                parameters,
                                value = TRUE)
   centred_covariate_value <- covariate_value - model$network$mx_bl
-  
+
   samples <- list()
   #The number of chains is always left at the default 3
   for (chain in 1:3) {
     samples[[chain]] <- model$samples[[chain]][, treatment_parameters] + centred_covariate_value * model$samples[[chain]][, covariate_parameters]
   }
-  
+
   relative_effects <- MCMCvis::MCMCsummary(samples)
   return(as.matrix(relative_effects[, c("50%", "2.5%", "97.5%")]))
 }
@@ -237,31 +237,31 @@ BnmaRelativeEffects <- function(model, covariate_value) {
 
 
 #' Get the outcome in the reference arm.
-#' 
+#'
 #' @param data Data in long format.
 #' @param treatment_ids Data frame containing treatment IDs and names in columns named 'Number' and 'Label' respectively.
 #' @param outcome_type "Binary" or "Continuous".
 #' @param observed "Observed" or "Imputed". See @return.
 #' @param model Model created by bnma::network.run(). Only required when @param observed == "Imputed". Defaults to NULL.
-#' 
+#'
 #' @return Vector of reference arm outcomes, named by study.
 #'   If a study contains the reference treatment then the value returned is the observed outcome in the reference arm.
 #'   If a study does not contain the reference treatment then the value returned is:
 #'     - NA if @param observed == "Observed";
 #'     - The median of the study-specific intercept parameter if @param observed == "Imputed".
 GetReferenceOutcome <- function(data, treatment_ids, outcome_type, observed, model = NULL){
-  
+
   if (!(observed %in% c("Observed", "Imputed"))) {
     stop("'observed' must be 'Observed' or 'Imputed'")
   }
-  
+
   if (observed == "Imputed" && is.null(model)) {
-    stop("A model must be provided when 'observed' == 'Imputed'") 
+    stop("A model must be provided when 'observed' == 'Imputed'")
   }
-  
+
   treatments <- treatment_ids$Label
   data$Treatment <- treatments[match(data$T, treatment_ids$Number)]
-  
+
   #Data with only control treatment rows kept
   data_control <- KeepOrDeleteControlTreatment(data = data, treatments = treatments, keep_delete = "keep")
   if (outcome_type == "Binary"){
@@ -282,7 +282,7 @@ GetReferenceOutcome <- function(data, treatment_ids, outcome_type, observed, mod
   }
   outcomes <- as.numeric(effect_sizes$yi)
   names(outcomes) <- unique(data_control$Study)
-  
+
   #If imputed values are requested and there are any missing outcomes then use the imputed outcomes
   if (observed == "Imputed" && any(is.na(outcomes))) {
     #Eta is the study-specific intercept parameter, which is often called mu in the literature. When a study does not contain the reference arm, {bnma} adds the reference arm to the data with missing values. Eta is then imputed for that study.
@@ -291,10 +291,10 @@ GetReferenceOutcome <- function(data, treatment_ids, outcome_type, observed, mod
 
     #The studies with missing outcomes
     na_studies <- names(outcomes[is.na(outcomes)])
-    
+
     outcomes[na_studies] <- imputed_outcomes[na_studies]
   }
-  
+
   return(outcomes)
 }
 
@@ -315,28 +315,28 @@ GetReferenceOutcome <- function(data, treatment_ids, outcome_type, observed, mod
 #' Each data frame in "regions" contains 11 rows creating a 10-polygon region.
 #' Each data frame in "intervals" contains a single row at the covariate value of that single contribution.
 CalculateConfidenceRegionsBnma <- function(model_output) {
-  
+
   mtc_results <- model_output$mtcResults
   treatments <- mtc_results$network$Treat.order
-  
+
   confidence_regions <- list()
   confidence_intervals <- list()
-  
+
   for (treatment_name in model_output$comparator_names) {
     parameter_name <- glue::glue("d[{which(treatment_name == unname(treatments))}]")
     cov_min <- model_output$covariate_min[treatment_name]
     cov_max <- model_output$covariate_max[treatment_name]
-    
+
     if (is.na(cov_min)) {
       confidence_intervals[[treatment_name]] <- data.frame(cov_value = NA, lower = NA, upper = NA)
       confidence_regions[[treatment_name]] <- data.frame(cov_value = NA, lower = NA, upper = NA)
     } else if (cov_min == cov_max) {
       interval <- .FindConfidenceIntervalBnma(mtc_results, cov_min, parameter_name)
       df <- data.frame(cov_value = cov_min, lower = interval["2.5%"], upper = interval["97.5%"])
-      
+
       # Strip out the row names
       rownames(df) <- NULL
-      
+
       # Add to regions list
       confidence_intervals[[treatment_name]] <- df
       confidence_regions[[treatment_name]] <- data.frame(cov_value = NA, lower = NA, upper = NA)
@@ -349,16 +349,16 @@ CalculateConfidenceRegionsBnma <- function(model_output) {
           data.frame(cov_value = cov_value, lower = interval["2.5%"], upper = interval["97.5%"])
         )
       }
-      
+
       # Strip out the row names
       rownames(df) <- NULL
-      
+
       # Add to regions list
       confidence_regions[[treatment_name]] <- df
       confidence_intervals[[treatment_name]] <- data.frame(cov_value = NA, lower = NA, upper = NA)
     }
   }
-  
+
   return(
     list(
       regions = confidence_regions,
@@ -403,14 +403,14 @@ BaselineRiskDicTable <- function(br_model) {
 #' @return A relative effects table in the same format as from gemtc.
 BaselineRiskRelativeEffectsTable <- function(median_ci_table) {
   #Entries in the input table are in the form "[lower_ci,median,upper_ci]" (no spaces)
-  
+
   #The dimensions of the (square) table
   dim_median <- nrow(median_ci_table)
   #Create matrices to store the lower_ci, median and upper_ci separately
   lower_ci <- matrix(nrow = dim_median, ncol = dim_median)
   median_br <- matrix(nrow = dim_median, ncol = dim_median)
   upper_ci <- matrix(nrow = dim_median, ncol = dim_median)
-  
+
   for (row in 1:dim_median) {
     for (col in 1:dim_median) {
       #Extract lower_ci, median and upper_ci
@@ -425,13 +425,13 @@ BaselineRiskRelativeEffectsTable <- function(median_ci_table) {
     upper_ci[row, col] <- interval[3]
     }
   }
-  
+
   #Paste into the format "median (lower_ci, upper_ci)"
   median_ci_table_new <- matrix(paste0(median_br, " (", lower_ci, ", ", upper_ci, ")"), nrow = dim_median)
   diag(median_ci_table_new) <- rownames(median_ci_table)
   rownames(median_ci_table_new) <- rownames(median_ci_table)
   colnames(median_ci_table_new) <- colnames(median_ci_table)
-  
+
   return(median_ci_table_new)
 }
 
@@ -447,11 +447,11 @@ BnmaSwitchRanking <- function(ranking_table) {
   rownames(new_table) <- rownames(ranking_table)
   return(as.matrix(dplyr::select(new_table, !"new_ranks")))
 }
-                            
+
 
 
 #' Get the parameters that are to be displayed in Gelman plots.
-#' 
+#'
 #' @param all_parameters Vector of monitored parameters from a bnma model.
 #' @param effects_type "fixed" or "random".
 #' @param cov_parameters "shared", "exchangeable", or "unrelated".
@@ -478,7 +478,7 @@ GetBnmaParameters <- function(all_parameters, effects_type, cov_parameters) {
 
 
 #' An equivalent to {gemtc}'s relative.effect() function, for baseline risk in {bnma}.
-#' 
+#'
 #' @param model bnma model object created by BaselineRiskRegression().
 #' @param covariate_value The covariate value at which to calculate relative effects.
 #' @return Matrix with the median and 95% credible interval relative effect
@@ -496,13 +496,13 @@ BnmaRelativeEffects <- function(model, covariate_value) {
                                parameters,
                                value = TRUE)
   centred_covariate_value <- covariate_value - model$network$mx_bl
-  
+
   samples <- list()
   #The number of chains is always left at the default 3
   for (chain in 1:3) {
     samples[[chain]] <- model$samples[[chain]][, treatment_parameters] + centred_covariate_value * model$samples[[chain]][, covariate_parameters]
   }
-  
+
   relative_effects <- MCMCvis::MCMCsummary(samples)
   return(as.matrix(relative_effects[, c("50%", "2.5%", "97.5%")]))
 }

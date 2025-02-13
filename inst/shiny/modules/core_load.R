@@ -49,7 +49,7 @@ core_load_module_server <- function(id, common, modules, map, COMPONENT_MODULES,
 
       for (component in names(common$state$main$selected_module)) {
         value <- common$state$main$selected_module[[component]]
-        updateRadioButtons(parent_session, glue("{component}Sel"), selected = value)
+        shinyWidgets::updateRadioGroupButtons(parent_session, glue("{component}Sel"), selected = value)
       }
 
       #restore results for used modules
@@ -64,7 +64,7 @@ core_load_module_server <- function(id, common, modules, map, COMPONENT_MODULES,
       common$logger %>% writeLog(type="info", "The previous session has been loaded successfully")
     })
 
-    # load file if run_shinyscholar has a load_file parameter
+    # load file if run_metainsight has a load_file parameter
     load_file_path <- reactive({if (exists("load_file_path", envir = .GlobalEnv)) {
       get("load_file_path", envir = .GlobalEnv)
     } else {

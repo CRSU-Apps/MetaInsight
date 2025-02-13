@@ -99,8 +99,12 @@ setup_load <- function(data_path = NULL, outcome, logger = NULL){
 #' - "message" = String describing any issues causing the data to be invalid
 ValidateUploadedData <- function(data, outcome, logger = NULL) {
   if (is.null(data) || nrow(data) == 0) {
-    logger |> writeLog(type = "error", "File is empty")
-    return()
+    return(
+      list(
+        valid = FALSE,
+        message = "File is empty"
+      )
+    )
   }
 
   if (outcome == "Continuous") {
@@ -108,8 +112,7 @@ ValidateUploadedData <- function(data, outcome, logger = NULL) {
   } else if (outcome == "Binary") {
     outcome_columns <- binary_column_names
   } else {
-    logger |> writeLog(type = "error", glue::glue("Outcome type {outcome} is not recognised. Please use 'Continuous' or 'Binary'"))
-    return()
+    stop(glue::glue("Outcome {outcome} is not recognised. Please use 'Continuous' or 'Binary'"))
   }
 
   required_columns <- outcome_columns %>%
@@ -505,6 +508,7 @@ CleanData <- function(data) {
 #' @param wide_data Data frame of wide format
 #' @param outcome Indicator whether outcome is 'Binary' or 'Continuous'
 #' @return Data frame in long format
+#' @export
 WideToLong <- function(wide_data, outcome) {
   # Specify columns that contain wide data
   if (outcome == "Continuous") {

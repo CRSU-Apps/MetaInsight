@@ -19,6 +19,10 @@ test_that("{shinytest2} recording: e2e_summary_network", {
   app$set_inputs("summary_exclude-exclusions" = c("Study01", "Study25"))
   app$set_inputs(summarySel = "summary_network")
   app$set_inputs(main = "Results")
+
+  # don't know why, but the downloads fail without this
+  common <- app$get_value(export = "common")
+
   pdf_all <- app$get_download("summary_network-download_all")
   pdf_sub <- app$get_download("summary_network-download_sub")
   expect_gt(file.info(pdf_all)$size, 1000)
