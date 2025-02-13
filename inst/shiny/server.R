@@ -154,6 +154,15 @@ function(input, output, session) {
     })
   })
 
+  ############################################# #
+  ### CODE TAB ####
+  ############################################# #
+
+  observe({
+    req(module())
+    module <- module()
+    core_code_module_server("core_code", common, module)
+  })
 
   ############################################# #
   ### RUN MODULE ON ENTER ####

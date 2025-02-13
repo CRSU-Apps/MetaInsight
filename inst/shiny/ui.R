@@ -141,7 +141,10 @@ tagList(
               'Module Guidance', icon = icon("circle-info", class = "mod_icon"),
               uiOutput('gtext_module')
             ),
-
+            tabPanel(
+              'Code',
+              core_code_module_ui("core_code")
+            ),
             tabPanel(
               'Save', icon = icon("floppy-disk", class = "save_icon"),
               core_save_module_ui("core_save")
