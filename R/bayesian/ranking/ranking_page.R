@@ -7,9 +7,6 @@ ranking_page_ui <- function(id) {
   ns <- NS(id)
   div(
     helpText(
-      "Please note: if you change the selections on the sidebar,
-      you will need to re-run the primary and/or sensitivity analysis from the 'Forest Plot' page.",
-      tags$br(),
       tags$strong("Please note it may take up to 5 minutes to load the results.", style = "color:#FF0000"),
       tags$br(),
       tags$strong(

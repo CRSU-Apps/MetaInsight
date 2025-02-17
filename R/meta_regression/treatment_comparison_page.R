@@ -6,18 +6,18 @@
 covariate_treatment_comparisons_page_ui <- function(id) {
   ns <- NS(id)
   div(
-    helpText("Please note: if you change the selections on the sidebar, you will need to re-run the analysis from the 'Forest Plot' page."),
-    p(
+    conditionalPanel(
+      condition = "output.package == 'gemtc'",
+      ns = ns,
       tags$strong(
-        conditionalPanel(condition = "output.package == 'gemtc'",
-                         ns = ns,
-                         p("This table only contains the estimates from the network meta analysis,
-        i.e. does not contain estimates from pairwise meta-analysis which only contains direct evidence.
-        If you would like to obtain the pairwise meta-analysis results, please run 4c-4. Nodesplit model")
+        p(
+          "This table only contains the estimates from the network meta analysis,
+          i.e. does not contain estimates from pairwise meta-analysis which only contains direct evidence.
+          If you would like to obtain the pairwise meta-analysis results, please run 4c-4. Nodesplit model"
         )
-      )
+      ),
+      br()
     ),
-    br(),
     invalid_model_panel_ui(id = ns("model_invalid")),
     p(tags$strong("Treatment effects for all studies: comparison of all treatment pairs.")),
     tableOutput(outputId = ns("baye_comparison")),

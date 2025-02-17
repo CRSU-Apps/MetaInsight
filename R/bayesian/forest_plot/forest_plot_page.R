@@ -27,14 +27,12 @@ bayesian_forest_plots_page_ui <- function(id) {
         width = 6,
         align = "center",
         p(tags$strong("Results for all studies")),
-        p("Please click the button below to run Bayesian analysis for all studies, and after each time when you change the radiobutton selections."),
         actionButton(inputId = ns("baye_do"), label = "Click here to run the main analysis for all studies")
       ),
       column(
         width = 6,
         align = "center",
         p(tags$strong("Results with selected studies excluded")),
-        p("Please click the button below to run each time after you finish the selection of studies, or change the radiobutton selections."),
         actionButton(inputId = ns("sub_do"), label = "Click here to run the sensitivity analysis")
       )
     ),

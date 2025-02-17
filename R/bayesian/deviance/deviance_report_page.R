@@ -19,11 +19,6 @@ deviance_report_page_ui <- function(id, item_names) {
   
   # Main UI
   div(
-    helpText(
-      "Please note: if you change the selections on the sidebar,
-      you will need to re-run the primary and/or sensitivity analysis from the 'Forest Plot' page."
-    ),
-    
     conditionalPanel(
       condition = "output.model_type != 'consistency'",
       ns = ns,

@@ -6,7 +6,6 @@
 bayesian_treatment_comparisons_page_ui <- function(id) {
   ns <- NS(id)
   div(
-    helpText("Please note: if you change the selections on the sidebar, you will need to re-run the primary and/or sensitivity analysis from the 'Forest Plot' page."),
     p(
       tags$strong(
         "In contrast to the 'comparison of all treatment pairs' tab in the frequentist NMA results,

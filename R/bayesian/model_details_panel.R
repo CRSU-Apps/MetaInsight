@@ -32,10 +32,6 @@ model_details_panel_ui <- function(id, item_names, page_numbering) {
   )
   
   ui = div(
-    helpText(
-      "Please note: if you change the selections on the sidebar,
-      you will need to re-run the primary and/or sensitivity analysis from the 'Forest Plot' page."
-    ),
     tabsetPanel(
       tabPanel(
         title = paste0(page_numbering$AddChild(), " Model codes"),
