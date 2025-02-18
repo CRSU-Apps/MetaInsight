@@ -33,6 +33,7 @@ ranking_forest_panel_ui <- function(id) {
 #' @param treat_order Reactive containing treatments ordered by SUCRA
 #' @param frequentist_react Reactive containing frequentist meta-analysis
 #' @param bugsnetdt_react Reactive containing bugsnet meta-analysis
+#' @param model_valid Reactive containing whether the model is valid.
 #' @param filename_prefix Prefix to add before file names.
 #' @param title_prefix Prefix to add before plot titles.
 ranking_forest_panel_server <- function(
@@ -41,14 +42,26 @@ ranking_forest_panel_server <- function(
     treat_order,
     frequentist_react,
     bugsnetdt_react,
+    model_valid,
     filename_prefix,
     title_prefix
     ) {
   moduleServer(id, function(input, output, session) {
+    
+    observe({
+      if (is.null(model_valid()) || !model_valid()) {
+        shinyjs::disable(id = "download_rank_forest")
+      } else {
+        shinyjs::enable(id = "download_rank_forest")
+      }
+    })
 
     # Forest plots for ranking panel (different style due to using 'boxes' in UI) CRN
     # All studies #
     output$gemtc2 <- renderPlot({
+      if (is.null(model_valid()) || !model_valid()) {
+        return()
+      }
       temp_dir <- tempdir()
       png(file.path(temp_dir, "forest.png"))  # initialise image
       gemtc::forest(model()$mtcRelEffects, digits = 3)
@@ -84,6 +97,9 @@ ranking_forest_panel_server <- function(
 
     # Text underneath
     output$relative_rank_text <- renderText({
+      if (is.null(model_valid()) || !model_valid()) {
+        return()
+      }
       relative_rank_text(model())
     })
   })
@@ -99,6 +115,7 @@ ranking_forest_panel_server <- function(
 #' @param model Reactive containing bayesian meta-analysis for all studies
 #' @param treat_order Reactive containing treatments ordered by SUCRA
 #' @param bugsnetdt_react Reactive containing bugsnet meta-analysis
+#' @param model_valid Reactive containing whether the model is valid.
 #' @param filename_prefix Prefix to add before file names.
 #' @param title_prefix Prefix to add before plot titles.
 ranking_forest_panel_baseline_risk_server <- function(
@@ -106,14 +123,26 @@ ranking_forest_panel_baseline_risk_server <- function(
     model,
     treat_order,
     bugsnetdt_react,
+    model_valid,
     filename_prefix,
     title_prefix
 ) {
   moduleServer(id, function(input, output, session) {
     
+    observe({
+      if (is.null(model_valid()) || !model_valid()) {
+        shinyjs::disable(id = "download_rank_forest")
+      } else {
+        shinyjs::enable(id = "download_rank_forest")
+      }
+    })
+    
     # Forest plots for ranking panel (different style due to using 'boxes' in UI) CRN
     # All studies #
     output$gemtc2 <- renderPlot({
+      if (is.null(model_valid()) || !model_valid()) {
+        return()
+      }
       temp_dir <- tempdir()
       png(file.path(temp_dir, "forest.png"))  # initialise image
       bnma::network.forest.plot(model(), only.reference.treatment = TRUE)

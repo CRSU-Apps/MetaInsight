@@ -7,9 +7,6 @@ ranking_page_ui <- function(id) {
   ns <- NS(id)
   div(
     helpText(
-      "Please note: if you change the selections on the sidebar,
-      you will need to re-run the primary and/or sensitivity analysis from the 'Forest Plot' page.",
-      tags$br(),
       tags$strong("Please note it may take up to 5 minutes to load the results.", style = "color:#FF0000"),
       tags$br(),
       tags$strong(
@@ -49,6 +46,8 @@ ranking_page_ui <- function(id) {
 #' @param freq_sub Reactive containing frequentist meta-analysis for the sensitivity analysis.
 #' @param bugsnetdt Reactive containing bugsnet meta-analysis.
 #' @param bugsnetdt_sub Reactive containing bugsnet meta-analysis for sensitivity analysis
+#' @param model_valid Reactive containing whether the full model is valid.
+#' @param model_sub_valid Reactive containing whether the sensitivity analysis model is valid.
 ranking_page_server <- function(
     id,
     model,
@@ -64,7 +63,9 @@ ranking_page_server <- function(
     freq_all,
     freq_sub,
     bugsnetdt,
-    bugsnetdt_sub
+    bugsnetdt_sub,
+    model_valid,
+    model_sub_valid
     ) {
   
   moduleServer(id, function(input, output, session) {
@@ -77,6 +78,7 @@ ranking_page_server <- function(
       rank_option = rank_option,
       frequentist = freq_all,
       bugsnetdt = bugsnetdt,
+      model_valid = model_valid,
       filename_prefix = "all_studies_",
       title_prefix = "All Studies"
     )
@@ -90,6 +92,7 @@ ranking_page_server <- function(
       rank_option = rank_option,
       frequentist = freq_sub,
       bugsnetdt = bugsnetdt_sub,
+      model_valid = model_sub_valid,
       filename_prefix = "filtered_studies_",
       title_prefix = "Filtered Studies"
     )

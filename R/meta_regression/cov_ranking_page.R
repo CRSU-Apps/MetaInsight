@@ -7,9 +7,6 @@ covariate_ranking_page_ui <- function(id) {
   ns <- NS(id)
   div(
     helpText(
-      "Please note: if you change the selections on the sidebar,
-      you will need to re-run the primary and/or sensitivity analysis from the 'Forest Plot' page.",
-      tags$br(),
       tags$strong("Please note it may take up to 5 minutes to load the results.", style = "color:#FF0000"),
       tags$br(),
       tags$strong(
@@ -41,6 +38,7 @@ covariate_ranking_page_ui <- function(id) {
 #' @param rank_option Reactive containing ranking option: "good" or "bad" depending on whether small values are desirable or not.
 #' @param freq_all Reactive containing frequentist meta-analysis.
 #' @param bugsnetdt Reactive containing bugsnet meta-analysis.
+#' @param model_valid Reactive containing whether the model is valid.
 #' @param cov_value Value of covariate for regression analysis.
 #' @param package "gemtc" or "bnma". Defaults to "gemtc".
 #' regression_text Annotation text for regression model plots.
@@ -55,7 +53,8 @@ covariate_ranking_page_server <- function(
     rank_option,
     freq_all,
     bugsnetdt,
-    cov_value,
+    model_valid,
+    cov_value = reactive({NA}),
     package = "gemtc"
     ) {
   
@@ -71,6 +70,7 @@ covariate_ranking_page_server <- function(
         rank_option = rank_option,
         frequentist = freq_all,
         bugsnetdt = bugsnetdt,
+        model_valid = model_valid,
         filename_prefix = "regression_",
         title_prefix = "Regression analysis",
         cov_value = cov_value
@@ -85,8 +85,10 @@ covariate_ranking_page_server <- function(
         rank_option = rank_option,
         frequentist = freq_all,
         bugsnetdt = bugsnetdt,
+        model_valid = model_valid,
         filename_prefix = "baseline_risk_",
         title_prefix = "Baseline risk",
+        cov_value = cov_value,
         package = package
       )
     } else{

@@ -37,6 +37,7 @@ regression_plot_panel_ui <- function(id) {
       position = "right",
       mainPanel = mainPanel(
         width = 9,
+        invalid_model_panel_ui(id = ns("model_invalid")),
         plotOutput(outputId = ns("regression_plot"), height = "800px"),
         div(
           radioButtons(
@@ -220,6 +221,16 @@ regression_plot_panel_server <- function(
     model_valid = reactiveVal(TRUE)) {
   shiny::moduleServer(id, function(input, output, session) {
     
+    invalid_model_panel_server(id = "model_invalid", model_valid = model_valid)
+    
+    observe({
+      if (is.null(model_valid()) || !model_valid()) {
+        shinyjs::disable(id = "download")
+      } else {
+        shinyjs::enable(id = "download")
+      }
+    })
+    
     # This will show a spinner while the model calculates, but will not render anything once it has completed
     output$spinner <- renderUI({
       model_output()
@@ -400,36 +411,28 @@ regression_plot_panel_server <- function(
     })
     
     output$regression_plot <- renderPlot({
-      tryCatch(
-        expr = {
-          if (!model_valid()) {
-            stop()
-          }
-          shinyjs::enable(id = "download")
-          CreateCompositeMetaRegressionPlot(
-            model_output = model_output(),
-            treatment_df = treatment_df(),
-            outcome_measure = outcome_measure(),
-            comparators = comparator_titles(),
-            contribution_matrix = contribution_matrix(),
-            contribution_type = input$absolute_relative_toggle,
-            credible_regions = credible_regions$result(),
-            include_covariate = input$covariate,
-            include_ghosts = input$ghosts,
-            include_extrapolation = input$extrapolate,
-            include_credible = input$credible,
-            credible_opacity = input$credible_opacity,
-            include_contributions = input$contributions != "None",
-            contribution_multiplier = input$circle_multipler,
-            legend_position = input$legend_position_dropdown
-          )
-        },
-        error = function(exptn) {
-          shinyjs::disable(id = "download")
-          ggplot(data = data.frame(text = c("Please rerun analysis"))) +
-            ggplot2::theme_void() +
-            ggplot2::geom_text(mapping = ggplot2::aes(label = text, x = 0, y = 0), size = 10)
-        }
+      if (is.null(model_valid()) ||!model_valid()) {
+        return()
+      }
+      
+      return(
+        CreateCompositeMetaRegressionPlot(
+          model_output = model_output(),
+          treatment_df = treatment_df(),
+          outcome_measure = outcome_measure(),
+          comparators = comparator_titles(),
+          contribution_matrix = contribution_matrix(),
+          contribution_type = input$absolute_relative_toggle,
+          credible_regions = credible_regions$result(),
+          include_covariate = input$covariate,
+          include_ghosts = input$ghosts,
+          include_extrapolation = input$extrapolate,
+          include_credible = input$credible,
+          credible_opacity = input$credible_opacity,
+          include_contributions = input$contributions != "None",
+          contribution_multiplier = input$circle_multipler,
+          legend_position = input$legend_position_dropdown
+        )
       )
     })
     

@@ -2,31 +2,23 @@
 #' Module UI for the deviance report page.
 #' 
 #' @param id ID of the module.
-#' @param item_names Vector of item names to be shown side-by-side in the page.
+#' @param item_names Vector of analysis titles to be shown side-by-side in the page.
 #' @return Div for the page
 deviance_report_page_ui <- function(id, item_names) {
   ns <- NS(id)
   
-  # Matrix containing plots for named items
-  index <- 0
+  # Matrix containing ui items:
+  # - Deviance plots
+  # - Invalid model notification
   divs <- sapply(
-    item_names,
-    function(name) {
-      div <- deviance_report_panel_ui(id = ns(as.character(index)), item_name = name)
-      # Update the index variable in the outer scope with <<-
-      # This updates the variable defined above the `sapply` call instead of creating a new variable with the same name within this inner function
-      index <<- index + 1
-      return(div)
+    1:length(item_names),
+    function(index) {
+      return(deviance_report_panel_ui(id = ns(glue::glue("deviance_{index}")), item_name = item_names[index]))
     }
   )
   
   # Main UI
   div(
-    helpText(
-      "Please note: if you change the selections on the sidebar,
-      you will need to re-run the primary and/or sensitivity analysis from the 'Forest Plot' page."
-    ),
-    
     conditionalPanel(
       condition = "output.model_type != 'consistency'",
       ns = ns,
@@ -42,11 +34,12 @@ deviance_report_page_ui <- function(id, item_names) {
       do.call(
         fluidRow,
         lapply(
-          item_names,
-          function(name) {
+          1:length(item_names),
+          function(index) {
             column(
               width = 12 / length(item_names),
-              divs["residual", name]
+              divs["model_invalid", index],
+              divs["residual", index]
             )
           }
         )
@@ -72,11 +65,11 @@ deviance_report_page_ui <- function(id, item_names) {
     do.call(
       fluidRow,
       lapply(
-        item_names,
-        function(name) {
+        1:length(item_names),
+        function(index) {
           column(
             width = 12 / length(item_names),
-            divs["per_arm", name]
+            divs["per_arm", index]
           )
         }
       )
@@ -100,11 +93,11 @@ deviance_report_page_ui <- function(id, item_names) {
     do.call(
       fluidRow,
       lapply(
-        item_names,
-        function(name) {
+        1:length(item_names),
+        function(index) {
           column(
             width = 12 / length(item_names),
-            divs["leverage", name]
+            divs["leverage", index]
           )
         }
       )
@@ -136,10 +129,11 @@ deviance_report_page_ui <- function(id, item_names) {
 
 #' Module server for the deviance report page.
 #' 
-#' @param id ID of the module
+#' @param id ID of the module.
 #' @param models Vector of reactives containing bayesian meta-analyses.
+#' @param models_valid Vector of reactives containing whether each model is valid.
 #' @param package "gemtc" (default) or "bnma".
-deviance_report_page_server <- function(id, models, package = "gemtc") {
+deviance_report_page_server <- function(id, models, models_valid, package = "gemtc") {
   moduleServer(id, function(input, output, session) {
 
     output$package <- reactive(paste0("{", package, "}"))
@@ -155,14 +149,10 @@ deviance_report_page_server <- function(id, models, package = "gemtc") {
     outputOptions(x = output, name = "model_type", suspendWhenHidden = FALSE)
     
     # Create server for each model
-    index <- 0
     sapply(
-      models,
-      function(mod) {
-        deviance_report_panel_server(id = as.character(index), model = mod, package = package)
-        # Update the index variable in the outer scope with <<-
-        # This updates the variable defined above the `sapply` call instead of creating a new variable with the same name within this inner function
-        index <<- index + 1
+      1:length(models),
+      function(index) {
+        deviance_report_panel_server(glue::glue("deviance_{index}"), model = models[[index]], model_valid = models_valid[[index]], package = package)
       }
     )
   })

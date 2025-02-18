@@ -46,10 +46,11 @@ ranking_network_panel_ui <- function(id) {
 
 #' Module server for the ranking network panel.
 #' 
-#' @param id ID of the module
-#' @param treat_order Reactive containing treatments ordered by SUCRA
-#' @param frequentist_react Reactive containing frequentist meta-analysis
-#' @param bugsnetdt_react Reactive containing bugsnet meta-analysis
+#' @param id ID of the module.
+#' @param treat_order Reactive containing treatments ordered by SUCRA.
+#' @param frequentist_react Reactive containing frequentist meta-analysis.
+#' @param bugsnetdt_react Reactive containing bugsnet meta-analysis.
+#' @param model_valid Reactive containing whether the model is valid.
 #' @param filename_prefix Prefix to add before file names.
 #' @param title_prefix Prefix to add beofre plot titles.
 ranking_network_panel_server <- function(
@@ -57,12 +58,24 @@ ranking_network_panel_server <- function(
     treat_order,
     frequentist_react,
     bugsnetdt_react,
+    model_valid,
     filename_prefix,
     title_prefix
     ) {
   moduleServer(id, function(input, output, session) {
     
+    observe({
+      if (is.null(model_valid()) || !model_valid()) {
+        shinyjs::disable(id = "download_network_rank")
+      } else {
+        shinyjs::enable(id = "download_network_rank")
+      }
+    })
+    
     output$netGraphStatic1_rank <- renderPlot({
+      if (is.null(model_valid()) || !model_valid()) {
+        return()
+      }
       if (input$networkstyle_rank == 'networkp1') {
         # Number of trials on line
         make_netgraph_rank(frequentist_react(), treat_order())
