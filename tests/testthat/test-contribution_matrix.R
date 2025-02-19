@@ -63,8 +63,8 @@ test_that("CalculateDirectness() correctly calculates directness", {
     ncol = length(treatment_ids$Label) - 1,
     byrow = TRUE
   )
-  row.names(expected_direct_contributions) <- studies
-  colnames(expected_direct_contributions) <- treatment_ids$Label[-1]
+  row.names(expected_directness) <- studies
+  colnames(expected_directness) <- treatment_ids$Label[-1]
   
   expect_equal(
     !!contributions$direct,
