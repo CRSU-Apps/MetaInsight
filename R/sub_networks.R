@@ -2,22 +2,25 @@
 #' Create a graph where the nodes are treatments and the links are studies comparing those treatments.
 #'
 #' @param data Data for which to create graph.
+#' @param exclude_link Vector containing the numbers of two treatments for which links will not be added. Defaults to NULL.
 #'
 #' @return Created igraph object.
-.CreateGraph <- function(data) {
+CreateGraph <- function(data, exclude_link = NULL) {
   # Find links
   links = c()
   for (study in unique(data$Study)) {
     study_treatments <- FindAllTreatments(data[data$Study == study, ])
     for (i in 1:(length(study_treatments) - 1)) {
       for (j in (i + 1):length(study_treatments)) {
-        links <- c(links, study_treatments[i], study_treatments[j])
+        if (!setequal(c(study_treatments[i], study_treatments[j]), exclude_link)) {
+          links <- c(links, study_treatments[i], study_treatments[j])
+        }
       }
     }
   }
   
   # Build network (Mathematical structure is called a 'graph')
-  return(igraph::graph(links, directed = FALSE))
+  return(igraph::make_graph(links, directed = FALSE))
 }
 
 #' Identify all of the disconnected subnetworks contained in the data.
@@ -51,7 +54,7 @@ IdentifySubNetworks <- function(data, treatment_df, reference_treatment_name = N
     reference_treatment <- new_reference_treatment
   }
 
-  graph <- .CreateGraph(data)
+  graph <- CreateGraph(data)
   components <- igraph::components(graph)
   membership <- components$membership
 

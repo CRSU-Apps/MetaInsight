@@ -1,0 +1,12 @@
+Study,T,N,R,covar.age
+StudyAB,A,113,39,40.9
+StudyAB,B,114,85,40.9
+StudyABC,A,66,36,41.3
+StudyABC,B,66,59,41.3
+StudyABC,C,66,53,41.3
+StudyAC,A,88,36,52.6
+StudyAC,C,89,78,52.6
+StudyAD,A,132,76,51.9
+StudyAD,D,134,126,51.9
+StudyBC,B,107,14,40.1
+StudyBC,C,106,22,40.1

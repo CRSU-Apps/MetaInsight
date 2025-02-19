@@ -51,16 +51,6 @@ regression_plot_panel_ui <- function(id) {
           ),
           downloadButton(outputId = ns("download")),
           style = "text-align: center;"
-        ),
-        h4(style = "text-align:left",
-           "This graph was adapted from",
-           tags$em("Graphs of study contributions and covariate distributions for network meta-regression"),
-           ", Sarah Donegan, Sofia Dias, Catrin Tudur-Smith, Valeria Marinho, Nicky J Welton, ",
-           tags$em("Res Syn Meth"),
-           ", 2018;",
-           tags$b(9),
-           ":243-260.",
-           tags$b(tags$a("DOI: 10.1002/jrsm.1292", href = "https://onlinelibrary.wiley.com/doi/10.1002/jrsm.1292", target = "_blank"))
         )
       ),
       sidebarPanel = sidebarPanel(
@@ -118,64 +108,33 @@ regression_plot_panel_ui <- function(id) {
           ),
           tooltip = "Extrapolate the regression lines beyond the range of the original data"
         ),
-        # Contributions
+        # Covariate values
         .AddRegressionOptionTooltip(
           selectInput(
-            inputId = ns("contributions"),
-            label = tags$html("Show contributions", tags$i(class="fa-regular fa-circle-question")),
+            inputId = ns("covariate_symbol"),
+            label = tags$html("Show covariate values as", tags$i(class="fa-regular fa-circle-question")),
             choices = c(
-              "None",
-              "Treatment Effect",
-              "Covariate Effect"
+              "Nothing",
+              "Circles",
+              "Crosses"
             ),
-            selected = "Treatment Effect",
+            selected = "Circles",
             selectize = FALSE
           ),
-          tooltip = "Show study contributions as circles, where a bigger circle represents a larger contribution"
+          tooltip = "Show covariate values using a symbol of your choice"
         ),
-        uiOutput(outputId = ns("contributions_missing")),
         
         div(
-          id = ns("contribution_options"),
-          radioButtons(
-            inputId = ns("absolute_relative_toggle"),
-            label = "Study circle sized by:",
-            choiceNames = list(
-              .AddRegressionOptionTooltip(
-                tags$html("% Contribution", tags$i(class="fa-regular fa-circle-question")),
-                tooltip = "Circles scaled by percentage contribution of each study to each parameter"
-              ),
-              .AddRegressionOptionTooltip(
-                tags$html("Absolute contribution", tags$i(class="fa-regular fa-circle-question")),
-                tooltip = "Circles scaled by absolute contribution of each study"
-              )
-            ),
-            choiceValues = c("percentage", "absolute")
-          ),
-          radioButtons(
-            inputId = ns("contribution_weight_toggle"),
-            label = "Contribution type:",
-            choiceNames = list(
-              .AddRegressionOptionTooltip(
-                tags$html("Contribution", tags$i(class="fa-regular fa-circle-question")),
-                tooltip = "Circles scaled by total contribution to the regression; both the weight and the value are taken into account"
-              ),
-              .AddRegressionOptionTooltip(
-                tags$html("Weight", tags$i(class="fa-regular fa-circle-question")),
-                tooltip = "Circles scaled by weight of each study; this does not take into account how much this study affects the regression"
-              )
-            ),
-            choiceValues = c("contribution", "weight")
-          ),
+          id = ns("circle_options"),
           .AddRegressionOptionTooltip(
             numericInput(
-              inputId = ns("circle_multipler"),
-              label = tags$html("Circle Size Multiplier", tags$i(class="fa-regular fa-circle-question")),
+              inputId = ns("covariate_symbol_size"),
+              label = tags$html("Covariate Symbol Size", tags$i(class="fa-regular fa-circle-question")),
               min = 0,
-              value = 1,
-              step = 0.5
+              value = 10,
+              step = 1
             ),
-            tooltip = "Multiply the size of every study contribution circle by this amount"
+            tooltip = "The size of every covariate value"
           )
         ),
         selectInput(
@@ -204,6 +163,7 @@ regression_plot_panel_ui <- function(id) {
 #' @param treatment_df Reactive containing data frame containing treatment IDs (Number), sanitised names (Label), and original names (RawLabel).
 #' @param outcome_type Reactive containing meta analysis outcome: "Continuous" or "Binary".
 #' @param outcome_measure Reactive type of outcome (OR, RR, RD, MD or SD).
+#' @param reference The reference treatment.
 #' @param package package used to create the model. Either "gemtc" (default) or "bnma".
 #' @param model_valid Reactive containing whether or not the model is valid to be displayed.
 regression_plot_panel_server <- function(
@@ -233,9 +193,9 @@ regression_plot_panel_server <- function(
       shinyjs::toggleState(id = "credible_opacity", condition = input$credible)
     })
     
-    # Disable contribution options when contributions not shown
+    # Disable circle options when circles not shown
     observe({
-      shinyjs::toggleState(id = "contribution_options", condition = input$contributions)
+      shinyjs::toggleState(id = "circle_options", condition = input$covariate_symbol != "Nothing")
     })
     
     mtc_summary <- reactive({
@@ -296,99 +256,23 @@ regression_plot_panel_server <- function(
       )
     })
     
-    contribution_matrix <- reactive({
-      tryCatch(
-        expr = {
-          if (package == "gemtc") {
-            cov_parameters <- model_output()$mtcResults$model$regressor$coefficient
-          } else if (package == "bnma") {
-            if (model_output()$mtcResults$network$baseline == "common") {
-              cov_parameters <- "shared"
-            } else if (model_output()$mtcResults$network$baseline == "independent") {
-              cov_parameters <- "unrelated"
-            } else {
-              cov_parameters <- model_output()$mtcResults$network$baseline
-            }
-          }
-
-          if (model_output()$model == "random") {
-            if (package == "gemtc") {
-              std_dev_d <- mtc_summary()$summaries$quantiles["sd.d", "50%"]
-            } else if (package == "bnma") {
-              std_dev_d <- mtc_summary()$summary.samples$quantiles["sd", "50%"]
-            }
-          } else {
-            std_dev_d <- NULL
-          }
-
-          if (cov_parameters == "exchangeable") {
-            if (package == "gemtc") {
-              std_dev_beta <- mtc_summary()$summaries$quantiles["reg.sd", "50%"]
-            } else if (package == "bnma") {
-              std_dev_beta <- mtc_summary()$summary.samples$quantiles["sdB", "50%"]
-            }
-          } else {
-            std_dev_beta <- NULL
-          }
-
-          long_data <- reactive({
-            if (FindDataShape(data()) == "wide") {
-              return(WideToLong(data(), outcome_type = outcome_type()))
-            } else {
-              return(data())
-            }
-          })
-          
-          CalculateContributions(
-            data = long_data(),
-            covariate_title = covariate_title(),
-            treatment_ids = treatment_df(),
-            outcome_type = outcome_type(),
-            outcome_measure = outcome_measure(),
-            effects_type = model_output()$model,
-            std_dev_d = std_dev_d,
-            std_dev_beta = std_dev_beta,
-            cov_parameters = cov_parameters,
-            study_or_arm_level = "study",
-            absolute_or_percentage = input$absolute_relative_toggle,
-            weight_or_contribution = input$contribution_weight_toggle,
-            treatment_or_covariate_effect = input$contributions
-          )
-        },
-        error = function(err) {
-          return(NULL)
-        }
-      )
-    })
-
-    contributions_failed <- reactiveVal(NULL)
-
-    # Show warning when contribution matrix fails to calculate
-    output$contributions_missing <- renderUI({
-      if (!is.null(contributions_failed())) {
-        return(
-          div(
-            glue::glue("Contribution matrix cannot be calculated"), tags$i(class="fa-regular fa-circle-question"),
-            style = "color: #ff0000;",
-            title = "This possibly indicates a poorly fitting model. Please check model diagnostics in the Result Details and Deviance Report tabs"
-          )
-        )
+    long_data <- reactive({
+      if (FindDataShape(data()) == "wide") {
+        return(WideToLong(data(), outcome_type = outcome_type()))
       } else {
-        return(NULL)
+        return(data())
       }
     })
-
-    # Reset failed contributions when model recalculated
-    observe({
-      contributions_failed(NULL)
-    }) |> bindEvent(model_output())
     
-    # Reset contributions to "None" and record failed contribution matrix calculation
-    observe({
-      if (!is.null(model_output()) && input$contributions != "None" && is.null(contribution_matrix())) {
-        updateSelectInput(inputId = "contributions", selected = "None")
-        contributions_failed(input$contributions)
-      }
+    directness_matrix <- reactive({
+      CalculateDirectness(
+        data = long_data(),
+        covariate_title = covariate_title(),
+        treatment_ids = treatment_df(),
+        outcome_type = outcome_type(),
+        outcome_measure = outcome_measure(),
+        effects_type = model_output()$model
+      )
     })
     
     comparator_titles <- reactive({
@@ -411,16 +295,15 @@ regression_plot_panel_server <- function(
             treatment_df = treatment_df(),
             outcome_measure = outcome_measure(),
             comparators = comparator_titles(),
-            contribution_matrix = contribution_matrix(),
-            contribution_type = input$absolute_relative_toggle,
+            directness_matrix = directness_matrix(),
             credible_regions = credible_regions$result(),
             include_covariate = input$covariate,
             include_ghosts = input$ghosts,
             include_extrapolation = input$extrapolate,
             include_credible = input$credible,
             credible_opacity = input$credible_opacity,
-            include_contributions = input$contributions != "None",
-            contribution_multiplier = input$circle_multipler,
+            covariate_symbol = input$covariate_symbol,
+            covariate_symbol_size = input$covariate_symbol_size,
             legend_position = input$legend_position_dropdown
           )
         },
@@ -450,16 +333,15 @@ regression_plot_panel_server <- function(
             treatment_df = treatment_df(),
             outcome_measure = outcome_measure(),
             comparators = comparator_titles(),
-            contribution_matrix = contribution_matrix(),
-            contribution_type = input$absolute_relative_toggle,
+            directness_matrix = directness_matrix(),
             credible_regions = credible_regions$result(),
             include_covariate = input$covariate,
             include_ghosts = input$ghosts,
             include_extrapolation = input$extrapolate,
             include_credible = input$credible,
             credible_opacity = input$credible_opacity,
-            include_contributions = input$contributions != "None",
-            contribution_multiplier = input$circle_multipler,
+            covariate_symbol = input$covariate_symbol,
+            covariate_symbol_size = input$covariate_symbol_size,
             legend_position = input$legend_position_dropdown
           )
         )

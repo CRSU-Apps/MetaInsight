@@ -5,8 +5,7 @@
 #' @param treatment_df Data frame containing treatment IDs (Number), sanitised names (Label), and original names (RawLabel).
 #' @param outcome_measure Outcome measure of analysis (OR, RR, RD, MD)
 #' @param comparators Vector of names of comparison treatments to plot in colour.
-#' @param contribution_matrix Contributions from function `CalculateContributions()`.
-#' @param contribution_type Name of the type of contribution, used to calculate sizes for the study contribution circles.
+#' @param directness_matrix Contributions from function `CalculateDirectness()`.
 #' @param credible_regions List of credible region data frames from function `CalculateCredibleRegions()`.
 #' @param include_covariate TRUE if the value of the covariate is to be plotted as a vertical line. Defaults to FALSE.
 #' @param include_ghosts TRUE if all other comparator studies should be plotted in grey in the background of the plot. Defaults to FALSE.
@@ -15,8 +14,8 @@
 #' @param include_credible TRUE if the credible regions should be plotted for the specified comparators. These will be partially transparent regions.
 #' Defaults to FALSE.
 #' @param credible_opacity The opacity of the credible regions. Can be any value between 0 and 1, inclusive. Defaults to 0.2.
-#' @param include_contributions TRUE if the contributions should be plotted as a circle for each study. Defaults to TRUE.
-#' @param contribution_multiplier Multiplication factor by which to scale the sizes of the study contribution circles. Defaults to 1.0.
+#' @param covariate_symbol The selected symbol for displaying covariates. Defaults to "Circles".
+#' @param covariate_symbol_size Size of the covariate symbols. Defaults to 10.
 #' @param legend_position String informing the position of the legend. Acceptable values are:
 #' - "BR" - Bottom-right of the plot area
 #' - "BL" - Bottom-left of the plot area
@@ -30,18 +29,17 @@ CreateMainRegressionPlot <- function(
     treatment_df,
     outcome_measure,
     comparators,
-    contribution_matrix,
-    contribution_type,
+    directness_matrix,
     credible_regions,
     include_covariate = FALSE,
     include_ghosts = FALSE,
     include_extrapolation = FALSE,
     include_credible = FALSE,
     credible_opacity = 0.2,
-    include_contributions = TRUE,
-    contribution_multiplier = 1.0,
+    covariate_symbol = "Circles",
+    covariate_symbol_size = 10,
     legend_position = "BR") {
-  
+
   reference = model_output$reference_name
   comparators <- sort(comparators)
   all_comparators <- model_output$comparator_names
@@ -60,20 +58,20 @@ CreateMainRegressionPlot <- function(
   if (include_ghosts) {
     ghosts <-  all_comparators[!all_comparators %in% comparators]
     
-    if (include_contributions) {
-      plot <- .PlotDirectContributionCircles(plot, model_output, treatment_df, reference, ghosts, contribution_matrix, contribution_type, contribution_multiplier, ghosted = TRUE)
+    if (covariate_symbol != "Nothing") {
+      plot <- .PlotDirectCovariateCircles(plot, model_output, treatment_df, reference, ghosts, directness_matrix, covariate_symbol, covariate_symbol_size, ghosted = TRUE)
     }
-    plot <- .PlotRegressionLines(plot, model_output, contribution_matrix, treatment_df, reference, ghosts, include_extrapolation, ghosted = TRUE)
+    plot <- .PlotRegressionLines(plot, model_output, directness_matrix, treatment_df, reference, ghosts, include_extrapolation, ghosted = TRUE)
   }
   
   if (length(comparators) > 0) {
     if (include_credible) {
       plot <- .PlotCredibleRegions(plot, credible_regions, comparators, credible_opacity)
     }
-    if (include_contributions) {
-      plot <- .PlotDirectContributionCircles(plot, model_output, treatment_df, reference, comparators, contribution_matrix, contribution_type, contribution_multiplier)
+    if (covariate_symbol != "Nothing") {
+      plot <- .PlotDirectCovariateCircles(plot, model_output, treatment_df, reference, comparators, directness_matrix, covariate_symbol, covariate_symbol_size)
     }
-    plot <- .PlotRegressionLines(plot, model_output, contribution_matrix, treatment_df, reference, comparators, include_extrapolation)
+    plot <- .PlotRegressionLines(plot, model_output, directness_matrix, treatment_df, reference, comparators, include_extrapolation)
   }
   
   # Plot a vertical line at the covariate value
@@ -103,6 +101,7 @@ CreateMainRegressionPlot <- function(
 #'
 #' @return Created ggplot2 object.
 .SetupMainRegressionPlot <- function(reference, comparators, outcome_measure, include_ghosts, credible_opacity, legend_position) {
+
   # Set up basic plot
   plot <- ggplot() +
     theme_minimal() +
@@ -153,9 +152,11 @@ CreateMainRegressionPlot <- function(
 #' @param plot object to which to add elements.
 #' @param credible_regions List of credible region data frames from function `CalculateCredibleRegions()`.
 #' @param comparators Vector of names of comparison treatments to plot.
-#'
+#' @param credible_opacity The opacity of the credible regions. Can be any value between 0 and 1, inclusive. Defaults to 0.2.
+#' 
 #' @return The modified ggplot2 object.
 .PlotCredibleRegions <- function(plot, credible_regions, comparators, credible_opacity) {
+
   regions <- .FormatRegressionCredibleRegion(credible_regions$regions, comparators)
   intervals <- .FormatRegressionCredibleRegion(credible_regions$intervals, comparators)
   
@@ -193,14 +194,15 @@ CreateMainRegressionPlot <- function(
 #' @param treatment_df Data frame containing treatment IDs (Number), sanitised names (Label), and original names (RawLabel).
 #' @param reference Name of reference treatment.
 #' @param comparators Vector of names of comparison treatments to plot.
-#' @param contribution_matrix Contributions from function `CalculateContributions()`.
-#' @param contribution_type Name of the type of contribution, used to calculate sizes for the study contribution circles.
-#' @param contribution_multiplier Multiplication factor by which to scale the sizes of the study contribution circles. Defaults to 1.0.
+#' @param directness_matrix Contributions from function `CalculateDirectness()`.
+#' @param covariate_symbol The selected symbol for displaying covariates. Defaults to "Circles".
+#' @param covariate_symbol_size Size of the covariate symbols. Defaults to 10.
 #' @param ghosted TRUE if studies should be plotted in grey. Defaults to FALSE.
 #'
 #' @return The modified ggplot2 object.
-.PlotDirectContributionCircles <- function(plot, model_output, treatment_df, reference, comparators, contribution_matrix, contribution_type, contribution_multiplier, ghosted = FALSE) {
-  contributions = .FindDirectRegressionContributions(model_output, reference, comparators, contribution_matrix, contribution_type)
+.PlotDirectCovariateCircles <- function(plot, model_output, treatment_df, reference, comparators, directness_matrix, covariate_symbol, covariate_symbol_size, ghosted = FALSE) {
+
+  contributions = .FindDirectRegressionContributions(model_output, reference, comparators, directness_matrix)
   
   if (nrow(contributions) == 0) {
     return(plot)
@@ -212,6 +214,10 @@ CreateMainRegressionPlot <- function(
     contributions$Treatment <- rep(regression_ghost_name, length(contributions$Treatment))
   }
   
+  shape <- switch(covariate_symbol,
+                  "Circles" = "circle open",
+                  "Crosses" = "cross")
+  
   plot <- plot +
     geom_point(
       data = contributions,
@@ -221,8 +227,8 @@ CreateMainRegressionPlot <- function(
         color = Treatment,
         stroke = 1.5
       ),
-      shape = 1,
-      size = contributions$contribution * contribution_multiplier,
+      shape = shape,
+      size = covariate_symbol_size,
       show.legend = FALSE
     )
   
@@ -233,7 +239,7 @@ CreateMainRegressionPlot <- function(
 #'
 #' @param plot ggplot2 object to which to add elements.
 #' @param model_output GEMTC model results found by calling `CovariateModelOutput()`.
-#' @param contribution_matrix Contributions from function `CalculateContributions()`.
+#' @param directness_matrix Contributions from function `CalculateDirectness()`.
 #' @param treatment_df Data frame containing treatment IDs (Number), sanitised names (Label), and original names (RawLabel).
 #' @param reference Name of reference treatment.
 #' @param comparators Vector of names of comparison treatments to plot.
@@ -242,7 +248,8 @@ CreateMainRegressionPlot <- function(
 #' @param ghosted TRUE if studies should be plotted in grey. Defaults to FALSE.
 #'
 #' @return The modified ggplot2 object.
-.PlotRegressionLines <- function(plot, model_output, contribution_matrix, treatment_df, reference, comparators, extrapolate, ghosted = FALSE) {
+.PlotRegressionLines <- function(plot, model_output, directness_matrix, treatment_df, reference, comparators, extrapolate, ghosted = FALSE) {
+
   # Create data frame
   lines = data.frame(
     Treatment = sapply(comparators, function(comparator) { treatment_df$RawLabel[treatment_df$Label == comparator] }),
@@ -295,35 +302,35 @@ CreateMainRegressionPlot <- function(
 #' @param model_output GEMTC model results found by calling `CovariateModelOutput()`.
 #' @param reference Name of reference treatment.
 #' @param comparator Name of comparison treatment for which to find the contributions.
-#' @param contribution_matrix Contributions from function `CalculateContributions()`.
-#' @param contribution_type Name of the type of contribution to find.
+#' @param directness_matrix Contributions from function `CalculateDirectness()`.
 #'
 #' @return Data frame containing contribution details. Each row represents a study contributing to a given treatment. Columns are:
 #' - Treatment: The treatment for which this contribution relates.
 #' - covariate_value: Value of the covariate for this study.
 #' - relative_effect Relative effect for this study.
 #' - contribution: Size of contribution for this study.
-.FindDirectRegressionContributions <- function(model_output, reference, comparator, contribution_matrix, contribution_type) {
+.FindDirectRegressionContributions <- function(model_output, reference, comparator, directness_matrix) {
+
   treatments <- c()
   covariate_values <- c()
   relative_effects <- c()
   contributions <- c()
-  
+
   for (treatment in comparator) {
-    for (study in row.names(contribution_matrix$direct)) {
-      direct_contribution <- contribution_matrix$direct[study, treatment]
+    for (study in row.names(directness_matrix$direct)) {
+      contribution <- directness_matrix$direct[study, treatment]
       
-      if (is.na(direct_contribution)) {
+      if (is.na(contribution) | contribution == FALSE) {
         next
       }
       
       treatments <- c(treatments, treatment)
-      covariate_values <- c(covariate_values, contribution_matrix$covariate_value[study])
-      relative_effects <- c(relative_effects, contribution_matrix$relative_effect[study, treatment])
-      contributions <- c(contributions, direct_contribution)
+      covariate_values <- c(covariate_values, directness_matrix$covariate_value[study])
+      relative_effects <- c(relative_effects, directness_matrix$relative_effect[study, treatment])
+      contributions <- c(contributions, contribution)
     }
   }
-  
+
   return(
     data.frame(
       Treatment = treatments,
@@ -345,7 +352,7 @@ CreateMainRegressionPlot <- function(
 #' - y_min Relative effect of the lower end of this interval
 #' - y_max: Relative effect of the upper end of this interval
 .FormatRegressionCredibleRegion <- function(credible_regions, comparator) {
-  
+
   treatments <- c()
   covariate_values <- c()
   y_mins <- c()

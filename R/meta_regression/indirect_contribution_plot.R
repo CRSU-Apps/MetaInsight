@@ -3,29 +3,29 @@
 #' @param model_output GEMTC model results found by calling `CovariateModelOutput()`.
 #' @param treatment_df Data frame containing treatment IDs (Number), sanitised names (Label), and original names (RawLabel).
 #' @param comparators Vector of names of comparison treatments to plot in colour.
-#' @param contribution_matrix Contributions from function `CalculateContributions()`.
-#' @param contribution_type Type of contribution, used to calculate sizes for the study contribution circles.
+#' @param directness_matrix Contributions from function `CalculateDirectness()`.
 #' @param include_covariate TRUE if the value of the covariate is to be plotted as a vertical line. Defaults to FALSE.
 #' @param include_ghosts TRUE if all other comparator studies should be plotted in grey in the background of the plot. Defaults to FALSE.
-#' @param contribution_multiplier Factor by which to scale the sizes of the study contribution circles. Defaults to 1.0.
+#' @param covariate_symbol The selected symbol for displaying covariates. Defaults to "Circles".
+#' @param covariate_symbol_size Size of the covariate symbols. Defaults to 10.
 #'
 #' @return Created ggplot2 object.
-CreateIndirectContributionPlot <- function(
+CreateIndirectCovariatePlot <- function(
     model_output,
     treatment_df,
     comparators,
-    contribution_matrix,
-    contribution_type,
+    directness_matrix,
     include_covariate = FALSE,
     include_ghosts = FALSE,
-    contribution_multiplier = 1.0) {
-  
+    covariate_symbol = "Circles",
+    covariate_symbol_size = 10) {
+
   reference = model_output$reference_name
   comparators <- sort(comparators)
   all_comparators <- model_output$comparator_names
   
   # Set up basic plot
-  plot <- .SetupIndirectContributionPlot(
+  plot <- .SetupIndirectCovariatePlot(
     reference = treatment_df$RawLabel[treatment_df$Label == reference],
     comparators = comparators,
     include_ghosts = include_ghosts && length(comparators) < length(all_comparators)
@@ -34,11 +34,11 @@ CreateIndirectContributionPlot <- function(
   # Plot the ghost regression lines for the comparators
   if (include_ghosts) {
     ghosts <-  all_comparators[!all_comparators %in% comparators]
-    plot <- .PlotIndirectContributionCircles(plot, model_output, treatment_df, reference, ghosts, contribution_matrix, contribution_type, contribution_multiplier, ghosted = TRUE)
+    plot <- .PlotIndirectCovariateCircles(plot, model_output, treatment_df, reference, ghosts, directness_matrix, covariate_symbol, covariate_symbol_size, ghosted = TRUE)
   }
   
   if (length(comparators) > 0) {
-    plot <- .PlotIndirectContributionCircles(plot, model_output, treatment_df, reference, comparators, contribution_matrix, contribution_type, contribution_multiplier)
+    plot <- .PlotIndirectCovariateCircles(plot, model_output, treatment_df, reference, comparators, directness_matrix, covariate_symbol, covariate_symbol_size)
   }
   
   if (include_covariate) {
@@ -59,7 +59,7 @@ CreateIndirectContributionPlot <- function(
 #' @param include_ghosts TRUE if all otherc omparator studies should be plotted in grey in the background of the plot. Defaults to FALSE.
 #'
 #' @return Created ggplot2 object.
-.SetupIndirectContributionPlot <- function(reference, comparators, include_ghosts) {
+.SetupIndirectCovariatePlot <- function(reference, comparators, include_ghosts) {
   # Set up basic plot
   plot <- ggplot() +
     theme_minimal() +
@@ -92,14 +92,15 @@ CreateIndirectContributionPlot <- function(
 #' @param treatment_df Data frame containing treatment IDs (Number), sanitised names (Label), and original names (RawLabel).
 #' @param reference Name of reference treatment.
 #' @param comparators Vector of names of comparison treatments to plot.
-#' @param contribution_type Type of contribution, used to calculate sizes for the study contribution circles.
-#' @param contribution_multiplier Factor by which to scale the sizes of the study contribution circles. Defaults to 1.0.
+#' @param directness_matrix Contributions from function `CalculateDirectness()`.
+#' @param covariate_symbol The selected symbol for displaying covariates. Defaults to "Circles".
+#' @param covariate_symbol_size Size of the covariate symbols. Defaults to 10.
 #' @param ghosted TRUE if studies should be plotted in grey. Defaults to FALSE.
 #'
 #' @return The modified ggplot2 object.
-.PlotIndirectContributionCircles <- function(plot, model_output, treatment_df, reference, comparators, contribution_matrix, contribution_type, contribution_multiplier, ghosted = FALSE) {
-  contributions = .FindIndirectRegressionContributions(model_output, reference, comparators, contribution_matrix, contribution_type)
-  
+.PlotIndirectCovariateCircles <- function(plot, model_output, treatment_df, reference, comparators, directness_matrix, covariate_symbol, covariate_symbol_size, ghosted = FALSE) {
+  contributions = .FindIndirectRegressionCovariates(model_output, reference, comparators, directness_matrix)
+
   if (nrow(contributions) == 0) {
     return(plot)
   }
@@ -110,19 +111,27 @@ CreateIndirectContributionPlot <- function(
     contributions$Treatment <- rep(regression_ghost_name, length(contributions$Treatment))
   }
   
+  #Give each circle a distinct y-value so they can all be seen
+  contributions$y_val <- seq(from = -1, to = 1, length.out = length(contributions[[1]]))
+  
+  shape <- switch(covariate_symbol,
+                  "Circles" = "circle open",
+                  "Crosses" = "cross")
+  
   plot <- plot +
     geom_point(
       data = contributions,
       mapping = aes(
         x = covariate_value,
-        y = 0,
+        y = y_val,
         color = Treatment,
-        stroke = 1.5
+        stroke = 1.5,
       ),
-      shape = 1,
-      size = contributions$contribution * contribution_multiplier,
-      show.legend = FALSE
-    )
+      shape = shape,
+      size = covariate_symbol_size,
+      show.legend = FALSE,
+    ) +
+    ylim(-10, 10)
   
   return(plot)
 }
@@ -132,31 +141,31 @@ CreateIndirectContributionPlot <- function(
 #' @param model_output GEMTC model results found by calling `CovariateModelOutput()`.
 #' @param reference Name of reference treatment.
 #' @param comparator Name of comparison treatment for which to find the contributions.
-#' @param contribution_type Type of contribution to find.
+#' @param directness_matrix Contributions from function `CalculateDirectness()`.
 #'
 #' @return Data frame containing contribution details. Each row represents a study contributing to a given treatment. Columns are:
 #' - Treatment: The treatment for which this contribution relates.
 #' - covariate_value: Value of the covariate for this study.
 #' - contribution: Size of contribution for this study.
-.FindIndirectRegressionContributions <- function(model_output, reference, comparator, contribution_matrix, contribution_type) {
+.FindIndirectRegressionCovariates <- function(model_output, reference, comparator, directness_matrix) {
   treatments <- c()
   covariate_values <- c()
   contributions <- c()
   
   for (treatment in comparator) {
-    for (study in row.names(contribution_matrix$indirect)) {
-      indirect_contribution <- contribution_matrix$indirect[study, treatment]
+    for (study in row.names(directness_matrix$direct)) {
+      contribution <- directness_matrix$direct[study, treatment]
       
-      if (is.na(indirect_contribution)) {
+      if (is.na(contribution) | contribution == TRUE) {
         next
       }
       
       treatments <- c(treatments, treatment)
-      covariate_values <- c(covariate_values, contribution_matrix$covariate_value[study])
-      contributions <- c(contributions, indirect_contribution)
+      covariate_values <- c(covariate_values, directness_matrix$covariate_value[study])
+      contributions <- c(contributions, contribution)
     }
   }
-  
+
   return(
     data.frame(
       Treatment = treatments,
