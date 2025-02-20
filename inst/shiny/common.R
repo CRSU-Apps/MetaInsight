@@ -9,7 +9,8 @@ common_class <- R6::R6Class(
    outcome = NULL,
    treatment_df = NULL,
    outcome_measure = NULL,
-   reference_treatment = NULL,
+   reference_treatment_all = NULL,
+   reference_treatment_sub = NULL,
    disconnected_indices = NULL,
    main_connected_data = NULL,
    non_covariate_data_all = NULL,
@@ -33,7 +34,8 @@ common_class <- R6::R6Class(
      self$outcome <- NULL
      self$treatment_df <- NULL
      self$outcome_measure <- NULL
-     self$reference_treatment <- NULL
+     self$reference_treatment_all <- NULL
+     self$reference_treatment_sub <- NULL
      self$disconnected_indices <- NULL
      self$main_connected_data <- NULL
      self$non_covariate_data_all <- NULL

@@ -65,7 +65,7 @@ setup_define_module_server <- function(id, common, parent_session) {
     common$non_covariate_data_all <- result$non_covariate_data_all
     common$bugsnet_all <- result$bugsnet_all
     common$freq_all <- result$freq_all
-    common$reference_treatment <- input$reference_treatment
+    common$reference_treatment_all <- input$reference_treatment
     common$treatment_df <- result$treatment_df
     common$outcome_measure <- input$outcome_measure
     common$logger %>% writeLog(type = "complete", "Data has been defined")
