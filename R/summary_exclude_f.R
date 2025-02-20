@@ -51,11 +51,8 @@ summary_exclude <- function(non_covariate_data, treatment_df, reference_treatmen
 
   subsetted_data <- non_covariate_data[!non_covariate_data$Study %in% exclusions,]
 
-  # I find this baffling - why not just add the IDs once when data is loaded (SS)?
   dewrangled_data_sub <- ReinstateTreatmentIds(subsetted_data, treatment_df)
   treatments_sub <- FindAllTreatments(dewrangled_data_sub)
-  # treatments_sub <- unique(dewrangled_data_sub$T)
-  # browser()
 
   treatment_df_sub <- CreateTreatmentIds(treatments_sub, reference_treatment)
   data_sub <- ReplaceTreatmentIds(dewrangled_data_sub, treatment_df_sub)
@@ -71,7 +68,7 @@ summary_exclude <- function(non_covariate_data, treatment_df, reference_treatmen
                           treatment_df_sub,
                           outcome_measure,
                           model_type,
-                          treatment_df_sub$Label[treatment_df_sub$Number == 1]) # this should be handled inside the function (SS)
+                          reference_treatment)
               )
 
   list(bugsnet_sub = bugsnet_sub,
