@@ -58,6 +58,8 @@ summary_exclude <- function(non_covariate_data, treatment_df, reference_treatmen
   data_sub <- ReplaceTreatmentIds(dewrangled_data_sub, treatment_df_sub)
   non_covariate_data_sub <- RemoveCovariates(data_sub)
 
+  reference_treatment_sub <- treatment_df_sub$Label[treatment_df_sub$Number == 1]
+
   bugsnet_sub <- bugsnetdata(non_covariate_data_sub,
                              outcome,
                              treatment_df_sub)
@@ -68,9 +70,10 @@ summary_exclude <- function(non_covariate_data, treatment_df, reference_treatmen
                           treatment_df_sub,
                           outcome_measure,
                           model_type,
-                          reference_treatment)
+                          reference_treatment_sub)
               )
 
   list(bugsnet_sub = bugsnet_sub,
-       freq_sub = freq_sub)
+       freq_sub = freq_sub,
+       reference_treatment_sub = reference_treatment_sub)
 }

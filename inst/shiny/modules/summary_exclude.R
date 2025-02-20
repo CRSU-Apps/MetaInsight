@@ -74,9 +74,6 @@ summary_exclude_module_server <- function(id, common, parent_session) {
     observeEvent(exclusion_triggers(), {
       req(common$bugsnet_all)
 
-      # WARNING ####
-      # Something if a whole treatment becomes excluded (SS)?
-
       # FUNCTION CALL ####
       result <- summary_exclude(common$main_connected_data,
                                common$treatment_df,
@@ -91,6 +88,15 @@ summary_exclude_module_server <- function(id, common, parent_session) {
       common$excluded_studies <- input$exclusions
       common$bugsnet_sub <- result$bugsnet_sub
       common$freq_sub <- result$freq_sub
+      common$reference_treatment_sub <- result$reference_treatment_sub
+
+      if (common$reference_treatment_sub != common$reference_treatment_all){
+        common$logger %>% writeLog(type = "info",
+                                   glue::glue("The reference treatment for the sensitivity analysis
+                                              has been changed to {common$reference_treatment_sub}
+                                              because the {common$reference_treatment_all} treatment
+                                              has been removed from the network of sensitivity analysis."))
+      }
 
       # METADATA ####
       common$meta$summary_exclude$used <- TRUE
@@ -98,6 +104,8 @@ summary_exclude_module_server <- function(id, common, parent_session) {
       common$meta$summary_exclude$model <- input$model
 
       # TRIGGER
+      # required for testing to wait until the debounce has triggered
+      shinyjs::runjs("Shiny.setInputValue('summary_exclude-complete', 'complete');")
       trigger("summary_exclude")
     })
 
