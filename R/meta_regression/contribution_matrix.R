@@ -38,7 +38,7 @@ CalculateDirectness <- function(
   treatments <- treatment_ids$Label[treatment_ids$Label != reference]
   studies <- unique(data$Study)
   
-  directness <- matrix(
+  is_direct <- matrix(
     nrow = length(studies),
     ncol = length(treatments),
     dimnames = list(
@@ -47,14 +47,14 @@ CalculateDirectness <- function(
     )
   )
 
-  #Populate 'directness'
+  #Populate 'is_direct'
   for (study in studies) {
     study_treatments <- FindAllTreatments(data = data, treatment_ids = treatment_ids, study = study)
     study_treatment_index <- match(study_treatments, treatment_ids$Label)
     for (treatment in treatments) {
       #If the study contains both the reference and this treatment then it makes a direct contribution
       if (all(c(reference, treatment) %in% study_treatments)) {
-        directness[study, treatment] <- TRUE 
+        is_direct[study, treatment] <- TRUE 
       } else {
         treatment_number <- treatment_ids$Number[treatment_ids$Label == treatment]
         #Create the network excluding the edge between the reference and this treatment
@@ -67,12 +67,12 @@ CalculateDirectness <- function(
                           error = function(condition) {
                             return(NULL)
                           })
-        if (!is.null(paths) & length(paths) != 0) {
+        if (length(paths) != 0) {
           #If there are paths, check that at least one of them contains at least two treatments from this study
           # If so, then this study contributes to an indirect path between the reference and this treatment
           for (path_number in 1:length(paths)) {
             if (sum(study_treatment_index %in% paths[[path_number]]) >= 2) {
-              directness[study, treatment] <- FALSE
+              is_direct[study, treatment] <- FALSE
               break
             }
           }
@@ -107,7 +107,7 @@ CalculateDirectness <- function(
 
   return(
     list(
-      direct = directness,
+      is_direct = is_direct,
       relative_effect = relative_effects,
       covariate_value = covariate_values
     )

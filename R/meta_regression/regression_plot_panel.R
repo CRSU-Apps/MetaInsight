@@ -114,18 +114,18 @@ regression_plot_panel_ui <- function(id) {
             inputId = ns("covariate_symbol"),
             label = tags$html("Show covariate values as", tags$i(class="fa-regular fa-circle-question")),
             choices = c(
-              "Nothing",
-              "Circles",
-              "Crosses"
+              "Nothing" = "none",
+              "Circles" = "circle open",
+              "Crosses" = "cross"
             ),
-            selected = "Circles",
+            selected = "circle open",
             selectize = FALSE
           ),
           tooltip = "Show covariate values using a symbol of your choice"
         ),
         
         div(
-          id = ns("circle_options"),
+          id = ns("covariate_symbol_options"),
           .AddRegressionOptionTooltip(
             numericInput(
               inputId = ns("covariate_symbol_size"),
@@ -134,7 +134,7 @@ regression_plot_panel_ui <- function(id) {
               value = 10,
               step = 1
             ),
-            tooltip = "The size of every covariate value"
+            tooltip = "The size of the covariate value symbols"
           )
         ),
         selectInput(
@@ -163,7 +163,7 @@ regression_plot_panel_ui <- function(id) {
 #' @param treatment_df Reactive containing data frame containing treatment IDs (Number), sanitised names (Label), and original names (RawLabel).
 #' @param outcome_type Reactive containing meta analysis outcome: "Continuous" or "Binary".
 #' @param outcome_measure Reactive type of outcome (OR, RR, RD, MD or SD).
-#' @param reference The reference treatment.
+#' @param reference The name of the reference treatment.
 #' @param package package used to create the model. Either "gemtc" (default) or "bnma".
 #' @param model_valid Reactive containing whether or not the model is valid to be displayed.
 regression_plot_panel_server <- function(
@@ -193,9 +193,9 @@ regression_plot_panel_server <- function(
       shinyjs::toggleState(id = "credible_opacity", condition = input$credible)
     })
     
-    # Disable circle options when circles not shown
+    # Disable covariate symbol options when no symbol shown
     observe({
-      shinyjs::toggleState(id = "circle_options", condition = input$covariate_symbol != "Nothing")
+      shinyjs::toggleState(id = "covariate_symbol_options", condition = input$covariate_symbol != "none")
     })
     
     mtc_summary <- reactive({
@@ -264,7 +264,7 @@ regression_plot_panel_server <- function(
       }
     })
     
-    directness_matrix <- reactive({
+    is_direct <- reactive({
       CalculateDirectness(
         data = long_data(),
         covariate_title = covariate_title(),
@@ -295,7 +295,7 @@ regression_plot_panel_server <- function(
             treatment_df = treatment_df(),
             outcome_measure = outcome_measure(),
             comparators = comparator_titles(),
-            directness_matrix = directness_matrix(),
+            is_direct = is_direct(),
             credible_regions = credible_regions$result(),
             include_covariate = input$covariate,
             include_ghosts = input$ghosts,
@@ -333,7 +333,7 @@ regression_plot_panel_server <- function(
             treatment_df = treatment_df(),
             outcome_measure = outcome_measure(),
             comparators = comparator_titles(),
-            directness_matrix = directness_matrix(),
+            is_direct = is_direct(),
             credible_regions = credible_regions$result(),
             include_covariate = input$covariate,
             include_ghosts = input$ghosts,
