@@ -1,0 +1,5 @@
+component: "freq"
+short_name: "Summary forest plot"
+long_name: "Summary forest plot"
+authors: "Rhiannon K. Owen, Naomi Bradbury, Yiqiao Xin, Tom Morris, Janion Nevill, Simon E. H. Smart"
+package: []

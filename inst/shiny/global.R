@@ -13,7 +13,7 @@ source("helpers.R")
 
 # The components that have modules. These names must match the values of the
 # tabs of the components in the UI.
-COMPONENTS <- c("setup", "summary", "rep")
+COMPONENTS <- c("setup", "summary", "freq", "rep")
 
 # Information about modules that various parts of the app need access to
 COMPONENT_MODULES <- list()
@@ -27,6 +27,10 @@ base_module_configs <- c(
   "modules/summary_char.yml",
   "modules/summary_study.yml",
   "modules/summary_network.yml",
+  "modules/freq_forest.yml",
+  "modules/freq_compare.yml",
+  "modules/freq_inconsistent.yml",
+  "modules/freq_summary.yml",
   "modules/rep_markdown.yml",
   "modules/rep_renv.yml",
   "modules/rep_refPackages.yml"

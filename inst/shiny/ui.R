@@ -28,6 +28,7 @@ tagList(
     tabPanel("Intro", value = "intro"),
     tabPanel("Setup", value = "setup"),
     tabPanel("Summary", value = "summary"),
+    tabPanel("Frequentist", value = "freq"),
     tabPanel("Reproduce", value = "rep"),
     navbarMenu("Support", icon = icon("life-ring"),
                HTML('<a href="https://github.com/CRSU-Apps/MetaInsight/issues" target="_blank">GitHub Issues</a>'),
@@ -76,6 +77,20 @@ tagList(
           tags$hr(),
           summary_exclude_module_ui("summary_exclude"),
           insert_modules_ui("summary", exclude = "summary_exclude")
+          ),
+          # FREQUENTIST ####
+          conditionalPanel(
+            "input.tabs == 'freq'",
+            div("Component: Frequentist NMA", class = "componentName"),
+            help_comp_ui("freqHelp"),
+            shinyWidgets::radioGroupButtons(
+              "freqSel", "Modules Available:",
+              choices = insert_modules_options("freq"),
+              direction = "vertical",
+              status = "outline-secondary",
+              width = "100%"
+            ),
+            tags$hr(),
           ),
           # REPRODUCIBILITY
           conditionalPanel(
