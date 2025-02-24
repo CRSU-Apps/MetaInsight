@@ -68,6 +68,7 @@ setup_define_module_server <- function(id, common, parent_session) {
     common$reference_treatment_all <- input$reference_treatment
     common$treatment_df <- result$treatment_df
     common$outcome_measure <- input$outcome_measure
+    common$ranking_option <- input$rankopts
     common$logger %>% writeLog(type = "complete", "Data has been defined")
 
     # METADATA ####

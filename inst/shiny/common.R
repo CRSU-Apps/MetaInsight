@@ -7,6 +7,7 @@ common_class <- R6::R6Class(
    is_data_valid = NULL,
    is_data_uploaded = NULL,
    outcome = NULL,
+   ranking_option = NULL,
    treatment_df = NULL,
    outcome_measure = NULL,
    reference_treatment_all = NULL,
@@ -32,6 +33,7 @@ common_class <- R6::R6Class(
      self$valid_data <- NULL
      self$is_data_uploaded <- NULL
      self$outcome <- NULL
+     self$ranking_outcome <- NULL
      self$treatment_df <- NULL
      self$outcome_measure <- NULL
      self$reference_treatment_all <- NULL

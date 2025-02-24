@@ -1,8 +1,13 @@
 ```{asis, echo = {{freq_compare_knit}}, eval = {{freq_compare_knit}}, include = {{freq_compare_knit}}}
-Description of what the code will do {{var1}}
+Produce tables of relative treatment effects
 ```
 
 ```{r, echo = {{freq_compare_knit}}, include = {{freq_compare_knit}}}
-# R code to run {{var2}}
-# Populate using metadata()
+frequentist_comparison_all <- freq_compare(frequentist_all, model_type)
+knitr::kable(frequentist_comparison_all, row.names = TRUE, caption = "Relative treatment effects in ranked order for all studies")
+```
+
+```{r, echo = {{freq_compare_knit}}, include = {{freq_compare_knit}}}
+frequentist_comparison_sub <- freq_compare(frequentist_sub, model_type)
+knitr::kable(frequentist_comparison_sub, row.names = TRUE, caption = "Relative treatment effects in ranked order with selected studies excluded")
 ```

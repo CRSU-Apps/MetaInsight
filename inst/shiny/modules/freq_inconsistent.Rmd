@@ -3,6 +3,13 @@ Description of what the code will do {{var1}}
 ```
 
 ```{r, echo = {{freq_inconsistent_knit}}, include = {{freq_inconsistent_knit}}}
-# R code to run {{var2}}
-# Populate using metadata()
+frequentist_inconsistency_all <- freq_inconsistent(frequentist_all, model_type)
+
+knitr::kable(frequentist_inconsistency_all, row.names = TRUE, caption = "Assessment of inconsistency for all studies")
+```
+
+```{r, echo = {{freq_inconsistent_knit}}, include = {{freq_inconsistent_knit}}}
+frequentist_inconsistency_sub <- freq_inconsistent(frequentist_sub, model_type)
+
+knitr::kable(frequentist_inconsistency_sub, row.names = TRUE, caption = "Assessment of inconsistency with selected studies excluded")
 ```
