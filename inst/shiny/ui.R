@@ -75,7 +75,6 @@ tagList(
             width = "100%"
           ),
           tags$hr(),
-          summary_exclude_module_ui("summary_exclude"),
           insert_modules_ui("summary", exclude = "summary_exclude")
           ),
           # FREQUENTIST ####
@@ -91,6 +90,7 @@ tagList(
               width = "100%"
             ),
             tags$hr(),
+            insert_modules_ui("freq")
           ),
           # REPRODUCIBILITY
           conditionalPanel(
@@ -114,6 +114,8 @@ tagList(
         conditionalPanel(
           "input.tabs != 'intro' & input.tabs != 'rep'",
           fixedRow(
+            column(4,
+                   summary_exclude_module_ui("summary_exclude")),
             column(
               2,
               offset = 1,

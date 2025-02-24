@@ -68,9 +68,8 @@ setup_define <- function(data, treatment_df, outcome, outcome_measure, reference
                  ({reference_treatment}) will be displayed and disconnected
                  studies are shown in the logger."))
 
-    for (s in main_subnetwork_exclusions){
-      logger %>% writeLog(s)
-    }
+    logger %>% writeLog(paste0("Disconnected studies: ", paste(main_subnetwork_exclusions, collapse = ",")))
+
   }
 
   disconnected_indices <- which(studies %in% main_subnetwork_exclusions)

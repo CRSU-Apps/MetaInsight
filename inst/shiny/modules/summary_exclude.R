@@ -1,13 +1,10 @@
 summary_exclude_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
-    bslib::accordion(
-      bslib::accordion_panel("Select model and exclude studies",
-         radioButtons(ns("model"), label = "Model:",
-                      choices = c("Random effect (RE)" = "random", "Fixed effect (FE)" = "fixed")),
-         checkboxGroupInput(ns("exclusions"), label = "Studies to exclude:", choices = c())
-      )
-    )
+    radioButtons(ns("model"), label = "Model:",
+                  choices = c("Random effect (RE)" = "random", "Fixed effect (FE)" = "fixed"), inline = TRUE),
+    shinyWidgets::pickerInput(ns("exclusions"), label = "Studies to exclude:", choices = c(), multiple = TRUE,
+                              options = shinyWidgets::pickerOptions(liveSearch = TRUE))
   )
 }
 
@@ -17,40 +14,14 @@ summary_exclude_module_server <- function(id, common, parent_session) {
     init("model")
 
     observe({
-      watch("setup_load")
+      watch("setup_define")
       req(common$data)
       # selected = is required to restore selections on reload
-      updateCheckboxGroupInput(session, "exclusions", choices = unique(common$data$Study), selected = common$excluded_studies)
-    })
+      shinyWidgets::updatePickerInput(session, "exclusions",
+                                      choices = unique(common$data$Study),
+                                      selected = common$excluded_studies,
+                                      choicesOpt = list(disabled = !c(unique(common$data$Study) %in% unique(common$main_connected_data$Study))))
 
-    # Update which studies can be selected from the sensitivity analysis by taking the initial data subnetwork
-    observe({
-      watch("setup_define")
-      req(common$disconnected_indices)
-
-      all_studies <- unique(common$data$Study)
-
-      selected <- all_studies[common$disconnected_indices]
-      updateCheckboxGroupInput(inputId = "exclusions", selected = selected)
-
-      filtered_treatments <- FindAllTreatments(common$main_connected_data)
-      lapply(
-        all_studies,
-        function(study) {
-          index <- match(study, all_studies)
-          sub_element <- glue::glue("#{session$ns('exclusions')} .checkbox:nth-child({index}) label")
-
-          study_treatments <- FindAllTreatments(common$data[common$data$Study == study, ])
-
-          if (any(study_treatments %in% filtered_treatments)) {
-            # The 0ms delay is required to disable studies disconnected within the initial uploaded data
-            shinyjs::delay(0, shinyjs::enable(selector = sub_element))
-          } else {
-            # The 0ms delay is required to disable studies disconnected within the initial uploaded data
-            shinyjs::delay(0, shinyjs::disable(selector = sub_element))
-          }
-        }
-      )
     })
 
     # update freq_all if model selection changes
