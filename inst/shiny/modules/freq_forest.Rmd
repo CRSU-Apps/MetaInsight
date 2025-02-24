@@ -1,8 +1,31 @@
 ```{asis, echo = {{freq_forest_knit}}, eval = {{freq_forest_knit}}, include = {{freq_forest_knit}}}
-Description of what the code will do {{var1}}
+Generate forest plots
 ```
 
 ```{r, echo = {{freq_forest_knit}}, include = {{freq_forest_knit}}}
-# R code to run {{var2}}
-# Populate using metadata()
+
+frequentist_forest_xmin_all <- {{freq_forest_xmin_all}}
+frequentist_forest_xmax_all <- {{freq_forest_xmax_all}}
+frequentist_forest_all <- freq_forest(frequentist_all, 
+                                      reference_treatment_all, 
+                                      model_type,
+                                      outcome_measure,
+                                      frequentist_forest_xmin_all,
+                                      frequentist_forest_xmax_all) 
+frequentist_forest_all$plot()
+
+```
+
+```{r, echo = {{freq_forest_knit}}, include = {{freq_forest_knit}}}
+
+frequentist_forest_xmin_sub <- {{freq_forest_xmin_sub}}
+frequentist_forest_xmax_sub <- {{freq_forest_xmax_sub}}
+frequentist_forest_sub <- freq_forest(frequentist_sub, 
+                                      reference_treatment_all,
+                                      model_type,
+                                      outcome_measure,
+                                      frequentist_forest_xmin_sub,
+                                      frequentist_forest_xmax_sub) 
+frequentist_forest_sub$plot()
+
 ```

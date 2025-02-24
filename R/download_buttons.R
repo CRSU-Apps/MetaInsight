@@ -33,15 +33,20 @@ NodeDownloadHeight <- function(ncomp, type) {
 #' @param notrt The number of treatments in the plot
 #' @param title TRUE if the title is included in the plot
 #' @return The height of the plot in pixels
-BayesPixels <- function(notrt, title=FALSE) {    # input is total number of treatments and whether title is included in plot
-  if (notrt <= 25) {
-    height <- 420        # default for 25 or less treatments
-  } else {
-    height <- 15 * (notrt - 1) + 60
-  }
+#' @export
+BayesPixels <- function(notrt, title=FALSE, annotation = FALSE) {    # input is total number of treatments and whether title is included in plot
+  # if (notrt <= 25) {
+  #   height <- 420        # default for 25 or less treatments
+  # } else {
+  height <- 15 * (notrt - 1) + 60
+  # }
 
   if (title) {
     height <- height + 100
+  }
+
+  if (annotation) {
+    height <- height + 80
   }
 
   return(height)
@@ -52,6 +57,7 @@ BayesPixels <- function(notrt, title=FALSE) {    # input is total number of trea
 #'
 #' @param notrt The number of treatments in the plot
 #' @return The height of the plot in inches
+#' @export
 BayesInch <- function(notrt) {
   if (notrt <= 25) {
     height <- 6

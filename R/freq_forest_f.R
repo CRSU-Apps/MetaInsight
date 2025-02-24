@@ -1,8 +1,11 @@
-#' Assess the data for validity. this checks the column names for required columns, and balanced wide format numbered columns.
+#' Produce a forest plot and annotation
 #'
 #' @param freq list. NMA results created by freq_wrap().
 #' @param reference_treatment character. The reference treatment of the dataset
 #' @param model_type character. Type of model to fit, either `random` or `fixed`
+#' @param outcome_measure character. Outcome measure of the dataset. Either
+#' `OR`, `RR` or `RD` when `outcome` is `Binary` or `MD` or `SMD` when
+#' `outcome` is `Continuous`
 #' @param xmin numeric. Minimum x-axis limit.
 #' @param xmax numeric. Maximum x-axis limit.
 #' @param logger Stores all notification messages to be displayed in the Log
@@ -11,40 +14,110 @@
 #'
 #' @return Forest plot created using metafor::forest().
 #' @export
-freq_forest <- function(freq, reference_treatment, model_type, xmin, xmax, logger = NULL) {
-  check_param_classes(c("freq", "reference treatment", "model_type", "xmin", "xmax"),
-                      c("list", "character", "character", "numeric", "numeric"), logger)
+freq_forest <- function(freq, reference_treatment, model_type, outcome_measure, xmin, xmax, logger = NULL) {
+  check_param_classes(c("freq", "reference_treatment", "model_type", "outcome_measure", "xmin", "xmax"),
+                      c("list", "character", "character", "character", "numeric", "numeric"), logger)
 
-  return(metafor::forest(freq$net1, reference.group = reference_treatment, pooled = model_type, xlim = c(xmin, xmax)))
+  plot <- function(){metafor::forest(freq$net1, reference.group = reference_treatment, pooled = model_type, xlim = c(xmin, xmax))}
+  annotation <- forest_annotation(freq, model_type, outcome_measure)
+  n_treatments <- length(levels(freq$net1$data$treat1))
+  height_pixels <- BayesPixels(n_treatments, title = TRUE, annotation = TRUE)
+
+  return(list(plot = plot,
+              annotation = annotation,
+              height_pixels = height_pixels
+              ))
 }
 
 
 #' Extract the minimum and maximum confidence intervals from the summary produced by netmeta
 #'
 #' @param freq list. NMA results created by freq_wrap().
-#' @param treatment_df dataframe. Treatments and their IDs
+#' @param outcome. character. `Binary` or `Continuous`
 #'
 #' @return List containing:
-#'  \item{is_data_valid}{logical. Whether the data is valid}
-#'  \item{is_data_uploaded}{logical. Whether the data is uploaded}
+#'  \item{xmin}{numeric. Minimum confidence interval}
+#'  \item{xmax}{numeric. Maximum confidence interval}
 #' @export
-extract_ci <- function(freq, treatment_df){
+extract_ci <- function(freq, outcome){
 
   # store the result of print(freq$net1) produced by netmeta
   net1_summary <- capture.output(freq$net1)
 
   # extract the treatment estimate lines
   first_line <- grep("Treatment estimate", net1_summary ) + 2
-  last_line <- first_line + nrow(treatment_df) - 1
+  last_line <- first_line + length(levels(freq$net1$data$treat1)) - 1
   treatment_estimates <- net1_summary[first_line:last_line]
 
   # extract the square brackets and then the values inside
   square_brackets <- unlist(regmatches(treatment_estimates, gregexpr("\\[([-0-9.; ]+)\\]", treatment_estimates)))
   ci_values <- as.numeric(unlist(strsplit(gsub("\\[|\\]", "", square_brackets), ";")))
 
-  # add a 20% buffer to the CIs
-  xmin <- min(numeric_values) * 1.2
-  xmax <- max(numeric_values) * 1.2
+  if (outcome == "Continuous"){
+    # add a 20% buffer to the CIs and round to 0.1
+    xmin <- round(min(ci_values) * 1.2, 1)
+    xmax <- round(max(ci_values) * 1.2, 1)
+  }
+  if (outcome == "Binary"){
+    xmin <- round(min(ci_values) * 1.2, 1)
+    # prevent errors
+    if (xmin == 0){
+      xmin = 0.01
+    }
+    xmax <- round(max(ci_values) * 1.2, 1)
+  }
 
-  return(list(xmin = xmin, xmax = xmax))
+  return(list(xmin = xmin,
+              xmax = xmax))
+}
+
+#' Creates the text to be displayed underneath the forest plots, with between-study SD, number of studies and number of treatments.
+#'
+#' @param tau Between study standard deviation.
+#' @param k Number of studies.
+#' @param n Number of treatments.
+#' @param model_type "fixed" or "random".
+#' @param outcome_measure "MD", "SMD", "OR", "RR", or "RD".
+#' @return Text as described above.
+forest_annotation <- function(freq, model_type, outcome_measure) {
+
+  tau <- round(freq$net1$tau, 2)
+  k <- freq$net1$k
+  n <- freq$net1$n
+
+  if (model_type == "random") {
+    if (outcome_measure == "OR") {
+      output_text <- paste("Between-study standard deviation (log-odds scale):", tau,
+                           "\n Number of studies:", k,
+                           ", Number of treatments:", n)
+    } else if (outcome_measure == "RR") {
+      output_text <- paste("Between-study standard deviation (log probability scale):", tau,
+                           "\n Number of studies:", k,
+                           ", Number of treatments:", n)
+    } else if(outcome_measure %in% c("MD", "SMD", "RD")) {
+      output_text <- paste("Between-study standard deviation:", tau,
+                           "\n Number of studies:", k,
+                           ", Number of treatments:", n)
+    } else {
+      stop("outcome_measure must be one of 'MD', 'SMD', 'OR', 'RR', 'RD'")
+    }
+  } else if (model_type == "fixed") {
+    if (outcome_measure == "OR") {
+      output_text <- paste("Between-study standard deviation (log-odds scale) set at 0. \n Number of studies:", k,
+                           ", Number of treatments:", n)
+    }
+    else if (outcome_measure == "RR") {
+      output_text <- paste("Between-study standard deviation (log probability scale) set at 0. \n Number of studies:", k,
+                           ", Number of treatments:", n)}
+    else if(outcome_measure %in% c("MD", "SMD", "RD")) {
+      output_text <- paste("Between-study standard deviation set at 0. \n Number of studies:", k,
+                           ", Number of treatments:", n)
+    } else {
+      stop("outcome_measure must be one of 'MD', 'SMD', 'OR', 'RR', 'RD'")
+    }
+  } else {
+    stop("model_type must be 'fixed' or 'random'")
+  }
+
+  return(output_text)
 }
