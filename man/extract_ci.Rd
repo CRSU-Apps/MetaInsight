@@ -4,12 +4,12 @@
 \alias{extract_ci}
 \title{Extract the minimum and maximum confidence intervals from the summary produced by netmeta}
 \usage{
-extract_ci(freq)
+extract_ci(freq, outcome)
 }
 \arguments{
 \item{freq}{list. NMA results created by freq_wrap().}
 
-\item{treatment_df}{dataframe. Treatments and their IDs}
+\item{outcome.}{character. `Binary` or `Continuous`}
 }
 \value{
 List containing:

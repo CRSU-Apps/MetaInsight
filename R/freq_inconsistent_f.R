@@ -1,3 +1,5 @@
+#' Produce inconsistency tables
+#'
 #' @param freq list. NMA results created by freq_wrap().
 #' @param model_type  character. "fixed" or "random".
 #' @return Dataframe of inconsistency data:

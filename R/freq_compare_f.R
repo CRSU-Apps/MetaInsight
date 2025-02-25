@@ -1,3 +1,5 @@
+#' Produce comparison tables
+#'
 #' @param freq List of NMA results created by freq_wrap().
 #' @param modelranfix Character. `fixed` or `random`.
 #' @param rankopts Character. `good` or `bad`, referring to smaller outcome values.
