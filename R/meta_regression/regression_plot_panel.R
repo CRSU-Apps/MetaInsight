@@ -264,7 +264,7 @@ regression_plot_panel_server <- function(
       }
     })
     
-    is_direct <- reactive({
+    directness <- reactive({
       CalculateDirectness(
         data = long_data(),
         covariate_title = covariate_title(),
@@ -295,7 +295,7 @@ regression_plot_panel_server <- function(
             treatment_df = treatment_df(),
             outcome_measure = outcome_measure(),
             comparators = comparator_titles(),
-            is_direct = is_direct(),
+            directness = directness(),
             credible_regions = credible_regions$result(),
             include_covariate = input$covariate,
             include_ghosts = input$ghosts,
@@ -333,7 +333,7 @@ regression_plot_panel_server <- function(
             treatment_df = treatment_df(),
             outcome_measure = outcome_measure(),
             comparators = comparator_titles(),
-            is_direct = is_direct(),
+            directness = directness(),
             credible_regions = credible_regions$result(),
             include_covariate = input$covariate,
             include_ghosts = input$ghosts,

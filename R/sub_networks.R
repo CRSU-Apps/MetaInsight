@@ -2,19 +2,16 @@
 #' Create a graph where the nodes are treatments and the links are studies comparing those treatments.
 #'
 #' @param data Data for which to create graph.
-#' @param exclude_link Vector containing the numbers of two treatments for which links will not be added. Defaults to NULL.
 #'
 #' @return Created igraph object.
-CreateGraph <- function(data, exclude_link = NULL) {
+CreateGraph <- function(data) {
   # Find links
   links = c()
   for (study in unique(data$Study)) {
     study_treatments <- FindAllTreatments(data[data$Study == study, ])
     for (i in 1:(length(study_treatments) - 1)) {
       for (j in (i + 1):length(study_treatments)) {
-        if (!setequal(c(study_treatments[i], study_treatments[j]), exclude_link)) {
-          links <- c(links, study_treatments[i], study_treatments[j])
-        }
+        links <- c(links, study_treatments[i], study_treatments[j])
       }
     }
   }

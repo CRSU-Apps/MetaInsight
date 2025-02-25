@@ -50,25 +50,45 @@ test_that("CalculateDirectness() correctly calculates directness", {
   
   studies <- unique(data$Study)
   
-  # Numbers manually taken from data set
-  expected_directness <- matrix(
+  expected_is_direct <- matrix(
     data = c(
-      TRUE, FALSE, NA,
-      TRUE, TRUE, NA,
-      FALSE, TRUE, NA,
-      NA, NA, TRUE,
-      FALSE, FALSE, NA
+      TRUE, FALSE, FALSE,
+      TRUE, TRUE, FALSE,
+      FALSE, TRUE, FALSE,
+      FALSE, FALSE, TRUE,
+      FALSE, FALSE, FALSE
     ),
     nrow = length(studies),
     ncol = length(treatment_ids$Label) - 1,
     byrow = TRUE
   )
-  row.names(expected_directness) <- studies
-  colnames(expected_directness) <- treatment_ids$Label[-1]
+  
+  row.names(expected_is_direct) <- studies
+  colnames(expected_is_direct) <- treatment_ids$Label[-1]
+  
+  expected_is_indirect <- matrix(
+    data = c(
+      FALSE, TRUE, FALSE,
+      TRUE, TRUE, FALSE,
+      TRUE, FALSE, FALSE,
+      FALSE, FALSE, FALSE,
+      TRUE, TRUE, FALSE
+    ),
+    nrow = length(studies),
+    ncol = length(treatment_ids$Label) - 1,
+    byrow = TRUE
+  )
+  
+  row.names(expected_is_indirect) <- studies
+  colnames(expected_is_indirect) <- treatment_ids$Label[-1]
   
   expect_equal(
-    !!contributions$direct,
-    !!expected_directness
+    !!contributions$is_direct,
+    !!expected_is_direct
+  )
+  expect_equal(
+    !!contributions$is_indirect,
+    !!expected_is_indirect
   )
 })
 

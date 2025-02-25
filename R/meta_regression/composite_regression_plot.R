@@ -8,7 +8,7 @@ regression_ghost_name = "\"Other\""
 #' @param treatment_df Data frame containing treatment IDs (Number), sanitised names (Label), and original names (RawLabel).
 #' @param outcome_measure Outcome measure of analysis (OR, RR, RD or MD)
 #' @param comparators Vector of names of comparison treatments to plot in colour.
-#' @param is_direct Contributions from function `CalculateDirectness()`.
+#' @param directness Contributions from function `CalculateDirectness()`.
 #' @param credible_regions List of credible region data frames from function `CalculateCredibleRegions()`.
 #' @param include_covariate TRUE if the value of the covariate is to be plotted as a vertical line. Defaults to FALSE.
 #' @param include_ghosts TRUE if all other comparator studies should be plotted in grey in the background of the plot. Defaults to FALSE.
@@ -31,7 +31,7 @@ CreateCompositeMetaRegressionPlot <- function(
     treatment_df,
     outcome_measure,
     comparators,
-    is_direct,
+    directness,
     credible_regions,
     include_covariate = FALSE,
     include_ghosts = FALSE,
@@ -47,7 +47,7 @@ CreateCompositeMetaRegressionPlot <- function(
     treatment_df = treatment_df,
     outcome_measure = outcome_measure,
     comparators = comparators,
-    is_direct = is_direct,
+    directness = directness,
     credible_regions = credible_regions,
     include_covariate = include_covariate,
     include_ghosts = include_ghosts,
@@ -67,7 +67,7 @@ CreateCompositeMetaRegressionPlot <- function(
     model_output = model_output,
     treatment_df = treatment_df,
     comparators = comparators,
-    is_direct = is_direct,
+    directness = directness,
     include_covariate = include_covariate,
     include_ghosts = include_ghosts,
     covariate_symbol = covariate_symbol,

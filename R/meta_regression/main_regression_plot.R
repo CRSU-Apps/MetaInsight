@@ -5,7 +5,7 @@
 #' @param treatment_df Data frame containing treatment IDs (Number), sanitised names (Label), and original names (RawLabel).
 #' @param outcome_measure Outcome measure of analysis (OR, RR, RD, MD)
 #' @param comparators Vector of names of comparison treatments to plot in colour.
-#' @param is_direct Contributions from function `CalculateDirectness()`.
+#' @param directness Contributions from function `CalculateDirectness()`.
 #' @param credible_regions List of credible region data frames from function `CalculateCredibleRegions()`.
 #' @param include_covariate TRUE if the value of the covariate is to be plotted as a vertical line. Defaults to FALSE.
 #' @param include_ghosts TRUE if all other comparator studies should be plotted in grey in the background of the plot. Defaults to FALSE.
@@ -29,7 +29,7 @@ CreateMainRegressionPlot <- function(
     treatment_df,
     outcome_measure,
     comparators,
-    is_direct,
+    directness,
     credible_regions,
     include_covariate = FALSE,
     include_ghosts = FALSE,
@@ -59,7 +59,7 @@ CreateMainRegressionPlot <- function(
     ghosts <-  all_comparators[!all_comparators %in% comparators]
     
     if (covariate_symbol != "none") {
-      plot <- .PlotDirectCovariateCircles(plot, model_output, treatment_df, reference, ghosts, is_direct, covariate_symbol, covariate_symbol_size, ghosted = TRUE)
+      plot <- .PlotDirectCovariateCircles(plot, model_output, treatment_df, reference, ghosts, directness, covariate_symbol, covariate_symbol_size, ghosted = TRUE)
     }
     plot <- .PlotRegressionLines(plot, model_output, treatment_df, reference, ghosts, include_extrapolation, ghosted = TRUE)
   }
@@ -69,7 +69,7 @@ CreateMainRegressionPlot <- function(
       plot <- .PlotCredibleRegions(plot, credible_regions, comparators, credible_opacity)
     }
     if (covariate_symbol != "none") {
-      plot <- .PlotDirectCovariateCircles(plot, model_output, treatment_df, reference, comparators, is_direct, covariate_symbol, covariate_symbol_size)
+      plot <- .PlotDirectCovariateCircles(plot, model_output, treatment_df, reference, comparators, directness, covariate_symbol, covariate_symbol_size)
     }
     plot <- .PlotRegressionLines(plot, model_output, treatment_df, reference, comparators, include_extrapolation)
   }
@@ -194,15 +194,15 @@ CreateMainRegressionPlot <- function(
 #' @param treatment_df Data frame containing treatment IDs (Number), sanitised names (Label), and original names (RawLabel).
 #' @param reference Name of reference treatment.
 #' @param comparators Vector of names of comparison treatments to plot.
-#' @param is_direct Contributions from function `CalculateDirectness()`.
+#' @param directness Contributions from function `CalculateDirectness()`.
 #' @param covariate_symbol The selected symbol for displaying covariates. Defaults to "circle open".
 #' @param covariate_symbol_size Size of the covariate symbols. Defaults to 10.
 #' @param ghosted TRUE if studies should be plotted in grey. Defaults to FALSE.
 #'
 #' @return The modified ggplot2 object.
-.PlotDirectCovariateCircles <- function(plot, model_output, treatment_df, reference, comparators, is_direct, covariate_symbol = "circle open", covariate_symbol_size = 10, ghosted = FALSE) {
+.PlotDirectCovariateCircles <- function(plot, model_output, treatment_df, reference, comparators, directness, covariate_symbol = "circle open", covariate_symbol_size = 10, ghosted = FALSE) {
 
-  contributions = .FindDirectRegressionContributions(model_output, reference, comparators, is_direct)
+  contributions = .FindDirectRegressionContributions(model_output, reference, comparators, directness)
   
   if (nrow(contributions) == 0) {
     return(plot)
@@ -297,14 +297,14 @@ CreateMainRegressionPlot <- function(
 #' @param model_output GEMTC model results found by calling `CovariateModelOutput()`.
 #' @param reference Name of reference treatment.
 #' @param comparator Name of comparison treatment for which to find the contributions.
-#' @param is_direct Contributions from function `CalculateDirectness()`.
+#' @param directness Contributions from function `CalculateDirectness()`.
 #'
 #' @return Data frame containing contribution details. Each row represents a study contributing to a given treatment. Columns are:
 #' - Treatment: The treatment for which this contribution relates.
 #' - covariate_value: Value of the covariate for this study.
 #' - relative_effect Relative effect for this study.
 #' - contribution: Size of contribution for this study.
-.FindDirectRegressionContributions <- function(model_output, reference, comparator, is_direct) {
+.FindDirectRegressionContributions <- function(model_output, reference, comparator, directness) {
 
   treatments <- c()
   covariate_values <- c()
@@ -312,16 +312,16 @@ CreateMainRegressionPlot <- function(
   contributions <- c()
 
   for (treatment in comparator) {
-    for (study in row.names(is_direct$is_direct)) {
-      contribution_is_direct <- is_direct$is_direct[study, treatment]
+    for (study in row.names(directness$is_direct)) {
+      contribution_is_direct <- directness$is_direct[study, treatment]
       
-      if (is.na(contribution_is_direct) || !contribution_is_direct) {
+      if (!contribution_is_direct) {
         next
       }
       
       treatments <- c(treatments, treatment)
-      covariate_values <- c(covariate_values, is_direct$covariate_value[study])
-      relative_effects <- c(relative_effects, is_direct$relative_effect[study, treatment])
+      covariate_values <- c(covariate_values, directness$covariate_value[study])
+      relative_effects <- c(relative_effects, directness$relative_effect[study, treatment])
       contributions <- c(contributions, contribution_is_direct)
     }
   }
