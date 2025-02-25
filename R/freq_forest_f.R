@@ -32,7 +32,7 @@ freq_forest <- function(freq, reference_treatment, model_type, outcome_measure, 
   plot <- function(){meta::forest(freq$net1, reference.group = reference_treatment, pooled = model_type, xlim = c(xmin, xmax))}
   annotation <- forest_annotation(freq, model_type, outcome_measure)
   n_treatments <- length(levels(freq$net1$data$treat1))
-  height_pixels <- BayesPixels(n_treatments, title = TRUE, annotation = TRUE)
+  height_pixels <- forest_height_pixels(n_treatments, title = TRUE, annotation = TRUE)
 
   return(list(plot = plot,
               annotation = annotation,

@@ -157,3 +157,27 @@ show_results <- function(parent_session){
 show_table <- function(parent_session){
   updateTabsetPanel(parent_session, "main", selected = "Data table")
 }
+
+####################### #
+# PLOTTING #
+####################### #
+
+#' Calculate the pixel height of a forest plot for a given number of treatments
+#'
+#' @param notrt The number of treatments in the plot
+#' @param title TRUE if the title is included in the plot
+#' @return The height of the plot in pixels
+#' @export
+forest_height_pixels <- function(notrt, title=FALSE, annotation = FALSE) {    # input is total number of treatments and whether title is included in plot
+  height <- 15 * (notrt - 1) + 60
+
+  if (title) {
+    height <- height + 100
+  }
+
+  if (annotation) {
+    height <- height + 80
+  }
+
+  return(height)
+}
