@@ -13,6 +13,14 @@
 #' @export
 freq_inconsistent <- function(freq, model_type, logger = NULL) {
 
+  check_param_classes(c("freq", "model_type"),
+                      c("list", "character"), logger)
+
+  if (!model_type %in% c("fixed", "random")){
+    logger %>% writeLog(type = "error", "model_type must be 'fixed' or 'random'")
+    return()
+  }
+
   incona <- netmeta::netsplit(freq$net1)
 
   Comparison <- incona$comparison
@@ -26,7 +34,8 @@ freq_inconsistent <- function(freq, model_type, logger = NULL) {
     Diff_95CI_upper <- incona$compare.random$upper
     NMA <- incona$random$TE
     pValue <- incona$compare.random$p
-  } else if (model_type == "fixed") {
+  }
+  if (model_type == "fixed") {
     Direct <- incona$direct.fixed$TE
     Indirect <- incona$indirect.fixed$TE
     Difference <- incona$compare.fixed$TE
@@ -34,9 +43,8 @@ freq_inconsistent <- function(freq, model_type, logger = NULL) {
     Diff_95CI_upper <- incona$compare.fixed$upper
     NMA <- incona$fixed$TE
     pValue <- incona$compare.fixed$p
-  } else {
-    stop("model_type must be 'fixed' or 'random'")
   }
+
   return(data.frame(Comparison, No.Studies, NMA, Direct, Indirect, Difference, Diff_95CI_lower,
                     Diff_95CI_upper, pValue))
 
