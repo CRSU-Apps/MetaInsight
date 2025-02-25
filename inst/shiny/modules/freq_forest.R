@@ -99,17 +99,19 @@ freq_forest_module_server <- function(id, common, parent_session) {
     content = function(file){
 
       # remove title, divide by 72 dpi
-      height <- (result_all()$height_pixels - 100) / 72
+      height <- (result_all()$height_pixels) / 72
 
-      # make width reponsive to treatment label
+      # make width responsive to treatment label
       width <- 5 + (max(nchar(common$treatment_df$Label)) / 10)
 
       if (input$format_all == "PDF"){
         pdf(file = file, height = height, width = width)
       } else {
-        png(file = file, height = height, width = width, units = "in", res = 216)
+        png(file = file, height = height, width = width, units = "in", res = 300)
       }
       result_all()$plot()
+      grid::grid.text("Results for all studies", 0.5, grid::unit(height - 0.25, "inches"), gp=grid::gpar(cex=1.2, fontface = "bold"))
+      grid::grid.text(result_all()$annotation, 0.5, grid::unit(height - 0.65, "inches"), gp=grid::gpar(cex=1))
       dev.off()
     }
   )
@@ -119,18 +121,20 @@ freq_forest_module_server <- function(id, common, parent_session) {
       paste0("MetaInsight_frequentist_forest_sub.", tolower(input$format_sub))},
     content = function(file){
 
-      # remove title, divide by 72 dpi
-      height <- (result_sub()$height_pixels - 100) / 72
+      # divide by 72 dpi
+      height <- (result_sub()$height_pixels) / 72
 
-      # make width reponsive to treatment label
+      # make width responsive to treatment label
       width <- 5 + (max(nchar(common$treatment_df$Label)) / 10)
 
       if (input$format_sub == "PDF"){
         pdf(file = file, height = height, width = width)
       } else {
-        png(file = file, height = height, width = width, units = "in", res = 216)
+        png(file = file, height = height, width = width, units = "in", res = 300)
       }
       result_sub()$plot()
+      grid::grid.text("Results with selected studies excluded", 0.5, grid::unit(height - 0.25, "inches"), gp=grid::gpar(cex=1.2, fontface = "bold"))
+      grid::grid.text(result_sub()$annotation, 0.5, grid::unit(height - 0.65, "inches"), gp=grid::gpar(cex=1))
       dev.off()
     }
   )

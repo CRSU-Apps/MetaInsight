@@ -15,10 +15,21 @@
 #' @return Forest plot created using metafor::forest().
 #' @export
 freq_forest <- function(freq, reference_treatment, model_type, outcome_measure, xmin, xmax, logger = NULL) {
+
   check_param_classes(c("freq", "reference_treatment", "model_type", "outcome_measure", "xmin", "xmax"),
                       c("list", "character", "character", "character", "numeric", "numeric"), logger)
 
-  plot <- function(){metafor::forest(freq$net1, reference.group = reference_treatment, pooled = model_type, xlim = c(xmin, xmax))}
+  if (!model_type %in% c("fixed", "random")){
+    logger %>% writeLog(type = "error", "model_type must be 'fixed' or 'random'")
+    return()
+  }
+
+  if (!outcome_measure %in% c("OR", "RR", "RD", "MD", "SMD")){
+    logger %>% writeLog(type = "error", "outcome_measure must be 'OR', 'RR', 'RD', 'MD' or 'SMD'")
+    return()
+  }
+
+  plot <- function(){meta::forest(freq$net1, reference.group = reference_treatment, pooled = model_type, xlim = c(xmin, xmax))}
   annotation <- forest_annotation(freq, model_type, outcome_measure)
   n_treatments <- length(levels(freq$net1$data$treat1))
   height_pixels <- BayesPixels(n_treatments, title = TRUE, annotation = TRUE)
@@ -87,31 +98,31 @@ forest_annotation <- function(freq, model_type, outcome_measure) {
 
   if (model_type == "random") {
     if (outcome_measure == "OR") {
-      output_text <- paste("Between-study standard deviation (log-odds scale):", tau,
-                           "\n Number of studies:", k,
-                           ", Number of treatments:", n)
+      output_text <- paste0("Between-study standard deviation (log-odds scale): ", tau,
+                           "\n Number of studies: ", k,
+                           ", Number of treatments: ", n)
     } else if (outcome_measure == "RR") {
-      output_text <- paste("Between-study standard deviation (log probability scale):", tau,
-                           "\n Number of studies:", k,
-                           ", Number of treatments:", n)
+      output_text <- paste0("Between-study standard deviation (log probability scale): ", tau,
+                           "\n Number of studies: ", k,
+                           ", Number of treatments: ", n)
     } else if(outcome_measure %in% c("MD", "SMD", "RD")) {
-      output_text <- paste("Between-study standard deviation:", tau,
-                           "\n Number of studies:", k,
-                           ", Number of treatments:", n)
+      output_text <- paste0("Between-study standard deviation: ", tau,
+                           "\n Number of studies: ", k,
+                           ", Number of treatments: ", n)
     } else {
       stop("outcome_measure must be one of 'MD', 'SMD', 'OR', 'RR', 'RD'")
     }
   } else if (model_type == "fixed") {
     if (outcome_measure == "OR") {
-      output_text <- paste("Between-study standard deviation (log-odds scale) set at 0. \n Number of studies:", k,
+      output_text <- paste0("Between-study standard deviation (log-odds scale) set at 0. \n Number of studies: ", k,
                            ", Number of treatments:", n)
     }
     else if (outcome_measure == "RR") {
-      output_text <- paste("Between-study standard deviation (log probability scale) set at 0. \n Number of studies:", k,
-                           ", Number of treatments:", n)}
+      output_text <- paste0("Between-study standard deviation (log probability scale) set at 0. \n Number of studies: ", k,
+                           ", Number of treatments: ", n)}
     else if(outcome_measure %in% c("MD", "SMD", "RD")) {
-      output_text <- paste("Between-study standard deviation set at 0. \n Number of studies:", k,
-                           ", Number of treatments:", n)
+      output_text <- paste0("Between-study standard deviation set at 0. \n Number of studies: ", k,
+                           ", Number of treatments: ", n)
     } else {
       stop("outcome_measure must be one of 'MD', 'SMD', 'OR', 'RR', 'RD'")
     }
