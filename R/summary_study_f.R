@@ -51,14 +51,6 @@ summary_study <- function(freq, outcome_measure, header, title, logger = NULL) {
   lines <- lines[!lines %in% gaps]
   lines <- lines[!lines %in% (gaps + 1)]
 
-  if (max(lines) < 28) {size = 7
-  } else if (max(lines) >= 28 & max(lines) <= 40) {size = max(lines) / 4
-  } else if (max(lines) > 40 & max(lines) <= 70) {size = max(lines) / 5
-  } else if (max(lines) > 70 & max(lines) <= 100) {size = max(lines) / 6
-  } else if (max(lines) > 100 & max(lines) <= 130) {size = max(lines) / 7
-  } else {size = max(lines) / 8
-  } # sizing for output
-
   d1 <- d1[order(d1$treat1, d1$treat2, d1$StudyID), ] #ensuring the ordering is correct
 
   if (outcome == "OR" | outcome =="RR" ){
@@ -74,6 +66,6 @@ summary_study <- function(freq, outcome_measure, header, title, logger = NULL) {
   text(fplot$xlim[1], gaps, pos = 4, font = 4, text_label, cex = HeaderSize)
   title("Individual study results (with selected studies excluded) grouped by treatment comparison", cex.main = TitleSize)
 
-  list(fplot = fplot, size = size)
+  return(fplot)
 
 }
