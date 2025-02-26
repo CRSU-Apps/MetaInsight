@@ -1,10 +1,10 @@
 ```{asis, echo = {{setup_define_knit}}, eval = {{setup_define_knit}}, include = {{setup_define_knit}}}
-Define the type of the uploaded data and process it into suitable formats for later analyses
+Define the type of the uploaded data and process it into suitable formats for analysis
 ```
 
 ```{r, echo = {{setup_define_knit}}, include = {{setup_define_knit}}}
 reference_treatment <- {{setup_define_reference_treatment}}
-ranking_options <- {{setup_define_rankopts}}
+ranking_option <- {{setup_define_ranking_option}}
 outcome_measure <- {{setup_define_outcome_measure}}
 
 defined_data <- setup_define(uploaded_data, treatments, outcome, outcome_measure, reference_treatment)

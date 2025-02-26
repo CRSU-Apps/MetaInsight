@@ -4,7 +4,7 @@ setup_define_module_ui <- function(id) {
     selectizeInput(ns("reference_treatment"), "Select reference treatment", choices = c()),
     radioButtons(ns("outcome_measure"), label = "Outcome for continuous data:",
                  choices = c("Mean Difference (MD)" = "MD", "Standardised Mean Difference (SMD)" = "SMD")),
-    radioButtons(ns("rankopts"), label = "For treatment rankings, values lower than the mean are:",
+    radioButtons(ns("ranking_option"), label = "For treatment rankings, values lower than the mean are:",
                  choices = c("Desirable" = "good", "Undesirable" = "bad")),
     actionButton(ns("run"), "Define data")
   )
@@ -31,7 +31,7 @@ setup_define_module_server <- function(id, common, parent_session) {
     updateSelectInput(session, "reference_treatment", choices = treatments,
                       selected = FindExpectedReferenceTreatment(treatments))
     updateRadioButtons(session, "outcome_measure", outcome_label, outcome_choices)
-    updateRadioButtons(session, "rankopts", rank_label,
+    updateRadioButtons(session, "ranking_option", rank_label,
                        selected = RankingOrder(common$outcome, !common$is_data_uploaded))
   })
 
@@ -68,13 +68,13 @@ setup_define_module_server <- function(id, common, parent_session) {
     common$reference_treatment_all <- input$reference_treatment
     common$treatment_df <- result$treatment_df
     common$outcome_measure <- input$outcome_measure
-    common$ranking_option <- input$rankopts
+    common$ranking_option <- input$ranking_option
     common$logger %>% writeLog(type = "complete", "Data has been defined")
 
     # METADATA ####
     common$meta$setup_define$used <- TRUE
     common$meta$setup_define$reference_treatment <- input$reference_treatment
-    common$meta$setup_define$rankopts <- input$rankopts
+    common$meta$setup_define$ranking_option <- input$ranking_option
     common$meta$setup_define$outcome_measure <- input$outcome_measure
 
     # TRIGGER
@@ -88,14 +88,14 @@ setup_define_module_server <- function(id, common, parent_session) {
       ### Manual save start
       ### Manual save end
       reference_treatment = input$reference_treatment,
-      rankopts = input$rankopts,
+      ranking_option = input$ranking_option,
       outcome = input$outcome)
     },
     load = function(state) {
       ### Manual load start
       ### Manual load end
       updateSelectizeInput(session, "reference_treatment", selected = state$reference_treatment)
-      updateRadioButtons(session, "rankopts", selected = state$rankopts)
+      updateRadioButtons(session, "ranking_option", selected = state$ranking_option)
       updateRadioButtons(session, "outcome", selected = state$outcome)
     }
   ))
@@ -106,7 +106,7 @@ setup_define_module_server <- function(id, common, parent_session) {
 setup_define_module_rmd <- function(common){ list(
   setup_define_knit = !is.null(common$meta$setup_define$used),
   setup_define_reference_treatment = common$meta$setup_define$reference_treatment,
-  setup_define_rankopts = common$meta$setup_define$rankopts,
+  setup_define_ranking_option = common$meta$setup_define$ranking_option,
   setup_define_outcome_measure = common$meta$setup_define$outcome_measure)
   # Variables used in the module's Rmd code
 }
