@@ -98,7 +98,6 @@ function(input, output, session) {
 
     label <- common$treatment_df
     dt <- common$non_covariate_data_all
-    # browser()
 
     # reformat wide data
     if ("T.1" %in% colnames(dt)){
@@ -112,7 +111,6 @@ function(input, output, session) {
 
     DT::datatable(
       dt,
-      editable = TRUE, # is this supposed to be?
       rownames = FALSE,
       colnames = colnames,
       filter = list(position = 'top', clear = FALSE, stateSave = TRUE)
@@ -128,7 +126,6 @@ function(input, output, session) {
       write.csv(common$data, file, row.names = FALSE)
     }
   )
-
 
   ####################
   ### INITIALISATION ####
@@ -171,6 +168,11 @@ function(input, output, session) {
     req(module())
     shinyjs::runjs(glue::glue("document.getElementById('{module()}-run').click();"))
   })
+
+  ############################################# #
+  ### PLOT DOWNLOAD FORMAT ####
+  ############################################# #
+  observe(common$download_format <- input$download_format)
 
   ################################
   ### SAVE / LOAD FUNCTIONALITY ####

@@ -23,6 +23,7 @@ common_class <- R6::R6Class(
    bugsnet_sub = NULL,
    freq_all = NULL,
    freq_sub = NULL,
+   download_format = NULL,
    meta = NULL,
    logger = NULL,
    state = NULL,

@@ -147,6 +147,7 @@ close_loading_modal <- function (session = getDefaultReactiveDomain())
 #' @export
 show_results <- function(parent_session){
   updateTabsetPanel(parent_session, "main", selected = "Results")
+  bslib::accordion_panel_close("collapse_table", TRUE, session = parent_session)
 }
 
 #' @title show_table
@@ -155,8 +156,9 @@ show_results <- function(parent_session){
 #' @keywords internal
 #' @export
 show_table <- function(parent_session){
-  updateTabsetPanel(parent_session, "main", selected = "Data table")
+  bslib::accordion_panel_open("collapse_table", TRUE, session = parent_session)
 }
+
 
 ####################### #
 # PLOTTING #
@@ -181,3 +183,19 @@ forest_height_pixels <- function(notrt, title=FALSE, annotation = FALSE) {    # 
 
   return(height)
 }
+
+#' Create a pair of download buttons
+#'
+#' @param id The id of the module
+#' @return tagList of downloadButtons
+#' @export
+download_button_pair <- function(id){
+  ns <- NS(id)
+  tagList(
+    div(style = "padding-top: 20px; padding-bottom: 20px; display: flex; gap: 20px;",
+        downloadButton(ns("download_all"), "All studies"),
+        downloadButton(ns("download_sub"), "Without excluded studies"))
+  )
+
+}
+

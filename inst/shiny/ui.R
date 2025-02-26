@@ -115,10 +115,16 @@ tagList(
           "input.tabs != 'intro' & input.tabs != 'rep'",
           fixedRow(
             column(4,
-                   summary_exclude_module_ui("summary_exclude")),
+               fluidRow(
+                 column(6, summary_exclude_module_ui("summary_exclude")),
+                 column(6, radioButtons("download_format",
+                                        "Plot download format", choices = c("PDF" = "pdf",
+                                                                            "PNG" = "png",
+                                                                            "SVG" = "svg")))
+               )
+            ),
             column(
               2,
-              offset = 1,
               align = "left",
               div(style = "margin-top: -10px"),
               strong("Log window"),
@@ -133,13 +139,18 @@ tagList(
         br(),
         conditionalPanel(
           "input.tabs != 'intro' & input.tabs != 'rep'",
+          bslib::accordion(
+            id = "collapse_table",
+            open = FALSE,
+            bslib::accordion_panel(
+              title = "Data table (Click to open / hide this panel)",
+              "Users can use the filter box under each column of heading to select studies to exclude in the sensitivity analysis.",
+              DT::dataTableOutput("table")
+            )
+          ),
+
           tabsetPanel(
             id = 'main',
-
-            tabPanel(
-              "Data table", br(),
-              DT::dataTableOutput("table"),
-            ),
 
             tabPanel(
               'Results',
