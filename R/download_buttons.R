@@ -76,10 +76,14 @@ BayesInch <- function(notrt) {
 #' @param width The width of the plot in inches for pdf, or user specified units for png.
 #' @export
 write_to_pdf_or_png <- function(file, type, renderFunction, height = NULL, width = NULL) {
-  if (tolower(type) == "pdf") {
+  if (type == "pdf") {
     pdf(file = file, height = height, width = width)
-  } else {
-    png(file = file, height = height, width = width, units = "in", res = 216)
+  }
+  if (type == "png") {
+    png(file = file, height = height, width = width, units = "in", res = 300)
+  }
+  if (type == "svg") {
+    svg(file = file, height = height, width = width)
   }
   renderFunction()
   dev.off()
