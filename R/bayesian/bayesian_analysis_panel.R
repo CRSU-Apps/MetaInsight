@@ -2,6 +2,7 @@
 #' Module UI for the bayesian analysis panel
 #' 
 #' @param id ID of the module
+#' @param page_numbering PageNumbering object for giving each page a unique identifier in the UI
 #' @return Div for the panel
 bayesian_analysis_panel_ui <- function(id, page_numbering) {
   ns <- NS(id)
@@ -36,7 +37,7 @@ bayesian_analysis_panel_ui <- function(id, page_numbering) {
       ),
       tabPanel(
         title = paste0(page_numbering$AddChild(), " Model details"),
-        model_details_panel_ui(id = ns("model_details"), c("all studies", " the sensitivity analysis"), page_numbering)
+        model_details_panel_ui(id = ns("model_details"), c("all studies", "the sensitivity analysis"), page_numbering)
       )
     )
   )
@@ -117,14 +118,17 @@ bayesian_analysis_panel_server <- function(
     
     model <- forest_plots_reactives$model
     model_sub <- forest_plots_reactives$model_sub
-
+    model_valid <- forest_plots_reactives$model_valid
+    model_sub_valid <- forest_plots_reactives$model_sub_valid
 
     # 3b. Comparison of all treatment pairs
     bayesian_treatment_comparisons_page_server(
       id = "treatment_comparisons",
       model = model,
       model_sub = model_sub,
-      outcome_measure = outcome_measure
+      outcome_measure = outcome_measure,
+      model_valid = model_valid,
+      model_sub_valid = model_sub_valid
     )
 
     # 3c. Ranking Panel
@@ -143,7 +147,9 @@ bayesian_analysis_panel_server <- function(
       freq_all = freq_all,
       freq_sub = freq_sub,
       bugsnetdt = bugsnetdt,
-      bugsnetdt_sub = bugsnetdt_sub
+      bugsnetdt_sub = bugsnetdt_sub,
+      model_valid = model_valid,
+      model_sub_valid = model_sub_valid
     )
 
     # 3d. Nodesplit model
@@ -161,19 +167,22 @@ bayesian_analysis_panel_server <- function(
     # 3e. Bayesian result details
     result_details_page_server(
       id = "result_details",
-      models = c(model, model_sub)
+      models = c(model, model_sub),
+      models_valid = c(model_valid, model_sub_valid)
     )
 
     # 3f. Deviance report
     deviance_report_page_server(
       id = "deviance_report",
-      models = c(model, model_sub)
+      models = c(model, model_sub),
+      models_valid = c(model_valid, model_sub_valid)
     )
 
     # 3g. Model details
     model_details_panel_server(
       id = "model_details",
-      models = c(model, model_sub)
+      models = c(model, model_sub),
+      models_valid = c(model_valid, model_sub_valid)
     )
   })
 }

@@ -13,6 +13,7 @@ ranking_panel_ui <- function(id, title, table_label) {
     solidHeader = TRUE,
     width = 12,
     collapsible = TRUE,
+    invalid_model_panel_ui(id = ns("model_invalid")),
     splitLayout(
       cellWidths = c("30%", "40%", "30%"),
       cellArgs = list(style = "height: 780px; padding: 16px; border: 2px solid gold; white-space: normal"),
@@ -43,6 +44,7 @@ ranking_panel_ui <- function(id, title, table_label) {
 #' @param rank_option Reactive containing ranking option: "good" or "bad" depending on whether small values are desirable or not
 #' @param frequentist Reactive containing frequentist meta-analysis
 #' @param bugsnetdt Reactive containing bugsnet meta-analysis
+#' @param model_valid Reactive containing whether the model is valid.
 #' @param filename_prefix Text to prefix the filename of all the downloads
 #' @param title_prefix Text to prefix the title of plots
 #' @param cov_value Value of covariate for regression analysis
@@ -57,6 +59,7 @@ ranking_panel_server <- function(
     rank_option,
     frequentist,
     bugsnetdt,
+    model_valid,
     filename_prefix,
     title_prefix,
     cov_value = reactive({NA}),
@@ -64,6 +67,8 @@ ranking_panel_server <- function(
     package = "gemtc"
     ) {
   moduleServer(id, function(input, output, session) {
+    
+    invalid_model_panel_server(id = "model_invalid", model_valid = model_valid)
     
     ranking_data <- eventReactive(
       model(),
@@ -102,6 +107,7 @@ ranking_panel_server <- function(
         treat_order = treat_order,
         frequentist_react = frequentist_react,
         bugsnetdt_react = bugsnetdt_react,
+        model_valid = model_valid,
         filename_prefix = filename_prefix,
         title_prefix = title_prefix
       )
@@ -111,6 +117,7 @@ ranking_panel_server <- function(
         model = model,
         treat_order = treat_order,
         bugsnetdt_react = bugsnetdt_react,
+        model_valid = model_valid,
         filename_prefix = filename_prefix,
         title_prefix = title_prefix
       )
@@ -129,6 +136,7 @@ ranking_panel_server <- function(
     rankogram_panel_server(
       id = "rankogram",
       ranking_data = ranking_data,
+      model_valid = model_valid,
       filename_prefix = filename_prefix,
       regression_text = regression_text
     )
@@ -138,6 +146,7 @@ ranking_panel_server <- function(
       treat_order = treat_order,
       frequentist_react = frequentist_react,
       bugsnetdt_react = bugsnetdt_react,
+      model_valid = model_valid,
       filename_prefix = filename_prefix,
       title_prefix = title_prefix
     )

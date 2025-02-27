@@ -2,6 +2,7 @@
 #' Module UI for the data summary panel.
 #' 
 #' @param id ID of the module
+#' @param page_numbering PageNumbering object for giving each page a unique identifier in the UI
 #' @return Div for the panel
 data_summary_panel_ui <- function(id, page_numbering) {
   ns <- NS(id)

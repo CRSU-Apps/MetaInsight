@@ -6,10 +6,6 @@
 nodesplit_page_ui <- function(id) {
   ns <- NS(id)
   div(
-    helpText(
-      "Please note: if you change the selections on the sidebar,
-      you will need to re-run the primary and/or sensitivity analysis from the 'Forest Plot' page."
-    ),
     p(
       "Please note: This may take more than 10 minutes depending on the number of treatment options. The node splitting option for
       the Bayesian analysis is highly numerically intensive and using it on the app can cause the app to disconnect in some circumstances.  We have produced a",
