@@ -1,28 +1,37 @@
 summary_char_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
+    actionButton(ns("run"), "Generate table", icon = icon("play")),
+    conditionalPanel("input.run > 0", downloadButton(ns("download")), ns = ns)
   )
 }
 
 summary_char_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
+    observeEvent(input$run, {
+      # WARNING ####
+      if (is.null(common$bugsnet_sub)){
+        common$logger %>% writeLog(type = "error", "Please define the data first in the Setup component")
+        return()
+      }
+      # TRIGGER
+      trigger("summary_char")
+    })
+
     summary_all <- reactive({
-      watch("setup_define")
-      req(common$bugsnet_all)
+      req(watch("summary_char") > 0)
       common$meta$summary_char$used <- TRUE
       summary_char(common$bugsnet_all, common$outcome)
     })
 
     summary_sub <- reactive({
       watch("summary_exclude")
-      watch("setup_define")
-      req(common$bugsnet_sub)
+      req(watch("summary_char") > 0)
       summary_char(common$bugsnet_sub, common$outcome)
     })
 
     table <- reactive({
-      req(summary_all())
       df <- data.frame(summary_all()$Value, summary_sub()$Value)
       colnames(df) <- c("All studies", "With selected studies excluded")
       rownames(df) <- summary_all()$Characteristic
@@ -31,7 +40,6 @@ summary_char_module_server <- function(id, common, parent_session) {
 
     # Characteristics table of all studies
     output$table <- renderTable({
-      watch("setup_define")
       table()
     }, rownames = TRUE)
 
@@ -50,8 +58,7 @@ summary_char_module_server <- function(id, common, parent_session) {
 summary_char_module_result <- function(id) {
   ns <- NS(id)
   fluidRow(
-    div(style = "display: flex; justify-content: center; padding-top: 50px", tableOutput(ns("table"))),
-    downloadButton(ns("download")) # this needs something to reduce the width (SS)
+    div(style = "display: flex; justify-content: center; padding-top: 50px", tableOutput(ns("table")))
   )
 }
 

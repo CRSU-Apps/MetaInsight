@@ -1,8 +1,8 @@
 freq_compare_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
-    # UI
-    actionButton(ns("run"), "Run module freq_compare")
+    actionButton(ns("run"), "Generate tables", icon = icon("play")),
+    conditionalPanel("input.run > 0", download_button_pair(id))
   )
 }
 
@@ -11,39 +11,32 @@ freq_compare_module_server <- function(id, common, parent_session) {
 
   observeEvent(input$run, {
     # WARNING ####
-
-    # FUNCTION CALL ####
-
-    # LOAD INTO COMMON ####
-
-    # METADATA ####
-    # Populate using metadata()
-
+    if (is.null(common$freq_all)){
+      common$logger %>% writeLog(type = "error", "Please define the data first in the Setup component")
+      return()
+    }
     # TRIGGER
-    gargoyle::trigger("freq_compare")
+    trigger("freq_compare")
   })
 
   table_all <- reactive({
-    watch("setup_define")
     watch("model")
-    req(common$freq_all)
+    req(watch("freq_compare") > 0)
     common$meta$freq_compare$used <- TRUE
     freq_compare(common$freq_all, common$model_type, common$ranking_option)
   })
 
   table_sub <- reactive({
     watch("summary_exclude")
-    req(common$freq_sub)
+    req(watch("freq_compare") > 0)
     freq_compare(common$freq_sub, common$model_type, common$ranking_option)
   })
 
-  output$table_all <- renderTable(colnames=FALSE, {
-    req(table_all())
+  output$table_all <- renderTable(colnames = FALSE, {
     table_all()
   })
 
-  output$table_sub <- renderTable(colnames=FALSE, {
-    req(table_sub())
+  output$table_sub <- renderTable(colnames = FALSE, {
     table_sub()
   })
 
@@ -70,11 +63,9 @@ freq_compare_module_result <- function(id) {
     h4("Treatments are ranked from best to worst along the leading diagonal. Above the leading diagonal are estimates from pairwise meta-analyses, below the leading diagonal are estimates from network meta-analyses"),
     h4("Relative treatment effects in ranked order for all studies"),
     tableOutput(ns("table_all")),
-    downloadButton(ns("download_all")),
     br(),
     h4("Relative treatment effects in ranked order with selected studies excluded"),
     tableOutput(ns("table_sub")),
-    downloadButton(ns("download_sub"))
   )
 }
 

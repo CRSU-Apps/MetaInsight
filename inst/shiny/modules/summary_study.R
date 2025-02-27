@@ -1,33 +1,32 @@
 summary_study_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
-    numericInput(ns("title"), label = "Title text size:", value = 1, step = 0.1),
-    numericInput(ns("header"), label = "Group headers text size:", value = 1, step = 0.1),
-    downloadButton(ns("download"))
+    actionButton(ns("run"), "Generate plot", icon = icon("play")),
+    conditionalPanel("input.run > 0",
+       numericInput(ns("title"), label = "Title text size:", value = 1, step = 0.1),
+       numericInput(ns("header"), label = "Group headers text size:", value = 1, step = 0.1),
+       downloadButton(ns("download")),
+       ns = ns)
   )
 }
 
 summary_study_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
-  observeEvent(list(watch("summary_exclude"), input$content, input$title, input$header), {
-    req(common$freq_sub)
-
-    # METADATA ####
-      common$meta$summary_study$used <- TRUE
-      common$meta$summary_study$content <- as.numeric(input$content)
-      common$meta$summary_study$title <- as.numeric(input$title)
-      common$meta$summary_study$header <- as.numeric(input$header)
-      common$meta$summary_study$format <- input$format
-
+  observeEvent(input$run, {
+    # WARNING ####
+    if (is.null(common$freq_sub)){
+      common$logger %>% writeLog(type= "error", "Please define the data first in the Setup component")
+      return()
+    }
     # TRIGGER
     trigger("summary_study")
   })
 
   # Determine the plot height in pixels
   plot_height <- reactive({
-    watch("summary_study")
-    req(common$freq_sub)
+    watch("summary_exclude")
+    req(watch("summary_study") > 0)
     # The rows that don't correspond to NA treatment effects
     proper_comparison_rows <- !is.na(common$freq_sub$d0$TE)
     # The number of comparisons, with NA rows dropped
@@ -39,8 +38,11 @@ summary_study_module_server <- function(id, common, parent_session) {
   })
 
   output$plot <- renderPlot({
-    watch("summary_study")
-    req(common$freq_sub)
+    watch("summary_exclude")
+    req(watch("summary_study") > 0)
+    common$meta$summary_study$used <- TRUE
+    common$meta$summary_study$title <- as.numeric(input$title)
+    common$meta$summary_study$header <- as.numeric(input$header)
     summary_study(common$freq_sub, common$outcome_measure, as.numeric(input$header), as.numeric(input$title))
   }, height = function(){plot_height()})
 

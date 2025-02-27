@@ -6,7 +6,7 @@ setup_define_module_ui <- function(id) {
                  choices = c("Mean Difference (MD)" = "MD", "Standardised Mean Difference (SMD)" = "SMD")),
     radioButtons(ns("ranking_option"), label = "For treatment rankings, values lower than the mean are:",
                  choices = c("Desirable" = "good", "Undesirable" = "bad")),
-    actionButton(ns("run"), "Define data")
+    actionButton(ns("run"), "Define data", icon = icon("play"))
   )
 }
 
