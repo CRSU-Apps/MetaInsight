@@ -45,15 +45,17 @@ summary_exclude_module_server <- function(id, common, parent_session) {
     observeEvent(exclusion_triggers(), {
       req(common$bugsnet_all)
 
-      # FUNCTION CALL ####
-      result <- summary_exclude(common$main_connected_data,
-                               common$treatment_df,
-                               common$reference_treatment_all,
-                               common$outcome,
-                               common$outcome_measure,
-                               input$model,
-                               input$exclusions,
-                               common$logger)
+      withProgress(message = "Updating selected studies", {
+        # FUNCTION CALL ####
+        result <- summary_exclude(common$main_connected_data,
+                                  common$treatment_df,
+                                  common$reference_treatment_all,
+                                  common$outcome,
+                                  common$outcome_measure,
+                                  input$model,
+                                  input$exclusions,
+                                  common$logger)
+      })
 
       # LOAD INTO COMMON ####
       common$excluded_studies <- input$exclusions
