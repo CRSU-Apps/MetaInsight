@@ -6,9 +6,13 @@
 #' @param outcome_measure character. Type of outcome being plotted
 #' @param ranking_option character. `good` if the treatment effect is desirable, else `bad`
 #' @param model_type character. `random` or `fixed` effects model being plotted
+#' @param logger Stores all notification messages to be displayed in the Log
+#'   Window. Insert the logger reactive list here for running in
+#'   shiny, otherwise leave the default `NULL`
+#'
 #' @return Summary forest matrix plot
 #' @export
-freq_summary <- function(freq, treatment_df, plot_title, outcome_measure, ranking_option, model_type) {
+freq_summary <- function(freq, treatment_df, plot_title, outcome_measure, ranking_option, model_type, logger = NULL) {
 
   check_param_classes(c("freq", "treatment_df", "plot_title", "outcome_measure", "ranking_option", "model_type"),
                       c("list", "data.frame", "character", "character", "character", "character"), logger)
