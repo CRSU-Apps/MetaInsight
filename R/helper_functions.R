@@ -191,10 +191,11 @@ forest_height_pixels <- function(notrt, title=FALSE, annotation = FALSE) {    # 
 #' @export
 download_button_pair <- function(id){
   ns <- NS(id)
-  tagList(
-    div(style = "padding-top: 20px; padding-bottom: 20px; display: flex; gap: 20px;",
-        downloadButton(ns("download_all"), "All studies"),
-        downloadButton(ns("download_sub"), "Without excluded studies"))
+  div(class = "download_buttons",
+    fluidRow(
+      column(width = 6, downloadButton(ns("download_all"), "All studies")),
+      column(width = 6, downloadButton(ns("download_sub"), "Selected studies excluded"))
+    )
   )
 
 }

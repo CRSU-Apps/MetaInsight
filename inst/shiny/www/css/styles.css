@@ -125,9 +125,6 @@ hr {
   background: transparent;
 }
 
-.leaflet-top {
-  z-index: 999 !important;
-}
 #save_warning {
   color: red;
 }
@@ -138,4 +135,16 @@ hr {
 .mod_icon {
   color:#699FA1;
   margin:0px;
+}
+
+.download_buttons {
+  padding-top: 20px;
+  padding-bottom: 20px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.download_buttons.btn-default {
+  width: 100% !important;
+  box-sizing: border-box !important;
 }
