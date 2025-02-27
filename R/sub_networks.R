@@ -4,7 +4,7 @@
 #' @param data Data for which to create graph.
 #'
 #' @return Created igraph object.
-.CreateGraph <- function(data) {
+CreateGraph <- function(data) {
   # Find links
   links = c()
   for (study in unique(data$Study)) {
@@ -17,7 +17,7 @@
   }
   
   # Build network (Mathematical structure is called a 'graph')
-  return(igraph::graph(links, directed = FALSE))
+  return(igraph::make_graph(links, directed = FALSE))
 }
 
 #' Identify all of the disconnected subnetworks contained in the data.
@@ -51,7 +51,7 @@ IdentifySubNetworks <- function(data, treatment_df, reference_treatment_name = N
     reference_treatment <- new_reference_treatment
   }
 
-  graph <- .CreateGraph(data)
+  graph <- CreateGraph(data)
   components <- igraph::components(graph)
   membership <- components$membership
 

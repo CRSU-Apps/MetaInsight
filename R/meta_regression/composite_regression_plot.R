@@ -8,8 +8,7 @@ regression_ghost_name = "\"Other\""
 #' @param treatment_df Data frame containing treatment IDs (Number), sanitised names (Label), and original names (RawLabel).
 #' @param outcome_measure Outcome measure of analysis (OR, RR, RD or MD)
 #' @param comparators Vector of names of comparison treatments to plot in colour.
-#' @param contribution_matrix Contributions from function `CalculateContributions()`.
-#' @param contribution_type Type of contribution, used to calculate sizes for the study contribution circles.
+#' @param directness Contributions from function `CalculateDirectness()`.
 #' @param credible_regions List of credible region data frames from function `CalculateCredibleRegions()`.
 #' @param include_covariate TRUE if the value of the covariate is to be plotted as a vertical line. Defaults to FALSE.
 #' @param include_ghosts TRUE if all other comparator studies should be plotted in grey in the background of the plot. Defaults to FALSE.
@@ -18,8 +17,8 @@ regression_ghost_name = "\"Other\""
 #' @param include_credible TRUE if the credible regions should be plotted for the specified comparators. These will be partially transparent regions.
 #' Defaults to FALSE.
 #' @param credible_opacity The opacity of the credible regions. Can be any value between 0 and 1, inclusive. Defaults to 0.2.
-#' @param include_contributions TRUE if the contributions should be plotted as a circle for each study. Defaults to TRUE.
-#' @param contribution_multiplier Factor by which to scale the sizes of the study contribution circles. Defaults to 1.0.
+#' @param covariate_symbol The selected symbol for displaying covariates. Defaults to "circle open".
+#' @param covariate_symbol_size Size of the covariate symbols. Defaults to 10.
 #' @param legend_position String informing the position of the legend. Acceptable values are:
 #' - "BR" - Bottom-right of the plot area
 #' - "BL" - Bottom-left of the plot area
@@ -32,49 +31,47 @@ CreateCompositeMetaRegressionPlot <- function(
     treatment_df,
     outcome_measure,
     comparators,
-    contribution_matrix,
-    contribution_type,
+    directness,
     credible_regions,
     include_covariate = FALSE,
     include_ghosts = FALSE,
     include_extrapolation = FALSE,
     include_credible = FALSE,
     credible_opacity = 0.2,
-    include_contributions = TRUE,
-    contribution_multiplier = 1.0,
+    covariate_symbol = "circle open",
+    covariate_symbol_size = 10,
     legend_position = "BR") {
-  
+
   direct_plot <- CreateMainRegressionPlot(
     model_output = model_output,
     treatment_df = treatment_df,
     outcome_measure = outcome_measure,
     comparators = comparators,
-    contribution_matrix = contribution_matrix,
-    contribution_type = contribution_type,
+    directness = directness,
     credible_regions = credible_regions,
     include_covariate = include_covariate,
     include_ghosts = include_ghosts,
     include_extrapolation = include_extrapolation,
     include_credible = include_credible,
     credible_opacity = credible_opacity,
-    include_contributions = include_contributions,
-    contribution_multiplier = contribution_multiplier,
+    covariate_symbol = covariate_symbol,
+    covariate_symbol_size = covariate_symbol_size,
     legend_position = legend_position
   )
-  
-  if (!include_contributions) {
+
+  if (covariate_symbol == "none") {
     return(direct_plot)
   }
   
-  indirect_plot <- CreateIndirectContributionPlot(
+  indirect_plot <- CreateIndirectCovariatePlot(
     model_output = model_output,
     treatment_df = treatment_df,
     comparators = comparators,
-    contribution_matrix = contribution_matrix,
-    contribution_type = contribution_type,
+    directness = directness,
     include_covariate = include_covariate,
     include_ghosts = include_ghosts,
-    contribution_multiplier = contribution_multiplier
+    covariate_symbol = covariate_symbol,
+    covariate_symbol_size = covariate_symbol_size
   )
   
   # Find the x-axis ranges of the 2 plots
