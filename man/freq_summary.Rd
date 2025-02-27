@@ -10,7 +10,8 @@ freq_summary(
   plot_title,
   outcome_measure,
   ranking_option,
-  model_type
+  model_type,
+  logger = NULL
 )
 }
 \arguments{
@@ -25,6 +26,10 @@ freq_summary(
 \item{ranking_option}{character. `good` if the treatment effect is desirable, else `bad`}
 
 \item{model_type}{character. `random` or `fixed` effects model being plotted}
+
+\item{logger}{Stores all notification messages to be displayed in the Log
+Window. Insert the logger reactive list here for running in
+shiny, otherwise leave the default `NULL`}
 }
 \value{
 Summary forest matrix plot

@@ -4,7 +4,7 @@
 \alias{forest.df}
 \title{Creates the forest plot from netmeta::netmeta() output.}
 \usage{
-\method{forest}{df}(netresult, model, lstx, ref, min, max)
+forest.df(netresult, model, lstx, ref, min, max)
 }
 \arguments{
 \item{netresult}{NMA results from netmeta::netmeta(), as produced by freq_wrap().}
