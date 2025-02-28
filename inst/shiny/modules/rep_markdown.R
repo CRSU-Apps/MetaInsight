@@ -28,11 +28,13 @@ rep_markdown_module_server <- function(id, common, parent_session, COMPONENT_MOD
         md_files <- c(md_files, md_intro_file)
 
         module_rmds <- NULL
-        #force rep_renv to beginning
+        # force rep_renv to beginning
         components <- names(COMPONENT_MODULES)
         components <- c("rep", components[components != c("rep")])
         for (component in components) {
           for (module in COMPONENT_MODULES[[component]]) {
+
+            # print(module$id) #for debugging
 
             rmd_file <- module$rmd_file
             rmd_function <- module$rmd_function

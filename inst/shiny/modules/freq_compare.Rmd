@@ -3,11 +3,11 @@ Produce tables of relative treatment effects
 ```
 
 ```{r, echo = {{freq_compare_knit}}, include = {{freq_compare_knit}}}
-frequentist_comparison_all <- freq_compare(frequentist_all, model_type)
+frequentist_comparison_all <- freq_compare(frequentist_all, model_type, ranking_option)
 knitr::kable(frequentist_comparison_all, row.names = TRUE, caption = "Relative treatment effects in ranked order for all studies")
 ```
 
 ```{r, echo = {{freq_compare_knit}}, include = {{freq_compare_knit}}}
-frequentist_comparison_sub <- freq_compare(frequentist_sub, model_type)
+frequentist_comparison_sub <- freq_compare(frequentist_sub, model_type, ranking_option)
 knitr::kable(frequentist_comparison_sub, row.names = TRUE, caption = "Relative treatment effects in ranked order with selected studies excluded")
 ```

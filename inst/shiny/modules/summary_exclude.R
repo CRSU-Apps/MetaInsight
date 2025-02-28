@@ -107,6 +107,7 @@ summary_exclude_module_server <- function(id, common, parent_session) {
 summary_exclude_module_rmd <- function(common){ list(
   summary_exclude_knit = !is.null(common$meta$summary_exclude$used),
   summary_exclude_exclusions = common$meta$summary_exclude$exclusions,
-  summary_exclude_model = common$meta$summary_exclude$model)
+  summary_exclude_model = common$meta$summary_exclude$model,
+  summary_exclude_reference_treatment = common$reference_treatment_sub)
 }
 

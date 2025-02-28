@@ -125,6 +125,8 @@ freq_forest_module_server <- function(id, common, parent_session) {
   })
 
   output$plot_wrap_all <- renderUI({
+    # required for testing
+    shinyjs::runjs("Shiny.setInputValue('freq_forest-complete', 'complete');")
     plotOutput(session$ns("plot_all"), height = result_all()$height_pixels)
   })
 
@@ -225,6 +227,6 @@ freq_forest_module_rmd <- function(common){ list(
   freq_forest_height_all = common$meta$freq_forest$height_all,
   freq_forest_width_all = common$meta$freq_forest$width_all,
   freq_forest_height_sub = common$meta$freq_forest$height_sub,
-  freq_forest_width_sub = common$meta$freq_forest$width_sub
+  freq_forest_width_sub = common$meta$freq_forest$width_sub)
 }
 

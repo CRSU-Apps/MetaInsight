@@ -30,7 +30,7 @@ grid::grid.text(frequentist_forest_all$annotation, 0.5, grid::unit(frequentist_f
 frequentist_forest_xmin_sub <- {{freq_forest_xmin_sub}}
 frequentist_forest_xmax_sub <- {{freq_forest_xmax_sub}}
 frequentist_forest_sub <- freq_forest(frequentist_sub, 
-                                      reference_treatment_all,
+                                      reference_treatment_sub,
                                       model_type,
                                       outcome_measure,
                                       frequentist_forest_xmin_sub,
