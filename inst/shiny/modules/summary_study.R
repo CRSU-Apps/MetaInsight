@@ -43,6 +43,7 @@ summary_study_module_server <- function(id, common, parent_session) {
     common$meta$summary_study$used <- TRUE
     common$meta$summary_study$title <- as.numeric(input$title)
     common$meta$summary_study$header <- as.numeric(input$header)
+    common$meta$summary_study$height <- plot_height()/72 # pixels to inches
     summary_study(common$freq_sub, common$outcome_measure, as.numeric(input$header), as.numeric(input$title))
   }, height = function(){plot_height()})
 
@@ -56,7 +57,7 @@ summary_study_module_server <- function(id, common, parent_session) {
                           common$download_format,
                           function(){summary_study(common$freq_sub, common$outcome_measure, as.numeric(input$header), as.numeric(input$title))},
                           width = 8,
-                          height = plot_height()/72 #pixels to inches
+                          height = common$meta$summary_study$height
                           )
       }
   )
@@ -88,6 +89,7 @@ summary_study_module_result <- function(id) {
 summary_study_module_rmd <- function(common){ list(
   summary_study_knit = !is.null(common$meta$summary_study$used),
   summary_study_title = common$meta$summary_study$title,
-  summary_study_header = common$meta$summary_study$header)
+  summary_study_header = common$meta$summary_study$header,
+  summary_study_height = common$meta$summary_study$height)
 }
 

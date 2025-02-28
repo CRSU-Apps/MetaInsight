@@ -104,12 +104,21 @@ freq_forest_module_server <- function(id, common, parent_session) {
 
 
   output$plot_all <- renderPlot({
+
+    common$meta$freq_forest$height_all <- (result_all()$height_pixels) / 72 # divide by 72 dpi
+    # make width responsive to treatment label
+    common$meta$freq_forest$width_all <- 5 + (max(nchar(common$treatment_df$Label)) / 10)
+
     result_all()$plot()
     title("Results for all studies")
     mtext(result_all()$annotation, padj = 0.5)
   })
 
   output$plot_sub <- renderPlot({
+    common$meta$freq_forest$height_sub <- (result_sub()$height_pixels) / 72 # divide by 72 dpi
+    # make width responsive to treatment label
+    common$meta$freq_forest$width_sub <- 5 + (max(nchar(common$treatment_df$Label)) / 10)
+
     result_sub()$plot()
     title("Results with selected studies excluded")
     mtext(result_sub()$annotation, padj = 0.5)
@@ -128,11 +137,8 @@ freq_forest_module_server <- function(id, common, parent_session) {
       paste0("MetaInsight_frequentist_forest_all.", common$download_format)},
     content = function(file){
 
-      # remove title, divide by 72 dpi
-      height <- (result_all()$height_pixels) / 72
-
-      # make width responsive to treatment label
-      width <- 5 + (max(nchar(common$treatment_df$Label)) / 10)
+      height <- common$meta$freq_forest$height_all
+      width <- common$meta$freq_forest$width_all
 
       if (common$download_format == "pdf"){
         pdf(file = file, height = height, width = width)
@@ -155,11 +161,8 @@ freq_forest_module_server <- function(id, common, parent_session) {
       paste0("MetaInsight_frequentist_forest_sub.", common$download_format)},
     content = function(file){
 
-      # divide by 72 dpi
-      height <- (result_sub()$height_pixels) / 72
-
-      # make width responsive to treatment label
-      width <- 5 + (max(nchar(common$treatment_df$Label)) / 10)
+      height <- common$meta$freq_forest$height_sub
+      width <- common$meta$freq_forest$width_sub
 
       if (common$download_format == "pdf"){
         pdf(file = file, height = height, width = width)
@@ -218,6 +221,10 @@ freq_forest_module_rmd <- function(common){ list(
   freq_forest_xmin_all = common$meta$freq_forest$xmin_all,
   freq_forest_xmax_all = common$meta$freq_forest$xmax_all,
   freq_forest_xmin_sub = common$meta$freq_forest$xmin_sub,
-  freq_forest_xmax_sub = common$meta$freq_forest$xmax_sub)
+  freq_forest_xmax_sub = common$meta$freq_forest$xmax_sub,
+  freq_forest_height_all = common$meta$freq_forest$height_all,
+  freq_forest_width_all = common$meta$freq_forest$width_all,
+  freq_forest_height_sub = common$meta$freq_forest$height_sub,
+  freq_forest_width_sub = common$meta$freq_forest$width_sub
 }
 

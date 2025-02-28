@@ -2,10 +2,16 @@
 Generate a summary forest plot matrix
 ```
 
+```{asis, echo = {{freq_summary_knit}}, eval = {{freq_summary_knit}}, include = {{freq_summary_knit}}}
+{r, fig.width = {{freq_summary_width}}, fig.height = {{freq_summary_height}}}
+```
 ```{r, echo = {{freq_summary_knit}}, include = {{freq_summary_knit}}}
 freq_summary(frequentist_all, treatment_df, "Summary Forest Plot", outcome_measure, ranking_option, model_type)
 ```
 
+```{asis, echo = {{freq_summary_knit}}, eval = {{freq_summary_knit}}, include = {{freq_summary_knit}}}
+{r, fig.width = {{freq_summary_width}}, fig.height = {{freq_summary_height}}}
+```
 ```{r, echo = {{freq_summary_knit}}, include = {{freq_summary_knit}}}
-freq_summary(frequentist_sub, treatment_df, "Summary Forest Plot", outcome_measure, ranking_option, model_type)
+freq_summary(frequentist_sub, treatment_df, "Summary Forest Plot with Selected Studies Excluded", outcome_measure, ranking_option, model_type)
 ```

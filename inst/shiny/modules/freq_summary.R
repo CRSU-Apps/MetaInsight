@@ -23,6 +23,8 @@ freq_summary_module_server <- function(id, common, parent_session) {
     watch("model")
     req(watch("freq_summary") > 0)
     common$meta$freq_summary$used <- TRUE
+    common$meta$freq_summary$height <- 2.5 * nrow(common$treatment_df)
+    common$meta$freq_summary$width <- 2.5 * nrow(common$treatment_df)
     freq_summary(common$freq_all,
                  common$treatment_df,
                  "Summary Forest Plot",
@@ -60,8 +62,8 @@ freq_summary_module_server <- function(id, common, parent_session) {
                        common$ranking_option,
                        common$model_type)
         },
-        height = 2.5 * nrow(common$treatment_df),
-        width = 2.5 * nrow(common$treatment_df)
+        height = common$meta$freq_summary$height,
+        width = common$meta$freq_summary$width
       )
     }
   )
@@ -82,8 +84,8 @@ freq_summary_module_server <- function(id, common, parent_session) {
                        common$ranking_option,
                        common$model_type)
         },
-        height = 2.5 * nrow(common$treatment_df),
-        width = 2.5 * nrow(common$treatment_df)
+        height = common$meta$freq_summary$height,
+        width = common$meta$freq_summary$width
       )
     }
   )
@@ -99,6 +101,8 @@ freq_summary_module_result <- function(id) {
 }
 
 freq_summary_module_rmd <- function(common) {
-  list(freq_summary_knit = !is.null(common$meta$freq_summary$used))
+  list(freq_summary_knit = !is.null(common$meta$freq_summary$used),
+       freq_summary_height = common$meta$freq_summary$height,
+       freq_summary_width = common$meta$freq_summary$width)
 }
 
