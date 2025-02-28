@@ -27,7 +27,7 @@ test_that("summary_char produces a merged table that can be downloaded", {
   app$set_inputs(tabs = "summary")
   app$set_inputs("summary_exclude-exclusions" = c("Study01", "Study25"))
   app$set_inputs(summarySel = "summary_char")
-  app$set_inputs(main = "Results")
+  app$click("summary_char-run")
 
   # don't know why, but the downloads fail without this
   common <- app$get_value(export = "common")

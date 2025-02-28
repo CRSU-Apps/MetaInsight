@@ -59,8 +59,11 @@ Imports:
     tools,
     zip
 Suggests:
+    magick,
+    pdftools,
     shinytest2,
-    testthat
+    testthat,
+    xml2
 License: GPL-3
 URL: 
 Encoding: UTF-8
