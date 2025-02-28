@@ -2,7 +2,7 @@ freq_inconsistent_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
     actionButton(ns("run"), "Generate tables", icon = icon("play")),
-    conditionalPanel("input.run > 0", download_button_pair(id))
+    conditionalPanel("input.run > 0", download_button_pair(id), ns = ns)
   )
 }
 
@@ -11,7 +11,7 @@ freq_inconsistent_module_server <- function(id, common, parent_session) {
 
     observeEvent(input$run, {
       # WARNING ####
-      if (is.null(common$freq_sub)){
+      if (is.null(common$freq_all)){
         common$logger %>% writeLog(type = "error", "Please define the data first in the Setup component")
         return()
       }
@@ -36,14 +36,14 @@ freq_inconsistent_module_server <- function(id, common, parent_session) {
     output$table_sub <- renderTable(colnames = TRUE, table_sub())
 
     output$download_all <- downloadHandler(
-      filename = "MetaInight_inconsistency_all.csv",
+      filename = "MetaInsight_inconsistency_all.csv",
       content = function(file) {
         write.csv(table_all(), file)
       }
     )
 
     output$download_sub <- downloadHandler(
-      filename = "MetaInight_inconsistency_sub.csv",
+      filename = "MetaInsight_inconsistency_sub.csv",
       content = function(file) {
         write.csv(table_sub(), file)
       }
