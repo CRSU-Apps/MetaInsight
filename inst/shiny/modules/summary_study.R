@@ -53,7 +53,7 @@ summary_study_module_server <- function(id, common, parent_session) {
     },
     content = function(file) {
 
-      write_to_pdf_or_png(file,
+      write_plot(file,
                           common$download_format,
                           function(){summary_study(common$freq_sub, common$outcome_measure, as.numeric(input$header), as.numeric(input$title))},
                           width = 8,

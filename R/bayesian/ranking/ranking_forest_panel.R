@@ -74,7 +74,7 @@ ranking_forest_panel_server <- function(
             mtext(model()$cov_value_sentence, side = 1, adj = 0)
           }
         }
-        write_to_pdf_or_png(
+        write_plot(
           file,
           input$rank_forest_choice,
           draw_forest

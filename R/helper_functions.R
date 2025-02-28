@@ -164,6 +164,28 @@ show_table <- function(parent_session){
 # PLOTTING #
 ####################### #
 
+#' Write a plot to a .pdf, .png or .svg file.
+#'
+#' @param file The file to which to write.
+#' @param type String containing the type of file to which to write.
+#' @param renderFunction A function to render the plot.
+#' @param height The height of the plot in inches for pdf, or user specified units for png.
+#' @param width The width of the plot in inches for pdf, or user specified units for png.
+#' @export
+write_plot <- function(file, type, renderFunction, height = NULL, width = NULL) {
+  if (type == "pdf") {
+    pdf(file = file, height = height, width = width)
+  }
+  if (type == "png") {
+    png(file = file, height = height, width = width, units = "in", res = 300)
+  }
+  if (type == "svg") {
+    svg(file = file, height = height, width = width)
+  }
+  renderFunction()
+  dev.off()
+}
+
 #' Calculate the pixel height of a forest plot for a given number of treatments
 #'
 #' @param notrt The number of treatments in the plot

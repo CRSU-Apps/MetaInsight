@@ -51,7 +51,7 @@ freq_summary_module_server <- function(id, common, parent_session) {
       paste0("MetaInsight_summary_forest_all.", common$download_format)
     },
     content = function(file) {
-      write_to_pdf_or_png(
+      write_plot(
         file = file,
         type = common$download_format,
         renderFunction = function() {
@@ -73,7 +73,7 @@ freq_summary_module_server <- function(id, common, parent_session) {
       paste0("MetaInsight_summary_forest_sub.", common$download_format)
     },
     content = function(file) {
-      write_to_pdf_or_png(
+      write_plot(
         file = file,
         type = common$download_format,
         renderFunction = function() {

@@ -67,28 +67,6 @@ BayesInch <- function(notrt) {
   return(height)
 }
 
-#' Write some plot to a .pdf or .png file.
-#'
-#' @param file The file to which to write.
-#' @param type String containing the type of file to which to write.
-#' @param renderFunction A function to render the plot.
-#' @param height The height of the plot in inches for pdf, or user specified units for png.
-#' @param width The width of the plot in inches for pdf, or user specified units for png.
-#' @export
-write_to_pdf_or_png <- function(file, type, renderFunction, height = NULL, width = NULL) {
-  if (type == "pdf") {
-    pdf(file = file, height = height, width = width)
-  }
-  if (type == "png") {
-    png(file = file, height = height, width = width, units = "in", res = 300)
-  }
-  if (type == "svg") {
-    svg(file = file, height = height, width = width)
-  }
-  renderFunction()
-  dev.off()
-}
-
 
 #########################
 ### Tab 2 - Load data ###

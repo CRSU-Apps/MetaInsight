@@ -51,7 +51,7 @@ summary_forest_plot_server <- function(id, sfp_data, treatment_df, outcome_type,
         paste0(download_file_name, '.', tolower(input$summaryForestPlotFormat))
       },
       content = function(file) {
-        write_to_pdf_or_png(
+        write_plot(
           file = file,
           type = input$summaryForestPlotFormat,
           renderFunction = function() {

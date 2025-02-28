@@ -86,7 +86,7 @@ ranking_network_panel_server <- function(
           }
           title(paste0(title_prefix, ": Network plot of all studies"))
         }
-        write_to_pdf_or_png(
+        write_plot(
           file,
           input$network_rank_choice,
           draw_network_rank

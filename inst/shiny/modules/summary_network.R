@@ -90,7 +90,7 @@ summary_network_module_server <- function(id, common, parent_session) {
           summary_network(common$freq_all, common$bugsnet_all, input$style, input$label_all, common$logger)
           title("Network plot of all studies")
         }
-        write_to_pdf_or_png(
+        write_plot(
           file,
           common$download_format,
           draw_network,
@@ -109,7 +109,7 @@ summary_network_module_server <- function(id, common, parent_session) {
           summary_network(common$freq_sub, common$bugsnet_sub, input$style, input$label_sub, common$logger)
           title("Network plot with selected studies excluded")
         }
-        write_to_pdf_or_png(
+        write_plot(
           file,
           common$download_format,
           draw_network,

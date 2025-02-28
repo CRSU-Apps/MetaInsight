@@ -248,7 +248,7 @@ data_summary_panel_server <- function(id, metaoutcome, outcome_measure, bugsnetd
           }
           title("Network plot of all studies")
         }
-        write_to_pdf_or_png(
+        write_plot(
           file,
           input$format_freq1,
           draw_network
@@ -271,7 +271,7 @@ data_summary_panel_server <- function(id, metaoutcome, outcome_measure, bugsnetd
           }
           title("Network plot with selected studies excluded")
         }
-        write_to_pdf_or_png(
+        write_plot(
           file,
           input$format_freq2,
           draw_network
