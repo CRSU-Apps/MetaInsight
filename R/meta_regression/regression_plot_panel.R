@@ -305,16 +305,15 @@ regression_plot_panel_server <- function(
           treatment_df = treatment_df(),
           outcome_measure = outcome_measure(),
           comparators = comparator_titles(),
-          contribution_matrix = contribution_matrix(),
-          contribution_type = input$absolute_relative_toggle,
+          directness = directness(),
           credible_regions = credible_regions$result(),
           include_covariate = input$covariate,
           include_ghosts = input$ghosts,
           include_extrapolation = input$extrapolate,
           include_credible = input$credible,
           credible_opacity = input$credible_opacity,
-          include_contributions = input$contributions != "None",
-          contribution_multiplier = input$circle_multipler,
+          covariate_symbol = input$covariate_symbol,
+          covariate_symbol_size = input$covariate_symbol_size,
           legend_position = input$legend_position_dropdown
         )
       )
