@@ -21,7 +21,7 @@ home_page_ui <- function(id) {
         });'
       )
     ),
-    h2("MetaInsight v6.2.1", align = "left"),
+    h2("MetaInsight v6.3.0", align = "left"),
     fluidRow(
       column(
         width = 3,
