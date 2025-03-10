@@ -35,20 +35,15 @@ home_page_ui <- function(id) {
       column(
         width = 5,
         p(tags$strong("Latest Updates:")),
+        p(tags$strong("Minor update (11 March 2025 v6.3.0):")),
+        tags$ul(
+          tags$li("Removed the limit of 6 arms per study in the frequentist analysis."),
+          tags$li("Removed the sizing of circles by contribution in the regression plot."),
+          tags$li("Fixed a bug in the study-level forest plot where the last treatment effect was partially cut off."),
+        ),
         p(tags$strong("Minor update (29 January 2025 v6.2.1):")),
         tags$ul(
           tags$li("Various bug fixes, and improvements to displays."),
-        ),
-        p(tags$strong("Major update (10 July 2024 v6.0.0):")),
-        p(
-          tags$ul(
-            tags$li(
-              "Meta-regression has been added. One covariate is allowed, which can be a new continuous or binary variable,
-              or baseline risk. Two new graphs are available for meta-regression. The first displays the covariate values grouped by
-              treatment and study. The second plots the covariate against relative treatment effects, with credible regions and
-              study-level contributions."
-            )
-          )
         ),
         p(
           "The full update history for MetaInsight is available on",
