@@ -458,8 +458,11 @@ rank_probs_table = function(data) {
 #' @return UME scatter plot created by umeplot.df().
 scat_plot = function(model) {
   x <- gemtc::mtc.deviance(model$mtcResults)
-  c <- data.frame(x$dev.ab)
-  umeplot.df(c = c, mtcNetwork = model$mtcNetwork, model = model$model, outcome = model$outcome)
+  residual_deviance <- data.frame(x$dev.ab)
+  umeplot.df(residual_deviance = residual_deviance,
+             mtcNetwork = model$mtcNetwork,
+             model = model$model,
+             outcome = model$outcome)
 }
 
 

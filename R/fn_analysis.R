@@ -8,7 +8,11 @@
 #' @param reference Name of the reference treatment.
 #' @return See output from freq_wrap().
 frequentist <- function(data, metaoutcome, treatment_list, outcome_measure, modelranfix, reference) {
-  data_wide <-  entry.df(data = data, CONBI = metaoutcome) # Transform data to wide form
+  if (FindDataShape(data) == "long") {
+    data_wide <- LongToWide(long_data = data, outcome_type = metaoutcome)
+  } else {
+    data_wide <- data
+  }
   
   # Use the self-defined function, freq_wrap
   return(
@@ -25,62 +29,44 @@ frequentist <- function(data, metaoutcome, treatment_list, outcome_measure, mode
 
 
 
-#' Converts long data to wide, leaves wide data unchanged.
-#' 
-#' @param data Input dataset.
-#' @param CONBI "Continuous" or "Binary".
-#' @return Input data in long format.
-entry.df <- function(data, CONBI) {
-  newData1 <- as.data.frame(data)
-  if (FindDataShape(newData1) == "long") {
-    newData2<-newData1[order(newData1$StudyID, -newData1$T), ]
-    newData2$number<- ave(as.numeric(newData2$StudyID),newData2$StudyID,FUN=seq_along)  # create counting variable for number of arms within each study.
-    data_wide <- reshape(newData2, timevar = "number",idvar = c("Study", "StudyID"), direction = "wide") # reshape
-    numbertreat=max(newData2$number)
-  }
-  else {
-    data_wide<- newData1
-    a<- ifelse(CONBI=='Continuous', 4, 3)
-    numbertreat=(ncol(newData1)-2)/a
-  }
-  if (numbertreat < 6) {  # generate additional columns if less than 6 arms.
-    for (k in (numbertreat+1):6) {
-      if (CONBI=='Continuous') {
-        data_wide[c(paste0("T.",k),paste0("N.",k),paste0("Mean.",k),paste0("SD.",k))]<-NA
-      } else {
-        data_wide[c(paste0("T.",k),paste0("R.",k),paste0("N.",k))]<-NA
-      }
-    }
-  }
-  return(data_wide)
-}
-
-
-
 #########################
 ##### function for transforming data to contrast form
 #########################
 
-#' Puts data in contrast form using netmeta::pairwise().
+#' Puts data in contrast form using meta::pairwise().
 #' 
 #' @param data Input dataset.
 #' @param outcome "MD", "SMD", "OR", "RR", or "RD".
 #' @param CONBI "Continuous" or "Binary".
 #' @return Input data in contrast form.
 contrastform.df <- function(data, outcome, CONBI) {
+
+  #Create a list of columns of the variables to be passed to meta::pairwise()
+  treat_list <- CreateListOfWideColumns(wide_data = data, column_prefix = "T")
+  n_list <-  CreateListOfWideColumns(wide_data = data, column_prefix = "N")
+  
   if (CONBI == 'Continuous') {
-    d1 <- netmeta::pairwise(treat = list(T.1, T.2, T.3, T.4, T.5, T.6),
-                            n = list(N.1, N.2, N.3, N.4, N.5, N.6),
-                            mean = list(Mean.1, Mean.2, Mean.3, Mean.4, Mean.5, Mean.6),
-                            sd = list(SD.1, SD.2, SD.3, SD.4, SD.5, SD.6),
-                            data = data,                
-                            sm = outcome)
+    
+    mean_list <-  CreateListOfWideColumns(wide_data = data, column_prefix = "Mean")
+    sd_list <-  CreateListOfWideColumns(wide_data = data, column_prefix = "SD")
+    
+    d1 <- meta::pairwise(treat = treat_list,
+                         n = n_list,
+                         mean = mean_list,
+                         sd = sd_list,
+                         data = data,                
+                         sm = outcome,
+                         studlab = data$Study)
   } else if (CONBI == 'Binary') {
-    d1 <- netmeta::pairwise(treat = list(T.1, T.2, T.3, T.4, T.5, T.6),
-                            event = list(R.1, R.2, R.3, R.4, R.5, R.6),
-                            n = list(N.1, N.2, N.3, N.4, N.5, N.6),
-                            data = data,
-                            sm = outcome)
+    
+    event_list <-  CreateListOfWideColumns(wide_data = data, column_prefix = "R")
+    
+    d1 <- meta::pairwise(treat = treat_list,
+                         event = event_list,
+                         n = n_list,
+                         data = data,
+                         sm = outcome,
+                         studlab = data$Study)
   } else {
     stop("CONBI must be 'Continuous' or 'Binary'")
   }
@@ -120,14 +106,28 @@ labelmatching.df <- function(d1, ntx, treat_list) {
 #' @param model "fixed" or "random".
 #' @param outcome "MD", "SMD", "OR", "RR", or "RD".
 #' @param dataf Data in contrast form with treatment labels, typically output from labelmatching.df().
-#' @param lstx Vector of treatment labels. (TM: this parameter is not used. Removing it has knock on effects due to parameters not being named when this function is called. To be removed in a later task).
 #' @param ref Reference treatment.
 #' @return NMA results from netmeta::netmeta().
-freq.df <- function(model, outcome, dataf, lstx, ref) {
-  net1 <- netmeta(TE = TE, seTE = seTE, treat1 = treat1, treat2 = treat2, studlab = studlab, data = dataf, subset=NULL,
-                  sm = outcome, level = 0.95, level.comb=0.95, comb.random = (model == "random"),
-                  comb.fixed = (model == "fixed"), reference.group = ref, all.treatments = NULL, seq = NULL,
-                  tau.preset = NULL, tol.multiarm = 0.05, tol.multiarm.se = 0.2, warn = TRUE)
+freq.df <- function(model, outcome, dataf, ref) {
+  net1 <- netmeta::netmeta(TE = TE,
+                           seTE = seTE,
+                           treat1 = treat1,
+                           treat2 = treat2,
+                           studlab = studlab,
+                           data = dataf,
+                           subset = NULL,
+                           sm = outcome,
+                           level = 0.95,
+                           level.ma = 0.95,
+                           random = (model == "random"),
+                           common = (model == "fixed"),
+                           reference.group = ref,
+                           all.treatments = NULL,
+                           seq = NULL,
+                           tau.preset = NULL,
+                           tol.multiarm = 0.05,
+                           tol.multiarm.se = 0.2,
+                           warn = TRUE)
   return(net1) 
 }
 
@@ -161,7 +161,7 @@ freq_wrap <- function(data, treat_list, model, outcome, CONBI, ref) {
   ntx <- length(lstx)     #count treatment numbers
   d1 <- labelmatching.df(d1 = d0, ntx = ntx, treat_list = treat_list) #matching treatment labels to treatment code
   progress$inc(0.6, detail = "Updating")
-  net1 <- freq.df(model = model, outcome = outcome, dataf = d1, lstx = lstx, ref = ref) # NMA of all studies
+  net1 <- freq.df(model = model, outcome = outcome, dataf = d1, ref = ref) # NMA of all studies
   progress$inc(0.4, detail = "Rendering results")
   return(list(net1 = net1, lstx = lstx, ntx = ntx, d0 = d0, d1 = d1))
 }
@@ -222,12 +222,12 @@ groupforest.df <- function(d1, ntx, lstx, outcome, HeaderSize, TitleSize) {
   
   if (outcome == "OR" | outcome =="RR" ){
     fplot <- metafor::forest(d1$TE, sei = d1$seTE, slab = paste(d1$Study), subset = order(d1$treat1, d1$treat2),
-                             ylim = c(1, nrow(d1) + 2 * length(text_label) + 2), rows = lines, atransf = exp,
+                             ylim = c(0, nrow(d1) + 2 * length(text_label) + 2), rows = lines, atransf = exp,
                              at = log(c(0.01, 1, 10, 100)), xlab = paste("Observed ", outcome), efac = 0.5
                              )
   } else {
     fplot <- metafor::forest(d1$TE, sei = d1$seTE, slab = paste(d1$Study), subset = order(d1$treat1, d1$treat2),
-                             ylim = c(1, nrow(d1) + 2 * length(text_label) + 2), rows = lines,
+                             ylim = c(0, nrow(d1) + 2 * length(text_label) + 2), rows = lines,
                              xlab = paste("Observed ",outcome), efac = 0.5)
   }
   text(fplot$xlim[1], gaps, pos = 4, font = 4, text_label, cex = HeaderSize)

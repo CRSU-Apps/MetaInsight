@@ -6,6 +6,7 @@
 bayesian_forest_plot_plus_stats_ui <- function(id) {
   ns <- NS(id)
   div(
+    invalid_model_panel_ui(id = ns("model_invalid")),
     shinycssloaders::withSpinner(
       uiOutput(outputId = ns("bayesian_forest_plot")),
       type = 6
@@ -54,16 +55,28 @@ bayesian_forest_plot_plus_stats_ui <- function(id) {
 #' @param metaoutcome Reactive containing meta analysis outcome: "Continuous" or "Binary"
 #' @param outcome_measure Reactive containing meta analysis outcome measure: "MD", "SMD", "OR, "RR", or "RD"
 #' @param bugsnetdt Reactive containing bugsnet meta-analysis
+#' @param model_valid Reactive containing whether the model is valid
 bayesian_forest_plot_plus_stats_server <- function(
     id,
     model_output,
     analysis_type,
     metaoutcome,
     outcome_measure,
-    bugsnetdt
+    bugsnetdt,
+    model_valid = reactiveVal(TRUE)
     ) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
+    
+    invalid_model_panel_server(id = "model_invalid", model_valid = model_valid)
+    
+    observe({
+      if (is.null(model_valid()) || !model_valid()) {
+        shinyjs::disable(id="download_plot")
+      } else {
+        shinyjs::enable(id="download_plot")
+      }
+    })
 
     output$package <- reactive({"gemtc"})
     outputOptions(x = output, name = "package", suspendWhenHidden = FALSE)
@@ -85,6 +98,10 @@ bayesian_forest_plot_plus_stats_server <- function(
 
     # Forest plot for all studies
     output$forest_plot <- renderPlot({
+      if (is.null(model_valid()) || !model_valid()) {
+        return()
+      }
+      
       CreateForestPlot(model_output(), metaoutcome(), input$axis_min, input$axis_max)
       title(paste(ifelse(analysis_type == "Full", "All studies:", 
                          ifelse(analysis_type == "Sub", "Results with studies excluded:",
@@ -99,13 +116,23 @@ bayesian_forest_plot_plus_stats_server <- function(
     })
     
     # DIC table for all studies
-    output$dic <- renderTable ({
-      model_output()$dic
-    }, digits=3, rownames=TRUE, colnames=FALSE
+    output$dic <- renderTable (
+      digits = 3,
+      rownames = TRUE,
+      colnames = FALSE,
+      {
+        if (is.null(model_valid()) || !model_valid()) {
+          return()
+        }
+        model_output()$dic
+      }
     )
     
     # Tau all studies
     output$tau_text <-renderText({
+      if (is.null(model_valid()) || !model_valid()) {
+        return()
+      }
       CreateTauSentence(model_output(), outcome_measure())
     })
     
@@ -138,14 +165,16 @@ bayesian_forest_plot_plus_stats_server <- function(
     # Interactive UI - forest plot
     output$bayesian_forest_plot <- renderUI({
       shinycssloaders::withSpinner(
+        type = 6,
         plotOutput(
-        outputId = ns("forest_plot"),
-        width="630px",
-        height = BayesPixels(
-          as.numeric(bugsnet_sumtb(bugsnetdt(), metaoutcome())$Value[1]),
-          title = TRUE
+          outputId = ns("forest_plot"),
+          width="630px",
+          height = BayesPixels(
+            as.numeric(bugsnet_sumtb(bugsnetdt(), metaoutcome())$Value[1]),
+            title = TRUE
+          )
         )
-      ), type = 6)
+      )
     })
     
   })
@@ -163,37 +192,62 @@ bayesian_forest_plot_plus_stats_server <- function(
 #' @param metaoutcome Reactive containing meta analysis outcome: "Continuous" or "Binary"
 #' @param outcome_measure Reactive containing meta analysis outcome measure: "MD" or "OR"
 #' @param bugsnetdt Reactive containing bugsnet meta-analysis
+#' @param model_valid Reactive containing whether the model is valid
 bayesian_forest_plot_plus_stats_baseline_risk_server <- function(
     id,
     model_reactive,
     metaoutcome,
     outcome_measure,
-    bugsnetdt
+    bugsnetdt,
+    model_valid = reactiveVal(TRUE)
 ) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
+    
+    invalid_model_panel_server(id = "model_invalid", model_valid = model_valid)
+    
+    observe({
+      if (is.null(model_valid()) || !model_valid()) {
+        shinyjs::disable(id="download_plot")
+      } else {
+        shinyjs::enable(id="download_plot")
+      }
+    })
 
     output$package <- reactive({"bnma"})
     outputOptions(x = output, name = "package", suspendWhenHidden = FALSE)
     
     # Forest plot for all studies
     output$forest_plot <- renderPlot({
+      if (is.null(model_valid()) || !model_valid()) {
+        return()
+      }
+      
       bnma::network.forest.plot(model_reactive(), only.reference.treatment = TRUE)
     }) 
     
-    observe({
-      model_reactive()
-      # DIC table for all studies
-      output$dic <- renderTable ({
+    # DIC table for all studies
+    output$dic <- renderTable (
+      digits = 3,
+      rownames = TRUE,
+      colnames = FALSE,
+      {
+        if (is.null(model_valid()) || !model_valid()) {
+          return()
+        }
         BaselineRiskDicTable(model_reactive())
-      }, digits=3, rownames=TRUE, colnames=FALSE)
-      # Tau all studies
-      output$tau_text <-renderText({
-        CreateTauSentence(
-          FormatForCreateTauSentence(model_reactive()),
-          outcome_measure()
-        )
-      })
+      }
+    )
+    
+    # Tau all studies
+    output$tau_text <-renderText({
+      if (is.null(model_valid()) || !model_valid()) {
+        return()
+      }
+      CreateTauSentence(
+        FormatForCreateTauSentence(model_reactive()),
+        outcome_measure()
+      )
     })
     
     output$download_plot <- downloadHandler(
@@ -219,6 +273,7 @@ bayesian_forest_plot_plus_stats_baseline_risk_server <- function(
     # Interactive UI - forest plot
     output$bayesian_forest_plot <- renderUI({
       shinycssloaders::withSpinner(
+        type = 6,
         plotOutput(
           outputId = ns("forest_plot"),
           width="630px",
@@ -226,7 +281,8 @@ bayesian_forest_plot_plus_stats_baseline_risk_server <- function(
             as.numeric(bugsnet_sumtb(bugsnetdt(), metaoutcome())$Value[1]),
             title = FALSE
           )
-        ), type = 6)
+        )
+      )
     })
 
   })

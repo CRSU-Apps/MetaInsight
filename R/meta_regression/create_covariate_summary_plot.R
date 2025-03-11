@@ -42,7 +42,6 @@ CreateCovariateSummaryPlot <- function(long_data, metaoutcome, covariate_or_base
     mutated_data <- long_data # Rename for input to BUGSnet::data.prep
   } 
   
-  # browser()
   # Add column with treatment labels
   mutated_data <- mutated_data %>%
     dplyr::inner_join(treatment_df, by = join_by(T == Number)) 

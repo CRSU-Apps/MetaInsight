@@ -19,19 +19,19 @@ wide_format_upload_panel_ui <- function(id) {
     h4(tags$strong("Step 1:")),
     p("The wide format data file should contain the following columns:"),
     p(tags$ul(tags$li(tags$strong("Study"), "contains name (e.g., author,year) of the study. The study name must be unique for each study."))),
-    p(tags$ul(tags$li(tags$strong("T.1, T.2, ..., up to T.6"), "contains name of the treatment given for study arm 1, 2, ..., up to 6, respectively. Treatment names should only contain letters, numbers and underscores."))),
+    p(tags$ul(tags$li(tags$strong("T.1, T.2, ..., up to T.k"), "contains name of the treatment given for study arm 1, 2, ..., up to k, respectively. Treatment names should only contain letters, numbers and underscores."))),
     conditionalPanel(
       condition = "output.metaoutcome == 'Continuous'",
       ns = ns,
-      p(tags$ul(tags$li(tags$strong("N.1, N.2, ..., up to N.6"), "contains number of participants in study arm 1, 2, ..., up to 6, respectively"))),
-      p(tags$ul(tags$li(tags$strong("Mean.1, Mean.2, ..., up to Mean.6"), "contains the mean value of the outcome in study arm 1, 2, ..., up to 6, respectively"))),
-      p(tags$ul(tags$li(tags$strong("SD.1, SD.2, ..., up to SD.6"), "contains standard deviation of the outcome in study arm 1, 2, ..., up to 6, respectively")))
+      p(tags$ul(tags$li(tags$strong("N.1, N.2, ..., up to N.k"), "contains number of participants in study arm 1, 2, ..., up to k, respectively"))),
+      p(tags$ul(tags$li(tags$strong("Mean.1, Mean.2, ..., up to Mean.k"), "contains the mean value of the outcome in study arm 1, 2, ..., up to k, respectively"))),
+      p(tags$ul(tags$li(tags$strong("SD.1, SD.2, ..., up to SD.k"), "contains standard deviation of the outcome in study arm 1, 2, ..., up to k, respectively")))
     ),
     conditionalPanel(
       condition = "output.metaoutcome == 'Binary'",
       ns = ns,
-      p(tags$ul(tags$li(tags$strong("R.1, R.2, ..., up to R.6"), "contains number of participants with the outcome of interest in study arm 1, 2, ..., up to 6, respectively"))),
-      p(tags$ul(tags$li(tags$strong("N.1, N.2, ..., up to N.6"), "contains number of participants in study arm 1, 2, ..., up to 6, respectively")))
+      p(tags$ul(tags$li(tags$strong("R.1, R.2, ..., up to R.k"), "contains number of participants with the outcome of interest in study arm 1, 2, ..., up to k, respectively"))),
+      p(tags$ul(tags$li(tags$strong("N.1, N.2, ..., up to N.k"), "contains number of participants in study arm 1, 2, ..., up to k, respectively")))
     ),
     p("The wide format data file may also contain the following column:"),
     tags$ul(
@@ -40,7 +40,6 @@ wide_format_upload_panel_ui <- function(id) {
         " contains the study-level covariate value, where <COVARIATE_NAME> is replaced by the name of the covariate. The name of the covariate will be extracted and used in the analysis output."
       )
     ),
-    p(tags$strong("The maximum number of arms for each trial allowed in the MetaInsight app is 6.")),
     p("An example of this structure can be seen in the", tags$strong("'View Data'"), "tab."),
     p("The csv file that is used to produce the example dataset can be downloaded from here:"),
     downloadButton(

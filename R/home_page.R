@@ -21,7 +21,7 @@ home_page_ui <- function(id) {
         });'
       )
     ),
-    h2("MetaInsight v6.2.1", align = "left"),
+    h2("MetaInsight v6.3.0", align = "left"),
     fluidRow(
       column(
         width = 3,
@@ -35,9 +35,12 @@ home_page_ui <- function(id) {
       column(
         width = 5,
         p(tags$strong("Latest Updates:")),
-        p(tags$strong("Minor update (29 January 2025 v6.2.1):")),
+        p(tags$strong("Minor update (11 March 2025 v6.3.0):")),
         tags$ul(
-          tags$li("Various bug fixes, and improvements to displays."),
+          tags$li("Removed the limit of 6 arms per study in the frequentist analysis."),
+          tags$li("Removed the sizing of circles by contribution in the regression plot."),
+          tags$li("Fixed a bug in the study-level forest plot where the last treatment effect was partially cut off."),
+          tags$li("Bayesian analysis outputs are now cleared when options are changed."),
         ),
         p(tags$strong("Major update (10 July 2024 v6.0.0):")),
         p(

@@ -1,6 +1,7 @@
 #' Create the covariate analysis panel.
 #'
 #' @param id ID of the module
+#' @param page_numbering PageNumbering object for giving each page a unique identifier in the UI
 #' @return Div containing the module UI
 covariate_analysis_panel_ui <- function(id, page_numbering) {
   ns <- NS(id)
@@ -213,30 +214,39 @@ covariate_analysis_panel_server <- function(
       )
     })
     
-    model_valid = reactiveVal(FALSE)
+    # ReactiveVal contains validity state of the model. NULL if the model has not yet been run.
+    model_valid = reactiveVal(NULL)
     parameter_matcher <- ParameterMatcher$new()
     
+    # Set validity when model input change
     observe({
+      # Only assess the validity once the model has been run the first time
+      if (is.null(model_valid())) {
+        return()
+      }
+      
       model_valid(
         parameter_matcher$Matches(
-          all_data=all_data(),
           metaoutcome=metaoutcome(),
           outcome_measure=outcome_measure(),
           model_effects=model_effects(),
-          rank_option=rank_option(),
           regressor_type=model_reactives$regressor_type(),
           covariate_type=covariate_type()
         )
       )
     })
     
+    # Clear validity when data changes
+    observe({
+      model_valid(NULL)
+    }) |> bindEvent(all_data())
+    
+    # Record inputs when model run
     observe({
       parameter_matcher$SetParameters(
-        all_data=all_data(),
         metaoutcome=metaoutcome(),
         outcome_measure=outcome_measure(),
         model_effects=model_effects(),
-        rank_option=rank_option(),
         regressor_type=model_reactives$regressor_type(),
         covariate_type=covariate_type()
       )
@@ -264,14 +274,16 @@ covariate_analysis_panel_server <- function(
       analysis_type = "Regression",
       metaoutcome = metaoutcome,
       outcome_measure = outcome_measure,
-      bugsnetdt = bugsnetdt
+      bugsnetdt = bugsnetdt,
+      model_valid = model_valid
     )
     
     # 4c-3 Treatment comparisons
     covariate_treatment_comparisons_page_server(
       id = "cov_treatment_comparisons",
       model = model_output,
-      outcome_measure = outcome_measure
+      outcome_measure = outcome_measure,
+      model_valid = model_valid
     )
     
     # 4c-4 Ranking Panel
@@ -286,19 +298,20 @@ covariate_analysis_panel_server <- function(
       rank_option = rank_option,
       freq_all = freq_all,
       bugsnetdt = bugsnetdt,
+      model_valid = model_valid,
       cov_value = covariate_value
     )
     # 4c-5 Nodesplit model
     covariate_nodesplit_page_server(id = "nodesplit")
     
     # 4c-6 Result details
-    result_details_page_server(id = "result_details", models = c(model_output))
+    result_details_page_server(id = "result_details", models = c(model_output), models_valid = c(model_valid))
     
     # 4c-7 Deviance report
-    deviance_report_page_server(id = "deviance_report", models = c(model_output))
+    deviance_report_page_server(id = "deviance_report", models = c(model_output), models_valid = c(model_valid))
     
     # 4c-8 Model details
-    model_details_panel_server(id = "model_details", models = c(model_output))
+    model_details_panel_server(id = "model_details", models = c(model_output), models_valid = c(model_valid))
     
   })
 }

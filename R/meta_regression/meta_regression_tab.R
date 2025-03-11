@@ -1,6 +1,7 @@
 #' Create the meta-regression panel.
 #'
 #' @param id ID of the module
+#' @param page_numbering PageNumbering object for giving each page a unique identifier in the UI
 #' @return Div containing the module
 meta_regression_tab_ui <- function(id, page_numbering) {
   ns <- NS(id)
@@ -162,7 +163,6 @@ meta_regression_tab_server <- function(
             )
           }
         )
-        
       }
     )
   })

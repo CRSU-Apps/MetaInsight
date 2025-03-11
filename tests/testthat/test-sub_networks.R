@@ -1,4 +1,24 @@
 
+test_that("CreateGraph() contains correct links", {
+  data <- read.csv("data\\Test_directness.csv")
+  graph <- CreateGraph(data)
+  
+  expected_connected_to <- list(
+    "A" = c("B", "C", "D"),
+    "B" = c("A", "C"),
+    "C" = c("A", "B"),
+    "D" = "A"
+  )
+  connected_to <- list(
+    "A" = unique(names(graph[["A"]][[1]])),
+    "B" = unique(names(graph[["B"]][[1]])),
+    "C" = unique(names(graph[["C"]][[1]])),
+    "D" = unique(names(graph[["D"]][[1]]))
+  )
+  
+  expect_equal(expected_connected_to, connected_to)
+})
+
 test_that("IdentifySubNetworks() finds single subnetwork for fully connected network for continuous long format", {
   data <- CleanData(read.csv("data/Cont_long.csv"))
   treatment_df <- CreateTreatmentIds(FindAllTreatments(data))

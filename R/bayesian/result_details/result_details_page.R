@@ -11,11 +11,6 @@ result_details_page_ui <- function(id, item_names) {
   index <- 0
   
   div(
-    helpText(
-      "Please note: if you change the selections on the sidebar,
-      you will need to re-run the analysis from the 'Forest Plot' page."
-    ),
-    
     # This is the way to get a dynamic number of columns rendered into the row
     do.call(
       fluidRow,
@@ -39,24 +34,22 @@ result_details_page_ui <- function(id, item_names) {
 
 #' Module server for the result details page.
 #' 
-#' @param id ID of the module
+#' @param id ID of the module.
 #' @param models Vector of reactives containing bayesian meta-analyses.
+#' @param models_valid Vector of reactives containing whether each model is valid.
 #' @param package "gemtc" (default) or "bnma".
-result_details_page_server <- function(id, models, package = "gemtc") {
+result_details_page_server <- function(id, models, models_valid, package = "gemtc") {
   moduleServer(id, function(input, output, session) {
     # Create server for each model
-    index <- 0
     sapply(
-      models,
-      function(mod) {
+      1:length(models),
+      function(index) {
         serv <- result_details_panel_server(
-          id = as.character(index),
-          model = mod,
+          id = as.character(index - 1),
+          model = models[[index]],
+          model_valid = models_valid[[index]],
           package = package
         )
-        # Update the index variable in the outer scope with <<-
-        # This updates the variable defined above the `sapply` call instead of creating a new variable with the same name within this inner function
-        index <<- index + 1
         return(serv)
       }
     )

@@ -1,6 +1,7 @@
 #' Create the baseline risk analysis panel.
 #'
 #' @param id ID of the module
+#' @param page_numbering PageNumbering object for giving each page a unique identifier in the UI
 #' @return Div containing the module UI
 baseline_risk_analysis_panel_ui <- function(id, page_numbering) {
   ns <- NS(id)
@@ -152,29 +153,35 @@ baseline_risk_analysis_panel_server <- function(    id,
              )
     })
     
-    model_valid = reactiveVal(FALSE)
+    # ReactiveVal contains validity state of the model. NULL if the model has not yet been run.
+    model_valid = reactiveVal(NULL)
     parameter_matcher <- ParameterMatcher$new()
     
+    # Set validity when model input change
     observe({
+      # Only assess the validity once the model has been run the first time
+      if (is.null(model_valid())) {
+        return()
+      }
+      
       model_valid(
         parameter_matcher$Matches(
           all_data=all_data(),
           metaoutcome=metaoutcome(),
           outcome_measure=outcome_measure(),
           model_effects=model_effects(),
-          rank_option=rank_option(),
           regressor_type=model_reactives$regressor_type()
         )
       )
     })
     
+    # Record inputs when model run
     observe({
       parameter_matcher$SetParameters(
         all_data=all_data(),
         metaoutcome=metaoutcome(),
         outcome_measure=outcome_measure(),
         model_effects=model_effects(),
-        rank_option=rank_option(),
         regressor_type=model_reactives$regressor_type()
       )
       model_valid(TRUE)
@@ -201,14 +208,16 @@ baseline_risk_analysis_panel_server <- function(    id,
       model_reactive = model_reactive,
       metaoutcome = metaoutcome,
       outcome_measure = outcome_measure,
-      bugsnetdt = bugsnetdt
+      bugsnetdt = bugsnetdt,
+      model_valid = model_valid
     )
     
     # 4b-3 Treatment comparisons
     treatment_comparisons_page_baseline_risk_server(
       id = "baseline_risk_treatment_comparisons",
       model = model_reactive,
-      outcome_measure = outcome_measure
+      outcome_measure = outcome_measure,
+      model_valid = model_valid
     )
     
     # 4b-4 Ranking Panel
@@ -218,10 +227,12 @@ baseline_risk_analysis_panel_server <- function(    id,
       data = long_data,
       treatment_df = treatment_df,
       metaoutcome = metaoutcome,
+      outcome_measure = outcome_measure,
       model_effects = model_effects,
       rank_option = rank_option,
       freq_all = freq_all,
       bugsnetdt = bugsnetdt,
+      model_valid = model_valid,
       package = "bnma"
     )
       
@@ -229,14 +240,14 @@ baseline_risk_analysis_panel_server <- function(    id,
     covariate_nodesplit_page_server(id = "baseline_risk_nodesplit")
     
     # 4b-6 Result details
-    result_details_page_server(id = "baseline_risk_result_details", models = c(model_reactive), package = "bnma")
+    result_details_page_server(id = "baseline_risk_result_details", models = c(model_reactive), models_valid = c(model_valid), package = "bnma")
     
     # 4b-7 Deviance report
-    deviance_report_page_server(id = "baseline_risk_deviance_report", models = c(model_reactive), package = "bnma")
+    deviance_report_page_server(id = "baseline_risk_deviance_report", models = c(model_reactive), models_valid = c(model_valid), package = "bnma")
     
     # 4c-8 Model details
-    model_details_panel_server(id = "baseline_risk_model_details", models = c(model_reactive), package = "bnma")
+    model_details_panel_server(id = "baseline_risk_model_details", models = c(model_reactive), models_valid = c(model_valid), package = "bnma")
     
-    })
+  })
 }
 

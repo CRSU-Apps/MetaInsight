@@ -89,15 +89,27 @@ rankogram_panel_ui <- function(id, table_label) {
 #' 
 #' @param id ID of the module.
 #' @param ranking_data Reactive containing ranking data.
+#' @param model_valid Reactive containing whether the model is valid.
 #' @param filename_prefix Prefix to add before file names.
-#' @param regression_text Regression annotation if needed
+#' @param regression_text Regression annotation if needed.
 rankogram_panel_server <- function(
     id,
     ranking_data,
+    model_valid,
     filename_prefix,
     regression_text
     ) {
   moduleServer(id, function(input, output, session) {
+    
+    observe({
+      if (is.null(model_valid()) || !model_valid()) {
+        shinyjs::disable(id = "download_rank_plot")
+        shinyjs::disable(id = "download_rank_table")
+      } else {
+        shinyjs::enable(id = "download_rank_plot")
+        shinyjs::enable(id = "download_rank_table")
+      }
+    })
 
     # All rank plots in one function for easier loading when switching options #
     Rankplots <- reactive({
@@ -111,6 +123,9 @@ rankogram_panel_server <- function(
 
     # Litmus Rank-O-Gram
     output$Litmus <- renderPlot({
+      if (is.null(model_valid()) || !model_valid()) {
+        return()
+      }
       if (!input$Colour_blind) {
         Rankplots()$Litmus
       } else {
@@ -120,6 +135,9 @@ rankogram_panel_server <- function(
 
     # Radial SUCRA
     output$Radial <- renderPlot({
+      if (is.null(model_valid()) || !model_valid()) {
+        return()
+      }
       if (!input$Colour_blind) {
         Rankplots()$Radial$Original
       } else {
@@ -129,6 +147,9 @@ rankogram_panel_server <- function(
     
     # Alternative SUCRA plots
     output$RadialAlt <- renderPlot({
+      if (!model_valid()) {
+        return()
+      }
       if (!input$Colour_blind) {
         Rankplots()$Radial$Alternative
       } else {
@@ -166,6 +187,9 @@ rankogram_panel_server <- function(
     # Table of Probabilities (need to include SUCRA and have it as a collapsable table)
     output$rank_probs <- renderTable(
       {
+        if (is.null(model_valid()) || !model_valid()) {
+          return()
+        }
         rank_probs_table(ranking_data())
       },
       digits = 2,
