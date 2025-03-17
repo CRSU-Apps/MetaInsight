@@ -1,11 +1,3 @@
-###### Bayesian V4 ######
-
-#if packages not installed, please install them first by running the line below.
-#install.packages(c("dplyr","metafor", "netmeta","shiny", "shinyAce","rmarkdown", "knitr", "gemtc", "plyr", data.table"
-#  , "shinyalert", "plotly"))
-
-# the data for meta-regression is from: http://nicedsu.org.uk/wp-content/uploads/2016/03/TSD3-Heterogeneity.final-report.08.05.12.pdf
-
 
 shinyServer(function(input, output, session) {
   
