@@ -18,6 +18,12 @@ output: html_document
 - Study results
 - Network plot
 
-**3.** *Reproduce*
+**3.** *Frequentist*
+- Forest plot
+- Comparisons
+- Inconsistency
+- Summary matrix
+
+**4.** *Reproduce*
 - Download Session Code
 - Download Package References
