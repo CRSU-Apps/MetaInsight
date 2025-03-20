@@ -13,7 +13,7 @@ source("helpers.R")
 
 # The components that have modules. These names must match the values of the
 # tabs of the components in the UI.
-COMPONENTS <- c("setup", "summary", "freq", "rep")
+COMPONENTS <- c("setup", "summary", "freq", "bayes", "rep")
 
 # Information about modules that various parts of the app need access to
 COMPONENT_MODULES <- list()
@@ -31,6 +31,13 @@ base_module_configs <- c(
   "modules/freq_compare.yml",
   "modules/freq_inconsistent.yml",
   "modules/freq_summary.yml",
+  "modules/bayes_forest.yml",
+  "modules/bayes_compare.yml",
+  "modules/bayes_ranking.yml",
+  "modules/bayes_nodesplit.yml",
+  "modules/bayes_results.yml",
+  "modules/bayes_deviance.yml",
+  "modules/bayes_details.yml",
   "modules/rep_markdown.yml",
   "modules/rep_renv.yml",
   "modules/rep_refPackages.yml"

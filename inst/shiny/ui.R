@@ -29,6 +29,7 @@ tagList(
     tabPanel("Setup", value = "setup"),
     tabPanel("Summary", value = "summary"),
     tabPanel("Frequentist", value = "freq"),
+    tabPanel("Bayesian", value = "bayes"),
     tabPanel("Reproduce", value = "rep"),
     navbarMenu("Support", icon = icon("life-ring"),
                HTML('<a href="https://github.com/CRSU-Apps/MetaInsight/issues" target="_blank">GitHub Issues</a>'),
@@ -91,6 +92,21 @@ tagList(
             ),
             tags$hr(),
             insert_modules_ui("freq")
+          ),
+          # BAYESIAN ####
+          conditionalPanel(
+            "input.tabs == 'bayes'",
+            div("Component: Bayesian NMA", class = "componentName"),
+            help_comp_ui("bayesHelp"),
+            shinyWidgets::radioGroupButtons(
+              "bayesSel", "Modules Available:",
+              choices = insert_modules_options("bayes"),
+              direction = "vertical",
+              status = "outline-secondary",
+              width = "100%"
+            ),
+            tags$hr(),
+            insert_modules_ui("bayes")
           ),
           # REPRODUCIBILITY
           conditionalPanel(
