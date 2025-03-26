@@ -463,13 +463,13 @@ test_that("AddStudyIds() adds study IDs for binary wide data", {
 
 test_that(".ContinuousOrder() creates the correct ordering", {
   expected_order <- c("StudyID", "Study", "T", "N", "Mean", "SD", "T.1", "N.1", "Mean.1", "SD.1",
-                      "T.2", "N.2", "Mean.2", "SD.2", "T.3", "N.3", "Mean.3", "SD.3")
+                      "T.2", "N.2", "Mean.2", "SD.2", "T.3", "N.3", "Mean.3", "SD.3", "rob", "indirectness")
   expect_equal(expected_order, .ContinuousOrder(3))
 })
 
 test_that(".BinaryOrder() creates the correct ordering", {
   expected_order <- c("StudyID", "Study", "T", "R", "N", "T.1", "R.1", "N.1",
-                      "T.2", "R.2", "N.2", "T.3", "R.3", "N.3")
+                      "T.2", "R.2", "N.2", "T.3", "R.3", "N.3", "rob", "indirectness")
   expect_equal(expected_order, .BinaryOrder(3))
 })
 
