@@ -33,7 +33,7 @@ wide_format_upload_panel_ui <- function(id) {
       p(tags$ul(tags$li(tags$strong("R.1, R.2, ..., up to R.k"), "contains number of participants with the outcome of interest in study arm 1, 2, ..., up to k, respectively"))),
       p(tags$ul(tags$li(tags$strong("N.1, N.2, ..., up to N.k"), "contains number of participants in study arm 1, 2, ..., up to k, respectively")))
     ),
-    p("The wide format data file may also contain the following column:"),
+    p("The wide format data file may also contain the following columns:"),
     tags$ul(
       tags$li(
         tags$strong("covar.<COVARIATE_NAME>"),

@@ -298,7 +298,7 @@ ValidateUploadedData <- function(data, outcome_type) {
 
   studies_with_wrong_qa_values <- unique(data$Study[!(data$rob %in% 1:3) | !(data$indirectness %in% 1:3)])
   if (!is.null(data$rob) && !is.null(data$indirectness)
-      && length(studies_with_wrong_qa_values) != 0) {
+      && length(studies_with_wrong_qa_values) > 0) {
     return(
       list(
         valid = FALSE,
