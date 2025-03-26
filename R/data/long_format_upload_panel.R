@@ -56,11 +56,23 @@ long_format_upload_panel_ui <- function(id) {
       ),
       p("N.B. Continuity corrections will need to be applied to cells containing 0 values")
     ),
-    p("The long format data file may also contain the following column:"),
+    p("The long format data file may also contain the following columns:"),
     tags$ul(
       tags$li(
         tags$strong("covar.<COVARIATE_NAME>"),
         " contains the study-level covariate value, where <COVARIATE_NAME> is replaced by the name of the covariate. This must be identical for each arm of the study. The name of the covariate will be extracted and used in the analysis output."
+      )
+    ),
+    tags$ul(
+      tags$li(
+        tags$strong("rob"),
+        " contains the risk of bias of the study as required by", tags$a(href = "https://cinema.ispm.unibe.ch/", "CINeMA", target = "_blank"), ". This must be identical for each arm of the study."
+      )
+    ),
+    tags$ul(
+      tags$li(
+        tags$strong("indirectness"),
+        " contains the indirectness of the study as required by", tags$a(href = "https://cinema.ispm.unibe.ch/", "CINeMA", target = "_blank"), ". This must be identical for each arm of the study."
       )
     ),
     p("An example of this structure can be seen in the", tags$strong("'View Data'"), "tab."),

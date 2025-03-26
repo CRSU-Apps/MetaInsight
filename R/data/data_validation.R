@@ -50,6 +50,11 @@ ValidateUploadedData <- function(data, outcome_type) {
     return(result)
   }
 
+  result <- .ValidateQualityColumns(data)
+  if (!result$valid) {
+    return(result)
+  }
+  
   return(.valid_result)
 }
 
@@ -266,5 +271,61 @@ ValidateUploadedData <- function(data, outcome_type) {
     )
   }
 
+  return(.valid_result)
+}
+
+#' Validate that the quality assessment columns in the data are of the expected format.
+#'
+#' @param data Data frame to validate.
+#'
+#' @return Validation result in the form of a list:
+#' - "valid" = TRUE or FALSE defining whether data is valid
+#' - "message" = String describing any issues causing the data to be invalid
+.ValidateQualityColumns <- function(data) {
+  if (is.null(data$rob) && is.null(data$indirectness)) {
+    return(.valid_result)
+  }
+  
+  if ((is.null(data$rob) && !is.null(data$indirectness))
+      || (!is.null(data$rob) && is.null(data$indirectness))) {
+    return(
+      list(
+        valid = FALSE,
+        message = glue::glue("Provide both 'rob' and 'indirectness', or neither.")
+      )
+    )
+  }
+
+  studies_with_wrong_qa_values <- unique(data$Study[!(data$rob %in% 1:3) | !(data$indirectness %in% 1:3)])
+  if (!is.null(data$rob) && !is.null(data$indirectness)
+      && length(studies_with_wrong_qa_values) != 0) {
+    return(
+      list(
+        valid = FALSE,
+        message = glue::glue("Some studies have values for 'rob' or 'indirectness' that are not 1, 2 or 3: {paste0(studies_with_wrong_qa_values, collapse = ', ')}")
+      )
+    )
+  }
+  
+  studies_with_multiple_rob <- unique(data$Study)[as.vector(rowSums(table(data[, c("Study", "rob")]) != 0) > 1)]
+  if (length((studies_with_multiple_rob) > 0)) {
+    return(
+      list(
+        valid = FALSE,
+        message = glue::glue("Some studies do not have a unique risk of bias: {paste0(studies_with_multiple_rob, collapse = ', ')}.")
+      )
+    )
+  }
+  
+  studies_with_multiple_indirectness <- unique(data$Study)[as.vector(rowSums(table(data[, c("Study", "indirectness")]) != 0) > 1)]
+  if (length(studies_with_multiple_indirectness) > 0) {
+    return(
+      list(
+        valid = FALSE,
+        message = glue::glue("Some studies do not have a unique indirectness: {paste0(studies_with_multiple_indirectness, collapse = ', ')}.")
+      )
+    )
+  }
+  
   return(.valid_result)
 }

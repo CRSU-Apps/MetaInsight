@@ -12,7 +12,7 @@
   type_check = "is.character",
   type_name = "character (text)",
   pattern = "^(?i)Study(\\.([0-9]+))?$",
-  replacement ="Study\\1",
+  replacement = "Study\\1",
   number_group = NA
 )
 
@@ -22,7 +22,7 @@
   type_check = "is.character",
   type_name = "character (text)",
   pattern = "^(?i)T(\\.([0-9]+))?$",
-  replacement ="T\\1",
+  replacement = "T\\1",
   number_group = "\\2"
 )
 
@@ -32,7 +32,7 @@
   type_check = "is.numeric",
   type_name = "numeric",
   pattern = "^(?i)N(\\.([0-9]+))?$",
-  replacement ="N\\1",
+  replacement = "N\\1",
   number_group = "\\2"
 )
 
@@ -42,7 +42,7 @@
   type_check = "is.numeric",
   type_name = "numeric",
   pattern = "^(?i)Mean(\\.([0-9]+))?$",
-  replacement ="Mean\\1",
+  replacement = "Mean\\1",
   number_group = "\\2"
 )
 
@@ -52,7 +52,7 @@
   type_check = "is.numeric",
   type_name = "numeric",
   pattern = "^(?i)SD(\\.([0-9]+))?$",
-  replacement ="SD\\1",
+  replacement = "SD\\1",
   number_group = "\\2"
 )
 
@@ -62,7 +62,7 @@
   type_check = "is.numeric",
   type_name = "numeric",
   pattern = "^(?i)covar\\.(.+)$",
-  replacement ="covar.\\1",
+  replacement = "covar.\\1",
   number_group = NA
 )
 
@@ -72,8 +72,28 @@
   type_check = "is.numeric",
   type_name = "numeric",
   pattern = "^(?i)R(\\.([0-9]+))?$",
-  replacement ="R\\1",
+  replacement = "R\\1",
   number_group = "\\2"
+)
+
+.rob_definition <- data.frame(
+  name = "rob",
+  required = FALSE,
+  type_check = "is.numeric",
+  type_name = "numeric",
+  pattern = "^(?i)rob$",
+  replacement = "rob\\1",
+  number_group = NA
+)
+
+.indirectness_definition <- data.frame(
+  name = "indirectness",
+  required = FALSE,
+  type_check = "is.numeric",
+  type_name = "numeric",
+  pattern = "^(?i)indirectness$",
+  replacement = "indirectness\\1",
+  number_group = NA
 )
 
 continuous_column_names <- data.frame() %>%
@@ -82,11 +102,15 @@ continuous_column_names <- data.frame() %>%
   rbind(.n_definition) %>%
   rbind(.mean_definition) %>%
   rbind(.sd_definition) %>%
-  rbind(.covariate_definition)
+  rbind(.covariate_definition) %>%
+  rbind(.rob_definition) %>%
+  rbind(.indirectness_definition)
 
 binary_column_names <- data.frame() %>%
   rbind(.study_definition) %>%
   rbind(.t_definition) %>%
   rbind(.r_definition) %>%
   rbind(.n_definition) %>%
-  rbind(.covariate_definition)
+  rbind(.covariate_definition) %>%
+  rbind(.rob_definition) %>%
+  rbind(.indirectness_definition)
