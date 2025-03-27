@@ -286,8 +286,7 @@ ValidateUploadedData <- function(data, outcome_type) {
     return(.valid_result)
   }
   
-  if ((is.null(data$rob) && !is.null(data$indirectness))
-      || (!is.null(data$rob) && is.null(data$indirectness))) {
+  if (xor(is.null(data$rob), is.null(data$indirectness))) {
     return(
       list(
         valid = FALSE,
@@ -307,22 +306,26 @@ ValidateUploadedData <- function(data, outcome_type) {
     )
   }
   
-  studies_with_multiple_rob <- unique(data$Study)[as.vector(rowSums(table(data[, c("Study", "rob")]) != 0) > 1)]
+  #Find the studies that have more than one value for risk of bias, by creating a table of rob values by study and summing the rows to check if any rows have more than one non-zero element.
+  rob_table <- table(data[, c("Study", "rob")])
+  studies_with_multiple_rob <- dimnames(rob_table)$Study[as.vector(rowSums(rob_table != 0) > 1)]
   if (length((studies_with_multiple_rob) > 0)) {
     return(
       list(
         valid = FALSE,
-        message = glue::glue("Some studies do not have a unique risk of bias: {paste0(studies_with_multiple_rob, collapse = ', ')}.")
+        message = glue::glue("Some studies do not have the same risk of bias value for every arm: {paste0(studies_with_multiple_rob, collapse = ', ')}.")
       )
     )
   }
   
-  studies_with_multiple_indirectness <- unique(data$Study)[as.vector(rowSums(table(data[, c("Study", "indirectness")]) != 0) > 1)]
+  #Find the studies that have more than one value for indirectness, by creating a table of indirectness values by study and summing the rows to check if any rows have more than one non-zero element.
+  indirectness_table <- table(data[, c("Study", "indirectness")])
+  studies_with_multiple_indirectness <- dimnames(indirectness_table)$Study[as.vector(rowSums(indirectness_table != 0) > 1)]
   if (length(studies_with_multiple_indirectness) > 0) {
     return(
       list(
         valid = FALSE,
-        message = glue::glue("Some studies do not have a unique indirectness: {paste0(studies_with_multiple_indirectness, collapse = ', ')}.")
+        message = glue::glue("Some studies do not have the same indirectness value for every arm: {paste0(studies_with_multiple_indirectness, collapse = ', ')}.")
       )
     )
   }

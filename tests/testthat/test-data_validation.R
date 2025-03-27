@@ -241,6 +241,17 @@ test_that("ValidateUploadedData() identifies invalid binary long data, with sing
   expect_equal(validation_result$message, "Some studies have single arms: Constantine, Justinian")
 })
 
+test_that("ValidateUploadedData() allows correct quality assessment columns", {
+  data <- read.csv("data/Cont_long.csv")
+  data$rob <- c(1, 1, 1, 2, 2, 2, 3, 3)
+  data$indirectness <- c(2, 2, 2, 3, 3, 3, 1, 1)
+  
+  validation_result <- ValidateUploadedData(data, "Continuous")
+  
+  expect_true(validation_result$valid)
+  expect_equal(validation_result$message, "Data is valid")
+})
+
 test_that("ValidateUploadedData() identifies partial quality assessment columns", {
   data <- read.csv("data/Cont_long.csv")
   data2 <- data
@@ -259,22 +270,55 @@ test_that("ValidateUploadedData() identifies partial quality assessment columns"
 
 test_that("ValidateUploadedData() identifies unallowed quality assessment values", {
   data <- read.csv("data/Cont_long.csv")
+  data2 <- data
+  
   data$rob <- c(1, 1, 1, 2, 2, 2, 4, 4)
   data$indirectness <- 1
+  data2$rob <- 1
+  data2$indirectness <- c(1, 1, 1, 4, 4, 4, 2, 2)
   
   validation_result <- ValidateUploadedData(data, "Continuous")
+  validation_result2 <- ValidateUploadedData(data2, "Continuous")
   
   expect_false(validation_result$valid)
   expect_equal(validation_result$message, "Some studies have values for 'rob' or 'indirectness' that are not 1, 2 or 3: Justinian")
+  expect_false(validation_result2$valid)
+  expect_equal(validation_result2$message, "Some studies have values for 'rob' or 'indirectness' that are not 1, 2 or 3: Leo")
+})
+
+test_that("ValidateUploadedData() identifies studies with partially empty quality assessment values", {
+  data <- read.csv("data/Cont_long.csv")
+  data2 <- data
+  
+  data$rob <- c(1, 1, 1, 1, 1, 1, NA, NA)
+  data$indirectness <- 1
+  data2$rob <- 1
+  data2$indirectness <- c(1, 1, 1, NA, NA, 1, 1, 1)
+  
+  validation_result <- ValidateUploadedData(data, "Continuous")
+  validation_result2 <- ValidateUploadedData(data2, "Continuous")
+  
+  expect_false(validation_result$valid)
+  expect_equal(validation_result$message, "Some studies have values for 'rob' or 'indirectness' that are not 1, 2 or 3: Justinian")
+  expect_false(validation_result2$valid)
+  expect_equal(validation_result2$message, "Some studies have values for 'rob' or 'indirectness' that are not 1, 2 or 3: Leo")
 })
 
 test_that("ValidateUploadedData() identifies studies without unique quality values", {
   data <- read.csv("data/Cont_long.csv")
+  data2 <- data
+  
   data$rob <- c(1, 1, 2, 2, 2, 2, 1, 1)
   data$indirectness <- 1
+  data2$rob <- 1
+  data2$indirectness <- c(1, 1, 1, 1, 2, 2, 1, 1)
   
   validation_result <- ValidateUploadedData(data, "Continuous")
+  validation_result2 <- ValidateUploadedData(data2, "Continuous")
   
   expect_false(validation_result$valid)
-  expect_equal(validation_result$message, "Some studies do not have a unique risk of bias: Constantine.")
+  expect_equal(validation_result$message, "Some studies do not have the same risk of bias value for every arm: Constantine.")
+  expect_false(validation_result2$valid)
+  expect_equal(validation_result2$message, "Some studies do not have the same indirectness value for every arm: Leo.")
 })
+

@@ -82,7 +82,7 @@
   type_check = "is.numeric",
   type_name = "numeric",
   pattern = "^(?i)rob$",
-  replacement = "rob\\1",
+  replacement = "rob",
   number_group = NA
 )
 
@@ -92,7 +92,7 @@
   type_check = "is.numeric",
   type_name = "numeric",
   pattern = "^(?i)indirectness$",
-  replacement = "indirectness\\1",
+  replacement = "indirectness",
   number_group = NA
 )
 

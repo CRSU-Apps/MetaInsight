@@ -1,4 +1,17 @@
 
+#' Get the colour corresponding to the quality assessment values.
+#' 
+#' @param quality_value 1, 2 or 3.
+#' @return Named vector of 'icon' and 'colour'.
+.QualityTagColour <- function(quality_value) {
+  switch(as.character(quality_value),
+         "1" = "color:green",
+         "2" = "color:darkorange",
+         "3" = "color:red",
+         NULL)
+}
+
+
 #' Module UI for the study exclusion panel.
 #' 
 #' @param id ID of the module.
@@ -44,18 +57,6 @@ study_exclusions_panel_server <- function(id, data, treatment_df, reference_trea
     
     data_reset <- reactiveVal(FALSE)
     
-    #' Get the colour corresponding to the quality assessment values.
-    #' 
-    #' @param quality_value 1, 2 or 3.
-    #' @return Named vector of 'icon' and 'colour'.
-    QualityTagColour <- function(quality_value) {
-      switch(as.character(quality_value),
-             "1" = "color:green",
-             "2" = "color:darkorange",
-             "3" = "color:red",
-             NULL)
-    }
-
     choices_with_qa <- reactive({
       if (is.null(data()$rob) || is.null(data()$indirectness)) {
         return(all_studies())
@@ -63,8 +64,8 @@ study_exclusions_panel_server <- function(id, data, treatment_df, reference_trea
         return(
           lapply(X = 1:length(quality_assessment_data()$Study),
                  FUN = function(row) {
-                   rob_colour <- QualityTagColour(quality_assessment_data()$rob[row])
-                   indirectness_colour <- QualityTagColour(quality_assessment_data()$indirectness[row])
+                   rob_colour <- .QualityTagColour(quality_assessment_data()$rob[row])
+                   indirectness_colour <- .QualityTagColour(quality_assessment_data()$indirectness[row])
                    return(
                      tags$span(quality_assessment_data()$Study[row],
                                "  (RoB ",
