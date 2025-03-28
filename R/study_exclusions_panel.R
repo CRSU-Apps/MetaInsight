@@ -2,7 +2,7 @@
 #' Get the colour corresponding to the quality assessment values.
 #' 
 #' @param quality_value 1, 2 or 3.
-#' @return Named vector of 'icon' and 'colour'.
+#' @return CSS text containing a colour.
 .QualityTagColour <- function(quality_value) {
   switch(as.character(quality_value),
          "1" = "color:green",
