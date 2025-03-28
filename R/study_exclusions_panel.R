@@ -4,11 +4,14 @@
 #' @param quality_value 1, 2 or 3.
 #' @return CSS text containing a colour.
 .QualityTagColour <- function(quality_value) {
-  switch(as.character(quality_value),
-         "1" = "color:green",
-         "2" = "color:darkorange",
-         "3" = "color:red",
-         NULL)
+  return(
+    switch(as.character(quality_value),
+           "1" = "color:green",
+           "2" = "color:darkorange",
+           "3" = "color:red",
+           NULL
+           )
+    )
 }
 
 
