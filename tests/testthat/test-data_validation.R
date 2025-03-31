@@ -308,7 +308,7 @@ test_that("ValidateUploadedData() identifies studies without unique quality valu
   data <- read.csv("data/Cont_long.csv")
   data2 <- data
   
-  data$rob <- c(1, 1, 2, 2, 2, 2, 1, 1)
+  data$rob <- c(1, 1, 1, 2, 2, 2, 1, 3)
   data$indirectness <- 1
   data2$rob <- 1
   data2$indirectness <- c(1, 1, 1, 1, 2, 2, 1, 1)
