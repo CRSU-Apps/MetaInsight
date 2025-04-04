@@ -31,10 +31,11 @@ tagList(
     tabPanel("Frequentist", value = "freq"),
     tabPanel("Bayesian", value = "bayes"),
     tabPanel("Reproduce", value = "rep"),
+    navbarMenu("Save", icon = icon("floppy-disk"),
+               HTML('<a href="#" id="save-button" class="action-button btn" onclick="Shiny.setInputValue(\'core_save-save\', Math.random())">Save session</a>')),
     navbarMenu("Support", icon = icon("life-ring"),
                HTML('<a href="https://github.com/CRSU-Apps/MetaInsight/issues" target="_blank">GitHub Issues</a>'),
-               HTML('<a href="mailto: info@crsu.org.uk" target="_blank">Send Email</a>')),
-    tabPanel(NULL, icon = icon("power-off"), value = "_stopapp")
+               HTML('<a href="mailto: info@crsu.org.uk" target="_blank">Send Email</a>'))
   ),
   tags$div(
     class = "container-fluid",
@@ -175,7 +176,9 @@ tagList(
                   glue::glue("input.tabs == '{component}'"),
                   insert_modules_results(component)
                 )
-              })
+              }),
+              # invisible but contains download button
+              core_save_module_ui("core_save")
             ),
             tabPanel(
               'Component Guidance', icon = icon("circle-info"),
@@ -188,10 +191,6 @@ tagList(
             tabPanel(
               'Code',
               core_code_module_ui("core_code")
-            ),
-            tabPanel(
-              'Save', icon = icon("floppy-disk", class = "save_icon"),
-              core_save_module_ui("core_save")
             )
           )
         ),

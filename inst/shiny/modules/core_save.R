@@ -1,28 +1,17 @@
 core_save_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
-    br(),
-    h5(em("Note: To save your session code or metadata, use the Reproduce component")),
-    wellPanel(
-      h4(strong("Save Session")),
-      p(paste0("By saving your session into an RDS file, you can resume ",
-               "working on it at a later time or you can share the file",
-               " with a collaborator.")),
-      shinyjs::hidden(p(
-        id = "save_warning",
-        icon("triangle-exclamation"),
-        paste0("The current session data is large, which means the ",
-               "downloaded file may be large and the download might",
-               " take a long time.")
-      )),
-      downloadButton(ns("save_session"), "Save Session"),
-      br()
-  )
+    div(downloadButton(ns("save_session"), "Save Session"), style = "visibility: hidden"),
   )
 }
 
 core_save_module_server <- function(id, common, modules, COMPONENTS, main_input) {
   moduleServer(id, function(input, output, session) {
+
+    # listen for the button press in the menu and then trigger the download
+    observeEvent(input$save, {
+      shinyjs::runjs("document.getElementById('core_save-save_session').click();")
+    })
 
     output$save_session <- downloadHandler(
       filename = function() {
