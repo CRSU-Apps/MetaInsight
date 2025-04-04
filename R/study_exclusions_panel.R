@@ -15,6 +15,16 @@
 }
 
 
+#' Determine the width of the study labels for the study exclusions panel
+#' 
+#' @param studies Vector of the study names.
+#' @return CSS code to be passed to the style argument.
+.StudyChoicesLength <- function(studies) {
+  n_pixels <- 7 * max(nchar(studies)) + 100
+  return(paste0("width: ", n_pixels, "px"))
+}
+
+
 #' Module UI for the study exclusion panel.
 #' 
 #' @param id ID of the module.
@@ -70,13 +80,15 @@ study_exclusions_panel_server <- function(id, data, treatment_df, reference_trea
                    rob_colour <- .QualityTagColour(quality_assessment_data()$rob[row])
                    indirectness_colour <- .QualityTagColour(quality_assessment_data()$indirectness[row])
                    return(
-                     tags$span(quality_assessment_data()$Study[row],
-                               "  (RoB ",
-                               tags$span(icon("circle", class = "fa-solid"), style = rob_colour),
-                               ", Ind ",
-                               tags$span(icon("circle", class = "fa-solid"), style = indirectness_colour),
-                               ")"
-                               )
+                     tags$div(quality_assessment_data()$Study[row],
+                              tags$span("(RoB ",
+                                        tags$span(icon("circle", class = "fa-solid"), style = rob_colour),
+                                        ", Ind ",
+                                        tags$span(icon("circle", class = "fa-solid"), style = indirectness_colour),
+                                        ")",
+                                        style = "float: right"),
+                              style = .StudyChoicesLength(quality_assessment_data()$Study)
+                              )
                    )
                  }
                  )
