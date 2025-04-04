@@ -10,6 +10,7 @@ core_save_module_server <- function(id, common, modules, COMPONENTS, main_input)
 
     # listen for the button press in the menu and then trigger the download
     observeEvent(input$save, {
+      show_loading_modal("Saving session...")
       shinyjs::runjs("document.getElementById('core_save-save_session').click();")
     })
 
@@ -30,6 +31,8 @@ core_save_module_server <- function(id, common, modules, COMPONENTS, main_input)
         for (module_id in names(modules)) {
           common$state[[module_id]] <- modules[[module_id]]$save()
         }
+
+        on.exit(close_loading_modal())
 
         saveRDS(common, file)
 
