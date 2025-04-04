@@ -133,10 +133,12 @@ function(input, output, session) {
     lapply(COMPONENT_MODULES[[component]], function(module) {
       # Initialize event triggers for each module
       init(module$id)
-       if (module$id == "rep_markdown"){
-        return <- do.call(get(module$server_function), args = list(id = module$id, common = common, parent_session = session, COMPONENT_MODULES))
+      if (module$id == "rep_markdown"){
+       return <- do.call(get(module$server_function), args = list(id = module$id, common = common, parent_session = session, COMPONENT_MODULES))
+      } else if (module$id == "setup_reload"){
+       return <- do.call(get(module$server_function), args = list(id = module$id, common = common, modules = modules, parent_session = session))
       } else {
-      return <- do.call(get(module$server_function), args = list(id = module$id, common = common, parent_session = session))
+       return <- do.call(get(module$server_function), args = list(id = module$id, common = common, parent_session = session))
       }
       if (is.list(return) &&
           "save" %in% names(return) && is.function(return$save) &&
@@ -174,7 +176,6 @@ function(input, output, session) {
   ################################
 
   core_save_module_server("core_save", common, modules, COMPONENTS, input)
-  core_load_module_server("core_load", common, modules, map, COMPONENT_MODULES, parent_session = session)
 
   ################################
   ### DEBUGGING ####

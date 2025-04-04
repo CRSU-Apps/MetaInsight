@@ -236,10 +236,6 @@ tagList(
             tabPanel(
               'How To Use',
               includeMarkdown("Rmd/text_how_to_use.Rmd")
-            ),
-            tabPanel(
-              'Load Prior Session',
-              core_load_module_ui("core_load")
             )
           )
         )
