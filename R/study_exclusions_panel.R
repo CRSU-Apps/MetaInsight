@@ -2,13 +2,13 @@
 #' Get the colour corresponding to the quality assessment values.
 #' 
 #' @param quality_value 1, 2 or 3.
-#' @return CSS text containing a colour.
+#' @return Named vector containing CSS code to define a colour and an icon.
 .QualityTagColour <- function(quality_value) {
   return(
     switch(as.character(quality_value),
-           "1" = "color:green",
-           "2" = "color:darkorange",
-           "3" = "color:red",
+           "1" = c(colour = "color:green", icon = "circle-plus"),
+           "2" = c(colour = "color:darkorange", icon = "circle-minus"),
+           "3" = c(colour = "color:red", icon = "circle-xmark"),
            NULL
            )
     )
@@ -77,14 +77,16 @@ study_exclusions_panel_server <- function(id, data, treatment_df, reference_trea
         return(
           lapply(X = 1:length(quality_assessment_data()$Study),
                  FUN = function(row) {
-                   rob_colour <- .QualityTagColour(quality_assessment_data()$rob[row])
-                   indirectness_colour <- .QualityTagColour(quality_assessment_data()$indirectness[row])
+                   rob_colour <- .QualityTagColour(quality_assessment_data()$rob[row])["colour"]
+                   rob_icon <- .QualityTagColour(quality_assessment_data()$rob[row])["icon"]
+                   indirectness_colour <- .QualityTagColour(quality_assessment_data()$indirectness[row])["colour"]
+                   indirectness_icon <- .QualityTagColour(quality_assessment_data()$indirectness[row])["icon"]
                    return(
                      tags$div(quality_assessment_data()$Study[row],
                               tags$span("(RoB ",
-                                        tags$span(icon("circle", class = "fa-solid"), style = rob_colour),
+                                        tags$span(icon(rob_icon, class = "fa-solid"), style = rob_colour),
                                         ", Ind ",
-                                        tags$span(icon("circle", class = "fa-solid"), style = indirectness_colour),
+                                        tags$span(icon(indirectness_icon, class = "fa-solid"), style = indirectness_colour),
                                         ")",
                                         style = "float: right"),
                               style = .StudyChoicesLength(quality_assessment_data()$Study)
