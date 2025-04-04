@@ -23,7 +23,7 @@ uiBottom <- function(mod_INFO) {
   pkgAuts <- mod_INFO$pkgAuts
   pkgTitl <- mod_INFO$pkgTitl
 
-  ls <- list(shiny::span('Module Developers:', class = "rpkg"),
+  ls <- list(shiny::span('App Developers:', class = "rpkg"),
              shiny::span(modAuts, class = "pkgDes"), br(), br())
 
   for (i in seq_along(pkgName)) {
@@ -94,11 +94,14 @@ insert_modules_ui <- function(component, exclude = NULL) {
       ),
       do.call(module$ui_function, list(module$id)),
       tags$hr(),
-      ui_bottom(
-        modID = module$id,
-        modName = module$long_name,
-        modAuts = module$authors,
-        pkgName = module$package
+      tags$details(
+        tags$summary("Module attribution"),
+        ui_bottom(
+          modID = module$id,
+          modName = module$long_name,
+          modAuts = module$authors,
+          pkgName = module$package
+        )
       )
     )
   })
