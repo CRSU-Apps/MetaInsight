@@ -1,5 +1,5 @@
 component: "setup"
-short_name: "Define data type"
-long_name: "Define data type and process"
-authors: "Rhiannon K. Owen, Naomi Bradbury, Yiqiao Xin, Tom Morris, Janion Nevill, Simon E. H. Smart"
+short_name: "Configure analysis"
+long_name: "Configure analysis"
+authors: "Rhiannon K. Owen, Naomi Bradbury, Yiqiao Xin, Tom Morris, Janion Nevill, Simon Smart"
 package: [BUGSnet, igraph]
