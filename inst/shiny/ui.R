@@ -55,7 +55,7 @@ tagList(
           div("Component: Setup", class = "componentName"),
           help_comp_ui("setupHelp"),
           shinyWidgets::radioGroupButtons(
-            "setupSel", "Modules Available:",
+            "setupSel", "",
             choices = insert_modules_options("setup"),
             direction = "vertical",
             status = "outline-secondary",
@@ -70,7 +70,7 @@ tagList(
           div("Component: Summary", class = "componentName"),
           help_comp_ui("summaryHelp"),
           shinyWidgets::radioGroupButtons(
-            "summarySel", "Modules Available:",
+            "summarySel", "",
             choices = insert_modules_options("summary", exclude = "summary_exclude"),
             direction = "vertical",
             status = "outline-secondary",
@@ -85,7 +85,7 @@ tagList(
             div("Component: Frequentist NMA", class = "componentName"),
             help_comp_ui("freqHelp"),
             shinyWidgets::radioGroupButtons(
-              "freqSel", "Modules Available:",
+              "freqSel", "",
               choices = insert_modules_options("freq"),
               direction = "vertical",
               status = "outline-secondary",
@@ -100,7 +100,7 @@ tagList(
             div("Component: Bayesian NMA", class = "componentName"),
             help_comp_ui("bayesHelp"),
             shinyWidgets::radioGroupButtons(
-              "bayesSel", "Modules Available:",
+              "bayesSel", "",
               choices = insert_modules_options("bayes"),
               direction = "vertical",
               status = "outline-secondary",
@@ -114,7 +114,7 @@ tagList(
             "input.tabs == 'rep'",
             div("Component: Reproduce", class = "componentName"),
             shinyWidgets::radioGroupButtons(
-              "repSel", "Modules Available:",
+              "repSel", "",
               choices = insert_modules_options("rep"),
               direction = "vertical",
               status = "outline-secondary",
