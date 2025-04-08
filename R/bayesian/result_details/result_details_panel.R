@@ -71,14 +71,20 @@ result_details_panel_server <- function(id, model, model_valid, package = "gemtc
     #For baseline risk, create a Gelman plot for each parameter
     gelman_plots <- reactive({
       if (package == "gemtc") {
-        return(NULL)
+        return(
+          lapply(parameters(),
+                 function(parameter){
+                   return(coda::gelman.plot(model()$mtcResults$samples[, parameter]))
+                   }
+                 )
+        )
       } else if (package == "bnma") {
         return(
           lapply(parameters(),
                  function(parameter){
                    return(coda::gelman.plot(model()$samples[, parameter]))
                  }
-          )
+                 )
         )
       }
     })
@@ -94,12 +100,8 @@ result_details_panel_server <- function(id, model, model_valid, package = "gemtc
         if (is.null(model_valid()) || !model_valid()) {
           return()
         }
-        if (package == "gemtc") {
-          return(gelman.plot(model()$mtcResults))
-        } else if (package == "bnma") {
-          par(mfrow = c(n_rows(), 2))
-          return(BnmaGelmanPlots(gelman_plots = gelman_plots(), parameters = parameters()))
-        }
+        par(mfrow = c(n_rows(), 2))
+        return(GelmanPlots(gelman_plots = gelman_plots(), parameters = parameters()))
       },
       height = function() {
         n_rows() * 300
