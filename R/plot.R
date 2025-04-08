@@ -538,6 +538,6 @@ GelmanPlot <- function(gelman_plot, parameter){
 #' @return Plots the Gelman plots mentioned in @param gelman_plots.
 GelmanPlots <- function(gelman_plots, parameters){
   for (i in 1:length(parameters)) {
-    BnmaGelmanPlot(gelman_plot = gelman_plots[[i]], parameter = parameters[i])
+    GelmanPlot(gelman_plot = gelman_plots[[i]], parameter = parameters[i])
   }
 }
