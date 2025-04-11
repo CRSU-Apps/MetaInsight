@@ -17,12 +17,14 @@ common_class <- R6::R6Class(
    non_covariate_data_all = NULL,
    model_type = NULL,
    excluded_studies = NULL,
-   sensitivity_data = NULL,
-   sensitivity_treatment_df = NULL,
+   subsetted_data = NULL,
+   subsetted_treatment_df = NULL,
    bugsnet_all = NULL,
    bugsnet_sub = NULL,
    freq_all = NULL,
    freq_sub = NULL,
+   bayes_all = NULL,
+   bayes_sub = NULL,
    download_format = NULL,
    meta = NULL,
    logger = NULL,
@@ -44,12 +46,14 @@ common_class <- R6::R6Class(
      self$non_covariate_data_all <- NULL
      self$model_type <- NULL
      self$excluded_studies <- NULL
-     self$sensitivity_data <- NULL
-     self$sensitivity_treatment_df <- NULL
+     self$subsetted_data <- NULL
+     self$subsetted_treatment_df <- NULL
      self$bugsnet_all <- NULL
      self$bugsnet_sub <- NULL
      self$freq_all <- NULL
      self$freq_sub <- NULL
+     self$bayes_all <- NULL
+     self$bayes_sub <- NULL
      self$meta <- NULL
      self$state <- NULL
      invisible(self)

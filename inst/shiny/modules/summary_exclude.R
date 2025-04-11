@@ -62,6 +62,8 @@ summary_exclude_module_server <- function(id, common, parent_session) {
       common$bugsnet_sub <- result$bugsnet_sub
       common$freq_sub <- result$freq_sub
       common$reference_treatment_sub <- result$reference_treatment_sub
+      common$subsetted_data <- result$subsetted_data
+      common$subsetted_treatment_df <- result$subsetted_treatment_df
 
       if (common$reference_treatment_sub != common$reference_treatment_all){
         common$logger %>% writeLog(type = "info",

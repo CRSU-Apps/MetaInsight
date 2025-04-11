@@ -23,13 +23,13 @@ baye <- function(data, treat_list, model, outcome, CONBI, ref) {
   if (!outcome %in% c('OR', 'RR', 'MD')) {
     stop(glue::glue("Outcome type '{outcome}' is not supported. Please use one of: 'MD', 'OR', 'RR'"))
   }
-  
+
   progress <- shiny::Progress$new()   # Adding progress bars
   on.exit(progress$close())
   progress$set(message = "Updating.This may take up to 10 minutes", value = 0)
   treat_list2 <- data.frame(treat_list)
-  
-  if (CONBI == "Continuous") { 
+
+  if (CONBI == "Continuous") {
     armData <- data.frame(study = data$Study,       # Create arm level data set for gemtc
                           treatment = data$T,
                           mean = data$Mean,
@@ -40,10 +40,10 @@ baye <- function(data, treat_list, model, outcome, CONBI, ref) {
                           responders = data$R,
                           sampleSize = data$N)
   }
-  
+
   progress$inc(0.2, detail = "Preparing to run simulation models")
   mtcNetwork <- mtc.network(data.ab = armData, description = "Network")   # Gemtc network object
-  
+
   if (outcome == "MD") {
     like <- "normal"
     link <- "identity"
@@ -51,7 +51,7 @@ baye <- function(data, treat_list, model, outcome, CONBI, ref) {
     like <- "binom"
     link <- ifelse (outcome == "OR","logit", "log")
   }
-  
+
   mtcModel <- mtc.model(
     network = mtcNetwork,
     type = "consistency",
@@ -60,19 +60,19 @@ baye <- function(data, treat_list, model, outcome, CONBI, ref) {
     link = link,
     dic = TRUE
   )
-  
+
   progress$inc(0.4, detail = "Running simulation models")
   mtcResults <- mtc.run(mtcModel)   # Run gemtc model object for analysis
   progress$inc(0.4, detail = "Rendering results")
   mtcRelEffects <- relative.effect(mtcResults, t1 = ref)  #Set reference treatment
-  rel_eff_tbl <- relative.effect.table(mtcResults) 
+  rel_eff_tbl <- relative.effect.table(mtcResults)
   sumresults <- summary(mtcRelEffects)
   a <- paste(model, "effect", sep = " ")   #Create text for random/fixed effect
   lstx <- treat_list$Label # Treatment names
   ntx <- nrow(treat_list) # Number of treatments
   sumoverall <- summary(mtcResults)
   dic <- as.data.frame(sumoverall$DIC) # The statistics 'Dbar', 'pD', 'DIC', and 'data points'
-  
+
   return(
     list(
       mtcResults = mtcResults,
@@ -101,11 +101,12 @@ baye <- function(data, treat_list, model, outcome, CONBI, ref) {
 #'  - 'a' = "fixed effect" or "random effect"
 #' @param outcome One of "SMD", "RD", "MD", "OR". Anything else is interpreted as RR. (TM: Probably don't need this, as it's included as @param results$outcome)
 #' @return Text with the point estimate and 95% CrI of between-trial SD of treatment effects (all 0 if fixed effects)
-CreateTauSentence <- function(results,outcome) {
+#' @export
+CreateTauSentence <- function(results, outcome) {
   if (!outcome %in% c('OR', 'RR', 'MD')) {
     stop(glue::glue("Outcome type '{outcome}' is not supported. Please use one of: 'MD', 'OR', 'RR'"))
   }
-  
+
   sumresults <- results$sumresults
   if (results$a == "random effect") {   #SD and its 2.5% and 97.5%
     sd_mean <- round(sumresults$summaries$statistics["sd.d", "Mean"], digits = 2)
@@ -160,7 +161,7 @@ FormatForCreateTauSentence <- function(br_model){
 
 
 
-### 3c. Ranking results 
+### 3c. Ranking results
 
 
 #' Get SUCRA data.
@@ -194,16 +195,16 @@ FormatForCreateTauSentence <- function(br_model){
 #' - 'BUGSnetData' = Output from BUGSnet::data.prep with arguments from @param longdata.
 rankdata <- function(NMAdata, rankdirection, longdata, cov_value = NA, package = "gemtc") {
   # data frame of colours
-  colour_dat = data.frame(SUCRA = seq(0, 100, by = 0.1)) 
-  colour_dat = dplyr::mutate(colour_dat, colour = seq(0, 100, length.out = 1001)) 
-  
+  colour_dat = data.frame(SUCRA = seq(0, 100, by = 0.1))
+  colour_dat = dplyr::mutate(colour_dat, colour = seq(0, 100, length.out = 1001))
+
   direction <- ifelse(rankdirection == "good", -1, 1)
   # probability rankings
   if (package == "gemtc"){
     prob <- as.data.frame(
       print(
         gemtc::rank.probability(
-          NMAdata, 
+          NMAdata,
           preferredDirection = direction,
           covariate = cov_value
         )
@@ -218,18 +219,18 @@ rankdata <- function(NMAdata, rankdirection, longdata, cov_value = NA, package =
     #Remove "treatment " from the start of the treatment names
     rownames(prob) <- substr(rownames(prob), start = 11, stop = nchar(rownames(prob)))
   } else{
-    stop("package must be 'gemtc' or 'bnma'") 
+    stop("package must be 'gemtc' or 'bnma'")
   }
   names(prob)[1:ncol(prob)] <- paste("Rank ", 1:(ncol(prob)), sep="")
   sucra <- gemtc::sucra(prob)  # 1 row of SUCRA values for each treatment column
   treatments <- row.names(prob)
-  
+
   # SUCRA
   SUCRA <- data.frame(
     Treatment = treatments,
     SUCRA = as.numeric(sucra) * 100
   )
-  
+
   # Cumulative Probabilities
   cumprob <- prob              # obtain copy of probabilities
   for (i in 2:ncol(prob)) {    # for each rank (column)
@@ -243,7 +244,7 @@ rankdata <- function(NMAdata, rankdirection, longdata, cov_value = NA, package =
     Cumulative_Probability = as.numeric(t(cumprob))
   )
   Cumulative_Data <- Cumulative_Data %>% left_join(SUCRA, by = "Treatment")
-  
+
   # Number of people in each node #
   Patients <- data.frame(
     Treatment = longdata$T,
@@ -256,7 +257,7 @@ rankdata <- function(NMAdata, rankdirection, longdata, cov_value = NA, package =
   )
   Patients <- dplyr::rename(Patients, c(Treatment = "Category", N = "x"))  # previously using plyr::rename where old/new names are other way round
   SUCRA <- SUCRA %>% dplyr::right_join(Patients, by = "Treatment")
-  
+
   # Node size #
   size.maxO <- 15
   size.maxA <- 10
@@ -272,10 +273,10 @@ rankdata <- function(NMAdata, rankdirection, longdata, cov_value = NA, package =
       SUCRA$SizeA[i] <- size.min
     }
   }
-  
+
   prob <- data.table::setDT(prob, keep.rownames = "Treatment") # treatment as a column rather than rownames (useful for exporting)
   prob$Treatment <- prob$Treatment
-  
+
   # Number of trials as line thickness taken from BUDGnetData object #
   BUGSnetData <- data.prep(arm.data = longdata, varname.t = "T", varname.s = "Study")
   return(
@@ -297,7 +298,7 @@ relative_rank_text <- function(results) {
 
 
 #' 3d. nodesplit models.
-#' 
+#'
 #' @param data Input data set.
 #' @param treat_list Data frame consisting of the treatment IDs ('Number') and the treatment names ('Label').
 #' @param model "random" or "fixed".
@@ -308,10 +309,10 @@ bayenode <- function(data, treat_list, model, outcome, CONBI) {
   if (!outcome %in% c('OR', 'RR', 'MD')) {
     stop(glue::glue("Outcome type '{outcome}' is not supported. Please use one of: 'MD', 'OR', 'RR'"))
   }
-  
+
   if (outcome=="SMD" ) {
     print("Please note: standardised mean difference currently cannot be analysed in Bayesian analysis", type = "warning")
-  } 
+  }
   else if (outcome == "RD") {
     print("Please note: Bayesian analysis of risk differences is not currently implemented in MetaInsight", type = "warning")
   } else if (outcome %in% c("MD", "OR", "RR")) {
@@ -321,7 +322,7 @@ bayenode <- function(data, treat_list, model, outcome, CONBI) {
     lstx <- treat_list$Label
     ntx <- nrow(treat_list)
     progress$inc(0.2, detail = "Preparing to run simulation models")
-    if (CONBI == "Continuous") { 
+    if (CONBI == "Continuous") {
       armData <- data.frame(study = data$Study,       # Create arm level data set for gemtc
                             treatment = data$T,
                             mean = data$Mean,
@@ -349,7 +350,7 @@ bayenode <- function(data, treat_list, model, outcome, CONBI) {
     progress$inc(0.4, detail = "Rendering results")
     return(nodeSplitResults)
   } else {
-    stop("outcome must be one of 'MD', 'SMD', 'OR', 'RR', or 'RD'") 
+    stop("outcome must be one of 'MD', 'SMD', 'OR', 'RR', or 'RD'")
   }
 }
 
@@ -369,12 +370,12 @@ umeplot.df <- function(c, mtcNetwork, model, outcome) {
   if (!outcome %in% c('OR', 'RR', 'MD')) {
     stop(glue::glue("Outcome type '{outcome}' is not supported. Please use one of: 'MD', 'OR', 'RR'"))
   }
-  
+
   progress <- shiny::Progress$new()
   on.exit(progress$close())
   progress$set(message = "Updating.", value = 0)
   c$names <- rownames(c)
-  
+
   if (outcome == "MD") {
     like <- "normal"
     link <- "identity"
@@ -382,12 +383,12 @@ umeplot.df <- function(c, mtcNetwork, model, outcome) {
     like <- "binom"
     link <- ifelse (outcome == "OR", "logit", "log")
   } else {
-    stop("outcome must be 'MD', 'OR', or 'RR'") 
+    stop("outcome must be 'MD', 'OR', or 'RR'")
   }
-  
+
   ume <- mtc.model(network = mtcNetwork,
                    type = "ume",
-                   linearModel = model, 
+                   linearModel = model,
                    likelihood = like,
                    link = link,
                    dic = TRUE)
@@ -398,19 +399,19 @@ umeplot.df <- function(c, mtcNetwork, model, outcome) {
   inc <- data.frame(y$dev.ab)
   inc$names <- rownames(inc)
   all <- merge(c, inc, by = "names")
-  
+
   names(all)[names(all) == "X1.x"] <- "NMAmodel_arm1"
   names(all)[names(all) == "X1.y"] <- "UMEmodel_arm1"
   names(all)[names(all) == "X2.x"] <- "NMAmodel_arm2"
   names(all)[names(all) == "X2.y"] <- "UMEmodel_arm2"
-  
+
   k <- all[, names(all) != "names"]  #### to define the maximum range of the equality line: find the maximum number of the dev data in the dataset.
   j <- max(k, na.rm = TRUE)
   m <- c(0, 1, j)
   n <- c(0, 1, j)
-  
+
   dline <- data.frame(m, n)
-  
+
   p = plot_ly() %>%   # plot
     add_trace(data = dline, x = ~m, y = ~n, type = 'scatter', mode = 'lines',
               line = list(color = '#45171D'))
@@ -425,9 +426,9 @@ umeplot.df <- function(c, mtcNetwork, model, outcome) {
                           '</br> Deviance from NMA model:',round(NMAmodel_arm1, digits = 2),
                           '</br> Deviance from UME model:',round(UMEmodel_arm1, digits = 2)
               ))
-  p = p %>% 
+  p = p %>%
     add_trace(
-      x = ~NMAmodel_arm2, y = ~UMEmodel_arm2, type = 'scatter', mode = 'markers', 
+      x = ~NMAmodel_arm2, y = ~UMEmodel_arm2, type = 'scatter', mode = 'markers',
       marker = list(size = 4, color = '#CAEFD1',
                   line = list(color = 'rgb(0,128,0)',
                               width = 2)),
@@ -436,15 +437,15 @@ umeplot.df <- function(c, mtcNetwork, model, outcome) {
                   '</br> Arm 2',
                   '</br> Deviance from NMA model:', round(NMAmodel_arm2, digits = 2),
                   '</br> Deviance from UME model:', round(UMEmodel_arm2, digits = 2)
-                  
+
       ))%>%
-    layout(showlegend = FALSE, xaxis = list(title = "Deviance from NMA model"), 
+    layout(showlegend = FALSE, xaxis = list(title = "Deviance from NMA model"),
            yaxis = list(title = "Deviance from UME inconsistency model"))
-  
-  if (ncol(c) > 3) { 
-    p = p %>% 
+
+  if (ncol(c) > 3) {
+    p = p %>%
       add_trace(data = all,
-                x = ~X3.x, y = ~X3.y, type = 'scatter', mode = 'markers', 
+                x = ~X3.x, y = ~X3.y, type = 'scatter', mode = 'markers',
                 marker = list(size = 4, color = '#CAEFD1',
                             line = list(color = 'rgb(0,128,0)',
                                         width = 2)),
@@ -453,10 +454,10 @@ umeplot.df <- function(c, mtcNetwork, model, outcome) {
                             '</br> Arm 3',
                             '</br> Deviance from NMA model:', round(X3.x, digits = 2),
                             '</br> Deviance from UME model:', round(X3.y, digits = 2)))}
-  if (ncol(c) > 4) { 
-    p = p %>% 
+  if (ncol(c) > 4) {
+    p = p %>%
       add_trace(data = all,
-                x = ~X4.x, y = ~X4.y, type = 'scatter', mode = 'markers', 
+                x = ~X4.x, y = ~X4.y, type = 'scatter', mode = 'markers',
                 marker = list(size = 4, color = '#CAEFD1',
                             line = list(color = 'rgb(0,128,0)',
                                         width = 2)),
@@ -465,10 +466,10 @@ umeplot.df <- function(c, mtcNetwork, model, outcome) {
                             '</br> Arm 4',
                             '</br> Deviance from NMA model:', round(X4.x, digits = 2),
                             '</br> Deviance from UME model:', round(X4.y, digits = 2)))}
-  if (ncol(c) > 5) { 
-    p = p %>% 
+  if (ncol(c) > 5) {
+    p = p %>%
       add_trace(data = all,
-                x = ~X5.x, y = ~X5.y, type = 'scatter', mode = 'markers', 
+                x = ~X5.x, y = ~X5.y, type = 'scatter', mode = 'markers',
                 marker = list(size = 4, color = '#CAEFD1',
                             line = list(color = 'rgb(0,128,0)',
                                         width = 2)),
@@ -477,10 +478,10 @@ umeplot.df <- function(c, mtcNetwork, model, outcome) {
                             '</br> Arm 5',
                             '</br> Deviance from NMA model:', round(X5.x, digits = 2),
                             '</br> Deviance from UME model:', round(X5.y, digits = 2)))}
-  if (ncol(c) > 6) { 
-    p = p %>% 
+  if (ncol(c) > 6) {
+    p = p %>%
       add_trace(data = all,
-                x = ~X6.x, y = ~X6.y, type = 'scatter', mode = 'markers', 
+                x = ~X6.x, y = ~X6.y, type = 'scatter', mode = 'markers',
                 marker = list(size = 4, color = '#CAEFD1',
                             line = list(color = 'rgb(0,128,0)',
                                         width = 2)),
@@ -490,14 +491,14 @@ umeplot.df <- function(c, mtcNetwork, model, outcome) {
                             '</br> Deviance from NMA model:', round(X6.x, digits = 2),
                             '</br> Deviance from UME model:', round(X6.y, digits = 2)))}
   progress$inc(0.2, detail = "Exporting results")
-  
+
   return(list(p = p, y = y))
 }
 
 
 
 #' Per-arm residual deviance plot.
-#' 
+#'
 #' @param c Deviance obtained from @param x.
 #' @param x gemtc::mtc.deviance() object.
 #' @return Creates a stemplot of residual deviances by arm.
@@ -537,21 +538,21 @@ stemplot.df <- function(c, x) {
                    xend = i,
                    y = 0,
                    yend = devbar[i],
-                   marker = list(color = 'white', 
+                   marker = list(color = 'white',
                                  line = list(color = 'white')
                                  ),
                    line = list(color = 'black',
                                width = 1)
                    )
   }
-  p = p%>% 
-    add_trace(data = d, x = ~v, y = ~devbar, type = 'scatter', mode = 'markers', 
+  p = p%>%
+    add_trace(data = d, x = ~v, y = ~devbar, type = 'scatter', mode = 'markers',
               marker = list(size = 4,
                             color = '#CAEFD1',
                             line = list(color = 'rgb(0,128,0)',
                                         width = 2)
                             ),
-              symbol = ~sep, symbols = c('circle', 'o'), 
+              symbol = ~sep, symbols = c('circle', 'o'),
               hoverinfo = 'text',
               text = ~paste('</br> Study', d$studynames,
                             '</br> Deviance from NMA model:', round(d$devbar, digits = 2)
@@ -564,7 +565,7 @@ stemplot.df <- function(c, x) {
 
 
 #' Creates a plot of leverage versus residual deviance, by study.
-#' 
+#'
 #' @param x gemtc::mtc.deviance() object.
 #' @return Leverage vs residual deviance plot.
 levplot.df <- function(x) {
@@ -579,18 +580,18 @@ levplot.df <- function(x) {
   lev <- c(lev.ab, lev.re) / nd
   d <- data.frame(w, lev)
   d$names <- rownames(d)
-  
+
   a <- seq(from = 0, to = 3, by = 0.05)
   b1 <- 1 - a^2
   b2 <- 2 - a^2
   b3 <- 3 - a^2
   b4 <- 4 - a^2
   parabola <- data.frame(a, b1, b2, b3, b4)
-  
+
   xlab = "Square root of average residual deviance across the arms for each study"
   'sqrt(average(residual deviance for arm 1, residual deviance for arm 2...))'
   ylab = "Average leverage across the arms for each study"
-  
+
   xl <- list(
     title = xlab,
     range = c(0, max(c(w, 2.5))),
@@ -607,13 +608,13 @@ levplot.df <- function(x) {
     zeroline = TRUE,
     showgrid = TRUE
   )
-  
+
   p <- plot_ly(parabola, x = ~a) %>%
     add_trace(y = b1, mode = 'lines', line = list(color = 'black', width = 1), hoverinfo = 'skip') %>%
     add_trace(y = b2, mode = 'lines', line = list(color = 'black', width = 1), hoverinfo = 'skip') %>%
     add_trace(y = b3, mode = 'lines', line = list(color = 'black', width = 1), hoverinfo = 'skip') %>%
     add_trace(y = b4, mode = 'lines', line = list(color = 'black', width = 1), hoverinfo = 'skip') %>%
-    add_trace(data = d, x = ~w, y = ~lev, 
+    add_trace(data = d, x = ~w, y = ~lev,
               marker = list(size = 4,
                             color = '#CAEFD1',
                             line = list(color = 'rgb(0,128,0)',

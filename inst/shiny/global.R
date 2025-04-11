@@ -32,6 +32,7 @@ base_module_configs <- c(
   "modules/freq_compare.yml",
   "modules/freq_inconsistent.yml",
   "modules/freq_summary.yml",
+  "modules/bayes_model.yml",
   "modules/bayes_forest.yml",
   "modules/bayes_compare.yml",
   "modules/bayes_ranking.yml",
@@ -144,7 +145,7 @@ for (module in core_modules){
   source(module, local = TRUE)
 }
 
-#load common object
+# load common object
 source(system.file("shiny", "common.R", package = "metainsight"))
 common <- common_class$new()
 

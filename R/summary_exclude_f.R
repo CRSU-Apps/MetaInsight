@@ -50,11 +50,10 @@ summary_exclude <- function(non_covariate_data, treatment_df, reference_treatmen
   }
 
   subsetted_data <- non_covariate_data[!non_covariate_data$Study %in% exclusions,]
-
   dewrangled_data_sub <- ReinstateTreatmentIds(subsetted_data, treatment_df)
-  treatments_sub <- FindAllTreatments(dewrangled_data_sub)
+  subsetted_treatment_df <- FindAllTreatments(dewrangled_data_sub)
 
-  treatment_df_sub <- CreateTreatmentIds(treatments_sub, reference_treatment)
+  treatment_df_sub <- CreateTreatmentIds(subsetted_treatment_df, reference_treatment)
   data_sub <- ReplaceTreatmentIds(dewrangled_data_sub, treatment_df_sub)
   non_covariate_data_sub <- RemoveCovariates(data_sub)
 
@@ -75,5 +74,8 @@ summary_exclude <- function(non_covariate_data, treatment_df, reference_treatmen
 
   list(bugsnet_sub = bugsnet_sub,
        freq_sub = freq_sub,
-       reference_treatment_sub = reference_treatment_sub)
+       reference_treatment_sub = reference_treatment_sub,
+       subsetted_data = subsetted_data,
+       subsetted_treatment_df = treatment_df_sub
+       )
 }
