@@ -44,8 +44,8 @@ baseline_risk_analysis_panel_ui <- function(id, page_numbering) {
         result_details_page_ui(id = ns("baseline_risk_result_details"), item_names = c("all studies"))
       ),
       tabPanel(
-        title = paste0(page_numbering$AddChild(), " Deviance report"),
-        deviance_report_page_ui(id = ns("baseline_risk_deviance_report"), item_names = c("all studies"))
+        title = paste0(page_numbering$AddChild(), " Diagnostics"),
+        diagnostics_page_ui(id = ns("baseline_risk_diagnostics"), item_names = c("all studies"), page_numbering)
       ),
       tabPanel(
         title = paste0(page_numbering$AddChild(), " Model details"),
@@ -243,7 +243,7 @@ baseline_risk_analysis_panel_server <- function(    id,
     result_details_page_server(id = "baseline_risk_result_details", models = c(model_reactive), models_valid = c(model_valid), package = "bnma")
     
     # 4b-7 Deviance report
-    deviance_report_page_server(id = "baseline_risk_deviance_report", models = c(model_reactive), models_valid = c(model_valid), package = "bnma")
+    diagnostics_page_server(id = "baseline_risk_diagnostics", models = c(model_reactive), models_valid = c(model_valid), package = "bnma")
     
     # 4c-8 Model details
     model_details_panel_server(id = "baseline_risk_model_details", models = c(model_reactive), models_valid = c(model_valid), package = "bnma")
