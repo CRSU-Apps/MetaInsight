@@ -9,19 +9,21 @@ mcmc_panel_ui <- function(id, item_name) {
   div(
     invalid_model_panel_ui(id = ns("model_invalid")),
 
-    p(tags$strong(glue::glue("Gelman convergence assessment plots for {item_name}"))),
+    h3(tags$strong(glue::glue("Gelman convergence assessment plots for {item_name}"))),
     shinycssloaders::withSpinner(
       plotOutput(outputId = ns("gemtc_gelman"), inline = TRUE),
       type = 6
     ),
+    br(),
     
-    p(tags$strong(glue::glue("Trace plots for {item_name}"))),
+    h3(tags$strong(glue::glue("Trace plots for {item_name}"))),
     shinycssloaders::withSpinner(
       plotOutput(outputId = ns("trace_plots"), inline = TRUE),
       type = 6
     ),
+    br(),
     
-    p(tags$strong(glue::glue("Posterior density plots for {item_name}"))),
+    h3(tags$strong(glue::glue("Posterior density plots for {item_name}"))),
     shinycssloaders::withSpinner(
       plotOutput(outputId = ns("density_plots"), inline = TRUE),
       type = 6
@@ -67,11 +69,17 @@ mcmc_panel_server <- function(id, model, model_valid, package = "gemtc") {
     #For baseline risk, create a Gelman plot for each parameter
     gelman_plots <- reactive({
       if (package == "gemtc") {
-        return(NULL)
+        return(
+          lapply(parameters(),
+                 function(parameter) {
+                   return(coda::gelman.plot(model()$mtcResults$samples[, parameter]))
+                 }
+          )
+        )
       } else if (package == "bnma") {
         return(
           lapply(parameters(),
-                 function(parameter){
+                 function(parameter) {
                    return(coda::gelman.plot(model()$samples[, parameter]))
                  }
           )
@@ -79,7 +87,7 @@ mcmc_panel_server <- function(id, model, model_valid, package = "gemtc") {
       }
     })
     
-    #The number of rows, to determine the dimensions of the grid in bnma, and the height of the plot in bnma and gemtc
+    #The number of rows, to determine the dimensions of the grid for the Gelman plots, and the height of the plots for the Gelman, trace and density plots
     n_rows <- reactive({
       ceiling(length(parameters()) / 2)
     })
@@ -90,12 +98,8 @@ mcmc_panel_server <- function(id, model, model_valid, package = "gemtc") {
         if (is.null(model_valid()) || !model_valid()) {
           return()
         }
-        if (package == "gemtc") {
-          return(gelman.plot(model()$mtcResults))
-        } else if (package == "bnma") {
-          par(mfrow = c(n_rows(), 2))
-          return(BnmaGelmanPlots(gelman_plots = gelman_plots(), parameters = parameters()))
-        }
+        par(mfrow = c(n_rows(), 2))
+        return(GelmanPlots(gelman_plots = gelman_plots(), parameters = parameters()))
       },
       height = function() {
         n_rows() * 300
