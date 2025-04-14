@@ -476,7 +476,6 @@ GetBnmaParameters <- function(all_parameters, effects_type, cov_parameters) {
 
 
 
-
 #' An equivalent to {gemtc}'s relative.effect() function, for baseline risk in {bnma}.
 #' 
 #' @param model bnma model object created by BaselineRiskRegression().
@@ -505,4 +504,82 @@ BnmaRelativeEffects <- function(model, covariate_value) {
   
   relative_effects <- MCMCvis::MCMCsummary(samples)
   return(as.matrix(relative_effects[, c("50%", "2.5%", "97.5%")]))
+}
+
+
+
+#' MCMC characteristics from a BNMA model.
+#' 
+#' @param model BNMA model output.
+#' @return Data frame with four MCMC characteristics.
+GetBnmaMcmcCharacteristics <- function(model) {
+  return(data.frame(characteristic = c("Chains",
+                                       "Burn-in iterations",
+                                       "Sample iterations",
+                                       "Thinning factor"),
+                    value = c(length(model$samples),
+                              model$burnin,
+                              length(model$samples[[1]][, 1]),
+                              model$n.thin)
+                    )
+         )
+}
+
+
+
+#' Prior distributions from a BNMA model.
+#' 
+#' @param model BNMA model output.
+#' @return Data frame with prior distribution information.
+GetBnmaPriors <- function(model) {
+  treatment_effect_mean <- reactive(model$network$prior.data$mean.d)
+  treatment_effect_var <- reactive(round(1 / model$network$prior.data$prec.d, digits = 1))
+  eta_mean <- reactive(model$network$prior.data$mean.Eta)
+  eta_var <- reactive(round(1 / model$network$prior.data$prec.Eta, digits = 1))
+  prior_table <- data.frame(parameter = c("Relative treatment effects",
+                                          "Intercepts"),
+                            value = c(paste0(" ~ N (", treatment_effect_mean(), ", ", treatment_effect_var(), ")"),
+                                      paste0(" ~ N (", eta_mean(), ", ", eta_var(), ")"))
+  )
+  
+  #If the model is random effects, add the heterogenity SD
+  if (model$network$type == "random") {
+    heterogeneity_sd_lower <- reactive(round(model$network$prior.data$hy.prior.1, digits = 1))
+    heterogeneity_sd_upper <- reactive(round(model$network$prior.data$hy.prior.2, digits = 1))
+    prior_table <- rbind(prior_table,
+                         data.frame(parameter = "Heterogeneity standard deviation",
+                                    value = paste0(" ~ Unif (", heterogeneity_sd_lower(), ", ", heterogeneity_sd_upper(), ")"))
+    )
+  }
+  
+  #If the model is NMR shared, add the covariate parameter
+  if (model$network$baseline == "common") {
+    shared_mean <- reactive(model$network$prior.data$mean.bl)
+    shared_var <- reactive(round(1 / model$network$prior.data$prec.bl, digits = 1))
+    prior_table <- rbind(prior_table,
+                         data.frame(parameter = "Shared covariate parameter",
+                                    value = paste0(" ~ N (", shared_mean(), ", ", shared_var(), ")"))
+    )
+    #If the model is NMR exchangeable, add the covariate mean and variance parameters
+  } else if (model$network$baseline == "exchangeable") {
+    exchangeable_mean_mean <- reactive(model$network$prior.data$mean.bl)
+    exchangeable_mean_var <- reactive(round(1 / model$network$prior.data$prec.bl, digits = 1))
+    exchangeable_sd_lower <- reactive(model$network$prior.data$hy.prior.bl.1)
+    exchangeable_sd_upper <- reactive(model$network$prior.data$hy.prior.bl.2)
+    prior_table <- rbind(prior_table,
+                         data.frame(parameter = c("Covariate mean",
+                                                  "Covariate standard deviation"),
+                                    value = c(paste0(" ~ N (", exchangeable_mean_mean(), ", ", exchangeable_mean_var(), ")"),
+                                              paste0(" ~ Unif (", exchangeable_sd_lower(), ", ", exchangeable_sd_upper(), ")")))
+    )
+    #If the model is NMR unrelated, add the covariate parameters
+  } else if (model$network$baseline == "independent") {
+    unrelated_mean <- reactive(model$network$prior.data$mean.bl)
+    unrelated_var <- reactive(round(1 / model$network$prior.data$prec.bl, digits = 1))
+    prior_table <- rbind(prior_table,
+                         data.frame(parameter = "Covariate parameters",
+                                    value = paste0(" ~ N (", unrelated_mean(), ", ", unrelated_var(), ")"))
+    )
+  }
+  return(prior_table)
 }
