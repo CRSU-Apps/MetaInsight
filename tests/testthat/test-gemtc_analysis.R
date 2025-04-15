@@ -167,7 +167,10 @@ test_that("CreateGemtcModel() has correct model settings for MD outcome", {
 
 })
 
-test_that("RunCovariateModel() gives reproducible output. Follow on: FindCovariateDefault() & CovariateModelOutput() gives correct output", {
+test_that("RunCovariateModel() gives reproducible output.
+          FindCovariateDefault() gives correct output.
+          CovariateModelOutput() gives correct output.
+          GetGemtcMcmcCharacteristics() returns correct MCMC data.", {
   reference = "the_Little"
 
   data <- read.csv("data/Binary_wide_continuous_cov.csv")
@@ -209,6 +212,14 @@ test_that("RunCovariateModel() gives reproducible output. Follow on: FindCovaria
   expect_equal(output_1$covariate_value, covariate_value)
   expect_equal(output_1$reference_name, reference)
   expect_equal(output_1$comparator_names, c("the_Butcher", "the_Dung_named", "the_Great", "the_Slit_nosed", "the_Younger"))
+  
+  expected_mcmc_table <- data.frame(characteristic = c("Chains",
+                                                       "Burn-in iterations",
+                                                       "Sample iterations",
+                                                       "Thinning factor"),
+                                    value = c(4, 5000, 20000, 1))
+  
+  expect_equal(GetGemtcMcmcCharacteristics(result_1), expected_mcmc_table)
 })
 
 test_that("CalculateCredibleRegions() gives nothing for NA evidence range", {
