@@ -9,23 +9,21 @@ mcmc_panel_ui <- function(id, item_name) {
   div(
     invalid_model_panel_ui(id = ns("model_invalid")),
 
-    h3(tags$strong(glue::glue("Gelman convergence assessment plots for {item_name}"))),
+    h4(tags$strong(glue::glue("Gelman convergence assessment plots for {item_name}"))),
     shinycssloaders::withSpinner(
-      plotOutput(outputId = ns("gemtc_gelman"), inline = TRUE),
+      plotOutput(outputId = ns("gemtc_gelman"), width = "100%", height = "100%"),
       type = 6
     ),
     br(),
-    
-    h3(tags$strong(glue::glue("Trace plots for {item_name}"))),
+    h4(tags$strong(glue::glue("Trace plots for {item_name}"))),
     shinycssloaders::withSpinner(
-      plotOutput(outputId = ns("trace_plots"), inline = TRUE),
+      plotOutput(outputId = ns("trace_plots"), width = "100%", height = "100%"),
       type = 6
     ),
     br(),
-    
-    h3(tags$strong(glue::glue("Posterior density plots for {item_name}"))),
+    h4(tags$strong(glue::glue("Posterior density plots for {item_name}"))),
     shinycssloaders::withSpinner(
-      plotOutput(outputId = ns("density_plots"), inline = TRUE),
+      plotOutput(outputId = ns("density_plots"), width = "100%", height = "100%"),
       type = 6
     )
   )
@@ -87,44 +85,50 @@ mcmc_panel_server <- function(id, model, model_valid, package = "gemtc") {
       }
     })
     
-    #The number of rows, to determine the dimensions of the grid for the Gelman plots, and the height of the plots for the Gelman, trace and density plots
+    #TRUE if the model is a regression
+    is_nmr <- reactive({
+      return(package == "bnma" || model()$mtcResults$model$type == "regression")
+    })
+    
+    #The number of columns in the grid
+    n_cols <- reactive({
+      return(2 + 2 * is_nmr())
+    })
+    
+    #The number of rows in the grid
     n_rows <- reactive({
-      ceiling(length(parameters()) / 2)
+      return(ceiling(length(parameters()) / n_cols()))
     })
     
     # Gelman plots
-    output$gemtc_gelman <- renderPlot(
-      {
+    output$gemtc_gelman <- renderPlot({
         if (is.null(model_valid()) || !model_valid()) {
           return()
         }
-        par(mfrow = c(n_rows(), 2))
+        par(mfrow = c(n_rows(), n_cols()))
         return(GelmanPlots(gelman_plots = gelman_plots(), parameters = parameters()))
       },
       height = function() {
-        n_rows() * 300
+        n_rows() * 250
       }
     )
     
     #Trace plots
-    output$trace_plots <- renderPlot(
-      {
+    output$trace_plots <- renderPlot({
         if (is.null(model_valid()) || !model_valid()) {
           return()
         }
         
-        plotlist <- reactive(
-          if (package == "gemtc") {
-            return(TracePlots(model = model()$mtcResults, parameters = parameters()))
-          } else if (package == "bnma") {
-            return(TracePlots(model = model(), parameters = parameters()))
-          }
-        )
+        plotlist <- switch(
+          package,
+          "gemtc" = TracePlots(model = model()$mtcResults, parameters = parameters()),
+          "bnma" = TracePlots(model = model(), parameters = parameters())
+          )
         
         return(
           cowplot::plot_grid(
-            plotlist = plotlist(),
-            ncol = 2
+            plotlist = plotlist,
+            ncol = n_cols()
           )
         )
       },
@@ -134,24 +138,21 @@ mcmc_panel_server <- function(id, model, model_valid, package = "gemtc") {
     )
     
     #Posterior density plots
-    output$density_plots <- renderPlot(
-      {
+    output$density_plots <- renderPlot({
         if (is.null(model_valid()) || !model_valid()) {
           return()
         }
         
-        plotlist <- reactive(
-          if (package == "gemtc") {
-            return(DensityPlots(model = model()$mtcResults, parameters = parameters()))
-          } else if (package == "bnma") {
-            return(DensityPlots(model = model(), parameters = parameters()))
-          }
-        )
-        
+        plotlist <- switch(
+          package,
+          "gemtc" = DensityPlots(model = model()$mtcResults, parameters = parameters()),
+          "bnma" = DensityPlots(model = model(), parameters = parameters())
+          )
+      
         return(
           cowplot::plot_grid(
-            plotlist = plotlist(),
-            ncol = 2
+            plotlist = plotlist,
+            ncol = n_cols()
           )
         )
       },
