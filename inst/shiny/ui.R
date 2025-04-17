@@ -142,6 +142,10 @@ tagList(
             ),
             column(
               2,
+              uiOutput("processing")
+            ),
+            column(
+              2,
               align = "left",
               div(style = "margin-top: -10px"),
               strong("Log window"),

@@ -25,6 +25,16 @@ function(input, output, session) {
     shinyjs::js$scrollLogger()
   })
 
+  output$processing <- renderUI({
+    status <- unlist(lapply(common$tasks, function(x){x$status()}))
+    running <- length(status[status == "running"])
+    if (running >= 1){
+      return(div(icon("rotate", class = "fa-spin loading-icon"), style = "width: 100%;"))
+    } else {
+      NULL
+    }
+  })
+
   ########################## #
   # REACTIVE VALUES LISTS ####
   ########################## #

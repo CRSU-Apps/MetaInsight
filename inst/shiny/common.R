@@ -27,6 +27,7 @@ common_class <- R6::R6Class(
    bayes_sub = NULL,
    download_format = NULL,
    meta = NULL,
+   tasks = NULL,
    logger = NULL,
    state = NULL,
    reset = function(){

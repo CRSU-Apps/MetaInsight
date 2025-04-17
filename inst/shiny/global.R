@@ -3,6 +3,10 @@ library(metainsight)
 # shouldn't be necessary, but ..?
 library(magrittr)
 
+mirai::daemons(4)
+onStop(function() mirai::daemons(0))
+
+
 MB <- 1024^2
 UPLOAD_SIZE_MB <- 5000
 options(shiny.maxRequestSize = UPLOAD_SIZE_MB*MB)

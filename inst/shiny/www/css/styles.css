@@ -148,3 +148,10 @@ hr {
   width: 100% !important;
   box-sizing: border-box !important;
 }
+
+.loading-icon {
+  width: 100%;
+  font-size: clamp(40px, 8vw, 100px);
+  color: #FF5733;
+  text-align: center;
+}
