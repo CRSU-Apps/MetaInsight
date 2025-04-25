@@ -349,3 +349,71 @@ CalculateCredibleRegions <- function(model_output) {
   rel_eff_summary <- summary(rel_eff)
   return(rel_eff_summary$summaries$quantiles[parameter_name, c("2.5%", "97.5%")])
 }
+
+#' MCMC characteristics from a GEMTC model.
+#' 
+#' @param model GEMTC model output.
+#' @return Data frame with four MCMC characteristics.
+GetGemtcMcmcCharacteristics <- function(model) {
+  return(data.frame(characteristic = c("Chains",
+                                       "Burn-in iterations",
+                                       "Sample iterations",
+                                       "Thinning factor"),
+                    value = c(model$model$n.chain,
+                              attr(model$samples[[1]], "mcpar")[1] - 1,
+                              length(model$samples[[1]][, 1]),
+                              summary(model)$summaries$thin)
+                    )
+         )
+}
+
+#' Prior distributions from a GEMTC model.
+#' 
+#' @param model GEMTC model output.
+#' @return Data frame with prior distribution information.
+GetGemtcPriors <- function(model) {
+  treatment_effect_var <- round(model$model$data$re.prior.sd^2, digits = 1)
+  prior_table <- data.frame(parameter = c("Relative treatment effects",
+                                          "Intercepts"),
+                            value = c(paste0(" ~ N (0, ", treatment_effect_var, ")"),
+                                      paste0(" ~ N (0, ", treatment_effect_var, ")"))
+  )
+  
+  #If the model is random effects, add the heterogenity SD
+  if (model$model$linearModel == "random") {
+    heterogeneity_sd_upper <- round(model$model$data$om.scale, digits = 1)
+    prior_table <- rbind(prior_table,
+                         data.frame(parameter = "Heterogeneity standard deviation",
+                                    value = paste0(" ~ Unif (0, ", heterogeneity_sd_upper, ")"))
+    )
+  }
+  
+  if (!is.null(model$model$regressor$coefficient)) {
+    #If the model is NMR shared, add the covariate parameter
+    if (model$model$regressor$coefficient == "shared") {
+      shared_var <- RoundVariance(model$model$data$om.scale^2)
+      prior_table <- rbind(prior_table,
+                           data.frame(parameter = "Shared covariate parameter",
+                                      value = paste0(" ~ Scaled t-distribution (0, ", shared_var, ", 1)"))
+      )
+      #If the model is NMR exchangeable, add the covariate mean and variance parameters
+    } else if (model$model$regressor$coefficient == "exchangeable") {
+      exchangeable_mean_var <- round(model$model$data$om.scale^2, digits = 1)
+      exchangeable_sd_upper <- round(model$model$data$om.scale, digits = 1)
+      prior_table <- rbind(prior_table,
+                           data.frame(parameter = c("Covariate mean",
+                                                    "Covariate standard deviation"),
+                                      value = c(paste0(" ~ Scaled t-distribution (0, ", exchangeable_mean_var, ", 1)"),
+                                                paste0(" ~ Unif (0, ", exchangeable_sd_upper, ")")))
+      )
+      #If the model is NMR unrelated, add the covariate parameters
+    } else if (model$model$regressor$coefficient == "unrelated") {
+      unrelated_var <- RoundVariance(model$model$data$om.scale^2)
+      prior_table <- rbind(prior_table,
+                           data.frame(parameter = "Covariate parameters",
+                                      value = paste0(" ~ Scaled t-distribution (0, ", unrelated_var, ", 1)"))
+      )
+    }
+  }
+  return(prior_table)
+}
