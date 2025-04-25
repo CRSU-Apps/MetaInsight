@@ -52,6 +52,8 @@ baye <- function(data, treat_list, model, outcome, CONBI, ref) {
     link <- ifelse (outcome == "OR","logit", "log")
   }
   
+  set.seed(145) # needs to be set before mtc.model
+  
   mtcModel <- mtc.model(
     network = mtcNetwork,
     type = "consistency",
@@ -60,6 +62,15 @@ baye <- function(data, treat_list, model, outcome, CONBI, ref) {
     link = link,
     dic = TRUE
   )
+  
+  # Settings for JAGS seeds and generator types for reproducible results (code taken from mtc.model manual)
+  seeds <- sample.int(4, n = .Machine$integer.max) # 4 chains
+  mtcModel$inits <- mapply(c, mtcModel$inits, list(
+    list(.RNG.name = "base::Wichmann-Hill", .RNG.seed = seeds[1]),
+    list(.RNG.name = "base::Marsaglia-Multicarry", .RNG.seed = seeds[2]),
+    list(.RNG.name = "base::Super-Duper", .RNG.seed = seeds[3]),
+    list(.RNG.name = "base::Mersenne-Twister", .RNG.seed = seeds[4])),
+    SIMPLIFY = FALSE)
   
   progress$inc(0.4, detail = "Running simulation models")
   mtcResults <- mtc.run(mtcModel)   # Run gemtc model object for analysis
@@ -385,6 +396,8 @@ umeplot.df <- function(residual_deviance, mtcNetwork, model, outcome) {
     stop("outcome must be 'MD', 'OR', or 'RR'") 
   }
   
+  set.seed(145) # needs to be set before mtc.model
+  
   ume <- mtc.model(network = mtcNetwork,
                    type = "ume",
                    linearModel = model, 
@@ -392,6 +405,15 @@ umeplot.df <- function(residual_deviance, mtcNetwork, model, outcome) {
                    link = link,
                    dic = TRUE)
   progress$inc(0.5, detail = "Preparing results")
+  
+  seeds <- sample.int(4, n = .Machine$integer.max) # 4 chains
+  ume$inits <- mapply(c, ume$inits, list(
+    list(.RNG.name = "base::Wichmann-Hill", .RNG.seed = seeds[1]),
+    list(.RNG.name = "base::Marsaglia-Multicarry", .RNG.seed = seeds[2]),
+    list(.RNG.name = "base::Super-Duper", .RNG.seed = seeds[3]),
+    list(.RNG.name = "base::Mersenne-Twister", .RNG.seed = seeds[4])),
+    SIMPLIFY = FALSE)
+  
   ume_results <- mtc.run(ume)
   progress$inc(0.3, detail = "Rendering results")
   y <- mtc.deviance({ume_results})
