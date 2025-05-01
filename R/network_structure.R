@@ -1,33 +1,33 @@
 ### Function taken and adapted from BUGSnet GitHub ###
 network.structure <- function(data.nma, my_order = NA) {     # data.nma is a BUGSnetData item, created using data.prep(arm.data=longdata, varname.t = "T", varname.s="Study")
-  
+
   # Bind Variables to function
   from <- NULL
   to <- NULL
   trt <- NULL
   flag <- NULL
   mtchvar <- NULL
-  
-  
+
+
   trial <- rlang::quo(!!as.name(data.nma$varname.s))
   varname.t.quo <- rlang::quo(!!as.name(data.nma$varname.t))
-  
+
   # Change underscores if present (as when my_order is based on rank results, it'll already have underscores removed)
   data.nma$arm.data$T <- data.nma$arm.data$T
   data.nma$treatments$T <- data.nma$treatments$T
-  
+
   studytrt <- data.nma$arm.data %>%
     dplyr::select(data.nma$varname.s, data.nma$varname.t) %>%
     tidyr::nest(data = c(data.nma$varname.t))      # nest treatments within each study
-  
+
   cnt <- data.nma$arm.data %>%
     dplyr::select(data.nma$varname.s, data.nma$varname.t) %>%
     dplyr::count(data.nma$varname.s)     # number of treatments within each study
-  
-  tmp1 <- bind_cols(studytrt, cnt) %>%
+
+  tmp1 <- dplyr::bind_cols(studytrt, cnt) %>%
     dplyr::filter(n > 1)   # removes single arm studies
-  
-  if (is.empty(my_order)) {
+
+  if (rlang::is_empty(my_order)) {
     pairs <- tmp1[1, "data"] %>%
       unlist %>%
       sort %>%
@@ -36,9 +36,9 @@ network.structure <- function(data.nma, my_order = NA) {     # data.nma is a BUG
     pairs <- unlist(tmp1[1, "data"])[order(match(unlist(tmp1[1, "data"]), my_order))] %>%
       combn(2) # orders according to 'my_order'
   }
-    
+
   for(i in 2:nrow(tmp1)){
-    if (is.empty(my_order)) {
+    if (rlang::is_empty(my_order)) {
       pairs <- tmp1[i, "data"] %>%
         unlist %>%
         sort %>%
@@ -50,24 +50,24 @@ network.structure <- function(data.nma, my_order = NA) {     # data.nma is a BUG
         cbind(pairs)
     }
   }
-  
+
   # data of each pairwise comparison and number of trials
   pairs2 <- data.frame(
     from = pairs[1, ],
     to = pairs[2, ]) %>%
       dplyr::group_by(from, to) %>%
-      dplyr::mutate(edge.weight = max(1:n())) %>%   # counts number of pairwise comparisons
+      dplyr::mutate(edge.weight = max(1:dplyr::n())) %>%   # counts number of pairwise comparisons
       dplyr::arrange(from, to) %>%
       dplyr::distinct() %>%
       dplyr::mutate(mtchvar = 1)
-  
+
   studylabs <- studytrt %>%
     dplyr::group_by(!! trial) %>%
     dplyr::mutate(trt = paste(unlist(data), collapse = ';')) %>%
     dplyr::select(!!trial, trt) %>%
     dplyr::mutate(mtchvar = 1)
-  
-  edges <- left_join(pairs2, studylabs, by = "mtchvar") %>%
+
+  edges <- dplyr::left_join(pairs2, studylabs, by = "mtchvar") %>%
     dplyr::ungroup() %>%
     dplyr::mutate(
       flag = ifelse(
@@ -82,6 +82,6 @@ network.structure <- function(data.nma, my_order = NA) {     # data.nma is a BUG
     dplyr::group_by(from, to) %>%
     dplyr::mutate(study = paste(unlist(data), collapse = ', \n')) %>%
     dplyr::select(-data)
-  
+
   return(edges)
 }
