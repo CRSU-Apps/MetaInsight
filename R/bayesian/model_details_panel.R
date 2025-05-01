@@ -139,6 +139,7 @@ model_details_panel_server <- function(id, models, models_valid, package = "gemt
     invalid_model_panel_server(id = "model_invalid_1", model_valid = main_model_valid)
     invalid_model_panel_server(id = "model_invalid_2", model_valid = main_model_valid)
     invalid_model_panel_server(id = "model_invalid_3", model_valid = main_model_valid)
+    invalid_model_panel_server(id = "model_invalid_4", model_valid = main_model_valid)
     
     observe({
       # Get either enable or disable function to apply to relevant UI elements
@@ -149,8 +150,10 @@ model_details_panel_server <- function(id, models, models_valid, package = "gemt
       }
       
       # Apply enable or disable function
+      fn(id = glue::glue("download_mcmc"))
+      fn(id = glue::glue("download_priors"))
       fn(id = glue::glue("download_code"))
-      
+
       sapply(
         1:4,
         function(index) {
@@ -177,20 +180,22 @@ model_details_panel_server <- function(id, models, models_valid, package = "gemt
       }
     })
     
-    output$mcmc_details <- renderTable({
-      mcmc_details()
-    },
-    digits = 0,
-    colnames = FALSE
+    output$mcmc_details <- renderTable(
+      {
+        mcmc_details()
+      },
+      digits = 0,
+      colnames = FALSE
     )
     
-    output$priors <- renderTable({
-      priors()
-    },
-    colnames = FALSE
+    output$priors <- renderTable(
+      {
+        priors()
+      },
+      colnames = FALSE
     )
     
-    output$download_mcmc <-     downloadHandler(
+    output$download_mcmc <- downloadHandler(
       filename = "mcmc_characteristics.csv",
       content = function(file) {
         data <- mcmc_details()

@@ -1346,7 +1346,7 @@ test_that("FindMaxArms() returns the correct number of arms for wide data", {
 })
 
 
-test_that("RoundVariance() rounds correctly", {
-  expect_equal(RoundVariance(1234.5678), 1234.6)
-  expect_equal(RoundVariance(0.000789), 0.0008)
+test_that("RoundForDisplay() rounds correctly", {
+  expect_equal(RoundForDisplay(1234.5678), 1234.6)
+  expect_equal(RoundForDisplay(0.000789), 0.0008)
 })

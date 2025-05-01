@@ -549,12 +549,12 @@ FindMaxArms <- function(data) {
 
 #' Returns a number rounded in a nice manner.
 #' 
-#' @param variance Any number, doesn't have to be a variance.
-#' @return 'variance' with 1 decimal place or 1 significant figure.
-RoundVariance <- function(variance) {
-  rounded <- round(variance, digits = 1)
+#' @param number Any number.
+#' @return 'number' with 1 decimal place or 1 significant figure.
+RoundForDisplay <- function(number) {
+  rounded <- round(number, digits = 1)
   if (rounded == 0) {
-    return(signif(variance, digits = 1))
+    return(signif(number, digits = 1))
   } else {
     return(rounded)
   }
