@@ -3,17 +3,10 @@ uiTop <- function(mod_INFO) {
   modName <- mod_INFO$modName
   pkgName <- mod_INFO$pkgName
 
-  ls <- list(div(paste("Module: ", modName), class = "mod"),
-             actionLink(paste0(modID, "Help"),
-                        label = "", icon = icon("circle-question"),
-                        class = "modHelpButton"),
-             br())
+  ls <- list(span(span("R packages:", class = "rpkg"),
+                        span(paste(pkgName, collapse = ", "), class = "pkgDes"))
+  )
 
-  ls <- c(ls, list(shiny::span("R packages:", class = "rpkg"),
-                   shiny::span(paste(pkgName, collapse = ", "), class = "pkgDes"),
-                   br()))
-
-  ls <- c(ls, list(HTML('<hr>')))
   ls
 }
 
@@ -24,12 +17,12 @@ uiBottom <- function(mod_INFO) {
   pkgTitl <- mod_INFO$pkgTitl
 
   ls <- list(shiny::span('App Developers:', class = "rpkg"),
-             shiny::span(modAuts, class = "pkgDes"), br(), br())
+             shiny::span(modAuts, class = "pkgDes"))
 
   for (i in seq_along(pkgName)) {
     ls <- c(ls, list(
       shiny::span(pkgName[i], class = "rpkg"),
-      "references", br(),
+      "references",
       div(paste(pkgTitl[i]), class = "pkgTitl"),
       div(paste('Package Developers:', pkgAuts[i]), class = "pkgDes"),
       a("CRAN", href = file.path("http://cran.r-project.org/web/packages",
@@ -93,7 +86,7 @@ insert_modules_ui <- function(component, exclude = NULL) {
         pkgName = module$package
       ),
       do.call(module$ui_function, list(module$id)),
-      tags$hr(),
+      # tags$hr(),
       tags$details(
         tags$summary("Module attribution"),
         ui_bottom(
