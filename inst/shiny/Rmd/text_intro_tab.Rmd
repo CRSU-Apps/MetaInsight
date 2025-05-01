@@ -5,7 +5,7 @@ output: html_document
 
 #### WORKFLOW
 
-*metainsight* (v0.0.1) includes two components, or steps of a possible workflow. Each component includes one or more modules, which are possible analyses for that step.
+*metainsight* (v0.0.1) includes five components, or steps of a possible workflow. Each component includes two or more modules, which are possible analyses for that step.
 
 **Components:**  
 **1.** *Setup*
@@ -24,6 +24,16 @@ output: html_document
 - Inconsistency
 - Summary matrix
 
-**4.** *Reproduce*
+**4.** *Bayesian*
+- Run models
+- Forest plot
+- Comparison
+- Ranking
+- Nodesplit model
+- Result details
+- Deviance report
+- Model details
+
+**5.** *Reproduce*
 - Download Session Code
 - Download Package References
