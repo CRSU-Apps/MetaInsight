@@ -1,60 +1,140 @@
+bayes_compare_submodule_ui <- function(id, download_label) {
+  ns <- NS(id)
+  downloadButton(ns("download"), download_label)
+}
+
 bayes_compare_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
-    # UI
-
-
-    actionButton(ns("run"), "Run module bayes_compare")
-
+    actionButton(ns("run"), "Generate tables"),
+    fixedRow(
+      column(
+        width = 6,
+        bayes_compare_submodule_ui(ns("all"), "All studies")
+      ),
+      column(
+        width = 6,
+        bayes_compare_submodule_ui(ns("sub"), "With selected studies excluded")
+      )
+    )
   )
+}
+
+bayes_compare_submodule_server <- function(id, common, model, run, text){
+  moduleServer(id, function(input, output, session) {
+
+    output$table <- renderTable({
+      bayes_compare(common[[model]], common$outcome_measure)
+    }) %>% bindEvent(run())
+
+    output$text <- renderUI({
+      req(common[[model]])
+      p(tags$strong(text))
+    }) %>% bindEvent(run())
+
+    output$download <- downloadHandler(
+      filename = function(){
+        if (model == "bayes_all"){
+          name <- "MetaInsight_bayesian_comparison_all.csv"
+        } else {
+          name <- "MetaInsight_bayesian_comparison_sub.csv"
+        }
+      },
+      content = function(file) {
+        write.csv(bayes_compare(common[[model]], common$outcome_measure), file)
+      }
+    )
+
+  })
 }
 
 bayes_compare_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
+    # check that a fitted model exists and error if not
+    observeEvent(input$run, {
+      if (is.null(common$bayes_all)){
+        common$logger %>% writeLog(type = "error", "Please fit the Bayesian models first")
+        return()
+      } else {
+        trigger("bayes_compare")
+      }
+    })
 
-  observeEvent(input$run, {
-    # WARNING ####
+    # listen for the _sub model being refitted and trigger again, but only if the module has already been used
+    on("bayes_model_sub", {
+      if (watch("bayes_compare") > 0){
+        shinyjs::runjs("Shiny.setInputValue('bayes_compare-rerun', new Date().getTime());")
+      }
+    })
 
-    # FUNCTION CALL ####
+    # trigger for the main analysis - when run is clicked, but only if there is a valid model
+    all_trigger <- reactive({
+      if (watch("bayes_compare") > 0){
+        return(input$run)
+      }
+    })
 
-    # LOAD INTO COMMON ####
+    # trigger for the sub analysis - when run is clicked or the model reruns, but only if there is a valid model
+    sub_trigger <- reactive({
+      if (watch("bayes_compare") > 0){
+        return(list(input$run, input$rerun))
+      }
+    })
 
-    # METADATA ####
-    # Populate using metadata()
+    bayes_compare_submodule_server("all", common, "bayes_all", all_trigger, "Treatment effects for all studies: comparison of all treatment pairs.")
+    bayes_compare_submodule_server("sub", common, "bayes_sub", sub_trigger, "Treatment effects with selected studies excluded: comparison of all treatment pairs.")
 
-    # TRIGGER
-    trigger("bayes_compare")
-
+    return(list(
+      save = function() {
+        # Save any values that should be saved when the current session is saved
+        # Populate using save_and_load()
+      },
+      load = function(state) {
+        # Load
+        # Populate using save_and_load()
+      }
+    ))
 
   })
-
-  output$result <- renderText({
-    watch("bayes_compare")
-    # Result
-  })
-
-
-  return(list(
-    save = function() {
-      # Save any values that should be saved when the current session is saved
-      # Populate using save_and_load()
-    },
-    load = function(state) {
-      # Load
-      # Populate using save_and_load()
-    }
-  ))
-
-})
 }
 
+
+bayes_compare_submodule_result <- function(id) {
+  ns <- NS(id)
+  tagList(
+    uiOutput(ns("text")),
+    tableOutput(ns("table"))
+  )
+}
 
 bayes_compare_module_result <- function(id) {
   ns <- NS(id)
 
-  # Result UI
-  verbatimTextOutput(ns("result"))
+  tagList(
+    p(
+      tags$strong(
+        "In contrast to the 'comparison of all treatment pairs' tab in the frequentist NMA results,
+        this table only contains the estimates from the network meta analysis,
+        i.e. does not contain estimates from pairwise meta-analysis which only contains direct evidence.
+        If you would like to obtain the pairwise meta-analysis results, please use the Nodesplit model module"
+      )
+    ),
+    fluidRow(
+      column(
+        width = 6,
+        align = "center",
+        bayes_compare_submodule_result(ns("all"))
+      ),
+      column(
+        width = 6,
+        align = "center",
+        div(class = "sub_output bayes_sub",
+            bayes_compare_submodule_result(ns("sub"))
+        )
+      )
+    )
+  )
 }
 
 
@@ -62,4 +142,12 @@ bayes_compare_module_rmd <- function(common) {
   # Variables used in the module's Rmd code
   # Populate using metadata()
 }
+
+
+
+
+
+
+
+
 

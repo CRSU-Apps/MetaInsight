@@ -82,6 +82,9 @@ bayes_forest_module_server <- function(id, common, parent_session) {
 
     # check that a fitted model exists and error if not
     observeEvent(input$run, {
+
+      # add check for a running model
+
       if (is.null(common$bayes_all)){
         common$logger %>% writeLog(type = "error", "Please fit the Bayesian models first")
         return()
@@ -152,7 +155,9 @@ bayes_forest_module_result <- function(id) {
       column(
         width = 6,
         align = "center",
-        bayes_forest_submodule_result(ns("sub"))
+        div(class = "sub_output bayes_sub",
+          bayes_forest_submodule_result(ns("sub"))
+        )
       )
     )
   )

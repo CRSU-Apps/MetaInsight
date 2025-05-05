@@ -1,5 +1,5 @@
 #' Reformats the treatment labels then calls dataform.df().
-#' 
+#'
 #' @param data Input dataset.
 #' @param metaoutcome "Continuous" or "Binary".
 #' @param treatment_list Data frame containing the treatment ID ('Number') and the treatment name ('Label').
@@ -20,7 +20,7 @@ bugsnetdata <- function(data, metaoutcome, treatment_list){
 #####################################
 
 #' Returns the default ranking order, for the example datasets.
-#' 
+#'
 #' @param outcome "Binary" or "Continuous".
 #' @param data Input dataset.
 #' @return "good" or "bad".
@@ -35,7 +35,6 @@ RankingOrder <- function(outcome, data) {
 }
 
 
-
 #' Converts wide data to long, adds the variable 'se' for a continuous outcomes, and does some formatting.
 #' (TM: to be modified to use WideToLong() when it becomes available from meta-regression.)
 #'
@@ -47,32 +46,17 @@ dataform.df <- function(newData1, treat_list, CONBI) {
   if (FindDataShape(newData1) == "long") {
     long <- newData1
   } else {
-    data_wide <- newData1
-    numbertreat = .FindTreatmentCount(data_wide)
-    long_pre <- reshape(
-      data_wide,
-      direction = "long",
-      varying = .FindVaryingColumnIndices(data_wide), 
-      times = paste0(".", 1:numbertreat),
-      sep = ".",
-      idvar = c("StudyID", "Study")
-    )
-    long_pre <- subset(long_pre, select = -time)
-    long <- long_pre[!is.na(long_pre$T), ]
+    long <- WideToLong(wide_data = newData1, outcome_type = CONBI)
   }
-  
+
   long_sort <- long[order(long$StudyID, -long$T), ]
   if (CONBI == 'Continuous') {
     long_sort$se <- long_sort$SD / sqrt(long_sort$N)
   }
-  
-  treat_list2 <- data.frame(treat_list)
-  colnames(treat_list2)[1] <- "T"
-  long_sort2 <- merge(long_sort, treat_list2, by = c("T"))
-  long_sort2 <- subset(long_sort2, select = -T)
-  names(long_sort2)[names(long_sort2) == 'Label'] <- 'T'
-  
-  return(long_sort2)
+
+  long_sort <- ReinstateTreatmentIds(data = long_sort, treatment_ids = treat_list)
+
+  return(long_sort)
 }
 
 #' Find the titles of all varying column to be reshaped.

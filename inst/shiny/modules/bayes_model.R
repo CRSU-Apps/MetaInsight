@@ -22,13 +22,13 @@ bayes_model_module_server <- function(id, common, parent_session) {
     })
 
     common$tasks$bayes_model_all <- ExtendedTask$new(
-      function(...) mirai(run(...), run = bayes_model, .args = environment())
+      function(...) mirai::mirai(run(...), run = bayes_model, .args = environment())
     ) %>% bslib::bind_task_button("run")
 
     # needed to cancel in progress
     sub_model <- NULL
     common$tasks$bayes_model_sub <- ExtendedTask$new(
-      function(...) sub_model <<- mirai(run(...), run = bayes_model, .args = environment())
+      function(...) sub_model <<- mirai::mirai(run(...), run = bayes_model, .args = environment())
     ) %>% bslib::bind_task_button("run")
 
     observeEvent(watch("bayes_model"), {
@@ -43,11 +43,9 @@ bayes_model_module_server <- function(id, common, parent_session) {
       # METADATA ####
       common$meta$bayes_model$used <- TRUE
       result_all$resume()
-
     })
 
     observeEvent(list(watch("bayes_model"), watch("summary_exclude")), {
-
       req(watch("bayes_model") > 0)
 
       # cancel if the model is already updating
@@ -55,9 +53,9 @@ bayes_model_module_server <- function(id, common, parent_session) {
         mirai::stop_mirai(sub_model)
       }
 
-      # FUNCTION CALL ####
-      common$tasks$bayes_model_sub$invoke(bayes_model,
-                                          common$subsetted_data,
+      shinyjs::show(selector = ".bayes_sub")
+
+      common$tasks$bayes_model_sub$invoke(common$subsetted_data,
                                           common$subsetted_treatment_df,
                                           common$outcome,
                                           common$outcome_measure,

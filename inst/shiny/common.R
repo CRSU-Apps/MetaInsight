@@ -25,6 +25,8 @@ common_class <- R6::R6Class(
    freq_sub = NULL,
    bayes_all = NULL,
    bayes_sub = NULL,
+   bayes_rank_all = NULL,
+   bayes_rank_sub = NULL,
    download_format = NULL,
    meta = NULL,
    tasks = NULL,
@@ -55,6 +57,8 @@ common_class <- R6::R6Class(
      self$freq_sub <- NULL
      self$bayes_all <- NULL
      self$bayes_sub <- NULL
+     self$bayes_rank_all <- NULL
+     self$bayes_rank_sub <- NULL
      self$meta <- NULL
      self$state <- NULL
      invisible(self)

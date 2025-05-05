@@ -464,21 +464,37 @@ binary_column_names <- data.frame() %>%
 
 # Column ordering
 .common_order = c("StudyID", "Study")
-.continuous_specific_order = unlist(
-  lapply(
-    c("", paste0(".", 1:6)),
-    function(x) paste0(c("T", "N", "Mean", "SD"), x)
-  )
-)
-.binary_specific_order = unlist(
-  lapply(
-    c("", paste0(".", 1:6)),
-    function(x) paste0(c("T", "R", "N"), x)
-  )
-)
 
-.continuous_order <- c(.common_order, .continuous_specific_order)
-.binary_order <- c(.common_order, .binary_specific_order)
+#' The column order for a continuous outcome, for wide and long data.
+#'
+#' @param max_arms Maximum number of arms in the data set.
+#' @return Vector of column names in order.
+.ContinuousOrder <- function(max_arms) {
+  continuous_specific_order <- unlist(
+    lapply(
+      c("", paste0(".", 1:max_arms)),
+      function(x) paste0(c("T", "N", "Mean", "SD"), x)
+    )
+  )
+  return(c(.common_order, continuous_specific_order))
+}
+
+#' The column order for a binary outcome, for wide and long data.
+#'
+#' @param max_arms Maximum number of arms in the data set.
+#' @return Vector of column names in order.
+.BinaryOrder <-function(max_arms) {
+  binary_specific_order <- unlist(
+    lapply(
+      c("", paste0(".", 1:max_arms)),
+      function(x) paste0(c("T", "R", "N"), x)
+    )
+  )
+  return(c(.common_order, binary_specific_order))
+}
+
+.covariate_prefix <- "covar."
+.covariate_prefix_regex <- "^covar\\."
 
 .covariate_prefix <- "covar."
 .covariate_prefix_regex <- "^covar\\."
@@ -796,15 +812,17 @@ AddStudyIds <- function(data) {
 #' Reorder data frame columns to the correct order, both for long and wide formats.
 #'
 #' @param data Data frame to reorder
-#' @param outcome Type of outcome for which to reorder, either 'Continuous' or 'Binary'
+#' @param outcome_type Type of outcome for which to reorder, either 'Continuous' or 'Binary'
 #' @return Data frame with columns reordered
-ReorderColumns <- function(data, outcome) {
-  if (tolower(outcome) == "continuous") {
-    expected_order <- .continuous_order
-  } else if (tolower(outcome) == "binary") {
-    expected_order <- .binary_order
+ReorderColumns <- function(data, outcome_type) {
+  #The maximum number of arms
+  max_arms <- FindMaxArms(data)
+  if (tolower(outcome_type) == "continuous") {
+    expected_order <- .ContinuousOrder(max_arms = max_arms)
+  } else if (tolower(outcome_type) == "binary") {
+    expected_order <- .BinaryOrder(max_arms = max_arms)
   } else {
-    stop(paste0("Outcome type ", outcome, " not recognised. Use either 'Continuous' or 'Binary'"))
+    stop(paste0("Outcome type ", outcome_type, " not recognised. Use either 'Continuous' or 'Binary'"))
   }
 
   actual_order <- colnames(data)
@@ -932,6 +950,39 @@ KeepOrDeleteControlTreatment <- function(data, treatments, keep_delete){
     return(data[data$Treatment != data$Control, ])
   } else{
     stop("keep_delete must be 'keep' or 'delete'")
+  }
+}
+
+
+#' Create a list of all columns starting with the given column prefix.
+#'
+#' @param wide_data Data in wide format.
+#' @param column_prefix String containing the opening letters of one or more columns in 'wide_data'.
+#' @return List with one element per selected column in 'wide_data', with each element named by the column name.
+CreateListOfWideColumns <- function(wide_data, column_prefix) {
+  return(
+    as.list(
+      wide_data[, grep(pattern = paste0(column_prefix, ".*"),
+                       x = names(wide_data),
+                       value = TRUE)]
+    )
+  )
+}
+
+#' Find the maximum number of arms in a study, for long or wide data.
+#'
+#' @param data Long or wide format data.
+#' @return The maximum number of arms.
+FindMaxArms <- function(data) {
+  if (FindDataShape(data) == "long") {
+    return(max(table(data$Study)))
+  } else {
+    return(
+      length(
+        grep(pattern = "T.*",
+             x = names(data))
+      )
+    )
   }
 }
 

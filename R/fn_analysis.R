@@ -69,19 +69,33 @@ entry.df <- function(data, CONBI) {
 #' @param CONBI "Continuous" or "Binary".
 #' @return Input data in contrast form.
 contrastform.df <- function(data, outcome, CONBI) {
+
+  #Create a list of columns of the variables to be passed to meta::pairwise()
+  treat_list <- CreateListOfWideColumns(wide_data = data, column_prefix = "T")
+  n_list <-  CreateListOfWideColumns(wide_data = data, column_prefix = "N")
+
   if (CONBI == 'Continuous') {
-    d1 <- netmeta::pairwise(treat = list(T.1, T.2, T.3, T.4, T.5, T.6),
-                            n = list(N.1, N.2, N.3, N.4, N.5, N.6),
-                            mean = list(Mean.1, Mean.2, Mean.3, Mean.4, Mean.5, Mean.6),
-                            sd = list(SD.1, SD.2, SD.3, SD.4, SD.5, SD.6),
-                            data = data,
-                            sm = outcome)
+
+    mean_list <-  CreateListOfWideColumns(wide_data = data, column_prefix = "Mean")
+    sd_list <-  CreateListOfWideColumns(wide_data = data, column_prefix = "SD")
+
+    d1 <- meta::pairwise(treat = treat_list[1:2],
+                         n = n_list[1:2],
+                         mean = mean_list[1:2],
+                         sd = sd_list[1:2],
+                         data = data,
+                         sm = outcome,
+                         studlab = data$Study)
   } else if (CONBI == 'Binary') {
-    d1 <- netmeta::pairwise(treat = list(T.1, T.2, T.3, T.4, T.5, T.6),
-                            event = list(R.1, R.2, R.3, R.4, R.5, R.6),
-                            n = list(N.1, N.2, N.3, N.4, N.5, N.6),
-                            data = data,
-                            sm = outcome)
+
+    event_list <-  CreateListOfWideColumns(wide_data = data, column_prefix = "R")
+
+    d1 <- meta::pairwise(treat = treat_list,
+                         event = event_list,
+                         n = n_list,
+                         data = data,
+                         sm = outcome,
+                         studlab = data$Study)
   } else {
     stop("CONBI must be 'Continuous' or 'Binary'")
   }

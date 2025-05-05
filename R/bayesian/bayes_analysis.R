@@ -255,6 +255,7 @@ rankdata <- function(NMAdata, rankdirection, longdata, cov_value = NA, package =
     by = list(Category = Patients$Treatment),
     FUN = sum
   )
+
   Patients <- dplyr::rename(Patients, c(Treatment = "Category", N = "x"))  # previously using plyr::rename where old/new names are other way round
   SUCRA <- SUCRA %>% dplyr::right_join(Patients, by = "Treatment")
 

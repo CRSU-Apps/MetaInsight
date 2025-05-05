@@ -1,6 +1,6 @@
 
 #' Module UI for the ranking network panel.
-#' 
+#'
 #' @param id ID of the module.
 #' @return Div for the panel.
 ranking_network_panel_ui <- function(id) {
@@ -45,13 +45,13 @@ ranking_network_panel_ui <- function(id) {
 
 
 #' Module server for the ranking network panel.
-#' 
+#'
 #' @param id ID of the module
 #' @param treat_order Reactive containing treatments ordered by SUCRA
 #' @param frequentist_react Reactive containing frequentist meta-analysis
 #' @param bugsnetdt_react Reactive containing bugsnet meta-analysis
 #' @param filename_prefix Prefix to add before file names.
-#' @param title_prefix Prefix to add beofre plot titles.
+#' @param title_prefix Prefix to add before plot titles.
 ranking_network_panel_server <- function(
     id,
     treat_order,
@@ -61,7 +61,7 @@ ranking_network_panel_server <- function(
     title_prefix
     ) {
   moduleServer(id, function(input, output, session) {
-    
+
     output$netGraphStatic1_rank <- renderPlot({
       if (input$networkstyle_rank == 'networkp1') {
         # Number of trials on line
