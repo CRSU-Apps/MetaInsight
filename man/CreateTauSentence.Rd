@@ -4,7 +4,7 @@
 \alias{CreateTauSentence}
 \title{Create text with the point estimate and 95% CrI of between-trial SD of treatment effects.}
 \usage{
-CreateTauSentence(results, outcome)
+CreateTauSentence(results, outcome, model_type)
 }
 \arguments{
 \item{results}{Output from the 'baye' function. These are the list elements that are relevant:
@@ -12,7 +12,11 @@ CreateTauSentence(results, outcome)
 - 'sumresults' = summary(mtcRelEffects)
 - 'a' = "fixed effect" or "random effect"}
 
-\item{outcome}{One of "SMD", "RD", "MD", "OR". Anything else is interpreted as RR. (TM: Probably don't need this, as it's included as @param results$outcome)}
+\item{outcome}{One of "SMD", "RD", "MD", "OR". Anything else is interpreted as RR.
+(TM: Probably don't need this, as it's included as @param results$outcome)
+(SS: I've removed that from results given it's already in common)}
+
+\item{model_type}{character Either `random` or `fixed`}
 }
 \value{
 Text with the point estimate and 95% CrI of between-trial SD of treatment effects (all 0 if fixed effects)
