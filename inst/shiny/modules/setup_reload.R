@@ -35,7 +35,7 @@ setup_reload_module_server <- function(id, common, modules, parent_session) {
 
       temp_names <- names(temp)
       # exclude the non-public and function objects
-      temp_names  <- temp_names[!temp_names %in% c("clone", ".__enclos_env__", "logger", "reset")]
+      temp_names  <- temp_names[!temp_names %in% c("clone", ".__enclos_env__", "logger", "reset", "tasks")]
       for (name in temp_names){
         common[[name]] <- temp[[name]]
       }
@@ -57,9 +57,11 @@ setup_reload_module_server <- function(id, common, modules, parent_session) {
     }
 
     observeEvent(input$goLoad_session, {
+      show_loading_modal("Loading previous session")
       temp <- readRDS(input$load_session$datapath)
       load_session(temp)
-      common$logger %>% writeLog(type="info", "The previous session has been loaded successfully")
+      close_loading_modal()
+      common$logger %>% writeLog(type = "info", "The previous session has been loaded successfully")
     })
 
     # load file if run_metainsight has a load_file parameter
