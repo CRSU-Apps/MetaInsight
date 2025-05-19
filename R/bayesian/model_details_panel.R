@@ -150,9 +150,9 @@ model_details_panel_server <- function(id, models, models_valid, package = "gemt
       }
       
       # Apply enable or disable function
-      fn(id = glue::glue("download_mcmc"))
-      fn(id = glue::glue("download_priors"))
-      fn(id = glue::glue("download_code"))
+      fn(id = "download_mcmc")
+      fn(id = "download_priors")
+      fn(id = "download_code")
 
       sapply(
         1:4,
@@ -182,7 +182,10 @@ model_details_panel_server <- function(id, models, models_valid, package = "gemt
     
     output$mcmc_details <- renderTable(
       {
-        mcmc_details()
+        if (is.null(main_model_valid()) || !main_model_valid()) {
+          return()
+        }
+        return(mcmc_details())
       },
       digits = 0,
       colnames = FALSE
@@ -190,7 +193,10 @@ model_details_panel_server <- function(id, models, models_valid, package = "gemt
     
     output$priors <- renderTable(
       {
-        priors()
+        if (is.null(main_model_valid()) || !main_model_valid()) {
+          return()
+        }
+        return(priors())
       },
       colnames = FALSE
     )
