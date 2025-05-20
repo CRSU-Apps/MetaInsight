@@ -163,9 +163,7 @@ function(input, output, session) {
   ############################################# #
 
   observe({
-    req(module())
-    module <- module()
-    core_code_module_server("core_code", common, module)
+    shinyjs::js$runOnEnter(module())
   })
 
   ############################################# #

@@ -89,6 +89,12 @@ hr {
   font-size:10pt;
   font-style:italic;
 }
+.package_info {
+  gap: 0.01rem;
+}
+.package_spacer {
+  padding-top: 0.8rem;
+}
 .step {
   color: #DD8627;
   font-weight:bold;
@@ -196,4 +202,44 @@ hr {
 /* hide empty panels created by bslib::nav_panel */
 .container-fluid.html-fill-item.html-fill-container {
   display: none !important;
+}
+
+.bslib-sidebar-layout>.sidebar>.sidebar-content {
+  gap: 0.5rem !important;
+}
+
+.fa-arrow-turn-down {
+  transform: rotate(90deg) translate(2px, 2px);
+  display: inline-block;
+}
+
+.radio-group-buttons {
+  padding-bottom: 15px;
+}
+
+/* Allow selectinput dropdowns to escape cards */
+.card, .card-body {
+  overflow: visible !important;
+}
+
+/* Ensure footer is displayed below the sidebar */
+
+.sidebar_container {
+  display: flex;
+  flex-direction: column;
+  min-height: 91.5vh;
+}
+
+.ss_footer {
+  margin-top: auto;
+  font-size: 0.8rem
+}
+
+
+.sidebar_card {
+  background-color: var(--bs-light-bg-subtle);
+}
+/* colour of radio buttons for module selection*/
+.btn.btn-outline-secondary{
+  background-color: var(--bs-light-bg-subtle);
 }
