@@ -71,8 +71,7 @@ summary_exclude_module_server <- function(id, common, parent_session) {
                                               common$outcome,
                                               common$outcome_measure,
                                               input$model,
-                                              input$exclusions,
-                                              common$logger)
+                                              input$exclusions)
 
       # storing this here so they are always in sync
       common$excluded_studies <- input$exclusions
