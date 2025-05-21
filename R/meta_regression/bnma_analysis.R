@@ -9,7 +9,11 @@
 #'  - 'Treat.order' = Vector of (unique) treatments, with the reference treatment first
 FormatForBnma <- function(br_data, treatment_ids, outcome_type, ref) {
   if (FindDataShape(br_data) == "wide") {
-    br_data2 <- as.data.frame(WideToLong(br_data, outcome_type=outcome_type))
+    br_data2 <- as.data.frame(
+      WideToLong(br_data,
+                 outcome_type = outcome_type
+      )
+    )
   } else if (FindDataShape(br_data) == "long") {
     br_data2 <- br_data
   } else {
@@ -57,26 +61,36 @@ BaselineRiskNetwork <- function(br_data, outcome_type, effects_type, cov_paramet
   }
   
   if(outcome_type == "Binary") {
-    network <- with(br_data, bnma::network.data(Outcomes = ArmLevel$Outcomes,
-                                                Study = ArmLevel$Study,
-                                                Treat = ArmLevel$Treat,
-                                                N = ArmLevel$N,
-                                                response = "binomial",
-                                                Treat.order = Treat.order,
-                                                type = effects_type,
-                                                baseline = cov_parameters,
-                                                baseline.risk = "independent"))
+    network <- with(
+      br_data,
+      bnma::network.data(
+        Outcomes = ArmLevel$Outcomes,
+        Study = ArmLevel$Study,
+        Treat = ArmLevel$Treat,
+        N = ArmLevel$N,
+        response = "binomial",
+        Treat.order = Treat.order,
+        type = effects_type,
+        baseline = cov_parameters,
+        baseline.risk = "independent"
+      )
+    )
   }
   if(outcome_type == "Continuous") {
-    network <- with(br_data, bnma::network.data(Outcomes = ArmLevel$Outcomes,
-                                                Study = ArmLevel$Study,
-                                                Treat = ArmLevel$Treat,
-                                                response = "normal",
-                                                SE = ArmLevel$SD / sqrt(ArmLevel$N),
-                                                Treat.order = Treat.order,
-                                                type = effects_type,
-                                                baseline = cov_parameters,
-                                                baseline.risk = "independent"))
+    network <- with(
+      br_data,
+      bnma::network.data(
+        Outcomes = ArmLevel$Outcomes,
+        Study = ArmLevel$Study,
+        Treat = ArmLevel$Treat,
+        response = "normal",
+        SE = ArmLevel$SD / sqrt(ArmLevel$N),
+        Treat.order = Treat.order,
+        type = effects_type,
+        baseline = cov_parameters,
+        baseline.risk = "independent"
+      )
+    )
   }
   return(network)
 }
@@ -94,10 +108,18 @@ BaselineRiskNetwork <- function(br_data, outcome_type, effects_type, cov_paramet
 #' @param seed Seed. Defaults to 123.
 #' @return Output from bnma::network.run().
 BaselineRiskRegression <- function(br_data, treatment_ids, outcome_type, ref,  effects_type, cov_parameters, seed = 123) {
-  formatted_data <- FormatForBnma(br_data = br_data, treatment_ids = treatment_ids,
-                                  outcome_type = outcome_type, ref = ref)
-  network <- BaselineRiskNetwork(br_data = formatted_data, outcome_type = outcome_type,
-                                 effects_type = effects_type, cov_parameters = cov_parameters)
+  formatted_data <- FormatForBnma(
+    br_data = br_data,
+    treatment_ids = treatment_ids,
+    outcome_type = outcome_type,
+    ref = ref
+  )
+  network <- BaselineRiskNetwork(
+    br_data = formatted_data,
+    outcome_type = outcome_type,
+    effects_type = effects_type,
+    cov_parameters = cov_parameters
+  )
   #Select random seeds for the four chains based on 'seed'
   set.seed(seed)
   seeds <- sample.int(4, n = .Machine$integer.max)
@@ -105,15 +127,22 @@ BaselineRiskRegression <- function(br_data, treatment_ids, outcome_type, ref,  e
   #Put the seeds in the required format for passing to bnma::network.run()
   rng_inits <- list()
   for (i in 1:length(seeds)) {
-    rng_inits[[i]] <- list(.RNG.name = "base::Wichmann-Hill", .RNG.seed = seeds[i])
+    rng_inits[[i]] <- list(
+      .RNG.name = "base::Wichmann-Hill",
+      .RNG.seed = seeds[i]
+    )
   }
 
-  return(bnma::network.run(network,
-                           n.run = 20000,
-                           max.run = 60000,
-                           conv.limit = 1.5,
-                           RNG.inits = rng_inits,
-                           n.chains = length(seeds)))
+  return(
+    bnma::network.run(
+      network,
+      n.run = 20000,
+      max.run = 60000,
+      conv.limit = 1.5,
+      RNG.inits = rng_inits,
+      n.chains = length(seeds)
+    )
+  )
 }
 
 
@@ -186,19 +215,21 @@ BaselineRiskModelOutput <- function(data, treatment_ids, model, outcome_measure)
     model = model
   )
   
-  return(list(mtcResults = model,
-              covariate_value = mean_covariate_value,
-              reference_name = reference,
-              comparator_names = comparator_names,
-              a = model_text,
-              cov_value_sentence = cov_value_sentence,
-              slopes = slopes,
-              intercepts = intercepts,
-              outcome = outcome_measure,
-              model = model$network$type,
-              covariate_min = min_max$min,
-              covariate_max = min_max$max
-              )
+  return(
+    list(
+      mtcResults = model,
+      covariate_value = mean_covariate_value,
+      reference_name = reference,
+      comparator_names = comparator_names,
+      a = model_text,
+      cov_value_sentence = cov_value_sentence,
+      slopes = slopes,
+      intercepts = intercepts,
+      outcome = outcome_measure,
+      model = model$network$type,
+      covariate_min = min_max$min,
+      covariate_max = min_max$max
+    )
   )
 }
 
@@ -215,23 +246,31 @@ BnmaRelativeEffects <- function(model, covariate_value) {
   model_summary <- summary(model)
   parameters <- rownames(model_summary$summary.samples$quantiles)
   #Extract parameters that begin with "d[", except d[1]
-  treatment_parameters <- grep("d\\[([0-9][0-9]+|[2-9])\\]",
-                               parameters,
-                               value = TRUE)
+  treatment_parameters <- grep(
+    "d\\[([0-9][0-9]+|[2-9])\\]",
+    parameters,
+    value = TRUE
+  )
   #Extract parameters that begin with "b_bl[", except b_bl[1]
-  covariate_parameters <- grep("b_bl\\[([0-9][0-9]+|[2-9])\\]",
-                               parameters,
-                               value = TRUE)
+  covariate_parameters <- grep(
+    "b_bl\\[([0-9][0-9]+|[2-9])\\]",
+    parameters,
+    value = TRUE
+  )
   centred_covariate_value <- covariate_value - model$network$mx_bl
   
   samples <- list()
-  #The number of chains is always left at the default 3
-  for (chain in 1:3) {
+  #The number of chains is always set to 4
+  for (chain in 1:4) {
     samples[[chain]] <- model$samples[[chain]][, treatment_parameters] + centred_covariate_value * model$samples[[chain]][, covariate_parameters]
   }
   
   relative_effects <- MCMCvis::MCMCsummary(samples)
-  return(as.matrix(relative_effects[, c("50%", "2.5%", "97.5%")]))
+  return(
+    as.matrix(
+      relative_effects[, c("50%", "2.5%", "97.5%")]
+    )
+  )
 }
 
 
@@ -263,21 +302,29 @@ GetReferenceOutcome <- function(data, treatment_ids, outcome_type, observed, mod
   data$Treatment <- treatments[match(data$T, treatment_ids$Number)]
   
   #Data with only control treatment rows kept
-  data_control <- KeepOrDeleteControlTreatment(data = data, treatments = treatments, keep_delete = "keep")
-  if (outcome_type == "Binary"){
+  data_control <- KeepOrDeleteControlTreatment(
+    data = data,
+    treatments = treatments,
+    keep_delete = "keep"
+  )
+  if (outcome_type == "Binary") {
     #Add NAs as required by metafor::escalc()
     data_control$R[data_control$Treatment != treatments[1]] <- NA
-    effect_sizes <- metafor::escalc(measure = "PLO",
-                                    xi = data_control$R,
-                                    ni = data_control$N)
-  } else if (outcome_type == "Continuous"){
+    effect_sizes <- metafor::escalc(
+      measure = "PLO",
+      xi = data_control$R,
+      ni = data_control$N
+    )
+  } else if (outcome_type == "Continuous") {
     #Add NAs as required by metafor::escalc()
     data_control$Mean[data_control$Treatment != treatments[1]] <- NA
-    effect_sizes <- metafor::escalc(measure = "MN",
-                                    mi = data_control$Mean,
-                                    sdi = data_control$SD,
-                                    ni = data_control$N)
-  } else{
+    effect_sizes <- metafor::escalc(
+      measure = "MN",
+      mi = data_control$Mean,
+      sdi = data_control$SD,
+      ni = data_control$N
+    )
+  } else {
     stop("'outcome_type' must be 'Continuous' or 'Binary'")
   }
   outcomes <- as.numeric(effect_sizes$yi)
@@ -286,7 +333,10 @@ GetReferenceOutcome <- function(data, treatment_ids, outcome_type, observed, mod
   #If imputed values are requested and there are any missing outcomes then use the imputed outcomes
   if (observed == "Imputed" && any(is.na(outcomes))) {
     #Eta is the study-specific intercept parameter, which is often called mu in the literature. When a study does not contain the reference arm, {bnma} adds the reference arm to the data with missing values. Eta is then imputed for that study.
-    imputed_outcomes <- MCMCvis::MCMCsummary(object = model$samples, params = "Eta")["50%"][[1]]
+    imputed_outcomes <- MCMCvis::MCMCsummary(
+      object = model$samples,
+      params = "Eta"
+    )["50%"][[1]]
     names(imputed_outcomes) <- model$network$Study.order
 
     #The studies with missing outcomes
@@ -331,8 +381,16 @@ CalculateCredibleRegionsBnma <- function(model_output) {
       credible_intervals[[treatment_name]] <- data.frame(cov_value = NA, lower = NA, upper = NA)
       credible_regions[[treatment_name]] <- data.frame(cov_value = NA, lower = NA, upper = NA)
     } else if (cov_min == cov_max) {
-      interval <- .FindCredibleIntervalBnma(mtc_results, cov_min, parameter_name)
-      df <- data.frame(cov_value = cov_min, lower = interval["2.5%"], upper = interval["97.5%"])
+      interval <- .FindCredibleIntervalBnma(
+        mtc_results = mtc_results,
+        cov_value = cov_min,
+        parameter_name = parameter_name
+      )
+      df <- data.frame(
+        cov_value = cov_min,
+        lower = interval["2.5%"],
+        upper = interval["97.5%"]
+      )
       
       # Strip out the row names
       rownames(df) <- NULL
@@ -343,10 +401,18 @@ CalculateCredibleRegionsBnma <- function(model_output) {
     } else {
       df <- data.frame()
       for (cov_value in seq(from = cov_min, to = cov_max, length.out = 11)) {
-        interval <- .FindCredibleIntervalBnma(mtc_results, cov_value, parameter_name)
+        interval <- .FindCredibleIntervalBnma(
+          mtc_results = mtc_results,
+          cov_value = cov_value,
+          parameter_name = parameter_name
+        )
         df <- rbind(
           df,
-          data.frame(cov_value = cov_value, lower = interval["2.5%"], upper = interval["97.5%"])
+          data.frame(
+            cov_value = cov_value,
+            lower = interval["2.5%"],
+            upper = interval["97.5%"]
+          )
         )
       }
       
@@ -378,8 +444,13 @@ CalculateCredibleRegionsBnma <- function(model_output) {
 #'
 #' @return Named vector of "2.5%" and "97.5" quantiles.
 .FindCredibleIntervalBnma <- function(mtc_results, cov_value, parameter_name) {
-  rel_eff <- BnmaRelativeEffects(model = mtc_results, covariate_value = cov_value)
-  return(rel_eff[parameter_name, c("2.5%", "97.5%")])
+  rel_eff <- BnmaRelativeEffects(
+    model = mtc_results,
+    covariate_value = cov_value
+  )
+  return(
+    rel_eff[parameter_name, c("2.5%", "97.5%")]
+  )
 }
 
 
@@ -416,13 +487,15 @@ BaselineRiskRelativeEffectsTable <- function(median_ci_table) {
       #Extract lower_ci, median and upper_ci
       interval <- round(
         as.numeric(
-          stringr::str_extract_all(string = median_ci_table[row, col],
-                                   pattern = "[-0-9\\.]+")[[1]]
-          ), digits = 2
+          stringr::str_extract_all(
+            string = median_ci_table[row, col],
+            pattern = "[-0-9\\.]+")[[1]]
+          ),
+        digits = 2
       )
-    lower_ci[row, col] <- interval[1]
-    median_br[row, col] <- interval[2]
-    upper_ci[row, col] <- interval[3]
+      lower_ci[row, col] <- interval[1]
+      median_br[row, col] <- interval[2]
+      upper_ci[row, col] <- interval[3]
     }
   }
   
@@ -442,10 +515,17 @@ BaselineRiskRelativeEffectsTable <- function(median_ci_table) {
 #' @param ranking_table The $rank.tx table from output from bnma::network.run()
 #' @return A relative effects table in the same format as from gemtc.
 BnmaSwitchRanking <- function(ranking_table) {
-  ranking_table <- cbind(ranking_table, data.frame(new_ranks = nrow(ranking_table):1))
+  ranking_table <- cbind(
+    ranking_table,
+    data.frame(new_ranks = nrow(ranking_table):1)
+  )
   new_table <- dplyr::arrange(ranking_table, ranking_table$new_ranks)
   rownames(new_table) <- rownames(ranking_table)
-  return(as.matrix(dplyr::select(new_table, !"new_ranks")))
+  return(
+    as.matrix(
+      dplyr::select(new_table, !"new_ranks")
+    )
+  )
 }
                             
 
@@ -458,9 +538,11 @@ BnmaSwitchRanking <- function(ranking_table) {
 #' @return Vector of treatment effect and covariate parameter names, plus random effects sd and/or exchangeable covariate sd.
 GetBnmaParameters <- function(all_parameters, effects_type, cov_parameters) {
   #Extract parameters which begin with "d[" or "b_bl[", except d[1] and b_bl[1]
-  parameters <- grep("(d|b_bl)\\[([0-9][0-9]+|[2-9])\\]",
-                     all_parameters,
-                     value = TRUE)
+  parameters <- grep(
+    "(d|b_bl)\\[([0-9][0-9]+|[2-9])\\]",
+    all_parameters,
+    value = TRUE
+  )
   if (effects_type == "random") {
     parameters <- c(parameters, "sd")
   } else if (effects_type != "fixed") {
@@ -476,7 +558,6 @@ GetBnmaParameters <- function(all_parameters, effects_type, cov_parameters) {
 
 
 
-
 #' An equivalent to {gemtc}'s relative.effect() function, for baseline risk in {bnma}.
 #' 
 #' @param model bnma model object created by BaselineRiskRegression().
@@ -488,13 +569,17 @@ BnmaRelativeEffects <- function(model, covariate_value) {
 
   parameters <- colnames(model$samples[[1]])
   #Extract parameters that begin with "d[", except d[1]
-  treatment_parameters <- grep("d\\[([0-9][0-9]+|[2-9])\\]",
-                               parameters,
-                               value = TRUE)
+  treatment_parameters <- grep(
+    "d\\[([0-9][0-9]+|[2-9])\\]",
+    parameters,
+    value = TRUE
+  )
   #Extract parameters that begin with "b_bl[", except b_bl[1]
-  covariate_parameters <- grep("b_bl\\[([0-9][0-9]+|[2-9])\\]",
-                               parameters,
-                               value = TRUE)
+  covariate_parameters <- grep(
+    "b_bl\\[([0-9][0-9]+|[2-9])\\]",
+    parameters,
+    value = TRUE
+  )
   centred_covariate_value <- covariate_value - model$network$mx_bl
   
   samples <- list()
@@ -504,5 +589,102 @@ BnmaRelativeEffects <- function(model, covariate_value) {
   }
   
   relative_effects <- MCMCvis::MCMCsummary(samples)
-  return(as.matrix(relative_effects[, c("50%", "2.5%", "97.5%")]))
+  return(
+    as.matrix(
+      relative_effects[, c("50%", "2.5%", "97.5%")]
+    )
+  )
+}
+
+
+
+#' MCMC characteristics from a BNMA model.
+#' 
+#' @param model BNMA model output.
+#' @return Data frame with four MCMC characteristics.
+GetBnmaMcmcCharacteristics <- function(model) {
+  return(
+    data.frame(
+      characteristic = c("Chains",
+                         "Burn-in iterations",
+                         "Sample iterations",
+                         "Thinning factor"),
+      value = c(length(model$samples),
+                model$burnin,
+                length(model$samples[[1]][, 1]),
+                model$n.thin)
+    )
+  )
+}
+
+
+
+#' Prior distributions from a BNMA model.
+#' 
+#' @param model BNMA model output.
+#' @return Data frame with prior distribution information.
+GetBnmaPriors <- function(model) {
+  treatment_effect_mean <- model$network$prior.data$mean.d
+  treatment_effect_var <- round(1 / model$network$prior.data$prec.d, digits = 1)
+  eta_mean <- model$network$prior.data$mean.Eta
+  eta_var <- round(1 / model$network$prior.data$prec.Eta, digits = 1)
+  prior_table <- data.frame(
+    parameter = c("Relative treatment effects",
+                  "Intercepts"),
+    value = c(paste0(" ~ N (", treatment_effect_mean, ", ", treatment_effect_var, ")"),
+              paste0(" ~ N (", eta_mean, ", ", eta_var, ")"))
+  )
+  
+  #If the model is random effects, add the heterogenity SD
+  if (model$network$type == "random") {
+    heterogeneity_sd_lower <- round(model$network$prior.data$hy.prior.1, digits = 1)
+    heterogeneity_sd_upper <- round(model$network$prior.data$hy.prior.2, digits = 1)
+    prior_table <- rbind(
+      prior_table,
+      data.frame(
+        parameter = "Heterogeneity standard deviation",
+        value = paste0(" ~ Unif (",heterogeneity_sd_lower, ", ", heterogeneity_sd_upper, ")")
+      )
+    )
+  }
+  
+  #If the model is NMR shared, add the covariate parameter
+  if (model$network$baseline == "common") {
+    shared_mean <- model$network$prior.data$mean.bl
+    shared_var <- round(1 / model$network$prior.data$prec.bl, digits = 1)
+    prior_table <- rbind(
+      prior_table,
+      data.frame(
+        parameter = "Shared covariate parameter",
+        value = paste0(" ~ N (", shared_mean, ", ", shared_var, ")")
+      )
+    )
+    #If the model is NMR exchangeable, add the covariate mean and variance parameters
+  } else if (model$network$baseline == "exchangeable") {
+    exchangeable_mean_mean <- model$network$prior.data$mean.bl
+    exchangeable_mean_var <- round(1 / model$network$prior.data$prec.bl, digits = 1)
+    exchangeable_sd_lower <- model$network$prior.data$hy.prior.bl.1
+    exchangeable_sd_upper <- model$network$prior.data$hy.prior.bl.2
+    prior_table <- rbind(
+      prior_table,
+      data.frame(
+        parameter = c("Covariate mean",
+                      "Covariate standard deviation"),
+        value = c(paste0(" ~ N (", exchangeable_mean_mean, ", ", exchangeable_mean_var, ")"),
+                  paste0(" ~ Unif (", exchangeable_sd_lower, ", ", exchangeable_sd_upper, ")"))
+      )
+    )
+    #If the model is NMR unrelated, add the covariate parameters
+  } else if (model$network$baseline == "independent") {
+    unrelated_mean <- model$network$prior.data$mean.bl
+    unrelated_var <- round(1 / model$network$prior.data$prec.bl, digits = 1)
+    prior_table <- rbind(
+      prior_table,
+      data.frame(
+        parameter = "Covariate parameters",
+        value = paste0(" ~ N (", unrelated_mean, ", ", unrelated_var, ")")
+      )
+    )
+  }
+  return(prior_table)
 }
