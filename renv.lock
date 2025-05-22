@@ -1,6 +1,6 @@
 {
   "R": {
-    "Version": "4.3.2",
+    "Version": "4.4.2",
     "Repositories": [
       {
         "Name": "CRAN",
@@ -1261,7 +1261,7 @@
     },
     "httpuv": {
       "Package": "httpuv",
-      "Version": "1.6.11",
+      "Version": "1.6.16",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -1272,7 +1272,7 @@
         "promises",
         "utils"
       ],
-      "Hash": "838602f54e32c1a0f8cc80708cefcefa"
+      "Hash": "6c3c8728e40326de6529a5c46e377e5c"
     },
     "httr": {
       "Package": "httr",
@@ -1355,13 +1355,13 @@
     },
     "jsonlite": {
       "Package": "jsonlite",
-      "Version": "1.8.5",
+      "Version": "2.0.0",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
         "methods"
       ],
-      "Hash": "3ee4d9899e4db3e976fc82b98d24a31a"
+      "Hash": "b0776f526d36d8bd4a3344a88fe165c4"
     },
     "knitr": {
       "Package": "knitr",
@@ -2270,14 +2270,14 @@
     },
     "rjags": {
       "Package": "rjags",
-      "Version": "4-14",
+      "Version": "4-17",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
         "R",
         "coda"
       ],
-      "Hash": "dc00e7bcbec8cd953930ec12fc9c8819"
+      "Hash": "1cf40ca3e11ef31ed51be85d4d227d8d"
     },
     "rlang": {
       "Package": "rlang",
