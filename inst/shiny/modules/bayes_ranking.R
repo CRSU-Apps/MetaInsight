@@ -74,15 +74,11 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
       req(watch(trigger) > 0)
       req(common[[paste0("bayes_", id)]], run())
 
-      outfile <- tempfile(fileext = ".svg")
-      svglite::svglite(filename = outfile,
-                       height = forest_height_pixels(n_trt(), title = TRUE) / 72,
-                       width = 6.5)
-      bayes_forest(common[[paste0("bayes_", id)]])
-      dev.off()
+      svg_text <- svglite::xmlSVG(
+        bayes_forest(common[[paste0("bayes_", id)]]),
+        height = forest_height_pixels(n_trt(), title = TRUE) / 72,
+        width = 6.5)
 
-      svg_text <- readLines(outfile)
-      file.remove(outfile)
       div(class = "svg_container",
         HTML(paste(svg_text, collapse = "\n"))
       )
@@ -99,7 +95,7 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
         litmus_blind = LitmusRankOGram(common[[paste0("bayes_rank_", id)]], colourblind = TRUE, regression_text = regression_text()),
         radial_blind = RadialSUCRA(common[[paste0("bayes_rank_", id)]], colourblind = TRUE, regression_text = regression_text())
       )
-      shinyjs::show("bayes_ranking_results", asis = TRUE)
+      # shinyjs::show("bayes_ranking_results", asis = TRUE)
       return(plots)
     })
 
@@ -125,9 +121,20 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
       }
     })
 
-    output$network <- renderPlot({
+    output$network <- renderUI({
       req(watch(trigger) > 0)
-      summary_network(common[[paste0("freq_", id)]], common[[paste0("bugsnet_", id)]], network_style())
+
+      svg_text <- svglite::xmlSVG(
+        summary_network(common[[paste0("freq_", id)]], common[[paste0("bugsnet_", id)]], network_style()),
+        width = 5,
+        height = 5
+      )
+
+      div(class = "svg_container",
+          HTML(paste(svg_text, collapse = "\n"))
+      )
+
+
     })
 
     # output$download <- downloadHandler(
@@ -228,7 +235,7 @@ bayes_ranking_submodule_result <- function(id, title) {
           ),
           fluidRow(
             align = "center",
-              plotOutput(ns("network"))
+              uiOutput(ns("network"))
           )
         )
       )
@@ -239,7 +246,7 @@ bayes_ranking_submodule_result <- function(id, title) {
 bayes_ranking_module_result <- function(id) {
   ns <- NS(id)
   tagList(
-    div(id = "bayes_ranking_results", style = "display: none;",
+    # div(id = "bayes_ranking_results", style = "display: none;",
       fluidRow(
         bayes_ranking_submodule_result(ns("all"),
                                        title = "Ranking panel for all studies")
@@ -250,7 +257,7 @@ bayes_ranking_module_result <- function(id) {
 
       )
     )
-  )
+  # )
 }
 
 

@@ -56,6 +56,7 @@ Imports:
     shinyjs,
     stringr,
     shinyWidgets (>= 0.6.0),
+    svglite,
     tidyr,
     tools,
     zip
