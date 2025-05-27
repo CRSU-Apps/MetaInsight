@@ -11,6 +11,7 @@
 
 # Column ordering
 .common_order = c("StudyID", "Study")
+.rob_order = c("rob", "indirectness")
 
 #' The column order for a continuous outcome, for wide and long data.
 #' 
@@ -23,7 +24,7 @@
       function(x) paste0(c("T", "N", "Mean", "SD"), x)
     )
   )
-  return(c(.common_order, continuous_specific_order))
+  return(c(.common_order, continuous_specific_order, .rob_order))
 }
 
 #' The column order for a binary outcome, for wide and long data.
@@ -37,7 +38,7 @@
       function(x) paste0(c("T", "R", "N"), x)
     )
   )
-  return(c(.common_order, binary_specific_order))
+  return(c(.common_order, binary_specific_order, .rob_order))
 }
 
 .covariate_prefix <- "covar."
@@ -49,7 +50,6 @@
 #' @param data Data frame to clean
 #' @return Cleaned data frame
 CleanData <- function(data) {
-  # return(dplyr::mutate(data, across(where(is.character), stringr::str_squish)))
   return(dplyr::mutate(data, across(where(is.character), .TidyStringItem)))
 }
 

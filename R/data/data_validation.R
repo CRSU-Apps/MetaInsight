@@ -50,6 +50,11 @@ ValidateUploadedData <- function(data, outcome_type) {
     return(result)
   }
 
+  result <- .ValidateQualityColumns(data)
+  if (!result$valid) {
+    return(result)
+  }
+  
   return(.valid_result)
 }
 
@@ -266,5 +271,64 @@ ValidateUploadedData <- function(data, outcome_type) {
     )
   }
 
+  return(.valid_result)
+}
+
+#' Validate that the quality assessment columns in the data are of the expected format.
+#'
+#' @param data Data frame to validate.
+#'
+#' @return Validation result in the form of a list:
+#' - "valid" = TRUE or FALSE defining whether data is valid
+#' - "message" = String describing any issues causing the data to be invalid
+.ValidateQualityColumns <- function(data) {
+  if (is.null(data$rob) && is.null(data$indirectness)) {
+    return(.valid_result)
+  }
+  
+  if (xor(is.null(data$rob), is.null(data$indirectness))) {
+    return(
+      list(
+        valid = FALSE,
+        message = glue::glue("Provide both 'rob' and 'indirectness', or neither.")
+      )
+    )
+  }
+
+  studies_with_wrong_qa_values <- unique(data$Study[!(data$rob %in% 1:3) | !(data$indirectness %in% 1:3)])
+  if (!is.null(data$rob) && !is.null(data$indirectness)
+      && length(studies_with_wrong_qa_values) > 0) {
+    return(
+      list(
+        valid = FALSE,
+        message = glue::glue("Some studies have values for 'rob' or 'indirectness' that are not 1, 2 or 3: {paste0(studies_with_wrong_qa_values, collapse = ', ')}")
+      )
+    )
+  }
+  
+  #Find the studies that have more than one value for risk of bias, by creating a table of rob values by study and summing the rows to check if any rows have more than one non-zero element.
+  rob_table <- table(data[, c("Study", "rob")])
+  studies_with_multiple_rob <- dimnames(rob_table)$Study[as.vector(rowSums(rob_table != 0) > 1)]
+  if (length((studies_with_multiple_rob) > 0)) {
+    return(
+      list(
+        valid = FALSE,
+        message = glue::glue("Some studies do not have the same risk of bias value for every arm: {paste0(studies_with_multiple_rob, collapse = ', ')}.")
+      )
+    )
+  }
+  
+  #Find the studies that have more than one value for indirectness, by creating a table of indirectness values by study and summing the rows to check if any rows have more than one non-zero element.
+  indirectness_table <- table(data[, c("Study", "indirectness")])
+  studies_with_multiple_indirectness <- dimnames(indirectness_table)$Study[as.vector(rowSums(indirectness_table != 0) > 1)]
+  if (length(studies_with_multiple_indirectness) > 0) {
+    return(
+      list(
+        valid = FALSE,
+        message = glue::glue("Some studies do not have the same indirectness value for every arm: {paste0(studies_with_multiple_indirectness, collapse = ', ')}.")
+      )
+    )
+  }
+  
   return(.valid_result)
 }

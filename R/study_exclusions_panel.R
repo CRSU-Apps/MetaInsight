@@ -1,4 +1,30 @@
 
+#' Get the colour corresponding to the quality assessment values.
+#' 
+#' @param quality_value 1, 2 or 3.
+#' @return Named vector containing CSS code to define a colour and an icon.
+.QualityTagColour <- function(quality_value) {
+  return(
+    switch(as.character(quality_value),
+           "1" = c(colour = "color:green", icon = "circle-plus"),
+           "2" = c(colour = "color:darkorange", icon = "circle-minus"),
+           "3" = c(colour = "color:red", icon = "circle-xmark"),
+           NULL
+           )
+    )
+}
+
+
+#' Determine the width of the study labels for the study exclusions panel
+#' 
+#' @param studies Vector of the study names.
+#' @return CSS code to be passed to the style argument.
+.StudyChoicesLength <- function(studies) {
+  n_pixels <- 7 * max(nchar(studies)) + 100
+  return(paste0("width: ", n_pixels, "px"))
+}
+
+
 #' Module UI for the study exclusion panel.
 #' 
 #' @param id ID of the module.
@@ -29,18 +55,55 @@ study_exclusions_panel_ui <- function(id) {
 #' - "sensitivity_treatment_list" contains the treatment names ("Label") and IDs ("Number") for the sensitivity analysis data
 study_exclusions_panel_server <- function(id, data, treatment_df, reference_treatment) {
   moduleServer(id, function(input, output, session) {
-    
+
     all_studies <- reactive({
       unique(data()$Study)
     })
     
+    quality_assessment_data <- reactive({
+      if (is.null(data()$rob) || is.null(data()$indirectness)) {
+        return(data.frame(Study = all_studies()))
+      } else {
+        return(unique(data()[, c("Study", "rob", "indirectness")]))
+      }
+    })
+    
     data_reset <- reactiveVal(FALSE)
+    
+    choices_with_qa <- reactive({
+      if (is.null(data()$rob) || is.null(data()$indirectness)) {
+        return(all_studies())
+      } else {
+        return(
+          lapply(X = 1:length(quality_assessment_data()$Study),
+                 FUN = function(row) {
+                   rob_colour <- .QualityTagColour(quality_assessment_data()$rob[row])["colour"]
+                   rob_icon <- .QualityTagColour(quality_assessment_data()$rob[row])["icon"]
+                   indirectness_colour <- .QualityTagColour(quality_assessment_data()$indirectness[row])["colour"]
+                   indirectness_icon <- .QualityTagColour(quality_assessment_data()$indirectness[row])["icon"]
+                   return(
+                     tags$div(quality_assessment_data()$Study[row],
+                              tags$span("(RoB ",
+                                        tags$span(icon(rob_icon, class = "fa-solid"), style = rob_colour),
+                                        ", Ind ",
+                                        tags$span(icon(indirectness_icon, class = "fa-solid"), style = indirectness_colour),
+                                        ")",
+                                        style = "float: right"),
+                              style = .StudyChoicesLength(quality_assessment_data()$Study)
+                              )
+                   )
+                 }
+                 )
+        )
+      }
+    })
     
     # Create check boxes for studies in data
     observe({
       shiny::updateCheckboxGroupInput(
         inputId = "exclusionbox",
-        choices = all_studies()
+        choiceValues = quality_assessment_data()$Study,
+        choiceNames = choices_with_qa()
       )
       
       # Mark data as reset
