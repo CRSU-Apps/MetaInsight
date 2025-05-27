@@ -6,6 +6,6 @@
 #' @description Run the application via the
 #'   function \code{\link{run_metainsight}}
 #'
-#' @import shiny gargoyle
+#' @import shiny gargoyle bslib
 #' @importFrom magrittr "%>%"
 NULL
