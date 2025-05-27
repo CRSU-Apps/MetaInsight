@@ -8,7 +8,7 @@ summary_network_module_ui <- function(id) {
                    "Number of trials indicated by node size and line thickness" = "netplot"
                  ),
                  selected = "netplot"),
-    actionButton(ns("run"), "Generate plots", icon = icon("play")),
+    actionButton(ns("run"), "Generate plots", icon = icon("arrow-turn-down")),
     conditionalPanel("input.run > 0",
       fluidRow(
         tags$label("Label size"),
@@ -161,7 +161,7 @@ summary_network_module_result <- function(id) {
     column(width = 6,
            plotOutput(ns("plot_sub"))
     ),
-    div(style = "display: flex; justify-content: center; padding-top: 50px", tableOutput(ns("table")))
+    div(style = "disarrow-turn-down: flex; justify-content: center; padding-top: 50px", tableOutput(ns("table")))
   )
 }
 

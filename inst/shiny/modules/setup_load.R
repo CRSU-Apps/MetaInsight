@@ -11,7 +11,7 @@ setup_load_module_ui <- function(id) {
     ),
     p(tags$strong("Maximum file size is 5MB.")),
     uiOutput(ns("data_out")),
-    actionButton(ns("run"), "Load example data", icon = icon("play")),
+    actionButton(ns("run"), "Load example data", icon = icon("arrow-turn-down")),
     uiOutput(ns("reset_out")),
     br(),
     uiOutput(ns("download_out"))
@@ -27,16 +27,16 @@ setup_load_module_server <- function(id, common, parent_session) {
     observe({
       selection <- paste0(tolower(input$outcome),"_guidance")
       shinyjs::runjs(sprintf("
-                     document.querySelectorAll('.continuous_guidance, .binary_guidance').forEach(el => el.style.display = 'none');
-                     document.querySelectorAll('.%s').forEach(el => el.style.display = 'block');
+                     document.querySelectorAll('.continuous_guidance, .binary_guidance').forEach(el => el.style.disarrow-turn-down = 'none');
+                     document.querySelectorAll('.%s').forEach(el => el.style.disarrow-turn-down = 'block');
                      ", selection))
     })
 
     observe({
       selection <- paste0(input$format,"_guidance")
       shinyjs::runjs(sprintf("
-                     document.querySelectorAll('.long_guidance, .wide_guidance').forEach(el => el.style.display = 'none');
-                     document.querySelectorAll('.%s').forEach(el => el.style.display = 'block');
+                     document.querySelectorAll('.long_guidance, .wide_guidance').forEach(el => el.style.disarrow-turn-down = 'none');
+                     document.querySelectorAll('.%s').forEach(el => el.style.disarrow-turn-down = 'block');
                      ", selection))
     })
 

@@ -1,7 +1,7 @@
 freq_summary_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
-    actionButton(ns("run"), "Generate plots", icon = icon("play")),
+    actionButton(ns("run"), "Generate plots", icon = icon("arrow-turn-down")),
     conditionalPanel("input.run > 0", download_button_pair(id), ns = ns)
   )
 }

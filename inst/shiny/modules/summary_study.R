@@ -1,7 +1,7 @@
 summary_study_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
-    actionButton(ns("run"), "Generate plot", icon = icon("play")),
+    actionButton(ns("run"), "Generate plot", icon = icon("arrow-turn-down")),
     conditionalPanel("input.run > 0",
        numericInput(ns("title"), label = "Title text size:", value = 1, step = 0.1),
        numericInput(ns("header"), label = "Group headers text size:", value = 1, step = 0.1),

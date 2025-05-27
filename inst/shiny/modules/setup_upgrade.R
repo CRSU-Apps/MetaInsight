@@ -11,7 +11,7 @@ setup_upgrade_module_ui <- function(id) {
     textInput(ns("treatment_names"),
       label = "Type in the treatment names in order, separated by commas. Eg. \"Placebo,Paracetamol,Ibuprofen\""
     ),
-    actionButton(ns("run"), "Update data", icon = icon("play")),
+    actionButton(ns("run"), "Update data", icon = icon("arrow-turn-down")),
     uiOutput(ns("download_out"))
   )
 }

@@ -1,7 +1,7 @@
 freq_inconsistent_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
-    actionButton(ns("run"), "Generate tables", icon = icon("play")),
+    actionButton(ns("run"), "Generate tables", icon = icon("arrow-turn-down")),
     conditionalPanel("input.run > 0", download_button_pair(id), ns = ns)
   )
 }

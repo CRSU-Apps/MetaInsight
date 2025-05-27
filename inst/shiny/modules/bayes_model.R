@@ -1,7 +1,7 @@
 bayes_model_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
-    bslib::input_task_button(ns("run"), "Run models")
+    bslib::input_task_button(ns("run"), "Run models", type = "default")
   )
 }
 

@@ -1,5 +1,5 @@
 ```{asis, echo = {{summary_network_knit}}, eval = {{summary_network_knit}}, include = {{summary_network_knit}}}
-Display the networks for the original data and data with excluded studies.
+Disarrow-turn-down the networks for the original data and data with excluded studies.
 ```
 
 ```{asis, echo = {{summary_network_knit}}, eval = {{summary_network_knit}}, include = {{summary_network_knit}}}
@@ -23,7 +23,7 @@ title("Network plot with selected studies excluded")
 ```
 
 ```{asis, echo = {{summary_network_knit}}, eval = {{summary_network_knit}}, include = {{summary_network_knit}}}
-Display a table summarising the network characteristics of the original data and data with excluded studies.
+Disarrow-turn-down a table summarising the network characteristics of the original data and data with excluded studies.
 ```
 
 ```{r, echo = {{summary_network_knit}}, include = {{summary_network_knit}}}

@@ -1,7 +1,7 @@
 summary_char_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
-    actionButton(ns("run"), "Generate table", icon = icon("play")),
+    actionButton(ns("run"), "Generate table", icon = icon("arrow-turn-down")),
     conditionalPanel("input.run > 0", downloadButton(ns("download")), ns = ns)
   )
 }
@@ -58,7 +58,7 @@ summary_char_module_server <- function(id, common, parent_session) {
 summary_char_module_result <- function(id) {
   ns <- NS(id)
   fluidRow(
-    div(style = "display: flex; justify-content: center; padding-top: 50px", tableOutput(ns("table")))
+    div(style = "disarrow-turn-down: flex; justify-content: center; padding-top: 50px", tableOutput(ns("table")))
   )
 }
 

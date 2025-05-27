@@ -27,11 +27,11 @@ bayes_ranking_module_ui <- function(id) {
                  ),
                  inline = TRUE
     ),
-    checkboxInput(ns("colourblind"), "Display colourblind-friendly ranking plot"),
+    checkboxInput(ns("colourblind"), "Disarrow-turn-down colourblind-friendly ranking plot"),
     conditionalPanel(
       condition = "input.rank_style == 1",
       ns = ns,
-      checkboxInput(ns("simple"), label = "Display simplified ranking plot", value = FALSE),
+      checkboxInput(ns("simple"), label = "Disarrow-turn-down simplified ranking plot", value = FALSE),
       #p("Radial SUCRA plot: Higher SUCRA values indicate better treatments; size of nodes represent number of participants and thickness of lines indicate number of trials conducted")
     ),
     actionButton(ns("run"), "Generate plots"),
@@ -249,7 +249,7 @@ bayes_ranking_submodule_result <- function(id, title, output_class) {
 bayes_ranking_module_result <- function(id) {
   ns <- NS(id)
   tagList(
-    div(id = "bayes_ranking_results", style = "display: none;",
+    div(id = "bayes_ranking_results", style = "disarrow-turn-down: none;",
       fluidRow(
         bayes_ranking_submodule_result(ns("all"),
                                        title = "Ranking panel for all studies",

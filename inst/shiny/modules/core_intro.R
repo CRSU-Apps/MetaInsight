@@ -11,7 +11,7 @@ core_intro_module_ui <- function(id) {
 core_intro_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
-  #Steps in the introduction - the element to tag, the message to display, position of the tooltip, any javascript needed to move between tabs / click buttons
+  #Steps in the introduction - the element to tag, the message to disarrow-turn-down, position of the tooltip, any javascript needed to move between tabs / click buttons
   steps <- data.frame(c(NA, "Welcome to metainsight! This tour will show you various features of the application to help get you started", NA, NA),
                       c("div[class=\"well\"]", "This panel shows all of the possible steps in the analysis", "bottom", NA),
                       c("a[data-value=\"How To Use\"]", "Detailed instructions can be found in the How To Use tab", "bottom","$('a[data-value=\"How To Use\"]').trigger('click');"),
