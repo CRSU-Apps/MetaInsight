@@ -59,14 +59,6 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
       trigger(trigger)
     })
 
-    # for some reason width doesn't adjust to screen size if this is a bindEvent
-    output$forest <- renderPlot({
-      watch(trigger)
-      req(common[[paste0("bayes_", id)]], run())
-      bayes_forest(common[[paste0("bayes_", id)]])
-      # title(main = title)
-    })
-
     n_trt <- reactive({
       req(watch(trigger) > 0)
       if (id == "all"){
@@ -76,9 +68,23 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
       }
     })
 
-    output$forest_wrap <- renderUI({
-      req(watch(trigger) > 0)
-      plotOutput(session$ns("forest"), height = forest_height_pixels(n_trt(), title = TRUE))
+    # this enables the plot to always fit in the column width
+    output$forest <- renderUI({
+      watch(trigger)
+      req(common[[paste0("bayes_", id)]], run())
+
+      outfile <- tempfile(fileext = ".svg")
+      svglite::svglite(filename = outfile,
+                       height = forest_height_pixels(n_trt(), title = TRUE) / 72,
+                       width = 6.5)
+      bayes_forest(common[[paste0("bayes_", id)]])
+      dev.off()
+
+      svg_text <- readLines(outfile)
+      file.remove(outfile)
+      div(class = "svg_container",
+        HTML(paste(svg_text, collapse = "\n"))
+      )
     })
 
     regression_text <- reactive("")
@@ -222,7 +228,7 @@ bayes_ranking_submodule_result <- function(id, title, output_class) {
           fluidRow(
             align = "center",
             div(loading_spinner(output_class),
-                uiOutput(ns("forest_wrap")))
+                uiOutput(ns("forest")))
           ),
           fluidRow(
             align = "center",
