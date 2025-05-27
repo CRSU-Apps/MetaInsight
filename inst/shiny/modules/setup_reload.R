@@ -51,7 +51,9 @@ setup_reload_module_server <- function(id, common, modules, parent_session) {
       }
 
       # restore results for used modules
-      for (used_module in names(common$meta)){
+      used_modules <- names(common$meta)
+      used_modules <- used_modules[!(used_modules %in% c("summary_exclude", "bayes_model"))]
+      for (used_module in used_modules){
         trigger(used_module)
       }
     }
