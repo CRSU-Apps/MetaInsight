@@ -134,7 +134,8 @@ tagList(
             bslib::nav_panel(
               'About',
               core_intro_module_ui("core_intro"),
-              includeMarkdown("Rmd/text_about.Rmd")
+              # prevent warning about logo path
+              suppressWarnings(includeMarkdown("Rmd/text_about.Rmd"))
             ),
             bslib::nav_panel(
               'Team',
