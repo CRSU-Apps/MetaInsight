@@ -211,9 +211,9 @@ bayes_ranking_module_server <- function(id, common, parent_session) {
 bayes_ranking_submodule_result <- function(id, title, output_class) {
   ns <- NS(id)
   tagList(
-    bslib::accordion(
+    accordion(
       open = TRUE,
-      bslib::accordion_panel(
+      accordion_panel(
         title = title,
 #
 #     shinydashboard::box(

@@ -2,8 +2,8 @@ resourcePath <- system.file("shiny", "www", package = "metainsight")
 shiny::addResourcePath("resources", resourcePath)
 
 tagList(
-  bslib::page_navbar(
-    theme = bslib::bs_theme(version = 5,
+  page_navbar(
+    theme = bs_theme(version = 5,
                             bootswatch = "spacelab"),
     id = "tabs",
     header = tagList(
@@ -17,20 +17,20 @@ tagList(
       )),
     title = img(src = "logo.png", height = "50", width = "50"),
     window_title = "MetaInsight",
-    bslib::nav_panel("Intro", value = "intro"),
-    bslib::nav_panel("Setup", value = "setup"),
-    bslib::nav_panel("Summary", value = "summary"),
-    bslib::nav_panel("Frequentist", value = "freq"),
-    bslib::nav_panel("Bayesian", value = "bayes"),
-    bslib::nav_panel("Reproduce", value = "rep"),
-    bslib::nav_menu("Save", icon = icon("floppy-disk"),
+    nav_panel("Intro", value = "intro"),
+    nav_panel("Setup", value = "setup"),
+    nav_panel("Summary", value = "summary"),
+    nav_panel("Frequentist", value = "freq"),
+    nav_panel("Bayesian", value = "bayes"),
+    nav_panel("Reproduce", value = "rep"),
+    nav_menu("Save", icon = icon("floppy-disk"),
                HTML('<a href="#" id="save-button" class="action-button btn" onclick="Shiny.setInputValue(\'core_save-save\', Math.random())">Save session</a>')),
-    bslib::nav_menu("Support", icon = icon("life-ring"),
+    nav_menu("Support", icon = icon("life-ring"),
                HTML('<a href="https://github.com/CRSU-Apps/MetaInsight/issues" target="_blank">GitHub Issues</a>'),
                HTML('<a href="mailto: info@crsu.org.uk" target="_blank">Send Email</a>'))
   ),
-  bslib::layout_sidebar(
-    sidebar = bslib::sidebar(
+  layout_sidebar(
+    sidebar = sidebar(
       width = 400,
       open = "always",
       conditionalPanel(
@@ -48,10 +48,10 @@ tagList(
       # --- RESULTS WINDOW ---
       conditionalPanel(
         "input.tabs != 'intro' & input.tabs != 'rep'",
-        bslib::layout_columns(
+        layout_columns(
           col_widths = c(4, 2, 6),
 
-            bslib::layout_columns(
+            layout_columns(
               col_widths = c(6, 6),
               summary_exclude_module_ui("summary_exclude"),
               radioButtons("download_format",
@@ -75,20 +75,20 @@ tagList(
       br(),
       conditionalPanel(
         "input.tabs != 'intro' & input.tabs != 'rep'",
-        bslib::accordion(
+        accordion(
           id = "collapse_table",
           open = FALSE,
-          bslib::accordion_panel(
+          accordion_panel(
             title = "Data table (Click to open / hide this panel)",
             "Use the filter box under each column of heading to select studies to exclude in the sensitivity analysis.",
             DT::dataTableOutput("table")
           )
         ),
 
-        bslib::navset_tab(
+        navset_tab(
           id = 'main',
 
-          bslib::nav_panel(
+          nav_panel(
             'Results',
             lapply(COMPONENTS, function(component) {
               conditionalPanel(
@@ -99,15 +99,15 @@ tagList(
             # invisible but contains download button
             core_save_module_ui("core_save")
           ),
-          bslib::nav_panel(
+          nav_panel(
             'Component Guidance', icon = icon("circle-info"),
             flex_wrap(uiOutput('gtext_component'))
           ),
-          bslib::nav_panel(
+          nav_panel(
             'Module Guidance', icon = icon("circle-info", class = "mod_icon"),
             flex_wrap(uiOutput('gtext_module'))
           ),
-          bslib::nav_panel(
+          nav_panel(
             'Code',
             core_code_module_ui("core_code")
           )
@@ -129,19 +129,19 @@ tagList(
       conditionalPanel(
         "input.tabs == 'intro'",
         flex_wrap(
-          bslib::navset_tab(
+          navset_tab(
             id = 'introTabs',
-            bslib::nav_panel(
+            nav_panel(
               'About',
               core_intro_module_ui("core_intro"),
               # prevent warning about logo path
               suppressWarnings(includeMarkdown("Rmd/text_about.Rmd"))
             ),
-            bslib::nav_panel(
+            nav_panel(
               'Team',
                includeMarkdown("Rmd/text_team.Rmd")
             ),
-            bslib::nav_panel(
+            nav_panel(
               'How To Use',
               includeMarkdown("Rmd/text_how_to_use.Rmd")
             )

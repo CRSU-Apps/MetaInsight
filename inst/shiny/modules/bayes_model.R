@@ -1,7 +1,7 @@
 bayes_model_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
-    bslib::input_task_button(ns("run"), "Run models", type = "default")
+    input_task_button(ns("run"), "Run models", type = "default")
   )
 }
 
@@ -23,13 +23,13 @@ bayes_model_module_server <- function(id, common, parent_session) {
 
     common$tasks$bayes_model_all <- ExtendedTask$new(
       function(...) mirai::mirai(run(...), run = bayes_model, .args = environment())
-    ) %>% bslib::bind_task_button("run")
+    ) %>% bind_task_button("run")
 
     # needed to cancel in progress
     sub_model <- NULL
     common$tasks$bayes_model_sub <- ExtendedTask$new(
       function(...) sub_model <<- mirai::mirai(run(...), run = bayes_model, .args = environment())
-    ) %>% bslib::bind_task_button("run")
+    ) %>% bind_task_button("run")
 
     observeEvent(watch("bayes_model"), {
       req(watch("bayes_model") > 0)
