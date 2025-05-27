@@ -398,3 +398,13 @@ RadialSUCRA <- function(ranking_data, colourblind=FALSE, regression_text="") {  
   return(list(Original = Finalplot, Alternative = Finalalt))
 }
 
+#' Ranking probability table
+#'
+#' @param ranking_data list created by bayes_ranking().
+#' @return dataframe
+#' @export
+ranking_table = function(ranking_data) {
+  df <- ranking_data$Probabilities %>% dplyr::right_join(ranking_data$SUCRA[,1:2], by="Treatment")
+  df <- df[order(-df$SUCRA),]
+  return(df)
+}

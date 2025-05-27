@@ -1,10 +1,10 @@
 bayes_ranking_submodule_ui <- function(id, download_label) {
   ns <- NS(id)
   tagList(
-    downloadButton(ns("download_effects"), "Effects graph"),
-    downloadButton(ns("download_rank_plot"), "Rank plot"),
-    downloadButton(ns("download_rank_table"), "Rank table"),
-    downloadButton(ns("download_network"), "Network graph")
+    downloadButton(ns("download_forest"), "Forest plot", width = "100%"),
+    downloadButton(ns("download_ranking_plot"), "Ranking plot (PNG only)", width = "100%"),
+    downloadButton(ns("download_ranking_table"), "Ranking table", width = "100%"),
+    downloadButton(ns("download_network"), "Network graph", width = "100%")
   )
 }
 
@@ -29,12 +29,11 @@ bayes_ranking_module_ui <- function(id) {
     ),
     checkboxInput(ns("colourblind"), "Display colourblind-friendly ranking plot"),
     conditionalPanel(
-      condition = "input.rank_style == 1",
+      condition = "input.rank_style == 'radial'",
       ns = ns,
-      checkboxInput(ns("simple"), label = "Disarrow-turn-down simplified ranking plot", value = FALSE),
+      checkboxInput(ns("simple"), label = "Display simplified ranking plot", value = FALSE),
       #p("Radial SUCRA plot: Higher SUCRA values indicate better treatments; size of nodes represent number of participants and thickness of lines indicate number of trials conducted")
     ),
-    #actionButton(ns("run"), "Generate plots", icon = icon("arrow-turn-down")),
     input_task_button(ns("run"), "Generate plots", type = "default", icon = icon("arrow-turn-down")),
     fixedRow(
       column(
@@ -95,7 +94,6 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
         litmus_blind = LitmusRankOGram(common[[paste0("bayes_rank_", id)]], colourblind = TRUE, regression_text = regression_text()),
         radial_blind = RadialSUCRA(common[[paste0("bayes_rank_", id)]], colourblind = TRUE, regression_text = regression_text())
       )
-      # shinyjs::show("bayes_ranking_results", asis = TRUE)
       return(plots)
     })
 
@@ -121,6 +119,23 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
       }
     })
 
+
+    output$ranking_table <- renderTable({
+      ranking_table(common[[paste0("bayes_rank_", id)]])
+      }, digits = 2)
+
+    output$download_ranking_table <- downloadHandler(
+      filename = paste0("MetaInsight_bayesian_ranking_table_", id, ".csv"),
+      content = function(file) {
+        write.csv(
+          ranking_table(common[[paste0("bayes_rank_", id)]]),
+          file,
+          row.names = FALSE
+        )
+      }
+    )
+
+
     output$network <- renderUI({
       req(watch(trigger) > 0)
 
@@ -134,29 +149,62 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
           HTML(paste(svg_text, collapse = "\n"))
       )
 
-
     })
 
-    # output$download <- downloadHandler(
-    #   filename = function() {
-    #     if (model == "bayes_all"){
-    #       name <- "MetaInsight_bayesian_forest_plot_all."
-    #     } else {
-    #       name <- "MetaInsight_bayesian_forest_plot_sub."
-    #     }
-    #     paste0(name, common$download_format)
-    #   },
-    #   content = function(file) {
-    #
-    #     plot_func <- function(){
-    #       bayes_ranking(common[[model]])
-    #       title(main = title)
-    #     }
-    #
-    #     write_plot(file, common$download_format, plot_func, width = 9, height = as.integer(forest_height_pixels(n_trt(), title = TRUE) / 72) + 0.5)
-    #
-    #   }
-    # )
+    output$download_forest <- downloadHandler(
+      filename = function() {
+        paste0("MetaInsight_bayesian_forest_plot_", id, ".", common$download_format)
+      },
+      content = function(file) {
+
+        plot_func <- function(){
+          bayes_forest(common[[paste0("bayes_", id)]])
+        }
+
+        write_plot(file, common$download_format, plot_func, width = 6.5, height = as.integer(forest_height_pixels(n_trt(), title = TRUE) / 72) + 0.5)
+      }
+    )
+
+    output$download_ranking_plot <- downloadHandler(
+      filename = function() {
+        paste0("MetaInsight_bayesian_ranking_plot_", id, ".png")
+      },
+      content = function(file) {
+
+        if (rank_style() == "litmus" && colourblind() == FALSE){
+          ggplot2::ggsave(file, ranking_plots()$litmus, width = 6, height = 6, units = "in")
+        }
+        if (rank_style() == "radial" && colourblind() == FALSE && simple() == FALSE){
+          ggplot2::ggsave(file, ranking_plots()$radial$Original, width = 6, height = 6, units = "in")
+        }
+        if (rank_style() == "radial" && colourblind() == FALSE && simple() == TRUE){
+          ggplot2::ggsave(file, ranking_plots()$radial$Alternative, width = 6, height = 6, units = "in")
+        }
+        if (rank_style() == "litmus" && colourblind() == TRUE){
+          ggplot2::ggsave(file, ranking_plots()$litmus_blind, width = 6, height = 6, units = "in")
+        }
+        if (rank_style() == "radial" && colourblind() == TRUE && simple() == FALSE){
+          ggplot2::ggsave(file, ranking_plots()$radial_blind$Original, width = 6, height = 6, units = "in")
+        }
+        if (rank_style() == "radial" && colourblind() == TRUE && simple() == TRUE){
+          ggplot2::ggsave(file, ranking_plots()$radial_blind$Alternative, width = 6, height = 6, units = "in")
+        }
+      }
+    )
+
+    output$download_network <- downloadHandler(
+      filename = function() {
+        paste0("MetaInsight_network_plot_", id, ".", common$download_format)
+      },
+      content = function(file) {
+
+        plot_func <- function(){
+          summary_network(common[[paste0("freq_", id)]], common[[paste0("bugsnet_", id)]], network_style())
+        }
+
+        write_plot(file, common$download_format, plot_func, width = 5, height = 5)
+      }
+    )
 
   })
 }
@@ -231,7 +279,15 @@ bayes_ranking_submodule_result <- function(id, title) {
           ),
           fluidRow(
             align = "center",
-              plotOutput(ns("ranking"))#, table_label = table_label)
+              plotOutput(ns("ranking")), # table_label = table_label)
+            shinyWidgets::dropMenu(
+              shinyWidgets::dropdownButton(
+                circle = FALSE,
+                status = "warning",
+                label = "Ranking probabilities and SUCRA values for all treatments"
+              ),
+              tableOutput(ns("ranking_table"))
+            )
           ),
           fluidRow(
             align = "center",
@@ -246,18 +302,15 @@ bayes_ranking_submodule_result <- function(id, title) {
 bayes_ranking_module_result <- function(id) {
   ns <- NS(id)
   tagList(
-    # div(id = "bayes_ranking_results", style = "display: none;",
-      fluidRow(
-        bayes_ranking_submodule_result(ns("all"),
-                                       title = "Ranking panel for all studies")
-      ),
-      fluidRow(
-        bayes_ranking_submodule_result(ns("sub"),
-                                       title = "Ranking panel with selected studies excluded")
-
-      )
+    fluidRow(
+      bayes_ranking_submodule_result(ns("all"),
+                                     title = "Ranking panel for all studies")
+    ),
+    fluidRow(
+      bayes_ranking_submodule_result(ns("sub"),
+                                     title = "Ranking panel with selected studies excluded")
     )
-  # )
+  )
 }
 
 
