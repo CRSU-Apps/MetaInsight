@@ -129,9 +129,7 @@ bayes_compare_module_result <- function(id) {
       column(
         width = 6,
         align = "center",
-        div(class = "sub_output bayes_sub",
-            bayes_compare_submodule_result(ns("sub"))
-        )
+        bayes_compare_submodule_result(ns("sub"))
       )
     )
   )

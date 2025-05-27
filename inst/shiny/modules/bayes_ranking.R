@@ -27,14 +27,15 @@ bayes_ranking_module_ui <- function(id) {
                  ),
                  inline = TRUE
     ),
-    checkboxInput(ns("colourblind"), "Disarrow-turn-down colourblind-friendly ranking plot"),
+    checkboxInput(ns("colourblind"), "Display colourblind-friendly ranking plot"),
     conditionalPanel(
       condition = "input.rank_style == 1",
       ns = ns,
       checkboxInput(ns("simple"), label = "Disarrow-turn-down simplified ranking plot", value = FALSE),
       #p("Radial SUCRA plot: Higher SUCRA values indicate better treatments; size of nodes represent number of participants and thickness of lines indicate number of trials conducted")
     ),
-    actionButton(ns("run"), "Generate plots", icon = icon("arrow-turn-down")),
+    #actionButton(ns("run"), "Generate plots", icon = icon("arrow-turn-down")),
+    input_task_button(ns("run"), "Generate plots", type = "default", icon = icon("arrow-turn-down")),
     fixedRow(
       column(
         width = 6,
@@ -70,7 +71,7 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
 
     # this enables the plot to always fit in the column width
     output$forest <- renderUI({
-      watch(trigger)
+      req(watch(trigger) > 0)
       req(common[[paste0("bayes_", id)]], run())
 
       outfile <- tempfile(fileext = ".svg")
@@ -89,7 +90,7 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
 
     regression_text <- reactive("")
 
-    ranking_plots <- reactive({
+    ranking_plots <- eventReactive(watch(trigger), {
       req(watch(trigger) > 0)
 
       plots <- list(
@@ -98,7 +99,7 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
         litmus_blind = LitmusRankOGram(common[[paste0("bayes_rank_", id)]], colourblind = TRUE, regression_text = regression_text()),
         radial_blind = RadialSUCRA(common[[paste0("bayes_rank_", id)]], colourblind = TRUE, regression_text = regression_text())
       )
-      shinyjs::hide(selector = ".bayes_sub")
+      shinyjs::show("bayes_ranking_results", asis = TRUE)
       return(plots)
     })
 
@@ -162,7 +163,6 @@ bayes_ranking_module_server <- function(id, common, parent_session) {
         common$logger %>% writeLog(type = "error", "Please fit the Bayesian models first")
         return()
       } else {
-        shinyjs::show("bayes_ranking_results", asis = TRUE)
         trigger("bayes_ranking")
       }
     })
@@ -208,37 +208,27 @@ bayes_ranking_module_server <- function(id, common, parent_session) {
 }
 
 
-bayes_ranking_submodule_result <- function(id, title, output_class) {
+bayes_ranking_submodule_result <- function(id, title) {
   ns <- NS(id)
   tagList(
     accordion(
       open = TRUE,
       accordion_panel(
         title = title,
-#
-#     shinydashboard::box(
-#       title = title,
-#       status = 'primary',
-#       solidHeader = TRUE,
-#       width = 12,
-#       collapsible = TRUE,
         splitLayout(
           cellWidths = c("30%", "40%", "30%"),
           cellArgs = list(style = "height: 500px; padding: 16px; border: 2px solid #005c8a; white-space: normal"),
           fluidRow(
             align = "center",
-            div(loading_spinner(output_class),
-                uiOutput(ns("forest")))
+              uiOutput(ns("forest"))
           ),
           fluidRow(
             align = "center",
-            div(loading_spinner(output_class),
-                plotOutput(ns("ranking")))#, table_label = table_label)
+              plotOutput(ns("ranking"))#, table_label = table_label)
           ),
           fluidRow(
             align = "center",
-            div(loading_spinner(output_class),
-                  plotOutput(ns("network")))
+              plotOutput(ns("network"))
           )
         )
       )
@@ -249,16 +239,15 @@ bayes_ranking_submodule_result <- function(id, title, output_class) {
 bayes_ranking_module_result <- function(id) {
   ns <- NS(id)
   tagList(
-    div(id = "bayes_ranking_results", style = "disarrow-turn-down: none;",
+    div(id = "bayes_ranking_results", style = "display: none;",
       fluidRow(
         bayes_ranking_submodule_result(ns("all"),
-                                       title = "Ranking panel for all studies",
-                                       output_class = "all_output bayes_all")
+                                       title = "Ranking panel for all studies")
       ),
       fluidRow(
         bayes_ranking_submodule_result(ns("sub"),
-                                       title = "Ranking panel with selected studies excluded",
-                                       output_class = "sub_output bayes_sub")
+                                       title = "Ranking panel with selected studies excluded")
+
       )
     )
   )

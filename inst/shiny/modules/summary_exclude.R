@@ -63,8 +63,6 @@ summary_exclude_module_server <- function(id, common, parent_session) {
         mirai::stop_mirai(excluding)
       }
 
-      shinyjs::show(selector = ".sub_output")
-
       common$tasks$summary_exclude_sub$invoke(common$main_connected_data,
                                               common$treatment_df,
                                               common$reference_treatment_all,

@@ -53,8 +53,6 @@ bayes_model_module_server <- function(id, common, parent_session) {
         mirai::stop_mirai(sub_model)
       }
 
-      shinyjs::show(selector = ".bayes_sub")
-
       common$tasks$bayes_model_sub$invoke(common$subsetted_data,
                                           common$subsetted_treatment_df,
                                           common$outcome,
