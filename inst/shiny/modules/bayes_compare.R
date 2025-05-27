@@ -6,7 +6,7 @@ bayes_compare_submodule_ui <- function(id, download_label) {
 bayes_compare_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
-    actionButton(ns("run"), "Generate tables"),
+    actionButton(ns("run"), "Generate tables", icon = icon("arrow-turn-down")),
     fixedRow(
       column(
         width = 6,

@@ -34,7 +34,7 @@ bayes_ranking_module_ui <- function(id) {
       checkboxInput(ns("simple"), label = "Disarrow-turn-down simplified ranking plot", value = FALSE),
       #p("Radial SUCRA plot: Higher SUCRA values indicate better treatments; size of nodes represent number of participants and thickness of lines indicate number of trials conducted")
     ),
-    actionButton(ns("run"), "Generate plots"),
+    actionButton(ns("run"), "Generate plots", icon = icon("arrow-turn-down")),
     fixedRow(
       column(
         width = 6,

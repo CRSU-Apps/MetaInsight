@@ -4,7 +4,7 @@ bayes_nodesplit_module_ui <- function(id) {
     # UI
 
 
-    actionButton(ns("run"), "Run module bayes_nodesplit")
+    actionButton(ns("run"), "Run module bayes_nodesplit", icon = icon("arrow-turn-down"))
 
   )
 }

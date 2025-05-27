@@ -4,7 +4,7 @@ bayes_details_module_ui <- function(id) {
     # UI
 
 
-    actionButton(ns("run"), "Run module bayes_details")
+    actionButton(ns("run"), "Run module bayes_details", icon = icon("arrow-turn-down"))
 
   )
 }
