@@ -6,34 +6,31 @@
 #' @param outcome_measure "MD", "OR" or "RR".
 #' @param model_type "fixed" or "random".
 #' @param reference_treatment Reference treatment
-#' @param logger Stores all notification messages to be displayed in the Log
-#'   Window. Insert the logger reactive list here for running in
-#'   shiny, otherwise leave the default `NULL`
+#' @param async Whether or not the function is being used aysnchronously. Default `FALSE`
 #' @return List:
 #'  - 'mtcResults' = Output from gemtc::mtc.run
 #'  - 'mtcRelEffects' = Output from gemtc::relative.effect
 #'  - 'rel_eff_tbl = Output from gemtc::relative.effect.table
 #'  - 'sumresults' = summary(mtcRelEffects)
-#'  - 'a' = "fixed effect" or "random effect"
 #'  - 'mtcNetwork' = Output from gemtc::mtc.network
 #'  - 'dic' = Data frame containing the statistics 'Dbar', 'pD', 'DIC', and 'data points'
 #' @export
 
-bayes_model <- function(data, treatment_df, outcome, outcome_measure, model_type, reference_treatment, logger = NULL){
+bayes_model <- function(data, treatment_df, outcome, outcome_measure, model_type, reference_treatment, async = FALSE){
 
-  if(check_param_classes(c("data", "treatment_df", "outcome", "outcome_measure", "model_type",  "reference_treatment"),
-                      c("data.frame", "data.frame", "character", "character", "character", "character"), logger)){
-    return()
+  if (!async){ # only an issue if run outside the app
+    if (check_param_classes(c("data", "treatment_df", "outcome", "outcome_measure", "model_type",  "reference_treatment"),
+                            c("data.frame", "data.frame", "character", "character", "character", "character"), NULL)){
+      return()
+    }
   }
 
   if (!model_type %in% c("fixed", "random")){
-    logger %>% writeLog(type = "error", "model_type must be 'fixed' or 'random'")
-    return()
+    return(async %>% asyncLog(type = "error", "model_type must be 'fixed' or 'random'"))
   }
 
   if (!outcome_measure %in% c("OR", "RR", "MD")){
-    logger %>% writeLog(type = "error", "outcome_measure must be 'OR', 'RR' or 'MD'")
-    return()
+    return(async %>% asyncLog(type = "error", "outcome_measure must be 'OR', 'RR' or 'MD'"))
   }
 
   longsort <- dataform.df(data, treatment_df, outcome)
@@ -86,7 +83,6 @@ bayes_model <- function(data, treatment_df, outcome, outcome_measure, model_type
       mtcRelEffects = mtcRelEffects,
       rel_eff_tbl = rel_eff_tbl,
       sumresults = sumresults,
-      # a = a,
       mtcNetwork = mtcNetwork,
       dic = dic
     )

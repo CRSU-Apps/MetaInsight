@@ -11,7 +11,9 @@ bayes_model_module_server <- function(id, common, parent_session) {
     init("bayes_model_sub")
 
     observeEvent(input$run, {
-      req(common$outcome_measure)
+      if (is.null(common$main_connected_data)){
+        common$logger %>% writeLog(type = "error", "Please define the data in the Setup component first.")
+      }
       if (common$outcome_measure == "SMD") {
         common$logger %>% writeLog(type = "error", "Standardised mean difference currently cannot be analysed within Bayesian analysis in MetaInsight")
       }
@@ -38,7 +40,8 @@ bayes_model_module_server <- function(id, common, parent_session) {
                                           common$outcome,
                                           common$outcome_measure,
                                           common$model_type,
-                                          common$reference_treatment_all)
+                                          common$reference_treatment_all,
+                                          async = TRUE)
 
       # METADATA ####
       common$meta$bayes_model$used <- TRUE
@@ -58,20 +61,31 @@ bayes_model_module_server <- function(id, common, parent_session) {
                                           common$outcome,
                                           common$outcome_measure,
                                           common$model_type,
-                                          common$reference_treatment_sub)
+                                          common$reference_treatment_sub,
+                                          async = TRUE)
       result_sub$resume()
     })
 
 
     result_all <- observe({
-      common$bayes_all <- common$tasks$bayes_model_all$result()
+      result <- common$tasks$bayes_model_all$result()
+      if (inherits(result, "list")){
+        common$bayes_all <- result
+      } else {
+        common$logger %>% writeLog(type = "error", result)
+      }
       result_all$suspend()
     })
 
     result_sub <- observe({
       # prevent loading when the task is cancelled
       if (common$tasks$bayes_model_sub$status() == "success"){
-        common$bayes_sub <- common$tasks$bayes_model_sub$result()
+        result <- common$tasks$bayes_model_sub$result()
+        if (inherits(result, "list")){
+          common$bayes_sub <- result
+        } else {
+          common$logger %>% writeLog(type = "error", result)
+        }
         result_sub$suspend()
         trigger("bayes_model_sub")
       }
