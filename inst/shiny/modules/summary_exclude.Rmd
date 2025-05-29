@@ -9,6 +9,8 @@ model_type <- {{summary_exclude_model}}
 
 excluded_data <- summary_exclude(wrangled_data, treatment_df, reference_treatment_sub, outcome, outcome_measure, model_type, excluded_studies)
 
+connected_data_sub <- excluded_data$subsetted_data 
+treatment_df_sub <- excluded_data$subsetted_treatment_df 
 frequentist_sub <- excluded_data$freq_sub
 bugsnet_sub <- excluded_data$bugsnet_sub
 ```
