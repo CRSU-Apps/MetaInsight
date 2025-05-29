@@ -7,15 +7,9 @@ bayes_compare_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
     actionButton(ns("run"), "Generate tables", icon = icon("arrow-turn-down")),
-    fixedRow(
-      column(
-        width = 6,
-        bayes_compare_submodule_ui(ns("all"), "All studies")
-      ),
-      column(
-        width = 6,
-        bayes_compare_submodule_ui(ns("sub"), "With selected studies excluded")
-      )
+    layout_columns(
+      bayes_compare_submodule_ui(ns("all"), "All studies"),
+      bayes_compare_submodule_ui(ns("sub"), "With selected studies excluded")
     )
   )
 }
@@ -34,11 +28,7 @@ bayes_compare_submodule_server <- function(id, common, model, run, text){
 
     output$download <- downloadHandler(
       filename = function(){
-        if (model == "bayes_all"){
-          name <- "MetaInsight_bayesian_comparison_all.csv"
-        } else {
-          name <- "MetaInsight_bayesian_comparison_sub.csv"
-        }
+         glue::glue("MetaInsight_bayesian_comparison_{id}.csv")
       },
       content = function(file) {
         write.csv(bayes_compare(common[[model]], common$outcome_measure), file)
@@ -85,17 +75,6 @@ bayes_compare_module_server <- function(id, common, parent_session) {
     bayes_compare_submodule_server("all", common, "bayes_all", all_trigger, "Treatment effects for all studies: comparison of all treatment pairs.")
     bayes_compare_submodule_server("sub", common, "bayes_sub", sub_trigger, "Treatment effects with selected studies excluded: comparison of all treatment pairs.")
 
-    return(list(
-      save = function() {
-        # Save any values that should be saved when the current session is saved
-        # Populate using save_and_load()
-      },
-      load = function(state) {
-        # Load
-        # Populate using save_and_load()
-      }
-    ))
-
   })
 }
 
@@ -110,7 +89,6 @@ bayes_compare_submodule_result <- function(id) {
 
 bayes_compare_module_result <- function(id) {
   ns <- NS(id)
-
   tagList(
     p(
       tags$strong(
@@ -120,17 +98,9 @@ bayes_compare_module_result <- function(id) {
         If you would like to obtain the pairwise meta-analysis results, please use the Nodesplit model module"
       )
     ),
-    fluidRow(
-      column(
-        width = 6,
-        align = "center",
-        bayes_compare_submodule_result(ns("all"))
-      ),
-      column(
-        width = 6,
-        align = "center",
-        bayes_compare_submodule_result(ns("sub"))
-      )
+    layout_columns(
+      bayes_compare_submodule_result(ns("all")),
+      bayes_compare_submodule_result(ns("sub"))
     )
   )
 }
