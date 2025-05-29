@@ -90,6 +90,28 @@ writeLog <- function(logger, ..., type = "default") {
   invisible()
 }
 
+#' @title asyncLog
+#' @description For internal use. Similar to writeLog but for use inside async
+#' functions
+#' @param async Whether the function is being used asynchronously
+#' @param ... Messages to write to the logger
+#' @param type One of `default`, `info`, `error`, `warning`
+#' @returns No return value, called for side effects
+#' @keywords internal
+#' @export
+asyncLog <- function(async, ..., type = "default"){
+  if (!async) {
+    if (type == "error") {
+      stop(paste0(..., collapse = ""), call. = FALSE)
+    } else if (type == "warning") {
+      warning(paste0(..., collapse = ""), call. = FALSE)
+    } else {
+      message(paste0(..., collapse = ""))
+    }
+  } else {
+    return(as.character(...))
+  }
+}
 
 #' Utility function for checking classes of function parameters
 #'
@@ -97,7 +119,7 @@ writeLog <- function(logger, ..., type = "default") {
 #' @param classes character. Vector of classes for each parameter
 #' @param logger Stores all notification messages to be displayed in the Log
 #'   Window or returned as errors.
-#' @return None - called for side effects
+#' @return `TRUE` if any errors are found. `FALSE` if not
 #' @keywords internal
 check_param_classes <- function(params, classes, logger){
   for (i in seq_along(params)) {
@@ -271,11 +293,11 @@ CreateTauSentence <- function(results, outcome, model_type) {
   }
   if (model_type=="random") {
     if (outcome=="OR") {
-      paste("Between-study standard deviation (log-odds scale):", sd_mean, ". 95% credible interval:",sd_lowCI,", ", sd_highCI, ".")
+      paste("Between-study standard deviation (log-odds scale):", sd_mean, ".\n 95% credible interval:",sd_lowCI,", ", sd_highCI, ".")
     } else if (outcome=="RR") {
-      paste ("Between-study standard deviation (log probability scale):", sd_mean, ". 95% credible interval:",sd_lowCI,", ", sd_highCI, ".")
+      paste ("Between-study standard deviation (log probability scale):", sd_mean, ".\n 95% credible interval:",sd_lowCI,", ", sd_highCI, ".")
     } else {
-      paste ("Between-study standard deviation:", sd_mean, ". 95% credible interval:",sd_lowCI,", ", sd_highCI, ".")
+      paste ("Between-study standard deviation:", sd_mean, ".\n 95% credible interval:",sd_lowCI,", ", sd_highCI, ".")
     }
   } else{
     if (outcome=="OR") {
