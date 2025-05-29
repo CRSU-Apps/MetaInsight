@@ -27,6 +27,8 @@ common_class <- R6::R6Class(
    bayes_sub = NULL,
    bayes_rank_all = NULL,
    bayes_rank_sub = NULL,
+   nodesplit_all = NULL,
+   nodesplit_sub = NULL,
    download_format = NULL,
    meta = NULL,
    tasks = NULL,
@@ -59,6 +61,8 @@ common_class <- R6::R6Class(
      self$bayes_sub <- NULL
      self$bayes_rank_all <- NULL
      self$bayes_rank_sub <- NULL
+     self$nodesplit_all <-  NULL
+     self$nodesplit_sub <-  NULL
      self$meta <- NULL
      self$state <- NULL
      invisible(self)

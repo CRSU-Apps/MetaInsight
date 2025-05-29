@@ -1,60 +1,163 @@
+bayes_nodesplit_submodule_ui <- function(id, download_label) {
+  ns <- NS(id)
+  downloadButton(ns("download"), download_label)
+}
+
 bayes_nodesplit_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
-    # UI
-
-
-    actionButton(ns("run"), "Run module bayes_nodesplit", icon = icon("arrow-turn-down"))
-
+    input_task_button(ns("run"), "Run nodesplitting models", icon = icon("arrow-turn-down"), type = "default"),
+    layout_columns(
+      bayes_nodesplit_submodule_ui(ns("all"), "All studies"),
+      bayes_nodesplit_submodule_ui(ns("sub"), "With selected studies excluded")
+    )
   )
+}
+
+bayes_nodesplit_submodule_server <- function(id, common, nodesplit, run){
+  moduleServer(id, function(input, output, session) {
+
+    plot_height <- reactive({
+      watch(run)
+      # removed a -1 here to make room for the title
+      n_comp <- length(common[[nodesplit]])
+      max(400, n_comp * 80)
+    })
+
+    plot_title = paste0("Inconsistency test with nodesplitting \nmodel",
+                        ifelse(id == "all", " for all studies", " with selected studies excluded"))
+
+    output$plot <- renderPlot({
+      watch(run)
+      req(common[[nodesplit]])
+      plot(summary(common[[nodesplit]]), digits = 3)
+      title(main = plot_title)
+    }, height = function(){plot_height()})
+
+    output$download <- downloadHandler(
+      filename = function(){
+          glue::glue("MetaInsight_nodesplit_{id}.{common$download_format}")
+      },
+      content = function(file) {
+
+        plot_function <- function(){
+          plot(summary(common[[nodesplit]]))
+          title(main = plot_title)
+        }
+
+        write_plot(file,
+                   common$download_format,
+                   plot_function,
+                   # convert to inches
+                   height =  plot_height() / 72,
+                   width = 8)
+      }
+    )
+
+  })
 }
 
 bayes_nodesplit_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
+    init("bayes_nodesplit_all")
+    init("bayes_nodesplit_sub")
 
-  observeEvent(input$run, {
-    # WARNING ####
+    observeEvent(input$run, {
+      if (is.null(common$main_connected_data)){
+        common$logger %>% writeLog(type = "error", "Please configure the analysis in the Setup component first.")
+      }
+      trigger("bayes_nodesplit")
+    })
 
-    # FUNCTION CALL ####
+    common$tasks$bayes_nodesplit_all <- ExtendedTask$new(
+      function(...) mirai::mirai(run(...), run = bayes_nodesplit, .args = environment())
+    ) %>% bind_task_button("run")
 
-    # LOAD INTO COMMON ####
+    # needed to cancel in progress
+    sub_nodesplit <- NULL
+    common$tasks$bayes_nodesplit_sub <- ExtendedTask$new(
+      function(...) sub_nodesplit <<- mirai::mirai(run(...), run = bayes_nodesplit, .args = environment())
+    ) %>% bind_task_button("run")
 
-    # METADATA ####
-    # Populate using metadata()
+    observeEvent(watch("bayes_nodesplit"), {
+      req(watch("bayes_nodesplit") > 0)
+      common$tasks$bayes_nodesplit_all$invoke(common$main_connected_data,
+                                              common$treatment_df,
+                                              common$outcome,
+                                              common$outcome_measure,
+                                              common$model_type,
+                                              async = TRUE)
 
-    # TRIGGER
-    trigger("bayes_nodesplit")
+      # METADATA ####
+      common$meta$bayes_model$used <- TRUE
+      result_all$resume()
+    })
 
+    observeEvent(list(watch("bayes_nodesplit"), watch("summary_exclude")), {
+      req(watch("bayes_nodesplit") > 0)
+
+      # cancel if the model is already updating
+      if (common$tasks$bayes_nodesplit_sub$status() == "running"){
+        mirai::stop_mirai(sub_nodesplit)
+      }
+
+      common$tasks$bayes_nodesplit_sub$invoke(common$subsetted_data,
+                                              common$subsetted_treatment_df,
+                                              common$outcome,
+                                              common$outcome_measure,
+                                              common$model_type,
+                                              async = TRUE)
+      result_sub$resume()
+    })
+
+    result_all <- observe({
+      result <- common$tasks$bayes_nodesplit_all$result()
+      if (inherits(result, "mtc.nodesplit")){
+        common$nodesplit_all <- result
+        common$meta$bayes_nodesplit$used <- TRUE
+        trigger("bayes_nodesplit_all")
+      } else {
+        common$logger %>% writeLog(type = "error", result)
+      }
+      result_all$suspend()
+
+    })
+
+    result_sub <- observe({
+      # prevent loading when the task is cancelled
+      if (common$tasks$bayes_nodesplit_sub$status() == "success"){
+        result <- common$tasks$bayes_nodesplit_sub$result()
+        if (inherits(result, "mtc.nodesplit")){
+          common$nodesplit_sub <- result
+          trigger("bayes_nodesplit_sub")
+        } else {
+          common$logger %>% writeLog(type = "error", result)
+        }
+        result_sub$suspend()
+      }
+    })
+
+    bayes_nodesplit_submodule_server("all", common, "nodesplit_all", "bayes_nodesplit_all")
+    bayes_nodesplit_submodule_server("sub", common, "nodesplit_sub", "bayes_nodesplit_sub")
 
   })
-
-  output$result <- renderText({
-    watch("bayes_nodesplit")
-    # Result
-  })
-
-
-  return(list(
-    save = function() {
-      # Save any values that should be saved when the current session is saved
-      # Populate using save_and_load()
-    },
-    load = function(state) {
-      # Load
-      # Populate using save_and_load()
-    }
-  ))
-
-})
 }
 
 
+bayes_nodesplit_submodule_result <- function(id) {
+  ns <- NS(id)
+  plotOutput(ns("plot"))
+}
+
 bayes_nodesplit_module_result <- function(id) {
   ns <- NS(id)
-
-  # Result UI
-  verbatimTextOutput(ns("result"))
+  tagList(
+    layout_columns(
+      bayes_nodesplit_submodule_result(ns("all")),
+      bayes_nodesplit_submodule_result(ns("sub"))
+    )
+  )
 }
 
 
