@@ -15,7 +15,7 @@ check_param_classes(params, classes, logger)
 Window or returned as errors.}
 }
 \value{
-None - called for side effects
+`TRUE` if any errors are found. `FALSE` if not
 }
 \description{
 Utility function for checking classes of function parameters
