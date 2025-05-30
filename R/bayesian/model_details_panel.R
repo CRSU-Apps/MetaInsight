@@ -34,15 +34,30 @@ model_details_panel_ui <- function(id, item_names, page_numbering) {
   ui = div(
     tabsetPanel(
       tabPanel(
-        title = paste0(page_numbering$AddChild(), " Model codes"),
+        title = paste0(page_numbering$AddChild(), " MCMC characteristics and priors"),
         invalid_model_panel_ui(id = ns("model_invalid_1")),
+        downloadButton(outputId = ns('download_mcmc'),
+                       label = "Download MCMC"),
+        downloadButton(outputId = ns('download_priors'),
+                       label = "Download priors"),
+        h4(tags$strong("MCMC characteristics")),
+        tableOutput(outputId = ns("mcmc_details")),
+        h4(tags$strong("Prior distributions")),
+        tableOutput(outputId = ns("priors")),
+        br(),
+        p("Note: Normal distributions are parameterized here as N(mean, variance) and in the JAGS code as N(mean, precision)."),
+        p("Note: For help on the scaled t-distribution see the JAGS manual.")
+      ),
+      tabPanel(
+        title = paste0(page_numbering$AddChild(), " Model codes"),
+        invalid_model_panel_ui(id = ns("model_invalid_2")),
         p(tags$strong("Model codes for analysis of all studies")),
         downloadButton(outputId = ns('download_code')),
         verbatimTextOutput(outputId = ns("code"))
       ),
       tabPanel(
         title = paste0(page_numbering$AddChild(), " Initial values"),
-        invalid_model_panel_ui(id = ns("model_invalid_2")),
+        invalid_model_panel_ui(id = ns("model_invalid_3")),
         p(tags$strong("Initial values")),
         downloadButton(outputId = ns('download_inits_1'), "Download initial values for chain 1"),
         downloadButton(outputId = ns('download_inits_2'), "Download initial values for chain 2"),
@@ -52,7 +67,7 @@ model_details_panel_ui <- function(id, item_names, page_numbering) {
       ),
       tabPanel(
         title = paste0(page_numbering$AddChild(), " Download simulations"),
-        invalid_model_panel_ui(id = ns("model_invalid_3")),
+        invalid_model_panel_ui(id = ns("model_invalid_4")),
         p(tags$strong("Download simulated data")),
         downloadButton(outputId = ns('download_data1'), "Download data from chain 1"),
         br(),
@@ -124,6 +139,7 @@ model_details_panel_server <- function(id, models, models_valid, package = "gemt
     invalid_model_panel_server(id = "model_invalid_1", model_valid = main_model_valid)
     invalid_model_panel_server(id = "model_invalid_2", model_valid = main_model_valid)
     invalid_model_panel_server(id = "model_invalid_3", model_valid = main_model_valid)
+    invalid_model_panel_server(id = "model_invalid_4", model_valid = main_model_valid)
     
     observe({
       # Get either enable or disable function to apply to relevant UI elements
@@ -134,8 +150,10 @@ model_details_panel_server <- function(id, models, models_valid, package = "gemt
       }
       
       # Apply enable or disable function
-      fn(id = glue::glue("download_code"))
-      
+      fn(id = "download_mcmc")
+      fn(id = "download_priors")
+      fn(id = "download_code")
+
       sapply(
         1:4,
         function(index) {
@@ -144,8 +162,62 @@ model_details_panel_server <- function(id, models, models_valid, package = "gemt
         }
       )
     })
-
-    # 3g-1 Model codes
+    
+    #Tab 1: MCMC characteristics and prior distributions
+    mcmc_details <- reactive({
+      if (package == "gemtc") {
+        return(GetGemtcMcmcCharacteristics(model = main_model()$mtcResults))
+      } else if (package == "bnma") {
+        return(GetBnmaMcmcCharacteristics(model = main_model()))
+      }
+    })
+    
+    priors <- reactive({
+      if (package == "gemtc") {
+        return(GetGemtcPriors(model = main_model()$mtcResults))
+      } else if (package == "bnma") {
+        return(GetBnmaPriors(model = main_model()))
+      }
+    })
+    
+    output$mcmc_details <- renderTable(
+      {
+        if (is.null(main_model_valid()) || !main_model_valid()) {
+          return()
+        }
+        return(mcmc_details())
+      },
+      digits = 0,
+      colnames = FALSE
+    )
+    
+    output$priors <- renderTable(
+      {
+        if (is.null(main_model_valid()) || !main_model_valid()) {
+          return()
+        }
+        return(priors())
+      },
+      colnames = FALSE
+    )
+    
+    output$download_mcmc <- downloadHandler(
+      filename = "mcmc_characteristics.csv",
+      content = function(file) {
+        data <- mcmc_details()
+        write.csv(data, file, row.names = FALSE, col.names = FALSE)
+      }
+    )
+    
+    output$download_priors <- downloadHandler(
+      filename = "prior_distributions.csv",
+      content = function(file) {
+        data <- priors()
+        write.csv(data, file, row.names = FALSE, col.names = FALSE)
+      }
+    )
+    
+    #Tab 2: Model codes
     output$code <- renderPrint({
       if (is.null(main_model_valid()) || !main_model_valid()) {
         return()
@@ -170,7 +242,7 @@ model_details_panel_server <- function(id, models, models_valid, package = "gemt
       }
     )
     
-    # 3g-2 Initial values
+    #Tab 3: Initial values
     inits <- reactive({
       if (is.null(main_model_valid()) || !main_model_valid()) {
         return()
@@ -192,7 +264,7 @@ model_details_panel_server <- function(id, models, models_valid, package = "gemt
       }
     )
 
-    # 3g-3 Chain data.
+    #Tab 4: Chain data.
 
     samples <- reactive({
       if (is.null(main_model_valid()) || !main_model_valid()) {
@@ -213,7 +285,7 @@ model_details_panel_server <- function(id, models, models_valid, package = "gemt
       }
     )
 
-    # 3g-4 Output deviance
+    #Tab 5: Deviance
     
     model_type <- reactive({
       for (index in 1:length(models)) {

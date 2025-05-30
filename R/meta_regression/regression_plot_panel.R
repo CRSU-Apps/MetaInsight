@@ -52,6 +52,16 @@ regression_plot_panel_ui <- function(id) {
           ),
           downloadButton(outputId = ns("download")),
           style = "text-align: center;"
+        ),
+        h4(style = "text-align:left",
+           "This graph was adapted from",
+           tags$em("Graphs of study contributions and covariate distributions for network meta-regression"),
+           ", Sarah Donegan, Sofia Dias, Catrin Tudur-Smith, Valeria Marinho, Nicky J Welton, ",
+           tags$em("Res Syn Meth"),
+           ", 2018;",
+           tags$b(9),
+           ":243-260.",
+           tags$b(tags$a("DOI: 10.1002/jrsm.1292", href = "https://onlinelibrary.wiley.com/doi/10.1002/jrsm.1292", target = "_blank"))
         )
       ),
       sidebarPanel = sidebarPanel(

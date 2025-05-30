@@ -32,8 +32,8 @@ bayesian_analysis_panel_ui <- function(id, page_numbering) {
         result_details_page_ui(id = ns("result_details"), item_names = c("all studies", "the sensitivity analysis"))
       ),
       tabPanel(
-        title = paste0(page_numbering$AddChild(), " Deviance report"),
-        deviance_report_page_ui(id = ns("deviance_report"), item_names = c("all studies", "the sensitivity analysis"))
+        title = paste0(page_numbering$AddChild(), " Diagnostics"),
+        diagnostics_page_ui(id = ns("diagnostics"), item_names = c("all studies", "the sensitivity analysis"), page_numbering)
       ),
       tabPanel(
         title = paste0(page_numbering$AddChild(), " Model details"),
@@ -172,8 +172,8 @@ bayesian_analysis_panel_server <- function(
     )
 
     # 3f. Deviance report
-    deviance_report_page_server(
-      id = "deviance_report",
+    diagnostics_page_server(
+      id = "diagnostics",
       models = c(model, model_sub),
       models_valid = c(model_valid, model_sub_valid)
     )

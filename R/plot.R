@@ -513,12 +513,12 @@ levplot <- function(model, package = "gemtc") {
 }
 
 
-#' Creates a Gelman plot for a BNMA baseline-risk model.
+#' Creates a Gelman plot for a gemtc or bnma model.
 #' 
-#' @param gelman_plot Output from coda::gelman.plot(bnma_model$samples[, parm]), where parm is a parameter from 'bnma_model'.
+#' @param gelman_plot Output from coda::gelman.plot(model$samples[, parm]), where parm is a parameter from the model.
 #' @param parameter The parameter from the previous argument, used as the title.
 #' @return Reproduces the Gelman plot mentioned in @param gelman_plot as a plot that can be put in a grid.
-BnmaGelmanPlot <- function(gelman_plot, parameter){
+GelmanPlot <- function(gelman_plot, parameter) {
   y_vals_median <- gelman_plot$shrink[, , "median"]
   y_vals_975 <- gelman_plot$shrink[, , "97.5%"]
   x_vals <- gelman_plot$last.iter
@@ -531,13 +531,41 @@ BnmaGelmanPlot <- function(gelman_plot, parameter){
 }
 
 
-#' Creates Gelman plots for a BNMA baseline-risk model.
+#' Creates Gelman plots for a gemtc or bnma model.
 #' 
-#' @param gelman_plots List of outputs from coda::gelman.plot(bnma_model$samples[, parm]), where parm is a parameter from bnma_model.
+#' @param gelman_plots List of outputs from coda::gelman.plot(model$samples[, parm]), where parm is a parameter from the model.
 #' @param parameters Vector of parameters mentioned in the previous argument.
 #' @return Plots the Gelman plots mentioned in @param gelman_plots.
-BnmaGelmanPlots <- function(gelman_plots, parameters){
+GelmanPlots <- function(gelman_plots, parameters) {
   for (i in 1:length(parameters)) {
-    BnmaGelmanPlot(gelman_plot = gelman_plots[[i]], parameter = parameters[i])
+    GelmanPlot(gelman_plot = gelman_plots[[i]], parameter = parameters[i])
   }
+}
+
+
+#' Creates trace plots of MCMC samples.
+#' 
+#' @param model Model output. 
+#' @param parameters Vector of parameters to create trace plots for.
+#' @return List of ggplot trace plots.
+TracePlots <- function(model, parameters) {
+  trace_plots <- list()
+  for (i in 1:length(parameters)) {
+    trace_plots[[i]] <- bayesplot::mcmc_trace(x = model$samples, pars = parameters[i]) + ggplot2::ggtitle(parameters[i]) + ggplot2::theme(plot.title = element_text(hjust = 0.5))
+  }
+  return(trace_plots)
+}
+
+
+#' Creates posterior density plots of MCMC samples.
+#' 
+#' @param model Model output. 
+#' @param parameters Vector of parameters to create density plots for.
+#' @return List of ggplot density plots.
+DensityPlots <- function(model, parameters) {
+  density_plots <- list()
+  for (i in 1:length(parameters)) {
+    density_plots[[i]] <- bayesplot::mcmc_hist(x = model$samples, pars = parameters[i])
+  }
+  return(density_plots)
 }
