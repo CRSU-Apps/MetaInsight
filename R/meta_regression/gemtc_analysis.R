@@ -391,7 +391,7 @@ GetGemtcPriors <- function(model) {
   if (!is.null(model$model$regressor$coefficient)) {
     #If the model is NMR shared, add the covariate parameter
     if (model$model$regressor$coefficient == "shared") {
-      shared_var <- RoundVariance(model$model$data$om.scale^2)
+      shared_var <- RoundForDisplay(model$model$data$om.scale^2)
       prior_table <- rbind(prior_table,
                            data.frame(parameter = "Shared covariate parameter",
                                       value = paste0(" ~ Scaled t-distribution (0, ", shared_var, ", 1)"))
@@ -408,7 +408,7 @@ GetGemtcPriors <- function(model) {
       )
       #If the model is NMR unrelated, add the covariate parameters
     } else if (model$model$regressor$coefficient == "unrelated") {
-      unrelated_var <- RoundVariance(model$model$data$om.scale^2)
+      unrelated_var <- RoundForDisplay(model$model$data$om.scale^2)
       prior_table <- rbind(prior_table,
                            data.frame(parameter = "Covariate parameters",
                                       value = paste0(" ~ Scaled t-distribution (0, ", unrelated_var, ", 1)"))
