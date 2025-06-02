@@ -9,7 +9,7 @@
 #' @param covariate Chosen covariate name as per uploaded data
 #' @param cov_friendly Friendly name of chosen covariate
 #' @return list containing two dataframes: armData containing the core data; studyData containing covariate data
-PrepDataGemtc <- function(data, treatment_ids, outcome_type, covariate, cov_friendly){
+PrepDataGemtc <- function(data, treatment_ids, outcome_type, covariate, cov_friendly) {
   # ensure data is in long format
   if (FindDataShape(data) == "wide") {
     long_data <- WideToLong(data, outcome_type)
@@ -18,22 +18,30 @@ PrepDataGemtc <- function(data, treatment_ids, outcome_type, covariate, cov_frie
   }
   # specify arm level data
   if (outcome_type == "Continuous") {
-    armData <- data.frame(study = long_data$Study,
-                          treatment = treatment_ids$Label[match(long_data$T, treatment_ids$Number)],
-                          mean = long_data$Mean,
-                          std.dev = long_data$SD,
-                          sampleSize = long_data$N)
+    armData <- data.frame(
+      study = long_data$Study,
+      treatment = treatment_ids$Label[match(long_data$T, treatment_ids$Number)],
+      mean = long_data$Mean,
+      std.dev = long_data$SD,
+      sampleSize = long_data$N
+    )
   } else if (outcome_type == "Binary") {
-    armData <- data.frame(study = long_data$Study,
-                          treatment = treatment_ids$Label[match(long_data$T, treatment_ids$Number)],
-                          responders = long_data$R,
-                          sampleSize = long_data$N)
+    armData <- data.frame(
+      study = long_data$Study,
+      treatment = treatment_ids$Label[match(long_data$T, treatment_ids$Number)],
+      responders = long_data$R,
+      sampleSize = long_data$N
+    )
   } else {
     paste0("Outcome_type has to be 'Continuous' or 'Binary'")
   }
   # specify study level data
-  studyData <- unique(data.frame(study = long_data$Study,
-                                 covariate = long_data[, covariate]))
+  studyData <- unique(
+    data.frame(
+      study = long_data$Study,
+      covariate = long_data[, covariate]
+    )
+  )
   names(studyData)[2] <- cov_friendly
   rownames(studyData) <- NULL
   
@@ -50,12 +58,16 @@ PrepDataGemtc <- function(data, treatment_ids, outcome_type, covariate, cov_frie
 #' @return An object of class mtc.model 
 CreateGemtcModel <- function(data, model_type, outcome, regressor_type, ref_choice) {
   # Create 'network' object
-  network_object <- gemtc::mtc.network(data.ab = data$armData,
-                                       studies = data$studyData)
+  network_object <- gemtc::mtc.network(
+    data.ab = data$armData,
+    studies = data$studyData
+  )
   # Define regression coefficient
-  regressor <- list(coefficient=regressor_type,
-                    variable=colnames(data$studyData[2]),
-                    control=ref_choice)
+  regressor <- list(
+    coefficient = regressor_type,
+    variable = colnames(data$studyData[2]),
+    control = ref_choice
+  )
   # Create 'model' object
   set.seed(145) # needs to be set before mtc.model
   if (outcome == "MD") {
@@ -71,20 +83,27 @@ CreateGemtcModel <- function(data, model_type, outcome, regressor_type, ref_choi
   } else {
     paste0("Outcome can only be OR, RR, or MD")
   }
-  model_object <- gemtc::mtc.model(network_object,
-                                   type = "regression",
-                                   likelihood=like,
-                                   link = link,
-                                   linearModel = model_type,
-                                   regressor = regressor)
+  model_object <- gemtc::mtc.model(
+    network_object,
+    type = "regression",
+    likelihood = like,
+    link = link,
+    linearModel = model_type,
+    regressor = regressor
+  )
   # Settings for JAGS seeds and generator types for reproducible results (code taken from mtc.model manual)
   seeds <- sample.int(4, n = .Machine$integer.max) # 4 chains
-  model_object$inits <- mapply(c, model_object$inits, list(
-    list(.RNG.name = "base::Wichmann-Hill", .RNG.seed = seeds[1]),
-    list(.RNG.name = "base::Marsaglia-Multicarry", .RNG.seed = seeds[2]),
-    list(.RNG.name = "base::Super-Duper", .RNG.seed = seeds[3]),
-    list(.RNG.name = "base::Mersenne-Twister", .RNG.seed = seeds[4])),
-    SIMPLIFY = FALSE)
+  model_object$inits <- mapply(
+    c,
+    model_object$inits,
+    list(
+      list(.RNG.name = "base::Wichmann-Hill", .RNG.seed = seeds[1]),
+      list(.RNG.name = "base::Marsaglia-Multicarry", .RNG.seed = seeds[2]),
+      list(.RNG.name = "base::Super-Duper", .RNG.seed = seeds[3]),
+      list(.RNG.name = "base::Mersenne-Twister", .RNG.seed = seeds[4])
+    ),
+    SIMPLIFY = FALSE
+  )
   
   return(model_object)
 }
@@ -194,9 +213,11 @@ CovariateModelOutput <- function(data, treatment_ids, model, covariate_title, co
   rel_eff_summary <- summary(rel_eff)
   
   # Find indices of beta parameters
-  beta_indices <- grep("^B$|^beta\\[[0-9]+\\]$",
-                       model$model$monitors$enabled,
-                       value = TRUE)
+  beta_indices <- grep(
+    "^B$|^beta\\[[0-9]+\\]$",
+    model$model$monitors$enabled,
+    value = TRUE
+  )
   # Add betas to relative effect summary
   beta_statistics <- model_summary$summaries$statistics[beta_indices, ]
   beta_quantiles <- model_summary$summaries$quantiles[beta_indices, ]
@@ -355,16 +376,21 @@ CalculateCredibleRegions <- function(model_output) {
 #' @param model GEMTC model output.
 #' @return Data frame with four MCMC characteristics.
 GetGemtcMcmcCharacteristics <- function(model) {
-  return(data.frame(characteristic = c("Chains",
-                                       "Burn-in iterations",
-                                       "Sample iterations",
-                                       "Thinning factor"),
-                    value = c(model$model$n.chain,
-                              attr(model$samples[[1]], "mcpar")[1] - 1,
-                              length(model$samples[[1]][, 1]),
-                              summary(model)$summaries$thin)
-                    )
-         )
+  return(
+    data.frame(
+      characteristic = c(
+        "Chains",
+        "Burn-in iterations",
+        "Sample iterations",
+        "Thinning factor"),
+      value = c(
+        model$model$n.chain,
+        attr(model$samples[[1]], "mcpar")[1] - 1,
+        length(model$samples[[1]][, 1]),
+        summary(model)$summaries$thin
+      )
+    )
+  )
 }
 
 #' Prior distributions from a GEMTC model.
@@ -373,18 +399,26 @@ GetGemtcMcmcCharacteristics <- function(model) {
 #' @return Data frame with prior distribution information.
 GetGemtcPriors <- function(model) {
   treatment_effect_var <- round(model$model$data$re.prior.sd^2, digits = 1)
-  prior_table <- data.frame(parameter = c("Relative treatment effects",
-                                          "Intercepts"),
-                            value = c(paste0(" ~ N (0, ", treatment_effect_var, ")"),
-                                      paste0(" ~ N (0, ", treatment_effect_var, ")"))
+  prior_table <- data.frame(
+    parameter = c(
+      "Relative treatment effects",
+      "Intercepts"
+    ),
+    value = c(
+      paste0(" ~ N (0, ", treatment_effect_var, ")"),
+      paste0(" ~ N (0, ", treatment_effect_var, ")")
+    )
   )
   
   #If the model is random effects, add the heterogenity SD
   if (model$model$linearModel == "random") {
     heterogeneity_sd_upper <- round(model$model$data$om.scale, digits = 1)
-    prior_table <- rbind(prior_table,
-                         data.frame(parameter = "Heterogeneity standard deviation",
-                                    value = paste0(" ~ Unif (0, ", heterogeneity_sd_upper, ")"))
+    prior_table <- rbind(
+      prior_table,
+      data.frame(
+        parameter = "Heterogeneity standard deviation",
+        value = paste0(" ~ Unif (0, ", heterogeneity_sd_upper, ")")
+      )
     )
   }
   
@@ -392,26 +426,39 @@ GetGemtcPriors <- function(model) {
     #If the model is NMR shared, add the covariate parameter
     if (model$model$regressor$coefficient == "shared") {
       shared_var <- RoundForDisplay(model$model$data$om.scale^2)
-      prior_table <- rbind(prior_table,
-                           data.frame(parameter = "Shared covariate parameter",
-                                      value = paste0(" ~ Scaled t-distribution (0, ", shared_var, ", 1)"))
+      prior_table <- rbind(
+        prior_table,
+        data.frame(
+          parameter = "Shared covariate parameter",
+          value = paste0(" ~ Scaled t-distribution (0, ", shared_var, ", 1)")
+        )
       )
       #If the model is NMR exchangeable, add the covariate mean and variance parameters
     } else if (model$model$regressor$coefficient == "exchangeable") {
       exchangeable_mean_var <- round(model$model$data$om.scale^2, digits = 1)
       exchangeable_sd_upper <- round(model$model$data$om.scale, digits = 1)
-      prior_table <- rbind(prior_table,
-                           data.frame(parameter = c("Covariate mean",
-                                                    "Covariate standard deviation"),
-                                      value = c(paste0(" ~ Scaled t-distribution (0, ", exchangeable_mean_var, ", 1)"),
-                                                paste0(" ~ Unif (0, ", exchangeable_sd_upper, ")")))
+      prior_table <- rbind(
+        prior_table,
+        data.frame(
+          parameter = c(
+            "Covariate mean",
+            "Covariate standard deviation"
+          ),
+          value = c(
+            paste0(" ~ Scaled t-distribution (0, ", exchangeable_mean_var, ", 1)"),
+            paste0(" ~ Unif (0, ", exchangeable_sd_upper, ")")
+          )
+        )
       )
       #If the model is NMR unrelated, add the covariate parameters
     } else if (model$model$regressor$coefficient == "unrelated") {
       unrelated_var <- RoundForDisplay(model$model$data$om.scale^2)
-      prior_table <- rbind(prior_table,
-                           data.frame(parameter = "Covariate parameters",
-                                      value = paste0(" ~ Scaled t-distribution (0, ", unrelated_var, ", 1)"))
+      prior_table <- rbind(
+        prior_table,
+        data.frame(
+          parameter = "Covariate parameters",
+          value = paste0(" ~ Scaled t-distribution (0, ", unrelated_var, ", 1)")
+        )
       )
     }
   }
