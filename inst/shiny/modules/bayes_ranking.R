@@ -1,10 +1,19 @@
 bayes_ranking_submodule_ui <- function(id, download_label) {
   ns <- NS(id)
   tagList(
-    downloadButton(ns("download_forest"), "Forest plot", width = "100%"),
-    downloadButton(ns("download_ranking_plot"), "Ranking plot (PNG only)", width = "100%"),
-    downloadButton(ns("download_ranking_table"), "Ranking table", width = "100%"),
-    downloadButton(ns("download_network"), "Network graph", width = "100%")
+    div(class = "bayes_ranking_download",
+      div(
+        style = "height: 40px; margin-bottom: 10px; display: flex; text-align: center; align-items: flex-end; justify-content: center;",
+        tags$label(download_label)
+      ),
+      div(
+        class = "d-grid gap-2",
+        downloadButton(ns("download_forest"), "Forest plot", class = "btn-block"),
+        downloadButton(ns("download_ranking_plot"), "Ranking plot (PNG only)", class = "btn-block"),
+        downloadButton(ns("download_ranking_table"), "Ranking table", class = "btn-block"),
+        downloadButton(ns("download_network"), "Network graph", class = "btn-block")
+      )
+    )
   )
 }
 
@@ -38,11 +47,11 @@ bayes_ranking_module_ui <- function(id) {
     fixedRow(
       column(
         width = 6,
-        bayes_ranking_submodule_ui(ns("all"), "All studies")
+        bayes_ranking_submodule_ui(ns("all"), "All studies:")
       ),
       column(
         width = 6,
-        bayes_ranking_submodule_ui(ns("sub"), "With selected studies excluded")
+        bayes_ranking_submodule_ui(ns("sub"), "With selected studies excluded:")
       )
     )
   )
@@ -52,6 +61,7 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
   moduleServer(id, function(input, output, session) {
 
     init(trigger)
+    shinyjs::hide(selector = ".bayes_ranking_download")
 
     observeEvent(run(),{
       req(common[[paste0("bayes_", id)]])
@@ -99,6 +109,7 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
 
     output$ranking <- renderPlot({
       req(watch(trigger) > 0)
+      shinyjs::show(selector = ".bayes_ranking_download")
       if (rank_style() == "litmus" && colourblind() == FALSE){
         return(ranking_plots()$litmus)
       }
@@ -134,7 +145,6 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
         )
       }
     )
-
 
     output$network <- renderUI({
       req(watch(trigger) > 0)
@@ -283,7 +293,7 @@ bayes_ranking_submodule_result <- function(id, title) {
             shinyWidgets::dropMenu(
               shinyWidgets::dropdownButton(
                 circle = FALSE,
-                status = "warning",
+                status = "default",
                 label = "Ranking probabilities and SUCRA values for all treatments"
               ),
               tableOutput(ns("ranking_table"))
