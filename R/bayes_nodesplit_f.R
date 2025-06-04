@@ -20,8 +20,8 @@ bayes_nodesplit <- function(data, treatment_df, outcome, outcome_measure, model_
     return(async %>% asyncLog(ype = "error", glue::glue("Outcome_measure type '{outcome_measure}' is not supported. Please use one of: 'MD', 'OR', 'RR'")))
   }
 
-  # try <- tryCatch(
-  #         expr = {
+  try <- tryCatch(
+          expr = {
             data <- dataform.df(data, treatment_df, outcome)
             lstx <- treatment_df$Label
             ntx <- nrow(treatment_df)
@@ -52,17 +52,17 @@ bayes_nodesplit <- function(data, treatment_df, outcome, outcome_measure, model_
                                                       link = link)  # nodesplitting
 
             return(nodeSplitResults)
-  #         },
-  #         error = function(exptn) {
-  #           return(NULL)
-  #         }
-  #       )
-  #
-  # if (is.null(try)){
-  #   return(async %>% asyncLog(type = "error", "Nodesplit model cannot be run, likely because there are no closed loops in the network"))
-  # } else {
-  #   return(try)
-  # }
+          },
+          error = function(exptn) {
+            return(NULL)
+          }
+        )
+
+  if (is.null(try)){
+    return(async %>% asyncLog(type = "error", "Nodesplit model cannot be run, likely because there are no closed loops in the network"))
+  } else {
+    return(try)
+  }
 
 
 }

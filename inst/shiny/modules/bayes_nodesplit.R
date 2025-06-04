@@ -113,14 +113,15 @@ bayes_nodesplit_module_server <- function(id, common, parent_session) {
 
     result_all <- observe({
       result <- common$tasks$bayes_nodesplit_all$result()
+      result_all$suspend()
       if (inherits(result, "mtc.nodesplit")){
         common$nodesplit_all <- result
         common$meta$bayes_nodesplit$used <- TRUE
         trigger("bayes_nodesplit_all")
       } else {
-        common$logger %>% writeLog(type = "error", result)
+        common$logger %>% writeLog(type = "error", "Nodesplit model cannot be run for all studies,
+                                   likely because there are no closed loops in the network")
       }
-      result_all$suspend()
 
     })
 
@@ -128,13 +129,14 @@ bayes_nodesplit_module_server <- function(id, common, parent_session) {
       # prevent loading when the task is cancelled
       if (common$tasks$bayes_nodesplit_sub$status() == "success"){
         result <- common$tasks$bayes_nodesplit_sub$result()
+        result_sub$suspend()
         if (inherits(result, "mtc.nodesplit")){
           common$nodesplit_sub <- result
           trigger("bayes_nodesplit_sub")
         } else {
-          common$logger %>% writeLog(type = "error", result)
+          common$logger %>% writeLog(type = "error", "Nodesplit model cannot be run with selected studies excluded,
+                                   likely because there are no closed loops in the network")
         }
-        result_sub$suspend()
       }
     })
 
