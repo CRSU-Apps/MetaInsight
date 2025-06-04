@@ -24,7 +24,7 @@
                         "uniqueItems": true,
                         "items": {
                           "type": "string",
-                          "pattern": "[0-9]+:[0-9]+"
+                          "pattern": "^[a-zA-Z0-9]+:[a-zA-Z0-9]+$"
                         }
                       },
                       "H": {
@@ -56,7 +56,7 @@
                         "uniqueItems": true,
                         "items": {
                           "type": "string",
-                          "pattern": "[0-9]+:[0-9]+"
+                          "pattern": "^[a-zA-Z0-9]+:[a-zA-Z0-9]+$"
                         }
                       },
                       "sm": {
@@ -82,14 +82,33 @@
                       "rowNames",
                       "sm"
                     ]
+                  },
+                  "studycontributions": {
+                    "type": "object",
+                    "minProperties": 1,
+                    "additionalProperties": false,
+                    "patternProperties": {
+                      "^[a-zA-Z0-9]+:[a-zA-Z0-9]+$": {
+                        "type": "object",
+                        "patternProperties": {
+                          "^[0-9]+$": {
+                            "type": "number"
+                          }
+                        }
+                      }
+                    }
                   }
                 },
                 "required": [
-                  "hatmatrix"
+                  "hatmatrix",
+                  "studycontributions"
                 ]
               }
             }
-          }
+          },
+          "required": [
+            "contributionMatrices"
+          ]
         }
       },
       "required": [
