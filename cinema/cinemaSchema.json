@@ -149,18 +149,12 @@
                 "oneOf": [
                   {
                     "allOf": [
-                      {
-                        "required": [ "r" ]
-                      },
+                      { "required": [ "r" ] },
                       {
                         "not": {
                           "anyOf": [
-                            {
-                              "required": [ "mean" ]
-                            },
-                            {
-                              "required": [ "sd" ]
-                            }
+                            { "required": [ "mean" ] },
+                            { "required": [ "sd" ] }
                           ]
                         }
                       }
@@ -168,13 +162,9 @@
                   },
                   {
                     "allOf": [
+                      { "required": [ "mean", "sd" ] },
                       {
-                        "required": [ "mean", "sd" ]
-                      },
-                      {
-                        "not": {
-                          "required": [ "r" ]
-                        }
+                        "not": { "required": [ "r" ] }
                       }
                     ]
                   }
