@@ -37,13 +37,8 @@
                         }
                       },
                       "model": {
-                        "type": "array",
-                        "minItems": 1,
-                        "maxItems": 1,
-                        "items": {
-                          "type": "string",
-                          "enum": [ "random", "fixed" ]
-                        }
+                        "type": "string",
+                        "enum": [ "random", "fixed" ]
                       },
                       "rowNames": {
                         "type": "array",
@@ -55,13 +50,8 @@
                         }
                       },
                       "sm": {
-                        "type": "array",
-                        "minItems": 1,
-                        "maxItems": 1,
-                        "items": {
-                          "type": "string",
-                          "enum": [ "OR", "RR", "RD", "MD", "SMD" ]
-                        }
+                        "type": "string",
+                        "enum": [ "OR", "RR", "RD", "MD", "SMD" ]
                       }
                     },
                     "required": [
@@ -79,8 +69,10 @@
                     "patternProperties": {
                       "^[a-zA-Z0-9_]+:[a-zA-Z0-9_]+$": {
                         "type": "object",
+                        "minProperties": 1,
+                        "additionalProperties": false,
                         "patternProperties": {
-                          "^[0-9]+$": { "type": "number" }
+                          "^[1-9][0-9]*$": { "type": "number" }
                         }
                       }
                     }
@@ -108,44 +100,42 @@
           "properties": {
             "long": {
               "type": "array",
-              "minItems": 1
+              "minItems": 2,
               "items": {
                 "type": "object",
                 "additionalProperties": false,
                 "properties": {
                   "study": {
                     "type": "string",
-                    "minLength": 1,
                     "pattern": "^[a-zA-Z0-9 ]+$"
                   },
                   "id": {
                     "type": "number",
-                    "min": 1
+                    "minimum": 1
                   },
                   "t": {
                     "type": "string",
-                    "minLength": 1,
                     "pattern": "^[a-zA-Z0-9_]+$"
                   },
                   "r": {
                     "type": "number",
-                    "min": 0
+                    "minimum": 0
                   },
                   "n": {
                     "type": "number",
-                    "min": 1
+                    "minimum": 1
                   },
                   "mean": { "type": "number" },
                   "sd": { "type": "number" },
                   "rob": {
                     "type": "number",
-                    "min": 1,
-                    "max": 3
+                    "minimum": 1,
+                    "maximum": 3
                   },
                   "indirectness": {
                     "type": "number",
-                    "min": 1,
-                    "max": 3
+                    "minimum": 1,
+                    "maximum": 3
                   }
                 },
                 "required": [
@@ -157,8 +147,37 @@
                   "indirectness"
                 ],
                 "oneOf": [
-                  { "required": [ "r" ] },
-                  { "required": [ "mean", "sd" ] }
+                  {
+                    "allOf": [
+                      {
+                        "required": [ "r" ]
+                      },
+                      {
+                        "not": {
+                          "anyOf": [
+                            {
+                              "required": [ "mean" ]
+                            },
+                            {
+                              "required": [ "sd" ]
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "allOf": [
+                      {
+                        "required": [ "mean", "sd" ]
+                      },
+                      {
+                        "not": {
+                          "required": [ "r" ]
+                        }
+                      }
+                    ]
+                  }
                 ]
               }
             }
