@@ -10,8 +10,6 @@ bayes_compare(model, outcome_measure)
 \item{model}{Various model output created by baye().}
 
 \item{outcome_measure}{"MD", "SMD", "OR", "RR", or "RD".}
-
-\item{metaoutcome}{"Continuous" or "Binary".}
 }
 \value{
 Relative effects table created by gemtc::relative.effect.table().

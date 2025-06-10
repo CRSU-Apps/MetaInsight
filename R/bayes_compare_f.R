@@ -1,7 +1,6 @@
 #' Creates a table of comparisons of all treatment pairs
 #'
 #' @param model Various model output created by baye().
-#' @param metaoutcome "Continuous" or "Binary".
 #' @param outcome_measure "MD", "SMD", "OR", "RR", or "RD".
 #' @return Relative effects table created by gemtc::relative.effect.table().
 #' @export

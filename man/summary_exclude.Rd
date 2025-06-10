@@ -42,6 +42,9 @@ shiny, otherwise leave the default `NULL`}
 List containing:
  \item{bugsnet_sub}{dataframe. Processed data for bugsnet analyses created by `bugsnetdata()`}
  \item{freq_sub}{list. Processed data for frequentist analyses created by `frequentist()`}
+ \item{reference_treatment_sub}{character. Reference treatment for sensitivity analyses}
+ \item{subsetted_data}{dataframe. Processed data}
+ \item{subsetted_treatment_df}{dataframe. Treatments in processed data}
 }
 \description{
 Takes the uploaded data, removes any excluded studies and returns

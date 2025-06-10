@@ -17,6 +17,10 @@
 #' @return List containing:
 #'  \item{bugsnet_sub}{dataframe. Processed data for bugsnet analyses created by `bugsnetdata()`}
 #'  \item{freq_sub}{list. Processed data for frequentist analyses created by `frequentist()`}
+#'  \item{reference_treatment_sub}{character. Reference treatment for sensitivity analyses}
+#'  \item{subsetted_data}{dataframe. Processed data}
+#'  \item{subsetted_treatment_df}{dataframe. Treatments in processed data}
+#'
 #' @export
 #'
 summary_exclude <- function(non_covariate_data, treatment_df, reference_treatment, outcome, outcome_measure, model_type, exclusions, logger = NULL){
