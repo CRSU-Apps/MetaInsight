@@ -59,7 +59,6 @@ bayes_deviance_module_result <- function(id) {
 
 
 bayes_deviance_module_rmd <- function(common) {
-  # Variables used in the module's Rmd code
-  # Populate using metadata()
+  list(bayes_deviance_knit = FALSE)
 }
 

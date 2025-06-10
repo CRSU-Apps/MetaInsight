@@ -59,7 +59,6 @@ bayes_details_module_result <- function(id) {
 
 
 bayes_details_module_rmd <- function(common) {
-  # Variables used in the module's Rmd code
-  # Populate using metadata()
+  list(bayes_details_knit = FALSE)
 }
 

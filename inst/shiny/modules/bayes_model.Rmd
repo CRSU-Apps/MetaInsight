@@ -1,0 +1,8 @@
+```{asis, echo = {{bayes_model_knit}}, eval = {{bayes_model_knit}}, include = {{bayes_model_knit}}}
+Fit the Bayesian models
+```
+
+```{r, echo = {{bayes_model_knit}}, include = {{bayes_model_knit}}}
+bayes_model_all <- bayes_model(main_connected_data, treatment_df, outcome, outcome_measure, model_type, reference_treatment_all)
+bayes_model_sub <- bayes_model(connected_data_sub, treatment_df_sub, outcome, outcome_measure, model_type, reference_treatment_sub)
+```

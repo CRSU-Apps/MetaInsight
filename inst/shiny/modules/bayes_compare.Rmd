@@ -1,8 +1,15 @@
 ```{asis, echo = {{bayes_compare_knit}}, eval = {{bayes_compare_knit}}, include = {{bayes_compare_knit}}}
-Description of what the code will do {{var1}}
+Produce tables comparing treatment pairs. In contrast to the 'comparison of all treatment pairs' module in the frequentist NMA results,
+this table only contains the estimates from the network meta analysis, i.e. does not contain estimates from pairwise meta-analysis which only contains direct evidence.
+If you would like to obtain the pairwise meta-analysis results, use the Nodesplit model module.
 ```
 
 ```{r, echo = {{bayes_compare_knit}}, include = {{bayes_compare_knit}}}
-# R code to run {{var2}}
-# Populate using metadata()
+knitr::kable(bayes_compare(bayes_model_all, outcome_measure), 
+             caption = "Treatment effects for all studies: comparison of all treatment pairs.")
+```
+
+```{r, echo = {{bayes_compare_knit}}, include = {{bayes_compare_knit}}}
+knitr::kable(bayes_compare(bayes_model_sub, outcome_measure), 
+             caption = "Treatment effects with selected studies excluded: comparison of all treatment pairs.")
 ```

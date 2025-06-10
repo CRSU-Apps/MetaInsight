@@ -83,9 +83,12 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
       req(watch(trigger) > 0)
       req(common[[paste0("bayes_", id)]], run())
 
+      plot_height <- forest_height_pixels(n_trt(), title = TRUE) / 72
+      common$meta$bayes_ranking[[paste0("forest_height_", id)]] <- plot_height
+
       svg_text <- svglite::xmlSVG(
         bayes_forest(common[[paste0("bayes_", id)]]),
-        height = forest_height_pixels(n_trt(), title = TRUE) / 72,
+        height = plot_height,
         width = 6.5)
 
       div(class = "svg_container",
@@ -242,6 +245,7 @@ bayes_ranking_module_server <- function(id, common, parent_session) {
     # trigger for the main analysis - when run is clicked, but only if there is a valid model
     all_trigger <- reactive({
       if (watch("bayes_ranking") > 0){
+        common$meta$bayes_ranking$used <- TRUE
         return(list(input$run))
       }
     })
@@ -251,6 +255,15 @@ bayes_ranking_module_server <- function(id, common, parent_session) {
       if (watch("bayes_ranking") > 0){
         return(list(input$run, input$rerun))
       }
+    })
+
+    # put these in an observe so that they are updated whenever the choices change
+    observe({
+      # METADATA ####
+      common$meta$bayes_ranking$colourblind <- input$colourblind
+      common$meta$bayes_ranking$simple <- input$simple
+      common$meta$bayes_ranking$network_style <- input$network_style
+      common$meta$bayes_ranking$rank_style <- input$rank_style
     })
 
     bayes_ranking_submodule_server("all", common, reactive(input$network_style), reactive(input$rank_style), reactive(input$colourblind), reactive(input$simple),
@@ -324,9 +337,14 @@ bayes_ranking_module_result <- function(id) {
 }
 
 
-bayes_ranking_module_rmd <- function(common) {
-  # Variables used in the module's Rmd code
-  # Populate using metadata()
+bayes_ranking_module_rmd <- function(common){ list(
+  bayes_ranking_knit = !is.null(common$meta$bayes_ranking$used),
+  bayes_ranking_forest_height_all = common$meta$bayes_ranking$forest_height_all,
+  bayes_ranking_forest_height_sub = common$meta$bayes_ranking$forest_height_sub,
+  bayes_ranking_colourblind = common$meta$bayes_ranking$colourblind,
+  bayes_ranking_simple = common$meta$bayes_ranking$simple,
+  bayes_ranking_network_style = common$meta$bayes_ranking$network_style,
+  bayes_ranking_rank_style = common$meta$bayes_ranking$rank_style)
 }
 
 

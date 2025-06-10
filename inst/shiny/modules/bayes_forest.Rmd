@@ -1,8 +1,31 @@
 ```{asis, echo = {{bayes_forest_knit}}, eval = {{bayes_forest_knit}}, include = {{bayes_forest_knit}}}
-Description of what the code will do {{var1}}
+Produce forest plots of the Bayesian models
 ```
 
+```{asis, echo = {{bayes_forest_knit}}, eval = {{bayes_forest_knit}}, include = {{bayes_forest_knit}}}
+{r, fig.width = 9, fig.height = {{bayes_forest_plot_height_all}}}
+```
 ```{r, echo = {{bayes_forest_knit}}, include = {{bayes_forest_knit}}}
-# R code to run {{var2}}
-# Populate using metadata()
+bayes_forest(bayes_model_all)
+title(main = "All studies")
+```
+```{r, echo = {{bayes_forest_knit}}, include = {{bayes_forest_knit}}}
+knitr::kable(bayes_model_all$dic, digits = 3, row.names = TRUE, col.names = c(""), caption = "Model fit")
+```
+```{asis, echo = {{bayes_forest_knit}}, eval = {{bayes_forest_knit}}, include = {{bayes_forest_knit}}}
+CreateTauSentence(bayes_model_all, outcome_measure, model_type)
+```
+
+```{asis, echo = {{bayes_forest_knit}}, eval = {{bayes_forest_knit}}, include = {{bayes_forest_knit}}}
+{r, fig.width = 9, fig.height = {{bayes_forest_plot_height_sub}}}
+```
+```{r, echo = {{bayes_forest_knit}}, include = {{bayes_forest_knit}}}
+bayes_forest(bayes_model_sub)
+title(main = "With selected studies excluded")
+```
+```{r, echo = {{bayes_forest_knit}}, include = {{bayes_forest_knit}}}
+knitr::kable(bayes_model_sub$dic, digits = 3, row.names = TRUE, col.names = c(""), caption = "Model fit")
+```
+```{r, echo = {{bayes_forest_knit}}, include = {{bayes_forest_knit}}}
+CreateTauSentence(bayes_model_sub, outcome_measure, model_type)
 ```

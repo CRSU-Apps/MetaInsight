@@ -95,3 +95,7 @@ bayes_model_module_server <- function(id, common, parent_session) {
 }
 
 
+bayes_model_module_rmd <- function(common) {
+  list(bayes_model_knit = !is.null(common$bayes_all))
+}
+

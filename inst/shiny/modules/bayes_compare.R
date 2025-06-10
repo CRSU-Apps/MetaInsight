@@ -61,6 +61,7 @@ bayes_compare_module_server <- function(id, common, parent_session) {
     # trigger for the main analysis - when run is clicked, but only if there is a valid model
     all_trigger <- reactive({
       if (watch("bayes_compare") > 0){
+        common$meta$bayes_compare$used <- TRUE
         return(input$run)
       }
     })
@@ -105,17 +106,6 @@ bayes_compare_module_result <- function(id) {
   )
 }
 
-
 bayes_compare_module_rmd <- function(common) {
-  # Variables used in the module's Rmd code
-  # Populate using metadata()
+  list(bayes_compare_knit = !is.null(common$meta$bayes_compare$used))
 }
-
-
-
-
-
-
-
-
-

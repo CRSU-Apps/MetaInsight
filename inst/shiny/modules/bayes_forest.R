@@ -35,8 +35,10 @@ bayes_forest_submodule_server <- function(id, common, model, run, title){
 
     output$plot_wrap <- renderUI({
       req(n_trt())
+      plot_height = forest_height_pixels(n_trt(), title = TRUE)
+      common$meta$bayes_forest[[paste0("plot_height_", id)]] <- plot_height / 72
       tagList(
-        plotOutput(session$ns("plot"), height = forest_height_pixels(n_trt(), title = TRUE)),
+        plotOutput(session$ns("plot"), height = plot_height),
         # stop it appearing without running
         p("Model fit:")
       )
@@ -44,7 +46,7 @@ bayes_forest_submodule_server <- function(id, common, model, run, title){
 
     output$table <- renderTable({
       common[[model]]$dic
-    }, digits = 3, rownames = TRUE, colnames = FALSE) %>% bindEvent(run())
+    }, digits = 3, rownames = TRUE, colnames = FALSE, label = "Test") %>% bindEvent(run())
 
     output$text <- renderText({
       req(common[[model]])
@@ -100,6 +102,7 @@ bayes_forest_module_server <- function(id, common, parent_session) {
     # trigger for the main analysis - when run is clicked, but only if there is a valid model
     all_trigger <- reactive({
       if (watch("bayes_forest") > 0){
+        common$meta$bayes_forest$used <- TRUE
         return(input$run)
         }
     })
@@ -147,8 +150,10 @@ bayes_forest_module_result <- function(id) {
 
 
 bayes_forest_module_rmd <- function(common) {
-  # Variables used in the module's Rmd code
-  # Populate using metadata()
+  list(bayes_forest_knit = !is.null(common$meta$bayes_forest$used),
+       bayes_forest_plot_height_all = common$meta$bayes_forest$plot_height_all,
+       bayes_forest_plot_height_sub = common$meta$bayes_forest$plot_height_sub
+      )
 }
 
 

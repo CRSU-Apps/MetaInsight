@@ -164,7 +164,6 @@ bayes_nodesplit_module_result <- function(id) {
 
 
 bayes_nodesplit_module_rmd <- function(common) {
-  # Variables used in the module's Rmd code
-  # Populate using metadata()
+  list(bayes_nodesplit_knit = !is.null(common$nodesplit_all))
 }
 

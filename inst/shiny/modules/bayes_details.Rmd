@@ -1,8 +1,6 @@
 ```{asis, echo = {{bayes_details_knit}}, eval = {{bayes_details_knit}}, include = {{bayes_details_knit}}}
-Description of what the code will do {{var1}}
+Description of what the code will do 
 ```
 
 ```{r, echo = {{bayes_details_knit}}, include = {{bayes_details_knit}}}
-# R code to run {{var2}}
-# Populate using metadata()
 ```
