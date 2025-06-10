@@ -4,7 +4,10 @@ shiny::addResourcePath("resources", resourcePath)
 tagList(
   page_navbar(
     theme = bs_theme(version = 5,
-                            bootswatch = "spacelab"),
+                     bootswatch = "spacelab",
+                     primary = "#e4042c",
+                     secondary = "#005c8a",
+                     info = "#005c8a"),
     id = "tabs",
     header = tagList(
       rintrojs::introjsUI(),
