@@ -9,80 +9,75 @@
           "type": "object",
           "properties": {
             "contributionMatrices": {
-              "type": "array",
-              "minItems": 1,
-              "maxItems": 1,
-              "items": {
-                "type": "object",
-                "properties": {
-                  "hatmatrix": {
-                    "type": "object",
-                    "properties": {
-                      "colNames": {
-                        "type": "array",
-                        "minItems": 1,
-                        "uniqueItems": true,
-                        "items": {
-                          "type": "string",
-                          "pattern": "^[a-zA-Z0-9_]+:[a-zA-Z0-9_]+$"
-                        }
-                      },
-                      "H": {
-                        "type": "array",
-                        "minItems": 1,
-                        "items": {
-                          "type": "array",
-                          "minItems": 1,
-                          "items": { "type": "number" }
-                        }
-                      },
-                      "model": {
+              "type": "object",
+              "properties": {
+                "hatmatrix": {
+                  "type": "object",
+                  "properties": {
+                    "colNames": {
+                      "type": "array",
+                      "minItems": 1,
+                      "uniqueItems": true,
+                      "items": {
                         "type": "string",
-                        "enum": [ "random", "fixed" ]
-                      },
-                      "rowNames": {
-                        "type": "array",
-                        "minItems": 1,
-                        "uniqueItems": true,
-                        "items": {
-                          "type": "string",
-                          "pattern": "^[a-zA-Z0-9_]+:[a-zA-Z0-9_]+$"
-                        }
-                      },
-                      "sm": {
-                        "type": "string",
-                        "enum": [ "OR", "RR", "RD", "MD", "SMD" ]
+                        "pattern": "^[a-zA-Z0-9_]+:[a-zA-Z0-9_]+$"
                       }
                     },
-                    "required": [
-                      "colNames",
-                      "H",
-                      "model",
-                      "rowNames",
-                      "sm"
-                    ]
+                    "H": {
+                      "type": "array",
+                      "minItems": 1,
+                      "items": {
+                        "type": "array",
+                        "minItems": 1,
+                        "items": { "type": "number" }
+                      }
+                    },
+                    "model": {
+                      "type": "string",
+                      "enum": [ "random", "fixed" ]
+                    },
+                    "rowNames": {
+                      "type": "array",
+                      "minItems": 1,
+                      "uniqueItems": true,
+                      "items": {
+                        "type": "string",
+                        "pattern": "^[a-zA-Z0-9_]+:[a-zA-Z0-9_]+$"
+                      }
+                    },
+                    "sm": {
+                      "type": "string",
+                      "enum": [ "OR", "RR", "RD", "MD", "SMD" ]
+                    }
                   },
-                  "studycontributions": {
-                    "type": "object",
-                    "minProperties": 1,
-                    "additionalProperties": false,
-                    "patternProperties": {
-                      "^[a-zA-Z0-9_]+:[a-zA-Z0-9_]+$": {
-                        "type": "object",
-                        "minProperties": 1,
-                        "additionalProperties": false,
-                        "patternProperties": {
-                          "^[1-9][0-9]*$": { "type": "number" }
-                        }
+                  "required": [
+                    "colNames",
+                    "H",
+                    "model",
+                    "rowNames",
+                    "sm"
+                  ]
+                },
+                "studycontributions": {
+                  "type": "object",
+                  "minProperties": 1,
+                  "additionalProperties": false,
+                  "patternProperties": {
+                    "^[a-zA-Z0-9_]+:[a-zA-Z0-9_]+$": {
+                      "type": "object",
+                      "minProperties": 1,
+                      "additionalProperties": false,
+                      "patternProperties": {
+                        "^[1-9][0-9]*$": { "type": "number" }
                       }
                     }
                   }
-                },
-                "required": [
-                  "hatmatrix",
-                  "studycontributions"
-                ]
-              }
+                }
+              },
+              "required": [
+                "hatmatrix",
+                "studycontributions"
+              ]
             }
           },
           "required": [ "contributionMatrices" ]
