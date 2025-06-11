@@ -1,6 +1,6 @@
 library(jsonvalidate)
 
-source("cinema_data/json.R")
+source("data/cinema_data/json.R")
 
 test_that("Should identify valid binary json", {
   expect_true(jsonvalidate::json_validate(json_valid_binary, schema, verbose = TRUE))

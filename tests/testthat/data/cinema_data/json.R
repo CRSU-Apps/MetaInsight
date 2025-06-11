@@ -4,46 +4,44 @@ json_valid_binary <- '
 {
   "project": {
     "CM": {
-      "contributionMatrices": [
-        {
-          "hatmatrix": {
-            "colNames": [
-              "sleep:salad",
-              "sleep:exercise",
-              "salad:exercise"
-            ],
-            "H": [
-              [ 0.1, 0.2, 0.3 ],
-              [ 0.11, 0.22, 0.33 ],
-              [ 0.111, 0.222, 0.333 ]
-            ],
-            "model": "fixed",
-            "rowNames": [
-              "sleep:salad",
-              "sleep:exercise",
-              "salad:exercise"
-            ],
-            "sm": "OR"
+      "contributionMatrices": {
+        "hatmatrix": {
+          "colNames": [
+            "sleep:salad",
+            "sleep:exercise",
+            "salad:exercise"
+          ],
+          "H": [
+            [ 0.1, 0.2, 0.3 ],
+            [ 0.11, 0.22, 0.33 ],
+            [ 0.111, 0.222, 0.333 ]
+          ],
+          "model": "fixed",
+          "rowNames": [
+            "sleep:salad",
+            "sleep:exercise",
+            "salad:exercise"
+          ],
+          "sm": "OR"
+        },
+        "studycontributions": {
+          "sleep:salad": {
+            "1": 0.8,
+            "2": 0.1,
+            "3": 0.1
           },
-          "studycontributions": {
-            "sleep:salad": {
-              "1": 0.8,
-              "2": 0.1,
-              "3": 0.1
-            },
-            "sleep:exercise": {
-              "1": 0.1,
-              "2": 0.8,
-              "3": 0.1
-            },
-            "salad:exercise": {
-              "1": 0.1,
-              "2": 0.1,
-              "3": 0.8
-            }
+          "sleep:exercise": {
+            "1": 0.1,
+            "2": 0.8,
+            "3": 0.1
+          },
+          "salad:exercise": {
+            "1": 0.1,
+            "2": 0.1,
+            "3": 0.8
           }
         }
-      ]
+      }
     },
     "format": "long",
     "type": "binary",
@@ -114,46 +112,44 @@ json_valid_continuous <- '
 {
   "project": {
     "CM": {
-      "contributionMatrices": [
-        {
-          "hatmatrix": {
-            "colNames": [
-              "sleep:salad",
-              "sleep:exercise",
-              "salad:exercise"
-            ],
-            "H": [
-              [ 0.1, 0.2, 0.3 ],
-              [ 0.11, 0.22, 0.33 ],
-              [ 0.111, 0.222, 0.333 ]
-            ],
-            "model": "random",
-            "rowNames": [
-              "sleep:salad",
-              "sleep:exercise",
-              "salad:exercise"
-            ],
-            "sm": "MD"
+      "contributionMatrices": {
+        "hatmatrix": {
+          "colNames": [
+            "sleep:salad",
+            "sleep:exercise",
+            "salad:exercise"
+          ],
+          "H": [
+            [ 0.1, 0.2, 0.3 ],
+            [ 0.11, 0.22, 0.33 ],
+            [ 0.111, 0.222, 0.333 ]
+          ],
+          "model": "random",
+          "rowNames": [
+            "sleep:salad",
+            "sleep:exercise",
+            "salad:exercise"
+          ],
+          "sm": "MD"
+        },
+        "studycontributions": {
+          "sleep:salad": {
+            "1": 0.8,
+            "2": 0.1,
+            "3": 0.1
           },
-          "studycontributions": {
-            "sleep:salad": {
-              "1": 0.8,
-              "2": 0.1,
-              "3": 0.1
-            },
-            "sleep:exercise": {
-              "1": 0.1,
-              "2": 0.8,
-              "3": 0.1
-            },
-            "salad:exercise": {
-              "1": 0.1,
-              "2": 0.1,
-              "3": 0.8
-            }
+          "sleep:exercise": {
+            "1": 0.1,
+            "2": 0.8,
+            "3": 0.1
+          },
+          "salad:exercise": {
+            "1": 0.1,
+            "2": 0.1,
+            "3": 0.8
           }
         }
-      ]
+      }
     },
     "format": "long",
     "type": "continuous",
@@ -230,42 +226,40 @@ json_incorrect_types <- '
 {
   "project": {
     "CM": {
-      "contributionMatrices": [
-        {
-          "hatmatrix": {
-            "colNames": 22.3,
-            "H": [
-              [ 0.1, 0.2, 0.3 ],
-              [ "eleven", 0.22, 0.33 ],
-              [ 0.111, 0.222, 0.333 ]
-            ],
-            "model": [ 1, 2, 3 ],
-            "rowNames": [
-              "sleep:salad",
-              "sleep:exercise",
-              false
-            ],
-            "sm": true
+      "contributionMatrices": {
+        "hatmatrix": {
+          "colNames": 22.3,
+          "H": [
+            [ 0.1, 0.2, 0.3 ],
+            [ "eleven", 0.22, 0.33 ],
+            [ 0.111, 0.222, 0.333 ]
+          ],
+          "model": [ 1, 2, 3 ],
+          "rowNames": [
+            "sleep:salad",
+            "sleep:exercise",
+            false
+          ],
+          "sm": true
+        },
+        "studycontributions": {
+          "sleep:salad": {
+            "1": 0.8,
+            "2": 0.1,
+            "3": 0.1
           },
-          "studycontributions": {
-            "sleep:salad": {
-              "1": 0.8,
-              "2": 0.1,
-              "3": 0.1
-            },
-            "sleep:exercise": {
-              "1": 0.1,
-              "2": 0.8,
-              "3": 0.1
-            },
-            "salad:exercise": {
-              "1": 0.1,
-              "2": 0.1,
-              "3": true
-            }
+          "sleep:exercise": {
+            "1": 0.1,
+            "2": 0.8,
+            "3": 0.1
+          },
+          "salad:exercise": {
+            "1": 0.1,
+            "2": 0.1,
+            "3": true
           }
         }
-      ]
+      }
     },
     "format": "long",
     "type": "binary",
@@ -333,58 +327,56 @@ json_incorrect_types <- '
 '
 
 json_incorrect_types_errors <- data.frame() |>
-  rbind(data.frame(field = "data.project.CM.contributionMatrices.0.hatmatrix.colNames", message = "is the wrong type")) |>
-  rbind(data.frame(field = "data.project.CM.contributionMatrices.0.hatmatrix.H.1.0", message = "is the wrong type")) |>
-  rbind(data.frame(field = "data.project.CM.contributionMatrices.0.hatmatrix.model", message = "is the wrong type")) |>
-  rbind(data.frame(field = "data.project.CM.contributionMatrices.0.hatmatrix.rowNames.2", message = "is the wrong type")) |>
-  rbind(data.frame(field = "data.project.CM.contributionMatrices.0.hatmatrix.sm", message = "is the wrong type")) |>
-  rbind(data.frame(field = "data.project.CM.contributionMatrices.0.studycontributions[keys2.2][keys4.2]", message = "is the wrong type")) |>
+  rbind(data.frame(field = "data.project.CM.contributionMatrices.hatmatrix.colNames", message = "is the wrong type")) |>
+  rbind(data.frame(field = "data.project.CM.contributionMatrices.hatmatrix.H.1.0", message = "is the wrong type")) |>
+  rbind(data.frame(field = "data.project.CM.contributionMatrices.hatmatrix.model", message = "is the wrong type")) |>
+  rbind(data.frame(field = "data.project.CM.contributionMatrices.hatmatrix.rowNames.2", message = "is the wrong type")) |>
+  rbind(data.frame(field = "data.project.CM.contributionMatrices.hatmatrix.sm", message = "is the wrong type")) |>
+  rbind(data.frame(field = "data.project.CM.contributionMatrices.studycontributions[keys2.2][keys4.2]", message = "is the wrong type")) |>
   rbind(data.frame(field = "data.project.studies.long.0.r", message = "is the wrong type"))
 
 json_data_mixed_outcome_type <- '
 {
   "project": {
     "CM": {
-      "contributionMatrices": [
-        {
-          "hatmatrix": {
-            "colNames": [
-              "sleep:salad",
-              "sleep:exercise",
-              "salad:exercise"
-            ],
-            "H": [
-              [ 0.1, 0.2, 0.3 ],
-              [ 0.11, 0.22, 0.33 ],
-              [ 0.111, 0.222, 0.333 ]
-            ],
-            "model": "fixed",
-            "rowNames": [
-              "sleep:salad",
-              "sleep:exercise",
-              "salad:exercise"
-            ],
-            "sm": "OR"
+      "contributionMatrices": {
+        "hatmatrix": {
+          "colNames": [
+            "sleep:salad",
+            "sleep:exercise",
+            "salad:exercise"
+          ],
+          "H": [
+            [ 0.1, 0.2, 0.3 ],
+            [ 0.11, 0.22, 0.33 ],
+            [ 0.111, 0.222, 0.333 ]
+          ],
+          "model": "fixed",
+          "rowNames": [
+            "sleep:salad",
+            "sleep:exercise",
+            "salad:exercise"
+          ],
+          "sm": "OR"
+        },
+        "studycontributions": {
+          "sleep:salad": {
+            "1": 0.8,
+            "2": 0.1,
+            "3": 0.1
           },
-          "studycontributions": {
-            "sleep:salad": {
-              "1": 0.8,
-              "2": 0.1,
-              "3": 0.1
-            },
-            "sleep:exercise": {
-              "1": 0.1,
-              "2": 0.8,
-              "3": 0.1
-            },
-            "salad:exercise": {
-              "1": 0.1,
-              "2": 0.1,
-              "3": 0.8
-            }
+          "sleep:exercise": {
+            "1": 0.1,
+            "2": 0.8,
+            "3": 0.1
+          },
+          "salad:exercise": {
+            "1": 0.1,
+            "2": 0.1,
+            "3": 0.8
           }
         }
-      ]
+      }
     },
     "format": "long",
     "type": "binary",
@@ -469,46 +461,44 @@ json_data_both_outcome_type <- '
 {
   "project": {
     "CM": {
-      "contributionMatrices": [
-        {
-          "hatmatrix": {
-            "colNames": [
-              "sleep:salad",
-              "sleep:exercise",
-              "salad:exercise"
-            ],
-            "H": [
-              [ 0.1, 0.2, 0.3 ],
-              [ 0.11, 0.22, 0.33 ],
-              [ 0.111, 0.222, 0.333 ]
-            ],
-            "model": "fixed",
-            "rowNames": [
-              "sleep:salad",
-              "sleep:exercise",
-              "salad:exercise"
-            ],
-            "sm": "OR"
+      "contributionMatrices": {
+        "hatmatrix": {
+          "colNames": [
+            "sleep:salad",
+            "sleep:exercise",
+            "salad:exercise"
+          ],
+          "H": [
+            [ 0.1, 0.2, 0.3 ],
+            [ 0.11, 0.22, 0.33 ],
+            [ 0.111, 0.222, 0.333 ]
+          ],
+          "model": "fixed",
+          "rowNames": [
+            "sleep:salad",
+            "sleep:exercise",
+            "salad:exercise"
+          ],
+          "sm": "OR"
+        },
+        "studycontributions": {
+          "sleep:salad": {
+            "1": 0.8,
+            "2": 0.1,
+            "3": 0.1
           },
-          "studycontributions": {
-            "sleep:salad": {
-              "1": 0.8,
-              "2": 0.1,
-              "3": 0.1
-            },
-            "sleep:exercise": {
-              "1": 0.1,
-              "2": 0.8,
-              "3": 0.1
-            },
-            "salad:exercise": {
-              "1": 0.1,
-              "2": 0.1,
-              "3": 0.8
-            }
+          "sleep:exercise": {
+            "1": 0.1,
+            "2": 0.8,
+            "3": 0.1
+          },
+          "salad:exercise": {
+            "1": 0.1,
+            "2": 0.1,
+            "3": 0.8
           }
         }
-      ]
+      }
     },
     "format": "long",
     "type": "binary",
@@ -599,41 +589,39 @@ json_missing_fields <- '
 {
   "project": {
     "CM": {
-      "contributionMatrices": [
-        {
-          "hatmatrix": {
-            "colNames": [
-              "sleep:salad",
-              "sleep:exercise",
-              "salad:exercise"
-            ],
-            "model": "fixed",
-            "rowNames": [
-              "sleep:salad",
-              "sleep:exercise",
-              "salad:exercise"
-            ],
-            "sm": "OR"
+      "contributionMatrices": {
+        "hatmatrix": {
+          "colNames": [
+            "sleep:salad",
+            "sleep:exercise",
+            "salad:exercise"
+          ],
+          "model": "fixed",
+          "rowNames": [
+            "sleep:salad",
+            "sleep:exercise",
+            "salad:exercise"
+          ],
+          "sm": "OR"
+        },
+        "studycontributions": {
+          "sleep:salad": {
+            "1": 0.8,
+            "2": 0.1,
+            "3": 0.1
           },
-          "studycontributions": {
-            "sleep:salad": {
-              "1": 0.8,
-              "2": 0.1,
-              "3": 0.1
-            },
-            "sleep:exercise": {
-              "1": 0.1,
-              "2": 0.8,
-              "3": 0.1
-            },
-            "salad:exercise": {
-              "1": 0.1,
-              "2": 0.1,
-              "3": 0.8
-            }
+          "sleep:exercise": {
+            "1": 0.1,
+            "2": 0.8,
+            "3": 0.1
+          },
+          "salad:exercise": {
+            "1": 0.1,
+            "2": 0.1,
+            "3": 0.8
           }
         }
-      ]
+      }
     },
     "format": "long",
     "type": "binary",
@@ -694,7 +682,7 @@ json_missing_fields <- '
 '
 
 json_missing_fields_errors <- data.frame() |>
-  rbind(data.frame(field = "data.project.CM.contributionMatrices.0.hatmatrix.H", message = "is required")) |>
+  rbind(data.frame(field = "data.project.CM.contributionMatrices.hatmatrix.H", message = "is required")) |>
   rbind(data.frame(field = "data.project.studies.long.0.study", message = "is required")) |>
   rbind(data.frame(field = "data.project.studies.long.1.id", message = "is required")) |>
   rbind(data.frame(field = "data.project.studies.long.2.t", message = "is required")) |>
@@ -707,46 +695,44 @@ json_values_out_of_bounds <- '
 {
   "project": {
     "CM": {
-      "contributionMatrices": [
-        {
-          "hatmatrix": {
-            "colNames": [
-              "sleep-salad",
-              "sleep:exercise",
-              "salad:exercise"
-            ],
-            "H": [
-              [ -0.1, 0.2, 0.3 ],
-              [ 0.11, 0.22, 0.33 ],
-              [ 0.111, 0.222, 0.333 ]
-            ],
-            "model": "pseudo-random",
-            "rowNames": [
-              "sleep-salad",
-              "sleep:exercise",
-              "salad:exercise"
-            ],
-            "sm": "Evens-Ratio"
+      "contributionMatrices": {
+        "hatmatrix": {
+          "colNames": [
+            "sleep-salad",
+            "sleep:exercise",
+            "salad:exercise"
+          ],
+          "H": [
+            [ -0.1, 0.2, 0.3 ],
+            [ 0.11, 0.22, 0.33 ],
+            [ 0.111, 0.222, 0.333 ]
+          ],
+          "model": "pseudo-random",
+          "rowNames": [
+            "sleep-salad",
+            "sleep:exercise",
+            "salad:exercise"
+          ],
+          "sm": "Evens-Ratio"
+        },
+        "studycontributions": {
+          "sleep:salad": {
+            "1": -0.8,
+            "2": -0.1,
+            "3": -0.1
           },
-          "studycontributions": {
-            "sleep:salad": {
-              "1": -0.8,
-              "2": -0.1,
-              "3": -0.1
-            },
-            "sleep:exercise": {
-              "0": 0.1,
-              "2": 0.8,
-              "3": 0.1
-            },
-            "salad vs exercise": {
-              "1": 0.1,
-              "2": 0.1,
-              "3": 0.8
-            }
+          "sleep:exercise": {
+            "0": 0.1,
+            "2": 0.8,
+            "3": 0.1
+          },
+          "salad vs exercise": {
+            "1": 0.1,
+            "2": 0.1,
+            "3": 0.8
           }
         }
-      ]
+      }
     },
     "format": "longish",
     "type": "strawberry",
@@ -814,12 +800,12 @@ json_values_out_of_bounds <- '
 '
 
 json_values_out_of_bounds_errors <- data.frame() |>
-  rbind(data.frame(field = "data.project.CM.contributionMatrices.0.hatmatrix.colNames.0", message = "pattern mismatch")) |>
-  rbind(data.frame(field = "data.project.CM.contributionMatrices.0.hatmatrix.model", message = "must be an enum value")) |>
-  rbind(data.frame(field = "data.project.CM.contributionMatrices.0.hatmatrix.rowNames.0", message = "pattern mismatch")) |>
-  rbind(data.frame(field = "data.project.CM.contributionMatrices.0.hatmatrix.sm", message = "must be an enum value")) |>
-  rbind(data.frame(field = "data.project.CM.contributionMatrices.0.studycontributions", message = "has additional properties")) |>
-  rbind(data.frame(field = "data.project.CM.contributionMatrices.0.studycontributions[keys2.1]", message = "has additional properties")) |>
+  rbind(data.frame(field = "data.project.CM.contributionMatrices.hatmatrix.colNames.0", message = "pattern mismatch")) |>
+  rbind(data.frame(field = "data.project.CM.contributionMatrices.hatmatrix.model", message = "must be an enum value")) |>
+  rbind(data.frame(field = "data.project.CM.contributionMatrices.hatmatrix.rowNames.0", message = "pattern mismatch")) |>
+  rbind(data.frame(field = "data.project.CM.contributionMatrices.hatmatrix.sm", message = "must be an enum value")) |>
+  rbind(data.frame(field = "data.project.CM.contributionMatrices.studycontributions", message = "has additional properties")) |>
+  rbind(data.frame(field = "data.project.CM.contributionMatrices.studycontributions[keys2.1]", message = "has additional properties")) |>
   rbind(data.frame(field = "data.project.format", message = "must be an enum value")) |>
   rbind(data.frame(field = "data.project.type", message = "must be an enum value")) |>
   rbind(data.frame(field = "data.project.studies.long.0.id", message = "is less than minimum")) |>
@@ -833,34 +819,32 @@ json_short_arrays <- '
 {
   "project": {
     "CM": {
-      "contributionMatrices": [
-        {
-          "hatmatrix": {
-            "colNames": [],
-            "H": [],
-            "model": "fixed",
-            "rowNames": [],
-            "sm": "OR"
+      "contributionMatrices": {
+        "hatmatrix": {
+          "colNames": [],
+          "H": [],
+          "model": "fixed",
+          "rowNames": [],
+          "sm": "OR"
+        },
+        "studycontributions": {
+          "sleep:salad": {
+            "1": 0.8,
+            "2": 0.1,
+            "3": 0.1
           },
-          "studycontributions": {
-            "sleep:salad": {
-              "1": 0.8,
-              "2": 0.1,
-              "3": 0.1
-            },
-            "sleep:exercise": {
-              "1": 0.1,
-              "2": 0.8,
-              "3": 0.1
-            },
-            "salad:exercise": {
-              "1": 0.1,
-              "2": 0.1,
-              "3": 0.8
-            }
+          "sleep:exercise": {
+            "1": 0.1,
+            "2": 0.8,
+            "3": 0.1
+          },
+          "salad:exercise": {
+            "1": 0.1,
+            "2": 0.1,
+            "3": 0.8
           }
         }
-      ]
+      }
     },
     "format": "long",
     "type": "binary",
@@ -882,57 +866,55 @@ json_short_arrays <- '
 '
 
 json_short_arrays_errors <- data.frame() |>
-  rbind(data.frame(field = "data.project.CM.contributionMatrices.0.hatmatrix.colNames", message = "has less items than allowed")) |>
-  rbind(data.frame(field = "data.project.CM.contributionMatrices.0.hatmatrix.H", message = "has less items than allowed")) |>
-  rbind(data.frame(field = "data.project.CM.contributionMatrices.0.hatmatrix.rowNames", message = "has less items than allowed")) |>
+  rbind(data.frame(field = "data.project.CM.contributionMatrices.hatmatrix.colNames", message = "has less items than allowed")) |>
+  rbind(data.frame(field = "data.project.CM.contributionMatrices.hatmatrix.H", message = "has less items than allowed")) |>
+  rbind(data.frame(field = "data.project.CM.contributionMatrices.hatmatrix.rowNames", message = "has less items than allowed")) |>
   rbind(data.frame(field = "data.project.studies.long", message = "has less items than allowed"))
 
 json_duplicate_row_column_names <- '
 {
   "project": {
     "CM": {
-      "contributionMatrices": [
-        {
-          "hatmatrix": {
-            "colNames": [
-              "sleep:salad",
-              "sleep:salad",
-              "sleep:exercise",
-              "salad:exercise"
-            ],
-            "H": [
-              [ 0.1, 0.2, 0.3 ],
-              [ 0.11, 0.22, 0.33 ],
-              [ 0.111, 0.222, 0.333 ]
-            ],
-            "model": "fixed",
-            "rowNames": [
-              "sleep:salad",
-              "sleep:salad",
-              "sleep:exercise",
-              "salad:exercise"
-            ],
-            "sm": "OR"
+      "contributionMatrices": {
+        "hatmatrix": {
+          "colNames": [
+            "sleep:salad",
+            "sleep:salad",
+            "sleep:exercise",
+            "salad:exercise"
+          ],
+          "H": [
+            [ 0.1, 0.2, 0.3 ],
+            [ 0.11, 0.22, 0.33 ],
+            [ 0.111, 0.222, 0.333 ]
+          ],
+          "model": "fixed",
+          "rowNames": [
+            "sleep:salad",
+            "sleep:salad",
+            "sleep:exercise",
+            "salad:exercise"
+          ],
+          "sm": "OR"
+        },
+        "studycontributions": {
+          "sleep:salad": {
+            "1": 0.8,
+            "2": 0.1,
+            "3": 0.1
           },
-          "studycontributions": {
-            "sleep:salad": {
-              "1": 0.8,
-              "2": 0.1,
-              "3": 0.1
-            },
-            "sleep:exercise": {
-              "1": 0.1,
-              "2": 0.8,
-              "3": 0.1
-            },
-            "salad:exercise": {
-              "1": 0.1,
-              "2": 0.1,
-              "3": 0.8
-            }
+          "sleep:exercise": {
+            "1": 0.1,
+            "2": 0.8,
+            "3": 0.1
+          },
+          "salad:exercise": {
+            "1": 0.1,
+            "2": 0.1,
+            "3": 0.8
           }
         }
-      ]
+      }
     },
     "format": "long",
     "type": "binary",
@@ -1000,53 +982,51 @@ json_duplicate_row_column_names <- '
 '
 
 json_duplicate_row_column_names_errors <- data.frame() |>
-  rbind(data.frame(field = "data.project.CM.contributionMatrices.0.hatmatrix.colNames", message = "must be unique")) |>
-  rbind(data.frame(field = "data.project.CM.contributionMatrices.0.hatmatrix.rowNames", message = "must be unique"))
+  rbind(data.frame(field = "data.project.CM.contributionMatrices.hatmatrix.colNames", message = "must be unique")) |>
+  rbind(data.frame(field = "data.project.CM.contributionMatrices.hatmatrix.rowNames", message = "must be unique"))
 
 json_empty_strings <- '
 {
   "project": {
     "CM": {
-      "contributionMatrices": [
-        {
-          "hatmatrix": {
-            "colNames": [
-              "",
-              "sleep:exercise",
-              "salad:exercise"
-            ],
-            "H": [
-              [ 0.1, 0.2, 0.3 ],
-              [ 0.11, 0.22, 0.33 ],
-              [ 0.111, 0.222, 0.333 ]
-            ],
-            "model": "",
-            "rowNames": [
-              "",
-              "sleep:exercise",
-              "salad:exercise"
-            ],
-            "sm": ""
+      "contributionMatrices": {
+        "hatmatrix": {
+          "colNames": [
+            "",
+            "sleep:exercise",
+            "salad:exercise"
+          ],
+          "H": [
+            [ 0.1, 0.2, 0.3 ],
+            [ 0.11, 0.22, 0.33 ],
+            [ 0.111, 0.222, 0.333 ]
+          ],
+          "model": "",
+          "rowNames": [
+            "",
+            "sleep:exercise",
+            "salad:exercise"
+          ],
+          "sm": ""
+        },
+        "studycontributions": {
+          "sleep:salad": {
+            "1": 0.8,
+            "2": 0.1,
+            "3": 0.1
           },
-          "studycontributions": {
-            "sleep:salad": {
-              "1": 0.8,
-              "2": 0.1,
-              "3": 0.1
-            },
-            "sleep:exercise": {
-              "1": 0.1,
-              "2": 0.8,
-              "3": 0.1
-            },
-            "salad:exercise": {
-              "1": 0.1,
-              "2": 0.1,
-              "3": 0.8
-            }
+          "sleep:exercise": {
+            "1": 0.1,
+            "2": 0.8,
+            "3": 0.1
+          },
+          "salad:exercise": {
+            "1": 0.1,
+            "2": 0.1,
+            "3": 0.8
           }
         }
-      ]
+      }
     },
     "format": "",
     "type": "",
@@ -1114,10 +1094,10 @@ json_empty_strings <- '
 '
 
 json_empty_strings_errors <- data.frame() |>
-  rbind(data.frame(field = "data.project.CM.contributionMatrices.0.hatmatrix.colNames.0", message = "pattern mismatch")) |>
-  rbind(data.frame(field = "data.project.CM.contributionMatrices.0.hatmatrix.model", message = "must be an enum value")) |>
-  rbind(data.frame(field = "data.project.CM.contributionMatrices.0.hatmatrix.rowNames.0", message = "pattern mismatch")) |>
-  rbind(data.frame(field = "data.project.CM.contributionMatrices.0.hatmatrix.sm", message = "must be an enum value")) |>
+  rbind(data.frame(field = "data.project.CM.contributionMatrices.hatmatrix.colNames.0", message = "pattern mismatch")) |>
+  rbind(data.frame(field = "data.project.CM.contributionMatrices.hatmatrix.model", message = "must be an enum value")) |>
+  rbind(data.frame(field = "data.project.CM.contributionMatrices.hatmatrix.rowNames.0", message = "pattern mismatch")) |>
+  rbind(data.frame(field = "data.project.CM.contributionMatrices.hatmatrix.sm", message = "must be an enum value")) |>
   rbind(data.frame(field = "data.project.format", message = "must be an enum value")) |>
   rbind(data.frame(field = "data.project.type", message = "must be an enum value")) |>
   rbind(data.frame(field = "data.project.studies.long.0.study", message = "pattern mismatch")) |>

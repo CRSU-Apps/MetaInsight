@@ -79,8 +79,8 @@
 .rob_definition <- data.frame(
   name = "RoB",
   required = FALSE,
-  type_check = "is.integer",
-  type_name = "integer",
+  type_check = "is.numeric",
+  type_name = "numeric",
   pattern = "^(?i)RoB$",
   replacement ="RoB",
   number_group = NA
@@ -89,8 +89,8 @@
 .indirectness_definition <- data.frame(
   name = "Indirectness",
   required = FALSE,
-  type_check = "is.integer",
-  type_name = "integer",
+  type_check = "is.numeric",
+  type_name = "numeric",
   pattern = "^(?i)Indirectness$",
   replacement ="Indirectness",
   number_group = NA

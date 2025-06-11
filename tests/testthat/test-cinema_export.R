@@ -1,6 +1,6 @@
 
 LoadCinemaData <- function() {
-  data <- CleanData(read.csv("cinema_data/NMA_data_binary_FE_two_arm_CINeMA.csv"))
+  data <- CleanData(read.csv("data/cinema_data/NMA_data_binary_FE_two_arm_CINeMA.csv"))
   outcome_type = "Binary"
   all_treatments <- FindAllTreatments(data)
   treatment_ids <- CreateTreatmentIds(all_treatments)
