@@ -52,7 +52,9 @@ setup_reload_module_server <- function(id, common, modules, parent_session) {
 
       # restore results for used modules
       used_modules <- names(common$meta)
-      used_modules <- used_modules[!(used_modules %in% c("summary_define", "bayes_model"))]
+      # these are modules which setup data but don't need to be rerun on reloading
+      setup_modules <- c("setup_load", "setup_define", "summary_exclude", "model", "bayes_model")
+      used_modules <- used_modules[!(used_modules %in% setup_modules)]
       for (used_module in used_modules){
         trigger(used_module)
       }

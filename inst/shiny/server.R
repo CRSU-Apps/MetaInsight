@@ -189,6 +189,8 @@ function(input, output, session) {
   ### DEBUGGING ####
   ################################
 
+  # options("gargoyle.talkative" = TRUE)
+
   output$debug <- renderPrint({
     browser()
     "debug"

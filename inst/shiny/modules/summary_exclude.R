@@ -21,7 +21,6 @@ summary_exclude_module_server <- function(id, common, parent_session) {
                                       choices = unique(common$data$Study),
                                       selected = common$excluded_studies,
                                       choicesOpt = list(disabled = !c(unique(common$data$Study) %in% unique(common$main_connected_data$Study))))
-
     })
 
     common$tasks$summary_exclude_all <- ExtendedTask$new(
@@ -50,6 +49,8 @@ summary_exclude_module_server <- function(id, common, parent_session) {
 
     # listen to all the triggers but only fire once they're static for 1200ms
     exclusion_triggers <- reactive({
+      # prevent it triggering on reload
+      req(!identical(input$exclusions, common$excluded_studies))
       list(input$exclusions,
            input$model,
            watch("setup_define"))
@@ -115,9 +116,9 @@ summary_exclude_module_server <- function(id, common, parent_session) {
       }
     })
 
-
-
     observeEvent(input$model, {
+      # prevent it triggering on reload
+      req(!identical(input$model, common$model_type))
       common$model_type <- input$model
       trigger("model")
     })

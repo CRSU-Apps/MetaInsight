@@ -259,11 +259,13 @@ bayes_ranking_module_server <- function(id, common, parent_session) {
 
     # put these in an observe so that they are updated whenever the choices change
     observe({
-      # METADATA ####
-      common$meta$bayes_ranking$colourblind <- input$colourblind
-      common$meta$bayes_ranking$simple <- input$simple
-      common$meta$bayes_ranking$network_style <- input$network_style
-      common$meta$bayes_ranking$rank_style <- input$rank_style
+      if (watch("bayes_ranking") > 0){
+        # METADATA ####
+        common$meta$bayes_ranking$colourblind <- input$colourblind
+        common$meta$bayes_ranking$simple <- input$simple
+        common$meta$bayes_ranking$network_style <- input$network_style
+        common$meta$bayes_ranking$rank_style <- input$rank_style
+      }
     })
 
     bayes_ranking_submodule_server("all", common, reactive(input$network_style), reactive(input$rank_style), reactive(input$colourblind), reactive(input$simple),

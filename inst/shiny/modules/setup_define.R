@@ -94,7 +94,7 @@ setup_define_module_server <- function(id, common, parent_session) {
     load = function(state) {
       ### Manual load start
       ### Manual load end
-      updateSelectizeInput(session, "reference_treatment", selected = state$reference_treatment)
+      updateSelectizeInput(session, "reference_treatment", selected = state$reference_treatment, choices = common$treatment_df$Label)
       updateRadioButtons(session, "ranking_option", selected = state$ranking_option)
       updateRadioButtons(session, "outcome", selected = state$outcome)
     }

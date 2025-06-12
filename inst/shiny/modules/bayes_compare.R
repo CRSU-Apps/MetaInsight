@@ -62,14 +62,14 @@ bayes_compare_module_server <- function(id, common, parent_session) {
     all_trigger <- reactive({
       if (watch("bayes_compare") > 0){
         common$meta$bayes_compare$used <- TRUE
-        return(input$run)
+        return(watch("bayes_compare"))
       }
     })
 
     # trigger for the sub analysis - when run is clicked or the model reruns, but only if there is a valid model
     sub_trigger <- reactive({
       if (watch("bayes_compare") > 0){
-        return(list(input$run, input$rerun))
+        return(list(watch("bayes_compare"), input$rerun))
       }
     })
 
