@@ -51,28 +51,26 @@ tagList(
       # --- RESULTS WINDOW ---
       conditionalPanel(
         "input.tabs != 'intro' & input.tabs != 'rep'",
-        layout_columns(
-          col_widths = c(4, 2, 6),
-
+          layout_columns(
+            col_widths = c(4, 2, 6),
+            div(id = "global_options",
             layout_columns(
               col_widths = c(6, 6),
-              summary_exclude_module_ui("summary_exclude"),
-              radioButtons("download_format",
-                           "Plot download format",
-                           choices = c("PDF" = "pdf",
-                                       "PNG" = "png",
-                                       "SVG" = "svg"))
-          ),
-
-            uiOutput("processing"),
-
-            div(style = "margin-top: -10px",
-            strong("Log window"),
-            div(style = "margin-top: 5px"),
-            div(
-              id = "messageLog",
-              div(id = "logHeader", div(id = "logContent"))
-            ))
+                summary_exclude_module_ui("summary_exclude"),
+                radioButtons("download_format",
+                             "Plot download format",
+                             choices = c("PDF" = "pdf",
+                                         "PNG" = "png",
+                                         "SVG" = "svg"))
+            )),
+              div(id = "processing_icon", uiOutput("processing")),
+              div(style = "margin-top: -10px",
+              strong("Log window"),
+              div(style = "margin-top: 5px"),
+              div(
+                id = "messageLog",
+                div(id = "logHeader", div(id = "logContent"))
+              ))
         )
       ),
       br(),

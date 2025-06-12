@@ -28,10 +28,11 @@ function(input, output, session) {
   output$processing <- renderUI({
     status <- unlist(lapply(common$tasks, function(x){x$status()}))
     running <- length(status[status == "running"])
-    if (running >= 1){
+    # input$processing_intro is used to show in the introduction tour
+    if (running >= 1 || !is.null(input$processing_intro)){
       return(div(icon("rotate", class = "fa-spin loading-icon"), style = "width: 100%;"))
     } else {
-      NULL
+      return(NULL)
     }
   })
 

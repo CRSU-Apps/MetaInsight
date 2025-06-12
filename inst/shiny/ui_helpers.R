@@ -100,7 +100,7 @@ insert_modules_ui <- function(component, long_component, exclude = NULL) {
       lapply(modules, function(module) {
         conditionalPanel(
           glue("input.{component}Sel == '{module$id}'"),
-          card(
+          card(id = glue("{component}_input_panel"),
             ui_top(
               modID = module$id,
               modName = module$long_name,
