@@ -50,7 +50,7 @@ summary_exclude_module_server <- function(id, common, parent_session) {
     # listen to all the triggers but only fire once they're static for 1200ms
     exclusion_triggers <- reactive({
       # prevent it triggering on reload
-      req(!identical(input$exclusions, common$excluded_studies))
+      req((!identical(input$exclusions, common$excluded_studies) || length(common$excluded_studies) == 0))
       list(input$exclusions,
            input$model,
            watch("setup_define"))
@@ -72,6 +72,12 @@ summary_exclude_module_server <- function(id, common, parent_session) {
                                               input$model,
                                               input$exclusions)
 
+      if (length(input$exclusions) == 0){
+        common$logger %>% writeLog(type = "starting", "Running initial sensitivity analysis")
+      } else {
+        common$logger %>% writeLog(type = "starting", "Updating sensitivity analysis")
+      }
+
       # storing this here so they are always in sync
       common$excluded_studies <- input$exclusions
 
@@ -84,7 +90,6 @@ summary_exclude_module_server <- function(id, common, parent_session) {
 
     })
 
-
     result_all <- observe({
       common$freq_all <- common$tasks$summary_exclude_all$result()
       result_all$suspend()
@@ -93,6 +98,7 @@ summary_exclude_module_server <- function(id, common, parent_session) {
     result_sub <- observe({
       # prevent loading when the task is cancelled
       if (common$tasks$summary_exclude_sub$status() == "success"){
+        result_sub$suspend()
         result <- common$tasks$summary_exclude_sub$result()
         common$bugsnet_sub <- result$bugsnet_sub
         common$freq_sub <- result$freq_sub
@@ -108,8 +114,12 @@ summary_exclude_module_server <- function(id, common, parent_session) {
                                               has been removed from the network of sensitivity analysis."))
         }
 
-        result_sub$suspend()
-        common$logger %>% writeLog(type = "complete", "Selected studies have been updated")
+        if (length(input$exclusions) == 0){
+          common$logger %>% writeLog(type = "complete", "Initial sensitivity analysis is complete")
+        } else {
+          common$logger %>% writeLog(type = "complete", "Selected studies have been updated")
+        }
+
         # required for testing to wait until the debounce has triggered
         shinyjs::runjs("Shiny.setInputValue('summary_exclude-complete', 'complete');")
         trigger("summary_exclude")

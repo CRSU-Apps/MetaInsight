@@ -35,6 +35,7 @@ bayes_model_module_server <- function(id, common, parent_session) {
 
     observeEvent(watch("bayes_model"), {
       req(watch("bayes_model") > 0)
+      common$logger %>% writeLog(type = "starting", "Fitting Bayesian models")
       common$tasks$bayes_model_all$invoke(common$main_connected_data,
                                           common$treatment_df,
                                           common$outcome,
@@ -56,6 +57,11 @@ bayes_model_module_server <- function(id, common, parent_session) {
         mirai::stop_mirai(sub_model)
       }
 
+      # prevent showing on first run
+      if (!is.null(common$bayes_sub)){
+        common$logger %>% writeLog(type = "starting", "Updating Bayesian for sensitivity analysis")
+      }
+
       common$tasks$bayes_model_sub$invoke(common$subsetted_data,
                                           common$subsetted_treatment_df,
                                           common$outcome,
@@ -68,25 +74,31 @@ bayes_model_module_server <- function(id, common, parent_session) {
 
 
     result_all <- observe({
+
       result <- common$tasks$bayes_model_all$result()
+      result_all$suspend()
       if (inherits(result, "list")){
         common$bayes_all <- result
+        common$logger %>% writeLog(type = "complete", "Bayesian models have been fitted")
       } else {
         common$logger %>% writeLog(type = "error", result)
       }
-      result_all$suspend()
     })
 
     result_sub <- observe({
       # prevent loading when the task is cancelled
       if (common$tasks$bayes_model_sub$status() == "success"){
         result <- common$tasks$bayes_model_sub$result()
+        result_sub$suspend()
         if (inherits(result, "list")){
+          # prevent showing on first run
+          if (!is.null(common$bayes_sub)){
+            common$logger %>% writeLog(type = "complete", "The Bayesian model for the sensitivity analysis has been updated")
+          }
           common$bayes_sub <- result
         } else {
           common$logger %>% writeLog(type = "error", result)
         }
-        result_sub$suspend()
         trigger("bayes_model_sub")
       }
     })
