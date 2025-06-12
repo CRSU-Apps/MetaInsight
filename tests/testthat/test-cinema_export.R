@@ -5,6 +5,7 @@ LoadCinemaData <- function() {
   all_treatments <- FindAllTreatments(data)
   treatment_ids <- CreateTreatmentIds(all_treatments)
   data <- WrangleUploadData(data, treatment_ids, outcome_type)
+  data <- ReinstateTreatmentIds(data, treatment_ids)
   
   return(
     list(
@@ -52,7 +53,7 @@ outcome_measure <- "OR"
 cinema_analysis <- GenerateCinemaAnalysis(cinema_data, model_type, outcome_measure)
 
 
-test_that("Should identify incorrect types", {
+test_that("Should produce valid JSON", {
   prepped_project <- PrepareProjectForCinema(cinema_data$long_data, cinema_data$treatment_ids, cinema_data$outcome_type, cinema_analysis, model_type, outcome_measure)
   
   json <- jsonlite::toJSON(prepped_project, pretty = TRUE)
