@@ -44,6 +44,7 @@ Imports:
     plotrix,
     plyr,
     promises,
+    quarto,
     R6,
     R.utils,
     rio,
