@@ -1,10 +1,8 @@
 rep_markdown_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
-    # UI
-    strong("Select download file type"),
-    selectInput(ns("rmdFileType"), label = "",
-                choices = c("Rmd" = ".Rmd", "PDF" = ".pdf", "HTML" = ".html", "Word" = ".docx")),
+    selectInput(ns("rmdFileType"), label = "Select download file type",
+                choices = c("HTML" = ".html", "Quarto" = ".qmd")),
     downloadButton(ns("dlRMD"), 'Download Session Code')
   )
 }
@@ -34,7 +32,7 @@ rep_markdown_module_server <- function(id, common, parent_session, COMPONENT_MOD
         for (component in components) {
           for (module in COMPONENT_MODULES[[component]]) {
 
-            print(module$id) #for debugging
+            # print(module$id) #for debugging
 
             rmd_file <- module$rmd_file
             rmd_function <- module$rmd_function
@@ -50,6 +48,9 @@ rep_markdown_module_server <- function(id, common, parent_session, COMPONENT_MOD
             )
             module_rmd <- do.call(knitr::knit_expand, knit_params)
 
+            # add a section header to create tabs
+            module_rmd <- c(glue::glue("## {stringr::str_to_sentence(component)}"), module_rmd)
+
             module_rmd_file <- tempfile(pattern = paste0(module$id, "_"),
                                         fileext = ".Rmd")
             writeLines(module_rmd, module_rmd_file)
@@ -59,6 +60,7 @@ rep_markdown_module_server <- function(id, common, parent_session, COMPONENT_MOD
 
         module_md_file <- tempfile(pattern = paste0(module$id, "_"),
                                    fileext = ".md")
+
         rmarkdown::render(input = "Rmd/userReport_module.Rmd",
                           params = list(child_rmds = module_rmds),
                           output_format = rmarkdown::github_document(html_preview = FALSE),
@@ -73,48 +75,51 @@ rep_markdown_module_server <- function(id, common, parent_session, COMPONENT_MOD
           lapply(paste, collapse = "\n") %>%
           paste(collapse = "\n\n")
 
-        result_file <- tempfile(pattern = "result_", fileext = input$rmdFileType)
-        if (input$rmdFileType == ".Rmd") {
-          combined_rmd <- gsub("``` r", "```{r}", combined_md)
-          combined_rmd <- unlist(strsplit(combined_rmd , "\n"))
+        combined_rmd <- gsub("``` r", "```{r}", combined_md)
+        combined_rmd <- unlist(strsplit(combined_rmd , "\n"))
 
-          # convert chunk control lines
-          chunk_control_lines <- grep("\\{r,", combined_rmd)
-          chunk_starts <- grep("```\\{r\\}", combined_rmd)
-          chunks_to_remove <- NA
-          for (i in seq_along(chunk_control_lines)) {
-            chunks_to_remove[i] <- min(chunk_starts[chunk_starts > chunk_control_lines[i]])
-          }
-          combined_rmd <- combined_rmd[-chunks_to_remove]
-          combined_rmd <- gsub("\\{r,", "```{r,", combined_rmd)
+        # remove ## for unused components and duplicates
+        is_tag <- grepl("^## ", combined_rmd)
+        tag_names <- sub("^## ", "", combined_rmd)
+        used_components <- unique(sapply(strsplit(stringr::str_to_sentence(names(common$meta)), "_"), function(x) x[1]))
+        lines_to_keep <- (!is_tag) | (tag_names %in% used_components & !duplicated(tag_names))
+        combined_rmd <- combined_rmd[lines_to_keep]
 
-          # fix any very long lines
-          long_lines <- which(nchar(combined_rmd) > 4000)
-          for (l in long_lines){
-            split_lines <- strwrap(combined_rmd[l], 4000)
-            combined_rmd <- combined_rmd[-l]
-            combined_rmd <- append(combined_rmd, split_lines, l-1)
-          }
+        # add quarto header
+        quarto_header <- readLines("Rmd/quarto_header.txt")
+        combined_rmd <- c(quarto_header, combined_rmd)
 
+        # convert chunk control lines
+        chunk_control_lines <- grep("\\{r,", combined_rmd)
+        chunk_starts <- grep("```\\{r\\}", combined_rmd)
+        chunks_to_remove <- NA
+        for (i in seq_along(chunk_control_lines)) {
+          chunks_to_remove[i] <- min(chunk_starts[chunk_starts > chunk_control_lines[i]])
+        }
+        combined_rmd <- combined_rmd[-chunks_to_remove]
+        combined_rmd <- gsub("\\{r,", "```{r,", combined_rmd)
+
+        # fix any very long lines
+        long_lines <- which(nchar(combined_rmd) > 4000)
+        for (l in long_lines){
+          split_lines <- strwrap(combined_rmd[l], 4000)
+          combined_rmd <- combined_rmd[-l]
+          combined_rmd <- append(combined_rmd, split_lines, l-1)
+        }
+
+        result_file <- paste0("combined", input$rmdFileType)
+        if (input$rmdFileType == ".qmd") {
           writeLines(combined_rmd, result_file, useBytes = TRUE)
         } else {
-          combined_md_file <- tempfile(pattern = "combined_", fileext = ".md")
-          writeLines(combined_md, combined_md_file)
-          rmarkdown::render(
-            input = combined_md_file,
-            output_format =
-              switch(
-                input$rmdFileType,
-                ".pdf" = rmarkdown::pdf_document(),
-                ".html" = rmarkdown::html_document(),
-                ".docx" = rmarkdown::word_document()
-              ),
-            output_file = result_file,
-            clean = TRUE,
-            encoding = "UTF-8"
+          writeLines(combined_rmd, "combined.qmd")
+          quarto::quarto_render(
+            input = "combined.qmd",
+            output_format = gsub(".", "", input$rmdFileType)
           )
         }
 
+        result_file <- paste0("combined", input$rmdFileType)
+        on.exit(unlink("combined.qmd"))
         file.rename(result_file, file)
       }
     )

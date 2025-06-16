@@ -1,0 +1,22 @@
+---
+format:
+  html:
+    embed-resources: true
+    code-overflow: wrap
+    code-fold: true
+    code-summary: "View code chunk"
+    page-layout: article
+    grid:
+      body-width: 1200px
+fig-format: svg
+execute:
+  warning: false
+  message: false
+theme: spacelab
+---
+
+# MetaInsight Session `r Sys.Date()`
+
+::: {.panel-tabset}
+
+## Introduction

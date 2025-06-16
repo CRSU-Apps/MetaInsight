@@ -1,7 +1,3 @@
----
-title: metainsight Session `r Sys.Date()`
----
-
 ```{r, include=FALSE}
 library(knitr)
 knit_engines$set(asis = function(options) {
