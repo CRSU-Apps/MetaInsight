@@ -12,7 +12,7 @@ title(main = "All studies")
 ```{r, echo = {{bayes_forest_knit}}, include = {{bayes_forest_knit}}}
 knitr::kable(bayes_model_all$dic, digits = 3, row.names = TRUE, col.names = c(""), caption = "Model fit")
 ```
-```{asis, echo = {{bayes_forest_knit}}, eval = {{bayes_forest_knit}}, include = {{bayes_forest_knit}}}
+```{r, echo = {{bayes_forest_knit}}, include = {{bayes_forest_knit}}}
 CreateTauSentence(bayes_model_all, outcome_measure, model_type)
 ```
 

@@ -10,8 +10,9 @@ output: html_document
 **Components:**  
 **1.** *Setup*
 - Load data
+- Configure analysis
+- Load a previous session
 - Upgrade old file formats
-- Define data type
 
 **2.** *Summary*
 - Data characteristics
