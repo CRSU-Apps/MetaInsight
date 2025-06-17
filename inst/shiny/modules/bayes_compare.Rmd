@@ -1,5 +1,7 @@
 ```{asis, echo = {{bayes_compare_knit}}, eval = {{bayes_compare_knit}}, include = {{bayes_compare_knit}}}
-Produce tables comparing treatment pairs. In contrast to the 'comparison of all treatment pairs' module in the frequentist NMA results,
+### Produce tables comparing treatment pairs. 
+
+In contrast to the 'comparison of all treatment pairs' module in the frequentist NMA results,
 this table only contains the estimates from the network meta analysis, i.e. does not contain estimates from pairwise meta-analysis which only contains direct evidence.
 If you would like to obtain the pairwise meta-analysis results, use the Nodesplit model module.
 ```

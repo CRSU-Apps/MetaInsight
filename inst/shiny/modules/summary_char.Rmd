@@ -1,5 +1,5 @@
 ```{asis, echo = {{summary_char_knit}}, eval = {{summary_char_knit}}, include = {{summary_char_knit}}}
-Summarise the characteristics of the original data and data with excluded studies.
+### Summarise the characteristics of the original data and data with excluded studies.
 ```
 
 ```{r, echo = {{summary_char_knit}}, include = {{summary_char_knit}}}

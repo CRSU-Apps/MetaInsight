@@ -1,10 +1,14 @@
 ```{asis, echo = {{bayes_ranking_knit}}, eval = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}
-Generate ranking plots
+### Generate ranking plots
 ```
 
 ```{r, echo = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}
 bayes_ranking_all <- bayes_ranking(main_connected_data, outcome, treatment_df, bayes_model_all, ranking_option)
 bayes_ranking_sub <- bayes_ranking(connected_data_sub, outcome, treatment_df_sub, bayes_model_all, ranking_option)
+```
+
+```{asis, echo = {{bayes_ranking_knit}}, eval = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}
+#### For all studies
 ```
 
 ```{asis, echo = {{bayes_ranking_knit}}, eval = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}
@@ -36,6 +40,10 @@ knitr::kable(ranking_table(bayes_ranking_all), digits = 2)
 ```
 ```{r, echo = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}
 summary_network(frequentist_all, bugsnet_all, {{bayes_ranking_network_style}})
+```
+
+```{asis, echo = {{bayes_ranking_knit}}, eval = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}
+#### Excluding selected studies
 ```
 
 ```{asis, echo = {{bayes_ranking_knit}}, eval = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}

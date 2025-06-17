@@ -1,5 +1,5 @@
 ```{asis, echo = {{bayes_model_knit}}, eval = {{bayes_model_knit}}, include = {{bayes_model_knit}}}
-Fit the Bayesian models
+### Fit the Bayesian models
 ```
 
 ```{r, echo = {{bayes_model_knit}}, include = {{bayes_model_knit}}}

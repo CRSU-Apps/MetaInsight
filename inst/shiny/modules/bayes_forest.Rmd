@@ -1,5 +1,5 @@
 ```{asis, echo = {{bayes_forest_knit}}, eval = {{bayes_forest_knit}}, include = {{bayes_forest_knit}}}
-Produce forest plots of the Bayesian models
+### Produce forest plots of the Bayesian models
 ```
 
 ```{asis, echo = {{bayes_forest_knit}}, eval = {{bayes_forest_knit}}, include = {{bayes_forest_knit}}}

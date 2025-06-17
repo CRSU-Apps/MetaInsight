@@ -1,5 +1,5 @@
 ```{asis, echo = {{summary_study_knit}}, eval = {{summary_study_knit}}, include = {{summary_study_knit}}}
-Show a summary of the effects in the included studies
+### Show a summary of the effects in the included studies
 ```
 
 ```{asis, echo = {{summary_study_knit}}, eval = {{summary_study_knit}}, include = {{summary_study_knit}}}

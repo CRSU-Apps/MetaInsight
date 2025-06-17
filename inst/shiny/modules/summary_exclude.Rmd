@@ -1,5 +1,5 @@
 ```{asis, echo = {{summary_exclude_knit}}, eval = {{summary_exclude_knit}}, include = {{summary_exclude_knit}}}
-Exclude studies from the analysis
+### Exclude selected studies from the analysis
 ```
 
 ```{r, echo = {{summary_exclude_knit}}, include = {{summary_exclude_knit}}}

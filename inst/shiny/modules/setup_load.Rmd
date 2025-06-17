@@ -1,5 +1,5 @@
 ```{asis, echo = {{setup_load_knit}}, eval = {{setup_load_knit}}, include = {{setup_load_knit}}}
-Read the data in and display a table
+### Read the data in and display a table
 ```
 
 ```{r, echo = {{setup_load_knit}}, include = {{setup_load_knit}}}

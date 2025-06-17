@@ -1,5 +1,5 @@
 ```{asis, echo = {{freq_forest_knit}}, eval = {{freq_forest_knit}}, include = {{freq_forest_knit}}}
-Generate forest plots
+### Generate forest plots
 ```
 
 ```{asis, echo = {{freq_forest_knit}}, eval = {{freq_forest_knit}}, include = {{freq_forest_knit}}}

@@ -1,5 +1,5 @@
 ```{asis, echo = {{setup_define_knit}}, eval = {{setup_define_knit}}, include = {{setup_define_knit}}}
-Define the type of the uploaded data and process it into suitable formats for analysis
+### Configure the analysis and process the data into suitable formats for analysis
 ```
 
 ```{r, echo = {{setup_define_knit}}, include = {{setup_define_knit}}}

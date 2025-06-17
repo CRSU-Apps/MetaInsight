@@ -1,5 +1,5 @@
 ```{asis, echo = {{freq_inconsistent_knit}}, eval = {{freq_inconsistent_knit}}, include = {{freq_inconsistent_knit}}}
-Produce tables of inconsistency
+### Produce tables of inconsistency
 ```
 
 ```{r, echo = {{freq_inconsistent_knit}}, include = {{freq_inconsistent_knit}}}
