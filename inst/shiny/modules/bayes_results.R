@@ -10,16 +10,8 @@ bayes_results_submodule_server <- function(id, common, model, run){
 
     output$text <- renderUI({
       req(common[[model]])
-
-      title <- glue::glue("Results on the {common[[model]]$sumresults$measure} scale")
-      iterations <- glue::glue("Iterations = {common[[model]]$sumresults$summaries$start}:{common[[model]]$sumresults$summaries$end}")
-      thinning <- glue::glue("Thinning interval = {common[[model]]$sumresults$summaries$thin}")
-      chains <- glue::glue("Number of chains = {common[[model]]$sumresults$summaries$nchain}")
-      sample <- glue::glue("Sample size per chain = {(common[[model]]$sumresults$summaries$end + 1) - common[[model]]$sumresults$summaries$start}")
-
       shinyjs::show(selector = ".bayes_results_div")
-      HTML(paste(title, "", iterations, thinning, chains, sample, sep = "<br/>"))
-
+      bayes_results(common[[model]])
     }) %>% bindEvent(run())
 
     output$statistics <- renderTable({

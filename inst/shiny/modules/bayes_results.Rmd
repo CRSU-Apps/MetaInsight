@@ -1,7 +1,30 @@
 ```{asis, echo = {{bayes_results_knit}}, eval = {{bayes_results_knit}}, include = {{bayes_results_knit}}}
-Description of what the code will do
+### Summarise the results from the Bayesian models
+#### All studies
 ```
 
 ```{r, echo = {{bayes_results_knit}}, include = {{bayes_results_knit}}}
-# Populate using metadata()
+bayes_results(bayes_model_all)
+```
+```{r, echo = {{bayes_results_knit}}, include = {{bayes_results_knit}}}
+knitr::kable(bayes_model_all$sumresults$summaries$statistics, row.names = TRUE, caption = "Empirical mean and standard deviation for each variable,
+            plus standard error of the mean:")
+```
+```{r, echo = {{bayes_results_knit}}, include = {{bayes_results_knit}}}
+knitr::kable(bayes_model_all$sumresults$summaries$quantiles, row.names = TRUE, caption = "Quantiles for each variable:")
+```
+
+```{asis, echo = {{bayes_results_knit}}, eval = {{bayes_results_knit}}, include = {{bayes_results_knit}}}
+#### With selected studies excluded
+```
+
+```{r, echo = {{bayes_results_knit}}, include = {{bayes_results_knit}}}
+bayes_results(bayes_model_sub)
+```
+```{r, echo = {{bayes_results_knit}}, include = {{bayes_results_knit}}}
+knitr::kable(bayes_model_sub$sumresults$summaries$statistics, row.names = TRUE, caption = "Empirical mean and standard deviation for each variable,
+            plus standard error of the mean:")
+```
+```{r, echo = {{bayes_results_knit}}, include = {{bayes_results_knit}}}
+knitr::kable(bayes_model_sub$sumresults$summaries$quantiles, row.names = TRUE, caption = "Quantiles for each variable:")
 ```
