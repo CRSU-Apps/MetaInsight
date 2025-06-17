@@ -1,7 +1,7 @@
 bayes_model_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
-    input_task_button(ns("run"), "Run models", type = "default")
+    input_task_button(ns("run"), "Run models", type = "default", icon = icon("arrow-turn-down"))
   )
 }
 
@@ -51,7 +51,10 @@ bayes_model_module_server <- function(id, common, parent_session) {
     })
 
     observeEvent(list(watch("bayes_model"), watch("summary_exclude")), {
+      # listen to both once they are run
       req((watch("bayes_model") + watch("summary_exclude")) > 0)
+      # stop summary_exclude from triggering prior to bayes_model being run,
+      # but enable it to run after reloading if studies are excluded
       req(common$meta$bayes_model$used)
 
       # cancel if the model is already updating

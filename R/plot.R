@@ -199,7 +199,7 @@ baye_comp <- function(model, outcome_measure){
 #'
 #' @param model Various model output created by baye().
 #' @return UME scatter plot created by umeplot.df().
-scat_plot = function(model) {
+scat_plot_old = function(model) {
   x <- gemtc::mtc.deviance(model$mtcResults)
   c <- data.frame(x$dev.ab)
   umeplot.df(c = c, mtcNetwork = model$mtcNetwork, model = model$model, outcome = model$outcome)
