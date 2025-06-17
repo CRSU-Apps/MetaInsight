@@ -119,19 +119,19 @@ CreateTauSentence <- function(results, outcome) {
   }
   if (results$a=="random effect") {
     if (outcome=="OR") {
-      paste("Between-study standard deviation (log-odds scale):", sd_mean, ". 95% credible interval:",sd_lowCI,", ", sd_highCI, ".")
+      HTML(paste("Between-study standard deviation (log-odds scale):", sd_mean, ". 95% credible interval:",sd_lowCI,", ", sd_highCI, "."))
     } else if (outcome=="RR") {
-      paste ("Between-study standard deviation (log probability scale):", sd_mean, ". 95% credible interval:",sd_lowCI,", ", sd_highCI, ".")
+      HTML(paste ("Between-study standard deviation (log probability scale):", sd_mean, ". 95% credible interval:",sd_lowCI,", ", sd_highCI, "."))
     } else {
-      paste ("Between-study standard deviation:", sd_mean, ". 95% credible interval:",sd_lowCI,", ", sd_highCI, ".")
+      HTML(paste ("Between-study standard deviation:", sd_mean, ". 95% credible interval:",sd_lowCI,", ", sd_highCI, "."))
     }
   } else{
     if (outcome=="OR") {
-      paste("Between-study standard deviation (log-odds scale) set at 0")
+      HTML(paste("Between-study standard deviation (log-odds scale) set at 0"))
     } else if (outcome=="RR") {
-      paste("Between-study standard deviation (log probability scale) set at 0")
+      HTML(paste("Between-study standard deviation (log probability scale) set at 0"))
     } else {
-      paste("Between-study standard deviation set at 0")
+      HTML(paste("Between-study standard deviation set at 0"))
     }
   }
 }

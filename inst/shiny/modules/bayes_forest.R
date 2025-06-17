@@ -48,7 +48,7 @@ bayes_forest_submodule_server <- function(id, common, model, run, title){
       common[[model]]$dic
     }, digits = 3, rownames = TRUE, colnames = FALSE, label = "Test") %>% bindEvent(run())
 
-    output$text <- renderText({
+    output$text <- renderUI({
       req(common[[model]])
       CreateTauSentence(common[[model]], common$outcome_measure, common$model_type)
     }) %>% bindEvent(run())
@@ -126,7 +126,7 @@ bayes_forest_submodule_result <- function(id) {
   tagList(
     uiOutput(ns("plot_wrap")),
     tableOutput(ns("table")),
-    textOutput(ns("text"))
+    uiOutput(ns("text"))
   )
 }
 
