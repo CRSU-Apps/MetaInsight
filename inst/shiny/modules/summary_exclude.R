@@ -50,7 +50,7 @@ summary_exclude_module_server <- function(id, common, parent_session) {
     # listen to all the triggers but only fire once they're static for 1200ms
     exclusion_triggers <- reactive({
       # prevent it triggering on reload
-      req((!identical(input$exclusions, common$excluded_studies) || length(common$excluded_studies) == 0))
+      req((!identical(input$exclusions, common$excluded_studies) || watch("setup_define") > 0))
       list(input$exclusions,
            input$model,
            watch("setup_define"))

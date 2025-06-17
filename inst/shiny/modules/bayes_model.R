@@ -20,6 +20,8 @@ bayes_model_module_server <- function(id, common, parent_session) {
       else if (common$outcome_measure == "RD") {
         common$logger %>% writeLog(type = "error", "Risk difference currently cannot be analysed within Bayesian analysis in MetaInsight")
       }
+      # METADATA ####
+      common$meta$bayes_model$used <- TRUE
       trigger("bayes_model")
     })
 
@@ -44,13 +46,13 @@ bayes_model_module_server <- function(id, common, parent_session) {
                                           common$reference_treatment_all,
                                           async = TRUE)
 
-      # METADATA ####
-      common$meta$bayes_model$used <- TRUE
+
       result_all$resume()
     })
 
     observeEvent(list(watch("bayes_model"), watch("summary_exclude")), {
-      req(watch("bayes_model") > 0)
+      req((watch("bayes_model") + watch("summary_exclude")) > 0)
+      req(common$meta$bayes_model$used)
 
       # cancel if the model is already updating
       if (common$tasks$bayes_model_sub$status() == "running"){
