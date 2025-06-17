@@ -1,6 +1,24 @@
 ```{asis, echo = {{bayes_nodesplit_knit}}, eval = {{bayes_nodesplit_knit}}, include = {{bayes_nodesplit_knit}}}
-Description of what the code will do
+### Fit Bayesian nodesplitting models
 ```
 
 ```{r, echo = {{bayes_nodesplit_knit}}, include = {{bayes_nodesplit_knit}}}
+bayes_nodesplit_all <- bayes_nodesplit(main_connected_data, treatment_df, outcome, outcome_measure, model_type)
+bayes_nodesplit_sub <- bayes_nodesplit(connected_data_sub, treatment_df_sub, outcome, outcome_measure, model_type)
+```
+
+```{asis, echo = {{bayes_nodesplit_knit}}, eval = {{bayes_nodesplit_knit}}, include = {{bayes_nodesplit_knit}}}
+{r, fig.width = 8, fig.height = {{bayes_nodesplit_plot_height_all}}}
+```
+```{r, echo = {{bayes_nodesplit_knit}}, include = {{bayes_nodesplit_knit}}}
+plot(summary(bayes_nodesplit_all), digits = 3)
+title(main = "Inconsistency test with nodesplitting \nmodel for all studies")
+```
+
+```{asis, echo = {{bayes_nodesplit_knit}}, eval = {{bayes_nodesplit_knit}}, include = {{bayes_nodesplit_knit}}}
+{r, fig.width = 8, fig.height = {{bayes_nodesplit_plot_height_sub}}}
+```
+```{r, echo = {{bayes_nodesplit_knit}}, include = {{bayes_nodesplit_knit}}}
+plot(summary(bayes_nodesplit_sub), digits = 3)
+title(main = "Inconsistency test with nodesplitting \nmodel with selected studies excluded")
 ```

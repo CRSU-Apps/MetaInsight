@@ -30,6 +30,9 @@ bayes_nodesplit_submodule_server <- function(id, common, nodesplit, run){
     output$plot <- renderPlot({
       watch(run)
       req(common[[nodesplit]])
+
+      common$meta$bayes_nodesplit[[paste0("plot_height_", id)]] <- plot_height() / 72
+
       plot(summary(common[[nodesplit]]), digits = 3)
       title(main = plot_title)
     }, height = function(){plot_height()})
@@ -89,8 +92,6 @@ bayes_nodesplit_module_server <- function(id, common, parent_session) {
                                               common$model_type,
                                               async = TRUE)
 
-      # METADATA ####
-      common$meta$bayes_model$used <- TRUE
       result_all$resume()
     })
 
@@ -116,6 +117,7 @@ bayes_nodesplit_module_server <- function(id, common, parent_session) {
       result_all$suspend()
       if (inherits(result, "mtc.nodesplit")){
         common$nodesplit_all <- result
+        # METADATA ####
         common$meta$bayes_nodesplit$used <- TRUE
         trigger("bayes_nodesplit_all")
       } else {
@@ -164,6 +166,9 @@ bayes_nodesplit_module_result <- function(id) {
 
 
 bayes_nodesplit_module_rmd <- function(common) {
-  list(bayes_nodesplit_knit = !is.null(common$nodesplit_all))
+  list(bayes_nodesplit_knit = !is.null(common$nodesplit_all),
+       bayes_nodesplit_plot_height_all = common$meta$bayes_nodesplit$plot_height_all,
+       bayes_nodesplit_plot_height_sub = common$meta$bayes_nodesplit$plot_height_sub
+       )
 }
 
