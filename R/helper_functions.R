@@ -203,6 +203,25 @@ show_table <- function(parent_session){
 
 
 ####################### #
+# SUPPRESS JAGS OUTPUT #
+####################### #
+
+#' @title suppress_jags_output
+#' @description For internal use. Stop JAGS output appearing in the console /
+#' html reports by wrapping model functions
+#' @param expr The model function to be used
+#' @keywords internal
+#' @export
+suppress_jags_output <- function(expr) {
+  null_device <- if (.Platform$OS.type == "windows") "NUL" else "/dev/null"
+  sink(null_device)
+  on.exit(sink())  # Ensure output is restored even if an error occurs
+  force(expr)
+}
+
+
+
+####################### #
 # PLOTTING #
 ####################### #
 
