@@ -17,7 +17,10 @@ bayes_compare_module_ui <- function(id) {
 bayes_compare_submodule_server <- function(id, common, model, run, text){
   moduleServer(id, function(input, output, session) {
 
+    shinyjs::hide("download")
+
     output$table <- renderTable({
+      shinyjs::show("download")
       bayes_compare(common[[model]], common$outcome_measure)
     }) %>% bindEvent(run())
 

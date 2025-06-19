@@ -17,10 +17,13 @@ bayes_forest_module_ui <- function(id) {
 bayes_forest_submodule_server <- function(id, common, model, run, title){
   moduleServer(id, function(input, output, session) {
 
+    shinyjs::hide("download")
+
     # for some reason width doesn't adjust to screen size if this is a bindEvent
     output$plot <- renderPlot({
       run()
       req(common[[model]], run())
+      shinyjs::show("download")
       bayes_forest(common[[model]])
       title(main = title)
     })
