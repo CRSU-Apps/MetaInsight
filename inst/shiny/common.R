@@ -31,6 +31,8 @@ common_class <- R6::R6Class(
    nodesplit_sub = NULL,
    bayes_deviance_all = NULL,
    bayes_deviance_sub = NULL,
+   bayes_mcmc_all = NULL,
+   bayes_mcmc_sub = NULL,
    download_format = NULL,
    meta = NULL,
    tasks = NULL,
@@ -67,6 +69,8 @@ common_class <- R6::R6Class(
      self$nodesplit_sub <- NULL
      self$bayes_deviance_all <- NULL
      self$bayes_deviance_sub <- NULL
+     self$bayes_mcmc_all <- NULL
+     self$bayes_mcmc_sub <- NULL
      self$meta <- NULL
      self$state <- NULL
      invisible(self)

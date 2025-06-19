@@ -4,9 +4,11 @@
 \alias{scat_plot}
 \title{UME scatter plot}
 \usage{
-scat_plot(deviance, model_type, outcome_measure)
+scat_plot(model, deviance, model_type, outcome_measure)
 }
 \arguments{
+\item{model}{Bayesian model produced by bayes_model}
+
 \item{deviance}{Output produced by `gemtc::mtc.deviance()`}
 
 \item{model_type}{Model effects type. "random" or "fixed".}

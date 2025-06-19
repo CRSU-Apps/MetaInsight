@@ -1,0 +1,168 @@
+bayes_mcmc_module_ui <- function(id) {
+  ns <- shiny::NS(id)
+  tagList(
+    input_task_button(ns("run"), "Generate plots", type = "default", icon = icon("arrow-turn-down"))
+  )
+}
+
+bayes_mcmc_submodule_server <- function(id, common, trigger){
+  moduleServer(id, function(input, output, session) {
+
+    n_rows <- reactive({
+      watch(trigger)
+      req(common[[paste0("bayes_mcmc_", id)]])
+      n <- common[[paste0("bayes_mcmc_", id)]]$n_rows
+      common$meta$bayes_mcmc$n_rows <- n
+      n
+    })
+
+    output$gelman <- renderPlot({
+      watch(trigger)
+      req(common[[paste0("bayes_mcmc_", id)]])
+      shinyjs::show(selector = ".bayes_mcmc_div")
+      par(mfrow = c(2, n_rows()))
+      # this returns a list of functions, each of which generates a plot
+      invisible(lapply(common[[paste0("bayes_mcmc_", id)]]$gelman_plots, function(f) f()))
+    }, height = function() {
+      n_rows() * 250
+    })
+
+    output$trace <- renderPlot({
+      watch(trigger)
+      req(common[[paste0("bayes_mcmc_", id)]])
+      cowplot::plot_grid(
+        plotlist = common[[paste0("bayes_mcmc_", id)]]$trace_plots,
+        ncol = 2
+      )
+    }, height = function() {
+      n_rows() * 200
+    })
+
+    output$density <- renderPlot({
+      watch(trigger)
+      req(common[[paste0("bayes_mcmc_", id)]])
+      cowplot::plot_grid(
+        plotlist = common[[paste0("bayes_mcmc_", id)]]$density_plots,
+        ncol = 2
+      )
+    }, height = function() {
+      n_rows() * 200
+    })
+
+  })
+}
+
+
+bayes_mcmc_module_server <- function(id, common, parent_session) {
+  moduleServer(id, function(input, output, session) {
+
+    init("bayes_mcmc_all")
+    init("bayes_mcmc_sub")
+    shinyjs::hide(selector = ".bayes_mcmc_div")
+
+    observeEvent(input$run, {
+      # add check for a running model
+
+      if (is.null(common$bayes_all)){
+        common$logger %>% writeLog(type = "error", "Please fit the Bayesian models first")
+        return()
+      } else {
+        common$meta$bayes_mcmc$used <- TRUE
+        trigger("bayes_mcmc")
+      }
+    })
+
+    common$tasks$bayes_mcmc_all <- ExtendedTask$new(
+      function(...) mirai::mirai(run(...), run = bayes_mcmc, .args = environment())
+    ) %>% bind_task_button("run")
+
+    common$tasks$bayes_mcmc_sub <- ExtendedTask$new(
+      function(...) mirai::mirai(run(...), run = bayes_mcmc, .args = environment())
+    ) %>% bind_task_button("run")
+
+    observeEvent(watch("bayes_mcmc"), {
+      req(watch("bayes_mcmc") > 0)
+      common$logger %>% writeLog(type = "starting", "Generating Markov chain Monte Carlo plots")
+      common$tasks$bayes_mcmc_all$invoke(common$bayes_all)
+      result_all$resume()
+    })
+
+    observeEvent(list(watch("bayes_mcmc"), watch("bayes_model_sub")), {
+      req((watch("bayes_mcmc") + watch("bayes_model_sub")) > 0)
+      req(common$meta$bayes_mcmc$used)
+
+      # prevent showing on first run
+      if (!is.null(common$bayes_mcmc_sub)){
+        common$logger %>% writeLog(type = "starting", "Updating Markov chain Monte Carlo plots")
+      }
+
+      common$tasks$bayes_mcmc_sub$invoke(common$bayes_sub)
+      result_sub$resume()
+    })
+
+    result_all <- observe({
+      result <- common$tasks$bayes_mcmc_all$result()
+      result_all$suspend()
+      common$bayes_mcmc_all <- result
+      common$logger %>% writeLog(type = "complete", "Markov chain Monte Carlo plots have been generated")
+      trigger("bayes_mcmc_all")
+    })
+
+    result_sub <- observe({
+      result <- common$tasks$bayes_mcmc_sub$result()
+      result_sub$suspend()
+      if (!is.null(common$bayes_mcmc_sub)){
+        common$logger %>% writeLog(type = "complete", "Markov chain Monte Carlo plots have been updated")
+      }
+      common$bayes_mcmc_sub <- result
+      trigger("bayes_mcmc_sub")
+    })
+
+    bayes_mcmc_submodule_server("all", common, "bayes_mcmc_all")
+    bayes_mcmc_submodule_server("sub", common, "bayes_mcmc_sub")
+
+  })
+}
+
+bayes_mcmc_submodule_result <- function(id, label) {
+  ns <- NS(id)
+  tagList(
+    div(class = "bayes_mcmc_div",
+        h5(glue::glue("Gelman convergence assessment plots {label}"))
+    ),
+    # auto makes the output height the same as the render
+    plotOutput(ns("gelman"), height = "auto"),
+    div(class = "bayes_mcmc_div",
+        h5(glue::glue("Trace plots {label}"))
+    ),
+    plotOutput(ns("trace"), height = "auto"),
+    div(class = "bayes_mcmc_div",
+        h5(glue::glue("Posterior density plots {label}"))
+    ),
+    plotOutput(ns("density"), height = "auto")
+  )
+}
+
+
+bayes_mcmc_module_result <- function(id) {
+  ns <- NS(id)
+  tagList(
+    fluidRow(
+      column(
+        width = 6,
+        align = "center",
+        bayes_mcmc_submodule_result(ns("all"), "for all studies")
+      ),
+      column(
+        width = 6,
+        align = "center",
+        bayes_mcmc_submodule_result(ns("sub"), "excluding selected studies")
+      )
+    )
+  )
+}
+
+bayes_mcmc_module_rmd <- function(common) {
+  list(bayes_mcmc_knit = !is.null(common$meta$bayes_mcmc$used),
+       bayes_mcmc_n_rows = common$meta$bayes_mcmc$n_rows)
+}

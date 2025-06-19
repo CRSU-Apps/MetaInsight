@@ -10,6 +10,7 @@ suppress_jags_output(expr)
 \item{expr}{The model function to be used}
 }
 \description{
-For internal use. Stop JAGS output appearing in the console / html reports
+For internal use. Stop JAGS output appearing in the console /
+html reports by wrapping model functions
 }
 \keyword{internal}

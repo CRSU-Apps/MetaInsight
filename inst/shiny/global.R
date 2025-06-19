@@ -43,6 +43,7 @@ base_module_configs <- c(
   "modules/bayes_nodesplit.yml",
   "modules/bayes_results.yml",
   "modules/bayes_deviance.yml",
+  "modules/bayes_mcmc.yml",
   "modules/bayes_details.yml",
   "modules/rep_markdown.yml",
   "modules/rep_renv.yml",

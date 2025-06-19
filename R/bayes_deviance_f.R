@@ -3,6 +3,8 @@
 #' @param model_type Model effects type. "random" or "fixed".
 #' @param outcome_measure Outcome measure being analysed: one of "OR". "RR", "MD".
 #' @return list containing:
+#'  \item{deviance_mtc}{results from `gemtc::mtc.deviance()` for model$mtcResults}
+#'  \item{deviance_ume}{results from `gemtc::mtc.deviance()` for UME model}
 #'  \item{scat_plot}{plotly object}
 #'  \item{stem_plot}{plotly object}
 #'  \item{lev_plot}{plotly object}
@@ -11,10 +13,14 @@
 bayes_deviance <- function(model, model_type, outcome_measure){
 
   deviance <- gemtc::mtc.deviance(model$mtcResults)
+  scat <- scat_plot(model, deviance, model_type, outcome_measure)
 
-  list(scat_plot = scat_plot(model, deviance, model_type, outcome_measure),
-       stem_plot = stem_plot(deviance),
-       lev_plot = lev_plot(deviance))
+  list(
+    deviance_mtc = deviance,
+    deviance_ume = scat$y,
+    scat_plot = scat$p,
+    stem_plot = stem_plot(deviance),
+    lev_plot = lev_plot(deviance))
 }
 
 #' UME scatter plot
@@ -139,9 +145,7 @@ scat_plot <- function(model, deviance, model_type, outcome_measure) {
                               '</br> Deviance from NMA model:', round(X6.x, digits = 2),
                               '</br> Deviance from UME model:', round(X6.y, digits = 2)))}
 
-  # removing this for now as I can't see what y is used for
-  # return(list(p = p, y = y))
-  return(p)
+  return(list(p = p, y = y))
 }
 
 #' Stem plot
