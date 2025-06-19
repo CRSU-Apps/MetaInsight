@@ -11,7 +11,7 @@ bayes_deviance_submodule_server <- function(id, common, trigger){
     output$scat <- plotly::renderPlotly({
       watch(trigger)
       req(common[[paste0("bayes_deviance_", id)]])
-      shinyjs::show(selector = ".bayes_results_div")
+      shinyjs::show(selector = ".bayes_deviance_div")
       common[[paste0("bayes_deviance_", id)]]$scat_plot
     })
 
@@ -36,7 +36,7 @@ bayes_deviance_module_server <- function(id, common, parent_session) {
 
     init("bayes_deviance_all")
     init("bayes_deviance_sub")
-    shinyjs::hide(selector = ".bayes_results_div")
+    shinyjs::hide(selector = ".bayes_deviance_div")
 
     observeEvent(input$run, {
       # add check for a running model
@@ -143,8 +143,6 @@ bayes_deviance_module_result <- function(id) {
   )
 }
 
-
 bayes_deviance_module_rmd <- function(common) {
-  list(bayes_deviance_knit = FALSE)
+  list(bayes_deviance_knit = !is.null(common$meta$bayes_deviance$used))
 }
-

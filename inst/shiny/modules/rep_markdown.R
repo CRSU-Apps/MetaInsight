@@ -32,7 +32,7 @@ rep_markdown_module_server <- function(id, common, parent_session, COMPONENT_MOD
         for (component in components) {
           for (module in COMPONENT_MODULES[[component]]) {
 
-            # print(module$id) #for debugging
+            print(module$id) #for debugging
 
             rmd_file <- module$rmd_file
             rmd_function <- module$rmd_function
@@ -96,7 +96,9 @@ rep_markdown_module_server <- function(id, common, parent_session, COMPONENT_MOD
         for (i in seq_along(chunk_control_lines)) {
           chunks_to_remove[i] <- min(chunk_starts[chunk_starts > chunk_control_lines[i]])
         }
-        combined_rmd <- combined_rmd[-chunks_to_remove]
+        if (!is.na(chunks_to_remove)){
+          combined_rmd <- combined_rmd[-chunks_to_remove]
+        }
         combined_rmd <- gsub("\\{r,", "```{r,", combined_rmd)
 
         # fix any very long lines

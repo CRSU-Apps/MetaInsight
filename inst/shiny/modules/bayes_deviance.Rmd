@@ -1,7 +1,50 @@
 ```{asis, echo = {{bayes_deviance_knit}}, eval = {{bayes_deviance_knit}}, include = {{bayes_deviance_knit}}}
-Description of what the code will do 
+### Deviance report
+#### For all studies
 ```
 
 ```{r, echo = {{bayes_deviance_knit}}, include = {{bayes_deviance_knit}}}
+deviance_all <- bayes_deviance(bayes_model_all, model_type, outcome_measure)
+deviance_sub <- bayes_deviance(bayes_model_sub, model_type, outcome_measure)
+```
 
+```{asis, echo = {{bayes_deviance_knit}}, eval = {{bayes_deviance_knit}}, include = {{bayes_deviance_knit}}}
+##### Residual deviance from NMA model and UME inconsistency model
+```
+```{r, echo = {{bayes_deviance_knit}}, include = {{bayes_deviance_knit}}}
+deviance_all$scat_plot
+```
+```{asis, echo = {{bayes_deviance_knit}}, eval = {{bayes_deviance_knit}}, include = {{bayes_deviance_knit}}}
+##### Per-arm residual deviance 
+```
+```{r, echo = {{bayes_deviance_knit}}, include = {{bayes_deviance_knit}}}
+deviance_all$stem_plot
+```
+```{asis, echo = {{bayes_deviance_knit}}, eval = {{bayes_deviance_knit}}, include = {{bayes_deviance_knit}}}
+##### Leverage plot
+```
+```{r, echo = {{bayes_deviance_knit}}, include = {{bayes_deviance_knit}}}
+deviance_all$lev_plot
+```
+
+```{asis, echo = {{bayes_deviance_knit}}, eval = {{bayes_deviance_knit}}, include = {{bayes_deviance_knit}}}
+#### Excluding selected studies
+```
+```{asis, echo = {{bayes_deviance_knit}}, eval = {{bayes_deviance_knit}}, include = {{bayes_deviance_knit}}}
+##### Residual deviance from NMA model and UME inconsistency model
+```
+```{r, echo = {{bayes_deviance_knit}}, include = {{bayes_deviance_knit}}}
+deviance_sub$scat_plot
+```
+```{asis, echo = {{bayes_deviance_knit}}, eval = {{bayes_deviance_knit}}, include = {{bayes_deviance_knit}}}
+##### Per-arm residual deviance 
+```
+```{r, echo = {{bayes_deviance_knit}}, include = {{bayes_deviance_knit}}}
+deviance_sub$stem_plot
+```
+```{asis, echo = {{bayes_deviance_knit}}, eval = {{bayes_deviance_knit}}, include = {{bayes_deviance_knit}}}
+##### Leverage plot
+```
+```{r, echo = {{bayes_deviance_knit}}, include = {{bayes_deviance_knit}}}
+deviance_sub$lev_plot
 ```
