@@ -9,22 +9,22 @@ mock_treatment_df_bin <- data.frame(1:length(mock_treatments), mock_treatments)
 colnames(mock_treatment_df_bin) <- c("Number", "Label")
 
 test_that("setup_upgrade returns errors for faulty inputs", {
-  expect_error(setup_define("not_a_dataframe", mock_treatment_df, "Continuous", "OR", "the Great"), "data must be of class data.frame")
-  expect_error(setup_define(mock_data, "not_a_dataframe", "Continuous", "OR", "the Great"), "treatment_df must be of class data.frame")
-  expect_error(setup_define(mock_data, mock_treatment_df, 123, "OR", "the Great"), "outcome must be of class character")
-  expect_error(setup_define(mock_data, mock_treatment_df, "Continuous", 123, "the Great"), "outcome_measure must be of class character")
-  expect_error(setup_define(mock_data, mock_treatment_df, "Continuous", "OR", 123), "reference_treatment must be of class character")
-  expect_error(setup_define(mock_data, mock_treatment_df, "InvalidOutcome", "OR", "the Great"), "outcome must be either Binary or Continuous")
-  expect_error(setup_define(mock_data, mock_treatment_df, "Continuous", "InvalidMeasure", "the Great"), "outcome_measure must be either MD or SMD")
-  expect_error(setup_define(mock_data_bin, mock_treatment_df_bin, "Binary", "InvalidMeasure", "the Great"), "outcome_measure must be either OR, RR or RD")
+  expect_error(setup_configure("not_a_dataframe", mock_treatment_df, "Continuous", "OR", "the Great"), "data must be of class data.frame")
+  expect_error(setup_configure(mock_data, "not_a_dataframe", "Continuous", "OR", "the Great"), "treatment_df must be of class data.frame")
+  expect_error(setup_configure(mock_data, mock_treatment_df, 123, "OR", "the Great"), "outcome must be of class character")
+  expect_error(setup_configure(mock_data, mock_treatment_df, "Continuous", 123, "the Great"), "outcome_measure must be of class character")
+  expect_error(setup_configure(mock_data, mock_treatment_df, "Continuous", "OR", 123), "reference_treatment must be of class character")
+  expect_error(setup_configure(mock_data, mock_treatment_df, "InvalidOutcome", "OR", "the Great"), "outcome must be either Binary or Continuous")
+  expect_error(setup_configure(mock_data, mock_treatment_df, "Continuous", "InvalidMeasure", "the Great"), "outcome_measure must be either MD or SMD")
+  expect_error(setup_configure(mock_data_bin, mock_treatment_df_bin, "Binary", "InvalidMeasure", "the Great"), "outcome_measure must be either OR, RR or RD")
 })
 
-test_that("setup_define returns correctly structured objects", {
+test_that("setup_configure returns correctly structured objects", {
 
   expected_items <- c("wrangled_data", "treatment_df", "disconnected_indices", "main_connected_data",
     "non_covariate_data_all", "bugsnet_all", "freq_all")
 
-  result <- setup_define(mock_data, mock_treatment_df, "Continuous", "MD", "the Great")
+  result <- setup_configure(mock_data, mock_treatment_df, "Continuous", "MD", "the Great")
   expect_type(result, "list")
   expect_true(all(expected_items %in% names(result)))
 
@@ -39,14 +39,14 @@ test_that("setup_define returns correctly structured objects", {
 
 # this and the next are equivalent to the 3rd and 6th in test-load_data_page.R
 
-test_that("setup_define loads data into common correctly for continuous long data", {
+test_that("setup_configure loads data into common correctly for continuous long data", {
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"))
   app$set_inputs(tabs = "setup")
   app$set_inputs(setupSel = "setup_load")
   app$upload_file("setup_load-data" = "data/Cont_long_continuous_cov.csv")
   app$click("setup_load-run")
-  app$set_inputs(setupSel = "setup_define")
-  app$click("setup_define-run")
+  app$set_inputs(setupSel = "setup_configure")
+  app$click("setup_configure-run")
   common <- app$get_value(export = "common")
 
   expect_s3_class(common$wrangled_data, "data.frame")
@@ -62,15 +62,15 @@ test_that("setup_define loads data into common correctly for continuous long dat
   app$stop()
 })
 
-test_that("setup_define loads data into common correctly for wide binary data", {
+test_that("setup_configure loads data into common correctly for wide binary data", {
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"))
   app$set_inputs(tabs = "setup")
   app$set_inputs(setupSel = "setup_load")
   app$upload_file("setup_load-data" = system.file("extdata", "binary_wide.csv", package = "metainsight"))
   app$set_inputs("setup_load-outcome" = "Binary")
   app$click("setup_load-run")
-  app$set_inputs(setupSel = "setup_define")
-  app$click("setup_define-run")
+  app$set_inputs(setupSel = "setup_configure")
+  app$click("setup_configure-run")
   common <- app$get_value(export = "common")
 
   expect_s3_class(common$wrangled_data, "data.frame")
@@ -86,14 +86,14 @@ test_that("setup_define loads data into common correctly for wide binary data", 
   app$stop()
 })
 
-test_that("setup_define logs errors when disconnected data is uploaded", {
+test_that("setup_configure logs errors when disconnected data is uploaded", {
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"))
   app$set_inputs(tabs = "setup")
   app$set_inputs(setupSel = "setup_load")
   app$upload_file("setup_load-data" = "data/continuous_long_disconnected.csv")
   app$click("setup_load-run")
-  app$set_inputs(setupSel = "setup_define")
-  app$click("setup_define-run")
+  app$set_inputs(setupSel = "setup_configure")
+  app$click("setup_configure-run")
   common <- app$get_value(export = "common")
 
   expect_s3_class(common$wrangled_data, "data.frame")
@@ -120,8 +120,8 @@ test_that("Data wrangled from default continuous long file", {
   app$set_inputs(tabs = "setup")
   app$set_inputs(setupSel = "setup_load")
   app$click("setup_load-run")
-  app$set_inputs(setupSel = "setup_define")
-  app$click("setup_define-run")
+  app$set_inputs(setupSel = "setup_configure")
+  app$click("setup_configure-run")
   common <- app$get_value(export = "common")
 
   expect_equal(colnames(common$wrangled_data), c("StudyID", colnames(common$data)[c(1, 2, 5, 3, 4, 6)]),
@@ -157,8 +157,8 @@ test_that("Continuous wide data wrangled with treatment IDs", {
   app$set_inputs(setupSel = "setup_load")
   app$upload_file("setup_load-data" = system.file("extdata", "continuous_wide.csv", package = "metainsight"))
   app$click("setup_load-run")
-  app$set_inputs(setupSel = "setup_define")
-  app$click("setup_define-run")
+  app$set_inputs(setupSel = "setup_configure")
+  app$click("setup_configure-run")
   common <- app$get_value(export = "common")
 
   expect_equal(common$wrangled_data$StudyID, 1:45,
@@ -203,8 +203,8 @@ test_that("Data wrangled from default binary long file", {
   app$set_inputs(setupSel = "setup_load")
   app$set_inputs("setup_load-outcome" = "Binary")
   app$click("setup_load-run")
-  app$set_inputs(setupSel = "setup_define")
-  app$click("setup_define-run")
+  app$set_inputs(setupSel = "setup_configure")
+  app$click("setup_configure-run")
   common <- app$get_value(export = "common")
 
   expect_equal(colnames(common$wrangled_data), c("StudyID", colnames(common$data)[c(1, 2, 4, 3, 5)]),
@@ -237,8 +237,8 @@ test_that("Binary wide data wrangled with treatment IDs", {
   app$set_inputs("setup_load-outcome" = "Binary")
   app$upload_file("setup_load-data" = system.file("extdata", "binary_wide.csv", package = "metainsight"))
   app$click("setup_load-run")
-  app$set_inputs(setupSel = "setup_define")
-  app$click("setup_define-run")
+  app$set_inputs(setupSel = "setup_configure")
+  app$click("setup_configure-run")
   common <- app$get_value(export = "common")
 
   expect_equal(common$wrangled_data$StudyID, 1:12,

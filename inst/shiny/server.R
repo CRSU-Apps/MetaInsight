@@ -90,7 +90,7 @@ function(input, output, session) {
 
   # TABLE
   output$table <- DT::renderDataTable({
-    watch("setup_define")
+    watch("setup_configure")
     req(common$non_covariate_data_all)
 
     if (common$outcome == "Continuous") {

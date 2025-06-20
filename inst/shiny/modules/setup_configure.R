@@ -1,4 +1,4 @@
-setup_define_module_ui <- function(id) {
+setup_configure_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
     selectizeInput(ns("reference_treatment"), "Select reference treatment", choices = c()),
@@ -10,7 +10,7 @@ setup_define_module_ui <- function(id) {
   )
 }
 
-setup_define_module_server <- function(id, common, parent_session) {
+setup_configure_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
   # Update UI depending on selections in previous module
@@ -51,7 +51,7 @@ setup_define_module_server <- function(id, common, parent_session) {
     show_loading_modal("Processing data...")
 
     # FUNCTION CALL ####
-    result <- setup_define(common$data,
+    result <- setup_configure(common$data,
                           common$treatment_df,
                           common$outcome,
                           input$outcome_measure,
@@ -72,13 +72,13 @@ setup_define_module_server <- function(id, common, parent_session) {
     common$logger %>% writeLog(type = "complete", "Data has been defined")
 
     # METADATA ####
-    common$meta$setup_define$used <- TRUE
-    common$meta$setup_define$reference_treatment <- input$reference_treatment
-    common$meta$setup_define$ranking_option <- input$ranking_option
-    common$meta$setup_define$outcome_measure <- input$outcome_measure
+    common$meta$setup_configure$used <- TRUE
+    common$meta$setup_configure$reference_treatment <- input$reference_treatment
+    common$meta$setup_configure$ranking_option <- input$ranking_option
+    common$meta$setup_configure$outcome_measure <- input$outcome_measure
 
     # TRIGGER
-    trigger("setup_define")
+    trigger("setup_configure")
     show_table(parent_session)
     close_loading_modal()
   })
@@ -103,11 +103,11 @@ setup_define_module_server <- function(id, common, parent_session) {
 }
 
 
-setup_define_module_rmd <- function(common){ list(
-  setup_define_knit = !is.null(common$meta$setup_define$used),
-  setup_define_reference_treatment = common$meta$setup_define$reference_treatment,
-  setup_define_ranking_option = common$meta$setup_define$ranking_option,
-  setup_define_outcome_measure = common$meta$setup_define$outcome_measure)
+setup_configure_module_rmd <- function(common){ list(
+  setup_configure_knit = !is.null(common$meta$setup_configure$used),
+  setup_configure_reference_treatment = common$meta$setup_configure$reference_treatment,
+  setup_configure_ranking_option = common$meta$setup_configure$ranking_option,
+  setup_configure_outcome_measure = common$meta$setup_configure$outcome_measure)
   # Variables used in the module's Rmd code
 }
 

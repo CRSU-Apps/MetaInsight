@@ -22,8 +22,8 @@ test_that("rep_markdown produces a renderable .Rmd file after an analysis", {
   app$click("setup_load-run")
   expected_chunks <- expected_chunks + 1
 
-  app$set_inputs(setupSel = "setup_define")
-  app$click("setup_define-run")
+  app$set_inputs(setupSel = "setup_configure")
+  app$click("setup_configure-run")
   expected_chunks <- expected_chunks + 1
 
   app$set_inputs(tabs = "summary")

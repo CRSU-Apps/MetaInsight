@@ -1,7 +1,7 @@
 #' Takes the uploaded data, removes any excluded studies and returns
 #' subsets of the data in formats for bugsnet and frequentist analyses
 #'
-#' @param non_covariate_data dataframe. Data processed by setup_define()
+#' @param non_covariate_data dataframe. Data processed by setup_configure()
 #' @param treatment_df dataframe. Treatments and their IDs
 #' @param reference_treatment character. The reference treatment of the dataset
 #' @param outcome character. Outcome type for the dataset. Either `Binary` or
