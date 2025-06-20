@@ -25,7 +25,7 @@ summary_study_module_server <- function(id, common, parent_session) {
 
   # Determine the plot height in pixels
   plot_height <- reactive({
-    watch("summary_exclude")
+    watch("setup_exclude")
     req(watch("summary_study") > 0)
     # The rows that don't correspond to NA treatment effects
     proper_comparison_rows <- !is.na(common$freq_sub$d0$TE)
@@ -38,7 +38,7 @@ summary_study_module_server <- function(id, common, parent_session) {
   })
 
   output$plot <- renderPlot({
-    watch("summary_exclude")
+    watch("setup_exclude")
     req(watch("summary_study") > 0)
     common$meta$summary_study$used <- TRUE
     common$meta$summary_study$title <- as.numeric(input$title)

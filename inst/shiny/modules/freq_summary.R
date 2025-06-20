@@ -35,7 +35,7 @@ freq_summary_module_server <- function(id, common, parent_session) {
   })
 
   output$plot_sub <- renderPlot({
-    watch("summary_exclude")
+    watch("setup_exclude")
     req(watch("freq_summary") > 0)
     freq_summary(common$freq_sub,
                  common$treatment_df,

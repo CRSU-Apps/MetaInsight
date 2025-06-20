@@ -50,10 +50,10 @@ bayes_model_module_server <- function(id, common, parent_session) {
       result_all$resume()
     })
 
-    observeEvent(list(watch("bayes_model"), watch("summary_exclude")), {
+    observeEvent(list(watch("bayes_model"), watch("setup_exclude")), {
       # listen to both once they are run
-      req((watch("bayes_model") + watch("summary_exclude")) > 0)
-      # stop summary_exclude from triggering prior to bayes_model being run,
+      req((watch("bayes_model") + watch("setup_exclude")) > 0)
+      # stop setup_exclude from triggering prior to bayes_model being run,
       # but enable it to run after reloading if studies are excluded
       req(common$meta$bayes_model$used)
 

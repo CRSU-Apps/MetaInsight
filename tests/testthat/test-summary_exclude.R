@@ -4,21 +4,21 @@ t_df <- defined_data_con$treatment_df
 no_cv_bin <- defined_data_bin$non_covariate_data_all
 t_df_bin <- defined_data_bin$treatment_df
 
-test_that("summary_exclude produces errors for incorrect data types", {
-  expect_error(summary_exclude("not_a_dataframe", t_df, "Placebo", "Continuous", "MD", "random", c("Study01")), "non_covariate_data must be of class data.frame")
-  expect_error(summary_exclude(no_cv, "not_a_dataframe", "Placebo", "Continuous", "MD", "random", c("Study01")), "treatment_df must be of class data.frame")
-  expect_error(summary_exclude(no_cv, t_df, 123, "Continuous", "MD", "random", c("Study01")), "reference_treatment must be of class character")
-  expect_error(summary_exclude(no_cv, t_df, "Placebo", 123, "MD", "random", c("Study01")), "outcome must be of class character")
-  expect_error(summary_exclude(no_cv, t_df, "Placebo", "Continuous", 123, "random", c("Study01")), "outcome_measure must be of class character")
-  expect_error(summary_exclude(no_cv, t_df, "Placebo", "Continuous", "MD", 123, c("Study01")), "model_type must be of class character")
-  expect_error(summary_exclude(no_cv, t_df, "Placebo", "Continuous", "MD", "random", 123), "exclusions must be of class character")
-  expect_error(summary_exclude(no_cv, t_df, "Placebo", "invalid_outcome", "MD", "random", c("Study01")), "outcome must be either Binary or Continuous")
-  expect_error(summary_exclude(no_cv, t_df, "Placebo", "Continuous", "invalid_measure", "random", c("Study01")), "outcome_measure must be either MD or SMD")
-  expect_error(summary_exclude(no_cv_bin, t_df_bin, "Placebo", "Binary", "invalid_measure", "random", c("Study01")), "outcome_measure must be either OR, RR or RD")
+test_that("setup_exclude produces errors for incorrect data types", {
+  expect_error(setup_exclude("not_a_dataframe", t_df, "Placebo", "Continuous", "MD", "random", c("Study01")), "non_covariate_data must be of class data.frame")
+  expect_error(setup_exclude(no_cv, "not_a_dataframe", "Placebo", "Continuous", "MD", "random", c("Study01")), "treatment_df must be of class data.frame")
+  expect_error(setup_exclude(no_cv, t_df, 123, "Continuous", "MD", "random", c("Study01")), "reference_treatment must be of class character")
+  expect_error(setup_exclude(no_cv, t_df, "Placebo", 123, "MD", "random", c("Study01")), "outcome must be of class character")
+  expect_error(setup_exclude(no_cv, t_df, "Placebo", "Continuous", 123, "random", c("Study01")), "outcome_measure must be of class character")
+  expect_error(setup_exclude(no_cv, t_df, "Placebo", "Continuous", "MD", 123, c("Study01")), "model_type must be of class character")
+  expect_error(setup_exclude(no_cv, t_df, "Placebo", "Continuous", "MD", "random", 123), "exclusions must be of class character")
+  expect_error(setup_exclude(no_cv, t_df, "Placebo", "invalid_outcome", "MD", "random", c("Study01")), "outcome must be either Binary or Continuous")
+  expect_error(setup_exclude(no_cv, t_df, "Placebo", "Continuous", "invalid_measure", "random", c("Study01")), "outcome_measure must be either MD or SMD")
+  expect_error(setup_exclude(no_cv_bin, t_df_bin, "Placebo", "Binary", "invalid_measure", "random", c("Study01")), "outcome_measure must be either OR, RR or RD")
 })
 
-test_that("summary_exclude produces data of the correct type", {
-  result <- summary_exclude(no_cv, t_df, "Placebo", "Continuous", "MD", "random", c("Study01"))
+test_that("setup_exclude produces data of the correct type", {
+  result <- setup_exclude(no_cv, t_df, "Placebo", "Continuous", "MD", "random", c("Study01"))
 
   expected_items <- c("freq_sub", "bugsnet_sub", "reference_treatment_sub")
   expect_type(result, "list")
@@ -29,8 +29,8 @@ test_that("summary_exclude produces data of the correct type", {
 })
 
 
-test_that("summary_exclude removes the correct studies", {
-  result <- summary_exclude(no_cv, t_df, "Placebo", "Continuous", "MD", "random", c("Study01", "Study25"))
+test_that("setup_exclude removes the correct studies", {
+  result <- setup_exclude(no_cv, t_df, "Placebo", "Continuous", "MD", "random", c("Study01", "Study25"))
   n_studies_all <- length(unique(no_cv$Study))
   n_studies_sub_bugs <- length(unique(result$bugsnet_sub$Study))
   n_studies_sub_freq <- length(unique(result$freq_sub$d0$Study))
@@ -47,7 +47,7 @@ test_that("summary_exclude removes the correct studies", {
 
 })
 
-test_that("summary_exclude loads data into common correctly", {
+test_that("setup_exclude loads data into common correctly", {
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"))
   app$set_inputs(tabs = "setup")
   app$set_inputs(setupSel = "setup_load")
@@ -55,8 +55,8 @@ test_that("summary_exclude loads data into common correctly", {
   app$set_inputs(setupSel = "setup_define")
   app$click("setup_define-run")
   app$set_inputs(tabs = "summary")
-  app$set_inputs("summary_exclude-exclusions" = c("Study01", "Study25"))
-  app$wait_for_value(input = "summary_exclude-complete")
+  app$set_inputs("setup_exclude-exclusions" = c("Study01", "Study25"))
+  app$wait_for_value(input = "setup_exclude-complete")
 
   common <- app$get_value(export = "common")
 
@@ -81,7 +81,7 @@ test_that("summary_exclude loads data into common correctly", {
   app$stop()
 })
 
-test_that("summary_exclude launches a note when reference_treatment_sub changes", {
+test_that("setup_exclude launches a note when reference_treatment_sub changes", {
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"))
   app$set_inputs(tabs = "setup")
   app$set_inputs(setupSel = "setup_load")
@@ -90,8 +90,8 @@ test_that("summary_exclude launches a note when reference_treatment_sub changes"
   app$set_inputs("setup_define-reference_treatment" = "Glucocorticoids")
   app$click("setup_define-run")
   app$set_inputs(tabs = "summary")
-  app$set_inputs("summary_exclude-exclusions" = c("Study01", "Study02", "Study03", "Study04"))
-  app$wait_for_value(input = "summary_exclude-complete")
+  app$set_inputs("setup_exclude-exclusions" = c("Study01", "Study02", "Study03", "Study04"))
+  app$wait_for_value(input = "setup_exclude-complete")
 
   common <- app$get_value(export = "common")
 

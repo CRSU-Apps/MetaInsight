@@ -27,8 +27,8 @@ test_that("rep_markdown produces a renderable .Rmd file after an analysis", {
   expected_chunks <- expected_chunks + 1
 
   app$set_inputs(tabs = "summary")
-  app$set_inputs("summary_exclude-exclusions" = c("Study01", "Study25"))
-  app$wait_for_value(input = "summary_exclude-complete")
+  app$set_inputs("setup_exclude-exclusions" = c("Study01", "Study25"))
+  app$wait_for_value(input = "setup_exclude-complete")
   expected_chunks <- expected_chunks + 1
 
   app$set_inputs(main = "Results")

@@ -13,7 +13,7 @@ test_that("The app can be saved after an analysis and the data restored", {
   app$set_inputs(setupSel = "setup_define")
   app$click("setup_define-run")
   app$set_inputs(tabs = "summary")
-  app$set_inputs("summary_exclude-exclusions" = c("Study01", "Study25"))
+  app$set_inputs("setup_exclude-exclusions" = c("Study01", "Study25"))
   app$set_inputs(summarySel = "summary_char")
   app$set_inputs(main = "Results")
   app$set_inputs(summarySel = "summary_study")
@@ -34,7 +34,7 @@ test_that("The app can be saved after an analysis and the data restored", {
   expect_type(common_saved$freq_sub, "list")
 
   # this is important as this is the object used to reload module outputs on loading
-  used_modules <- c("setup_load", "setup_define", "summary_exclude", "summary_char", "summary_study", "summary_network")
+  used_modules <- c("setup_load", "setup_define", "setup_exclude", "summary_char", "summary_study", "summary_network")
   expect_true(all(used_modules %in% names(common_saved$meta)))
 
   app$stop()
@@ -60,7 +60,7 @@ test_that("The app can be saved after an analysis and the data restored", {
   # check that input values have been restored
   # should be expanded upon...
   restored_inputs <- app_load$get_values()
-  expect_equal(restored_inputs$input[["summary_exclude-exclusions"]], c("Study01", "Study25"))
+  expect_equal(restored_inputs$input[["setup_exclude-exclusions"]], c("Study01", "Study25"))
 
   app_load$stop()
 

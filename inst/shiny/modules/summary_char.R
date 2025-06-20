@@ -26,7 +26,7 @@ summary_char_module_server <- function(id, common, parent_session) {
     })
 
     summary_sub <- reactive({
-      watch("summary_exclude")
+      watch("setup_exclude")
       req(watch("summary_char") > 0)
       summary_char(common$bugsnet_sub, common$outcome)
     })

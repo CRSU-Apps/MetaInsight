@@ -48,7 +48,7 @@ summary_network_module_server <- function(id, common, parent_session) {
     })
 
     output$plot_sub <- renderPlot({
-      watch("summary_exclude")
+      watch("setup_exclude")
       req(watch("summary_network") > 0)
       common$meta$summary_network$used <- TRUE
       common$meta$summary_network$label_all <- as.numeric(input$label_all)
@@ -69,7 +69,7 @@ summary_network_module_server <- function(id, common, parent_session) {
     })
 
     netconnect_sub <- reactive({
-      watch("summary_exclude")
+      watch("setup_exclude")
       req(watch("summary_network") > 0)
       make_netconnect(common$freq_sub)
     })

@@ -27,7 +27,7 @@ freq_compare_module_server <- function(id, common, parent_session) {
   })
 
   table_sub <- reactive({
-    watch("summary_exclude")
+    watch("setup_exclude")
     req(watch("freq_compare") > 0)
     freq_compare(common$freq_sub, common$model_type, common$ranking_option)
   })

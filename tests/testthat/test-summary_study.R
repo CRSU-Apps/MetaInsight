@@ -16,7 +16,7 @@ test_that("summary_study produces downloadable plots", {
   app$set_inputs(setupSel = "setup_define")
   app$click("setup_define-run")
   app$set_inputs(tabs = "summary")
-  app$set_inputs("summary_exclude-exclusions" = c("Study01", "Study25"))
+  app$set_inputs("setup_exclude-exclusions" = c("Study01", "Study25"))
   app$set_inputs(summarySel = "summary_study")
   app$click("summary_study-run")
 

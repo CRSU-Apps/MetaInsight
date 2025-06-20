@@ -27,7 +27,7 @@ freq_inconsistent_module_server <- function(id, common, parent_session) {
     })
 
     table_sub <- reactive({
-      watch("summary_exclude")
+      watch("setup_exclude")
       req(watch("freq_inconsistent") > 0)
       freq_inconsistent(common$freq_sub, common$model_type)
     })

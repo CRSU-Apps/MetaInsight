@@ -1,4 +1,4 @@
-summary_exclude_module_ui <- function(id) {
+setup_exclude_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
     radioButtons(ns("model"), label = "Model:",
@@ -8,7 +8,7 @@ summary_exclude_module_ui <- function(id) {
   )
 }
 
-summary_exclude_module_server <- function(id, common, parent_session) {
+setup_exclude_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
     init("model")
@@ -23,21 +23,21 @@ summary_exclude_module_server <- function(id, common, parent_session) {
                                       choicesOpt = list(disabled = !c(unique(common$data$Study) %in% unique(common$main_connected_data$Study))))
     })
 
-    common$tasks$summary_exclude_all <- ExtendedTask$new(
+    common$tasks$setup_exclude_all <- ExtendedTask$new(
       function(...) mirai::mirai(run(...), run = frequentist, .args = environment())
     )
 
     # needed to cancel in progress
     excluding <- NULL
-    common$tasks$summary_exclude_sub <- ExtendedTask$new(
-      function(...) excluding <<- mirai::mirai(run(...), run = summary_exclude, .args = environment())
+    common$tasks$setup_exclude_sub <- ExtendedTask$new(
+      function(...) excluding <<- mirai::mirai(run(...), run = setup_exclude, .args = environment())
     )
 
     # update freq_all if model selection changes
     observeEvent(input$model, {
       req(common$non_covariate_data_all)
 
-      common$tasks$summary_exclude_all$invoke(common$non_covariate_data_all,
+      common$tasks$setup_exclude_all$invoke(common$non_covariate_data_all,
                                               common$outcome,
                                               common$treatment_df,
                                               common$outcome_measure,
@@ -60,11 +60,11 @@ summary_exclude_module_server <- function(id, common, parent_session) {
       req(common$bugsnet_all)
 
       # cancel if already updating
-      if (common$tasks$summary_exclude_sub$status() == "running"){
+      if (common$tasks$setup_exclude_sub$status() == "running"){
         mirai::stop_mirai(excluding)
       }
 
-      common$tasks$summary_exclude_sub$invoke(common$main_connected_data,
+      common$tasks$setup_exclude_sub$invoke(common$main_connected_data,
                                               common$treatment_df,
                                               common$reference_treatment_all,
                                               common$outcome,
@@ -82,24 +82,24 @@ summary_exclude_module_server <- function(id, common, parent_session) {
       common$excluded_studies <- input$exclusions
 
       # METADATA ####
-      common$meta$summary_exclude$used <- TRUE
-      common$meta$summary_exclude$exclusions <- input$exclusions
-      common$meta$summary_exclude$model <- input$model
+      common$meta$setup_exclude$used <- TRUE
+      common$meta$setup_exclude$exclusions <- input$exclusions
+      common$meta$setup_exclude$model <- input$model
 
       result_sub$resume()
 
     })
 
     result_all <- observe({
-      common$freq_all <- common$tasks$summary_exclude_all$result()
+      common$freq_all <- common$tasks$setup_exclude_all$result()
       result_all$suspend()
     })
 
     result_sub <- observe({
       # prevent loading when the task is cancelled
-      if (common$tasks$summary_exclude_sub$status() == "success"){
+      if (common$tasks$setup_exclude_sub$status() == "success"){
         result_sub$suspend()
-        result <- common$tasks$summary_exclude_sub$result()
+        result <- common$tasks$setup_exclude_sub$result()
         common$bugsnet_sub <- result$bugsnet_sub
         common$freq_sub <- result$freq_sub
         common$reference_treatment_sub <- result$reference_treatment_sub
@@ -121,8 +121,8 @@ summary_exclude_module_server <- function(id, common, parent_session) {
         }
 
         # required for testing to wait until the debounce has triggered
-        shinyjs::runjs("Shiny.setInputValue('summary_exclude-complete', 'complete');")
-        trigger("summary_exclude")
+        shinyjs::runjs("Shiny.setInputValue('setup_exclude-complete', 'complete');")
+        trigger("setup_exclude")
       }
     })
 
@@ -150,10 +150,10 @@ summary_exclude_module_server <- function(id, common, parent_session) {
 })
 }
 
-summary_exclude_module_rmd <- function(common){ list(
-  summary_exclude_knit = !is.null(common$meta$summary_exclude$used),
-  summary_exclude_exclusions = common$meta$summary_exclude$exclusions,
-  summary_exclude_model = common$meta$summary_exclude$model,
-  summary_exclude_reference_treatment = common$reference_treatment_sub)
+setup_exclude_module_rmd <- function(common){ list(
+  setup_exclude_knit = !is.null(common$meta$setup_exclude$used),
+  setup_exclude_exclusions = common$meta$setup_exclude$exclusions,
+  setup_exclude_model = common$meta$setup_exclude$model,
+  setup_exclude_reference_treatment = common$reference_treatment_sub)
 }
 

@@ -61,7 +61,7 @@ freq_forest_module_server <- function(id, common, parent_session) {
   })
 
   observe({
-    watch("summary_exclude")
+    watch("setup_exclude")
     req(watch("freq_forest") > 0)
     ci <- extract_ci(common$freq_sub, common$outcome)
     updateNumericInput(session, "xmin_sub", value = ci$xmin)
@@ -89,7 +89,7 @@ freq_forest_module_server <- function(id, common, parent_session) {
   })
 
   result_sub <- reactive({
-    watch("summary_exclude")
+    watch("setup_exclude")
     req(watch("freq_forest") > 0)
     common$meta$freq_forest$xmin_sub <- as.numeric(input$xmin_sub)
     common$meta$freq_forest$xmax_sub <- as.numeric(input$xmax_sub)

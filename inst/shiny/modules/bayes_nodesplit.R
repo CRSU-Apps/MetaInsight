@@ -97,7 +97,7 @@ bayes_nodesplit_module_server <- function(id, common, parent_session) {
       result_all$resume()
     })
 
-    observeEvent(list(watch("bayes_nodesplit"), watch("summary_exclude")), {
+    observeEvent(list(watch("bayes_nodesplit"), watch("setup_exclude")), {
       req(watch("bayes_nodesplit") > 0)
 
       # cancel if the model is already updating

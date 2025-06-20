@@ -42,8 +42,8 @@ tagList(
         textOutput("debug"),
         includeMarkdown("Rmd/text_intro_tab.Rmd")
       ),
-      insert_modules_ui("setup", "Setup"),
-      insert_modules_ui("summary", "Summary", exclude = "summary_exclude"),
+      insert_modules_ui("setup", "Setup", exclude = "setup_exclude"),
+      insert_modules_ui("summary", "Summary"),
       insert_modules_ui("freq", "Frequentist NMA"),
       insert_modules_ui("bayes", "Bayesian NMA"),
       insert_modules_ui("rep", "Reproduce")
@@ -56,7 +56,7 @@ tagList(
             div(id = "global_options",
             layout_columns(
               col_widths = c(6, 6),
-                summary_exclude_module_ui("summary_exclude"),
+                setup_exclude_module_ui("setup_exclude"),
                 radioButtons("download_format",
                              "Plot download format",
                              choices = c("PDF" = "pdf",

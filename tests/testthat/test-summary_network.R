@@ -1,4 +1,4 @@
-test_that("summary_exclude produces errors for incorrect data types", {
+test_that("setup_exclude produces errors for incorrect data types", {
   expect_error(summary_network("not_a_list", defined_data$bugsnet_all, "netgraph", 1), "freq must be of class list")
   expect_error(summary_network(defined_data_con$freq_all, "not_a_dataframe", "netgraph", 1), "bugsnet must be of class data.frame")
   expect_error(summary_network(defined_data_con$freq_all, defined_data_con$bugsnet_all, 123, 1), "style must be of class character")
@@ -16,7 +16,7 @@ test_that("summary_network produces downloadable plots", {
   app$set_inputs(setupSel = "setup_define")
   app$click("setup_define-run")
   app$set_inputs(tabs = "summary")
-  app$set_inputs("summary_exclude-exclusions" = c("Study01", "Study25"))
+  app$set_inputs("setup_exclude-exclusions" = c("Study01", "Study25"))
   app$set_inputs(summarySel = "summary_network")
   app$set_inputs(main = "Results")
   app$click("summary_network-run")

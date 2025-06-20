@@ -78,7 +78,7 @@ setup_define <- function(data, treatment_df, outcome, outcome_measure, reference
 
   bugsnet_all <- bugsnetdata(non_covariate_data_all, outcome, treatment_df)
 
-  # random is the default model type, this structure is updated in summary_exclude if the model type changes
+  # random is the default model type, this structure is updated in setup_exclude if the model type changes
   # suppressWarnings deprecation temporarily
   freq_all <- suppressWarnings(frequentist(non_covariate_data_all,
                           outcome,
