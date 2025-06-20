@@ -15,6 +15,8 @@ bayes_deviance(model, model_type, outcome_measure)
 }
 \value{
 list containing:
+ \item{deviance_mtc}{results from `gemtc::mtc.deviance()` for model$mtcResults}
+ \item{deviance_ume}{results from `gemtc::mtc.deviance()` for UME model}
  \item{scat_plot}{plotly object}
  \item{stem_plot}{plotly object}
  \item{lev_plot}{plotly object}

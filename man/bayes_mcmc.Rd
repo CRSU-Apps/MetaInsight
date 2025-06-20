@@ -18,6 +18,7 @@ list containing:
 \item{gelman_plots}{Gelman plots}
 \item{trace_plots}{Gelman plots}
 \item{density_plots}{Gelman plots}
+\item{n_rows}{The number of rows for each plot}
 }
 \description{
 Produces Markov chain Monte Carlo plots

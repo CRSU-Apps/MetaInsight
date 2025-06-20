@@ -4,12 +4,12 @@
 \alias{LongToWide}
 \title{Convert long format to wide format (including covariate columns)}
 \usage{
-LongToWide(long_data, outcome)
+LongToWide(long_data, outcome_type)
 }
 \arguments{
 \item{long_data}{Data frame of long format}
 
-\item{outcome}{Indicator whether outcome is 'Binary' or 'Continuous'}
+\item{outcome_type}{Indicator whether outcome is 'Binary' or 'Continuous'}
 }
 \value{
 Data frame in wide format
