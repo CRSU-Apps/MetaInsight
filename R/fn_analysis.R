@@ -9,7 +9,11 @@
 #' @return See output from freq_wrap().
 #' @export
 frequentist <- function(data, metaoutcome, treatment_list, outcome_measure, modelranfix, reference) {
-  data_wide <-  entry.df(data = data, CONBI = metaoutcome) # Transform data to wide form
+  if (FindDataShape(data) == "long") {
+    data_wide <- LongToWide(long_data = data, outcome_type = metaoutcome)
+  } else {
+    data_wide <- data
+  }
 
   # Use the self-defined function, freq_wrap
   return(
@@ -23,39 +27,6 @@ frequentist <- function(data, metaoutcome, treatment_list, outcome_measure, mode
     )
   )
 }
-
-
-
-#' Converts long data to wide, leaves wide data unchanged.
-#'
-#' @param data Input dataset.
-#' @param CONBI "Continuous" or "Binary".
-#' @return Input data in long format.
-entry.df <- function(data, CONBI) {
-  newData1 <- as.data.frame(data)
-  if (FindDataShape(newData1) == "long") {
-    newData2<-newData1[order(newData1$StudyID, -newData1$T), ]
-    newData2$number<- ave(as.numeric(newData2$StudyID),newData2$StudyID,FUN=seq_along)  # create counting variable for number of arms within each study.
-    data_wide <- reshape(newData2, timevar = "number",idvar = c("Study", "StudyID"), direction = "wide") # reshape
-    numbertreat=max(newData2$number)
-  }
-  else {
-    data_wide<- newData1
-    a<- ifelse(CONBI=='Continuous', 4, 3)
-    numbertreat=(ncol(newData1)-2)/a
-  }
-  if (numbertreat < 6) {  # generate additional columns if less than 6 arms.
-    for (k in (numbertreat+1):6) {
-      if (CONBI=='Continuous') {
-        data_wide[c(paste0("T.",k),paste0("N.",k),paste0("Mean.",k),paste0("SD.",k))]<-NA
-      } else {
-        data_wide[c(paste0("T.",k),paste0("R.",k),paste0("N.",k))]<-NA
-      }
-    }
-  }
-  return(data_wide)
-}
-
 
 
 #########################
@@ -79,10 +50,10 @@ contrastform.df <- function(data, outcome, CONBI) {
     mean_list <-  CreateListOfWideColumns(wide_data = data, column_prefix = "Mean")
     sd_list <-  CreateListOfWideColumns(wide_data = data, column_prefix = "SD")
 
-    d1 <- meta::pairwise(treat = treat_list[1:2],
-                         n = n_list[1:2],
-                         mean = mean_list[1:2],
-                         sd = sd_list[1:2],
+    d1 <- meta::pairwise(treat = treat_list,
+                         n = n_list,
+                         mean = mean_list,
+                         sd = sd_list,
                          data = data,
                          sm = outcome,
                          studlab = data$Study)
@@ -168,17 +139,11 @@ freq.df <- function(model, outcome, dataf, lstx, ref) {
 #'  - 'd0': Data in contrast form.
 #'  - 'd1': Same as 'd0' but with treatment labels.
 freq_wrap <- function(data, treat_list, model, outcome, CONBI, ref) {
-  # disabled progress for now as can't run outside shiny (SS)
-  # progress <- shiny::Progress$new()   # Adding progress bars
-  # on.exit(progress$close())
-  # progress$set(message = "Updating", value = 0)
   d0 <- contrastform.df(data, outcome, CONBI)    # transform data to contrast form
   lstx <- treat_list$Label      #obtain treatment labels
   ntx <- length(lstx)     #count treatment numbers
   d1 <- labelmatching.df(d1 = d0, ntx = ntx, treat_list = treat_list) #matching treatment labels to treatment code
-  # progress$inc(0.6, detail = "Updating")
   net1 <- freq.df(model = model, outcome = outcome, dataf = d1, lstx = lstx, ref = ref) # NMA of all studies
-  # progress$inc(0.4, detail = "Rendering results")
   return(list(net1 = net1, lstx = lstx, ntx = ntx, d0 = d0, d1 = d1))
 }
 
