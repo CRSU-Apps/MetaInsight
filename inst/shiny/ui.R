@@ -107,10 +107,6 @@ tagList(
           nav_panel(
             'Module Guidance', icon = icon("circle-info", class = "mod_icon"),
             flex_wrap(uiOutput('gtext_module'))
-          ),
-          nav_panel(
-            'Code',
-            core_code_module_ui("core_code")
           )
         )
       ),

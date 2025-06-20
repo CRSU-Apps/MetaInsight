@@ -160,19 +160,10 @@ function(input, output, session) {
   })
 
   ############################################# #
-  ### CODE TAB ####
-  ############################################# #
-
-  observe({
-    shinyjs::js$runOnEnter(module())
-  })
-
-  ############################################# #
   ### RUN MODULE ON ENTER ####
   ############################################# #
-  observeEvent(input$run_module, {
-    req(module())
-    shinyjs::runjs(glue::glue("document.getElementById('{module()}-run').click();"))
+  observe({
+    shinyjs::js$runOnEnter(module())
   })
 
   ############################################# #
