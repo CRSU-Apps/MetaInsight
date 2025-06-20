@@ -12,13 +12,16 @@ bayes_model_module_server <- function(id, common, parent_session) {
 
     observeEvent(input$run, {
       if (is.null(common$main_connected_data)){
-        common$logger %>% writeLog(type = "error", "Please define the data in the Setup component first.")
+        common$logger %>% writeLog(type = "error", "Please configure the analysis in the Setup component first.")
+        return()
       }
       if (common$outcome_measure == "SMD") {
         common$logger %>% writeLog(type = "error", "Standardised mean difference currently cannot be analysed within Bayesian analysis in MetaInsight")
+        return()
       }
       else if (common$outcome_measure == "RD") {
         common$logger %>% writeLog(type = "error", "Risk difference currently cannot be analysed within Bayesian analysis in MetaInsight")
+        return()
       }
       # METADATA ####
       common$meta$bayes_model$used <- TRUE
