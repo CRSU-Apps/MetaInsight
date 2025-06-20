@@ -89,7 +89,7 @@ insert_modules_ui <- function(component, long_component, exclude = NULL) {
   tagList(
     conditionalPanel(
       glue("input.tabs == '{component}'"),
-      div(glue("Component: {long_component}"), help_comp_ui(glue("{component}Help")), class = "componentName"),
+      div(glue("Component: {long_component}"), class = "componentName"),
       shinyWidgets::radioGroupButtons(
         glue("{component}Sel"), "",
         choices = insert_modules_options(component, exclude = exclude),
@@ -145,12 +145,6 @@ insert_modules_results <- function(component) {
       )
     }
   })
-}
-
-# Add helper button for component
-help_comp_ui <- function(name) {
-  actionLink(name, label = "", icon = icon("circle-question"),
-             class = "compHelpButton")
 }
 
 # adjust layout width depending on screen size

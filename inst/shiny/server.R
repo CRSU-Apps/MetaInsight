@@ -54,13 +54,6 @@ function(input, output, session) {
   ### GUIDANCE TEXT ####
   ######################## #
 
-  # UI for component guidance text
-  output$gtext_component <- renderUI({
-    file <- file.path("Rmd", glue("gtext_{component()}.Rmd"))
-    if (!file.exists(file)) return()
-    includeMarkdown(file)
-  })
-
   # UI for module guidance text
   output$gtext_module <- renderUI({
     req(module())
@@ -69,14 +62,8 @@ function(input, output, session) {
     includeMarkdown(file)
   })
 
-  # Help Component
-  help_components <- COMPONENTS[!COMPONENTS == "rep"]
-  lapply(help_components, function(component) {
-    btn_id <- paste0(component, "Help")
-    observeEvent(input[[btn_id]], updateTabsetPanel(session, "main", "Component Guidance"))
-  })
-
   # Help Module
+  help_components <- COMPONENTS[!COMPONENTS == "rep"]
   lapply(help_components, function(component) {
     lapply(COMPONENT_MODULES[[component]], function(module) {
       btn_id <- paste0(module$id, "Help")

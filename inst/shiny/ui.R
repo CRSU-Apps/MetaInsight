@@ -85,10 +85,8 @@ tagList(
             DT::dataTableOutput("table")
           )
         ),
-
         navset_tab(
           id = 'main',
-
           nav_panel(
             'Results',
             lapply(COMPONENTS, function(component) {
@@ -101,11 +99,7 @@ tagList(
             core_save_module_ui("core_save")
           ),
           nav_panel(
-            'Component Guidance', icon = icon("circle-info"),
-            flex_wrap(uiOutput('gtext_component'))
-          ),
-          nav_panel(
-            'Module Guidance', icon = icon("circle-info", class = "mod_icon"),
+            'Guidance', icon = icon("circle-info", class = "mod_icon"),
             flex_wrap(uiOutput('gtext_module'))
           )
         )
