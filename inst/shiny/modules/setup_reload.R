@@ -3,8 +3,10 @@ setup_reload_module_ui <- function(id) {
   tagList(
     h4("Load session"),
     includeMarkdown("Rmd/text_loadsesh.Rmd"),
-    fileInput(ns("load_session"), "", accept = ".rds"),
-    actionButton(ns("goLoad_session"), "Load RDS")
+    div(id = "reload_inputs",
+      fileInput(ns("load_session"), "", accept = ".rds"),
+      actionButton(ns("goLoad_session"), "Load RDS")
+    )
   )
 }
 

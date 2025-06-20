@@ -33,8 +33,10 @@ core_intro_module_server <- function(id, common, parent_session) {
                       c("a[data-value=\"Save\"]", "You can download a file which saves the state of the app", "left", "$('a[data-value=\"Save\"]').trigger('click');"),
                       c("a[data-value=\"setup\"]", "Next time you visit...", "bottom", "$('a[data-value=\"setup\"]').trigger('click');
                                                                                         $('input[value=\"setup_reload\"]').trigger('click');"),
-                      c("#setup_input_panel", "you can upload the file in the setup component to restore the app", "bottom", NA),
-                      c(NA, "You are ready to go!", NA, "$('a[data-value=\"About\"]').trigger('click');")
+                      c("#reload_inputs", "you can upload the file in the setup component to restore the app", "bottom", NA),
+                      c(NA, "You are ready to go!", NA, "$('input[value=\"setup_load\"]').trigger('click');
+                                                         $('a[data-value=\"intro\"]').trigger('click');
+                                                         $('a[data-value=\"About\"]').trigger('click');")
 
   )
   #transpose and add columns names
@@ -81,8 +83,10 @@ core_intro_module_server <- function(id, common, parent_session) {
     c("a[data-value=\"Save\"]", "You can also download a file which saves the state of the app and then ...", "left", "$('a[data-value=\"Save\"]').trigger('click');"),
     c("a[data-value=\"setup\"]", "... next time you visit ...", "bottom", "$('a[data-value=\"setup\"]').trigger('click');
                                                                       $('input[value=\"setup_reload\"]').trigger('click');"),
-    c("#setup_input_panel", "you can upload the file in the setup component to restore the app", "bottom", NA),
-    c(NA, "You are ready to go! Please send any feedback to info@crsu.org.uk", NA, "$('a[data-value=\"About\"]').trigger('click');")
+    c("#reload_inputs", "you can upload the file in the setup component to restore the app", "bottom", NA),
+    c(NA, "You are ready to go! Please send any feedback to info@crsu.org.uk", NA, "$('input[value=\"setup_load\"]').trigger('click');
+                                                                                    $('a[data-value=\"intro\"]').trigger('click');
+                                                                                    $('a[data-value=\"About\"]').trigger('click');")
   )
 
   #transpose and add columns names
