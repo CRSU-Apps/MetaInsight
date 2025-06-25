@@ -69,6 +69,8 @@ PrepareDataForCinema <- function(data, treatment_ids, outcome_type) {
     long_data <- data
   }
   
+  long_data <- ReinstateTreatmentIds(long_data, treatment_ids)
+  
   prepared_data <- lapply(
     1:nrow(long_data),
     function(index) {
@@ -151,34 +153,39 @@ CinemaProjectTest <- function() {
   treatment_ids <- CreateTreatmentIds(all_treatments)
   data <- WrangleUploadData(data, treatment_ids, outcome_type)
   
-  data <-ReplaceTreatmentIds(data, treatment_ids)
-  
   model_type = "fixed"
   outcome_measure = "OR"
   
-  pairwise1 <- meta::pairwise(
-    treat = T,
-    event = R,
-    n = N,
-    studlab = Study,
-    data = data,
-    sm = outcome_measure
-  )
+  non_covariate_data <- RemoveCovariates(data)
+  reference <- treatment_ids$Label[treatment_ids$Number == 1]
   
-  netmeta1 <- netmeta::netmeta(
-    TE = TE,
-    seTE = seTE,
-    treat1 = treat1,
-    treat2 = treat2,
-    studlab = Study,
-    common = model_type == "fixed",
-    random = model_type == "random",
-    data = pairwise1,
-    sm = outcome_measure
+  if (FindDataShape(non_covariate_data) == "long") {
+    non_covariate_data_wide <- LongToWide(long_data = non_covariate_data, outcome_type = outcome_type)
+  } else {
+    non_covariate_data_wide <- non_covariate_data
+  }
+  
+  # transform data to contrast form
+  d0 <- contrastform.df(non_covariate_data_wide, treatment_ids, outcome_measure, outcome_type)
+  #obtain treatment labels
+  lstx <- treatment_ids$Label
+  #count treatment numbers
+  ntx <- length(lstx)
+  #matching treatment labels to treatment code
+  d1 <- labelmatching.df(d1 = d0, ntx = ntx, treat_list = treatment_ids)
+  # NMA of all studies
+  net1 <- freq.df(model = model_type, outcome = outcome_measure, dataf = d1, ref = reference)
+  
+  freq_all <- list(
+    net1 = net1,
+    lstx = lstx,
+    ntx = ntx,
+    d0 = d0,
+    d1 = d1
   )
   
   contributions <- netmeta::netcontrib(
-    x = netmeta1,
+    x = freq_all$net1,
     method = "shortestpath"
   )
   
