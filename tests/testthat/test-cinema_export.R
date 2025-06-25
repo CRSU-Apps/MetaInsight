@@ -1,11 +1,10 @@
 
-LoadCinemaData <- function() {
-  data <- CleanData(read.csv("data/cinema_data/NMA_data_binary_FE_two_arm_CINeMA.csv"))
+LoadCinemaData <- function(file_path = "data/cinema_data/NMA_data_binary_FE_two_arm_CINeMA.csv") {
+  data <- CleanData(read.csv(file_path))
   outcome_type = "Binary"
   all_treatments <- FindAllTreatments(data)
   treatment_ids <- CreateTreatmentIds(all_treatments)
   data <- WrangleUploadData(data, treatment_ids, outcome_type)
-  data <- ReinstateTreatmentIds(data, treatment_ids)
   
   return(
     list(
@@ -17,29 +16,30 @@ LoadCinemaData <- function() {
 }
 
 GenerateCinemaAnalysis <- function(cinema_data, model_type, outcome_measure) {
-  pairwise1 <- meta::pairwise(
-    treat = T,
-    event = R,
-    n = N,
-    studlab = Study,
-    data = cinema_data$long_data,
-    sm = outcome_measure
-  )
+  reference = cinema_data$treatment_ids$Label[cinema_data$treatment_ids$Number == 1]
+  wide_data <- LongToWide(long_data = cinema_data$long_data, outcome_type = cinema_data$outcome_type)
   
-  netmeta1 <- netmeta::netmeta(
-    TE = TE,
-    seTE = seTE,
-    treat1 = treat1,
-    treat2 = treat2,
-    studlab = Study,
-    common = model_type == "fixed",
-    random = model_type == "random",
-    data = pairwise1,
-    sm = outcome_measure
+  # transform data to contrast form
+  d0 <- contrastform.df(wide_data, cinema_data$treatment_ids, outcome_measure, cinema_data$outcome_type)
+  #obtain treatment labels
+  lstx <- cinema_data$treatment_ids$Label
+  #count treatment numbers
+  ntx <- length(lstx)
+  #matching treatment labels to treatment code
+  d1 <- labelmatching.df(d1 = d0, ntx = ntx, treat_list = cinema_data$treatment_ids)
+  # NMA of all studies
+  net1 <- freq.df(model = model_type, outcome = outcome_measure, dataf = d1, ref = reference)
+  
+  freq_all <- list(
+    net1 = net1,
+    lstx = lstx,
+    ntx = ntx,
+    d0 = d0,
+    d1 = d1
   )
   
   contributions <- netmeta::netcontrib(
-    x = netmeta1,
+    x = freq_all$net1,
     method = "shortestpath"
   )
   
