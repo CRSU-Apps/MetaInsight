@@ -245,6 +245,7 @@ test_that("ValidateUploadedData() allows correct quality assessment columns", {
   data <- read.csv("data/Cont_long.csv")
   data$rob <- c(1, 1, 1, 2, 2, 2, 3, 3)
   data$indirectness <- c(2, 2, 2, 3, 3, 3, 1, 1)
+  data$rob.test <- c(3, 3, 3, 1, 1, 1, 2, 2)
   
   validation_result <- ValidateUploadedData(data, "Continuous")
   
@@ -252,73 +253,117 @@ test_that("ValidateUploadedData() allows correct quality assessment columns", {
   expect_equal(validation_result$message, "Data is valid")
 })
 
-test_that("ValidateUploadedData() identifies partial quality assessment columns", {
-  data <- read.csv("data/Cont_long.csv")
-  data2 <- data
-  
-  data$rob <- 1
-  data2$indirectness <- 1
-  
-  validation_result <- ValidateUploadedData(data, "Continuous")
-  validation_result2 <- ValidateUploadedData(data2, "Continuous")
-  
-  expect_false(validation_result$valid)
-  expect_equal(validation_result$message, "Provide both 'rob' and 'indirectness', or neither.")
-  expect_false(validation_result2$valid)
-  expect_equal(validation_result2$message, "Provide both 'rob' and 'indirectness', or neither.")
-})
-
 test_that("ValidateUploadedData() identifies unallowed quality assessment values", {
   data <- read.csv("data/Cont_long.csv")
   data2 <- data
+  data3 <- data
   
   data$rob <- c(1, 1, 1, 2, 2, 2, 4, 4)
   data$indirectness <- 1
+  data$rob.test <- 1
   data2$rob <- 1
   data2$indirectness <- c(1, 1, 1, 4, 4, 4, 2, 2)
+  data2$rob.test <- 1
+  data3$rob <- 1
+  data3$indirectness <- 1
+  data3$rob.test <- c(1, 1, 1, 4, 4, 4, 2, 2)
   
   validation_result <- ValidateUploadedData(data, "Continuous")
   validation_result2 <- ValidateUploadedData(data2, "Continuous")
+  validation_result3 <- ValidateUploadedData(data3, "Continuous")
   
   expect_false(validation_result$valid)
-  expect_equal(validation_result$message, "Some studies have values for 'rob' or 'indirectness' that are not 1, 2 or 3: Justinian")
+  expect_equal(validation_result$message, "Some studies have values for rob that are not 1, 2 or 3: Justinian")
   expect_false(validation_result2$valid)
-  expect_equal(validation_result2$message, "Some studies have values for 'rob' or 'indirectness' that are not 1, 2 or 3: Leo")
+  expect_equal(validation_result2$message, "Some studies have values for indirectness that are not 1, 2 or 3: Leo")
+  expect_false(validation_result3$valid)
+  expect_equal(validation_result3$message, "Some studies have values for rob.test that are not 1, 2 or 3: Leo")
 })
 
 test_that("ValidateUploadedData() identifies studies with partially empty quality assessment values", {
   data <- read.csv("data/Cont_long.csv")
   data2 <- data
+  data3 <- data
   
   data$rob <- c(1, 1, 1, 1, 1, 1, NA, NA)
   data$indirectness <- 1
+  data$rob.test <- 1
   data2$rob <- 1
   data2$indirectness <- c(1, 1, 1, NA, NA, 1, 1, 1)
+  data2$rob.test <- 1
+  data3$rob <- 1
+  data3$indirectness <- 1
+  data3$rob.test <- c(NA, NA, 1, 1, 1, 1, 1, 1)
   
   validation_result <- ValidateUploadedData(data, "Continuous")
   validation_result2 <- ValidateUploadedData(data2, "Continuous")
+  validation_result3 <- ValidateUploadedData(data3, "Continuous")
   
   expect_false(validation_result$valid)
-  expect_equal(validation_result$message, "Some studies have values for 'rob' or 'indirectness' that are not 1, 2 or 3: Justinian")
+  expect_equal(validation_result$message, "Some studies have values for rob that are not 1, 2 or 3: Justinian")
   expect_false(validation_result2$valid)
-  expect_equal(validation_result2$message, "Some studies have values for 'rob' or 'indirectness' that are not 1, 2 or 3: Leo")
+  expect_equal(validation_result2$message, "Some studies have values for indirectness that are not 1, 2 or 3: Leo")
+  expect_false(validation_result3$valid)
+  expect_equal(validation_result3$message, "Some studies have values for rob.test that are not 1, 2 or 3: Constantine")
 })
 
 test_that("ValidateUploadedData() identifies studies without unique quality values", {
   data <- read.csv("data/Cont_long.csv")
   data2 <- data
+  data3 <- data
   
   data$rob <- c(1, 1, 1, 2, 2, 2, 1, 3)
   data$indirectness <- 1
+  data$rob.test  <- 1
   data2$rob <- 1
   data2$indirectness <- c(1, 1, 1, 1, 2, 2, 1, 1)
+  data2$rob.test  <- 1
+  data3$rob <- 1
+  data3$indirectness <- 1
+  data3$rob.test  <- c(1, 1, 2, 1, 1, 1, 1, 1)
   
   validation_result <- ValidateUploadedData(data, "Continuous")
   validation_result2 <- ValidateUploadedData(data2, "Continuous")
+  validation_result3 <- ValidateUploadedData(data3, "Continuous")
   
   expect_false(validation_result$valid)
-  expect_equal(validation_result$message, "Some studies do not have the same risk of bias value for every arm: Constantine.")
+  expect_equal(validation_result$message, "Some studies do not have the same rob value for every arm: Justinian.")
   expect_false(validation_result2$valid)
   expect_equal(validation_result2$message, "Some studies do not have the same indirectness value for every arm: Leo.")
+  expect_false(validation_result3$valid)
+  expect_equal(validation_result3$message, "Some studies do not have the same rob.test value for every arm: Constantine.")
 })
 
+test_that("ValidateUploadedData() identifies when rob is not present but an individual rob component is", {
+  data <- read.csv("data/Cont_long.csv")
+
+  data <- data[, names(data) != "rob"]
+  data$rob.test  <- 1
+
+  validation_result <- ValidateUploadedData(data, "Continuous")
+
+  expect_false(validation_result$valid)
+  expect_equal(validation_result$message, "If individual RoB variables are provided then an overall RoB variable must also be provided.")
+})
+
+test_that("ValidateUploadedData() identifies when more than 10 individual rob components are present", {
+  data <- read.csv("data/Cont_long.csv")
+  
+  data$rob.test1  <- 1
+  data$rob.test2  <- 1
+  data$rob.test3  <- 1
+  data$rob.test4  <- 1
+  data$rob.test5  <- 1
+  data$rob.test5  <- 1
+  data$rob.test6  <- 1
+  data$rob.test7  <- 1
+  data$rob.test8  <- 1
+  data$rob.test9  <- 1
+  data$rob.test10  <- 1
+  data$rob.test11  <- 1
+  
+  validation_result <- ValidateUploadedData(data, "Continuous")
+  
+  expect_false(validation_result$valid)
+  expect_equal(validation_result$message, "A maximum of 10 individual risk of bias variables are allowed.")
+})
