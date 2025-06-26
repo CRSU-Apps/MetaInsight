@@ -75,6 +75,12 @@ long_format_upload_panel_ui <- function(id) {
         " contains the indirectness of the study as required by", tags$a(href = "https://cinema.ispm.unibe.ch/", "CINeMA", target = "_blank"), ". This must be identical for each arm of the study."
       )
     ),
+    tags$ul(
+      tags$li(
+        tags$strong("rob.<ROB_NAME_1>, ..., rob.<ROB_NAME_10>"),
+        " contain individual risk of bias components. Up to 10 such columns can be present."
+      )
+    ),
     p("An example of this structure can be seen in the", tags$strong("'View Data'"), "tab."),
     p("The csv file that is used to produce the example dataset can be downloaded from here:"),
     downloadButton(

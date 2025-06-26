@@ -282,52 +282,59 @@ ValidateUploadedData <- function(data, outcome_type) {
 #' - "valid" = TRUE or FALSE defining whether data is valid
 #' - "message" = String describing any issues causing the data to be invalid
 .ValidateQualityColumns <- function(data) {
-  if (is.null(data$rob) && is.null(data$indirectness)) {
+  #The rob and indirectness columns
+  rob_indirectness_columns <- grep(pattern = "^rob|^indirectness$", x = names(data), value = TRUE)
+  
+  if (length(rob_indirectness_columns) == 0) {
     return(.valid_result)
   }
   
-  if (xor(is.null(data$rob), is.null(data$indirectness))) {
+  #The number of individual RoB columns
+  n_rob_individual <- length(grep(pattern = "^rob.+$", x = names(data)))
+
+  #Check there are no more than 10 individual RoB columns
+  if (n_rob_individual > 10) {
     return(
       list(
         valid = FALSE,
-        message = glue::glue("Provide both 'rob' and 'indirectness', or neither.")
+        message = glue::glue("A maximum of 10 individual risk of bias variables are allowed.")
       )
     )
   }
 
-  studies_with_wrong_qa_values <- unique(data$Study[!(data$rob %in% 1:3) | !(data$indirectness %in% 1:3)])
-  if (!is.null(data$rob) && !is.null(data$indirectness)
-      && length(studies_with_wrong_qa_values) > 0) {
+  #Check that overall RoB is there if there is at least one individual RoB column
+  if (n_rob_individual >= 1 && length(grep(pattern = "^rob$", x = names(data))) == 0) {
     return(
       list(
         valid = FALSE,
-        message = glue::glue("Some studies have values for 'rob' or 'indirectness' that are not 1, 2 or 3: {paste0(studies_with_wrong_qa_values, collapse = ', ')}")
+        message = glue::glue("If individual RoB variables are provided then an overall RoB variable must also be provided.")
       )
     )
   }
   
-  #Find the studies that have more than one value for risk of bias, by creating a table of rob values by study and summing the rows to check if any rows have more than one non-zero element.
-  rob_table <- table(data[, c("Study", "rob")])
-  studies_with_multiple_rob <- dimnames(rob_table)$Study[as.vector(rowSums(rob_table != 0) > 1)]
-  if (length((studies_with_multiple_rob) > 0)) {
-    return(
-      list(
-        valid = FALSE,
-        message = glue::glue("Some studies do not have the same risk of bias value for every arm: {paste0(studies_with_multiple_rob, collapse = ', ')}.")
+  #Loop through the rob and indirectness columns
+  for (var in rob_indirectness_columns) {
+    #Check for studies that have more than one value
+    rob_table <- table(data[, c("Study", var)])
+    studies_with_multiple_rob <- dimnames(rob_table)$Study[as.vector(rowSums(rob_table != 0) > 1)]
+    if (length((studies_with_multiple_rob) > 0)) {
+      return(
+        list(
+          valid = FALSE,
+          message = glue::glue("Some studies do not have the same {var} value for every arm: {paste0(studies_with_multiple_rob, collapse = ', ')}.")
+        )
       )
-    )
-  }
-  
-  #Find the studies that have more than one value for indirectness, by creating a table of indirectness values by study and summing the rows to check if any rows have more than one non-zero element.
-  indirectness_table <- table(data[, c("Study", "indirectness")])
-  studies_with_multiple_indirectness <- dimnames(indirectness_table)$Study[as.vector(rowSums(indirectness_table != 0) > 1)]
-  if (length(studies_with_multiple_indirectness) > 0) {
-    return(
-      list(
-        valid = FALSE,
-        message = glue::glue("Some studies do not have the same indirectness value for every arm: {paste0(studies_with_multiple_indirectness, collapse = ', ')}.")
+    }
+    #Check for studies that have invalid values
+    studies_with_wrong_qa_values <- unique(data$Study[!data[, var] %in% 1:3])
+    if (length(studies_with_wrong_qa_values) > 0) {
+      return(
+        list(
+          valid = FALSE,
+          message = glue::glue("Some studies have values for {var} that are not 1, 2 or 3: {paste0(studies_with_wrong_qa_values, collapse = ', ')}")
+        )
       )
-    )
+    }
   }
   
   return(.valid_result)
