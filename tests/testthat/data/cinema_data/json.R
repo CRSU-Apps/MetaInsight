@@ -26,19 +26,19 @@ json_valid_binary <- '
         },
         "studycontributions": {
           "sleep:salad": {
-            "1": 0.8,
-            "2": 0.1,
-            "3": 0.1
+            "Sleepy celery": 0.8,
+            "Sleepy saunter": 0.1,
+            "celery saunter": 0.1
           },
           "sleep:exercise": {
-            "1": 0.1,
-            "2": 0.8,
-            "3": 0.1
+            "Sleepy celery": 0.1,
+            "Sleepy saunter": 0.8,
+            "celery saunter": 0.1
           },
           "salad:exercise": {
-            "1": 0.1,
-            "2": 0.1,
-            "3": 0.8
+            "Sleepy celery": 0.1,
+            "Sleepy saunter": 0.1,
+            "celery saunter": 0.8
           }
         }
       }
@@ -134,19 +134,19 @@ json_valid_continuous <- '
         },
         "studycontributions": {
           "sleep:salad": {
-            "1": 0.8,
-            "2": 0.1,
-            "3": 0.1
+            "Sleepy celery": 0.8,
+            "Sleepy saunter": 0.1,
+            "celery saunter": 0.1
           },
           "sleep:exercise": {
-            "1": 0.1,
-            "2": 0.8,
-            "3": 0.1
+            "Sleepy celery": 0.1,
+            "Sleepy saunter": 0.8,
+            "celery saunter": 0.1
           },
           "salad:exercise": {
-            "1": 0.1,
-            "2": 0.1,
-            "3": 0.8
+            "Sleepy celery": 0.1,
+            "Sleepy saunter": 0.1,
+            "celery saunter": 0.8
           }
         }
       }
@@ -244,19 +244,19 @@ json_incorrect_types <- '
         },
         "studycontributions": {
           "sleep:salad": {
-            "1": 0.8,
-            "2": 0.1,
-            "3": 0.1
+            "Sleepy celery": 0.8,
+            "Sleepy saunter": 0.1,
+            "celery saunter": 0.1
           },
           "sleep:exercise": {
-            "1": 0.1,
-            "2": 0.8,
-            "3": 0.1
+            "Sleepy celery": 0.1,
+            "Sleepy saunter": 0.8,
+            "celery saunter": 0.1
           },
           "salad:exercise": {
-            "1": 0.1,
-            "2": 0.1,
-            "3": true
+            "Sleepy celery": 0.1,
+            "Sleepy saunter": 0.1,
+            "celery saunter": true
           }
         }
       }
@@ -361,19 +361,19 @@ json_data_mixed_outcome_type <- '
         },
         "studycontributions": {
           "sleep:salad": {
-            "1": 0.8,
-            "2": 0.1,
-            "3": 0.1
+            "Sleepy celery": 0.8,
+            "Sleepy saunter": 0.1,
+            "celery saunter": 0.1
           },
           "sleep:exercise": {
-            "1": 0.1,
-            "2": 0.8,
-            "3": 0.1
+            "Sleepy celery": 0.1,
+            "Sleepy saunter": 0.8,
+            "celery saunter": 0.1
           },
           "salad:exercise": {
-            "1": 0.1,
-            "2": 0.1,
-            "3": 0.8
+            "Sleepy celery": 0.1,
+            "Sleepy saunter": 0.1,
+            "celery saunter": 0.8
           }
         }
       }
@@ -483,19 +483,19 @@ json_data_both_outcome_type <- '
         },
         "studycontributions": {
           "sleep:salad": {
-            "1": 0.8,
-            "2": 0.1,
-            "3": 0.1
+            "Sleepy celery": 0.8,
+            "Sleepy saunter": 0.1,
+            "celery saunter": 0.1
           },
           "sleep:exercise": {
-            "1": 0.1,
-            "2": 0.8,
-            "3": 0.1
+            "Sleepy celery": 0.1,
+            "Sleepy saunter": 0.8,
+            "celery saunter": 0.1
           },
           "salad:exercise": {
-            "1": 0.1,
-            "2": 0.1,
-            "3": 0.8
+            "Sleepy celery": 0.1,
+            "Sleepy saunter": 0.1,
+            "celery saunter": 0.8
           }
         }
       }
@@ -606,19 +606,19 @@ json_missing_fields <- '
         },
         "studycontributions": {
           "sleep:salad": {
-            "1": 0.8,
-            "2": 0.1,
-            "3": 0.1
+            "Sleepy celery": 0.8,
+            "Sleepy saunter": 0.1,
+            "celery saunter": 0.1
           },
           "sleep:exercise": {
-            "1": 0.1,
-            "2": 0.8,
-            "3": 0.1
+            "Sleepy celery": 0.1,
+            "Sleepy saunter": 0.8,
+            "celery saunter": 0.1
           },
           "salad:exercise": {
-            "1": 0.1,
-            "2": 0.1,
-            "3": 0.8
+            "Sleepy celery": 0.1,
+            "Sleepy saunter": 0.1,
+            "celery saunter": 0.8
           }
         }
       }
@@ -717,19 +717,19 @@ json_values_out_of_bounds <- '
         },
         "studycontributions": {
           "sleep:salad": {
-            "1": -0.8,
-            "2": -0.1,
-            "3": -0.1
+            "Sleepy celery": -0.8,
+            "Sleepy saunter": -0.1,
+            "celery saunter": -0.1
           },
           "sleep:exercise": {
-            "0": 0.1,
-            "2": 0.8,
-            "3": 0.1
+            "Sleepy-celery": 0.1,
+            "Sleepy saunter": 0.8,
+            "celery saunter": 0.1
           },
           "salad vs exercise": {
-            "1": 0.1,
-            "2": 0.1,
-            "3": 0.8
+            "Sleepy celery": 0.1,
+            "Sleepy saunter": 0.1,
+            "celery saunter": 0.8
           }
         }
       }
@@ -829,19 +829,19 @@ json_short_arrays <- '
         },
         "studycontributions": {
           "sleep:salad": {
-            "1": 0.8,
-            "2": 0.1,
-            "3": 0.1
+            "Sleepy celery": 0.8,
+            "Sleepy saunter": 0.1,
+            "celery saunter": 0.1
           },
           "sleep:exercise": {
-            "1": 0.1,
-            "2": 0.8,
-            "3": 0.1
+            "Sleepy celery": 0.1,
+            "Sleepy saunter": 0.8,
+            "celery saunter": 0.1
           },
           "salad:exercise": {
-            "1": 0.1,
-            "2": 0.1,
-            "3": 0.8
+            "Sleepy celery": 0.1,
+            "Sleepy saunter": 0.1,
+            "celery saunter": 0.8
           }
         }
       }
@@ -899,19 +899,19 @@ json_duplicate_row_column_names <- '
         },
         "studycontributions": {
           "sleep:salad": {
-            "1": 0.8,
-            "2": 0.1,
-            "3": 0.1
+            "Sleepy celery": 0.8,
+            "Sleepy saunter": 0.1,
+            "celery saunter": 0.1
           },
           "sleep:exercise": {
-            "1": 0.1,
-            "2": 0.8,
-            "3": 0.1
+            "Sleepy celery": 0.1,
+            "Sleepy saunter": 0.8,
+            "celery saunter": 0.1
           },
           "salad:exercise": {
-            "1": 0.1,
-            "2": 0.1,
-            "3": 0.8
+            "Sleepy celery": 0.1,
+            "Sleepy saunter": 0.1,
+            "celery saunter": 0.8
           }
         }
       }
@@ -1011,19 +1011,19 @@ json_empty_strings <- '
         },
         "studycontributions": {
           "sleep:salad": {
-            "1": 0.8,
-            "2": 0.1,
-            "3": 0.1
+            "Sleepy celery": 0.8,
+            "Sleepy saunter": 0.1,
+            "celery saunter": 0.1
           },
           "sleep:exercise": {
-            "1": 0.1,
-            "2": 0.8,
-            "3": 0.1
+            "Sleepy celery": 0.1,
+            "Sleepy saunter": 0.8,
+            "celery saunter": 0.1
           },
           "salad:exercise": {
-            "1": 0.1,
-            "2": 0.1,
-            "3": 0.8
+            "Sleepy celery": 0.1,
+            "Sleepy saunter": 0.1,
+            "celery saunter": 0.8
           }
         }
       }

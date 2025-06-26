@@ -40,7 +40,8 @@ GenerateCinemaAnalysis <- function(cinema_data, model_type, outcome_measure) {
   
   contributions <- netmeta::netcontrib(
     x = freq_all$net1,
-    method = "shortestpath"
+    method = "shortestpath",
+    study = TRUE
   )
   
   return(contributions)

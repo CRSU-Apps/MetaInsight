@@ -68,7 +68,7 @@
                       "minProperties": 1,
                       "additionalProperties": false,
                       "patternProperties": {
-                        "^[1-9][0-9]*$": { "type": "number" }
+                        "^[a-zA-Z0-9_ ]+$": { "type": "number" }
                       }
                     }
                   }
