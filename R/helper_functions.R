@@ -275,12 +275,11 @@ forest_height_pixels <- function(notrt, title=FALSE, annotation = FALSE) {    # 
 download_button_pair <- function(id){
   ns <- NS(id)
   div(class = "download_buttons",
-    fluidRow(
-      column(width = 6, downloadButton(ns("download_all"), "All studies")),
-      column(width = 6, downloadButton(ns("download_sub"), "Selected studies excluded"))
+    bslib::layout_columns(
+      downloadButton(ns("download_all"), "All studies"),
+      downloadButton(ns("download_sub"), "Selected studies excluded")
     )
   )
-
 }
 
 #' Create text with the point estimate and 95% CrI of between-trial SD of treatment effects.
