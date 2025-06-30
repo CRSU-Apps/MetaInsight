@@ -164,5 +164,7 @@ bayes_mcmc_module_result <- function(id) {
 
 bayes_mcmc_module_rmd <- function(common) {
   list(bayes_mcmc_knit = !is.null(common$meta$bayes_mcmc$used),
-       bayes_mcmc_n_rows = common$meta$bayes_mcmc$n_rows)
+       bayes_mcmc_n_rows = common$meta$bayes_mcmc$n_rows,
+       bayes_mcmc_height_200 = common$meta$bayes_mcmc$n_rows * (200/72),
+       bayes_mcmc_height_250 = common$meta$bayes_mcmc$n_rows * (250/72))
 }

@@ -10,7 +10,7 @@ mcmc_sub <- bayes_mcmc(bayes_model_sub)
 
 ```{asis, echo = {{bayes_mcmc_knit}}, eval = {{bayes_mcmc_knit}}, include = {{bayes_mcmc_knit}}}
 ##### Gelman convergence assessment plots
-{r, fig.width = 9, fig.height = {{bayes_mcmc_n_rows * 3.47}}}
+{r, fig.width = 9, fig.height = {{bayes_mcmc_height_250}}}
 ```
 ```{r, echo = {{bayes_mcmc_knit}}, include = {{bayes_mcmc_knit}}}
 par(mfrow = c(2, {{bayes_mcmc_n_rows}}))
@@ -19,7 +19,7 @@ invisible(lapply(mcmc_all$gelman_plots, function(f) f()))
 ```
 ```{asis, echo = {{bayes_mcmc_knit}}, eval = {{bayes_mcmc_knit}}, include = {{bayes_mcmc_knit}}}
 ##### Trace plots
-{r, fig.width = 9, fig.height = {{bayes_mcmc_n_rows * 2.78}}}
+{r, fig.width = 9, fig.height = {{bayes_mcmc_height_200}}}
 ```
 ```{r, echo = {{bayes_mcmc_knit}}, include = {{bayes_mcmc_knit}}}
 cowplot::plot_grid(
@@ -29,7 +29,7 @@ cowplot::plot_grid(
 ```
 ```{asis, echo = {{bayes_mcmc_knit}}, eval = {{bayes_mcmc_knit}}, include = {{bayes_mcmc_knit}}}
 ##### Posterior density plots
-{r, fig.width = 9, fig.height = {{bayes_mcmc_n_rows * 2.78}}}
+{r, fig.width = 9, fig.height = {{bayes_mcmc_height_200}}}
 ```
 ```{r, echo = {{bayes_mcmc_knit}}, include = {{bayes_mcmc_knit}}}
 cowplot::plot_grid(
@@ -41,7 +41,7 @@ cowplot::plot_grid(
 ```{asis, echo = {{bayes_mcmc_knit}}, eval = {{bayes_mcmc_knit}}, include = {{bayes_mcmc_knit}}}
 #### Excluding selected studies
 ##### Gelman convergence assessment plots
-{r, fig.width = 9, fig.height = {{bayes_mcmc_n_rows * 3.47}}}
+{r, fig.width = 9, fig.height = {{bayes_mcmc_height_250}}}
 ```
 ```{r, echo = {{bayes_mcmc_knit}}, include = {{bayes_mcmc_knit}}}
 par(mfrow = c(2, {{bayes_mcmc_n_rows}}))
@@ -50,7 +50,7 @@ invisible(lapply(mcmc_all$gelman_plots, function(f) f()))
 ```
 ```{asis, echo = {{bayes_mcmc_knit}}, eval = {{bayes_mcmc_knit}}, include = {{bayes_mcmc_knit}}}
 ##### Trace plots
-{r, fig.width = 9, fig.height = {{bayes_mcmc_n_rows * 2.78}}}
+{r, fig.width = 9, fig.height = {{bayes_mcmc_height_200}}}
 ```
 ```{r, echo = {{bayes_mcmc_knit}}, include = {{bayes_mcmc_knit}}}
 cowplot::plot_grid(
@@ -60,7 +60,7 @@ cowplot::plot_grid(
 ```
 ```{asis, echo = {{bayes_mcmc_knit}}, eval = {{bayes_mcmc_knit}}, include = {{bayes_mcmc_knit}}}
 ##### Posterior density plots
-{r, fig.width = 9, fig.height = {{bayes_mcmc_n_rows * 2.78}}}
+{r, fig.width = 9, fig.height = {{bayes_mcmc_height_200}}}
 ```
 ```{r, echo = {{bayes_mcmc_knit}}, include = {{bayes_mcmc_knit}}}
 cowplot::plot_grid(
