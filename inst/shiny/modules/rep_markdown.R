@@ -3,12 +3,158 @@ rep_markdown_module_ui <- function(id) {
   tagList(
     selectInput(ns("rmdFileType"), label = "Select download file type",
                 choices = c("HTML" = ".html", "Quarto" = ".qmd")),
-    downloadButton(ns("dlRMD"), 'Download Session Code')
+    bslib::input_task_button(ns("download"), "Download", icon = shiny::icon("download"), type = "default"),
+    div(style = "visibility: hidden;",
+        downloadButton(ns("dlRMD"), "")
+    )
   )
 }
 
 rep_markdown_module_server <- function(id, common, parent_session, COMPONENT_MODULES) {
   moduleServer(id, function(input, output, session) {
+
+    # function to create report
+    # GlobalEnv ensures that rmd_functions can be found
+    .GlobalEnv$make_report <- function(rep_markdown_file_type){
+
+      `%>%` <- magrittr::`%>%`
+
+      md_files <- c()
+      md_intro_file <- tempfile(pattern = "intro_", fileext = ".md")
+      rmarkdown::render("Rmd/userReport_intro.Rmd",
+                        output_format = rmarkdown::github_document(html_preview = FALSE),
+                        output_file = md_intro_file,
+                        clean = TRUE,
+                        encoding = "UTF-8")
+      md_files <- c(md_files, md_intro_file)
+
+      module_rmds <- NULL
+      # force rep_renv to beginning
+      components <- names(COMPONENT_MODULES)
+      components <- c("rep", components[components != c("rep")])
+      for (component in components) {
+        for (module in COMPONENT_MODULES[[component]]) {
+
+          # print(module$id) #for debugging
+
+          rmd_file <- module$rmd_file
+          rmd_function <- module$rmd_function
+          if (is.null(rmd_file)) next
+          if (is.null(rmd_function)) {
+            rmd_vars <- list()
+          } else {
+            rmd_vars <- do.call(rmd_function, list(common))
+          }
+          knit_params <- c(
+            file = rmd_file,
+            lapply(rmd_vars, metainsight::printVecAsis)
+          )
+          module_rmd <- do.call(knitr::knit_expand, knit_params)
+
+          # add a section header to create tabs
+          module_rmd <- c(glue::glue("## {stringr::str_to_sentence(component)}"), module_rmd)
+
+          module_rmd_file <- tempfile(pattern = paste0(module$id, "_"),
+                                      fileext = ".Rmd")
+          writeLines(module_rmd, module_rmd_file)
+          module_rmds <- c(module_rmds, module_rmd_file)
+        }
+      }
+
+      module_md_file <- tempfile(pattern = paste0(module$id, "_"),
+                                 fileext = ".md")
+
+      rmarkdown::render(input = "Rmd/userReport_module.Rmd",
+                        params = list(child_rmds = module_rmds),
+                        output_format = rmarkdown::github_document(html_preview = FALSE),
+                        output_file = module_md_file,
+                        clean = TRUE,
+                        encoding = "UTF-8")
+      md_files <- c(md_files, module_md_file)
+
+      combined_md <-
+        md_files %>%
+        lapply(readLines) %>%
+        lapply(paste, collapse = "\n") %>%
+        paste(collapse = "\n\n")
+
+      combined_rmd <- gsub("``` r", "```{r}", combined_md)
+      combined_rmd <- unlist(strsplit(combined_rmd , "\n"))
+
+      # remove ## for unused components and duplicates
+      is_tag <- grepl("^## ", combined_rmd)
+      tag_names <- sub("^## ", "", combined_rmd)
+      used_components <- unique(sapply(strsplit(stringr::str_to_sentence(names(common$meta)), "_"), function(x) x[1]))
+      lines_to_keep <- (!is_tag) | (tag_names %in% used_components & !duplicated(tag_names))
+      combined_rmd <- combined_rmd[lines_to_keep]
+
+      # add quarto header
+      quarto_header <- readLines("Rmd/quarto_header.txt")
+      combined_rmd <- c(quarto_header, combined_rmd)
+
+      # convert chunk control lines
+      chunk_control_lines <- grep("\\{r,", combined_rmd)
+      chunk_starts <- grep("```\\{r\\}", combined_rmd)
+      chunks_to_remove <- NA
+      for (i in seq_along(chunk_control_lines)) {
+        chunks_to_remove[i] <- min(chunk_starts[chunk_starts > chunk_control_lines[i]])
+      }
+      if (any(!is.na(chunks_to_remove))){
+        combined_rmd <- combined_rmd[-chunks_to_remove]
+      }
+      combined_rmd <- gsub("\\{r,", "```{r,", combined_rmd)
+
+      # fix any very long lines
+      long_lines <- which(nchar(combined_rmd) > 4000)
+      for (l in long_lines){
+        split_lines <- strwrap(combined_rmd[l], 4000)
+        combined_rmd <- combined_rmd[-l]
+        combined_rmd <- append(combined_rmd, split_lines, l-1)
+      }
+
+      result_file <- paste0("combined", rep_markdown_file_type)
+      if (rep_markdown_file_type == ".qmd") {
+        writeLines(combined_rmd, result_file, useBytes = TRUE)
+      } else {
+        writeLines(combined_rmd, "combined.qmd")
+        quarto::quarto_render(
+          input = "combined.qmd",
+          output_format = gsub(".", "", rep_markdown_file_type)
+        )
+      }
+      result_file
+    }
+
+    # not ideal, but can't find a method to pass to the function
+    observe({
+      rep_markdown_file_type <<- input$rmdFileType
+    })
+
+    # task that calls the function
+    task <- ExtendedTask$new(function(){
+      mirai::mirai(make_report(rep_markdown_file_type), globalenv())
+    }) %>% bslib::bind_task_button("download")
+
+    # start the task
+    observeEvent(input$download, {
+      show_loading_modal("Preparing download...")
+      task$invoke()
+    })
+
+    # wait for the file to be prepared and then trigger the download
+    results <- observe({
+      if (task$status() == "success") {
+        results$destroy()
+        shinyjs::click("dlRMD")
+        close_loading_modal()
+      }
+
+      if (task$status() == "error"){
+        results$destroy()
+        common$logger %>% writeLog(type = "error", "An error occurred trying to produce the download")
+        close_loading_modal()
+      }
+    })
 
     # handler for R Markdown download
     output$dlRMD <- downloadHandler(
@@ -16,113 +162,7 @@ rep_markdown_module_server <- function(id, common, parent_session, COMPONENT_MOD
         paste0("metainsight-session-", Sys.Date(), input$rmdFileType)
       },
       content = function(file) {
-        md_files <- c()
-        md_intro_file <- tempfile(pattern = "intro_", fileext = ".md")
-        rmarkdown::render("Rmd/userReport_intro.Rmd",
-                          output_format = rmarkdown::github_document(html_preview = FALSE),
-                          output_file = md_intro_file,
-                          clean = TRUE,
-                          encoding = "UTF-8")
-        md_files <- c(md_files, md_intro_file)
-
-        module_rmds <- NULL
-        # force rep_renv to beginning
-        components <- names(COMPONENT_MODULES)
-        components <- c("rep", components[components != c("rep")])
-        for (component in components) {
-          for (module in COMPONENT_MODULES[[component]]) {
-
-            # print(module$id) #for debugging
-
-            rmd_file <- module$rmd_file
-            rmd_function <- module$rmd_function
-            if (is.null(rmd_file)) next
-            if (is.null(rmd_function)) {
-              rmd_vars <- list()
-            } else {
-              rmd_vars <- do.call(rmd_function, list(common))
-            }
-            knit_params <- c(
-              file = rmd_file,
-              lapply(rmd_vars, printVecAsis)
-            )
-            module_rmd <- do.call(knitr::knit_expand, knit_params)
-
-            # add a section header to create tabs
-            module_rmd <- c(glue::glue("## {stringr::str_to_sentence(component)}"), module_rmd)
-
-            module_rmd_file <- tempfile(pattern = paste0(module$id, "_"),
-                                        fileext = ".Rmd")
-            writeLines(module_rmd, module_rmd_file)
-            module_rmds <- c(module_rmds, module_rmd_file)
-          }
-        }
-
-        module_md_file <- tempfile(pattern = paste0(module$id, "_"),
-                                   fileext = ".md")
-
-        rmarkdown::render(input = "Rmd/userReport_module.Rmd",
-                          params = list(child_rmds = module_rmds),
-                          output_format = rmarkdown::github_document(html_preview = FALSE),
-                          output_file = module_md_file,
-                          clean = TRUE,
-                          encoding = "UTF-8")
-        md_files <- c(md_files, module_md_file)
-
-        combined_md <-
-          md_files %>%
-          lapply(readLines) %>%
-          lapply(paste, collapse = "\n") %>%
-          paste(collapse = "\n\n")
-
-        combined_rmd <- gsub("``` r", "```{r}", combined_md)
-        combined_rmd <- unlist(strsplit(combined_rmd , "\n"))
-
-        # remove ## for unused components and duplicates
-        is_tag <- grepl("^## ", combined_rmd)
-        tag_names <- sub("^## ", "", combined_rmd)
-        used_components <- unique(sapply(strsplit(stringr::str_to_sentence(names(common$meta)), "_"), function(x) x[1]))
-        lines_to_keep <- (!is_tag) | (tag_names %in% used_components & !duplicated(tag_names))
-        combined_rmd <- combined_rmd[lines_to_keep]
-
-        # add quarto header
-        quarto_header <- readLines("Rmd/quarto_header.txt")
-        combined_rmd <- c(quarto_header, combined_rmd)
-
-        # convert chunk control lines
-        chunk_control_lines <- grep("\\{r,", combined_rmd)
-        chunk_starts <- grep("```\\{r\\}", combined_rmd)
-        chunks_to_remove <- NA
-        for (i in seq_along(chunk_control_lines)) {
-          chunks_to_remove[i] <- min(chunk_starts[chunk_starts > chunk_control_lines[i]])
-        }
-        if (any(!is.na(chunks_to_remove))){
-          combined_rmd <- combined_rmd[-chunks_to_remove]
-        }
-        combined_rmd <- gsub("\\{r,", "```{r,", combined_rmd)
-
-        # fix any very long lines
-        long_lines <- which(nchar(combined_rmd) > 4000)
-        for (l in long_lines){
-          split_lines <- strwrap(combined_rmd[l], 4000)
-          combined_rmd <- combined_rmd[-l]
-          combined_rmd <- append(combined_rmd, split_lines, l-1)
-        }
-
-        result_file <- paste0("combined", input$rmdFileType)
-        if (input$rmdFileType == ".qmd") {
-          writeLines(combined_rmd, result_file, useBytes = TRUE)
-        } else {
-          writeLines(combined_rmd, "combined.qmd")
-          quarto::quarto_render(
-            input = "combined.qmd",
-            output_format = gsub(".", "", input$rmdFileType)
-          )
-        }
-
-        result_file <- paste0("combined", input$rmdFileType)
-        on.exit(unlink("combined.qmd"))
-        file.rename(result_file, file)
+        file.rename(task$result(), file)
       }
     )
 
