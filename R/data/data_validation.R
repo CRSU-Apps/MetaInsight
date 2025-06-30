@@ -290,7 +290,7 @@ ValidateUploadedData <- function(data, outcome_type) {
   }
   
   #The number of individual RoB columns
-  n_rob_individual <- length(grep(pattern = "^rob.+$", x = names(data)))
+  n_rob_individual <- length(grep(pattern = "^rob\\..+$", x = names(data)))
 
   #Check there are no more than 10 individual RoB columns
   if (n_rob_individual > 10) {

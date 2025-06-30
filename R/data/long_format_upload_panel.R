@@ -78,7 +78,7 @@ long_format_upload_panel_ui <- function(id) {
     tags$ul(
       tags$li(
         tags$strong("rob.<ROB_NAME_1>, ..., rob.<ROB_NAME_10>"),
-        " contain individual risk of bias components. Up to 10 such columns can be present."
+        " contain individual risk of bias components. Up to 10 such columns can be present. There are no restrictions on the names of these columns."
       )
     ),
     p("An example of this structure can be seen in the", tags$strong("'View Data'"), "tab."),

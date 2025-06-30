@@ -81,8 +81,8 @@
   required = FALSE,
   type_check = "is.numeric",
   type_name = "numeric",
-  pattern = "^(?i)rob(\\.)?.*$",
-  replacement = "rob",
+  pattern = "^(?i)rob(\\..+)?$",
+  replacement = "rob\\1",
   number_group = NA
 )
 

@@ -44,6 +44,8 @@
 .covariate_prefix <- "covar."
 .covariate_prefix_regex <- "^covar\\."
 
+.rob_individual_prefix_regex <- "^rob\\."
+
 
 #' Remove leading and trailing whitespace and collapse multiple whitespace characters between words.
 #' 
@@ -388,8 +390,11 @@ ReorderColumns <- function(data, outcome_type) {
   covariate_column_names <- FindCovariateNames(data)
   covariate_column_indices <- match(covariate_column_names, names(data))
   
-  reordering_indices <- c(reordering_indices, covariate_column_indices)
+  rob_individual_column_names <- FindRobIndividualNames(data)
+  rob_individual_column_indices <- match(rob_individual_column_names, names(data))
   
+  reordering_indices <- c(reordering_indices, rob_individual_column_indices, covariate_column_indices)
+
   return(data[, reordering_indices])
 }
 
@@ -487,6 +492,12 @@ GetFriendlyCovariateName <- function(column_name) {
   return(stringr::str_replace(column_name, .covariate_prefix_regex, ""))
 }
 
+#' Find the names of all columns which contain an individual RoB variable.
+#' @param df Data frame in which to find covariate columns.
+#' @return Names of all covariate columns
+FindRobIndividualNames <- function(df) {
+  return(names(dplyr::select(df, dplyr::matches(.rob_individual_prefix_regex))))
+}
 
 
 #' Keep or delete rows in @param data corresponding to the control treatment in each study.
