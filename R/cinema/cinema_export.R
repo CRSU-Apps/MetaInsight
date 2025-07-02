@@ -1,5 +1,14 @@
-
-prepareStudyContibutionsForCinema <- function(study_contributions) {
+#' Prepare study contributions into a format that CINeMA can read.
+#' This is a named list of lists. The top level list has item named "<TREATMENT_N>:<TREATMENT_M>"
+#' where "<TREATMENT_N>" and "<TREATMENT_M>" are the names of 2 treatments. There is an item
+#' for every possible comparion in the network.
+#' Each item in the second level is a named list of numerical values for the contribution of each
+#' study towards the comparison. The name of each item is the name of the relevant study, and
+#' every study is included in the list. The values sum to 1.
+#' 
+#' @param study_contributions The contribution matrix calculated by {netmeta}.
+#' @return A List with the described structure.
+.PrepareStudyContibutionsForCinema <- function(study_contributions) {
   prepped_contributions <- sapply(
     simplify = FALSE,
     unique(study_contributions$comparison),
@@ -23,7 +32,25 @@ prepareStudyContibutionsForCinema <- function(study_contributions) {
   return(prepped_contributions)
 }
 
-PrepareDataForCinema <- function(data, treatment_ids, outcome_type) {
+#' Prepare data into a format that CINeMA can read.
+#' This is an unnamed list of lists. The top level list contains an item for each study arm,
+#' as in long format.
+#' Each item in the second level is a named list of study arm properties:
+#' - "study" Study name
+#' - "id" Unique study ID
+#' - "t" Name of treatment
+#' - "n" Number of participants
+#' - "r" Number of events (Binary outcome)
+#' - "mean" Mean treatment effect (Continuous outcome)
+#' - "sd" Standard deviation of treatment effect (Continuous outcome)
+#' - "indirectness" Indirectness of study
+#' - "rob" Risk of bias of study
+#' 
+#' @param data The dataframe used in MetaInsight.
+#' @param treatment_ids  Data frame containing treatment names (Label), original tratment names (RawLabel) and IDs (Number).
+#' @param outcome_type Type of outcome for which to reorder, either 'Continuous' or 'Binary'.
+#' @return A List with the described structure.
+.PrepareDataForCinema <- function(data, treatment_ids, outcome_type) {
   if (FindDataShape(data) == "wide") {
     long_data <- WideToLong(data, outcome_type)
   } else {
@@ -60,7 +87,21 @@ PrepareDataForCinema <- function(data, treatment_ids, outcome_type) {
   return(prepared_data)
 }
 
-PrepareAnalysisForCinema <- function(analysis, model_type, outcome_measure) {
+#' Prepare analysis into a format that CINeMA can read.
+#' This is a named list of lists. The top level list contains items:
+#' - "hatmatrix" Hat matrix from {netmeta}
+#'   - "colnames" Vector of column names in form "<TREATMENT_N>:<TREATMENT_M>"
+#'   - "H" Matrix of matrices
+#'   - "model" Type of model: "fixed" or "random"
+#'   - "rownames" Vector of row names in form "<TREATMENT_N>:<TREATMENT_M>"
+#'   - "sm" Outcome measure, one of: ["OR", "RR", "RD", "MD", "SMD"]
+#' - "studycontributions" Output from `.PrepareStudyContibutionsForCinema()`
+#' 
+#' @param analysis Analysis from {netmeta}.
+#' @param model_type Type of model: "fixed" or "random".
+#' @param outcome_measure Outcome measure, one of: ["OR", "RR", "RD", "MD", "SMD"].
+#' @return A List with the described structure.
+.PrepareAnalysisForCinema <- function(analysis, model_type, outcome_measure) {
   if (model_type == "fixed") {
     hat_matrix <- analysis$common
     study_contributions <- analysis$study.common
@@ -83,7 +124,7 @@ PrepareAnalysisForCinema <- function(analysis, model_type, outcome_measure) {
     contributionMatrices = c(
       list(
         hatmatrix = prepped_hat_matrix,
-        studycontributions = prepareStudyContibutionsForCinema(study_contributions)
+        studycontributions = .PrepareStudyContibutionsForCinema(study_contributions)
       )
     )
   )
@@ -91,9 +132,26 @@ PrepareAnalysisForCinema <- function(analysis, model_type, outcome_measure) {
   return(prepared_analysis)
 }
 
-PrepareProjectForCinema <- function(long_data, treatment_ids, outcome_type, analysis, model_type, outcome_measure) {
-  prepped_data <- PrepareDataForCinema(long_data, treatment_ids, outcome_type)
-  prepared_analysis <- PrepareAnalysisForCinema(analysis, model_type, outcome_measure)
+#' Prepare project into a format that CINeMA can read.
+#' This is a named list of lists. The top level list contains items:
+#' - "project" Information for CINeMA project
+#'   - "CM" Contribution matrices
+#'     - "contributionMatrices" output from `.PrepareAnalysisForCinema()`
+#'   - "format" Data format. Always "long"
+#'   - "type" Outcome type. Either "binary" or "continuous"
+#'   - "Studies" Study data
+#'     - "long" Output from `.PrepareDataForCinema()`
+#' 
+#' @param data The dataframe used in MetaInsight.
+#' @param treatment_ids  Data frame containing treatment names (Label), original tratment names (RawLabel) and IDs (Number).
+#' @param outcome_type Type of outcome for which to reorder, either 'Continuous' or 'Binary'.
+#' @param analysis Analysis from {netmeta}.
+#' @param model_type Type of model: "fixed" or "random".
+#' @param outcome_measure Outcome measure, one of: ["OR", "RR", "RD", "MD", "SMD"].
+#' @return A List with the described structure.
+.PrepareProjectForCinema <- function(data, treatment_ids, outcome_type, analysis, model_type, outcome_measure) {
+  prepped_data <- .PrepareDataForCinema(data, treatment_ids, outcome_type)
+  prepared_analysis <- .PrepareAnalysisForCinema(analysis, model_type, outcome_measure)
   
   prepped_project = list(
     project = list(
@@ -107,4 +165,33 @@ PrepareProjectForCinema <- function(long_data, treatment_ids, outcome_type, anal
   )
   
   return(prepped_project)
+}
+
+#' Prepare project into a JSON format that CINeMA can read.
+#' This is a named list of lists. The top level list contains items:
+#' - "project" Information for CINeMA project
+#'   - "CM" Contribution matrices
+#'     - "contributionMatrices" output from `.PrepareAnalysisForCinema()`
+#'   - "format" Data format. Always "long"
+#'   - "type" Outcome type. Either "binary" or "continuous"
+#'   - "Studies" Study data
+#'     - "long" Output from `.PrepareDataForCinema()`
+#' 
+#' @param data The dataframe used in MetaInsight.
+#' @param treatment_ids  Data frame containing treatment names (Label), original tratment names (RawLabel) and IDs (Number).
+#' @param outcome_type Type of outcome for which to reorder, either 'Continuous' or 'Binary'.
+#' @param analysis Analysis from {netmeta}.
+#' @param model_type Type of model: "fixed" or "random".
+#' @param outcome_measure Outcome measure, one of: ["OR", "RR", "RD", "MD", "SMD"].
+#' @return JSON string with the described structure.
+GenerateCinemaJson <- function(data, treatment_ids, outcome_type, analysis, model_type, outcome_measure) {
+  prepped_project <- .PrepareProjectForCinema(
+    data,
+    treatment_ids,
+    outcome_type,
+    analysis,
+    model_type,
+    outcome_measure
+  )
+  return(jsonlite::toJSON(prepped_project, pretty = TRUE))
 }

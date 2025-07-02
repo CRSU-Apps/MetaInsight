@@ -55,10 +55,7 @@ cinema_analysis <- GenerateCinemaAnalysis(cinema_data, model_type, outcome_measu
 
 
 test_that("Should produce valid JSON", {
-  prepped_project <- PrepareProjectForCinema(cinema_data$long_data, cinema_data$treatment_ids, cinema_data$outcome_type, cinema_analysis, model_type, outcome_measure)
-  
-  json <- jsonlite::toJSON(prepped_project, pretty = TRUE)
-  
+  json <- GenerateCinemaJson(cinema_data$long_data, cinema_data$treatment_ids, cinema_data$outcome_type, cinema_analysis, model_type, outcome_measure)
   result <- jsonvalidate::json_validate(json, "../../cinema/cinema_schema.json", verbose = TRUE)
   
   expect_true(result, label = result)
