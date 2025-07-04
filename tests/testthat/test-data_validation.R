@@ -334,18 +334,6 @@ test_that("ValidateUploadedData() identifies studies without unique quality valu
   expect_equal(validation_result3$message, "Some studies do not have the same rob.test value for every arm: Constantine.")
 })
 
-test_that("ValidateUploadedData() identifies when rob is not present but an individual rob component is", {
-  data <- read.csv("data/Cont_long.csv")
-
-  data <- data[, names(data) != "rob"]
-  data$rob.test  <- 1
-
-  validation_result <- ValidateUploadedData(data, "Continuous")
-
-  expect_false(validation_result$valid)
-  expect_equal(validation_result$message, "If individual RoB variables are provided then an overall RoB variable must also be provided.")
-})
-
 test_that("ValidateUploadedData() identifies when more than 10 individual rob components are present", {
   data <- read.csv("data/Cont_long.csv")
   

@@ -301,16 +301,6 @@ ValidateUploadedData <- function(data, outcome_type) {
       )
     )
   }
-
-  #Check that overall RoB is there if there is at least one individual RoB column
-  if (n_rob_individual >= 1 && length(grep(pattern = "^rob$", x = names(data))) == 0) {
-    return(
-      list(
-        valid = FALSE,
-        message = glue::glue("If individual RoB variables are provided then an overall RoB variable must also be provided.")
-      )
-    )
-  }
   
   #Loop through the rob and indirectness columns
   for (var in rob_indirectness_columns) {
