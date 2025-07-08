@@ -79,7 +79,7 @@ setup_exclude <- function(non_covariate_data, treatment_df, reference_treatment,
   list(bugsnet_sub = bugsnet_sub,
        freq_sub = freq_sub,
        reference_treatment_sub = reference_treatment_sub,
-       subsetted_data = subsetted_data,
+       subsetted_data = data_sub,
        subsetted_treatment_df = treatment_df_sub
        )
 }
