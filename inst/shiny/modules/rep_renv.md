@@ -1,9 +1,11 @@
 ### **Module:** ***Reproduce environment***
 
 **BACKGROUND**
-In order to ensure that an analysis is reproducible, it is necessary to record the exact versions of all software dependencies used in an analysis. This module allows you to download a list of all packages used by shinyscholar which can be used to restore those versions in the future.
+
+In order to ensure that an analysis is reproducible, it is necessary to record the exact versions of all software dependencies used in an analysis. This module allows you to download a list of all packages used by MetaInsight which can be used to restore those versions in the future.
 
 **IMPLEMENTATION**
+
 The module uses `renv::snapshot()` to produce a `.lock` file which can passed to `renv::restore()` to reinstall the same package versions on your own machine.
 
 **REFERENCES**

@@ -114,6 +114,10 @@ tagList(
         flex_wrap(includeMarkdown("modules/rep_markdown.md"))
       ),
       conditionalPanel(
+        "input.tabs == 'rep' & input.repSel == 'rep_renv'",
+        flex_wrap(includeMarkdown("modules/rep_renv.md"))
+      ),
+      conditionalPanel(
         "input.tabs == 'rep' & input.repSel == 'rep_refPackages'",
         flex_wrap(includeMarkdown("modules/rep_refPackages.md"))
       ),
