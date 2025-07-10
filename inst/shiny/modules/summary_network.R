@@ -9,7 +9,7 @@ summary_network_module_ui <- function(id) {
                  ),
                  selected = "netplot"),
     actionButton(ns("run"), "Generate plots", icon = icon("arrow-turn-down")),
-    conditionalPanel("input.run > 0",
+    div(class = "summary_network_div",
       fluidRow(
         tags$label("Label size"),
         column(width = 6,
@@ -27,6 +27,8 @@ summary_network_module_ui <- function(id) {
 summary_network_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
+    shinyjs::hide(selector = ".summary_network_div")
+
     observeEvent(input$run, {
       # WARNING ####
       if (is.null(common$freq_sub)){
@@ -35,6 +37,7 @@ summary_network_module_server <- function(id, common, parent_session) {
       }
       # TRIGGER
       trigger("summary_network")
+      shinyjs::show(selector = ".summary_network_div")
     })
 
     output$plot_all <- renderPlot({
@@ -144,24 +147,26 @@ summary_network_module_server <- function(id, common, parent_session) {
 
 summary_network_module_result <- function(id) {
   ns <- NS(id)
-  fluidRow(
-    conditionalPanel(
-      condition = "input.style == 'netgraph'",
-      ns = ns,
-      h4("Numbers on the line indicate the number of trials conducted for the comparison. The shaded areas indicate there exist multi-arm trials between the comparisons.")
-    ),
-    conditionalPanel(
-      condition = "input.style == 'netplot'",
-      ns = ns,
-      h4("The size of the nodes and thickness of edges represent the number of studies that examined a treatment and compared two given treatments respectively.")
-    ),
-    column(width = 6,
-           plotOutput(ns("plot_all"))
-    ),
-    column(width = 6,
-           plotOutput(ns("plot_sub"))
-    ),
-    div(style = "disarrow-turn-down: flex; justify-content: center; padding-top: 50px", tableOutput(ns("table")))
+  div(class = "summary_network_div",
+    fluidRow(
+      conditionalPanel(
+        condition = "input.style == 'netgraph'",
+        ns = ns,
+        h4("Numbers on the line indicate the number of trials conducted for the comparison. The shaded areas indicate there exist multi-arm trials between the comparisons.")
+      ),
+      conditionalPanel(
+        condition = "input.style == 'netplot'",
+        ns = ns,
+        h4("The size of the nodes and thickness of edges represent the number of studies that examined a treatment and compared two given treatments respectively.")
+      ),
+      column(width = 6,
+             plotOutput(ns("plot_all"))
+      ),
+      column(width = 6,
+             plotOutput(ns("plot_sub"))
+      ),
+      div(style = "display: flex; justify-content: center; padding-top: 50px", tableOutput(ns("table")))
+    )
   )
 }
 
