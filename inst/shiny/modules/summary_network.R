@@ -19,8 +19,8 @@ summary_network_module_ui <- function(id) {
                numericInput(ns('label_sub'), label = "Selected studies excluded", value = 1.2, step = 0.1)
         )
       ),
-      download_button_pair(id),
-      ns = ns)
+      download_button_pair(id)
+    )
   )
 }
 
@@ -37,11 +37,11 @@ summary_network_module_server <- function(id, common, parent_session) {
       }
       # TRIGGER
       trigger("summary_network")
-      shinyjs::show(selector = ".summary_network_div")
     })
 
     output$plot_all <- renderPlot({
       req(watch("summary_network") > 0)
+      shinyjs::show(selector = ".summary_network_div")
       summary_network(common$freq_all,
                       common$bugsnet_all,
                       input$style,

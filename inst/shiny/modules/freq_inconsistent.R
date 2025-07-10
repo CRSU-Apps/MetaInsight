@@ -2,12 +2,14 @@ freq_inconsistent_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
     actionButton(ns("run"), "Generate tables", icon = icon("arrow-turn-down")),
-    conditionalPanel("input.run > 0", download_button_pair(id), ns = ns)
+    div(class = "freq_inconsistent_div", download_button_pair(id))
   )
 }
 
 freq_inconsistent_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
+
+    shinyjs::hide(selector = ".freq_inconsistent_div")
 
     observeEvent(input$run, {
       # WARNING ####
@@ -22,6 +24,7 @@ freq_inconsistent_module_server <- function(id, common, parent_session) {
     table_all <- reactive({
       watch("model")
       req(watch("freq_inconsistent") > 0)
+      shinyjs::show(selector = ".freq_inconsistent_div")
       common$meta$freq_inconsistent$used <- TRUE
       freq_inconsistent(common$freq_all, common$model_type)
     })
@@ -55,11 +58,13 @@ freq_inconsistent_module_server <- function(id, common, parent_session) {
 freq_inconsistent_module_result <- function(id) {
   ns <- NS(id)
   tagList(
-    h4("Assessment of inconsistency for all studies"),
-    tableOutput(ns("table_all")),
-    br(),
-    h4("Assessment of inconsistency with selected studies excluded"),
-    tableOutput(ns("table_sub"))
+    div(class = "freq_inconsistent_div",
+      h4("Assessment of inconsistency for all studies"),
+      tableOutput(ns("table_all")),
+      br(),
+      h4("Assessment of inconsistency with selected studies excluded"),
+      tableOutput(ns("table_sub"))
+    )
   )
 }
 

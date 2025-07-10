@@ -7,9 +7,11 @@ bayes_compare_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
     actionButton(ns("run"), "Generate tables", icon = icon("arrow-turn-down")),
-    layout_columns(
-      bayes_compare_submodule_ui(ns("all"), "All studies"),
-      bayes_compare_submodule_ui(ns("sub"), "With selected studies excluded")
+    div(class = "bayes_compare_div",
+      layout_columns(
+        bayes_compare_submodule_ui(ns("all"), "All studies"),
+        bayes_compare_submodule_ui(ns("sub"), "With selected studies excluded")
+      )
     )
   )
 }
@@ -17,10 +19,10 @@ bayes_compare_module_ui <- function(id) {
 bayes_compare_submodule_server <- function(id, common, model, run, text){
   moduleServer(id, function(input, output, session) {
 
-    shinyjs::hide("download")
+    shinyjs::hide(selector = ".bayes_compare_div")
 
     output$table <- renderTable({
-      shinyjs::show("download")
+      shinyjs::show(selector = ".bayes_compare_div")
       bayes_compare(common[[model]], common$outcome_measure)
     }) %>% bindEvent(run())
 
@@ -94,17 +96,17 @@ bayes_compare_submodule_result <- function(id) {
 bayes_compare_module_result <- function(id) {
   ns <- NS(id)
   tagList(
-    p(
-      tags$strong(
+    div(class = "bayes_compare_div",
+      h4(
         "In contrast to the 'comparison of all treatment pairs' tab in the frequentist NMA results,
         this table only contains the estimates from the network meta analysis,
         i.e. does not contain estimates from pairwise meta-analysis which only contains direct evidence.
         If you would like to obtain the pairwise meta-analysis results, please use the Nodesplit model module"
+      ),
+      layout_columns(
+        bayes_compare_submodule_result(ns("all")),
+        bayes_compare_submodule_result(ns("sub"))
       )
-    ),
-    layout_columns(
-      bayes_compare_submodule_result(ns("all")),
-      bayes_compare_submodule_result(ns("sub"))
     )
   )
 }

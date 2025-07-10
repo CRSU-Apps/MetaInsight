@@ -1,7 +1,7 @@
 bayes_ranking_submodule_ui <- function(id, download_label) {
   ns <- NS(id)
   tagList(
-    div(class = "bayes_ranking_download",
+    div(class = "bayes_ranking_div",
       div(
         style = "height: 40px; margin-bottom: 10px; display: flex; text-align: center; align-items: flex-end; justify-content: center;",
         tags$label(download_label)
@@ -61,7 +61,7 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
   moduleServer(id, function(input, output, session) {
 
     init(trigger)
-    shinyjs::hide(selector = ".bayes_ranking_download")
+    shinyjs::hide(selector = ".bayes_ranking_div")
 
     observeEvent(run(),{
       req(common[[paste0("bayes_", id)]])
@@ -112,7 +112,7 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
 
     output$ranking <- renderPlot({
       req(watch(trigger) > 0)
-      shinyjs::show(selector = ".bayes_ranking_download")
+      shinyjs::show(selector = ".bayes_ranking_div")
       if (rank_style() == "litmus" && colourblind() == FALSE){
         return(ranking_plots()$litmus)
       }
@@ -291,32 +291,34 @@ bayes_ranking_module_server <- function(id, common, parent_session) {
 bayes_ranking_submodule_result <- function(id, title) {
   ns <- NS(id)
   tagList(
-    accordion(
-      open = TRUE,
-      accordion_panel(
-        title = title,
-        splitLayout(
-          cellWidths = c("30%", "40%", "30%"),
-          cellArgs = list(style = "height: 500px; padding: 16px; border: 2px solid #005c8a; white-space: normal"),
-          fluidRow(
-            align = "center",
-              uiOutput(ns("forest"))
-          ),
-          fluidRow(
-            align = "center",
-              plotOutput(ns("ranking")), # table_label = table_label)
-            shinyWidgets::dropMenu(
-              shinyWidgets::dropdownButton(
-                circle = FALSE,
-                status = "default",
-                label = "Ranking probabilities and SUCRA values for all treatments"
-              ),
-              tableOutput(ns("ranking_table"))
+    div(class = "bayes_ranking_div",
+      accordion(
+        open = TRUE,
+        accordion_panel(
+          title = title,
+          splitLayout(
+            cellWidths = c("30%", "40%", "30%"),
+            cellArgs = list(style = "height: 500px; padding: 16px; border: 2px solid #005c8a; white-space: normal"),
+            fluidRow(
+              align = "center",
+                uiOutput(ns("forest"))
+            ),
+            fluidRow(
+              align = "center",
+                plotOutput(ns("ranking")), # table_label = table_label)
+              shinyWidgets::dropMenu(
+                shinyWidgets::dropdownButton(
+                  circle = FALSE,
+                  status = "default",
+                  label = "Ranking probabilities and \nSUCRA values for all treatments"
+                ),
+                tableOutput(ns("ranking_table"))
+              )
+            ),
+            fluidRow(
+              align = "center",
+                uiOutput(ns("network"))
             )
-          ),
-          fluidRow(
-            align = "center",
-              uiOutput(ns("network"))
           )
         )
       )
