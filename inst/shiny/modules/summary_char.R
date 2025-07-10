@@ -58,7 +58,7 @@ summary_char_module_server <- function(id, common, parent_session) {
 summary_char_module_result <- function(id) {
   ns <- NS(id)
   fluidRow(
-    div(style = "disarrow-turn-down: flex; justify-content: center; padding-top: 50px", tableOutput(ns("table")))
+    div(style = "display: flex; justify-content: center; padding-top: 50px", tableOutput(ns("table")))
   )
 }
 

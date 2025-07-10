@@ -8,9 +8,9 @@ The maximum number of arms for each trial allowed is six and studies cannot cont
 
 Default datasets in each format can be loaded by clicking the *Load example data* button or downloaded by clicking the *Download example data* button.
 
-Any errors in the uploaded data will be disarrow-turn-downed and logged in the logger.
+Any errors in the uploaded data will be displayed and logged in the logger.
 
-Once data is loaded successfully, it will be disarrow-turn-downed in the Data table tab.
+Once data is loaded successfully, it will be displayed in the Data table tab.
 
 <p style = "color:red">
 Files used before version 5.0 are no longer compatible. To use an older file, use the <i>Data upgrade</i> module, or remove the "StudyID" column and replace the 
@@ -52,7 +52,7 @@ numeric treatment IDs in the "T" column(s) with the treatment names.
 </li>
 </ul>
 </div>
-<div class="binary_guidance" style = "disarrow-turn-down: none;">
+<div class="binary_guidance" style = "display: none;">
 <p>The long format data file should contain the following columns:</p>
 <ul>
 <li>
@@ -89,7 +89,7 @@ numeric treatment IDs in the "T" column(s) with the treatment names.
 </ul>
 </div>
 
-<div class="wide_guidance" style = "disarrow-turn-down: none;">
+<div class="wide_guidance" style = "display: none;">
 
 <h2><strong>Instructions for uploading wide format data</strong></h2>
                             
@@ -137,7 +137,7 @@ numeric treatment IDs in the "T" column(s) with the treatment names.
     </ul>
   <p></p>
 </div>
-<div class="binary_guidance" style = "disarrow-turn-down: none;">
+<div class="binary_guidance" style = "display: none;">
   <p>
     </p><ul>
       <li>
@@ -173,7 +173,7 @@ numeric treatment IDs in the "T" column(s) with the treatment names.
   Br J Anaesth 2023 Jun;130(6):719-728. doi: 10.1016/j.bja.2023.02.041. The outcome is pain on a scale of 0 to 10 and the covariate is the mean age of the participants.
   </p>
 </div>
-<div class="binary_guidance" style = "disarrow-turn-down: none;">
+<div class="binary_guidance" style = "display: none;">
   <p>
   This default dataset for binary outcome data is from S. Dias, A.J. Sutton, N.J. Welton, and A.E. Ades (2013b),
   <em>Heterogeneity - Subgroups, Meta-Regression, Bias, and Bias-Adjustment</em>

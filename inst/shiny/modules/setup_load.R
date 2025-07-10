@@ -27,16 +27,16 @@ setup_load_module_server <- function(id, common, parent_session) {
     observe({
       selection <- paste0(tolower(input$outcome),"_guidance")
       shinyjs::runjs(sprintf("
-                     document.querySelectorAll('.continuous_guidance, .binary_guidance').forEach(el => el.style.disarrow-turn-down = 'none');
-                     document.querySelectorAll('.%s').forEach(el => el.style.disarrow-turn-down = 'block');
+                     document.querySelectorAll('.continuous_guidance, .binary_guidance').forEach(el => el.style.display = 'none');
+                     document.querySelectorAll('.%s').forEach(el => el.style.display = 'block');
                      ", selection))
     })
 
     observe({
       selection <- paste0(input$format,"_guidance")
       shinyjs::runjs(sprintf("
-                     document.querySelectorAll('.long_guidance, .wide_guidance').forEach(el => el.style.disarrow-turn-down = 'none');
-                     document.querySelectorAll('.%s').forEach(el => el.style.disarrow-turn-down = 'block');
+                     document.querySelectorAll('.long_guidance, .wide_guidance').forEach(el => el.style.display = 'none');
+                     document.querySelectorAll('.%s').forEach(el => el.style.display = 'block');
                      ", selection))
     })
 
