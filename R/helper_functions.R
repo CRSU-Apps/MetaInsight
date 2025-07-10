@@ -235,16 +235,16 @@ suppress_jags_output <- function(expr) {
 #' @export
 write_plot <- function(file, type, renderFunction, height = NULL, width = NULL) {
   if (type == "pdf") {
-    pdf(file = file, height = height, width = width)
+    grDevices::pdf(file = file, height = height, width = width)
   }
   if (type == "png") {
-    png(file = file, height = height, width = width, units = "in", res = 300)
+    grDevices::png(file = file, height = height, width = width, units = "in", res = 300)
   }
   if (type == "svg") {
-    svg(file = file, height = height, width = width)
+    grDevices::svg(file = file, height = height, width = width)
   }
   renderFunction()
-  dev.off()
+  grDevices::dev.off()
 }
 
 #' Calculate the pixel height of a forest plot for a given number of treatments

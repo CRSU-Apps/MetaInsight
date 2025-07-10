@@ -63,8 +63,8 @@ summary_study <- function(freq, outcome_measure, header, title, logger = NULL) {
                              ylim = c(1, nrow(d1) + 2 * length(text_label) + 2), rows = lines,
                              xlab = paste("Observed ",outcome), efac = 0.5)
   }
-  text(fplot$xlim[1], gaps, pos = 4, font = 4, text_label, cex = HeaderSize)
-  title("Individual study results (with selected studies excluded) grouped by treatment comparison", cex.main = TitleSize)
+  graphics::text(fplot$xlim[1], gaps, pos = 4, font = 4, text_label, cex = HeaderSize)
+  graphics::title("Individual study results (with selected studies excluded) grouped by treatment comparison", cex.main = TitleSize)
 
   return(invisible(fplot))
 
