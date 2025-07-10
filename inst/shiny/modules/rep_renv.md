@@ -6,7 +6,7 @@ In order to ensure that an analysis is reproducible, it is necessary to record t
 
 **IMPLEMENTATION**
 
-The module uses `renv::snapshot()` to produce a `.lock` file which can passed to `renv::restore()` to reinstall the same package versions on your own machine.
+The module uses `renv::snapshot()` to produce a `.lock` file which can passed to `renv::restore()` to reinstall the same package versions on your own machine. Once you have downloaded this file, the Session Code module will be updated to include a chunk which reads the file before rerunning the analysis.
 
 **REFERENCES**
 
