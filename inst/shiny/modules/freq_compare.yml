@@ -1,5 +1,5 @@
 component: "freq"
 short_name: "Comparisons"
 long_name: "Comparison of all treatment pairs"
-authors: "Rhiannon K. Owen, Naomi Bradbury, Yiqiao Xin, Tom Morris, Janion Nevill, Simon E. H. Smart"
+authors: "Naomi Bradbury, Tom Morris, Clareece Nevill, Janion Nevill, Rhiannon Owen, Simon Smart, Yiqiao Xin"
 package: [netmeta]

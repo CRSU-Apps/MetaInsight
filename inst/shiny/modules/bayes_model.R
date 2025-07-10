@@ -38,7 +38,7 @@ bayes_model_module_server <- function(id, common, parent_session) {
       function(...) sub_model <<- mirai::mirai(run(...), run = bayes_model, .args = environment())
     ) %>% bind_task_button("run")
 
-    observeEvent(watch("bayes_model"), {
+    observeEvent(list(watch("bayes_model"), watch("model")), {
       req(watch("bayes_model") > 0)
       common$logger %>% writeLog(type = "starting", "Fitting Bayesian models")
       common$tasks$bayes_model_all$invoke(common$main_connected_data,
