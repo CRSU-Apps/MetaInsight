@@ -91,29 +91,22 @@ bayes_forest_module_server <- function(id, common, parent_session) {
         common$logger %>% writeLog(type = "error", "Please fit the Bayesian models first")
         return()
       } else {
+        common$meta$bayes_forest$used <- TRUE
         trigger("bayes_forest")
-      }
-    })
-
-    # listen for the _sub model being refitted and trigger again, but only if the module has already been used
-    on("bayes_model_sub", {
-      if (watch("bayes_forest") > 0){
-        shinyjs::runjs("Shiny.setInputValue('bayes_forest-rerun', new Date().getTime());")
       }
     })
 
     # trigger for the main analysis - when run is clicked, but only if there is a valid model
     all_trigger <- reactive({
       if (watch("bayes_forest") > 0){
-        common$meta$bayes_forest$used <- TRUE
-        return(watch("bayes_forest"))
-        }
+        return(list(watch("bayes_forest"), watch("bayes_model_all")))
+      }
     })
 
     # trigger for the sub analysis - when run is clicked or the model reruns, but only if there is a valid model
     sub_trigger <- reactive({
       if (watch("bayes_forest") > 0){
-        return(list(watch("bayes_forest"), input$rerun))
+        return(list(watch("bayes_forest"), watch("bayes_model_sub")))
       }
     })
 

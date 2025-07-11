@@ -21,7 +21,8 @@ bayes_details_module_server <- function(id, common, parent_session) {
     })
 
     output$code <- renderPrint({
-      watch("bayes_details")
+      watch("bayes_model_all")
+      req(watch("bayes_details") > 0)
       req(common$bayes_all)
       cat(common$bayes_all$mtcResults$model$code, fill = FALSE, labels = NULL, append = FALSE)
     })
@@ -40,7 +41,8 @@ bayes_details_module_server <- function(id, common, parent_session) {
     )
 
     output$inits <- renderPrint({
-      watch("bayes_details")
+      watch("bayes_model_all")
+      req(watch("bayes_details") > 0)
       req(common$bayes_all)
       common$bayes_all$mtcResults$model$inits
     })
@@ -83,15 +85,17 @@ bayes_details_module_server <- function(id, common, parent_session) {
     output$download_data4 <- create_chain_data_download_handler(4)
 
     output$dev_mtc <- renderPrint({
-      watch("bayes_details")
       watch("bayes_deviance")
+      watch("bayes_model_all")
+      req(watch("bayes_details") > 0)
       validate(need(common$bayes_deviance_all, "Please run the Deviance report module first"))
       common$bayes_deviance_all$deviance_mtc
     })
 
     output$dev_ume <- renderPrint({
-      watch("bayes_details")
       watch("bayes_deviance")
+      watch("bayes_model_all")
+      req(watch("bayes_details") > 0)
       validate(need(common$bayes_deviance_all, "Please run the Deviance report module first"))
       common$bayes_deviance_all$deviance_ume
     })

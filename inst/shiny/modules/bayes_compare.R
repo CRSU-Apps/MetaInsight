@@ -19,10 +19,7 @@ bayes_compare_module_ui <- function(id) {
 bayes_compare_submodule_server <- function(id, common, model, run, text){
   moduleServer(id, function(input, output, session) {
 
-    shinyjs::hide(selector = ".bayes_compare_div")
-
     output$table <- renderTable({
-      shinyjs::show(selector = ".bayes_compare_div")
       bayes_compare(common[[model]], common$outcome_measure)
     }) %>% bindEvent(run())
 
@@ -46,6 +43,8 @@ bayes_compare_submodule_server <- function(id, common, model, run, text){
 bayes_compare_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
+    shinyjs::hide(selector = ".bayes_compare_div")
+
     # check that a fitted model exists and error if not
     observeEvent(input$run, {
       if (is.null(common$bayes_all)){
@@ -53,28 +52,22 @@ bayes_compare_module_server <- function(id, common, parent_session) {
         return()
       } else {
         trigger("bayes_compare")
-      }
-    })
-
-    # listen for the _sub model being refitted and trigger again, but only if the module has already been used
-    on("bayes_model_sub", {
-      if (watch("bayes_compare") > 0){
-        shinyjs::runjs("Shiny.setInputValue('bayes_compare-rerun', new Date().getTime());")
+        common$meta$bayes_compare$used <- TRUE
+        shinyjs::show(selector = ".bayes_compare_div")
       }
     })
 
     # trigger for the main analysis - when run is clicked, but only if there is a valid model
     all_trigger <- reactive({
       if (watch("bayes_compare") > 0){
-        common$meta$bayes_compare$used <- TRUE
-        return(watch("bayes_compare"))
+        return(list(watch("bayes_compare"), watch("bayes_model_all")))
       }
     })
 
     # trigger for the sub analysis - when run is clicked or the model reruns, but only if there is a valid model
     sub_trigger <- reactive({
       if (watch("bayes_compare") > 0){
-        return(list(watch("bayes_compare"), input$rerun))
+        return(list(watch("bayes_compare"), watch("bayes_model_sub")))
       }
     })
 

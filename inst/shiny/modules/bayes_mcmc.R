@@ -80,7 +80,7 @@ bayes_mcmc_module_server <- function(id, common, parent_session) {
       function(...) mirai::mirai(run(...), run = bayes_mcmc, .args = environment())
     ) %>% bind_task_button("run")
 
-    observeEvent(watch("bayes_mcmc"), {
+    observeEvent(list(watch("bayes_mcmc"), watch("bayes_model_all")), {
       req(watch("bayes_mcmc") > 0)
       common$logger %>% writeLog(type = "starting", "Generating Markov chain Monte Carlo plots")
       common$tasks$bayes_mcmc_all$invoke(common$bayes_all)
@@ -88,8 +88,7 @@ bayes_mcmc_module_server <- function(id, common, parent_session) {
     })
 
     observeEvent(list(watch("bayes_mcmc"), watch("bayes_model_sub")), {
-      req((watch("bayes_mcmc") + watch("bayes_model_sub")) > 0)
-      req(common$meta$bayes_mcmc$used)
+      req(watch("bayes_mcmc") > 0)
 
       # prevent showing on first run
       if (!is.null(common$bayes_mcmc_sub)){

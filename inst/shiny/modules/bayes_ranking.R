@@ -61,7 +61,6 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
   moduleServer(id, function(input, output, session) {
 
     init(trigger)
-    shinyjs::hide(selector = ".bayes_ranking_div")
 
     observeEvent(run(),{
       req(common[[paste0("bayes_", id)]])
@@ -112,7 +111,6 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
 
     output$ranking <- renderPlot({
       req(watch(trigger) > 0)
-      shinyjs::show(selector = ".bayes_ranking_div")
       if (rank_style() == "litmus" && colourblind() == FALSE){
         return(ranking_plots()$litmus)
       }
@@ -225,6 +223,8 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
 bayes_ranking_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
+    shinyjs::hide(selector = ".bayes_ranking_div")
+
     # check that a fitted model exists and error if not
     observeEvent(input$run, {
       if (is.null(common$bayes_all)){
@@ -232,28 +232,21 @@ bayes_ranking_module_server <- function(id, common, parent_session) {
         return()
       } else {
         trigger("bayes_ranking")
-      }
-    })
-
-    # listen for the _sub model being refitted and trigger again, but only if the module has already been used
-    on("bayes_model_sub", {
-      if (watch("bayes_ranking") > 0){
-        shinyjs::runjs("Shiny.setInputValue('bayes_ranking-rerun', new Date().getTime());")
+        shinyjs::show(selector = ".bayes_ranking_div")
       }
     })
 
     # trigger for the main analysis - when run is clicked, but only if there is a valid model
     all_trigger <- reactive({
       if (watch("bayes_ranking") > 0){
-        common$meta$bayes_ranking$used <- TRUE
-        return(list(input$run))
+        return(list(watch("bayes_ranking"), watch("bayes_model_all")))
       }
     })
 
     # trigger for the sub analysis - when run is clicked or the model reruns, but only if there is a valid model
     sub_trigger <- reactive({
       if (watch("bayes_ranking") > 0){
-        return(list(input$run, input$rerun))
+        return(list(watch("bayes_ranking"), watch("bayes_model_sub")))
       }
     })
 

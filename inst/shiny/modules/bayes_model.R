@@ -9,6 +9,7 @@ bayes_model_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
     init("bayes_model_sub")
+    init("bayes_model_all")
 
     observeEvent(input$run, {
       if (is.null(common$main_connected_data)){
@@ -40,7 +41,7 @@ bayes_model_module_server <- function(id, common, parent_session) {
 
     observeEvent(list(watch("bayes_model"), watch("model")), {
       req(watch("bayes_model") > 0)
-      if (!is.null(common$bayes_all)){
+      if (is.null(common$bayes_all)){
         common$logger %>% writeLog(type = "starting", "Fitting Bayesian models")
       } else {
         common$logger %>% writeLog(type = "starting", "Updating Bayesian model for main analysis")
@@ -95,6 +96,7 @@ bayes_model_module_server <- function(id, common, parent_session) {
       } else {
         common$logger %>% writeLog(type = "error", result)
       }
+      trigger("bayes_model_all")
     })
 
     result_sub <- observe({

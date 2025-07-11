@@ -10,7 +10,6 @@ bayes_results_submodule_server <- function(id, common, model, run){
 
     output$text <- renderUI({
       req(common[[model]])
-      shinyjs::show(selector = ".bayes_results_div")
       bayes_results(common[[model]])
     }) %>% bindEvent(run())
 
@@ -41,28 +40,21 @@ bayes_results_module_server <- function(id, common, parent_session) {
         return()
       } else {
         trigger("bayes_results")
-      }
-    })
-
-    # listen for the _sub model being refitted and trigger again, but only if the module has already been used
-    on("bayes_model_sub", {
-      if (watch("bayes_results") > 0){
-        shinyjs::runjs("Shiny.setInputValue('bayes_results-rerun', new Date().getTime());")
+        shinyjs::show(selector = ".bayes_results_div")
       }
     })
 
     # trigger for the main analysis - when run is clicked, but only if there is a valid model
     all_trigger <- reactive({
       if (watch("bayes_results") > 0){
-        common$meta$bayes_results$used <- TRUE
-        return(watch("bayes_results"))
+        return(list(watch("bayes_results"), watch("bayes_model_all")))
       }
     })
 
     # trigger for the sub analysis - when run is clicked or the model reruns, but only if there is a valid model
     sub_trigger <- reactive({
       if (watch("bayes_results") > 0){
-        return(list(watch("bayes_results"), input$rerun))
+        return(list(watch("bayes_results"), watch("bayes_model_sub")))
       }
     })
 

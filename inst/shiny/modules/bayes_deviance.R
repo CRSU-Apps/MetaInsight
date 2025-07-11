@@ -58,9 +58,9 @@ bayes_deviance_module_server <- function(id, common, parent_session) {
       function(...) mirai::mirai(run(...), run = bayes_deviance, .args = environment())
     ) %>% bind_task_button("run")
 
-    observeEvent(watch("bayes_deviance"), {
+    observeEvent(list(watch("bayes_deviance"), watch("bayes_model_all")), {
       req(watch("bayes_deviance") > 0)
-      common$logger %>% writeLog(type = "starting", "Generating deviance plots")
+      common$logger %>% writeLog(type = "starting", "Generating Bayesian deviance plots")
       common$tasks$bayes_deviance_all$invoke(common$bayes_all,
                                              common$model_type,
                                              common$outcome_measure)
@@ -68,8 +68,7 @@ bayes_deviance_module_server <- function(id, common, parent_session) {
     })
 
     observeEvent(list(watch("bayes_deviance"), watch("bayes_model_sub")), {
-      req((watch("bayes_deviance") + watch("bayes_model_sub")) > 0)
-      req(common$meta$bayes_deviance$used)
+      req(watch("bayes_deviance") > 0)
 
       # prevent showing on first run
       if (!is.null(common$bayes_deviance_sub)){
