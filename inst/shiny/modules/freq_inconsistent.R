@@ -19,12 +19,12 @@ freq_inconsistent_module_server <- function(id, common, parent_session) {
       }
       # TRIGGER
       trigger("freq_inconsistent")
+      shinyjs::show(selector = ".freq_inconsistent_div")
     })
 
     table_all <- reactive({
       watch("model")
       req(watch("freq_inconsistent") > 0)
-      shinyjs::show(selector = ".freq_inconsistent_div")
       common$meta$freq_inconsistent$used <- TRUE
       freq_inconsistent(common$freq_all, common$model_type)
     })
