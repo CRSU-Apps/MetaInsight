@@ -40,7 +40,11 @@ bayes_model_module_server <- function(id, common, parent_session) {
 
     observeEvent(list(watch("bayes_model"), watch("model")), {
       req(watch("bayes_model") > 0)
-      common$logger %>% writeLog(type = "starting", "Fitting Bayesian models")
+      if (!is.null(common$bayes_all)){
+        common$logger %>% writeLog(type = "starting", "Fitting Bayesian models")
+      } else {
+        common$logger %>% writeLog(type = "starting", "Updating Bayesian model for main analysis")
+      }
       common$tasks$bayes_model_all$invoke(common$main_connected_data,
                                           common$treatment_df,
                                           common$outcome,
@@ -67,7 +71,7 @@ bayes_model_module_server <- function(id, common, parent_session) {
 
       # prevent showing on first run
       if (!is.null(common$bayes_sub)){
-        common$logger %>% writeLog(type = "starting", "Updating Bayesian for sensitivity analysis")
+        common$logger %>% writeLog(type = "starting", "Updating Bayesian model for sensitivity analysis")
       }
 
       common$tasks$bayes_model_sub$invoke(common$subsetted_data,
