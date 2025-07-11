@@ -42,10 +42,10 @@ common_class <- R6::R6Class(
      self$data <- NULL
      self$upgraded_data <- NULL
      self$wrangled_data <- NULL
-     self$valid_data <- NULL
+     self$is_data_valid <- NULL
      self$is_data_uploaded <- NULL
      self$outcome <- NULL
-     self$ranking_outcome <- NULL
+     self$ranking_option <- NULL
      self$treatment_df <- NULL
      self$outcome_measure <- NULL
      self$reference_treatment_all <- NULL

@@ -44,15 +44,18 @@ setup_load_module_server <- function(id, common, parent_session) {
     # Create a definable reactive value to allow reloading of data
     init("setup_reset")
 
+    # make this id flexible to enable complete reset
+    file_id <- reactiveValues(id = "file1", value = 1)
+
     # Render function for file input dynamically to allow the button to be set to Null
     output$data_out <- renderUI({
       watch("setup_reset")
-      fileInput(ns("data"), label = "Select a data file (.csv or .xlsx) to upload", buttonLabel = "Select", accept = c(".csv", ".xlsx"))
+      fileInput(ns(file_id$id), label = "Select a data file (.csv or .xlsx) to upload", buttonLabel = "Select", accept = c(".csv", ".xlsx"))
     })
 
     # Update run button if a file has been uploaded
     observe({
-      if (!is.null(input$data)){
+      if (!is.null(input[[file_id$id]])){
         updateActionButton(session, "run", label = "Load data")
       }
     })
@@ -72,6 +75,8 @@ setup_load_module_server <- function(id, common, parent_session) {
     observeEvent(input$reset, {
       common$reset()
       updateActionButton(session, "run", label = "Load example data")
+      file_id$value <- file_id$value + 1
+      file_id$id <- paste0("file", file_id$value)
       trigger("setup_reset")
     })
 
@@ -87,7 +92,7 @@ setup_load_module_server <- function(id, common, parent_session) {
       # WARNING ####
       # none for this module
       # FUNCTION CALL ####
-      result <- setup_load(input$data$datapath, input$outcome, common$logger)
+      result <- setup_load(input[[file_id$id]]$datapath, input$outcome, common$logger)
 
       if (result$is_data_valid){
         if (result$is_data_uploaded){
