@@ -72,7 +72,7 @@ setup_exclude_module_server <- function(id, common, parent_session) {
                                               input$model,
                                               input$exclusions)
 
-      if (length(input$exclusions) == 0){
+      if (length(common$freq_sub) == 0){
         common$logger %>% writeLog(type = "starting", "Running initial sensitivity analysis")
       } else {
         common$logger %>% writeLog(type = "starting", "Updating sensitivity analysis")
@@ -98,6 +98,9 @@ setup_exclude_module_server <- function(id, common, parent_session) {
     result_sub <- observe({
       # prevent loading when the task is cancelled
       if (common$tasks$setup_exclude_sub$status() == "success"){
+
+        initial <- ifelse(is.null(common$freq_sub), TRUE, FALSE)
+
         result_sub$suspend()
         result <- common$tasks$setup_exclude_sub$result()
         common$bugsnet_sub <- result$bugsnet_sub
@@ -114,10 +117,10 @@ setup_exclude_module_server <- function(id, common, parent_session) {
                                               has been removed from the network of sensitivity analysis."))
         }
 
-        if (length(input$exclusions) == 0){
+        if (initial){
           common$logger %>% writeLog(type = "complete", "Initial sensitivity analysis is complete")
         } else {
-          common$logger %>% writeLog(type = "complete", "Selected studies have been updated")
+          common$logger %>% writeLog(type = "complete", "Sensitivity analysis has been updated")
         }
 
         # required for testing to wait until the debounce has triggered
