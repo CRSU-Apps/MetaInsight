@@ -2,4 +2,4 @@ component: "bayes"
 short_name: "Forest plot"
 long_name: "Forest plot"
 authors: "Naomi Bradbury, Tom Morris, Clareece Nevill, Janion Nevill, Rhiannon Owen, Simon Smart, Yiqiao Xin"
-package: [bnma, gemtc]
+package: [gemtc]

@@ -1,5 +1,5 @@
 component: "bayes"
 short_name: "Run models"
 long_name: "Run Bayesian models"
-authors: ""
-package: []
+authors: "Naomi Bradbury, Tom Morris, Clareece Nevill, Janion Nevill, Rhiannon Owen, Simon Smart, Yiqiao Xin"
+package: [gemtc]

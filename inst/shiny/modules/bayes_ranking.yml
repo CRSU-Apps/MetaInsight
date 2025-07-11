@@ -2,4 +2,4 @@ component: "bayes"
 short_name: "Ranking"
 long_name: "Ranking"
 authors: "Naomi Bradbury, Tom Morris, Clareece Nevill, Janion Nevill, Rhiannon Owen, Simon Smart, Yiqiao Xin"
-package: []
+package: [gemtc, ggplot2]

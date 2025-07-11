@@ -2,4 +2,4 @@ component: "bayes"
 short_name: "Nodesplit model"
 long_name: "Nodesplit model"
 authors: "Naomi Bradbury, Tom Morris, Clareece Nevill, Janion Nevill, Rhiannon Owen, Simon Smart, Yiqiao Xin"
-package: []
+package: [gemtc]
