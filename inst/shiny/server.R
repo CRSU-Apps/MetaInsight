@@ -170,10 +170,10 @@ function(input, output, session) {
 
   # options("gargoyle.talkative" = TRUE)
 
-  output$debug <- renderPrint({
-    browser()
-    "debug"
-  }) |> bindEvent(input$debug_button)
+  # output$debug <- renderPrint({
+  #   browser()
+  #   "debug"
+  # }) |> bindEvent(input$debug_button)
 
   ################################
   ### EXPORT TEST VALUES ####

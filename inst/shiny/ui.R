@@ -38,8 +38,8 @@ tagList(
       open = "always",
       conditionalPanel(
         "input.tabs == 'intro'",
-        actionButton("debug_button", "debug"),
-        textOutput("debug"),
+        # actionButton("debug_button", "debug"),
+        # textOutput("debug"),
         includeMarkdown("Rmd/text_intro_tab.Rmd")
       ),
       insert_modules_ui("setup", "Setup", exclude = "setup_exclude"),
