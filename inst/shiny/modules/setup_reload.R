@@ -25,9 +25,6 @@ setup_reload_module_server <- function(id, common, modules, parent_session) {
         return()
       }
 
-      # reload old logs, minus header
-      common$logger %>% writeLog(strsplit(temp$logger(), "-----<br>")[[1]][3])
-
       if (temp$state$main$version != as.character(packageVersion("metainsight"))){
         current_version <- as.character(packageVersion("metainsight"))
         common$logger %>% writeLog(type = "warning",
@@ -35,9 +32,10 @@ setup_reload_module_server <- function(id, common, modules, parent_session) {
                                  but you are using MetaInsight v{current_version}"))
       }
 
+      common$logger %>% writeLog(temp$logger)
+
       temp_names <- names(temp)
-      # exclude the non-public and function objects
-      temp_names  <- temp_names[!temp_names %in% c("clone", ".__enclos_env__", "logger", "reset", "tasks")]
+      temp_names <- temp_names[temp_names != "logger"]
       for (name in temp_names){
         common[[name]] <- temp[[name]]
       }
@@ -56,7 +54,7 @@ setup_reload_module_server <- function(id, common, modules, parent_session) {
       used_modules <- names(common$meta)
       # these are modules which setup data but don't need to be rerun on reloading
       setup_modules <- c("setup_load", "setup_configure", "setup_exclude", "model",
-                         "bayes_model", "bayes_nodesplit", "bayes_deviance", "bayes_mcmc")
+                         "bayes_model", "bayes_nodesplit", "bayes_deviance")
       used_modules <- used_modules[!(used_modules %in% setup_modules)]
       for (used_module in used_modules){
         trigger(used_module)
