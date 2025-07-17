@@ -17,7 +17,6 @@ core_intro_module_server <- function(id, common, parent_session) {
                       c("aside[class=\"sidebar\"]", "This panel shows all of the possible modules in the app", "bottom", NA),
                       c("a[data-value=\"How To Use\"]", "Detailed instructions can be found in the How To Use tab", "bottom","$('a[data-value=\"How To Use\"]').trigger('click');"),
                       c("a[data-value=\"setup\"]", "Click on the tabs to move between components", "bottom", "$('a[data-value=\"setup\"]').trigger('click');"),
-                      c("#setupHelp", "Click on the question mark to view instructions for the component", "bottom", "$('a[data-value=\"Component Guidance\"]').trigger('click');"),
                       c("#setupSel", "Select a module to load the options", "bottom", "$('input[value=\"setup_load\"]').trigger('click');"),
                       c("#setup_loadHelp", "Click on the question mark to view instructions for the module", "bottom", "$('a[data-value=\"Module Guidance\"]').trigger('click');"),
                       c("#setup_input_panel", "This panel shows possible options for the module.", "bottom", NA),
