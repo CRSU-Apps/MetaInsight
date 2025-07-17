@@ -48,7 +48,7 @@ setup_configure_module_server <- function(id, common, parent_session) {
       return()
     }
 
-    show_loading_modal("Processing data...")
+    show_loading_modal("Configuring analysis...")
 
     # FUNCTION CALL ####
     result <- setup_configure(common$data,
@@ -69,7 +69,7 @@ setup_configure_module_server <- function(id, common, parent_session) {
     common$treatment_df <- result$treatment_df
     common$outcome_measure <- input$outcome_measure
     common$ranking_option <- input$ranking_option
-    common$logger |> writeLog(type = "complete", "Data has been defined")
+    common$logger |> writeLog(type = "complete", "The analysis has been configured")
 
     # METADATA ####
     common$meta$setup_configure$used <- TRUE
