@@ -11,13 +11,13 @@
 bayes_nodesplit <- function(data, treatment_df, outcome, outcome_measure, model_type, async = FALSE) {
 
   if (outcome_measure == "SMD" ) {
-    return(async %>% asyncLog(type = "error", "Standardised mean difference currently cannot be analysed in Bayesian analysis"))
+    return(async |> asyncLog(type = "error", "Standardised mean difference currently cannot be analysed in Bayesian analysis"))
   }
   else if (outcome_measure == "RD") {
-    return(async %>% asyncLog(type = "error", "Bayesian analysis of risk differences is not currently implemented in MetaInsight"))
+    return(async |> asyncLog(type = "error", "Bayesian analysis of risk differences is not currently implemented in MetaInsight"))
   }
   if (!outcome_measure %in% c('OR', 'RR', 'MD')) {
-    return(async %>% asyncLog(ype = "error", glue::glue("Outcome_measure type '{outcome_measure}' is not supported. Please use one of: 'MD', 'OR', 'RR'")))
+    return(async |> asyncLog(ype = "error", glue::glue("Outcome_measure type '{outcome_measure}' is not supported. Please use one of: 'MD', 'OR', 'RR'")))
   }
 
   try <- tryCatch(
@@ -59,7 +59,7 @@ bayes_nodesplit <- function(data, treatment_df, outcome, outcome_measure, model_
         )
 
   if (is.null(try)){
-    return(async %>% asyncLog(type = "error", "Nodesplit model cannot be run, likely because there are no closed loops in the network"))
+    return(async |> asyncLog(type = "error", "Nodesplit model cannot be run, likely because there are no closed loops in the network"))
   } else {
     return(try)
   }

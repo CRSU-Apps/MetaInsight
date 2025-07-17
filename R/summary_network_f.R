@@ -27,7 +27,7 @@ summary_network <- function(freq, bugsnet, style, label_size = 1, logger = NULL)
     return(BUGSnet::net.plot(data.rh, node.scale = 3, edge.scale = 1.5, node.lab.cex = label_size,
                              layout.params = NULL))
   } else {
-    logger %>% writeLog(type = "error", "style must be either netgraph or netplot")
+    logger |> writeLog(type = "error", "style must be either netgraph or netplot")
     return()
   }
 }

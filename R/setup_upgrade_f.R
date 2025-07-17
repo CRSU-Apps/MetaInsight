@@ -14,15 +14,15 @@ setup_upgrade <- function(data_path, treatments, logger = NULL){
                       c("character", "character"), logger = logger)
 
   if (!tools::file_ext(data_path) %in% c("csv")){
-    logger %>% writeLog(type = "error", "data_path must link to either a .csv file")
+    logger |> writeLog(type = "error", "data_path must link to either a .csv file")
     return()
   }
   if (!file.exists(data_path)){
-    logger %>% writeLog(type = "error", "The specified file does not exist")
+    logger |> writeLog(type = "error", "The specified file does not exist")
     return()
   }
   if (!grepl("^[a-zA-Z_]+(,[a-zA-Z_]+)*$", treatments)){
-    logger %>% writeLog(type = "error", "The treatment names must only contain words separated by commas")
+    logger |> writeLog(type = "error", "The treatment names must only contain words separated by commas")
     return()
   }
 
@@ -43,7 +43,7 @@ setup_upgrade <- function(data_path, treatments, logger = NULL){
   treatment_name_surplus <- input_treatment_name_count - data_treatment_name_count
 
   if (treatment_name_surplus != 0){
-    logger %>% writeLog(type = "error", glue::glue("Your input data contains {input_treatment_name_count} treatments
+    logger |> writeLog(type = "error", glue::glue("Your input data contains {input_treatment_name_count} treatments
                                                    but your treatment list contains {data_treatment_name_count} treatments"))
     return()
   }
@@ -80,8 +80,8 @@ ReplaceTreatments <- function(old_data, treatment_df) {
 #' @param treatment_names_string String containing treatment names, separated by commas
 #' @return Data frame with 'Number' column defining treatment IDs and 'Label' column defining treatment names
 CreateTreatmentsDataFrame <- function(treatment_names_string) {
-  treatments <- stringr::str_split(treatment_names_string, pattern = ",")[[1]] %>%
-    stringr::str_trim() %>%
+  treatments <- stringr::str_split(treatment_names_string, pattern = ",")[[1]] |>
+    stringr::str_trim() |>
     stringr::str_replace_all(pattern = " ", replacement = "_")
   treatments <- treatments[treatments != ""]
 

@@ -23,7 +23,7 @@ freq_inconsistent <- function(freq, model_type, logger = NULL) {
                       c("list", "character"), logger)
 
   if (!model_type %in% c("fixed", "random")){
-    logger %>% writeLog(type = "error", "model_type must be 'fixed' or 'random'")
+    logger |> writeLog(type = "error", "model_type must be 'fixed' or 'random'")
     return()
   }
 

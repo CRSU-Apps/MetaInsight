@@ -20,12 +20,12 @@ freq_forest <- function(freq, reference_treatment, model_type, outcome_measure, 
                       c("list", "character", "character", "character", "numeric", "numeric"), logger)
 
   if (!model_type %in% c("fixed", "random")){
-    logger %>% writeLog(type = "error", "model_type must be 'fixed' or 'random'")
+    logger |> writeLog(type = "error", "model_type must be 'fixed' or 'random'")
     return()
   }
 
   if (!outcome_measure %in% c("OR", "RR", "RD", "MD", "SMD")){
-    logger %>% writeLog(type = "error", "outcome_measure must be 'OR', 'RR', 'RD', 'MD' or 'SMD'")
+    logger |> writeLog(type = "error", "outcome_measure must be 'OR', 'RR', 'RD', 'MD' or 'SMD'")
     return()
   }
 

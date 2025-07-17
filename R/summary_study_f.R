@@ -16,7 +16,7 @@ summary_study <- function(freq, outcome_measure, header, title, logger = NULL) {
                       c("list", "character", "numeric", "numeric"), logger)
 
   if (!outcome_measure %in% c("MD", "SMD", "OR", "RR", "RD")){
-    logger %>% writeLog(type = "error", "outcome_measure must be either MD, SMD, OR, RR or RD")
+    logger |> writeLog(type = "error", "outcome_measure must be either MD, SMD, OR, RR or RD")
     return()
   }
 

@@ -118,7 +118,7 @@ rankdata <- function(NMAdata, rankdirection, longdata, cov_value = NA, package =
     Rank = rep(1:ncol(prob), times = ncol(prob)),
     Cumulative_Probability = as.numeric(t(cumprob))
   )
-  Cumulative_Data <- Cumulative_Data %>% dplyr::left_join(SUCRA, by = "Treatment")
+  Cumulative_Data <- Cumulative_Data |> dplyr::left_join(SUCRA, by = "Treatment")
   # Number of people in each node #
   Patients <- data.frame(
     Treatment = longdata$T,
@@ -130,7 +130,7 @@ rankdata <- function(NMAdata, rankdirection, longdata, cov_value = NA, package =
     FUN = sum
   )
   Patients <- dplyr::rename(Patients, c(Treatment = "Category", N = "x"))  # previously using plyr::rename where old/new names are other way round
-  SUCRA <- SUCRA %>% dplyr::right_join(Patients, by = "Treatment")
+  SUCRA <- SUCRA |> dplyr::right_join(Patients, by = "Treatment")
 
   # Node size #
   size.maxO <- 15
@@ -262,7 +262,7 @@ RadialSUCRA <- function(ranking_data, colourblind=FALSE, regression_text="") {  
 
 
   # Create my own network plot using ggplot polar coords #
-  SUCRA <- SUCRAData %>% dplyr::arrange(-SUCRA)
+  SUCRA <- SUCRAData |> dplyr::arrange(-SUCRA)
   edges <- network.structure(ranking_data$BUGSnetData, my_order = SUCRA$Treatment)  # from file 'network_structure.R'
   dat.edges <- data.frame(pairwiseID = rep(NA, nrow(edges) * 2),
                           treatment = "",
@@ -404,7 +404,7 @@ RadialSUCRA <- function(ranking_data, colourblind=FALSE, regression_text="") {  
 #' @return dataframe
 #' @export
 ranking_table = function(ranking_data) {
-  df <- ranking_data$Probabilities %>% dplyr::right_join(ranking_data$SUCRA[,1:2], by="Treatment")
+  df <- ranking_data$Probabilities |> dplyr::right_join(ranking_data$SUCRA[,1:2], by="Treatment")
   df <- df[order(-df$SUCRA),]
   return(df)
 }

@@ -26,11 +26,11 @@ bayes_model <- function(data, treatment_df, outcome, outcome_measure, model_type
   }
 
   if (!model_type %in% c("fixed", "random")){
-    return(async %>% asyncLog(type = "error", "model_type must be 'fixed' or 'random'"))
+    return(async |> asyncLog(type = "error", "model_type must be 'fixed' or 'random'"))
   }
 
   if (!outcome_measure %in% c("OR", "RR", "MD")){
-    return(async %>% asyncLog(type = "error", "outcome_measure must be 'OR', 'RR' or 'MD'"))
+    return(async |> asyncLog(type = "error", "outcome_measure must be 'OR', 'RR' or 'MD'"))
   }
 
   longsort <- dataform.df(data, treatment_df, outcome)

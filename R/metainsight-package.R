@@ -7,5 +7,4 @@
 #'   function \code{\link{run_metainsight}}
 #'
 #' @import shiny gargoyle bslib
-#' @importFrom magrittr "%>%"
 NULL

@@ -14,12 +14,12 @@ freq_compare <- function(freq, model_type, ranking_option, logger = NULL) {
                       c("list", "character", "character"), logger)
 
   if (!model_type %in% c("fixed", "random")){
-    logger %>% writeLog(type = "error", "model_type must be 'fixed' or 'random'")
+    logger |> writeLog(type = "error", "model_type must be 'fixed' or 'random'")
     return()
   }
 
   if (!ranking_option %in% c("good", "bad")){
-    logger %>% writeLog(type = "error", "ranking_option must be 'good' or 'bad'")
+    logger |> writeLog(type = "error", "ranking_option must be 'good' or 'bad'")
     return()
   }
 

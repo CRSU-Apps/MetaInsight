@@ -13,7 +13,7 @@ summary_char <- function(bugsnet_data, outcome, logger = NULL) {
   check_param_classes(c("bugsnet_data", "outcome"), c("data.frame", "character"), logger)
 
   if (!outcome %in% c("Binary", "Continuous")){
-    logger %>% writeLog(type = "error", "outcome must be either Binary or Continuous")
+    logger |> writeLog(type = "error", "outcome must be either Binary or Continuous")
     return()
   }
 
@@ -25,7 +25,7 @@ summary_char <- function(bugsnet_data, outcome, logger = NULL) {
     outcome = "R"
     typeO = "binomial"
   } else {
-    logger %>% writeLog(type = "error", "outcome must be either Binary or Continuous")
+    logger |> writeLog(type = "error", "outcome must be either Binary or Continuous")
     return()
   }
   network.char <- BUGSnet::net.tab(data = data.rh,

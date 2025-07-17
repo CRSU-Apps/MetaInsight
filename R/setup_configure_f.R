@@ -29,17 +29,17 @@ setup_configure <- function(data, treatment_df, outcome, outcome_measure, refere
                       c("data.frame", "data.frame", "character", "character", "character"), logger)
 
   if (!outcome %in% c("Binary", "Continuous")){
-    logger %>% writeLog(type = "error", "outcome must be either Binary or Continuous")
+    logger |> writeLog(type = "error", "outcome must be either Binary or Continuous")
     return()
   }
 
   if (outcome == "Binary" && !outcome_measure %in% c("OR", "RR", "RD")){
-    logger %>% writeLog(type = "error", "When outcome is Binary, outcome_measure must be either OR, RR or RD")
+    logger |> writeLog(type = "error", "When outcome is Binary, outcome_measure must be either OR, RR or RD")
     return()
   }
 
   if (outcome == "Continuous" && !outcome_measure %in% c("MD", "SMD")){
-    logger %>% writeLog(type = "error", "When outcome is Continuous, outcome_measure must be either MD or SMD")
+    logger |> writeLog(type = "error", "When outcome is Continuous, outcome_measure must be either MD or SMD")
     return()
   }
 
@@ -62,13 +62,13 @@ setup_configure <- function(data, treatment_df, outcome, outcome_measure, refere
   main_subnetwork_exclusions <- studies[!studies %in% main_connected_data$Study]
 
   if (length(main_subnetwork_exclusions) > 0){
-    logger %>% writeLog(type = "warning",
+    logger |> writeLog(type = "warning",
       glue::glue("The uploaded data comprises a disconnected network.
                  Only the subnetwork containing the reference treatment
                  ({reference_treatment}) will be displayed and disconnected
                  studies are shown in the logger."))
 
-    logger %>% writeLog(paste0("Disconnected studies: ", paste(main_subnetwork_exclusions, collapse = ",")))
+    logger |> writeLog(paste0("Disconnected studies: ", paste(main_subnetwork_exclusions, collapse = ",")))
 
   }
 

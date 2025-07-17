@@ -18,17 +18,17 @@ freq_summary <- function(freq, treatment_df, plot_title, outcome_measure, rankin
                       c("list", "data.frame", "character", "character", "character", "character"), logger)
 
   if (!ranking_option %in% c("good", "bad")){
-    logger %>% writeLog(type = "error", "ranking_option must be 'good' or 'bad'")
+    logger |> writeLog(type = "error", "ranking_option must be 'good' or 'bad'")
     return()
   }
 
   if (!outcome_measure %in% c("OR", "RR", "RD", "MD", "SMD")){
-    logger %>% writeLog(type = "error", "outcome_measure must be 'OR', 'RR', 'RD', 'MD' or 'SMD'")
+    logger |> writeLog(type = "error", "outcome_measure must be 'OR', 'RR', 'RD', 'MD' or 'SMD'")
     return()
   }
 
   if (!model_type %in% c("fixed", "random")){
-    logger %>% writeLog(type = "error", "model_type must be 'fixed' or 'random'")
+    logger |> writeLog(type = "error", "model_type must be 'fixed' or 'random'")
     return()
   }
 

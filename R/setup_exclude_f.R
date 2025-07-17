@@ -29,27 +29,27 @@ setup_exclude <- function(non_covariate_data, treatment_df, reference_treatment,
                       c("data.frame", "data.frame", "character", "character", "character", "character"), logger)
 
   if (!is.null(exclusions) && !inherits(exclusions, "character")){
-    logger %>% writeLog(type = "error", "exclusions must be of class character")
+    logger |> writeLog(type = "error", "exclusions must be of class character")
     return()
   }
 
   if (!outcome %in% c("Binary", "Continuous")){
-    logger %>% writeLog(type = "error", "outcome must be either Binary or Continuous")
+    logger |> writeLog(type = "error", "outcome must be either Binary or Continuous")
     return()
   }
 
   if (outcome == "Binary" && !outcome_measure %in% c("OR", "RR", "RD")){
-    logger %>% writeLog(type = "error", "When outcome is Binary, outcome_measure must be either OR, RR or RD")
+    logger |> writeLog(type = "error", "When outcome is Binary, outcome_measure must be either OR, RR or RD")
     return()
   }
 
   if (outcome == "Continuous" && !outcome_measure %in% c("MD", "SMD")){
-    logger %>% writeLog(type = "error", "When outcome is Continuous, outcome_measure must be either MD or SMD")
+    logger |> writeLog(type = "error", "When outcome is Continuous, outcome_measure must be either MD or SMD")
     return()
   }
 
   if (!model_type %in% c("random", "fixed")){
-    logger %>% writeLog(type = "error", "model_type must be either random or fixed")
+    logger |> writeLog(type = "error", "model_type must be either random or fixed")
     return()
   }
 

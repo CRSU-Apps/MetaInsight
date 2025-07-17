@@ -17,26 +17,26 @@ setup_load <- function(data_path = NULL, outcome, logger = NULL){
   # check inputs
   if (!is.null(data_path)){
     if (!inherits(data_path, "character")){
-      logger %>% writeLog(type = "error", "data_path must be of class character")
+      logger |> writeLog(type = "error", "data_path must be of class character")
       return()
     }
     if (!tools::file_ext(data_path) %in% c("csv", "xlsx")){
-      logger %>% writeLog(type = "error", "data_path must link to either a .csv or .xlsx file")
+      logger |> writeLog(type = "error", "data_path must link to either a .csv or .xlsx file")
       return()
     }
     if (!file.exists(data_path)){
-      logger %>% writeLog(type = "error", "The specified file does not exist")
+      logger |> writeLog(type = "error", "The specified file does not exist")
       return()
     }
   }
 
   if (!inherits(outcome, "character")){
-    logger %>% writeLog(type = "error", "outcome must be of class character")
+    logger |> writeLog(type = "error", "outcome must be of class character")
     return()
   }
 
   if (!outcome %in% c("Binary", "Continuous")){
-    logger %>% writeLog(type = "error", "outcome must be either Binary or Continuous")
+    logger |> writeLog(type = "error", "outcome must be either Binary or Continuous")
     return()
   }
 
@@ -65,7 +65,7 @@ setup_load <- function(data_path = NULL, outcome, logger = NULL){
 
   # If the uploaded data is invalid, return that
   if (!is_valid$valid){
-    logger %>% writeLog(type = "error",
+    logger |> writeLog(type = "error",
                               glue::glue("Uploaded data was invalid because: {is_valid$message}.
                                 Please check you data file and ensure that you have the correct outcome type selected."))
     return(list(is_data_valid = is_valid$valid,
@@ -115,7 +115,7 @@ ValidateUploadedData <- function(data, outcome, logger = NULL) {
     stop(glue::glue("Outcome {outcome} is not recognised. Please use 'Continuous' or 'Binary'"))
   }
 
-  required_columns <- outcome_columns %>%
+  required_columns <- outcome_columns |>
     dplyr::filter(required)
 
   result <- .ValidateMissingColumns(data, required_columns, outcome)
@@ -199,7 +199,7 @@ ValidateUploadedData <- function(data, outcome, logger = NULL) {
 #' - "valid" = TRUE or FALSE defining whether data is valid
 #' - "message" = String describing any issues causing the data to be invalid
 .ValidateNumberedColumns <- function(data, required_columns) {
-  numbered_columns <- required_columns %>%
+  numbered_columns <- required_columns |>
     dplyr::filter(!is.na(number_group))
 
   if (!.ValidateMatchingWideColumns(data, numbered_columns)) {
@@ -230,10 +230,10 @@ ValidateUploadedData <- function(data, outcome, logger = NULL) {
   sapply(
     required_columns$pattern,
     function (pattern) {
-      wide_numbers[[required_columns$name[required_columns$pattern == pattern]]] <<- uploaded_data %>%
-        dplyr::select(grep(pattern, names(uploaded_data))) %>%
-        names() %>%
-        gsub(pattern = pattern, replacement = required_columns$number_group[required_columns$pattern == pattern]) %>%
+      wide_numbers[[required_columns$name[required_columns$pattern == pattern]]] <<- uploaded_data |>
+        dplyr::select(grep(pattern, names(uploaded_data))) |>
+        names() |>
+        gsub(pattern = pattern, replacement = required_columns$number_group[required_columns$pattern == pattern]) |>
         as.integer()
     }
   )
@@ -435,19 +435,19 @@ ValidateUploadedData <- function(data, outcome, logger = NULL) {
   number_group = "\\2"
 )
 
-continuous_column_names <- data.frame() %>%
-  rbind(.study_definition) %>%
-  rbind(.t_definition) %>%
-  rbind(.n_definition) %>%
-  rbind(.mean_definition) %>%
-  rbind(.sd_definition) %>%
+continuous_column_names <- data.frame() |>
+  rbind(.study_definition) |>
+  rbind(.t_definition) |>
+  rbind(.n_definition) |>
+  rbind(.mean_definition) |>
+  rbind(.sd_definition) |>
   rbind(.covariate_definition)
 
-binary_column_names <- data.frame() %>%
-  rbind(.study_definition) %>%
-  rbind(.t_definition) %>%
-  rbind(.r_definition) %>%
-  rbind(.n_definition) %>%
+binary_column_names <- data.frame() |>
+  rbind(.study_definition) |>
+  rbind(.t_definition) |>
+  rbind(.r_definition) |>
+  rbind(.n_definition) |>
   rbind(.covariate_definition)
 
 
@@ -528,22 +528,22 @@ CleanData <- function(data) {
 WideToLong <- function(wide_data, outcome) {
   # Specify columns that contain wide data
   if (outcome == "Continuous") {
-    change_cols <- wide_data %>%
+    change_cols <- wide_data |>
       dplyr::select(tidyselect::starts_with(c("T", "N", "Mean", "SD")))
   } else if (outcome == "Binary") {
-    change_cols <- wide_data %>%
+    change_cols <- wide_data |>
       dplyr::select(tidyselect::starts_with(c("T", "R", "N")))
   } else {
     paste0("outcome needs to be 'Binary' or 'Continuous'")
   }
   # Transform to long
-  long_data <- wide_data %>%
+  long_data <- wide_data |>
     tidyr::pivot_longer(cols = names(change_cols),
                         names_to = c(".value"),
                         names_pattern = "^(.*)\\.[0-9]+$",
                         values_drop_na = TRUE
     )
-  long_data <- long_data %>% dplyr::relocate(FindCovariateNames(long_data), .after = last_col())
+  long_data <- long_data |> dplyr::relocate(FindCovariateNames(long_data), .after = last_col())
   return(as.data.frame(long_data))
 }
 
@@ -555,18 +555,18 @@ WideToLong <- function(wide_data, outcome) {
 LongToWide <- function(long_data, outcome_type) {
   # Specify columns that contain wide data
   if (outcome_type == "Continuous") {
-    change_cols <- long_data %>%
+    change_cols <- long_data |>
       dplyr::select(c("T", "N", "Mean", "SD"))
   } else if (outcome_type == "Binary") {
-    change_cols <- long_data %>%
+    change_cols <- long_data |>
       dplyr::select(c("T", "R", "N"))
   } else {
     paste0("outcome_type needs to be 'Binary' or 'Continuous'")
   }
   # Add arms
-  long_data <- long_data %>% dplyr::group_by(Study) %>% dplyr::mutate(arm = dplyr::row_number())
+  long_data <- long_data |> dplyr::group_by(Study) |> dplyr::mutate(arm = dplyr::row_number())
   # Transform to long
-  wide_data <- long_data %>%
+  wide_data <- long_data |>
     tidyr::pivot_wider(id_cols = c("StudyID", "Study", FindCovariateNames(long_data)),
                        names_from = c("arm"),
                        values_from = names(change_cols),
@@ -868,12 +868,12 @@ SortByStudyIDThenT <- function(data, outcome) {
 #' @param outcome Type of outcome for which to reorder, either 'Continuous' or 'Binary'
 #' @return Data frame which is uasable by the rest of the app
 WrangleUploadData <- function(data, treatment_ids, outcome) {
-  new_df <- data %>%
-    .FixColumnNameCases(outcome) %>%
-    ReplaceTreatmentIds(treatment_ids) %>%
-    AddStudyIds() %>%
-    CleanStudies() %>%
-    ReorderColumns(outcome) %>%
+  new_df <- data |>
+    .FixColumnNameCases(outcome) |>
+    ReplaceTreatmentIds(treatment_ids) |>
+    AddStudyIds() |>
+    CleanStudies() |>
+    ReorderColumns(outcome) |>
     SortByStudyIDThenT(outcome)
 
   return(new_df)
@@ -885,8 +885,8 @@ WrangleUploadData <- function(data, treatment_ids, outcome) {
 #' @param strings Vector of the strings to be cleaned.
 #' @return Cleaned version of the strings.
 CleanStrings <- function(strings) {
-  return(strings %>%
-           stringr::str_replace_all("(?![a-zA-Z0-9_]).", "_") %>%
+  return(strings |>
+           stringr::str_replace_all("(?![a-zA-Z0-9_]).", "_") |>
            stringr::str_replace_all("(_+)", "_")
   )
 }
