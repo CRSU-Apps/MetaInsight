@@ -21,12 +21,12 @@ bayes_compare_submodule_server <- function(id, common, model, run, text){
 
     output$table <- renderTable({
       bayes_compare(common[[model]], common$outcome_measure)
-    }) %>% bindEvent(run())
+    }) |> bindEvent(run())
 
     output$text <- renderUI({
       req(common[[model]])
       p(tags$strong(text))
-    }) %>% bindEvent(run())
+    }) |> bindEvent(run())
 
     output$download <- downloadHandler(
       filename = function(){
@@ -48,7 +48,7 @@ bayes_compare_module_server <- function(id, common, parent_session) {
     # check that a fitted model exists and error if not
     observeEvent(input$run, {
       if (is.null(common$bayes_all)){
-        common$logger %>% writeLog(type = "error", "Please fit the Bayesian models first")
+        common$logger |> writeLog(type = "error", "Please fit the Bayesian models first")
         return()
       } else {
         trigger("bayes_compare")

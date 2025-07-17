@@ -21,18 +21,18 @@ setup_reload_module_server <- function(id, common, modules, parent_session) {
 
       if (!inherits(temp, "common") || temp$state$main$app != "metainsight"){
         close_loading_modal()
-        common$logger %>% writeLog(type = "error", "That is not a valid MetaInsight save file")
+        common$logger |> writeLog(type = "error", "That is not a valid MetaInsight save file")
         return()
       }
 
       if (temp$state$main$version != as.character(packageVersion("metainsight"))){
         current_version <- as.character(packageVersion("metainsight"))
-        common$logger %>% writeLog(type = "warning",
+        common$logger |> writeLog(type = "warning",
                                    glue::glue("The save file was created using MetaInsight v{temp$state$main$version},
                                  but you are using MetaInsight v{current_version}"))
       }
 
-      common$logger %>% writeLog(temp$logger)
+      common$logger |> writeLog(temp$logger)
 
       temp_names <- names(temp)
       temp_names <- temp_names[temp_names != "logger"]
@@ -66,7 +66,7 @@ setup_reload_module_server <- function(id, common, modules, parent_session) {
       temp <- readRDS(input$load_session$datapath)
       load_session(temp)
       close_loading_modal()
-      common$logger %>% writeLog(type = "info", "The previous session has been loaded successfully")
+      common$logger |> writeLog(type = "info", "The previous session has been loaded successfully")
     })
 
     # load file if run_metainsight has a load_file parameter
@@ -79,14 +79,14 @@ setup_reload_module_server <- function(id, common, modules, parent_session) {
     load_on_start <- observe({
       req(load_file_path())
       if (!file.exists(load_file_path())){
-        common$logger %>% writeLog(type = "error", "The specified load file cannot be found - please check the path")
+        common$logger |> writeLog(type = "error", "The specified load file cannot be found - please check the path")
         load_on_start$destroy()
         return()
       }
       show_loading_modal("Loading previous session")
       load_session(readRDS(load_file_path()))
       close_loading_modal()
-      common$logger %>% writeLog(type = "info", "The previous session has been loaded successfully")
+      common$logger |> writeLog(type = "info", "The previous session has been loaded successfully")
       load_on_start$destroy()
     })
 

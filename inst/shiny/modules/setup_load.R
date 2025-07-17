@@ -96,9 +96,9 @@ setup_load_module_server <- function(id, common, parent_session) {
 
       if (result$is_data_valid){
         if (result$is_data_uploaded){
-          common$logger %>% writeLog(type= "complete", "Data was uploaded successfully")
+          common$logger |> writeLog(type= "complete", "Data was uploaded successfully")
         } else {
-          common$logger %>% writeLog(type= "complete", glue::glue("Default {tolower(input$outcome)} data has been loaded"))
+          common$logger |> writeLog(type= "complete", glue::glue("Default {tolower(input$outcome)} data has been loaded"))
         }
       }
 

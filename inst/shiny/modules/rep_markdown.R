@@ -17,8 +17,6 @@ rep_markdown_module_server <- function(id, common, parent_session, COMPONENT_MOD
     # GlobalEnv ensures that rmd_functions can be found
     .GlobalEnv$make_report <- function(rep_markdown_file_type){
 
-      `%>%` <- magrittr::`%>%`
-
       md_files <- c()
       md_intro_file <- tempfile(pattern = "intro_", fileext = ".md")
       rmarkdown::render("Rmd/userReport_intro.Rmd",
@@ -77,9 +75,9 @@ rep_markdown_module_server <- function(id, common, parent_session, COMPONENT_MOD
       md_files <- c(md_files, module_md_file)
 
       combined_md <-
-        md_files %>%
-        lapply(readLines) %>%
-        lapply(paste, collapse = "\n") %>%
+        md_files |>
+        lapply(readLines) |>
+        lapply(paste, collapse = "\n") |>
         paste(collapse = "\n\n")
 
       combined_rmd <- gsub("``` r", "```{r}", combined_md)
@@ -137,7 +135,7 @@ rep_markdown_module_server <- function(id, common, parent_session, COMPONENT_MOD
     # task that calls the function
     task <- ExtendedTask$new(function(){
       mirai::mirai(make_report(rep_markdown_file_type), globalenv())
-    }) %>% bslib::bind_task_button("download")
+    }) |> bslib::bind_task_button("download")
 
     # start the task
     observeEvent(input$download, {
@@ -155,7 +153,7 @@ rep_markdown_module_server <- function(id, common, parent_session, COMPONENT_MOD
 
       if (task$status() == "error"){
         results$destroy()
-        common$logger %>% writeLog(type = "error", "An error occurred trying to produce the download")
+        common$logger |> writeLog(type = "error", "An error occurred trying to produce the download")
         close_loading_modal()
       }
     })

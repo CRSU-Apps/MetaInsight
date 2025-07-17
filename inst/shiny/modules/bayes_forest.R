@@ -34,7 +34,7 @@ bayes_forest_submodule_server <- function(id, common, model, run, title){
       } else {
         return(nrow(common$subsetted_treatment_df))
       }
-    }) %>% bindEvent(run())
+    }) |> bindEvent(run())
 
     output$plot_wrap <- renderUI({
       req(n_trt())
@@ -49,12 +49,12 @@ bayes_forest_submodule_server <- function(id, common, model, run, title){
 
     output$table <- renderTable({
       common[[model]]$dic
-    }, digits = 3, rownames = TRUE, colnames = FALSE, label = "Test") %>% bindEvent(run())
+    }, digits = 3, rownames = TRUE, colnames = FALSE, label = "Test") |> bindEvent(run())
 
     output$text <- renderUI({
       req(common[[model]])
       CreateTauSentence(common[[model]], common$outcome_measure, common$model_type)
-    }) %>% bindEvent(run())
+    }) |> bindEvent(run())
 
     output$download <- downloadHandler(
       filename = function() {
@@ -88,7 +88,7 @@ bayes_forest_module_server <- function(id, common, parent_session) {
       # add check for a running model
 
       if (is.null(common$bayes_all)){
-        common$logger %>% writeLog(type = "error", "Please fit the Bayesian models first")
+        common$logger |> writeLog(type = "error", "Please fit the Bayesian models first")
         return()
       } else {
         common$meta$bayes_forest$used <- TRUE

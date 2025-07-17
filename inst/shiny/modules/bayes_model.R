@@ -13,15 +13,15 @@ bayes_model_module_server <- function(id, common, parent_session) {
 
     observeEvent(input$run, {
       if (is.null(common$main_connected_data)){
-        common$logger %>% writeLog(type = "error", "Please configure the analysis in the Setup component first.")
+        common$logger |> writeLog(type = "error", "Please configure the analysis in the Setup component first.")
         return()
       }
       if (common$outcome_measure == "SMD") {
-        common$logger %>% writeLog(type = "error", "Standardised mean difference currently cannot be analysed within Bayesian analysis in MetaInsight")
+        common$logger |> writeLog(type = "error", "Standardised mean difference currently cannot be analysed within Bayesian analysis in MetaInsight")
         return()
       }
       else if (common$outcome_measure == "RD") {
-        common$logger %>% writeLog(type = "error", "Risk difference currently cannot be analysed within Bayesian analysis in MetaInsight")
+        common$logger |> writeLog(type = "error", "Risk difference currently cannot be analysed within Bayesian analysis in MetaInsight")
         return()
       }
       # METADATA ####
@@ -31,20 +31,20 @@ bayes_model_module_server <- function(id, common, parent_session) {
 
     common$tasks$bayes_model_all <- ExtendedTask$new(
       function(...) mirai::mirai(run(...), run = bayes_model, .args = environment())
-    ) %>% bind_task_button("run")
+    ) |> bind_task_button("run")
 
     # needed to cancel in progress
     sub_model <- NULL
     common$tasks$bayes_model_sub <- ExtendedTask$new(
       function(...) sub_model <<- mirai::mirai(run(...), run = bayes_model, .args = environment())
-    ) %>% bind_task_button("run")
+    ) |> bind_task_button("run")
 
     observeEvent(list(watch("bayes_model"), watch("model")), {
       req(watch("bayes_model") > 0)
       if (is.null(common$bayes_all)){
-        common$logger %>% writeLog(type = "starting", "Fitting Bayesian models")
+        common$logger |> writeLog(type = "starting", "Fitting Bayesian models")
       } else {
-        common$logger %>% writeLog(type = "starting", "Updating Bayesian model for main analysis")
+        common$logger |> writeLog(type = "starting", "Updating Bayesian model for main analysis")
       }
       common$tasks$bayes_model_all$invoke(common$main_connected_data,
                                           common$treatment_df,
@@ -72,7 +72,7 @@ bayes_model_module_server <- function(id, common, parent_session) {
 
       # prevent showing on first run
       if (!is.null(common$bayes_sub)){
-        common$logger %>% writeLog(type = "starting", "Updating Bayesian model for sensitivity analysis")
+        common$logger |> writeLog(type = "starting", "Updating Bayesian model for sensitivity analysis")
       }
 
       common$tasks$bayes_model_sub$invoke(common$subsetted_data,
@@ -92,9 +92,9 @@ bayes_model_module_server <- function(id, common, parent_session) {
       result_all$suspend()
       if (inherits(result, "list")){
         common$bayes_all <- result
-        common$logger %>% writeLog(type = "complete", "Bayesian models have been fitted")
+        common$logger |> writeLog(type = "complete", "Bayesian models have been fitted")
       } else {
-        common$logger %>% writeLog(type = "error", result)
+        common$logger |> writeLog(type = "error", result)
       }
       trigger("bayes_model_all")
     })
@@ -107,11 +107,11 @@ bayes_model_module_server <- function(id, common, parent_session) {
         if (inherits(result, "list")){
           # prevent showing on first run
           if (!is.null(common$bayes_sub)){
-            common$logger %>% writeLog(type = "complete", "The Bayesian model for the sensitivity analysis has been updated")
+            common$logger |> writeLog(type = "complete", "The Bayesian model for the sensitivity analysis has been updated")
           }
           common$bayes_sub <- result
         } else {
-          common$logger %>% writeLog(type = "error", result)
+          common$logger |> writeLog(type = "error", result)
         }
         trigger("bayes_model_sub")
       }

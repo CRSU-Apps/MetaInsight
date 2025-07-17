@@ -64,7 +64,7 @@ bayes_mcmc_module_server <- function(id, common, parent_session) {
       # add check for a running model
 
       if (is.null(common$bayes_all)){
-        common$logger %>% writeLog(type = "error", "Please fit the Bayesian models first")
+        common$logger |> writeLog(type = "error", "Please fit the Bayesian models first")
         return()
       } else {
         common$meta$bayes_mcmc$used <- TRUE
@@ -74,15 +74,15 @@ bayes_mcmc_module_server <- function(id, common, parent_session) {
 
     common$tasks$bayes_mcmc_all <- ExtendedTask$new(
       function(...) mirai::mirai(run(...), run = bayes_mcmc, .args = environment())
-    ) %>% bind_task_button("run")
+    ) |> bind_task_button("run")
 
     common$tasks$bayes_mcmc_sub <- ExtendedTask$new(
       function(...) mirai::mirai(run(...), run = bayes_mcmc, .args = environment())
-    ) %>% bind_task_button("run")
+    ) |> bind_task_button("run")
 
     observeEvent(list(watch("bayes_mcmc"), watch("bayes_model_all")), {
       req(watch("bayes_mcmc") > 0)
-      common$logger %>% writeLog(type = "starting", "Generating Markov chain Monte Carlo plots")
+      common$logger |> writeLog(type = "starting", "Generating Markov chain Monte Carlo plots")
       common$tasks$bayes_mcmc_all$invoke(common$bayes_all)
       result_all$resume()
     })
@@ -92,7 +92,7 @@ bayes_mcmc_module_server <- function(id, common, parent_session) {
 
       # prevent showing on first run
       if (!is.null(common$bayes_mcmc_sub)){
-        common$logger %>% writeLog(type = "starting", "Updating Markov chain Monte Carlo plots")
+        common$logger |> writeLog(type = "starting", "Updating Markov chain Monte Carlo plots")
       }
 
       common$tasks$bayes_mcmc_sub$invoke(common$bayes_sub)
@@ -103,7 +103,7 @@ bayes_mcmc_module_server <- function(id, common, parent_session) {
       result <- common$tasks$bayes_mcmc_all$result()
       result_all$suspend()
       common$bayes_mcmc_all <- result
-      common$logger %>% writeLog(type = "complete", "Markov chain Monte Carlo plots have been generated")
+      common$logger |> writeLog(type = "complete", "Markov chain Monte Carlo plots have been generated")
       trigger("bayes_mcmc_all")
     })
 
@@ -111,7 +111,7 @@ bayes_mcmc_module_server <- function(id, common, parent_session) {
       result <- common$tasks$bayes_mcmc_sub$result()
       result_sub$suspend()
       if (!is.null(common$bayes_mcmc_sub)){
-        common$logger %>% writeLog(type = "complete", "Markov chain Monte Carlo plots have been updated")
+        common$logger |> writeLog(type = "complete", "Markov chain Monte Carlo plots have been updated")
       }
       common$bayes_mcmc_sub <- result
       trigger("bayes_mcmc_sub")

@@ -70,20 +70,20 @@ bayes_nodesplit_module_server <- function(id, common, parent_session) {
 
     observeEvent(input$run, {
       if (is.null(common$main_connected_data)){
-        common$logger %>% writeLog(type = "error", "Please configure the analysis in the Setup component first.")
+        common$logger |> writeLog(type = "error", "Please configure the analysis in the Setup component first.")
       }
       trigger("bayes_nodesplit")
     })
 
     common$tasks$bayes_nodesplit_all <- ExtendedTask$new(
       function(...) mirai::mirai(run(...), run = bayes_nodesplit, .args = environment())
-    ) %>% bind_task_button("run")
+    ) |> bind_task_button("run")
 
     # needed to cancel in progress
     sub_nodesplit <- NULL
     common$tasks$bayes_nodesplit_sub <- ExtendedTask$new(
       function(...) sub_nodesplit <<- mirai::mirai(run(...), run = bayes_nodesplit, .args = environment())
-    ) %>% bind_task_button("run")
+    ) |> bind_task_button("run")
 
     observeEvent(watch("bayes_nodesplit"), {
       req(watch("bayes_nodesplit") > 0)
@@ -123,7 +123,7 @@ bayes_nodesplit_module_server <- function(id, common, parent_session) {
         common$meta$bayes_nodesplit$used <- TRUE
         trigger("bayes_nodesplit_all")
       } else {
-        common$logger %>% writeLog(type = "error", "Nodesplit model cannot be run for all studies,
+        common$logger |> writeLog(type = "error", "Nodesplit model cannot be run for all studies,
                                    likely because there are no closed loops in the network")
       }
 
@@ -138,7 +138,7 @@ bayes_nodesplit_module_server <- function(id, common, parent_session) {
           common$nodesplit_sub <- result
           trigger("bayes_nodesplit_sub")
         } else {
-          common$logger %>% writeLog(type = "error", "Nodesplit model cannot be run with selected studies excluded,
+          common$logger |> writeLog(type = "error", "Nodesplit model cannot be run with selected studies excluded,
                                    likely because there are no closed loops in the network")
         }
       }

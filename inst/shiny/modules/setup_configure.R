@@ -39,12 +39,12 @@ setup_configure_module_server <- function(id, common, parent_session) {
     # WARNING ####
 
     if (is.null(common$data)) {
-      common$logger %>% writeLog(type = "error", "Please load data first")
+      common$logger |> writeLog(type = "error", "Please load data first")
       return()
     }
 
     if (!common$is_data_valid) {
-      common$logger %>% writeLog(type = "error", "Please upload valid data first")
+      common$logger |> writeLog(type = "error", "Please upload valid data first")
       return()
     }
 
@@ -69,7 +69,7 @@ setup_configure_module_server <- function(id, common, parent_session) {
     common$treatment_df <- result$treatment_df
     common$outcome_measure <- input$outcome_measure
     common$ranking_option <- input$ranking_option
-    common$logger %>% writeLog(type = "complete", "Data has been defined")
+    common$logger |> writeLog(type = "complete", "Data has been defined")
 
     # METADATA ####
     common$meta$setup_configure$used <- TRUE

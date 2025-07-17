@@ -22,12 +22,12 @@ setup_upgrade_module_server <- function(id, common, parent_session) {
   observeEvent(input$run, {
     # WARNING ####
     if (is.null(input$uploaded_data)) {
-      common$logger %>% writeLog(type = "error", "Please upload a file")
+      common$logger |> writeLog(type = "error", "Please upload a file")
       return()
     }
 
     if (input$treatment_names == "") {
-      common$logger %>% writeLog(type = "error", "Please enter a list of treatment names")
+      common$logger |> writeLog(type = "error", "Please enter a list of treatment names")
       return()
     }
 
@@ -36,7 +36,7 @@ setup_upgrade_module_server <- function(id, common, parent_session) {
 
     # LOAD INTO COMMON ####
     if (!is.null(result)){
-      common$logger %>% writeLog(type= "complete", "Data was upgraded successfully and can now be downloaded")
+      common$logger |> writeLog(type= "complete", "Data was upgraded successfully and can now be downloaded")
       common$upgraded_data <- result
       # METADATA ####
       common$meta$setup_upgrade$used <- TRUE

@@ -42,7 +42,7 @@ bayes_deviance_module_server <- function(id, common, parent_session) {
       # add check for a running model
 
       if (is.null(common$bayes_all)){
-        common$logger %>% writeLog(type = "error", "Please fit the Bayesian models first")
+        common$logger |> writeLog(type = "error", "Please fit the Bayesian models first")
         return()
       } else {
         common$meta$bayes_deviance$used <- TRUE
@@ -52,15 +52,15 @@ bayes_deviance_module_server <- function(id, common, parent_session) {
 
     common$tasks$bayes_deviance_all <- ExtendedTask$new(
       function(...) mirai::mirai(run(...), run = bayes_deviance, .args = environment())
-    ) %>% bind_task_button("run")
+    ) |> bind_task_button("run")
 
     common$tasks$bayes_deviance_sub <- ExtendedTask$new(
       function(...) mirai::mirai(run(...), run = bayes_deviance, .args = environment())
-    ) %>% bind_task_button("run")
+    ) |> bind_task_button("run")
 
     observeEvent(list(watch("bayes_deviance"), watch("bayes_model_all")), {
       req(watch("bayes_deviance") > 0)
-      common$logger %>% writeLog(type = "starting", "Generating Bayesian deviance plots")
+      common$logger |> writeLog(type = "starting", "Generating Bayesian deviance plots")
       common$tasks$bayes_deviance_all$invoke(common$bayes_all,
                                              common$model_type,
                                              common$outcome_measure)
@@ -72,7 +72,7 @@ bayes_deviance_module_server <- function(id, common, parent_session) {
 
       # prevent showing on first run
       if (!is.null(common$bayes_deviance_sub)){
-        common$logger %>% writeLog(type = "starting", "Updating Bayesian deviance plots")
+        common$logger |> writeLog(type = "starting", "Updating Bayesian deviance plots")
       }
 
       common$tasks$bayes_deviance_sub$invoke(common$bayes_sub,
@@ -85,7 +85,7 @@ bayes_deviance_module_server <- function(id, common, parent_session) {
       result <- common$tasks$bayes_deviance_all$result()
       result_all$suspend()
       common$bayes_deviance_all <- result
-      common$logger %>% writeLog(type = "complete", "Bayesian deviance plots have been generated")
+      common$logger |> writeLog(type = "complete", "Bayesian deviance plots have been generated")
       trigger("bayes_deviance_all")
     })
 
@@ -93,7 +93,7 @@ bayes_deviance_module_server <- function(id, common, parent_session) {
       result <- common$tasks$bayes_deviance_sub$result()
       result_sub$suspend()
         if (!is.null(common$bayes_deviance_sub)){
-          common$logger %>% writeLog(type = "complete", "Bayesian deviance plots have been updated")
+          common$logger |> writeLog(type = "complete", "Bayesian deviance plots have been updated")
         }
       common$bayes_deviance_sub <- result
       trigger("bayes_deviance_sub")

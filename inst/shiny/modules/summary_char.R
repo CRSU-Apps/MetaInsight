@@ -12,7 +12,7 @@ summary_char_module_server <- function(id, common, parent_session) {
     observeEvent(input$run, {
       # WARNING ####
       if (is.null(common$bugsnet_sub)){
-        common$logger %>% writeLog(type = "error", "Please define the data first in the Setup component")
+        common$logger |> writeLog(type = "error", "Please define the data first in the Setup component")
         return()
       }
       # TRIGGER

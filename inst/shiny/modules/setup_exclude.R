@@ -54,7 +54,7 @@ setup_exclude_module_server <- function(id, common, parent_session) {
       list(input$exclusions,
            input$model,
            watch("setup_configure"))
-    }) %>% debounce(1200)
+    }) |> debounce(1200)
 
     observeEvent(exclusion_triggers(), {
       req(common$bugsnet_all)
@@ -73,9 +73,9 @@ setup_exclude_module_server <- function(id, common, parent_session) {
                                               input$exclusions)
 
       if (length(common$freq_sub) == 0){
-        common$logger %>% writeLog(type = "starting", "Running initial sensitivity analysis")
+        common$logger |> writeLog(type = "starting", "Running initial sensitivity analysis")
       } else {
-        common$logger %>% writeLog(type = "starting", "Updating sensitivity analysis")
+        common$logger |> writeLog(type = "starting", "Updating sensitivity analysis")
       }
 
       # storing this here so they are always in sync
@@ -110,7 +110,7 @@ setup_exclude_module_server <- function(id, common, parent_session) {
         common$subsetted_treatment_df <- result$subsetted_treatment_df
 
         if (common$reference_treatment_sub != common$reference_treatment_all){
-          common$logger %>% writeLog(type = "info",
+          common$logger |> writeLog(type = "info",
                                      glue::glue("The reference treatment for the sensitivity analysis
                                               has been changed to {common$reference_treatment_sub}
                                               because the {common$reference_treatment_all} treatment
@@ -118,9 +118,9 @@ setup_exclude_module_server <- function(id, common, parent_session) {
         }
 
         if (initial){
-          common$logger %>% writeLog(type = "complete", "Initial sensitivity analysis is complete")
+          common$logger |> writeLog(type = "complete", "Initial sensitivity analysis is complete")
         } else {
-          common$logger %>% writeLog(type = "complete", "Sensitivity analysis has been updated")
+          common$logger |> writeLog(type = "complete", "Sensitivity analysis has been updated")
         }
 
         # required for testing to wait until the debounce has triggered

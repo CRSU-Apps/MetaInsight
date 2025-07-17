@@ -11,17 +11,17 @@ bayes_results_submodule_server <- function(id, common, model, run){
     output$text <- renderUI({
       req(common[[model]])
       bayes_results(common[[model]])
-    }) %>% bindEvent(run())
+    }) |> bindEvent(run())
 
     output$statistics <- renderTable({
       req(common[[model]])
       common[[model]]$sumresults$summaries$statistics
-    }, rownames = TRUE) %>% bindEvent(run())
+    }, rownames = TRUE) |> bindEvent(run())
 
     output$quantiles <- renderTable({
       req(common[[model]])
       common[[model]]$sumresults$summaries$quantiles
-    }, rownames = TRUE) %>% bindEvent(run())
+    }, rownames = TRUE) |> bindEvent(run())
   })
 }
 
@@ -36,7 +36,7 @@ bayes_results_module_server <- function(id, common, parent_session) {
       # add check for a running model
 
       if (is.null(common$bayes_all)){
-        common$logger %>% writeLog(type = "error", "Please fit the Bayesian models first")
+        common$logger |> writeLog(type = "error", "Please fit the Bayesian models first")
         return()
       } else {
         trigger("bayes_results")
