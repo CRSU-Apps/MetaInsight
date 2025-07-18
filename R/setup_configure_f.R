@@ -47,6 +47,8 @@ setup_configure <- function(data, treatment_df, outcome, outcome_measure, refere
   treatment_df <- CreateTreatmentIds(treatment_df$Label, reference_treatment)
 
   data <- WrangleUploadData(data, treatment_df, outcome)
+  treatment_df <- CleanTreatmentIds(treatment_df)
+  reference_treatment <- CleanStrings(reference_treatment)
 
   main_subnetworks <- IdentifySubNetworks(data, treatment_df, reference_treatment)
 
