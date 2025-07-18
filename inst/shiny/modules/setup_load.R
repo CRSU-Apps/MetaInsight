@@ -9,7 +9,7 @@ setup_load_module_ui <- function(id) {
       "Long" = "long",
       "Wide" = "wide")
     ),
-    p(tags$strong("Maximum file size is 5MB.")),
+    p(tags$strong("See the Guidance tab for instructions")),
     uiOutput(ns("data_out")),
     actionButton(ns("run"), "Load example data", icon = icon("arrow-turn-down")),
     uiOutput(ns("reset_out")),
