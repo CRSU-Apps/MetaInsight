@@ -17,22 +17,22 @@ Owen, RK, Bradbury, N, Xin, Y, Cooper, N, Sutton, A. MetaInsight: An interactive
 
 ### **Attributes of _MetaInsight_**
 
-This version of *MetaInsight* was built using *shinyscholar* and has these attributes:
+This version of *MetaInsight* was built using *<a href = "https://cran.r-project.org/package=shinyscholar" target="_blank">shinyscholar</a>* and has these attributes:
 
 * **accessible**: lowers barriers to conducting complex meta-analysis by providing an intuitive graphical user interface
-* **open**: the code is free to use and modify (GPL 3.0) and can be viewed from inside the application
+* **open**: the code is free to use and modify (GPL 3.0) and <a href="https://github.com/CRSU-Apps/MetaInsight" target="_blank">available on GitHub</a>
 * **expandable**: users can author and contribute modules that enable new methodological options
 * **flexible**: options for user uploads and downloads of results
 * **interactive**: includes an embedded sortable `{DF}` data tables, and visualizations of results
 * **instructive**: features guidance text that educates users about theoretical and analytical aspects of each step in the workflow
-* **reproducible**: users can download an `{rmarkdown}` .Rmd file that when run reproduces the analysis, and also save sessions and load them later
+* **reproducible**: users can download a `{quarto}` .qmd file that when run reproduces the analysis, and also save sessions and load them later
 * **reliable**: modules and their underlying functions are tested using `{testthat}` and `{shinytest2}`
 
 ### **Contact us**
 
 Please <a href="mailto:info@crsu.org.uk" target="_blank">email us</a> with any other questions.
 
-#### **Funding and Support Acknowledgement**
+### **Funding and Support Acknowledgement**
 
 <div style="display: inline;">
   <img src="funded-by-nihr-logo.png" width="55%">
@@ -45,7 +45,7 @@ Please <a href="mailto:info@crsu.org.uk" target="_blank">email us</a> with any o
     MetaInsight is part of the Complex Reviews Synthesis Unit (CRSU) suite of evidence synthesis apps.
 The development of these apps are currently funded (majority) and overseen by the Evidence Synthesis Group @ CRSU (NIHR153934).
 Further details of other funders and support, current and past, can be found 
-<a href="https://github.com/CRSU-Apps/.github/blob/main/DetailedFundingStatement.pdf">on our GitHub page</a>
+<a href="https://github.com/CRSU-Apps/.github/blob/main/DetailedFundingStatement.pdf" target="_blank">on our GitHub page</a>
 . The views expressed are those of the author(s) and not necessarily those of the NIHR or the Department of Health and Social Care.
 </p>
 <p>
@@ -55,4 +55,3 @@ More information about the UK NIHR Complex Reviews Synthesis Unit (CRSU) can be 
 </div>
                   
 
-#### **References**

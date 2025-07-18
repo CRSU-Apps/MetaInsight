@@ -137,7 +137,7 @@ tagList(
                includeMarkdown("Rmd/text_team.Rmd")
             ),
             nav_panel(
-              'How To Use',
+              'How to use',
               includeMarkdown("Rmd/text_how_to_use.Rmd")
             )
           )

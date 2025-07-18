@@ -3,11 +3,29 @@ title: "team"
 output: html_document
 ---
 
-
 ## Developers
 
-<a href="https://github.com/simon-smart88" target="_blank">Simon Smart</a> received his PhD in Plant Sciences from the University of Cambridge and is currently a Software Developer in the Department of Population Health Sciences at the University of Leicester where he is developing <a href="https://simon-smart88.github.io/disagapp/" target="_blank">disagapp</a>
+Developers are listed in alphabetical order:
 
+<a href="https://github.com/nabury" target="_blank">Naomi Bradbury</a> is a Research Associate in the Biostatistics Research Group and developed the initial version of *MetaInsight*.
+
+<a href="https://github.com/tommorris168" target="_blank">Tom Morris</a> is a Research Associate in the Biostatistics Research Group.
+
+<a href="https://github.com/BalancedmonkeY" target="_blank">Clareece Nevill</a> is a Research Associate in the Biostatistics Research Group, where she spends half of her time as part of an NIHR Evidence Synthesis Group and the other half on my PhD. She developed the Ranking panel in the Bayesian analysis.
+
+<a href="https://github.com/JanionNevill" target="_blank">Janion Nevill</a> is a Research Software Engineer in the Biostatistics Research Group with significant experience writing desktop software in Java and Python. 
+
+Rhiannon Owen developed the initial version of *MetaInsight*.
+
+<a href="https://github.com/simon-smart88" target="_blank">Simon Smart</a> received his PhD in Plant Sciences from the University of Cambridge and is currently a Software Developer in the Department of Population Health Sciences at the University of Leicester. He developed *shinyscholar* for producing reproducible apps and converted *MetaInsight* to the framework.
+
+Yiqiao Xin developed the initial version of *MetaInsight*.
 
 ## Managers
+
+The managers have guided and supervised the developers:
+
+<a href="https://le.ac.uk/people/nicola-cooper" target="_blank">Nicola Cooper</a> is a Professor of Healthcare Evaluation Research at the University of Leicester and a member of the Complex Reviews Synthesis Unit. Her primary research interest is in the interface and integration of medical statistics and health economics.
+
+<a href="https://le.ac.uk/people/alex-sutton" target="_blank">Alex Sutton</a> is a Professor of medical statistics with a current interest in developing methods for data visualisation interactive digital web content to facilitate statistical analyses and using synthesis to inform the design of future studies. He has worked in evidence synthesis (including meta-analysis and network meta-analysis) for over 25 years and authored over 200 publications; a combination of methodological work and substantive applications.
 
