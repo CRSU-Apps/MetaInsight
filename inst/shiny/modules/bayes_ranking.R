@@ -99,7 +99,6 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
 
     ranking_plots <- eventReactive(watch(trigger), {
       req(watch(trigger) > 0)
-
       plots <- list(
         litmus = LitmusRankOGram(common[[paste0("bayes_rank_", id)]], colourblind = FALSE, regression_text = regression_text()),
         radial = RadialSUCRA(common[[paste0("bayes_rank_", id)]], colourblind = FALSE, regression_text = regression_text()),
@@ -111,6 +110,7 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
 
     output$ranking <- renderPlot({
       req(watch(trigger) > 0)
+      on.exit(shinyjs::show(selector = ".bayes_ranking_div"))
       if (rank_style() == "litmus" && colourblind() == FALSE){
         return(ranking_plots()$litmus)
       }
@@ -131,6 +131,8 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
       }
     })
 
+    # enable shinyjs::show to work
+    outputOptions(output, "ranking", suspendWhenHidden = FALSE)
 
     output$ranking_table <- renderTable({
       ranking_table(common[[paste0("bayes_rank_", id)]])
@@ -232,7 +234,7 @@ bayes_ranking_module_server <- function(id, common, parent_session) {
         return()
       } else {
         trigger("bayes_ranking")
-        shinyjs::show(selector = ".bayes_ranking_div")
+
       }
     })
 
