@@ -67,7 +67,7 @@ function(input, output, session) {
   lapply(help_components, function(component) {
     lapply(COMPONENT_MODULES[[component]], function(module) {
       btn_id <- paste0(module$id, "Help")
-      observeEvent(input[[btn_id]], updateTabsetPanel(session, "main", "Module Guidance"))
+      observeEvent(input[[btn_id]], updateTabsetPanel(session, "main", "Guidance"))
       })})
 
 
