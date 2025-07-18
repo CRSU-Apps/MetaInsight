@@ -40,6 +40,7 @@ tagList(
         "input.tabs == 'intro'",
         # actionButton("debug_button", "debug"),
         # textOutput("debug"),
+        core_intro_module_ui("core_intro"),
         includeMarkdown("Rmd/text_intro_tab.Rmd")
       ),
       insert_modules_ui("setup", "Setup", exclude = "setup_exclude"),
@@ -128,7 +129,6 @@ tagList(
             id = 'introTabs',
             nav_panel(
               'About',
-              core_intro_module_ui("core_intro"),
               # prevent warning about logo path
               suppressWarnings(includeMarkdown("Rmd/text_about.Rmd"))
             ),

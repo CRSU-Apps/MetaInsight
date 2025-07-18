@@ -2,9 +2,9 @@ core_intro_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
     tags$div(
-      style="text-align: center; padding: 20px;",
-      actionButton(ns("intro"), "Start a guided tour", icon = icon("person-hiking", lib = "font-awesome"), width = "400px", style = "font-size: 2rem; margin-bottom: 20px;"),
-      actionButton(ns("existing_intro"), "See what has changed", icon = icon("person-hiking", lib = "font-awesome"), width = "400px", style = "font-size: 2rem;")
+      style="display: flex; flex-direction: column; align-items: center; padding: 20px;",
+      actionButton(ns("intro"), "Start a guided tour", icon = icon("person-hiking", lib = "font-awesome"), width = "300px", style = "font-size: 1.5rem; margin-bottom: 20px;"),
+      actionButton(ns("existing_intro"), "See what has changed", icon = icon("person-hiking", lib = "font-awesome"), width = "300px", style = "font-size: 1.5rem;")
     )
   )
 }
