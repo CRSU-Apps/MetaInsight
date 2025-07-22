@@ -15,12 +15,10 @@ setup_exclude_module_server <- function(id, common, parent_session) {
 
     observe({
       watch("setup_configure")
-      req(common$data)
-      # selected = is required to restore selections on reload
+      req(common$wrangled_data)
       shinyWidgets::updatePickerInput(session, "exclusions",
-                                      choices = unique(common$data$Study),
-                                      selected = common$excluded_studies,
-                                      choicesOpt = list(disabled = !c(unique(common$data$Study) %in% unique(common$main_connected_data$Study))))
+                                      choices = unique(common$wrangled_data$Study),
+                                      choicesOpt = list(disabled = !c(unique(common$wrangled_data$Study) %in% unique(common$main_connected_data$Study))))
     })
 
     common$tasks$setup_exclude_all <- ExtendedTask$new(
@@ -140,13 +138,24 @@ setup_exclude_module_server <- function(id, common, parent_session) {
     save = function() {list(
       ### Manual save start
       ### Manual save end
+      choices = unique(common$wrangled_data$Study),
       exclusions = input$exclusions,
+      disabled = !c(unique(common$wrangled_data$Study) %in% unique(common$main_connected_data$Study)),
       model = input$model)
     },
     load = function(state) {
       ### Manual load start
       ### Manual load end
-      updateCheckboxGroupInput(session, "exclusions", selected = state$exclusions)
+      if (is.null(state$exclusions)){
+        shinyWidgets::updatePickerInput(session, "exclusions",
+                                        choices = state$choices,
+                                        choicesOpt = list(disabled = state$disabled))
+      } else {
+        shinyWidgets::updatePickerInput(session, "exclusions",
+                                        selected = state$exclusions,
+                                        choices = state$choices,
+                                        choicesOpt = list(disabled = state$disabled))
+      }
       updateRadioButtons(session, "model", selected = state$model)
     }
   ))
