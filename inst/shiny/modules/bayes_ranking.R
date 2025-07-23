@@ -313,7 +313,8 @@ bayes_ranking_submodule_result <- function(id, title) {
                 shinyWidgets::dropdownButton(
                   circle = FALSE,
                   status = "default",
-                  label = "Ranking probabilities and \nSUCRA values for all treatments"
+                  label = "Ranking probabilities and \nSUCRA values for all treatments",
+                  inputId = ns("dropdown")
                 ),
                 tableOutput(ns("ranking_table"))
               )
