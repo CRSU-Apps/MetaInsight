@@ -92,6 +92,7 @@ bayes_model_module_server <- function(id, common, parent_session) {
       result_all$suspend()
       if (inherits(result, "list")){
         common$bayes_all <- result
+        shinyjs::runjs("Shiny.setInputValue('bayes_model-all-complete', 'complete');")
         common$logger |> writeLog(type = "complete", "Bayesian models have been fitted")
       } else {
         common$logger |> writeLog(type = "error", result)
@@ -110,6 +111,7 @@ bayes_model_module_server <- function(id, common, parent_session) {
             common$logger |> writeLog(type = "complete", "The Bayesian model for the sensitivity analysis has been updated")
           }
           common$bayes_sub <- result
+          shinyjs::runjs("Shiny.setInputValue('bayes_model-sub-complete', 'complete');")
         } else {
           common$logger |> writeLog(type = "error", result)
         }
