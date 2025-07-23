@@ -16,16 +16,11 @@ bayes_compare_module_ui <- function(id) {
   )
 }
 
-bayes_compare_submodule_server <- function(id, common, model, run, text){
+bayes_compare_submodule_server <- function(id, common, run){
   moduleServer(id, function(input, output, session) {
 
     output$table <- renderTable({
-      bayes_compare(common[[model]], common$outcome_measure)
-    }) |> bindEvent(run())
-
-    output$text <- renderUI({
-      req(common[[model]])
-      p(tags$strong(text))
+      bayes_compare(common[[paste0("bayes_", id)]], common$outcome_measure)
     }) |> bindEvent(run())
 
     output$download <- downloadHandler(
@@ -33,7 +28,7 @@ bayes_compare_submodule_server <- function(id, common, model, run, text){
          glue::glue("MetaInsight_bayesian_comparison_{id}.csv")
       },
       content = function(file) {
-        write.csv(bayes_compare(common[[model]], common$outcome_measure), file)
+        write.csv(bayes_compare(common[[paste0("bayes_", id)]], common$outcome_measure), file)
       }
     )
 
@@ -71,17 +66,17 @@ bayes_compare_module_server <- function(id, common, parent_session) {
       }
     })
 
-    bayes_compare_submodule_server("all", common, "bayes_all", all_trigger, "Treatment effects for all studies: comparison of all treatment pairs.")
-    bayes_compare_submodule_server("sub", common, "bayes_sub", sub_trigger, "Treatment effects with selected studies excluded: comparison of all treatment pairs.")
+    bayes_compare_submodule_server("all", common, all_trigger)
+    bayes_compare_submodule_server("sub", common, sub_trigger)
 
   })
 }
 
 
-bayes_compare_submodule_result <- function(id) {
+bayes_compare_submodule_result <- function(id, text) {
   ns <- NS(id)
   tagList(
-    uiOutput(ns("text")),
+    p(tags$strong(text)),
     tableOutput(ns("table"))
   )
 }
@@ -97,8 +92,8 @@ bayes_compare_module_result <- function(id) {
         If you would like to obtain the pairwise meta-analysis results, please use the Nodesplit model module"
       ),
       layout_columns(
-        bayes_compare_submodule_result(ns("all")),
-        bayes_compare_submodule_result(ns("sub"))
+        bayes_compare_submodule_result(ns("all"), "Treatment effects for all studies: comparison of all treatment pairs."),
+        bayes_compare_submodule_result(ns("sub"), "Treatment effects with selected studies excluded: comparison of all treatment pairs.")
       )
     )
   )
