@@ -269,13 +269,21 @@ bayes_ranking_module_server <- function(id, common, parent_session) {
                                    "subsetted_data", "subsetted_treatment_df", sub_trigger, "bayes_ranking_sub")
 
     return(list(
-      save = function() {
-        # Save any values that should be saved when the current session is saved
-        # Populate using save_and_load()
+    save = function() {list(
+      ### Manual save start
+      ### Manual save end
+      colourblind = input$colourblind,
+      simple = input$simple,
+      network_style = input$network_style,
+      rank_style = input$rank_style)
       },
       load = function(state) {
-        # Load
-        # Populate using save_and_load()
+      ### Manual load start
+      ### Manual load end
+      updateCheckboxInput(session, "colourblind", value = state$colourblind)
+      updateCheckboxInput(session, "simple", value = state$simple)
+      updateRadioButtons(session, "network_style", selected = state$network_style)
+      updateRadioButtons(session, "rank_style", selected = state$rank_style)
       }
     ))
 
