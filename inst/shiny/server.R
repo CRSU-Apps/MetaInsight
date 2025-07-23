@@ -134,7 +134,7 @@ function(input, output, session) {
       if (module$id == "rep_markdown"){
        return <- do.call(get(module$server_function), args = list(id = module$id, common = common, parent_session = session, COMPONENT_MODULES))
       } else if (module$id == "setup_reload"){
-       return <- do.call(get(module$server_function), args = list(id = module$id, common = common, modules = modules, parent_session = session))
+        # do nothing (loaded below once modules list is complete)
       } else {
        return <- do.call(get(module$server_function), args = list(id = module$id, common = common, parent_session = session))
       }
@@ -163,6 +163,7 @@ function(input, output, session) {
   ################################
 
   core_save_module_server("core_save", common, modules, COMPONENTS, input)
+  setup_reload_module_server("setup_reload", common, modules, session)
 
   ################################
   ### DEBUGGING ####
