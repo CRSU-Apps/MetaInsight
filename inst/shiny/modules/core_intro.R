@@ -15,7 +15,7 @@ core_intro_module_server <- function(id, common, parent_session) {
   #Steps in the introduction - the element to tag, the message to display, position of the tooltip, any javascript needed to move between tabs / click buttons
   steps <- data.frame(c(NA, "Welcome to MetaInsight! This tour will show you various features of the application to help get you started", NA, NA),
                       c("aside[class=\"sidebar\"]", "This panel shows all of the possible modules in the app", "bottom", NA),
-                      c("a[data-value=\"How To Use\"]", "Detailed instructions can be found in the How To Use tab", "bottom","$('a[data-value=\"How To Use\"]').trigger('click');"),
+                      c("a[data-value=\"How to use\"]", "Detailed instructions can be found in the How To Use tab", "bottom","$('a[data-value=\"How To Use\"]').trigger('click');"),
                       c("a[data-value=\"setup\"]", "Click on the tabs to move between components", "bottom", "$('a[data-value=\"setup\"]').trigger('click');"),
                       c("#setupSel", "Select a module to load the options", "bottom", "$('input[value=\"setup_load\"]').trigger('click');"),
                       c("#setup_loadHelp", "Click on the question mark to view instructions for the module", "bottom", "$('a[data-value=\"Module Guidance\"]').trigger('click');"),
