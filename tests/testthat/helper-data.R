@@ -6,7 +6,7 @@ excluded_data_con <- setup_exclude(defined_data_con$non_covariate_data_all, defi
 loaded_data_bin <- setup_load(outcome = "Binary")
 defined_data_bin <- setup_configure(loaded_data_bin$data, loaded_data_bin$treatment_df, "Binary", "OR", "Placebo")
 
-fitted_bayes_model <- bayes_model(defined_data_con$main_connected_data, loaded_data_con$treatment_df, "Continuous", "MD", "fixed", "Placebo")
+fitted_bayes_model <- bayes_model(defined_data_con$main_connected_data, loaded_data_con$treatment_df, "Continuous", "MD", "random", "Placebo")
 
 test_data_dir <- normalizePath(testthat::test_path("data"))
 

@@ -73,7 +73,7 @@ test_plot_downloads <- function(app, module, pair = TRUE) {
 # similar to above, but for bayes modules which use submodules
 test_bayes_plot_downloads <- function(app, module, plot_id) {
   download_all_id <- paste0(module, "-all-download", plot_id)
-  download_sub_id <- paste0(module, "-all-download", plot_id)
+  download_sub_id <- paste0(module, "-sub-download", plot_id)
 
   app$set_inputs("download_format" = "pdf")
   pdf_all <- app$get_download(download_all_id)

@@ -33,8 +33,8 @@ bayes_nodesplit_submodule_server <- function(id, common, nodesplit, run){
       watch(run)
       req(common[[nodesplit]])
       shinyjs::show("download")
+      on.exit(shinyjs::runjs(paste0("Shiny.setInputValue('bayes_nodesplit-",id ,"-complete', 'complete');")))
       common$meta$bayes_nodesplit[[paste0("plot_height_", id)]] <- plot_height() / 72
-
       plot(summary(common[[nodesplit]]), digits = 3)
       title(main = plot_title)
     }, height = function(){plot_height()})

@@ -41,6 +41,7 @@ bayes_mcmc_submodule_server <- function(id, common, trigger){
     output$density <- renderPlot({
       watch(trigger)
       req(common[[paste0("bayes_mcmc_", id)]])
+      on.exit(shinyjs::runjs(paste0("Shiny.setInputValue('bayes_mcmc-",id ,"-complete', 'complete');")))
       cowplot::plot_grid(
         plotlist = common[[paste0("bayes_mcmc_", id)]]$density_plots,
         ncol = 2

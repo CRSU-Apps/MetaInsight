@@ -93,5 +93,6 @@ test_that("{shinytest2} recording: e2e_bayes_ranking", {
   expect_equal(nrow(df_sub), 4)
   expect_equal(ncol(df_sub), 6)
 
+  app$stop()
 })
 

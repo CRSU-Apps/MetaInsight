@@ -17,7 +17,7 @@ bayes_nodesplit <- function(data, treatment_df, outcome, outcome_measure, model_
     return(async |> asyncLog(type = "error", "Bayesian analysis of risk differences is not currently implemented in MetaInsight"))
   }
   if (!outcome_measure %in% c('OR', 'RR', 'MD')) {
-    return(async |> asyncLog(ype = "error", glue::glue("Outcome_measure type '{outcome_measure}' is not supported. Please use one of: 'MD', 'OR', 'RR'")))
+    return(async |> asyncLog(type = "error", glue::glue("Outcome_measure type '{outcome_measure}' is not supported. Please use one of: 'MD', 'OR', 'RR'")))
   }
 
   try <- tryCatch(
