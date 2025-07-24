@@ -55,7 +55,6 @@ rep_refPackages_module_server <- function(id, common, parent_session) {
         knitcitations::citep(citation("netmeta"))
         knitcitations::citep(citation("patchwork"))
         knitcitations::citep(citation("plotly"))
-        knitcitations::citep(citation("plotrix"))
         knitcitations::citep(citation("plyr"))
         knitcitations::citep(citation("quarto"))
         knitcitations::citep(citation("R6"))

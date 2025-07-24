@@ -1,5 +1,5 @@
 Package: metainsight
-Version: 8.0.0
+Version: 7.0.0
 Title: A 'shiny' Application for Network Metaanalysis
 Description: Conduct network metaanalyses through a graphical user interface using 
     'bnma', 'BUGSnet', 'gemtc', 'metafor' and 'netmeta'. Many options for downloading 
@@ -48,11 +48,9 @@ Imports:
     metafor,
     mirai,
     mvtnorm,
-    nanonext,
     netmeta,
     patchwork,
     plotly,
-    plotrix,
     plyr,
     quarto,
     R6,
@@ -73,10 +71,13 @@ Imports:
     tools,
     zip
 Suggests:
+    mockery,
     pdftools,
     shinytest2,
     testthat,
     xml2
+Remotes:
+    audrey-b/BUGSnet
 License: GPL-3
 URL: 
 Encoding: UTF-8
