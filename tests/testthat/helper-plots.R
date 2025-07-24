@@ -69,3 +69,35 @@ test_plot_downloads <- function(app, module, pair = TRUE) {
     unlink(c(pdf, png, svg))
   }
 }
+
+# similar to above, but for bayes modules which use submodules
+test_bayes_plot_downloads <- function(app, module, plot_id) {
+  download_all_id <- paste0(module, "-all-download", plot_id)
+  download_sub_id <- paste0(module, "-all-download", plot_id)
+
+  app$set_inputs("download_format" = "pdf")
+  pdf_all <- app$get_download(download_all_id)
+  pdf_sub <- app$get_download(download_sub_id)
+  expect_gt(file.info(pdf_all)$size, 1000)
+  expect_gt(file.info(pdf_sub)$size, 1000)
+  expect_true(validate_plot(pdf_all, "pdf"))
+  expect_true(validate_plot(pdf_sub, "pdf"))
+
+  app$set_inputs("download_format" = "png")
+  png_all <- app$get_download(download_all_id)
+  png_sub <- app$get_download(download_sub_id)
+  expect_gt(file.info(png_all)$size, 1000)
+  expect_gt(file.info(png_sub)$size, 1000)
+  expect_true(validate_plot(png_all, "png"))
+  expect_true(validate_plot(png_sub, "png"))
+
+  app$set_inputs("download_format" = "svg")
+  svg_all <- app$get_download(download_all_id)
+  svg_sub <- app$get_download(download_sub_id)
+  expect_gt(file.info(svg_all)$size, 1000)
+  expect_gt(file.info(svg_sub)$size, 1000)
+  expect_true(validate_plot(svg_all, "svg"))
+  expect_true(validate_plot(svg_sub, "svg"))
+
+  unlink(c(pdf_all, pdf_sub, png_all, png_sub, svg_all, svg_sub))
+}
