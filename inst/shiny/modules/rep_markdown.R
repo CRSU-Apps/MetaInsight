@@ -1,7 +1,7 @@
 rep_markdown_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
-    selectInput(ns("rmdFileType"), label = "Select download file type",
+    selectInput(ns("file_type"), label = "Select download file type",
                 choices = c("HTML" = ".html", "Quarto" = ".qmd")),
     bslib::input_task_button(ns("download"), "Download", icon = shiny::icon("download"), type = "default"),
     div(style = "visibility: hidden;",
@@ -129,7 +129,7 @@ rep_markdown_module_server <- function(id, common, parent_session, COMPONENT_MOD
 
     # not ideal, but can't find a method to pass to the function
     observe({
-      rep_markdown_file_type <<- input$rmdFileType
+      rep_markdown_file_type <<- input$file_type
     })
 
     # task that calls the function
@@ -144,10 +144,15 @@ rep_markdown_module_server <- function(id, common, parent_session, COMPONENT_MOD
     })
 
     # wait for the file to be prepared and then trigger the download
+    # if in testing set an input value to use when the download is ready
     results <- observe({
       if (task$status() == "success") {
         results$destroy()
-        shinyjs::click("dlRMD")
+        if (isTRUE(getOption("shiny.testmode"))) {
+          shinyjs::runjs("Shiny.setInputValue('rep_markdown-complete', 'complete');")
+        } else {
+          shinyjs::click("dlRMD")
+        }
         close_loading_modal()
       }
 
@@ -161,7 +166,7 @@ rep_markdown_module_server <- function(id, common, parent_session, COMPONENT_MOD
     # handler for R Markdown download
     output$dlRMD <- downloadHandler(
       filename = function() {
-        paste0("metainsight-session-", Sys.Date(), input$rmdFileType)
+        paste0("metainsight-session-", Sys.Date(), input$file_type)
       },
       content = function(file) {
         file.rename(task$result(), file)
