@@ -83,7 +83,8 @@ summary_study_module_server <- function(id, common, parent_session) {
 
 summary_study_module_result <- function(id) {
   ns <- NS(id)
-  plotOutput(ns("plot"))
+  # set a maximum width whilst staying centered
+  div(style = "max-width: 800px; margin: 0 auto;", plotOutput(ns("plot")))
 }
 
 summary_study_module_rmd <- function(common){ list(

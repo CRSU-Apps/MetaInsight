@@ -55,12 +55,12 @@ summary_study <- function(freq, outcome_measure, header, title, logger = NULL) {
 
   if (outcome == "OR" | outcome =="RR" ){
     fplot <- metafor::forest(d1$TE, sei = d1$seTE, slab = paste(d1$Study), subset = order(d1$treat1, d1$treat2),
-                             ylim = c(1, nrow(d1) + 2 * length(text_label) + 2), rows = lines, atransf = exp,
+                             ylim = c(0, nrow(d1) + 2 * length(text_label) + 2), rows = lines, atransf = exp,
                              at = log(c(0.01, 1, 10, 100)), xlab = paste("Observed ", outcome), efac = 0.5
     )
   } else {
     fplot <- metafor::forest(d1$TE, sei = d1$seTE, slab = paste(d1$Study), subset = order(d1$treat1, d1$treat2),
-                             ylim = c(1, nrow(d1) + 2 * length(text_label) + 2), rows = lines,
+                             ylim = c(0, nrow(d1) + 2 * length(text_label) + 2), rows = lines,
                              xlab = paste("Observed ",outcome), efac = 0.5)
   }
   graphics::text(fplot$xlim[1], gaps, pos = 4, font = 4, text_label, cex = HeaderSize)
