@@ -18,7 +18,7 @@ test_that("freq_compare functions correctly", {
 })
 
 test_that("freq_inconsistent produces downloadable tables", {
-  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"))
+  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 30000)
   app$set_inputs(tabs = "setup")
   app$set_inputs(setupSel = "setup_load")
   app$click("setup_load-run")
@@ -47,4 +47,5 @@ test_that("freq_inconsistent produces downloadable tables", {
   expect_equal(ncol(df), 9)
   expect_equal(nrow(df), 3)
 
+  app$stop()
 })

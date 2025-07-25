@@ -40,12 +40,12 @@ test_that("{shinytest2} recording: e2e_bayes_deviance", {
   expect_is(lev_all, "json")
   expect_is(lev_sub, "json")
 
-  expect_true(c("x", "evals", "jsHooks", "deps") %in% names(jsonify::from_json(scat_all)))
-  expect_true(c("x", "evals", "jsHooks", "deps") %in% names(jsonify::from_json(scat_sub)))
-  expect_true(c("x", "evals", "jsHooks", "deps") %in% names(jsonify::from_json(stem_all)))
-  expect_true(c("x", "evals", "jsHooks", "deps") %in% names(jsonify::from_json(stem_sub)))
-  expect_true(c("x", "evals", "jsHooks", "deps") %in% names(jsonify::from_json(lev_all)))
-  expect_true(c("x", "evals", "jsHooks", "deps") %in% names(jsonify::from_json(lev_sub)))
+  expect_true(all(c("x", "evals", "jsHooks", "deps") %in% names(jsonify::from_json(scat_all))))
+  expect_true(all(c("x", "evals", "jsHooks", "deps") %in% names(jsonify::from_json(scat_sub))))
+  expect_true(all(c("x", "evals", "jsHooks", "deps") %in% names(jsonify::from_json(stem_all))))
+  expect_true(all(c("x", "evals", "jsHooks", "deps") %in% names(jsonify::from_json(stem_sub))))
+  expect_true(all(c("x", "evals", "jsHooks", "deps") %in% names(jsonify::from_json(lev_all))))
+  expect_true(all(c("x", "evals", "jsHooks", "deps") %in% names(jsonify::from_json(lev_sub))))
 
   app$stop()
 })
