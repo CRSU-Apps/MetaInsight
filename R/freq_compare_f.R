@@ -23,8 +23,8 @@ freq_compare <- function(freq, model_type, ranking_option, logger = NULL) {
     return()
   }
 
-  league <- netmeta::netleague(freq$net1, comb.random = (model_type == "random"),
-                               comb.fixed = (model_type == "fixed"), digits = 2,
+  league <- netmeta::netleague(freq$net1, random = (model_type == "random"),
+                               common = (model_type == "fixed"), digits = 2,
                                seq = netmeta::netrank(freq$net1, small = ranking_option))
 
   if (model_type == "random") {
