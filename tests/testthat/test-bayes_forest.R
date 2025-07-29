@@ -10,6 +10,16 @@ test_that("Check bayes_forest function works as expected", {
   unlink(test_file)
 })
 
+test_that("Check bayes_forest function produces errors as expected", {
+
+  faulty_model <- list(mtcRelEffects = 1:4)
+
+  expect_error(bayes_forest("faulty_model"), "bayes_model must be an object created by bayes_model")
+  expect_error(bayes_forest(list(a = 1)), "bayes_model must be an object created by bayes_model")
+  expect_error(bayes_forest(faulty_model), "bayes_model must be an object created by bayes_model")
+
+})
+
 test_that("{shinytest2} recording: e2e_bayes_forest", {
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_bayes_forest", timeout = 30000)
   app$set_inputs(tabs = "setup")
