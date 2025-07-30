@@ -21,10 +21,6 @@ bayes_nodesplit <- function(data, treatment_df, outcome, outcome_measure, model_
   }
 
   data <- dataform.df(data, treatment_df, outcome)
-  lstx <- treatment_df$Label
-  # ntx <- nrow(treatment_df)
-  
-  graph <- .CreateGraph(data = data)
   
   if (outcome == "Continuous") {
     armData <- data.frame(
@@ -57,10 +53,10 @@ bayes_nodesplit <- function(data, treatment_df, outcome, outcome_measure, model_
     like <- "binom"
     link <- ifelse (outcome_measure == "OR", "logit", "log")
   }
-  
+
   check_nodesplit <- IsNodesplittable(
-    graph = graph,
-    treatments = lstx
+    data = data,
+    treatments = treatment_df$Label
   )
   
   if (!check_nodesplit$is_nodesplittable) {
@@ -80,59 +76,4 @@ bayes_nodesplit <- function(data, treatment_df, outcome, outcome_measure, model_
       )
     )
   }
-  
-  # nodeSplitResults <- gemtc::mtc.nodesplit(
-  #   network = mtcNetwork,
-  #   linearModel = model_type,
-  #   likelihood = like,
-  #   link = link
-  # )
-  # 
-  # return(nodeSplitResults)
-  
-  # try <- tryCatch(
-  #         expr = {
-  #           data <- dataform.df(data, treatment_df, outcome)
-  #           lstx <- treatment_df$Label
-  #           ntx <- nrow(treatment_df)
-  #           if (outcome == "Continuous") {
-  #             armData <- data.frame(study = data$Study,       # Create arm level data set for gemtc
-  #                                   treatment = data$T,
-  #                                   mean = data$Mean,
-  #                                   std.err = data$se)
-  #           } else {
-  #             armData <- data.frame(study = data$Study,
-  #                                   treatment = data$T,
-  #                                   responders = data$R,
-  #                                   sampleSize = data$N)
-  #           }
-  #           mtcNetwork <- gemtc::mtc.network(data.ab = armData, description = "Network",
-  #                                            treatments = data.frame(id = treatment_df$Label, description = treatment_df$Label)) # treatment argument needed so that it takes the reference treatment correctly
-  # 
-  #           if (outcome_measure == "MD") {
-  #             like <- "normal"
-  #             link <- "identity"
-  #           } else  {
-  #             like <- "binom"
-  #             link <- ifelse (outcome_measure == "OR", "logit", "log")
-  #           }
-  #           nodeSplitResults <- gemtc::mtc.nodesplit(network = mtcNetwork,
-  #                                                     linearModel = model_type,
-  #                                                     likelihood = like,
-  #                                                     link = link)  # nodesplitting
-  # 
-  #           return(nodeSplitResults)
-  #         },
-  #         error = function(exptn) {
-  #           return(NULL)
-  #         }
-  #       )
-  # 
-  # if (is.null(try)){
-  #   return(async |> asyncLog(type = "error", "Nodesplit model cannot be run, likely because there are no closed loops in the network"))
-  # } else {
-  #   return(try)
-  # }
-
-
 }

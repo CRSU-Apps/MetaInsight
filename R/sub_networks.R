@@ -23,12 +23,13 @@
 
 #' Determine if the network contains any splittable nodes. If not, state the reason.
 #' 
-#' @param graph The network as an igraph.
+#' @param data The dataset from which to create the network.
 #' @param treatments Vector of treatments in order.
 #' @return List:
 #'  - is_nodesplittable: TRUE or FALSE.
 #'  - reason: Text describing the reason there are no splittable nodes, or NULL when is_nodesplittable == TRUE.
-IsNodesplittable <- function(graph, treatments) {
+IsNodesplittable <- function(data, treatments) {
+  graph <- .CreateGraph(data = data)
   #If there are no loops then return FALSE
   if (igraph::is_acyclic(igraph::simplify(graph, remove.multiple = TRUE))) {
     return(
@@ -60,8 +61,8 @@ IsNodesplittable <- function(graph, treatments) {
           for (path_index in 1:length(paths)) {
             #Only consider loops
             if (length(paths[[path_index]]) > 2) {
-              #The number of edges in the loop (+1 for the last, which is not part of the path but is part of the loop)
-              n_comparisons <- length(paths[[path_index]]) + 1
+              #The number of edges in the loop (equal to the number of treatments in the path)
+              n_comparisons <- length(paths[[path_index]])
               supporting_studies <- list()
               #For each comparison except the last, find the supporting studies
               for (comparison_index in 1:(n_comparisons -  1)) {
@@ -70,7 +71,8 @@ IsNodesplittable <- function(graph, treatments) {
                   treatments = c(
                     names(paths[[path_index]])[comparison_index],
                     names(paths[[path_index]])[comparison_index + 1]
-                  )
+                  ),
+                  all_or_any = "all"
                 )
               }
               #The last comparison, which has to be done separately as it isn't part of the path
@@ -79,7 +81,8 @@ IsNodesplittable <- function(graph, treatments) {
                 treatments = c(
                   names(paths[[path_index]])[n_comparisons],
                   names(paths[[path_index]])[1]
-                )
+                ),
+                all_or_any = "all"
               )
               #If each edge has a unique set of supporting studies then this loop contains a splittable comparison
               if (length(supporting_studies) == length(unique(supporting_studies))) {
@@ -145,7 +148,7 @@ IdentifySubNetworks_old <- function(data, treatment_df, reference_treatment_name
   reference_found = FALSE
   for (membership_index in unique(membership)) {
     subnet_treatments <- treatment_df$Number[membership == membership_index]
-    subnet_studies <- FindStudiesIncludingTreatments(data, subnet_treatments)
+    subnet_studies <- FindStudiesIncludingTreatments(data, subnet_treatments, "any")
 
     if (length(subnet_studies) == 0) {
       next
