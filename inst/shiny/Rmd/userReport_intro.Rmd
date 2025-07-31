@@ -18,7 +18,7 @@ For more detailed information see <https://quarto.org/>.
 
 metainsight uses the following R packages that must be installed and loaded before starting.
 ```{r}
-remotes::install_github("CRSU-Apps/MetaInsight", ref = "shinyscholar")
+if(!require("metainsight")) remotes::install_github("CRSU-Apps/MetaInsight", ref = "shinyscholar")
 library(metainsight)
 ```
 
