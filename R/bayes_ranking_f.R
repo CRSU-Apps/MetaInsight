@@ -1,42 +1,41 @@
 #' Function to create data regarding rank results - CRN
 #'
 #' @param data Input data set.
-#' @param metaoutcome "Continuous" or "Binary".
-#' @param treatment_list Data frame containing the treatment ID ('Number') and the treatment name ('Label').
-#' @param bayesmodel List of various model output created by baye().
-#' @param rankdir "good" or "bad", referring to small outcome values.
-#' @param excluded Vector of excluded studies for sensitivity analysis.
+#' @param outcome "Continuous" or "Binary".
+#' @param treatment_df Dataframe containing the treatment ID ('Number') and the treatment name ('Label').
+#' @param model List. Output produced by bayes_model().
+#' @param ranking_option "good" or "bad", referring to small outcome values.
 #' @return List of output created by rankdata().
 #' @export
-bayes_ranking <- function(data, metaoutcome, treatment_list, bayesmodel, rankdir, cov_value = NA, excluded = c(), package = "gemtc") {
-  newData1 <- as.data.frame(data)
-  longsort2 <- dataform.df(newData1, treatment_list, metaoutcome)
-  if (length(excluded > 0)) {
-    # Subset of data when studies excluded
-    longsort2 <- dplyr::filter(longsort2, !Study %in% excluded)
+bayes_ranking <- function(data, outcome, treatment_df, model, ranking_option, logger = NULL) {
+
+  check_param_classes(c("data", "outcome", "treatment_df", "model", "ranking_option"),
+                      c("data.frame", "character", "data.frame", "list", "character"), logger)
+
+  if (!outcome %in% c("Binary", "Continuous")){
+    logger |> writeLog(type = "error", "outcome must be either Binary or Continuous")
+    return()
   }
-  if (package == "gemtc"){
-    return(
-      rankdata(
-        NMAdata = bayesmodel$mtcResults,
-        rankdirection = rankdir,
-        longdata = longsort2,
-        cov_value = cov_value
-      )
-    )
-  } else if (package == "bnma"){
-    return(
-      rankdata(
-        NMAdata = bayesmodel,
-        rankdirection = rankdir,
-        longdata = longsort2,
-        cov_value = cov_value,
-        package = package
-      )
-    )
-  } else{
-    stop("package must be 'gemtc' or 'bnma'")
+
+  if (!ranking_option %in% c("good", "bad")){
+    logger |> writeLog(type = "error", "ranking_option must be either good or bad")
+    return()
   }
+
+  if (!"mtcResults" %in% names(model) || !inherits(model$mtcResults, "mtc.relative.effect.table")){
+    logger |> writeLog(type = "error", "model must be an object created by bayes_model()")
+    return()
+  }
+
+  longsort <- dataform.df(data, treatment_df, outcome)
+
+  rankdata(
+    NMAdata = model$mtcResults,
+    rankdirection = ranking_option,
+    longdata = longsort,
+    cov_value = NA,
+    package = "gemtc"
+  )
 }
 
 #' Get SUCRA data.

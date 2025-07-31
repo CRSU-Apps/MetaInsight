@@ -90,7 +90,7 @@ bayes_model_module_server <- function(id, common, parent_session) {
 
       result <- common$tasks$bayes_model_all$result()
       result_all$suspend()
-      if (inherits(result, "list")){
+      if (inherits(result, "bayes_model")){
         common$bayes_all <- result
         shinyjs::runjs("Shiny.setInputValue('bayes_model-all-complete', 'complete');")
         common$logger |> writeLog(type = "complete", "Bayesian models have been fitted")
@@ -105,7 +105,7 @@ bayes_model_module_server <- function(id, common, parent_session) {
       if (common$tasks$bayes_model_sub$status() == "success"){
         result <- common$tasks$bayes_model_sub$result()
         result_sub$suspend()
-        if (inherits(result, "list")){
+        if (inherits(result, "bayes_model")){
           # prevent showing on first run
           if (!is.null(common$bayes_sub)){
             common$logger |> writeLog(type = "complete", "The Bayesian model for the sensitivity analysis has been updated")

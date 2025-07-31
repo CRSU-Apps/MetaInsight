@@ -1,12 +1,12 @@
 #' Run Bayesian models
 #'
-#' @param data dataframe. Input data set.
+#' @param connected_data dataframe. Input data set created by `setup_configure()` or `setup_exclude`
 #' @param treatment_df Data frame containing the treatment ID ('Number') and the treatment name ('Label').
 #' @param outcome "Continuous" or "Binary".
 #' @param outcome_measure "MD", "OR" or "RR".
 #' @param model_type "fixed" or "random".
 #' @param reference_treatment Reference treatment
-#' @param async Whether or not the function is being used aysnchronously. Default `FALSE`
+#' @param async Whether or not the function is being used asynchronously. Default `FALSE`
 #' @return List:
 #'  - 'mtcResults' = Output from gemtc::mtc.run
 #'  - 'mtcRelEffects' = Output from gemtc::relative.effect
@@ -16,10 +16,10 @@
 #'  - 'dic' = Data frame containing the statistics 'Dbar', 'pD', 'DIC', and 'data points'
 #' @export
 
-bayes_model <- function(data, treatment_df, outcome, outcome_measure, model_type, reference_treatment, async = FALSE){
+bayes_model <- function(connected_data, treatment_df, outcome, outcome_measure, model_type, reference_treatment, async = FALSE){
 
   if (!async){ # only an issue if run outside the app
-    if (check_param_classes(c("data", "treatment_df", "outcome", "outcome_measure", "model_type",  "reference_treatment"),
+    if (check_param_classes(c("connected_data", "treatment_df", "outcome", "outcome_measure", "model_type",  "reference_treatment"),
                             c("data.frame", "data.frame", "character", "character", "character", "character"), NULL)){
       return()
     }
@@ -33,7 +33,7 @@ bayes_model <- function(data, treatment_df, outcome, outcome_measure, model_type
     return(async |> asyncLog(type = "error", "outcome_measure must be 'OR', 'RR' or 'MD'"))
   }
 
-  longsort <- dataform.df(data, treatment_df, outcome)
+  longsort <- dataform.df(connected_data, treatment_df, outcome)
 
   # Create arm level data set for gemtc
   if (outcome == "Continuous") {
@@ -77,15 +77,20 @@ bayes_model <- function(data, treatment_df, outcome, outcome_measure, model_type
   sumoverall <- summary(mtcResults)
   dic <- as.data.frame(sumoverall$DIC) # The statistics 'Dbar', 'pD', 'DIC', and 'data points'
 
-  return(
-    list(
-      mtcResults = mtcResults,
-      mtcRelEffects = mtcRelEffects,
-      rel_eff_tbl = rel_eff_tbl,
-      sumresults = sumresults,
-      mtcNetwork = mtcNetwork,
-      dic = dic
-    )
-  )
+  results <- list(
+                mtcResults = mtcResults,
+                mtcRelEffects = mtcRelEffects,
+                rel_eff_tbl = rel_eff_tbl,
+                sumresults = sumresults,
+                mtcNetwork = mtcNetwork,
+                dic = dic,
+                # these are stored so that only the model object can be passed to other functions
+                outcome_measure = outcome_measure,
+                model_type = model_type
+             )
+
+  class(results) <- "bayes_model"
+
+  results
 }
 
