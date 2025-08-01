@@ -20,7 +20,6 @@ Depends:
     gargoyle,
     shiny (>= 1.8.1)
 Imports:
-    BUGSnet,
     bayesplot,
     bnma,
     coda,
