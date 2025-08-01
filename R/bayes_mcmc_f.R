@@ -1,16 +1,18 @@
 #' @title bayes_mcmc
 #' @description Produces Markov chain Monte Carlo plots
 #' @param model Output from `bayes_model()`
-#' @param logger Stores all notification messages to be displayed in the Log
-#'   Window. Insert the logger reactive list here for running in
-#'   shiny, otherwise leave the default NULL
+#' @param async Whether or not the function is being used asynchronously. Default `FALSE`
 #' @return list containing:
 #' \item{gelman_plots}{Gelman plots}
 #' \item{trace_plots}{Gelman plots}
 #' \item{density_plots}{Gelman plots}
 #' \item{n_rows}{The number of rows for each plot}
 #' @export
-bayes_mcmc <- function(model, logger = NULL){
+bayes_mcmc <- function(model, async = FALSE){
+
+  if (!inherits(model, "bayes_model")){
+    return(async |> asyncLog(type = "error", "model must be an object created by bayes_model()"))
+  }
 
   # prevent plots being produced
   pdf(file = NULL)

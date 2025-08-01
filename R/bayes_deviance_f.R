@@ -1,7 +1,6 @@
 #' Produce deviance plots
 #' @param model Bayesian model produced by bayes_model
-#' @param model_type Model effects type. "random" or "fixed".
-#' @param outcome_measure Outcome measure being analysed: one of "OR". "RR", "MD".
+#' @param async Whether or not the function is being used asynchronously. Default `FALSE`
 #' @return list containing:
 #'  \item{deviance_mtc}{results from `gemtc::mtc.deviance()` for model$mtcResults}
 #'  \item{deviance_ume}{results from `gemtc::mtc.deviance()` for UME model}
@@ -10,10 +9,14 @@
 #'  \item{lev_plot}{plotly object}
 #'
 #' @export
-bayes_deviance <- function(model, model_type, outcome_measure){
+bayes_deviance <- function(model, async = FALSE){
+
+  if (!inherits(model, "bayes_model")){
+    return(async |> asyncLog(type = "error", "model must be an object created by bayes_model()"))
+  }
 
   deviance <- gemtc::mtc.deviance(model$mtcResults)
-  scat <- scat_plot(model, deviance, model_type, outcome_measure)
+  scat <- scat_plot(model, deviance, model$model_type, model$outcome_measure)
 
   list(
     deviance_mtc = deviance,

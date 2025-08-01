@@ -1,33 +1,27 @@
 #' Function to create data regarding rank results - CRN
 #'
-#' @param data Input data set.
-#' @param outcome "Continuous" or "Binary".
+#' @param connected_data dataframe. Input data set created by `setup_configure()` or `setup_exclude`
 #' @param treatment_df Dataframe containing the treatment ID ('Number') and the treatment name ('Label').
 #' @param model List. Output produced by bayes_model().
 #' @param ranking_option "good" or "bad", referring to small outcome values.
 #' @return List of output created by rankdata().
 #' @export
-bayes_ranking <- function(data, outcome, treatment_df, model, ranking_option, logger = NULL) {
+bayes_ranking <- function(connected_data, treatment_df, model, ranking_option, logger = NULL) {
 
-  check_param_classes(c("data", "outcome", "treatment_df", "model", "ranking_option"),
-                      c("data.frame", "character", "data.frame", "list", "character"), logger)
-
-  if (!outcome %in% c("Binary", "Continuous")){
-    logger |> writeLog(type = "error", "outcome must be either Binary or Continuous")
-    return()
-  }
+  check_param_classes(c("connected_data", "treatment_df", "ranking_option"),
+                      c("data.frame", "data.frame", "character"), logger)
 
   if (!ranking_option %in% c("good", "bad")){
     logger |> writeLog(type = "error", "ranking_option must be either good or bad")
     return()
   }
 
-  if (!"mtcResults" %in% names(model) || !inherits(model$mtcResults, "mtc.relative.effect.table")){
+  if (!inherits(model, "bayes_model")){
     logger |> writeLog(type = "error", "model must be an object created by bayes_model()")
     return()
   }
 
-  longsort <- dataform.df(data, treatment_df, outcome)
+  longsort <- dataform.df(connected_data, treatment_df, model$outcome)
 
   rankdata(
     NMAdata = model$mtcResults,
