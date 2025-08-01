@@ -21,10 +21,28 @@ printVecAsis <- function(x) {
 #' @keywords internal
 #' @export
 spurious <- function(x) {
+  cookies::add_cookie_handlers(x)
   DT::renderDataTable(x)
+  grid::absolute.size(x)
+  jsonlite::as_gzjson_b64(x)
+  knitr::all_labels(x)
+  markdown::html_format(x)
+  mirai::call_mirai(x)
+  quarto::is_using_quarto(x)
+  rintrojs::hintjs(x)
   rmarkdown::github_document(x)
   shinyWidgets::pickerInput(x)
+  shinyBS::addPopover(x)
   shinyjs::disable(x)
+  svglite::add_fonts(x)
+  zip::deflate(x)
+
+  # to remove later on
+  bnma::contrast.network.data(x)
+  data.tree::Aggregate(a)
+  matrixcalc::commutation.matrix(x)
+  shinycssloaders::hidePageSpinner(x)
+  shinydashboard::box(x)
   return()
 }
 
