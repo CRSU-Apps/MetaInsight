@@ -11,8 +11,12 @@ fitted_bayes_model <- bayes_model(defined_data_con$main_connected_data, loaded_d
 test_data_dir <- normalizePath(testthat::test_path("data"))
 
 # fit a Bayesian model and save it so it can be reloaded in other tests
-bayes_model_path <- "~/temprds/bayes.rds" #tempfile(fileext = ".rds")
-
+# if required as I can't upload temp files for some reason
+if (Sys.getenv("GITHUB_ACTIONS") == "true"){
+  bayes_model_path <- tempfile(fileext = ".rds")
+} else {
+  bayes_model_path <- "~/temprds/bayes.rds"
+}
 
 app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 30000)
 app$upload_file("setup_load-file1" = file.path(test_data_dir, "Cont_long.csv"))
