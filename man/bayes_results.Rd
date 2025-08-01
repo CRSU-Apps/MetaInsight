@@ -7,7 +7,11 @@
 bayes_results(model, logger = NULL)
 }
 \arguments{
-\item{model}{Various model output created by bayes_model().}
+\item{model}{Various model output created by bayes_model()}
+
+\item{logger}{Stores all notification messages to be displayed in the Log
+Window. Insert the logger reactive list here for running in
+shiny, otherwise leave the default `NULL`}
 }
 \value{
 HTML summary of the model

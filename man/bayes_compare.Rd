@@ -4,12 +4,14 @@
 \alias{bayes_compare}
 \title{Creates a table of comparisons of all treatment pairs}
 \usage{
-bayes_compare(model, outcome_measure)
+bayes_compare(model, logger = NULL)
 }
 \arguments{
-\item{model}{Various model output created by baye().}
+\item{model}{Model output created by bayes_model().}
 
-\item{outcome_measure}{"MD", "SMD", "OR", "RR", or "RD".}
+\item{logger}{Stores all notification messages to be displayed in the Log
+Window. Insert the logger reactive list here for running in
+shiny, otherwise leave the default `NULL`}
 }
 \value{
 Relative effects table created by gemtc::relative.effect.table().

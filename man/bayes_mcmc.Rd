@@ -4,14 +4,12 @@
 \alias{bayes_mcmc}
 \title{bayes_mcmc}
 \usage{
-bayes_mcmc(model, logger = NULL)
+bayes_mcmc(model, async = FALSE)
 }
 \arguments{
 \item{model}{Output from `bayes_model()`}
 
-\item{logger}{Stores all notification messages to be displayed in the Log
-Window. Insert the logger reactive list here for running in
-shiny, otherwise leave the default NULL}
+\item{async}{Whether or not the function is being used asynchronously. Default `FALSE`}
 }
 \value{
 list containing:

@@ -5,7 +5,7 @@
 \title{Run Bayesian models}
 \usage{
 bayes_model(
-  data,
+  connected_data,
   treatment_df,
   outcome,
   outcome_measure,
@@ -15,7 +15,7 @@ bayes_model(
 )
 }
 \arguments{
-\item{data}{dataframe. Input data set.}
+\item{connected_data}{dataframe. Input data set created by `setup_configure()` or `setup_exclude`}
 
 \item{treatment_df}{Data frame containing the treatment ID ('Number') and the treatment name ('Label').}
 
@@ -27,7 +27,7 @@ bayes_model(
 
 \item{reference_treatment}{Reference treatment}
 
-\item{async}{Whether or not the function is being used aysnchronously. Default `FALSE`}
+\item{async}{Whether or not the function is being used asynchronously. Default `FALSE`}
 }
 \value{
 List:

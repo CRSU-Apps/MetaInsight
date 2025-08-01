@@ -4,14 +4,12 @@
 \alias{bayes_deviance}
 \title{Produce deviance plots}
 \usage{
-bayes_deviance(model, model_type, outcome_measure)
+bayes_deviance(model, async = FALSE)
 }
 \arguments{
 \item{model}{Bayesian model produced by bayes_model}
 
-\item{model_type}{Model effects type. "random" or "fixed".}
-
-\item{outcome_measure}{Outcome measure being analysed: one of "OR". "RR", "MD".}
+\item{async}{Whether or not the function is being used asynchronously. Default `FALSE`}
 }
 \value{
 list containing:

@@ -5,28 +5,21 @@
 \title{Function to create data regarding rank results - CRN}
 \usage{
 bayes_ranking(
-  data,
-  metaoutcome,
-  treatment_list,
-  bayesmodel,
-  rankdir,
-  cov_value = NA,
-  excluded = c(),
-  package = "gemtc"
+  connected_data,
+  treatment_df,
+  model,
+  ranking_option,
+  logger = NULL
 )
 }
 \arguments{
-\item{data}{Input data set.}
+\item{connected_data}{dataframe. Input data set created by `setup_configure()` or `setup_exclude`}
 
-\item{metaoutcome}{"Continuous" or "Binary".}
+\item{treatment_df}{Dataframe containing the treatment ID ('Number') and the treatment name ('Label').}
 
-\item{treatment_list}{Data frame containing the treatment ID ('Number') and the treatment name ('Label').}
+\item{model}{List. Output produced by bayes_model().}
 
-\item{bayesmodel}{List of various model output created by baye().}
-
-\item{rankdir}{"good" or "bad", referring to small outcome values.}
-
-\item{excluded}{Vector of excluded studies for sensitivity analysis.}
+\item{ranking_option}{"good" or "bad", referring to small outcome values.}
 }
 \value{
 List of output created by rankdata().
