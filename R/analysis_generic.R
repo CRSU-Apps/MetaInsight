@@ -46,7 +46,7 @@ dataform.df <- function(newData1, treat_list, CONBI) {
   if (FindDataShape(newData1) == "long") {
     long <- newData1
   } else {
-    long <- WideToLong(wide_data = newData1, outcome_type = CONBI)
+    long <- WideToLong(wide_data = newData1, outcome = CONBI)
   }
 
   long_sort <- long[order(long$StudyID, -long$T), ]
