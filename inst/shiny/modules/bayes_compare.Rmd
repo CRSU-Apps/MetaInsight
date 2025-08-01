@@ -7,11 +7,11 @@ If you would like to obtain the pairwise meta-analysis results, use the Nodespli
 ```
 
 ```{r, echo = {{bayes_compare_knit}}, include = {{bayes_compare_knit}}}
-knitr::kable(bayes_compare(bayes_model_all, outcome_measure), 
+knitr::kable(bayes_compare(bayes_model_all), 
              caption = "Treatment effects for all studies: comparison of all treatment pairs.")
 ```
 
 ```{r, echo = {{bayes_compare_knit}}, include = {{bayes_compare_knit}}}
-knitr::kable(bayes_compare(bayes_model_sub, outcome_measure), 
+knitr::kable(bayes_compare(bayes_model_sub), 
              caption = "Treatment effects with selected studies excluded: comparison of all treatment pairs.")
 ```

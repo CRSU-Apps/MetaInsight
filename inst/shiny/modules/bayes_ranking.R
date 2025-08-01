@@ -57,14 +57,14 @@ bayes_ranking_module_ui <- function(id) {
   )
 }
 
-bayes_ranking_submodule_server <- function(id, common, network_style, rank_style, colourblind, simple, data, treatments, run, trigger){
+bayes_ranking_submodule_server <- function(id, common, network_style, rank_style, colourblind, simple, connected_data, treatments, run, trigger){
   moduleServer(id, function(input, output, session) {
 
     init(trigger)
 
     observeEvent(run(),{
       req(common[[paste0("bayes_", id)]])
-      common[[paste0("bayes_rank_", id)]] <- bayes_ranking(common[[data]], common$outcome, common[[treatments]], common[[paste0("bayes_", id)]], common$ranking_option)
+      common[[paste0("bayes_rank_", id)]] <- bayes_ranking(common[[connected_data]], common[[treatments]], common[[paste0("bayes_", id)]], common$ranking_option)
       trigger(trigger)
     })
 

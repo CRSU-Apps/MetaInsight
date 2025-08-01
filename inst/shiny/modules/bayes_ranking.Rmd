@@ -3,8 +3,8 @@
 ```
 
 ```{r, echo = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}
-bayes_ranking_all <- bayes_ranking(main_connected_data, outcome, treatment_df, bayes_model_all, ranking_option)
-bayes_ranking_sub <- bayes_ranking(connected_data_sub, outcome, treatment_df_sub, bayes_model_all, ranking_option)
+bayes_ranking_all <- bayes_ranking(main_connected_data, treatment_df, bayes_model_all, ranking_option)
+bayes_ranking_sub <- bayes_ranking(connected_data_sub, treatment_df_sub, bayes_model_sub, ranking_option)
 ```
 
 ```{asis, echo = {{bayes_ranking_knit}}, eval = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}

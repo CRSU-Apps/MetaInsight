@@ -61,9 +61,7 @@ bayes_deviance_module_server <- function(id, common, parent_session) {
     observeEvent(list(watch("bayes_deviance"), watch("bayes_model_all")), {
       req(watch("bayes_deviance") > 0)
       common$logger |> writeLog(type = "starting", "Generating Bayesian deviance plots")
-      common$tasks$bayes_deviance_all$invoke(common$bayes_all,
-                                             common$model_type,
-                                             common$outcome_measure)
+      common$tasks$bayes_deviance_all$invoke(common$bayes_all)
       result_all$resume()
     })
 
@@ -75,9 +73,7 @@ bayes_deviance_module_server <- function(id, common, parent_session) {
         common$logger |> writeLog(type = "starting", "Updating Bayesian deviance plots")
       }
 
-      common$tasks$bayes_deviance_sub$invoke(common$bayes_sub,
-                                             common$model_type,
-                                             common$outcome_measure)
+      common$tasks$bayes_deviance_sub$invoke(common$bayes_sub)
       result_sub$resume()
     })
 
