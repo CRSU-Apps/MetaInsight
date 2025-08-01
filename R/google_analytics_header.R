@@ -12,11 +12,11 @@ google_analytics_header_ui <- function(id) {
 google_analytics_header_server <- function(id, app_name, google_analytics_id) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
-    
+
     cookie_name = glue::glue("{app_name}_analytics")
     gdpr_cookie_value <- reactiveVal(NULL)
     storage <- LocalStorage$new()
-    
+
     initial_value_observer <- observe({
       tryCatch(
         {
@@ -35,7 +35,7 @@ google_analytics_header_server <- function(id, app_name, google_analytics_id) {
       )
       initial_value_observer$destroy()
     })
-    
+
     observeEvent(
       once = TRUE,
       gdpr_cookie_value,
@@ -60,7 +60,7 @@ google_analytics_header_server <- function(id, app_name, google_analytics_id) {
         }
       }
     )
-    
+
     observeEvent(
       input$accept,
       {
@@ -75,7 +75,7 @@ google_analytics_header_server <- function(id, app_name, google_analytics_id) {
         gdpr_cookie_value(TRUE)
       }
     )
-    
+
     observeEvent(
       input$reject,
       {
@@ -90,7 +90,7 @@ google_analytics_header_server <- function(id, app_name, google_analytics_id) {
         gdpr_cookie_value(FALSE)
       }
     )
-    
+
     output$analytics_script <- renderUI({
       cookie_value <- gdpr_cookie_value()
       if (!is.null(cookie_value) && as.logical(cookie_value)) {
@@ -99,7 +99,7 @@ google_analytics_header_server <- function(id, app_name, google_analytics_id) {
             singleton(
               tags$script(
                 stringr::str_replace(
-                  readr::read_file("google_analytics2.js"),
+                  paste(readLines("google_analytics2.js", warn = FALSE), collapse = "\n"),
                   "<<GOOGLE_ANALYTICS_ID>>",
                   google_analytics_id
                 )
