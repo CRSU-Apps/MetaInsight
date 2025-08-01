@@ -45,14 +45,32 @@ jobs:
           $installerPath = "$env:TEMP\JAGS.msi"
           Invoke-WebRequest -Uri $jagsUrl -OutFile $installerPath
           Start-Process -FilePath "msiexec.exe" -ArgumentList "/i $installerPath /quiet" -Wait
+          # Set environment variables for rjags installation
+          echo "JAGS_INCLUDE=C:\Program Files\JAGS\JAGS-4.3.2\include\JAGS" >> $env:GITHUB_ENV
+          echo "JAGS_LIB=C:\Program Files\JAGS\JAGS-4.3.2\x64\lib" >> $env:GITHUB_ENV
           # Add JAGS to PATH
           Add-Content $env:GITHUB_PATH "C:\Program Files\JAGS\JAGS-4.3.2\x64\bin"
+      
+      - name: Install rjags (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          Rscript -e "install.packages('rjags', configure.args='--with-jags-include=$env:JAGS_INCLUDE --with-jags-lib=$env:JAGS_LIB')"
           
-      - name: Install JAGS (macOS)
+      - name: Install JAGS and rjags (macOS)
         if: runner.os == 'macOS'
         run: |
           brew update
           brew install jags
+          # Get JAGS paths from Homebrew
+          JAGS_INCLUDE=$(brew --prefix jags)/include/JAGS
+          JAGS_LIB=$(brew --prefix jags)/lib
+          echo "JAGS_INCLUDE=$JAGS_INCLUDE" >> $GITHUB_ENV
+          echo "JAGS_LIB=$JAGS_LIB" >> $GITHUB_ENV
+      
+      - name: Install rjags (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          Rscript -e "install.packages('rjags', configure.args='--with-jags-include=$JAGS_INCLUDE --with-jags-lib=$JAGS_LIB')"
 
       - uses: r-lib/actions/setup-r@v2
         with:
