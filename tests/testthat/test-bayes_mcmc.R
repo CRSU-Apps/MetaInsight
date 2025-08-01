@@ -13,6 +13,13 @@ test_that("Check bayes_mcmc function works as expected", {
   expect_equal(result$n_rows, 2)
 })
 
+test_that("Check bayes_mcmc function produces errors as expected", {
+  faulty_model <- list(mtcResults = 1:4)
+  expect_error(bayes_mcmc("faulty_model"), "model must be an object created by bayes_model")
+  expect_error(bayes_mcmc(list(a = 1)), "model must be an object created by bayes_model")
+  expect_error(bayes_mcmc(faulty_model), "model must be an object created by bayes_model")
+})
+
 test_that("{shinytest2} recording: e2e_bayes_mcmc", {
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_bayes_mcmc", timeout = 30000)
   app$set_inputs(tabs = "setup")

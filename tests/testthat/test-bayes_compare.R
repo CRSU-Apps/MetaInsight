@@ -1,8 +1,15 @@
 test_that("Check bayes_compare function works as expected", {
-  result <- bayes_compare(fitted_bayes_model, "MD")
+  result <- bayes_compare(fitted_bayes_model)
   expect_is(result, "data.frame")
   expect_equal(nrow(result), 4)
   expect_equal(ncol(result), 4)
+})
+
+test_that("Check bayes_mcmc function produces errors as expected", {
+  faulty_model <- list(mtcResults = 1:4)
+  expect_error(bayes_compare("faulty_model"), "model must be an object created by bayes_model")
+  expect_error(bayes_compare(list(a = 1)), "model must be an object created by bayes_model")
+  expect_error(bayes_compare(faulty_model), "model must be an object created by bayes_model")
 })
 
 test_that("{shinytest2} recording: e2e_bayes_compare", {

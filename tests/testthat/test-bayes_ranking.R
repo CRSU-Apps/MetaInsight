@@ -1,6 +1,5 @@
 test_that("Check bayes_ranking function works as expected", {
   result <- bayes_ranking(defined_data_con$main_connected_data,
-                          "Continuous",
                           loaded_data_con$treatment_df,
                           fitted_bayes_model,
                           "good")

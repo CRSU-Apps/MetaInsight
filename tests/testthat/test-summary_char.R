@@ -18,7 +18,7 @@ test_that("summary_char functions correctly", {
 })
 
 test_that("summary_char produces a merged table that can be downloaded", {
-  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_setup_load")
+  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_setup_load", timeout = 30000)
   app$set_inputs(tabs = "setup")
   app$set_inputs(setupSel = "setup_load")
   app$click("setup_load-run")
@@ -26,11 +26,12 @@ test_that("summary_char produces a merged table that can be downloaded", {
   app$click("setup_configure-run")
   app$set_inputs(tabs = "summary")
   app$set_inputs("setup_exclude-exclusions" = c("Study01", "Study25"))
+  app$wait_for_value(input = "setup_exclude-complete")
   app$set_inputs(summarySel = "summary_char")
   app$click("summary_char-run")
-
-  # don't know why, but the downloads fail without this
-  common <- app$get_value(export = "common")
+  app$wait_for_value(output = "summary_char-table")
+  table <- app$get_value(output = "summary_char-table")
+  expect_match(table, "<table")
 
   result_table <- app$get_download("summary_char-download")
   df <- read.csv(result_table)

@@ -27,8 +27,12 @@ test_that("summary_network produces downloadable plots", {
   app$set_inputs(freqSel = "freq_forest")
   app$click("freq_forest-run")
 
-  # don't know why, but the downloads fail without this
-  common <- app$get_value(export = "common")
+  app$wait_for_value(output = "freq_forest-plot_all")
+  app$wait_for_value(output = "freq_forest-plot_sub")
+  plot_all <- app$get_value(output = "freq_forest-plot_all")
+  plot_sub <- app$get_value(output = "freq_forest-plot_sub")
+  expect_equal(substr(plot_all$src, 1, 10), "data:image")
+  expect_equal(substr(plot_sub$src, 1, 10), "data:image")
 
   test_plot_downloads(app, "freq_forest")
 

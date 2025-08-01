@@ -11,13 +11,11 @@ test_that("Check bayes_forest function works as expected", {
 })
 
 test_that("Check bayes_forest function produces errors as expected", {
-
   faulty_model <- list(mtcRelEffects = 1:4)
 
-  expect_error(bayes_forest("faulty_model"), "bayes_model must be an object created by bayes_model")
-  expect_error(bayes_forest(list(a = 1)), "bayes_model must be an object created by bayes_model")
-  expect_error(bayes_forest(faulty_model), "bayes_model must be an object created by bayes_model")
-
+  expect_error(bayes_forest("faulty_model"), "model must be an object created by bayes_model")
+  expect_error(bayes_forest(list(a = 1)), "model must be an object created by bayes_model")
+  expect_error(bayes_forest(faulty_model), "model must be an object created by bayes_model")
 })
 
 test_that("{shinytest2} recording: e2e_bayes_forest", {

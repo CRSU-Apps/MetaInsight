@@ -56,7 +56,7 @@ test_that("setup_configure loads data into common correctly for continuous long 
   expect_s3_class(common$non_covariate_data_all, "data.frame")
   expect_s3_class(common$bugsnet_all, "data.frame")
   expect_type(common$freq_all, "list")
-  expect_equal(common$reference_treatment_all, "the Great")
+  expect_equal(common$reference_treatment_all, "the_Great")
   expect_equal(common$outcome_measure, "MD")
 
   app$stop()
