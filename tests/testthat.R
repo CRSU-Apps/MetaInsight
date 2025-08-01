@@ -1,3 +1,3 @@
 library(metainsight)
 
-# shinytest2::test_app()
+test_check("metainsight")
