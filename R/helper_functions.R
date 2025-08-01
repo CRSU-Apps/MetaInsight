@@ -300,25 +300,14 @@ download_button_pair <- function(id){
   )
 }
 
-#' Create text with the point estimate and 95% CrI of between-trial SD of treatment effects.
+#' Create text with the point estimate and 95\% CrI of between-trial SD of treatment effects.
 #'
-#' @param results Output from the 'baye' function. These are the list elements that are relevant:
-#'  - 'mtcResults' = Output from gemtc::mtc.run
-#'  - 'sumresults' = summary(mtcRelEffects)
-#'  - 'a' = "fixed effect" or "random effect"
-#' @param outcome One of "SMD", "RD", "MD", "OR". Anything else is interpreted as RR.
-#' (TM: Probably don't need this, as it's included as @param results$outcome)
-#' (SS: I've removed that from results given it's already in common)
-#' @param model_type character Either `random` or `fixed`
-#' @return Text with the point estimate and 95% CrI of between-trial SD of treatment effects (all 0 if fixed effects)
+#' @param model Output created by bayes_model()
+#' @return Text with the point estimate and 95\% CrI of between-trial SD of treatment effects (all 0 if fixed effects)
 #' @export
-CreateTauSentence <- function(results, outcome, model_type) {
-  if (!outcome %in% c('OR', 'RR', 'MD')) {
-    stop(glue::glue("Outcome type '{outcome}' is not supported. Please use one of: 'MD', 'OR', 'RR'"))
-  }
-
-  sumresults <- results$sumresults
-  if (model_type == "random") {   #SD and its 2.5% and 97.5%
+CreateTauSentence <- function(model) {
+  sumresults <- model$sumresults
+  if (model$model_type == "random") {   #SD and its 2.5% and 97.5%
     sd_mean <- round(sumresults$summaries$statistics["sd.d", "Mean"], digits = 2)
     sd_lowCI <- round(sumresults$summaries$quantiles["sd.d", "2.5%"], digits = 2)
     sd_highCI <- round(sumresults$summaries$quantiles["sd.d", "97.5%"], digits=2)
@@ -327,18 +316,18 @@ CreateTauSentence <- function(results, outcome, model_type) {
     sd_lowCI = 0
     sd_highCI = 0
   }
-  if (model_type=="random") {
-    if (outcome=="OR") {
+  if (model$model_type=="random") {
+    if (model$outcome=="OR") {
       paste("Between-study standard deviation (log-odds scale):", sd_mean, ".\n 95% credible interval:",sd_lowCI,", ", sd_highCI, ".")
-    } else if (outcome=="RR") {
+    } else if (model$outcome=="RR") {
       paste ("Between-study standard deviation (log probability scale):", sd_mean, ".\n 95% credible interval:",sd_lowCI,", ", sd_highCI, ".")
     } else {
       paste ("Between-study standard deviation:", sd_mean, ".\n 95% credible interval:",sd_lowCI,", ", sd_highCI, ".")
     }
   } else{
-    if (outcome=="OR") {
+    if (model$outcome=="OR") {
       paste("Between-study standard deviation (log-odds scale) set at 0")
-    } else if (outcome=="RR") {
+    } else if (model$outcome=="RR") {
       paste("Between-study standard deviation (log probability scale) set at 0")
     } else {
       paste("Between-study standard deviation set at 0")

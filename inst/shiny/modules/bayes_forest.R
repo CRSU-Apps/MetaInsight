@@ -53,7 +53,7 @@ bayes_forest_submodule_server <- function(id, common, model, run, title){
 
     output$text <- renderUI({
       req(common[[model]])
-      CreateTauSentence(common[[model]], common$outcome_measure, common$model_type)
+      CreateTauSentence(common[[model]])
     }) |> bindEvent(run())
 
     output$download <- downloadHandler(

@@ -2,25 +2,16 @@
 % Please edit documentation in R/helper_functions.R
 \name{CreateTauSentence}
 \alias{CreateTauSentence}
-\title{Create text with the point estimate and 95% CrI of between-trial SD of treatment effects.}
+\title{Create text with the point estimate and 95\% CrI of between-trial SD of treatment effects.}
 \usage{
-CreateTauSentence(results, outcome, model_type)
+CreateTauSentence(model)
 }
 \arguments{
-\item{results}{Output from the 'baye' function. These are the list elements that are relevant:
-- 'mtcResults' = Output from gemtc::mtc.run
-- 'sumresults' = summary(mtcRelEffects)
-- 'a' = "fixed effect" or "random effect"}
-
-\item{outcome}{One of "SMD", "RD", "MD", "OR". Anything else is interpreted as RR.
-(TM: Probably don't need this, as it's included as @param results$outcome)
-(SS: I've removed that from results given it's already in common)}
-
-\item{model_type}{character Either `random` or `fixed`}
+\item{model}{Output created by bayes_model()}
 }
 \value{
-Text with the point estimate and 95% CrI of between-trial SD of treatment effects (all 0 if fixed effects)
+Text with the point estimate and 95\% CrI of between-trial SD of treatment effects (all 0 if fixed effects)
 }
 \description{
-Create text with the point estimate and 95% CrI of between-trial SD of treatment effects.
+Create text with the point estimate and 95\% CrI of between-trial SD of treatment effects.
 }

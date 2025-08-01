@@ -13,7 +13,7 @@ title(main = "All studies")
 knitr::kable(bayes_model_all$dic, digits = 3, row.names = TRUE, col.names = c(""), caption = "Model fit")
 ```
 ```{r, echo = {{bayes_forest_knit}}, include = {{bayes_forest_knit}}}
-CreateTauSentence(bayes_model_all, outcome_measure, model_type)
+CreateTauSentence(bayes_model_all)
 ```
 
 ```{asis, echo = {{bayes_forest_knit}}, eval = {{bayes_forest_knit}}, include = {{bayes_forest_knit}}}
@@ -27,5 +27,5 @@ title(main = "With selected studies excluded")
 knitr::kable(bayes_model_sub$dic, digits = 3, row.names = TRUE, col.names = c(""), caption = "Model fit")
 ```
 ```{r, echo = {{bayes_forest_knit}}, include = {{bayes_forest_knit}}}
-CreateTauSentence(bayes_model_sub, outcome_measure, model_type)
+CreateTauSentence(bayes_model_sub)
 ```
