@@ -38,6 +38,10 @@ summary_network_module_server <- function(id, common, parent_session) {
       # TRIGGER
       trigger("summary_network")
       shinyjs::show(selector = ".summary_network_div")
+      common$meta$summary_network$used <- TRUE
+      common$meta$summary_network$label_all <- as.numeric(input$label_all)
+      common$meta$summary_network$label_sub <- as.numeric(input$label_sub)
+      common$meta$summary_network$style <- input$style
     })
 
     output$plot_all <- renderPlot({
@@ -53,11 +57,6 @@ summary_network_module_server <- function(id, common, parent_session) {
     output$plot_sub <- renderPlot({
       watch("setup_exclude")
       req(watch("summary_network") > 0)
-      common$meta$summary_network$used <- TRUE
-      common$meta$summary_network$label_all <- as.numeric(input$label_all)
-      common$meta$summary_network$label_sub <- as.numeric(input$label_sub)
-      common$meta$summary_network$style <- input$style
-
       summary_network(common$freq_sub,
                       common$bugsnet_sub,
                       input$style,
