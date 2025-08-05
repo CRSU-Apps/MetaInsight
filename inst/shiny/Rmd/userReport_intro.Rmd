@@ -6,7 +6,7 @@ knit_engines$set(asis = function(options) {
 knitr::opts_chunk$set(message = FALSE, warning = FALSE, eval = FALSE)
 ```
 
-Please find below the R code history from your *metainsight* v8.0.0 session. 
+Please find below the R code history from your *metainsight* v7.0.0 session. 
 
 You can reproduce your session results by running this quarto file in RStudio. 
 
