@@ -19,7 +19,6 @@ jobs:
         config:
           - {os: macOS-latest,   r: 'release'}
           - {os: windows-latest, r: 'release'}
-          - {os: ubuntu-latest,   r: 'devel', http-user-agent: 'release'}
           - {os: ubuntu-latest,   r: 'release'}
 
     env:
@@ -28,12 +27,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-
-      - uses: browser-actions/setup-chrome@v2
-        with:
-          chrome-version: stable
-      - run: chrome --version
-        if: runner.os != 'macOS'
 
       - uses: r-lib/actions/setup-pandoc@v2
 
