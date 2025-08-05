@@ -71,7 +71,7 @@ setup_exclude_module_server <- function(id, common, parent_session) {
                                               input$exclusions)
 
       if (length(common$freq_sub) == 0){
-        common$logger |> writeLog(type = "starting", "Running initial sensitivity analysis")
+        common$logger |> writeLog(type = "starting", "Running initial frequentist analysis")
       } else {
         common$logger |> writeLog(type = "starting", "Updating sensitivity analysis")
       }
@@ -116,7 +116,7 @@ setup_exclude_module_server <- function(id, common, parent_session) {
         }
 
         if (initial){
-          common$logger |> writeLog(type = "complete", "Initial sensitivity analysis is complete")
+          common$logger |> writeLog(type = "complete", "Initial frequentist analysis is complete")
         } else {
           common$logger |> writeLog(type = "complete", "Sensitivity analysis has been updated")
         }
