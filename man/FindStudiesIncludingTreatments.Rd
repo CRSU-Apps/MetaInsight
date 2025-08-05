@@ -2,18 +2,20 @@
 % Please edit documentation in R/setup_load_f.R
 \name{FindStudiesIncludingTreatments}
 \alias{FindStudiesIncludingTreatments}
-\title{Find all of the study names which include the given treatment names, both for long and wide formats.}
+\title{Find all of the studies which include the given treatments, both for long and wide formats.}
 \usage{
-FindStudiesIncludingTreatments(data, treatments)
+FindStudiesIncludingTreatments(data, treatments, all_or_any)
 }
 \arguments{
-\item{data}{Data frame in which to search for study names}
+\item{data}{Data frame in which to search for study names.}
 
-\item{treatments}{Vector of matching treatments}
+\item{treatments}{Vector of matching treatments.}
+
+\item{all_or_any}{Set to "all" to return studies containing all treatments. Set to "any" to return studies containing any of the treatments.}
 }
 \value{
-Vector of all matching study names
+Vector of all matching study names.
 }
 \description{
-Find all of the study names which include the given treatment names, both for long and wide formats.
+Find all of the studies which include the given treatments, both for long and wide formats.
 }

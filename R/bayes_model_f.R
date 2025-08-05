@@ -1,19 +1,21 @@
 #' Run Bayesian models
 #'
 #' @param connected_data dataframe. Input data set created by `setup_configure()` or `setup_exclude`
-#' @param treatment_df Data frame containing the treatment ID ('Number') and the treatment name ('Label').
-#' @param outcome "Continuous" or "Binary".
-#' @param outcome_measure "MD", "OR" or "RR".
-#' @param model_type "fixed" or "random".
-#' @param reference_treatment Reference treatment
+#' @param treatment_df dataframe containing the treatment ID ('Number') and the treatment name ('Label').
+#' @param outcome character. The type of outcome being measured either `Continuous` or `Binary`
+#' @param outcome_measure character. The analysis outcome measure. Either `MD`, `OR` or `RR`
+#' @param model_type character. The type of model. Either `random` or `fixed`
+#' @param reference_treatment character. Reference treatment
 #' @param async Whether or not the function is being used asynchronously. Default `FALSE`
-#' @return List:
-#'  - 'mtcResults' = Output from gemtc::mtc.run
-#'  - 'mtcRelEffects' = Output from gemtc::relative.effect
-#'  - 'rel_eff_tbl = Output from gemtc::relative.effect.table
-#'  - 'sumresults' = summary(mtcRelEffects)
-#'  - 'mtcNetwork' = Output from gemtc::mtc.network
-#'  - 'dic' = Data frame containing the statistics 'Dbar', 'pD', 'DIC', and 'data points'
+#' @return List containing:
+#'  \item{mtcResults}{mtc.result. Output from `gemtc::mtc.run()`}
+#'  \item{mtcRelEffects}{mtc.result. Output from `gemtc::relative.effect()`}
+#'  \item{rel_eff_tbl}{mtc.relative.effect.table. Output from `gemtc::relative.effect.table()`}
+#'  \item{sumresults}{summary.mtc.result. Output from `summary(mtcRelEffects)`}
+#'  \item{mtcNetwork}{mtc.network. Output from `gemtc::mtc.network()`}
+#'  \item{dic}{dataframe. Containing the statistics 'Dbar', 'pD', 'DIC', and 'data points'}
+#'  \item{outcome_measure}{character. The input `outcome_measure`}
+#'  \item{model_type}{dataframe. The input `model_type`}
 #' @export
 
 bayes_model <- function(connected_data, treatment_df, outcome, outcome_measure, model_type, reference_treatment, async = FALSE){
@@ -25,12 +27,20 @@ bayes_model <- function(connected_data, treatment_df, outcome, outcome_measure, 
     }
   }
 
+  if (!outcome %in% c("Binary", "Continuous")){
+    return(async |> asyncLog(type = "error", "outcome must be either Binary or Continuous"))
+  }
+
   if (!model_type %in% c("fixed", "random")){
     return(async |> asyncLog(type = "error", "model_type must be 'fixed' or 'random'"))
   }
 
   if (!outcome_measure %in% c("OR", "RR", "MD")){
     return(async |> asyncLog(type = "error", "outcome_measure must be 'OR', 'RR' or 'MD'"))
+  }
+
+  if (!reference_treatment %in% treatment_df$Label){
+    return(async |> asyncLog(type = "error", "reference_treatment must be one of the treatments in treatment_df"))
   }
 
   longsort <- dataform.df(connected_data, treatment_df, outcome)

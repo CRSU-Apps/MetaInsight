@@ -1,15 +1,28 @@
 #' Run the nodesplit model
 #'
-#' @param data Data to analyse.
+#' @param connected_data dataframe. Input data set created by `setup_configure()` or `setup_exclude`
 #' @param treatment_df Dataframe containing treatment names ("Label") and IDs ("Number").
 #' @param outcome character. The type of outcome being measured either `Continuous` or `Binary`
 #' @param outcome_measure character. The analysis outcome measure. Either `MD`, `OR` or `RR`
 #' @param model_type character. The type of model. Either `random` or `fixed`
 #'
-#' @return The created nodesplit model
+#' @return mtc.nodesplit object containing an mtc.result object for each node
 #' @export
-bayes_nodesplit <- function(data, treatment_df, outcome, outcome_measure, model_type, async = FALSE) {
+bayes_nodesplit <- function(connected_data, treatment_df, outcome, outcome_measure, model_type, async = FALSE) {
 
+  if (!async){ # only an issue if run outside the app
+    if (check_param_classes(c("connected_data", "treatment_df", "outcome", "outcome_measure", "model_type"),
+                            c("data.frame", "data.frame", "character", "character", "character"), NULL)){
+      return()
+    }
+  }
+
+  if (!outcome %in% c("Binary", "Continuous")){
+    return(async |> asyncLog(type = "error", "outcome must be either Binary or Continuous"))
+  }
+  if (!model_type %in% c("fixed", "random")){
+    return(async |> asyncLog(type = "error", "model_type must be 'fixed' or 'random'"))
+  }
   if (outcome_measure == "SMD" ) {
     return(async |> asyncLog(type = "error", "Standardised mean difference currently cannot be analysed in Bayesian analysis"))
   }
@@ -20,8 +33,8 @@ bayes_nodesplit <- function(data, treatment_df, outcome, outcome_measure, model_
     return(async |> asyncLog(type = "error", glue::glue("Outcome_measure type '{outcome_measure}' is not supported. Please use one of: 'MD', 'OR', 'RR'")))
   }
 
-  data <- dataform.df(data, treatment_df, outcome)
-  
+  data <- dataform.df(connected_data, treatment_df, outcome)
+
   if (outcome == "Continuous") {
     armData <- data.frame(
       study = data$Study,
@@ -45,7 +58,7 @@ bayes_nodesplit <- function(data, treatment_df, outcome, outcome_measure, model_
       description = treatment_df$Label
     )
   )
-  
+
   if (outcome_measure == "MD") {
     like <- "normal"
     link <- "identity"
@@ -58,7 +71,7 @@ bayes_nodesplit <- function(data, treatment_df, outcome, outcome_measure, model_
     data = data,
     treatments = treatment_df$Label
   )
-  
+
   if (!check_nodesplit$is_nodesplittable) {
     return(
       async |> asyncLog(

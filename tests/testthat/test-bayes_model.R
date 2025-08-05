@@ -1,5 +1,8 @@
+connected <- defined_data_con$main_connected_data
+t_df <- defined_data_con$treatment_df
+
 test_that("Check bayes_model function works as expected", {
-  result <- bayes_model(defined_data_con$main_connected_data, loaded_data_con$treatment_df, "Continuous", "MD", "random", "Placebo")
+  result <- bayes_model(connected, t_df, "Continuous", "MD", "random", "Placebo")
 
   expect_is(result, "bayes_model")
   expect_true(all(c("mtcResults",
@@ -18,6 +21,19 @@ test_that("Check bayes_model function works as expected", {
   expect_is(result$sumresults, "summary.mtc.result")
   expect_is(result$outcome_measure, "character")
   expect_is(result$model_type, "character")
+})
+
+test_that("bayes_model produces errors for incorrect data types", {
+  expect_error(bayes_model("not_a_dataframe", t_df, "Continuous", "MD", "random", "Placebo"), "connected_data must be of class data.frame")
+  expect_error(bayes_model(connected, "not_a_dataframe", "Continuous", "MD", "random", "Placebo"), "treatment_df must be of class data.frame")
+  expect_error(bayes_model(connected, t_df, 123, "MD", "random", "Placebo"), "outcome must be of class character")
+  expect_error(bayes_model(connected, t_df, "Continuous", 123, "random", "Placebo"), "outcome_measure must be of class character")
+  expect_error(bayes_model(connected, t_df, "Continuous", "MD", 123, "Placebo"), "model_type must be of class character")
+  expect_error(bayes_model(connected, t_df, "Continuous", "MD", "random", 123), "reference_treatment must be of class character")
+  expect_error(bayes_model(connected, t_df, "invalid_outcome", "MD", "random", "Placebo"), "outcome must be either Binary or Continuous")
+  expect_error(bayes_model(connected, t_df, "Continuous", "invalid_measure", "random", "Placebo"), "outcome_measure must be 'OR', 'RR' or 'MD'")
+  expect_error(bayes_model(connected, t_df, "Continuous", "MD", "not_random", "Placebo"), "model_type must be 'fixed' or 'random'")
+  expect_error(bayes_model(connected, t_df, "Continuous", "MD", "random", "not_a_placebo"), "reference_treatment must be one of the treatments in treatment_df")
 })
 
 test_that("{shinytest2} recording: e2e_bayes_model", {

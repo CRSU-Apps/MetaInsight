@@ -124,6 +124,7 @@ bayes_nodesplit_module_server <- function(id, common, parent_session) {
         trigger("bayes_nodesplit_all")
       } else {
         common$logger |> writeLog(type = "error", result)
+        shinyjs::runjs("Shiny.setInputValue('bayes_nodesplit-all-complete', 'complete');")
       }
 
     })
@@ -138,6 +139,7 @@ bayes_nodesplit_module_server <- function(id, common, parent_session) {
           trigger("bayes_nodesplit_sub")
         } else {
           common$logger |> writeLog(type = "error", result)
+          shinyjs::runjs("Shiny.setInputValue('bayes_nodesplit-sub-complete', 'complete');")
         }
       }
     })

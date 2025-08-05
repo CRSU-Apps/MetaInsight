@@ -5,7 +5,7 @@
 \title{Run the nodesplit model}
 \usage{
 bayes_nodesplit(
-  data,
+  connected_data,
   treatment_df,
   outcome,
   outcome_measure,
@@ -14,7 +14,7 @@ bayes_nodesplit(
 )
 }
 \arguments{
-\item{data}{Data to analyse.}
+\item{connected_data}{dataframe. Input data set created by `setup_configure()` or `setup_exclude`}
 
 \item{treatment_df}{Dataframe containing treatment names ("Label") and IDs ("Number").}
 
@@ -25,7 +25,7 @@ bayes_nodesplit(
 \item{model_type}{character. The type of model. Either `random` or `fixed`}
 }
 \value{
-The created nodesplit model
+mtc.nodesplit object containing an mtc.result object for each node
 }
 \description{
 Run the nodesplit model
