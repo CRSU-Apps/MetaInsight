@@ -30,7 +30,10 @@ jobs:
       - uses: actions/checkout@v3
 
       - uses: browser-actions/setup-chrome@v2
+        with:
+          chrome-version: stable
       - run: chrome --version
+        if: runner.os != 'macOS'
 
       - uses: r-lib/actions/setup-pandoc@v2
 
@@ -50,42 +53,26 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           # 1. Install JAGS
-          $jagsUrl = "https://sourceforge.net/projects/mcmc-jags/files/JAGS/4.x/Windows/JAGS-4.3.2.msi/download"
-          $installerPath = "$env:TEMP\JAGS.msi"
-          Invoke-WebRequest -Uri $jagsUrl -OutFile $installerPath
-          Start-Process -FilePath "msiexec.exe" -ArgumentList "/i $installerPath /quiet" -Wait
+          $jagsUrl = "https://sourceforge.net/projects/mcmc-jags/files/JAGS/4.x/Windows/JAGS-4.3.1.exe/download"
+          $installerPath = "$env:TEMP\JAGS.exe"
+          Invoke-WebRequest -UserAgent "Wget" -Uri $jagsUrl -OutFile $installerPath
+          Start-Process -FilePath $installerPath -ArgumentList "/S" -Wait
           
-          # 2. Set short path names (no spaces)
-          $shortInclude = (Get-Item "C:\Program Files\JAGS\JAGS-4.3.2\include\JAGS").FullName
-          $shortLib = (Get-Item "C:\Program Files\JAGS\JAGS-4.3.2\x64\lib").FullName
-          
-          # 3. Install rjags using the short paths
-          Rscript -e "install.packages('rjags', configure.args=paste0('--with-jags-include=', '$shortInclude', ' --with-jags-lib=', '$shortLib'))"
-          
-          # 4. Add to PATH
-          Add-Content $env:GITHUB_PATH "C:\Program Files\JAGS\JAGS-4.3.2\x64\bin"
+          # 2. Install rjags using the short paths
+          Rscript -e "install.packages('rjags')"
 
       - name: Install JAGS and rjags (macOS)
         if: runner.os == 'macOS'
-        run: |
-          # Install JAGS with Homebrew
-          brew update
-          brew install jags
-          
-          # Get JAGS installation path
-          JAGS_PATH=$(brew --prefix jags)
-          echo "JAGS_PATH=$JAGS_PATH" >> $GITHUB_ENV
-          
+        run: |         
+
+          # Install JAGS using PKG
+
+          curl -L https://sourceforge.net/projects/mcmc-jags/files/JAGS/4.x/Mac%20OS%20X/JAGS-4.3.2.pkg/download -o ${{ runner.temp }}/jags.pkg
+          /usr/bin/sudo installer -allowUntrusted -dumplog -pkg ${{ runner.temp }}/jags.pkg -target /
+
           # Install rjags with correct paths
-          Rscript -e "install.packages('rjags', configure.args='--with-jags-include=$JAGS_PATH/include/JAGS --with-jags-lib=$JAGS_PATH/lib')"
-          
-          # Create symlink to where rjags expects it
-          sudo mkdir -p /usr/local/lib
-          sudo ln -s $JAGS_PATH/lib/libjags.4.dylib /usr/local/lib/libjags.4.dylib
-          
-          # Add JAGS to library path
-          echo "DYLD_FALLBACK_LIBRARY_PATH=$JAGS_PATH/lib:$DYLD_FALLBACK_LIBRARY_PATH" >> $GITHUB_ENV
-          
+          Rscript -e "install.packages('rjags')"
+
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: rcmdcheck, any::XML
