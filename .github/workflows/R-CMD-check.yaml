@@ -69,7 +69,7 @@ jobs:
           brew update
           brew install jags
           
-          Get JAGS installation path
+          # Get JAGS installation path
           JAGS_PATH=$(brew --prefix jags)
           echo "JAGS_PATH=$JAGS_PATH" >> $GITHUB_ENV
           
