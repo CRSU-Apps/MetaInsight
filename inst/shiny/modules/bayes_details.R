@@ -16,6 +16,7 @@ bayes_details_module_server <- function(id, common, parent_session) {
         return()
       } else {
       shinyjs::show(selector = ".bayes_details_div")
+      common$meta$bayes_details$used <- TRUE
       trigger("bayes_details")
       }
     })
@@ -146,6 +147,7 @@ bayes_details_module_result <- function(id) {
 
 
 bayes_details_module_rmd <- function(common) {
-  list(bayes_details_knit = FALSE)
+  list(bayes_details_knit = !is.null(common$meta$bayes_details$used),
+       bayes_deviance_knit = !is.null(common$meta$bayes_deviance$used))
 }
 

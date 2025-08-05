@@ -1,6 +1,19 @@
 ```{asis, echo = {{bayes_details_knit}}, eval = {{bayes_details_knit}}, include = {{bayes_details_knit}}}
-Description of what the code will do 
+### Details of Bayesian model
 ```
 
 ```{r, echo = {{bayes_details_knit}}, include = {{bayes_details_knit}}}
+cat(bayes_model_all$mtcResults$model$code, fill = FALSE, labels = NULL, append = FALSE)
+```
+
+```{r, echo = {{bayes_details_knit}}, include = {{bayes_details_knit}}}
+bayes_model_all$mtcResults$model$inits
+```
+
+```{r, echo = {{all(bayes_details_knit, bayes_deviance_knit)}}, include = {{all(bayes_details_knit, bayes_deviance_knit)}}}
+deviance_all$deviance_mtc
+```
+
+```{r, echo = {{all(bayes_details_knit, bayes_deviance_knit)}}, include = {{all(bayes_details_knit, bayes_deviance_knit)}}}
+deviance_all$deviance_ume
 ```
