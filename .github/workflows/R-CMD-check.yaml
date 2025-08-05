@@ -33,6 +33,7 @@ jobs:
         with:
           chrome-version: stable
       - run: chrome --version
+        if: runner.os != 'macOS'
 
       - uses: r-lib/actions/setup-pandoc@v2
 
