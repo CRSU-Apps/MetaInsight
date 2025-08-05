@@ -47,12 +47,12 @@ test_that("{shinytest2} recording: e2e_bayes_deviance", {
   expect_is(lev_all, "json")
   expect_is(lev_sub, "json")
 
-  expect_true(all(c("x", "evals", "jsHooks", "deps") %in% names(jsonify::from_json(scat_all))))
-  expect_true(all(c("x", "evals", "jsHooks", "deps") %in% names(jsonify::from_json(scat_sub))))
-  expect_true(all(c("x", "evals", "jsHooks", "deps") %in% names(jsonify::from_json(stem_all))))
-  expect_true(all(c("x", "evals", "jsHooks", "deps") %in% names(jsonify::from_json(stem_sub))))
-  expect_true(all(c("x", "evals", "jsHooks", "deps") %in% names(jsonify::from_json(lev_all))))
-  expect_true(all(c("x", "evals", "jsHooks", "deps") %in% names(jsonify::from_json(lev_sub))))
+  expect_true(all(c("x", "evals", "jsHooks", "deps") %in% names(jsonlite::fromJSON(scat_all))))
+  expect_true(all(c("x", "evals", "jsHooks", "deps") %in% names(jsonlite::fromJSON(scat_sub))))
+  expect_true(all(c("x", "evals", "jsHooks", "deps") %in% names(jsonlite::fromJSON(stem_all))))
+  expect_true(all(c("x", "evals", "jsHooks", "deps") %in% names(jsonlite::fromJSON(stem_sub))))
+  expect_true(all(c("x", "evals", "jsHooks", "deps") %in% names(jsonlite::fromJSON(lev_all))))
+  expect_true(all(c("x", "evals", "jsHooks", "deps") %in% names(jsonlite::fromJSON(lev_sub))))
 
   app$stop()
 })
