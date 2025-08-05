@@ -76,7 +76,7 @@ jobs:
 
           # Install JAGS using PKG
 
-          curl -L https://sourceforge.net/projects/mcmc-jags/files/latest/download -o ${{ runner.temp }}/jags.pkg
+          curl -L https://sourceforge.net/projects/mcmc-jags/files/JAGS/4.x/Mac%20OS%20X/JAGS-4.3.2.pkg/download -o ${{ runner.temp }}/jags.pkg
           /usr/bin/sudo installer -allowUntrusted -dumplog -pkg ${{ runner.temp }}/jags.pkg -target /
 
           # Install rjags with correct paths
