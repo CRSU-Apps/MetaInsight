@@ -29,6 +29,7 @@ spurious <- function(x) {
   markdown::html_format(x)
   mirai::call_mirai(x)
   quarto::is_using_quarto(x)
+  R6::is.R6Class(x)
   rintrojs::hintjs(x)
   rmarkdown::github_document(x)
   shinyWidgets::pickerInput(x)
@@ -142,7 +143,7 @@ asyncLog <- function(async, ..., type = "default"){
 check_param_classes <- function(params, classes, logger){
   for (i in seq_along(params)) {
     if (!inherits(get(params[i], envir = parent.frame()), classes[i])) {
-      logger %>% writeLog(type = "error", paste0(params[i], " must be of class ", classes[i]))
+      logger |> writeLog(type = "error", paste0(params[i], " must be of class ", classes[i]))
       return(TRUE)
     }
   }
