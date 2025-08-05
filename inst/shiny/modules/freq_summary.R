@@ -2,7 +2,9 @@ freq_summary_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
     actionButton(ns("run"), "Generate plots", icon = icon("arrow-turn-down")),
-    conditionalPanel("input.run > 0", download_button_pair(id), ns = ns)
+    div(class = "freq_summary_div",
+      download_button_pair(id)
+    )
   )
 }
 
@@ -17,6 +19,7 @@ freq_summary_module_server <- function(id, common, parent_session) {
     }
     # TRIGGER
     trigger("freq_summary")
+    shinyjs::show(selector = ".freq_summary_div")
   })
 
   output$plot_all <- renderPlot({

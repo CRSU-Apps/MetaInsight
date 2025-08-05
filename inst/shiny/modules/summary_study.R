@@ -2,11 +2,11 @@ summary_study_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
     actionButton(ns("run"), "Generate plot", icon = icon("arrow-turn-down")),
-    conditionalPanel("input.run > 0",
+    div(class = "summary_study_div",
        numericInput(ns("title"), label = "Title text size:", value = 1, step = 0.1),
        numericInput(ns("header"), label = "Group headers text size:", value = 1, step = 0.1),
        downloadButton(ns("download")),
-       ns = ns)
+    )
   )
 }
 
@@ -21,6 +21,7 @@ summary_study_module_server <- function(id, common, parent_session) {
     }
     # TRIGGER
     trigger("summary_study")
+    shinyjs::show(selector = ".summary_study_div")
   })
 
   # Determine the plot height in pixels
