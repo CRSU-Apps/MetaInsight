@@ -123,8 +123,7 @@ bayes_nodesplit_module_server <- function(id, common, parent_session) {
         common$meta$bayes_nodesplit$used <- TRUE
         trigger("bayes_nodesplit_all")
       } else {
-        common$logger |> writeLog(type = "error", "Nodesplit model cannot be run for all studies,
-                                   likely because there are no closed loops in the network")
+        common$logger |> writeLog(type = "error", result)
       }
 
     })
@@ -138,8 +137,7 @@ bayes_nodesplit_module_server <- function(id, common, parent_session) {
           common$nodesplit_sub <- result
           trigger("bayes_nodesplit_sub")
         } else {
-          common$logger |> writeLog(type = "error", "Nodesplit model cannot be run with selected studies excluded,
-                                   likely because there are no closed loops in the network")
+          common$logger |> writeLog(type = "error", result)
         }
       }
     })

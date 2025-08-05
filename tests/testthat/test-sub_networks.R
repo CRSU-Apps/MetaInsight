@@ -1,4 +1,40 @@
 
+test_that("IsNodesplittable() identifies loops with splittable nodes", {
+  data <- data.frame(
+    Study = c("A", "A", "B", "B", "C", "C"),
+    T = c("Placebo", "Hydrogen", "Placebo", "Oxygen", "Hydrogen", "Oxygen")
+  )
+  treatments <- c("Placebo", "Hydrogen", "Oxygen")
+  
+  graph <- .CreateGraph(data = data)
+  check_nodesplit <- IsNodesplittable(graph = graph, treatments = treatments)
+  expect_equal(check_nodesplit, list(is_nodesplittable = TRUE, reason = NULL))
+})
+
+test_that("IsNodesplittable() identifies data with no loops", {
+  data <- data.frame(
+    Study = c("A", "A", "B", "B"),
+    T = c("Placebo", "Hydrogen", "Placebo", "Oxygen")
+  )
+  treatments <- c("Placebo", "Hydrogen", "Oxygen")
+  
+  graph <- .CreateGraph(data = data)
+  check_nodesplit <- IsNodesplittable(graph = graph, treatments = treatments)
+  expect_equal(check_nodesplit, list(is_nodesplittable = FALSE, reason = "There are no loops in the network."))
+})
+
+test_that("IsNodesplittable() identifies data with loops but no splittable nodes", {
+  data <- data.frame(
+    Study = c("A", "A", "A", "B", "B"),
+    T = c("Placebo", "Hydrogen", "Oxygen", "Placebo", "Hydrogen")
+  )
+  treatments <- c("Placebo", "Hydrogen", "Oxygen")
+  
+  graph <- .CreateGraph(data = data)
+  check_nodesplit <- IsNodesplittable(graph = graph, treatments = treatments)
+  expect_equal(check_nodesplit, list(is_nodesplittable = FALSE, reason = "In all loops, heterogeneity and inconsistency cannot be distinguished."))
+})
+
 test_that("IdentifySubNetworks() finds single subnetwork for fully connected network for continuous long format", {
   data <- CleanData(read.csv("data/Cont_long.csv"))
   treatment_df <- CreateTreatmentIds(FindAllTreatments(data))
