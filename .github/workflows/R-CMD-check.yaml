@@ -50,20 +50,13 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           # 1. Install JAGS
-          $jagsUrl = "https://sourceforge.net/projects/mcmc-jags/files/JAGS/4.x/Windows/JAGS-4.3.2.msi/download"
-          $installerPath = "$env:TEMP\JAGS.msi"
-          Invoke-WebRequest -Uri $jagsUrl -OutFile $installerPath
-          Start-Process -FilePath "msiexec.exe" -ArgumentList "/i $installerPath /quiet" -Wait
+          $jagsUrl = "https://sourceforge.net/projects/mcmc-jags/files/JAGS/4.x/Windows/JAGS-4.3.1.exe/download"
+          $installerPath = "$env:TEMP\JAGS.exe"
+          Invoke-WebRequest -UserAgent "Wget" -Uri $jagsUrl -OutFile $installerPath
+          Start-Process -FilePath $installerPath -ArgumentList "/S" -Wait
           
-          # 2. Set short path names (no spaces)
-          $shortInclude = (Get-Item "C:\Program Files\JAGS\JAGS-4.3.2\include\JAGS").FullName
-          $shortLib = (Get-Item "C:\Program Files\JAGS\JAGS-4.3.2\x64\lib").FullName
-          
-          # 3. Install rjags using the short paths
-          Rscript -e "install.packages('rjags', configure.args=paste0('--with-jags-include=', '$shortInclude', ' --with-jags-lib=', '$shortLib'))"
-          
-          # 4. Add to PATH
-          Add-Content $env:GITHUB_PATH "C:\Program Files\JAGS\JAGS-4.3.2\x64\bin"
+          # 2. Install rjags using the short paths
+          Rscript -e "install.packages('rjags')"
 
       - name: Install JAGS and rjags (macOS)
         if: runner.os == 'macOS'
