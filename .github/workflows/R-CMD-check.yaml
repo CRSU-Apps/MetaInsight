@@ -63,16 +63,7 @@ jobs:
 
       - name: Install JAGS and rjags (macOS)
         if: runner.os == 'macOS'
-        run: |
-
-          # Install JAGS with Homebrew
-          # brew update
-          # brew install jags
-          
-          # Get JAGS installation path
-          # JAGS_PATH=$(brew --prefix jags)
-          # echo "JAGS_PATH=$JAGS_PATH" >> $GITHUB_ENV
-          
+        run: |         
 
           # Install JAGS using PKG
 
@@ -81,17 +72,7 @@ jobs:
 
           # Install rjags with correct paths
           Rscript -e "install.packages('rjags')"
-          
-          # Create symlink to where rjags expects it
-          # sudo mkdir -p /usr/local/lib
-          # sudo mkdir -p /usr/local/lib
-          # Link the whole directory
-          # sudo ln -s $JAGS_PATH/lib/ /usr/local/lib/
-          
-          # Add JAGS to library path
-          # echo "DYLD_FALLBACK_LIBRARY_PATH=$JAGS_PATH/lib:$DYLD_FALLBACK_LIBRARY_PATH" >> $GITHUB_ENV
 
-          
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: rcmdcheck, any::XML
