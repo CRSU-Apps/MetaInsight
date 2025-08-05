@@ -40,16 +40,8 @@ bayes_forest_submodule_server <- function(id, common, model, run, title){
       req(n_trt())
       plot_height = forest_height_pixels(n_trt(), title = TRUE)
       common$meta$bayes_forest[[paste0("plot_height_", id)]] <- plot_height / 72
-      tagList(
-        plotOutput(session$ns("plot"), height = plot_height),
-        # stop it appearing without running
-        p("Model fit:")
-      )
+      plotOutput(session$ns("plot"), height = plot_height)
     })
-
-    output$table <- renderTable({
-      common[[model]]$dic
-    }, digits = 3, rownames = TRUE, colnames = FALSE, label = "Test") |> bindEvent(run())
 
     output$text <- renderUI({
       req(common[[model]])
@@ -121,7 +113,6 @@ bayes_forest_submodule_result <- function(id) {
   ns <- NS(id)
   tagList(
     uiOutput(ns("plot_wrap")),
-    tableOutput(ns("table")),
     uiOutput(ns("text"))
   )
 }

@@ -5,11 +5,25 @@ bayes_model_module_ui <- function(id) {
   )
 }
 
+bayes_model_submodule_server <- function(id, common, run){
+  moduleServer(id, function(input, output, session) {
+
+    output$table <- renderTable({
+      watch(paste0("bayes_model_", id))
+      req(common[[paste0("bayes_", id)]])
+      common[[paste0("bayes_", id)]]$dic
+    }, digits = 3, rownames = TRUE, colnames = FALSE)
+
+  })
+}
+
 bayes_model_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
     init("bayes_model_sub")
     init("bayes_model_all")
+
+    shinyjs::hide(selector = ".bayes_model_div")
 
     observeEvent(input$run, {
       if (is.null(common$main_connected_data)){
@@ -112,6 +126,7 @@ bayes_model_module_server <- function(id, common, parent_session) {
           }
           common$bayes_sub <- result
           shinyjs::runjs("Shiny.setInputValue('bayes_model-sub-complete', 'complete');")
+          shinyjs::show(selector = ".bayes_model_div")
         } else {
           common$logger |> writeLog(type = "error", result)
         }
@@ -119,9 +134,40 @@ bayes_model_module_server <- function(id, common, parent_session) {
       }
     })
 
+    bayes_model_submodule_server("all", common)
+    bayes_model_submodule_server("sub", common)
+
+
 })
 }
 
+bayes_model_submodule_result <- function(id, label) {
+  ns <- NS(id)
+  tagList(
+    p(paste0("Model fit ", label, ":")),
+    tableOutput(ns("table"))
+  )
+}
+
+bayes_model_module_result <- function(id) {
+  ns <- NS(id)
+  tagList(
+    div(class = "bayes_model_div",
+      fluidRow(
+        column(
+          width = 6,
+          align = "center",
+          bayes_model_submodule_result(ns("all"), "for all studies")
+        ),
+        column(
+          width = 6,
+          align = "center",
+          bayes_model_submodule_result(ns("sub"), "excluding selected studies")
+        )
+      )
+    )
+  )
+}
 
 bayes_model_module_rmd <- function(common) {
   list(bayes_model_knit = !is.null(common$bayes_all))

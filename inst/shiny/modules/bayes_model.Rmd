@@ -6,3 +6,10 @@
 bayes_model_all <- suppress_jags_output(bayes_model(main_connected_data, treatment_df, outcome, outcome_measure, model_type, reference_treatment_all))
 bayes_model_sub <- suppress_jags_output(bayes_model(connected_data_sub, treatment_df_sub, outcome, outcome_measure, model_type, reference_treatment_sub))
 ```
+
+```{r, echo = {{bayes_model_knit}}, include = {{bayes_model_knit}}}
+knitr::kable(bayes_model_all$dic, digits = 3, row.names = TRUE, col.names = c(""), caption = "Model fit for all studies")
+```
+```{r, echo = {{bayes_model_knit}}, include = {{bayes_model_knit}}}
+knitr::kable(bayes_model_sub$dic, digits = 3, row.names = TRUE, col.names = c(""), caption = "Model fit with selected studies excluded")
+```

@@ -10,9 +10,6 @@ bayes_forest(bayes_model_all)
 title(main = "All studies")
 ```
 ```{r, echo = {{bayes_forest_knit}}, include = {{bayes_forest_knit}}}
-knitr::kable(bayes_model_all$dic, digits = 3, row.names = TRUE, col.names = c(""), caption = "Model fit")
-```
-```{r, echo = {{bayes_forest_knit}}, include = {{bayes_forest_knit}}}
 CreateTauSentence(bayes_model_all)
 ```
 
@@ -22,9 +19,6 @@ CreateTauSentence(bayes_model_all)
 ```{r, echo = {{bayes_forest_knit}}, include = {{bayes_forest_knit}}}
 bayes_forest(bayes_model_sub)
 title(main = "With selected studies excluded")
-```
-```{r, echo = {{bayes_forest_knit}}, include = {{bayes_forest_knit}}}
-knitr::kable(bayes_model_sub$dic, digits = 3, row.names = TRUE, col.names = c(""), caption = "Model fit")
 ```
 ```{r, echo = {{bayes_forest_knit}}, include = {{bayes_forest_knit}}}
 CreateTauSentence(bayes_model_sub)
