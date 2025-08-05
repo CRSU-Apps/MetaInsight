@@ -66,24 +66,31 @@ jobs:
         run: |
 
           # Install JAGS with Homebrew
-          brew update
-          brew install jags
+          # brew update
+          # brew install jags
           
           # Get JAGS installation path
-          JAGS_PATH=$(brew --prefix jags)
-          echo "JAGS_PATH=$JAGS_PATH" >> $GITHUB_ENV
+          # JAGS_PATH=$(brew --prefix jags)
+          # echo "JAGS_PATH=$JAGS_PATH" >> $GITHUB_ENV
           
+
+          # Install JAGS using PKG
+
+          curl -L https://sourceforge.net/projects/mcmc-jags/files/latest/download -o /jags.pkg
+          sudo installer -store -pkg "/jags.pkg" -target /
+
           # Install rjags with correct paths
-          Rscript -e "install.packages('rjags')"
+          # Rscript -e "install.packages('rjags')"
           
           # Create symlink to where rjags expects it
           # sudo mkdir -p /usr/local/lib
-          sudo mkdir -p /usr/local/lib
+          # sudo mkdir -p /usr/local/lib
           # Link the whole directory
-          sudo ln -s $JAGS_PATH/lib/ /usr/local/lib/
+          # sudo ln -s $JAGS_PATH/lib/ /usr/local/lib/
           
           # Add JAGS to library path
-          echo "DYLD_FALLBACK_LIBRARY_PATH=$JAGS_PATH/lib:$DYLD_FALLBACK_LIBRARY_PATH" >> $GITHUB_ENV
+          # echo "DYLD_FALLBACK_LIBRARY_PATH=$JAGS_PATH/lib:$DYLD_FALLBACK_LIBRARY_PATH" >> $GITHUB_ENV
+
           
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
