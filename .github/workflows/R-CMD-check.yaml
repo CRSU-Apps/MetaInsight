@@ -80,7 +80,7 @@ jobs:
           sudo installer -store -pkg "/jags.pkg" -target /
 
           # Install rjags with correct paths
-          # Rscript -e "install.packages('rjags')"
+          Rscript -e "install.packages('rjags')"
           
           # Create symlink to where rjags expects it
           # sudo mkdir -p /usr/local/lib
