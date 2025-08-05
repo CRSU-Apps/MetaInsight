@@ -91,6 +91,7 @@ setup_configure <- function(data, treatment_df, outcome, outcome_measure, refere
 
   return(list(wrangled_data = data,
               treatment_df = treatment_df,
+              reference_treatment = reference_treatment,
               disconnected_indices = disconnected_indices,
               main_connected_data = main_connected_data,
               non_covariate_data_all = non_covariate_data_all,

@@ -65,22 +65,20 @@ setup_configure_module_server <- function(id, common, parent_session) {
     common$non_covariate_data_all <- result$non_covariate_data_all
     common$bugsnet_all <- result$bugsnet_all
     common$freq_all <- result$freq_all
-    # clean the selected id as per CleanStrings()
-    common$reference_treatment_all <- input$reference_treatment |>
-      stringr::str_replace_all("(?![a-zA-Z0-9_]).", "_") |>
-      stringr::str_replace_all("(_+)", "_")
+    common$reference_treatment_all <- result$reference_treatment
     common$treatment_df <- result$treatment_df
     common$outcome_measure <- input$outcome_measure
     common$ranking_option <- input$ranking_option
 
-    # update with cleaned id
+    # update with cleaned ids
     updateSelectInput(session, "reference_treatment", choices = common$treatment_df$Label,
-                      selected = FindExpectedReferenceTreatment(common$treatment_df$Label))
+                      selected = result$reference_treatment)
 
     common$logger |> writeLog(type = "complete", "The analysis has been configured")
 
     # METADATA ####
     common$meta$setup_configure$used <- TRUE
+    # this is the uncleaned version
     common$meta$setup_configure$reference_treatment <- input$reference_treatment
     common$meta$setup_configure$ranking_option <- input$ranking_option
     common$meta$setup_configure$outcome_measure <- input$outcome_measure

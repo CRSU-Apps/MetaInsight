@@ -3,17 +3,18 @@
 ```
 
 ```{r, echo = {{setup_configure_knit}}, include = {{setup_configure_knit}}}
-reference_treatment_all <- {{setup_configure_reference_treatment}}
+uncleaned_reference_treatment <- {{setup_configure_reference_treatment}}
 ranking_option <- {{setup_configure_ranking_option}}
 outcome_measure <- {{setup_configure_outcome_measure}}
 
-defined_data <- setup_configure(uploaded_data, treatments, outcome, outcome_measure, reference_treatment_all)
+configured_data <- setup_configure(uploaded_data, treatments, outcome, outcome_measure, uncleaned_reference_treatment)
 
-wrangled_data <- defined_data$wrangled_data
-treatment_df <- defined_data$treatment_df
-disconnected_indices <- defined_data$disconnected_indices
-main_connected_data <- defined_data$main_connected_data
-non_covariate_data_all <- defined_data$non_covariate_data_all
-bugsnet_all <- defined_data$bugsnet_all
-frequentist_all <- defined_data$freq_all
+wrangled_data <- configured_data$wrangled_data
+treatment_df <- configured_data$treatment_df
+disconnected_indices <- configured_data$disconnected_indices
+main_connected_data <- configured_data$main_connected_data
+non_covariate_data_all <- configured_data$non_covariate_data_all
+bugsnet_all <- configured_data$bugsnet_all
+frequentist_all <- configured_data$freq_all
+reference_treatment_all <- configured_data$reference_treatment
 ```

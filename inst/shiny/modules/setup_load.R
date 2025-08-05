@@ -113,6 +113,7 @@ setup_load_module_server <- function(id, common, parent_session) {
       common$meta$setup_load$used <- TRUE
       common$meta$setup_load$outcome <- input$outcome
       common$meta$setup_load$format <- input$format
+      common$meta$setup_load$treatment_df <- result$treatment_df
 
       # TRIGGER
       trigger("setup_load")
@@ -165,7 +166,7 @@ setup_load_module_result <- function(id) {
 setup_load_module_rmd <- function(common){ list(
   setup_load_knit = !is.null(common$meta$setup_load$used),
   setup_load_data = common$data,
-  setup_load_treatment_df = common$treatment_df,
+  setup_load_treatment_df = common$meta$setup_load$treatment_df,
   setup_load_outcome = common$meta$setup_load$outcome
 )
 }
