@@ -78,7 +78,7 @@ jobs:
           
           # Create symlink to where rjags expects it
           # sudo mkdir -p /usr/local/lib
-          sudo mkdir -p /usr/local
+          sudo mkdir -p /usr/local/lib
           # Link the whole directory
           sudo ln -s $JAGS_PATH/lib/ /usr/local/lib/
           
