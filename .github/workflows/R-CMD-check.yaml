@@ -64,23 +64,30 @@ jobs:
       - name: Install JAGS and rjags (macOS)
         if: runner.os == 'macOS'
         run: |
+
           # Install JAGS with Homebrew
           brew update
           brew install jags
+
+          # Add Homebrew to path
+          # echo path
+          echo $PATH
+          export PATH=$PATH:/opt/homebrew/bin
+          echo PATH
           
           # Get JAGS installation path
-          JAGS_PATH=$(brew --prefix jags)
-          echo "JAGS_PATH=$JAGS_PATH" >> $GITHUB_ENV
+          # JAGS_PATH=$(brew --prefix jags)
+          # echo "JAGS_PATH=$JAGS_PATH" >> $GITHUB_ENV
           
           # Install rjags with correct paths
-          Rscript -e "install.packages('rjags', configure.args='--with-jags-include=$JAGS_PATH/include/JAGS --with-jags-lib=$JAGS_PATH/lib')"
+          Rscript -e "install.packages('rjags')"
           
           # Create symlink to where rjags expects it
-          sudo mkdir -p /usr/local/lib
-          sudo ln -s $JAGS_PATH/lib/libjags.4.dylib /usr/local/lib/libjags.4.dylib
+          # sudo mkdir -p /usr/local/lib
+          # sudo ln -s $JAGS_PATH/lib/libjags.4.dylib /usr/local/lib/libjags.4.dylib
           
           # Add JAGS to library path
-          echo "DYLD_FALLBACK_LIBRARY_PATH=$JAGS_PATH/lib:$DYLD_FALLBACK_LIBRARY_PATH" >> $GITHUB_ENV
+          # echo "DYLD_FALLBACK_LIBRARY_PATH=$JAGS_PATH/lib:$DYLD_FALLBACK_LIBRARY_PATH" >> $GITHUB_ENV
           
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
