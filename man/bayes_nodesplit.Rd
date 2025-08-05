@@ -23,6 +23,8 @@ bayes_nodesplit(
 \item{outcome_measure}{character. The analysis outcome measure. Either `MD`, `OR` or `RR`}
 
 \item{model_type}{character. The type of model. Either `random` or `fixed`}
+
+\item{async}{Whether or not the function is being used asynchronously. Default `FALSE`}
 }
 \value{
 mtc.nodesplit object containing an mtc.result object for each node

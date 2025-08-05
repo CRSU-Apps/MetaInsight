@@ -269,6 +269,7 @@ write_plot <- function(file, type, renderFunction, height = NULL, width = NULL) 
 #'
 #' @param notrt The number of treatments in the plot
 #' @param title TRUE if the title is included in the plot
+#' @param annotation TRUE if an annotation is included in the plot
 #' @return The height of the plot in pixels
 #' @export
 forest_height_pixels <- function(notrt, title=FALSE, annotation = FALSE) {    # input is total number of treatments and whether title is included in plot

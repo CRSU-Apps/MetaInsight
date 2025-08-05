@@ -10,6 +10,8 @@ forest_height_pixels(notrt, title = FALSE, annotation = FALSE)
 \item{notrt}{The number of treatments in the plot}
 
 \item{title}{TRUE if the title is included in the plot}
+
+\item{annotation}{TRUE if an annotation is included in the plot}
 }
 \value{
 The height of the plot in pixels

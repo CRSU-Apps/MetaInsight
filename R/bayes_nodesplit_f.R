@@ -5,6 +5,7 @@
 #' @param outcome character. The type of outcome being measured either `Continuous` or `Binary`
 #' @param outcome_measure character. The analysis outcome measure. Either `MD`, `OR` or `RR`
 #' @param model_type character. The type of model. Either `random` or `fixed`
+#' @param async Whether or not the function is being used asynchronously. Default `FALSE`
 #'
 #' @return mtc.nodesplit object containing an mtc.result object for each node
 #' @export

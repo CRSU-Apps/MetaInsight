@@ -20,6 +20,10 @@ bayes_ranking(
 \item{model}{List. Output produced by bayes_model().}
 
 \item{ranking_option}{"good" or "bad", referring to small outcome values.}
+
+\item{logger}{Stores all notification messages to be displayed in the Log
+Window. Insert the logger reactive list here for running in
+shiny, otherwise leave the default `NULL`}
 }
 \value{
 List of output created by rankdata().

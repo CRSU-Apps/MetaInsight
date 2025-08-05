@@ -44,7 +44,7 @@ freq_forest <- function(freq, reference_treatment, model_type, outcome_measure, 
 #' Extract the minimum and maximum confidence intervals from the summary produced by netmeta
 #'
 #' @param freq list. NMA results created by freq_wrap().
-#' @param outcome. character. `Binary` or `Continuous`
+#' @param outcome character. `Binary` or `Continuous`
 #'
 #' @return List containing:
 #'  \item{xmin}{numeric. Minimum confidence interval}
@@ -84,9 +84,7 @@ extract_ci <- function(freq, outcome){
 
 #' Creates the text to be displayed underneath the forest plots, with between-study SD, number of studies and number of treatments.
 #'
-#' @param tau Between study standard deviation.
-#' @param k Number of studies.
-#' @param n Number of treatments.
+#' @param freq list. NMA results created by freq_wrap().
 #' @param model_type "fixed" or "random".
 #' @param outcome_measure "MD", "SMD", "OR", "RR", or "RD".
 #' @return Text as described above.
