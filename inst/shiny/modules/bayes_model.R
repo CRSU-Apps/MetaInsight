@@ -5,14 +5,17 @@ bayes_model_module_ui <- function(id) {
   )
 }
 
-bayes_model_submodule_server <- function(id, common, run){
+bayes_model_submodule_server <- function(id, common){
   moduleServer(id, function(input, output, session) {
 
     output$table <- renderTable({
-      watch(paste0("bayes_model_", id))
+      watch(paste0("bayes_model_table_", id))
+      shinyjs::show(selector = ".bayes_model_div")
       req(common[[paste0("bayes_", id)]])
       common[[paste0("bayes_", id)]]$dic
     }, digits = 3, rownames = TRUE, colnames = FALSE)
+
+    outputOptions(output, "table", suspendWhenHidden = FALSE)
 
   })
 }
@@ -20,8 +23,13 @@ bayes_model_submodule_server <- function(id, common, run){
 bayes_model_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
+    # used to trigger downstream actions when model is rerun
     init("bayes_model_sub")
     init("bayes_model_all")
+
+    # used to trigger summary tables - needs to be separate to reload
+    init("bayes_model_table_sub")
+    init("bayes_model_table_all")
 
     shinyjs::hide(selector = ".bayes_model_div")
 
@@ -113,6 +121,7 @@ bayes_model_module_server <- function(id, common, parent_session) {
         common$logger |> writeLog(type = "error", result)
       }
       trigger("bayes_model_all")
+      trigger("bayes_model_table_all")
     })
 
     result_sub <- observe({
@@ -127,11 +136,11 @@ bayes_model_module_server <- function(id, common, parent_session) {
           }
           common$bayes_sub <- result
           shinyjs::runjs("Shiny.setInputValue('bayes_model-sub-complete', 'complete');")
-          shinyjs::show(selector = ".bayes_model_div")
         } else {
           common$logger |> writeLog(type = "error", result)
         }
         trigger("bayes_model_sub")
+        trigger("bayes_model_table_sub")
       }
     })
 
