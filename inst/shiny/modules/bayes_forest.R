@@ -26,6 +26,7 @@ bayes_forest_submodule_server <- function(id, common, model, run, title){
       shinyjs::show("download")
       bayes_forest(common[[model]])
       title(main = title)
+      mtext(CreateTauSentence(common[[model]]), padj = 0.5)
     })
 
     n_trt <- reactive({
@@ -38,15 +39,10 @@ bayes_forest_submodule_server <- function(id, common, model, run, title){
 
     output$plot_wrap <- renderUI({
       req(n_trt())
-      plot_height = forest_height_pixels(n_trt(), title = TRUE)
+      plot_height = forest_height_pixels(n_trt(), title = TRUE, annotation = TRUE)
       common$meta$bayes_forest[[paste0("plot_height_", id)]] <- plot_height / 72
       plotOutput(session$ns("plot"), height = plot_height)
     })
-
-    output$text <- renderUI({
-      req(common[[model]])
-      CreateTauSentence(common[[model]])
-    }) |> bindEvent(run())
 
     output$download <- downloadHandler(
       filename = function() {
@@ -57,6 +53,7 @@ bayes_forest_submodule_server <- function(id, common, model, run, title){
         plot_func <- function(){
           bayes_forest(common[[model]])
           title(main = title)
+          mtext(CreateTauSentence(common[[model]]), padj = 0.5)
         }
 
         write_plot(file,
@@ -112,8 +109,7 @@ bayes_forest_module_server <- function(id, common, parent_session) {
 bayes_forest_submodule_result <- function(id) {
   ns <- NS(id)
   tagList(
-    uiOutput(ns("plot_wrap")),
-    uiOutput(ns("text"))
+    uiOutput(ns("plot_wrap"))
   )
 }
 

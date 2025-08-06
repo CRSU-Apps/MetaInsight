@@ -312,7 +312,7 @@ CreateTauSentence <- function(model) {
   if (model$model_type == "random") {   #SD and its 2.5% and 97.5%
     sd_mean <- round(sumresults$summaries$statistics["sd.d", "Mean"], digits = 2)
     sd_lowCI <- round(sumresults$summaries$quantiles["sd.d", "2.5%"], digits = 2)
-    sd_highCI <- round(sumresults$summaries$quantiles["sd.d", "97.5%"], digits=2)
+    sd_highCI <- round(sumresults$summaries$quantiles["sd.d", "97.5%"], digits = 2)
   }   else {
     sd_mean = 0
     sd_lowCI = 0
@@ -320,19 +320,19 @@ CreateTauSentence <- function(model) {
   }
   if (model$model_type=="random") {
     if (model$outcome=="OR") {
-      paste("Between-study standard deviation (log-odds scale):", sd_mean, ".\n 95% credible interval:",sd_lowCI,", ", sd_highCI, ".")
+      paste("Between-study standard deviation (log-odds scale):", sd_mean, "\n 95% credible interval:", sd_lowCI, ",", sd_highCI)
     } else if (model$outcome=="RR") {
-      paste ("Between-study standard deviation (log probability scale):", sd_mean, ".\n 95% credible interval:",sd_lowCI,", ", sd_highCI, ".")
+      paste("Between-study standard deviation (log probability scale):", sd_mean, "\n 95% credible interval:", sd_lowCI, ",", sd_highCI)
     } else {
-      paste ("Between-study standard deviation:", sd_mean, ".\n 95% credible interval:",sd_lowCI,", ", sd_highCI, ".")
+      paste("Between-study standard deviation:", sd_mean, "\n 95% credible interval:", sd_lowCI, ",", sd_highCI)
     }
   } else{
     if (model$outcome=="OR") {
-      paste("Between-study standard deviation (log-odds scale) set at 0")
+      "Between-study standard deviation (log-odds scale) set at 0"
     } else if (model$outcome=="RR") {
-      paste("Between-study standard deviation (log probability scale) set at 0")
+      "Between-study standard deviation (log probability scale) set at 0"
     } else {
-      paste("Between-study standard deviation set at 0")
+      "Between-study standard deviation set at 0"
     }
   }
 }

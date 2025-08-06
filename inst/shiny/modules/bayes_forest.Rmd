@@ -8,9 +8,7 @@
 ```{r, echo = {{bayes_forest_knit}}, include = {{bayes_forest_knit}}}
 bayes_forest(bayes_model_all)
 title(main = "All studies")
-```
-```{r, echo = {{bayes_forest_knit}}, include = {{bayes_forest_knit}}}
-CreateTauSentence(bayes_model_all)
+mtext(CreateTauSentence(bayes_model_all), padj = 0.5)
 ```
 
 ```{asis, echo = {{bayes_forest_knit}}, eval = {{bayes_forest_knit}}, include = {{bayes_forest_knit}}}
@@ -19,7 +17,6 @@ CreateTauSentence(bayes_model_all)
 ```{r, echo = {{bayes_forest_knit}}, include = {{bayes_forest_knit}}}
 bayes_forest(bayes_model_sub)
 title(main = "With selected studies excluded")
+mtext(CreateTauSentence(bayes_model_sub), padj = 0.5)
 ```
-```{r, echo = {{bayes_forest_knit}}, include = {{bayes_forest_knit}}}
-CreateTauSentence(bayes_model_sub)
-```
+
