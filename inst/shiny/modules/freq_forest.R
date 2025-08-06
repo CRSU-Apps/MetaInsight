@@ -37,6 +37,8 @@ freq_forest_module_ui <- function(id) {
 freq_forest_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
+  shinyjs::hide(selector = ".freq_forest_div")
+
   observeEvent(input$run, {
     # WARNING ####
     if (is.null(common$freq_sub)){
@@ -104,35 +106,40 @@ freq_forest_module_server <- function(id, common, parent_session) {
   })
 
 
-  output$plot_all <- renderPlot({
-
-    common$meta$freq_forest$height_all <- (result_all()$height_pixels) / 72 # divide by 72 dpi
-    # make width responsive to treatment label
-    common$meta$freq_forest$width_all <- 5 + (max(nchar(common$treatment_df$Label)) / 10)
-
-    result_all()$plot()
-    title("Results for all studies")
-    mtext(result_all()$annotation, padj = 0.5)
-  })
-
-  output$plot_sub <- renderPlot({
-    common$meta$freq_forest$height_sub <- (result_sub()$height_pixels) / 72 # divide by 72 dpi
+  output$plot_sub <- renderUI({
+    height <- (result_sub()$height_pixels) / 72 # divide by 72 dpi
+    common$meta$freq_forest$height_sub <- height
     # make width responsive to treatment label
     common$meta$freq_forest$width_sub <- 5 + (max(nchar(common$treatment_df$Label)) / 10)
 
-    result_sub()$plot()
-    title("Results with selected studies excluded")
-    mtext(result_sub()$annotation, padj = 0.5)
+    svg_text <- svglite::xmlSVG(
+      {result_sub()$plot()
+        grid::grid.text("Results with selected studies excluded", 0.5, grid::unit(height - 0.25, "inches"), gp=grid::gpar(cex=1.2, fontface = "bold"))
+        grid::grid.text(result_sub()$annotation, 0.5, grid::unit(height - 0.65, "inches"), gp=grid::gpar(cex=1))},
+      height = height,
+      width = common$meta$freq_forest$width_sub)
+
+    div(class = "svg_container",
+        HTML(paste(svg_text, collapse = "\n"))
+    )
   })
 
-  output$plot_wrap_all <- renderUI({
-    # required for testing
-    shinyjs::runjs("Shiny.setInputValue('freq_forest-complete', 'complete');")
-    plotOutput(session$ns("plot_all"), height = result_all()$height_pixels)
-  })
+  output$plot_all <- renderUI({
+    height <- (result_all()$height_pixels) / 72 # divide by 72 dpi
+    common$meta$freq_forest$height_all <- height
+    # make width responsive to treatment label
+    common$meta$freq_forest$width_all <- 5 + (max(nchar(common$treatment_df$Label)) / 10)
 
-  output$plot_wrap_sub <- renderUI({
-    plotOutput(session$ns("plot_sub"), height = result_sub()$height_pixels)
+    svg_text <- svglite::xmlSVG(
+      {result_all()$plot()
+       grid::grid.text("Results for all studies", 0.5, grid::unit(height - 0.25, "inches"), gp=grid::gpar(cex=1.2, fontface = "bold"))
+       grid::grid.text(result_all()$annotation, 0.5, grid::unit(height - 0.65, "inches"), gp=grid::gpar(cex=1))},
+      height = height,
+      width = common$meta$freq_forest$width_all)
+
+    div(class = "svg_container",
+        HTML(paste(svg_text, collapse = "\n"))
+    )
   })
 
   output$download_all <- downloadHandler(
@@ -206,17 +213,10 @@ freq_forest_module_server <- function(id, common, parent_session) {
 
 freq_forest_module_result <- function(id) {
   ns <- NS(id)
-  fluidRow(
-    column(
-      width = 6,
-      uiOutput(ns("plot_wrap_all")),
-    ),
-    column(
-      width = 6,
-      uiOutput(ns("plot_wrap_sub"))
-    )
+  layout_columns(
+    uiOutput(ns("plot_all")),
+    uiOutput(ns("plot_sub"))
   )
-
 }
 
 freq_forest_module_rmd <- function(common){ list(

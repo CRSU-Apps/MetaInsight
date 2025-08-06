@@ -31,8 +31,8 @@ test_that("summary_network produces downloadable plots", {
   app$wait_for_value(output = "freq_forest-plot_sub")
   plot_all <- app$get_value(output = "freq_forest-plot_all")
   plot_sub <- app$get_value(output = "freq_forest-plot_sub")
-  expect_equal(substr(plot_all$src, 1, 10), "data:image")
-  expect_equal(substr(plot_sub$src, 1, 10), "data:image")
+  expect_match(plot_all$html, "<svg")
+  expect_match(plot_sub$html, "<svg")
 
   test_plot_downloads(app, "freq_forest")
 

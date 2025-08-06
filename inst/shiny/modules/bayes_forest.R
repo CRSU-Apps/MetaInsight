@@ -9,7 +9,7 @@ bayes_forest_module_ui <- function(id) {
     actionButton(ns("run"), "Generate plots", icon = icon("arrow-turn-down")),
     layout_columns(
       bayes_forest_submodule_ui(ns("all"), "All studies"),
-      bayes_forest_submodule_ui(ns("sub"), "With selected studies excluded")
+      bayes_forest_submodule_ui(ns("sub"), "Selected studies excluded")
     )
   )
 }
@@ -19,16 +19,6 @@ bayes_forest_submodule_server <- function(id, common, model, run, title){
 
     shinyjs::hide("download")
 
-    # for some reason width doesn't adjust to screen size if this is a bindEvent
-    output$plot <- renderPlot({
-      run()
-      req(common[[model]], run())
-      shinyjs::show("download")
-      bayes_forest(common[[model]])
-      title(main = title)
-      mtext(CreateTauSentence(common[[model]]), padj = 0.5)
-    })
-
     n_trt <- reactive({
       if (model == "bayes_all"){
         return(nrow(common$treatment_df))
@@ -37,16 +27,30 @@ bayes_forest_submodule_server <- function(id, common, model, run, title){
       }
     }) |> bindEvent(run())
 
-    output$plot_wrap <- renderUI({
+    # this enables the plot to always fit in the column width
+    output$plot <- renderUI({
       req(n_trt())
-      plot_height = forest_height_pixels(n_trt(), title = TRUE, annotation = TRUE)
-      common$meta$bayes_forest[[paste0("plot_height_", id)]] <- plot_height / 72
-      plotOutput(session$ns("plot"), height = plot_height)
+      shinyjs::show("download")
+      plot_height <- forest_height_pixels(n_trt(), title = TRUE, annotation = TRUE) / 72
+      plot_width <- 5 + (max(nchar(common$treatment_df$Label)) / 10)
+      common$meta$bayes_forest[[paste0("plot_height_", id)]] <- plot_height
+      common$meta$bayes_forest[[paste0("plot_width_", id)]] <- plot_width
+
+      svg_text <- svglite::xmlSVG(
+        {bayes_forest(common[[paste0("bayes_", id)]])
+         title(main = title)
+         mtext(CreateTauSentence(common[[model]]), padj = 0.5)},
+         height = plot_height,
+         width = plot_width)
+
+      div(class = "svg_container",
+          HTML(paste(svg_text, collapse = "\n"))
+      )
     })
 
     output$download <- downloadHandler(
       filename = function() {
-        glue::glue("MetaInsight_bayesian_forest_plot{id}.{common$download_format}")
+        glue::glue("MetaInsight_bayesian_forest_plot_{id}.{common$download_format}")
       },
       content = function(file) {
 
@@ -59,8 +63,8 @@ bayes_forest_submodule_server <- function(id, common, model, run, title){
         write_plot(file,
                    common$download_format,
                    plot_func,
-                   width = 9,
-                   height = as.integer(forest_height_pixels(n_trt(), title = TRUE) / 72) + 0.5)
+                   width = common$meta$bayes_forest[[paste0("plot_width_", id)]],
+                   height = as.integer(forest_height_pixels(n_trt() + 1 , title = TRUE, annotation = TRUE) / 72))
 
       }
     )
@@ -99,8 +103,8 @@ bayes_forest_module_server <- function(id, common, parent_session) {
       }
     })
 
-    bayes_forest_submodule_server("all", common, "bayes_all", all_trigger, "All studies:")
-    bayes_forest_submodule_server("sub", common, "bayes_sub", sub_trigger, "With selected studies excluded:")
+    bayes_forest_submodule_server("all", common, "bayes_all", all_trigger, "Results for all studies")
+    bayes_forest_submodule_server("sub", common, "bayes_sub", sub_trigger, "Results with selected studies excluded")
 
   })
 }
@@ -109,7 +113,7 @@ bayes_forest_module_server <- function(id, common, parent_session) {
 bayes_forest_submodule_result <- function(id) {
   ns <- NS(id)
   tagList(
-    uiOutput(ns("plot_wrap"))
+    uiOutput(ns("plot"))
   )
 }
 
@@ -135,7 +139,9 @@ bayes_forest_module_result <- function(id) {
 bayes_forest_module_rmd <- function(common) {
   list(bayes_forest_knit = !is.null(common$meta$bayes_forest$used),
        bayes_forest_plot_height_all = common$meta$bayes_forest$plot_height_all,
-       bayes_forest_plot_height_sub = common$meta$bayes_forest$plot_height_sub
+       bayes_forest_plot_height_sub = common$meta$bayes_forest$plot_height_sub,
+       bayes_forest_plot_width_all = common$meta$bayes_forest$plot_width_all,
+       bayes_forest_plot_width_sub = common$meta$bayes_forest$plot_width_sub
       )
 }
 

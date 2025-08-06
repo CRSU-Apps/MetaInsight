@@ -83,12 +83,14 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
       req(common[[paste0("bayes_", id)]], run())
 
       plot_height <- forest_height_pixels(n_trt(), title = TRUE) / 72
+      plot_width <- 5 + (max(nchar(common$treatment_df$Label)) / 10)
       common$meta$bayes_ranking[[paste0("forest_height_", id)]] <- plot_height
+      common$meta$bayes_ranking[[paste0("forest_width_", id)]] <- plot_width
 
       svg_text <- svglite::xmlSVG(
         bayes_forest(common[[paste0("bayes_", id)]]),
         height = plot_height,
-        width = 6.5)
+        width = plot_width)
 
       div(class = "svg_container",
         HTML(paste(svg_text, collapse = "\n"))
@@ -174,7 +176,11 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
           bayes_forest(common[[paste0("bayes_", id)]])
         }
 
-        write_plot(file, common$download_format, plot_func, width = 6.5, height = as.integer(forest_height_pixels(n_trt(), title = TRUE) / 72) + 0.5)
+        write_plot(file,
+                   common$download_format,
+                   plot_func,
+                   width = common$meta$bayes_ranking[[paste0("forest_width_", id)]],
+                   height = as.integer(forest_height_pixels(n_trt(), title = TRUE) / 72) + 0.5)
       }
     )
 

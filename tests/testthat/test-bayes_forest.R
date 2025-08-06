@@ -29,20 +29,14 @@ test_that("{shinytest2} recording: e2e_bayes_forest", {
   app$set_inputs(bayesSel = "bayes_forest")
   app$click("bayes_forest-run")
 
-  app$wait_for_value(output = "bayes_forest-all-plot_wrap")
-  app$wait_for_value(output = "bayes_forest-sub-plot_wrap")
-
-  plot_wrap_all <- app$get_value(output = "bayes_forest-all-plot_wrap")
-  plot_wrap_sub <- app$get_value(output = "bayes_forest-sub-plot_wrap")
-
-  expect_match(plot_wrap_all$html, "bayes_forest-all-plot")
-  expect_match(plot_wrap_sub$html, "bayes_forest-sub-plot")
+  app$wait_for_value(output = "bayes_forest-all-plot")
+  app$wait_for_value(output = "bayes_forest-sub-plot")
 
   plot_all <- app$get_value(output = "bayes_forest-all-plot")
   plot_sub <- app$get_value(output = "bayes_forest-sub-plot")
 
-  expect_equal(substr(plot_all$src, 1, 10), "data:image")
-  expect_equal(substr(plot_sub$src, 1, 10), "data:image")
+  expect_match(plot_all$html, "<svg")
+  expect_match(plot_sub$html, "<svg")
 
   test_bayes_plot_downloads(app, "bayes_forest", "")
 })
