@@ -48,7 +48,7 @@ setup_exclude_module_server <- function(id, common, parent_session) {
     # listen to all the triggers but only fire once they're static for 1200ms
     exclusion_triggers <- reactive({
       # prevent it triggering on reload
-      req((!identical(input$exclusions, common$excluded_studies) || watch("setup_configure") > 0))
+      req((!identical(input$exclusions, common$excluded_studies) || watch("setup_configure") > 0 || watch("model") > 0))
       list(input$exclusions,
            input$model,
            watch("setup_configure"))
@@ -127,12 +127,13 @@ setup_exclude_module_server <- function(id, common, parent_session) {
       }
     })
 
-    observeEvent(input$model, {
+    # stop triggering at app load, but do so once data is loaded
+    observeEvent(list(input$model, watch("setup_load")), {
       # prevent it triggering on reload
       req(!identical(input$model, common$model_type))
       common$model_type <- input$model
       trigger("model")
-    })
+    }, ignoreInit = TRUE)
 
   return(list(
     save = function() {list(

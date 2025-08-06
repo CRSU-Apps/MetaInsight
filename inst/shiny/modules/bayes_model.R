@@ -54,7 +54,8 @@ bayes_model_module_server <- function(id, common, parent_session) {
     ) |> bind_task_button("run")
 
     observeEvent(list(watch("bayes_model"), watch("model")), {
-      req(watch("bayes_model") > 0)
+      # trigger if run is pressed or if model is changed, but only if a model exists
+      req((watch("bayes_model") > 0 || all(!is.null(common$bayes_all), watch("model") > 0)))
       if (is.null(common$bayes_all)){
         common$logger |> writeLog(type = "starting", "Fitting Bayesian models")
       } else {
