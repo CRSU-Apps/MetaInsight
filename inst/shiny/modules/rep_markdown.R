@@ -54,7 +54,8 @@ rep_markdown_module_server <- function(id, common, parent_session, COMPONENT_MOD
           module_rmd <- do.call(knitr::knit_expand, knit_params)
 
           # add a section header to create tabs
-          module_rmd <- c(glue::glue("## {stringr::str_to_sentence(component)}"), module_rmd)
+          full_component_name <- names(COMPONENTS[COMPONENTS == component])
+          module_rmd <- c(glue::glue("## {full_component_name}"), module_rmd)
 
           module_rmd_file <- tempfile(pattern = paste0(module$id, "_"),
                                       fileext = ".Rmd")
@@ -86,8 +87,9 @@ rep_markdown_module_server <- function(id, common, parent_session, COMPONENT_MOD
       # remove ## for unused components and duplicates
       is_tag <- grepl("^## ", combined_rmd)
       tag_names <- sub("^## ", "", combined_rmd)
-      used_components <- unique(sapply(strsplit(stringr::str_to_sentence(names(common$meta)), "_"), function(x) x[1]))
-      lines_to_keep <- (!is_tag) | (tag_names %in% used_components & !duplicated(tag_names))
+      used_components <- unique(sapply(strsplit(names(common$meta), "_"), function(x) x[1]))
+      used_full_components <- names(COMPONENTS[COMPONENTS %in% used_components])
+      lines_to_keep <- (!is_tag) | (tag_names %in% used_full_components & !duplicated(tag_names))
       combined_rmd <- combined_rmd[lines_to_keep]
 
       # add quarto header

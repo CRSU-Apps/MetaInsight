@@ -17,7 +17,7 @@ source("ui_helpers.R")
 
 # The components that have modules. These names must match the values of the
 # tabs of the components in the UI.
-COMPONENTS <- c("setup", "summary", "freq", "bayes", "rep")
+COMPONENTS <- c("Setup" = "setup", "Summary" = "summary", "Frequentist" = "freq", "Bayesian" = "bayes", "Reproduce" = "rep")
 
 # Information about modules that various parts of the app need access to
 COMPONENT_MODULES <- list()
