@@ -355,6 +355,8 @@ bayes_ranking_module_rmd <- function(common){ list(
   bayes_ranking_knit = !is.null(common$meta$bayes_ranking$used),
   bayes_ranking_forest_height_all = common$meta$bayes_ranking$forest_height_all,
   bayes_ranking_forest_height_sub = common$meta$bayes_ranking$forest_height_sub,
+  bayes_ranking_forest_width_all = common$meta$bayes_ranking$forest_width_all,
+  bayes_ranking_forest_width_sub = common$meta$bayes_ranking$forest_width_sub,
   bayes_ranking_colourblind = common$meta$bayes_ranking$colourblind,
   bayes_ranking_simple = common$meta$bayes_ranking$simple,
   bayes_ranking_network_style = common$meta$bayes_ranking$network_style,

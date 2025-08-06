@@ -12,7 +12,7 @@ bayes_ranking_sub <- bayes_ranking(connected_data_sub, treatment_df_sub, bayes_m
 ```
 
 ```{asis, echo = {{bayes_ranking_knit}}, eval = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}
-{r, fig.width = 6.5, fig.height = {{bayes_ranking_forest_height_all}}}
+{r, fig.width = {{bayes_ranking_forest_width_all}}, fig.height = {{bayes_ranking_forest_height_all}}}
 ```
 ```{r, echo = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}
 bayes_forest(bayes_model_all)
@@ -47,7 +47,7 @@ summary_network(frequentist_all, bugsnet_all, {{bayes_ranking_network_style}})
 ```
 
 ```{asis, echo = {{bayes_ranking_knit}}, eval = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}
-{r, fig.width = 6.5, fig.height = {{bayes_ranking_forest_height_sub}}}
+{r, fig.width = {{bayes_ranking_forest_width_sub}}, fig.height = {{bayes_ranking_forest_height_sub}}}
 ```
 ```{r, echo = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}
 bayes_forest(bayes_model_sub)
