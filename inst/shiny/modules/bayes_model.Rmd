@@ -8,8 +8,18 @@ bayes_model_sub <- suppress_jags_output(bayes_model(connected_data_sub, treatmen
 ```
 
 ```{r, echo = {{bayes_model_knit}}, include = {{bayes_model_knit}}}
-knitr::kable(bayes_model_all$dic, digits = 3, row.names = TRUE, col.names = c(""), caption = "Model fit for all studies")
+bayes_model_all$dic |>
+  gt::gt(rownames_to_stub = TRUE) |>
+  gt::tab_header(title = "Model fit for all studies") |>
+  gt::tab_options(column_labels.hidden = TRUE) |>
+  gt::fmt_number(rows = c(1:3), decimals = 3) |>
+  gt::fmt_number(rows = 4, decimals = 0)
 ```
 ```{r, echo = {{bayes_model_knit}}, include = {{bayes_model_knit}}}
-knitr::kable(bayes_model_sub$dic, digits = 3, row.names = TRUE, col.names = c(""), caption = "Model fit with selected studies excluded")
+bayes_model_sub$dic |>
+  gt::gt(rownames_to_stub = TRUE) |>
+  gt::tab_header(title = "Model fit with selected studies excluded") |>
+  gt::tab_options(column_labels.hidden = TRUE) |>
+  gt::fmt_number(rows = c(1:3), decimals = 3) |>
+  gt::fmt_number(rows = 4, decimals = 0)
 ```

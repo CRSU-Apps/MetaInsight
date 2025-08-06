@@ -36,6 +36,7 @@ Imports:
     ggrepel,
     glue,
     grid,
+    gt,
     igraph,
     jsonlite,
     knitcitations,
