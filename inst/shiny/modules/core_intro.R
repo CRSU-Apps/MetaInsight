@@ -62,7 +62,7 @@ core_intro_module_server <- function(id, common, parent_session) {
 
 
   existing_steps <- data.frame(
-    c(NA, "Welcome to MetaInsight v8! This tour will explain what has changed from earlier versions. Nothing has been removed but the interface has been redesigned and analyses are now reproducible.", NA, NA),
+    c(NA, "Welcome to MetaInsight v7.0.0! This tour will explain what has changed from earlier versions. Nothing has been removed but the interface has been redesigned and analyses are now reproducible.", NA, NA),
     c("a[data-value=\"setup\"]", "The tabs at the top move between sections of the app which combines the previous 'Load data' tab and all of the sub-tabs found in the 'Data analysis' tab.", "bottom", "$('a[data-value=\"setup\"]').trigger('click');"),
     c("#setupSel", "Inside each section this panel shows the available 'modules' which correspond to the second layer of tabs in the previous 'Data analysis' tab.", "bottom", "$('input[value=\"setup_load\"]').trigger('click');"),
     c("#setup_input_panel", "All the possible options for the module are shown in this panel, including downloading any outputs.", "bottom", NA),

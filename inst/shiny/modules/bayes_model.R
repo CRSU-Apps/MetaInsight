@@ -10,8 +10,8 @@ bayes_model_submodule_server <- function(id, common){
 
     output$table <- renderTable({
       watch(paste0("bayes_model_table_", id))
-      shinyjs::show(selector = ".bayes_model_div")
       req(common[[paste0("bayes_", id)]])
+      shinyjs::show(selector = ".bayes_model_div")
       common[[paste0("bayes_", id)]]$dic
     }, digits = 3, rownames = TRUE, colnames = FALSE)
 
