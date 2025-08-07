@@ -16,8 +16,9 @@ tagList(
         script = file.path("resources", "js", "shinyjs-funcs.js"),
         functions = c("scrollLogger", "disableModule", "enableModule", "runOnEnter")
       ),
-      tags$head(tags$link(href = "css/styles.css", rel = "stylesheet"),
-      )),
+      tags$link(href = "css/styles.css", rel = "stylesheet"),
+      includeHTML("favicon/favicon.html"),
+      ),
     title = img(src = "logo.png", height = "50", width = "50"),
     window_title = "MetaInsight",
     nav_panel("Intro", value = "intro"),
