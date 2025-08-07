@@ -119,8 +119,8 @@ test_that("FindStudiesIncludingTreatments() finds all studies containing treatme
   studies_any <- FindStudiesIncludingTreatments(data = data, treatments = c("Paracetamol", "Exercise"), all_or_any = "any")
   studies_all <- FindStudiesIncludingTreatments(data = data, treatments = c("Paracetamol", "Exercise"), all_or_any = "all")
 
-  expect_equal(sort(studies_any), c("A", "C", "D"), label = format_vector_to_string(sort(studies)))
-  expect_equal(sort(studies_all), "A", label = format_vector_to_string(sort(studies)))
+  expect_equal(sort(studies_any), c("A", "C", "D"), label = format_vector_to_string(sort(studies_any)))
+  expect_equal(sort(studies_all), "A", label = format_vector_to_string(sort(studies_all)))
 })
 
 test_that("VectorWithItemFirst() returns unchanged vector when intended first item not in vector", {

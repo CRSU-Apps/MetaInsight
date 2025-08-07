@@ -87,7 +87,11 @@ rep_markdown_module_server <- function(id, common, parent_session, COMPONENT_MOD
       # remove ## for unused components and duplicates
       is_tag <- grepl("^## ", combined_rmd)
       tag_names <- sub("^## ", "", combined_rmd)
-      used_components <- unique(sapply(strsplit(names(common$meta), "_"), function(x) x[1]))
+      if (!is.null(names(common$meta))){
+        used_components <- unique(sapply(strsplit(names(common$meta), "_"), function(x) x[1]))
+      } else {
+        used_components <- c()
+      }
       used_full_components <- names(COMPONENTS[COMPONENTS %in% used_components])
       lines_to_keep <- (!is_tag) | (tag_names %in% used_full_components & !duplicated(tag_names))
       combined_rmd <- combined_rmd[lines_to_keep]
