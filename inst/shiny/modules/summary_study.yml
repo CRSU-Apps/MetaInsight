@@ -1,5 +1,5 @@
 component: "summary"
 short_name: "Study results"
 long_name: "Produce study results forest plot"
-authors: "Naomi Bradbury, Tom Morris, Clareece Nevill, Janion Nevill, Rhiannon Owen, Simon Smart, Yiqiao Xin"
+authors: "Naomi Bradbury, Ryan Field, Tom Morris, Clareece Nevill, Janion Nevill, Rhiannon Owen, Simon Smart, Yiqiao Xin"
 package: [metafor]

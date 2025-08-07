@@ -1,5 +1,5 @@
 component: "setup"
 short_name: "Upgrade old data"
 long_name: "Upgrade old file formats"
-authors: "Naomi Bradbury, Tom Morris, Clareece Nevill, Janion Nevill, Rhiannon Owen, Simon Smart, Yiqiao Xin"
+authors: "Naomi Bradbury, Ryan Field, Tom Morris, Clareece Nevill, Janion Nevill, Rhiannon Owen, Simon Smart, Yiqiao Xin"
 package: [dplyr]

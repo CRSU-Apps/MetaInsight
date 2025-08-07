@@ -1,13 +1,14 @@
 Package: metainsight
 Version: 7.0.0
 Title: A 'shiny' Application for Network Metaanalysis
-Description: Conduct network metaanalyses through a graphical user interface using 
-    'bnma', 'BUGSnet', 'gemtc', 'metafor' and 'netmeta'. Many options for downloading 
-    publication-ready outputs are provided and analyses can be reproduced outside of
-    the application by downloading a 'quarto' file.
+Description: Conduct network metaanalyses through a graphical user interface generated with 
+    'shinyscholar', using 'bnma', 'BUGSnet', 'gemtc', 'metafor' and 'netmeta'. Many options 
+    for downloading publication-ready outputs are provided and analyses can be reproduced 
+    outside of the application by downloading a 'quarto' file.
 Authors@R: 
     c(person("Simon E. H.", "Smart", email = "simon.smart@cantab.net", role = c("aut","cre")),
       person("Naomi", "Bradbury", role = c("aut")),
+      person("Ryan", "Field", role = c("aut")),
       person("Tom", "Morris", role = c("aut")),
       person("Clareece", "Nevill", role = c("aut")),
       person("Janion", "Nevill", role = c("aut")),

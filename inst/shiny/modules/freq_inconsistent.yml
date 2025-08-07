@@ -1,5 +1,5 @@
 component: "freq"
 short_name: "Inconsistency"
 long_name: "Inconsistency"
-authors: "Naomi Bradbury, Tom Morris, Clareece Nevill, Janion Nevill, Rhiannon Owen, Simon Smart, Yiqiao Xin"
+authors: "Naomi Bradbury, Ryan Field, Tom Morris, Clareece Nevill, Janion Nevill, Rhiannon Owen, Simon Smart, Yiqiao Xin"
 package: [netmeta]
