@@ -266,14 +266,15 @@ write_plot <- function(file, type, renderFunction, height = NULL, width = NULL) 
   grDevices::dev.off()
 }
 
-#' Calculate the pixel height of a forest plot for a given number of treatments
+#' Calculate the height in inches of a forest plot for a given number of treatments
 #'
 #' @param notrt The number of treatments in the plot
 #' @param title TRUE if the title is included in the plot
 #' @param annotation TRUE if an annotation is included in the plot
 #' @return The height of the plot in pixels
 #' @export
-forest_height_pixels <- function(notrt, title=FALSE, annotation = FALSE) {    # input is total number of treatments and whether title is included in plot
+forest_height <- function(notrt, title=FALSE, annotation = FALSE) {
+  # original calculations are pixel-based
   height <- 15 * (notrt - 1) + 60
 
   if (title) {
@@ -284,8 +285,23 @@ forest_height_pixels <- function(notrt, title=FALSE, annotation = FALSE) {    # 
     height <- height + 80
   }
 
-  return(height)
+  # return in inches at 72 dpi
+  return(height / 72)
 }
+
+
+#' Calculate the width in inches of a forest plot for a given label.
+#'
+#' @param n_chars The number of characters in the widest label.
+#' For frequentist plots this should be the longest treatment name.
+#' For Bayesian plots this should be 'Compared to {reference treatment}'
+#' @return The width of the plot in inches
+#' @export
+forest_width <- function(n_chars) {
+  5 + (n_chars / 10)
+}
+
+
 
 #' Create a pair of download buttons
 #'

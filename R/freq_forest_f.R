@@ -12,7 +12,12 @@
 #'   Window. Insert the logger reactive list here for running in
 #'   shiny, otherwise leave the default `NULL`
 #'
-#' @return Forest plot created using metafor::forest().
+#' @return List containing:
+#'  \item{plot}{function. Forest plot created using `meta::forest()`}
+#'  \item{annotation}{character. Annotation to add to the plot}
+#'  \item{height}{numeric. Plot height in inches}
+#'  \item{width}{numeric. Plot width in inches}
+#'
 #' @export
 freq_forest <- function(freq, reference_treatment, model_type, outcome_measure, xmin, xmax, logger = NULL) {
 
@@ -32,11 +37,13 @@ freq_forest <- function(freq, reference_treatment, model_type, outcome_measure, 
   plot <- function(){meta::forest(freq$net1, reference.group = reference_treatment, pooled = model_type, xlim = c(xmin, xmax))}
   annotation <- forest_annotation(freq, model_type, outcome_measure)
   n_treatments <- length(levels(freq$net1$data$treat1))
-  height_pixels <- forest_height_pixels(n_treatments, title = TRUE, annotation = TRUE)
+  height <- forest_height(n_treatments, title = TRUE, annotation = TRUE)
+  width <- forest_width(max(nchar(freq$lstx)))
 
   return(list(plot = plot,
               annotation = annotation,
-              height_pixels = height_pixels
+              height = height,
+              width = width
               ))
 }
 

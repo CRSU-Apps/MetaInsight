@@ -82,8 +82,8 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
       req(watch(trigger) > 0)
       req(common[[paste0("bayes_", id)]], run())
 
-      plot_height <- forest_height_pixels(n_trt(), title = TRUE) / 72
-      plot_width <- 5 + (max(nchar(common$treatment_df$Label)) / 10)
+      plot_height <- forest_height(n_trt(), title = TRUE)
+      plot_width <- forest_width(14 + nchar(common[[paste0("reference_treatment_", id)]]))
       common$meta$bayes_ranking[[paste0("forest_height_", id)]] <- plot_height
       common$meta$bayes_ranking[[paste0("forest_width_", id)]] <- plot_width
 
@@ -97,15 +97,14 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
       )
     })
 
-    regression_text <- reactive("")
 
     ranking_plots <- eventReactive(watch(trigger), {
       req(watch(trigger) > 0)
       plots <- list(
-        litmus = LitmusRankOGram(common[[paste0("bayes_rank_", id)]], colourblind = FALSE, regression_text = regression_text()),
-        radial = RadialSUCRA(common[[paste0("bayes_rank_", id)]], colourblind = FALSE, regression_text = regression_text()),
-        litmus_blind = LitmusRankOGram(common[[paste0("bayes_rank_", id)]], colourblind = TRUE, regression_text = regression_text()),
-        radial_blind = RadialSUCRA(common[[paste0("bayes_rank_", id)]], colourblind = TRUE, regression_text = regression_text())
+        litmus = LitmusRankOGram(common[[paste0("bayes_rank_", id)]], colourblind = FALSE),
+        radial = RadialSUCRA(common[[paste0("bayes_rank_", id)]], colourblind = FALSE),
+        litmus_blind = LitmusRankOGram(common[[paste0("bayes_rank_", id)]], colourblind = TRUE),
+        radial_blind = RadialSUCRA(common[[paste0("bayes_rank_", id)]], colourblind = TRUE)
       )
       return(plots)
     })
@@ -180,7 +179,7 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
                    common$download_format,
                    plot_func,
                    width = common$meta$bayes_ranking[[paste0("forest_width_", id)]],
-                   height = as.integer(forest_height_pixels(n_trt(), title = TRUE) / 72) + 0.5)
+                   height = as.integer(forest_height(n_trt(), title = TRUE)) + 0.5)
       }
     )
 

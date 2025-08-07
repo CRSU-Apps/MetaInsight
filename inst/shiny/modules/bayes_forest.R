@@ -31,8 +31,8 @@ bayes_forest_submodule_server <- function(id, common, model, run, title){
     output$plot <- renderUI({
       req(n_trt())
       shinyjs::show("download")
-      plot_height <- forest_height_pixels(n_trt(), title = TRUE, annotation = TRUE) / 72
-      plot_width <- 5 + (max(nchar(common$treatment_df$Label)) / 10)
+      plot_height <- forest_height(n_trt(), title = TRUE, annotation = TRUE)
+      plot_width <- forest_width(14 + nchar(common[[paste0("reference_treatment_", id)]]))
       common$meta$bayes_forest[[paste0("plot_height_", id)]] <- plot_height
       common$meta$bayes_forest[[paste0("plot_width_", id)]] <- plot_width
 
@@ -64,7 +64,8 @@ bayes_forest_submodule_server <- function(id, common, model, run, title){
                    common$download_format,
                    plot_func,
                    width = common$meta$bayes_forest[[paste0("plot_width_", id)]],
-                   height = as.integer(forest_height_pixels(n_trt() + 1 , title = TRUE, annotation = TRUE) / 72))
+                   # not sure why but this needs to be slightly taller than in the app
+                   height = as.integer(forest_height(n_trt() + 1 , title = TRUE, annotation = TRUE)))
 
       }
     )

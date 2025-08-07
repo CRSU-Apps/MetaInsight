@@ -34,7 +34,11 @@ Window. Insert the logger reactive list here for running in
 shiny, otherwise leave the default `NULL`}
 }
 \value{
-Forest plot created using metafor::forest().
+List containing:
+ \item{plot}{function. Forest plot created using `meta::forest()`}
+ \item{annotation}{character. Annotation to add to the plot}
+ \item{height}{numeric. Plot height in inches}
+ \item{width}{numeric. Plot width in inches}
 }
 \description{
 Produce a forest plot and annotation
