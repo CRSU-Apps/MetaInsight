@@ -16,8 +16,6 @@ execute:
 theme: spacelab
 ---
 
-# MetaInsight Session `r Sys.Date()`
-
 ::: {.panel-tabset}
 
 ## Introduction

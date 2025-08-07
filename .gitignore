@@ -8,3 +8,4 @@ www.zip
 .DS_Store
 debug*
 _modules
+inst/shiny/rsconnect

@@ -16,7 +16,8 @@ For more detailed information see <https://quarto.org/>.
 
 ### Package installation
 
-metainsight uses the following R packages that must be installed and loaded before starting.
+metainsight is an R package and it must be installed and loaded before running any code. This can take a considerable time depending on your computing environment. Some analyses use JAGS and you should install this before installing the package: <https://mcmc-jags.sourceforge.io/> 
+ 
 ```{r}
 if(!require("metainsight")) remotes::install_github("CRSU-Apps/MetaInsight", ref = "shinyscholar")
 library(metainsight)
@@ -24,5 +25,5 @@ library(metainsight)
 
 The *metainsight* session code .qmd file is composed of a chain of module functions that are internal to *metainsight*. Each of these functions corresponds to a single module that the user ran during the session. Users are encouraged to write custom code in the .qmd directly to modify their analysis, and even modify the module function code to further customize. To see the source code for any module function, just type its name into the R console and press Return.
 
-Your analyses are below.
+Your analyses can be found in the tabs above. 
 

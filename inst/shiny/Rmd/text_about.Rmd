@@ -2,6 +2,7 @@
 title: "intro"
 output: html_document
 ---
+<br/>
 
 ### **What is *MetaInsight*?**  
 
