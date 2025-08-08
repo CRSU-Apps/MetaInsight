@@ -3,7 +3,7 @@
 ```
 
 ```{asis, echo = {{bayes_forest_knit}}, eval = {{bayes_forest_knit}}, include = {{bayes_forest_knit}}}
-{r, fig.width = {{bayes_forest_plot_width_all}}, fig.height = {{bayes_forest_plot_height_all}}}
+{r, fig.align="center", fig.width = {{bayes_forest_plot_width_all}}, fig.height = {{bayes_forest_plot_height_all}}}
 ```
 ```{r, echo = {{bayes_forest_knit}}, include = {{bayes_forest_knit}}}
 bayes_forest(bayes_model_all)
@@ -12,7 +12,7 @@ mtext(CreateTauSentence(bayes_model_all), padj = 0.5)
 ```
 
 ```{asis, echo = {{bayes_forest_knit}}, eval = {{bayes_forest_knit}}, include = {{bayes_forest_knit}}}
-{r, fig.width = {{bayes_forest_plot_width_sub}}, fig.height = {{bayes_forest_plot_height_sub}}}
+{r, fig.align="center", fig.width = {{bayes_forest_plot_width_sub}}, fig.height = {{bayes_forest_plot_height_sub}}}
 ```
 ```{r, echo = {{bayes_forest_knit}}, include = {{bayes_forest_knit}}}
 bayes_forest(bayes_model_sub)

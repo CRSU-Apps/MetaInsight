@@ -3,7 +3,7 @@
 ```
 
 ```{asis, echo = {{summary_network_knit}}, eval = {{summary_network_knit}}, include = {{summary_network_knit}}}
-{r, fig.width = 9, fig.height = 6}
+{r, fig.align="center", fig.width = 9, fig.height = 6}
 ```
 ```{r, echo = {{summary_network_knit}}, include = {{summary_network_knit}}}
 network_style <- {{summary_network_style}}
@@ -14,7 +14,7 @@ title("Network plot of all studies")
 ```
 
 ```{asis, echo = {{summary_network_knit}}, eval = {{summary_network_knit}}, include = {{summary_network_knit}}}
-{r, fig.width = 9, fig.height = 6}
+{r, fig.align="center", fig.width = 9, fig.height = 6}
 ```
 ```{r, echo = {{summary_network_knit}}, include = {{summary_network_knit}}}
 network_style_label_sub <- {{summary_network_label_sub}}

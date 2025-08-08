@@ -3,7 +3,7 @@
 ```
 
 ```{asis, echo = {{freq_forest_knit}}, eval = {{freq_forest_knit}}, include = {{freq_forest_knit}}}
-{r, fig.width = {{freq_forest_width_all}}, fig.height = {{freq_forest_height_all}}}
+{r, fig.align="center", fig.width = {{freq_forest_width_all}}, fig.height = {{freq_forest_height_all}}}
 ```
 ```{r, echo = {{freq_forest_knit}}, include = {{freq_forest_knit}}}
 
@@ -23,7 +23,7 @@ grid::grid.text(frequentist_forest_all$annotation, 0.5, grid::unit(frequentist_f
 ```
 
 ```{asis, echo = {{freq_forest_knit}}, eval = {{freq_forest_knit}}, include = {{freq_forest_knit}}}
-{r, fig.width = {{freq_forest_width_sub}}, fig.height = {{freq_forest_height_sub}}}
+{r, fig.align="center", fig.width = {{freq_forest_width_sub}}, fig.height = {{freq_forest_height_sub}}}
 ```
 ```{r, echo = {{freq_forest_knit}}, include = {{freq_forest_knit}}}
 

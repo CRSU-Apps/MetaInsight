@@ -6,7 +6,6 @@ format:
     code-fold: true
     code-summary: "View code chunk"
     page-layout: article
-    fig-align: center
     grid:
       body-width: 1200px
 fig-format: svg

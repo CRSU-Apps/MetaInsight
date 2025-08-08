@@ -8,7 +8,7 @@ bayes_nodesplit_sub <- suppress_jags_output(bayes_nodesplit(connected_data_sub, 
 ```
 
 ```{asis, echo = {{bayes_nodesplit_knit}}, eval = {{bayes_nodesplit_knit}}, include = {{bayes_nodesplit_knit}}}
-{r, fig.width = 8, fig.height = {{bayes_nodesplit_plot_height_all}}}
+{r, fig.align="center", fig.width = 8, fig.height = {{bayes_nodesplit_plot_height_all}}}
 ```
 ```{r, echo = {{bayes_nodesplit_knit}}, include = {{bayes_nodesplit_knit}}}
 plot(summary(bayes_nodesplit_all), digits = 3)
@@ -16,7 +16,7 @@ title(main = "Inconsistency test with nodesplitting \nmodel for all studies")
 ```
 
 ```{asis, echo = {{bayes_nodesplit_knit}}, eval = {{bayes_nodesplit_knit}}, include = {{bayes_nodesplit_knit}}}
-{r, fig.width = 8, fig.height = {{bayes_nodesplit_plot_height_sub}}}
+{r, fig.align="center", fig.width = 8, fig.height = {{bayes_nodesplit_plot_height_sub}}}
 ```
 ```{r, echo = {{bayes_nodesplit_knit}}, include = {{bayes_nodesplit_knit}}}
 plot(summary(bayes_nodesplit_sub), digits = 3)
