@@ -48,6 +48,7 @@ setup_configure_module_server <- function(id, common, parent_session) {
       return()
     }
 
+    # this is closed in setup_exclude once that has run
     show_loading_modal("Configuring analysis...")
 
     # FUNCTION CALL ####
@@ -86,7 +87,7 @@ setup_configure_module_server <- function(id, common, parent_session) {
     # TRIGGER
     trigger("setup_configure")
     show_table(parent_session)
-    close_loading_modal()
+
   })
 
   return(list(

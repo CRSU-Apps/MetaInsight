@@ -115,6 +115,8 @@ setup_exclude_module_server <- function(id, common, parent_session) {
                                               has been removed from the network of sensitivity analysis."))
         }
 
+        # if opened in setup_configure
+        close_loading_modal()
         if (initial){
           common$logger |> writeLog(type = "complete", "Initial frequentist analysis is complete")
         } else {
