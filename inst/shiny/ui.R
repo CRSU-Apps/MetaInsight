@@ -19,7 +19,7 @@ tagList(
       tags$link(href = "css/styles.css", rel = "stylesheet"),
       includeHTML("favicon/favicon.html"),
       ),
-    title = img(src = "logo.png", height = "50", width = "50"),
+    title = img(src = "logo.png", height = "40"),
     window_title = "MetaInsight",
     nav_panel("Intro", value = "intro"),
     nav_panel("Setup", value = "setup"),
