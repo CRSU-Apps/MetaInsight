@@ -1,6 +1,8 @@
 common_class <- R6::R6Class(
   classname = "common",
   public = list(
+   number = NULL,
+   square = NULL,
    data = NULL,
    upgraded_data = NULL,
    wrangled_data = NULL,
@@ -39,6 +41,8 @@ common_class <- R6::R6Class(
    logger = NULL,
    state = NULL,
    reset = function(){
+     self$number = NULL
+     self$square = NULL
      self$data <- NULL
      self$upgraded_data <- NULL
      self$wrangled_data <- NULL
@@ -77,4 +81,3 @@ common_class <- R6::R6Class(
    }
   )
 )
-
