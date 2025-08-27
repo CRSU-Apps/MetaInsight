@@ -1,4 +1,4 @@
-setup_select_module_ui <- function(id) {
+setup_square_module_ui <- function(id) {
   ns <- shiny::NS(id)
   div(
     h3("Square a number"),
@@ -7,7 +7,7 @@ setup_select_module_ui <- function(id) {
   )
 }
 
-setup_select_module_server <- function(id, common, parent_session) {
+setup_square_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
 
@@ -19,23 +19,23 @@ setup_select_module_server <- function(id, common, parent_session) {
       }
       
       # FUNCTION CALL ####
-      result <- setup_select(input$number)
+      result <- setup_square(input$number)
 
       # LOAD INTO COMMON ####
       common$number <- input$number
       common$square <- result
 
       # METADATA ####
-      common$meta$setup_select$used <- TRUE
+      common$meta$setup_square$used <- TRUE
 
       # TRIGGER
-      gargoyle::trigger("setup_select")
+      gargoyle::trigger("setup_square")
 
       show_results(parent_session)
     })
     
     output$number_text <- renderText({
-      gargoyle::watch("setup_select")
+      gargoyle::watch("setup_square")
       glue::glue("{common$number}^2 = {common$square}")
     })
     
@@ -58,15 +58,15 @@ setup_select_module_server <- function(id, common, parent_session) {
   })
 }
 
-setup_select_module_result <- function(id) {
+setup_square_module_result <- function(id) {
   ns <- NS(id)
   textOutput(outputId = ns("number_text"))
 }
 
-setup_select_module_rmd <- function(common){
+setup_square_module_rmd <- function(common){
   list(
-    setup_select_knit = !is.null(common$meta$setup_select$used),
-    setup_select_number = common$number,
-    setup_select_square = common$square
+    setup_square_knit = !is.null(common$meta$setup_square$used),
+    setup_square_number = common$number,
+    setup_square_square = common$square
   )
 }

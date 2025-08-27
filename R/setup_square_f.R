@@ -4,6 +4,6 @@
 #'
 #' @return Squared number
 #' @export
-setup_select <- function(number) {
+setup_square <- function(number) {
   return(number * number)
 }

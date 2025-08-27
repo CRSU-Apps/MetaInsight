@@ -1,4 +1,4 @@
-### **Module:** ***Select Number***
+### **Module:** ***Square a Number***
 
 **BACKGROUND**
 

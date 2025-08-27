@@ -1,0 +1,10 @@
+```{asis, echo = {{setup_square_knit}}, eval = {{setup_square_knit}}, include = {{setup_square_knit}}}
+### Select a number to square
+```
+
+```{r, echo = {{setup_square_knit}}, include = {{setup_square_knit}}}
+number <- {{setup_square_number}}
+square <- {{setup_square_square}}
+
+renderText(glue::glue("{number}^2 = {square}"))
+```
