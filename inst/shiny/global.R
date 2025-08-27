@@ -25,6 +25,7 @@ COMPONENT_MODULES <- list()
 # Loadbase modules
 base_module_configs <- c(
   "modules/setup_square.yml",
+  "modules/setup_plot.yml",
   "modules/setup_load.yml",
   "modules/setup_configure.yml",
   "modules/setup_reload.yml",

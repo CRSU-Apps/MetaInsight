@@ -1,0 +1,9 @@
+```{asis, echo = {{setup_plot_knit}}, eval = {{setup_plot_knit}}, include = {{setup_plot_knit}}}
+### Plot the square of squares
+```
+
+```{r, echo = {{setup_plot_knit}}, include = {{setup_plot_knit}}}
+number <- {{setup_plot_number}}
+
+renderPlot(setup_plot(number))
+```

@@ -1,0 +1,5 @@
+component: "setup"
+short_name: "Plot Square"
+long_name: "Plot the square of a number"
+authors: Janion Nevill"
+package: []
