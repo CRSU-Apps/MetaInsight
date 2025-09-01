@@ -1,0 +1,10 @@
+```{asis, echo = {{maths_plot_matrix_knit}}, eval = {{maths_plot_matrix_knit}}, include = {{maths_plot_matrix_knit}}}
+### Plot an *n x m* matrix of squares
+```
+
+```{r, echo = {{maths_plot_matrix_knit}}, include = {{maths_plot_matrix_knit}}}
+number_1 <- {{maths_select_number_1}}
+number_2 <- {{maths_select_number_2}}
+
+maths_plot_matrix(number_1, number_2)
+```

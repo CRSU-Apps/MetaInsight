@@ -1,6 +1,8 @@
 common_class <- R6::R6Class(
   classname = "common",
   public = list(
+   maths_number_1 = NULL,
+   maths_number_2 = NULL,
    number = NULL,
    square = NULL,
    data = NULL,
@@ -41,6 +43,8 @@ common_class <- R6::R6Class(
    logger = NULL,
    state = NULL,
    reset = function(){
+     self$maths_number_1 = NULL
+     self$maths_number_2 = NULL
      self$number = NULL
      self$square = NULL
      self$data <- NULL

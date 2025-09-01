@@ -1,0 +1,5 @@
+component: "maths"
+short_name: "Plot Matrix"
+long_name: "Plot an n x m matrix of squares"
+authors: Janion Nevill"
+package: []

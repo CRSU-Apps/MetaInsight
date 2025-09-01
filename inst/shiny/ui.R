@@ -21,6 +21,7 @@ tagList(
     title = img(src = "logo.png", height = "50", width = "50"),
     window_title = "MetaInsight",
     nav_panel("Intro", value = "intro"),
+    nav_panel("Maths", value = "maths"),
     nav_panel("Setup", value = "setup"),
     nav_panel("Summary", value = "summary"),
     nav_panel("Frequentist", value = "freq"),
@@ -44,6 +45,7 @@ tagList(
         includeMarkdown("Rmd/text_intro_tab.Rmd")
       ),
       insert_modules_ui("setup", "Setup", exclude = "setup_exclude"),
+      insert_modules_ui("maths", "Maths"),
       insert_modules_ui("summary", "Summary"),
       insert_modules_ui("freq", "Frequentist NMA"),
       insert_modules_ui("bayes", "Bayesian NMA"),

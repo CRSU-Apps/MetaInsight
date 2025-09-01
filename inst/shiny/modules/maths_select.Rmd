@@ -1,0 +1,14 @@
+```{asis, echo = {{maths_select_knit}}, eval = {{maths_select_knit}}, include = {{maths_select_knit}}}
+### Select numbers
+```
+
+```{r, echo = {{maths_select_knit}}, include = {{maths_select_knit}}}
+number_1 <- {{maths_select_number_1}}
+number_2 <- {{maths_select_number_2}}
+
+div(
+  glue::glue("First number: {number_1}"),
+  br(),
+  glue::glue("Second number: {number_2}")
+)
+```
