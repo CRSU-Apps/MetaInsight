@@ -5,5 +5,5 @@
 ```{r, echo = {{setup_plot_knit}}, include = {{setup_plot_knit}}}
 number <- {{setup_plot_number}}
 
-renderPlot(setup_plot(number))
+setup_plot(number)
 ```

@@ -63,6 +63,7 @@ setup_plot_module_result <- function(id) {
 
 setup_plot_module_rmd <- function(common){
   list(
-    setup_plot_knit = !is.null(common$meta$setup_plot$used)
+    setup_plot_knit = !is.null(common$meta$setup_plot$used),
+    setup_plot_number = common$number
   )
 }

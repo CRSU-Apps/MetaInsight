@@ -6,5 +6,5 @@
 number <- {{setup_square_number}}
 square <- {{setup_square_square}}
 
-renderText(glue::glue("{number}^2 = {square}"))
+glue::glue("{number}^2 = {square}")
 ```
