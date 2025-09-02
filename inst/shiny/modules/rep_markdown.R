@@ -126,6 +126,7 @@ rep_markdown_module_server <- function(id, common, parent_session, COMPONENT_MOD
         writeLines(combined_rmd, result_file, useBytes = TRUE)
       } else {
         writeLines(combined_rmd, "combined.qmd")
+        on.exit(unlink("combined.qmd"))
         quarto::quarto_render(
           input = "combined.qmd",
           output_format = gsub(".", "", rep_markdown_file_type)
@@ -148,13 +149,14 @@ rep_markdown_module_server <- function(id, common, parent_session, COMPONENT_MOD
     observeEvent(input$download, {
       show_loading_modal("Preparing download...")
       task$invoke()
+      results$resume()
     })
 
     # wait for the file to be prepared and then trigger the download
     # if in testing set an input value to use when the download is ready
     results <- observe({
       if (task$status() == "success") {
-        results$destroy()
+        results$suspend()
         if (isTRUE(getOption("shiny.testmode"))) {
           shinyjs::runjs("Shiny.setInputValue('rep_markdown-complete', 'complete');")
         } else {
@@ -164,7 +166,7 @@ rep_markdown_module_server <- function(id, common, parent_session, COMPONENT_MOD
       }
 
       if (task$status() == "error"){
-        results$destroy()
+        results$suspend()
         common$logger |> writeLog(type = "error", "An error occurred trying to produce the download")
         close_loading_modal()
       }
