@@ -3,6 +3,8 @@ rep_markdown_module_ui <- function(id) {
   tagList(
     selectInput(ns("file_type"), label = "Select download file type",
                 choices = c("HTML" = ".html", "Quarto" = ".qmd")),
+    conditionalPanel("input.file_type == '.html'",
+                     bslib::input_switch(ns("render"), "Include outputs?", value = TRUE), ns = ns),
     bslib::input_task_button(ns("download"), "Download", icon = shiny::icon("download"), type = "default"),
     div(style = "visibility: hidden;",
         downloadButton(ns("dlRMD"), "")
@@ -125,12 +127,23 @@ rep_markdown_module_server <- function(id, common, parent_session, COMPONENT_MOD
       if (rep_markdown_file_type == ".qmd") {
         writeLines(combined_rmd, result_file, useBytes = TRUE)
       } else {
-        writeLines(combined_rmd, "combined.qmd")
-        on.exit(unlink("combined.qmd"))
-        quarto::quarto_render(
-          input = "combined.qmd",
-          output_format = gsub(".", "", rep_markdown_file_type)
-        )
+        if (render_html){
+          writeLines(combined_rmd, "combined.qmd")
+          on.exit(unlink("combined.qmd"))
+          quarto::quarto_render(
+            input = "combined.qmd",
+            output_format = "html"
+          )
+        } else {
+          combined_rmd[grep("\\{r", combined_rmd)] <- "``` r"
+          writeLines(combined_rmd, "combined.md")
+          on.exit(unlink("combined.md"))
+          quarto::quarto_render(
+            input = "combined.md",
+            output_format = "html"
+          )
+        }
+
       }
       result_file
     }
@@ -138,6 +151,7 @@ rep_markdown_module_server <- function(id, common, parent_session, COMPONENT_MOD
     # not ideal, but can't find a method to pass to the function
     observe({
       rep_markdown_file_type <<- input$file_type
+      render_html <<- input$render
     })
 
     # task that calls the function
