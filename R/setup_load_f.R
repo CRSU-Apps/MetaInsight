@@ -137,6 +137,11 @@ ValidateUploadedData <- function(data, outcome, logger = NULL) {
   if (!result$valid) {
     return(result)
   }
+  
+  result <- .ValidateQualityColumns(data)
+  if (!result$valid) {
+    return(result)
+  }
 
   return(.valid_result)
 }
@@ -357,6 +362,62 @@ ValidateUploadedData <- function(data, outcome, logger = NULL) {
   return(.valid_result)
 }
 
+#' Validate that the quality assessment columns in the data are of the expected format.
+#'
+#' @param data Data frame to validate.
+#'
+#' @return Validation result in the form of a list:
+#' - "valid" = TRUE or FALSE defining whether data is valid
+#' - "message" = String describing any issues causing the data to be invalid
+.ValidateQualityColumns <- function(data) {
+  #The rob and indirectness columns
+  rob_indirectness_columns <- grep(pattern = "^rob|^indirectness$", x = names(data), value = TRUE)
+  
+  if (length(rob_indirectness_columns) == 0) {
+    return(.valid_result)
+  }
+  
+  #The number of individual RoB columns
+  n_rob_individual <- length(grep(pattern = "^rob\\..+$", x = names(data)))
+  
+  #Check there are no more than 10 individual RoB columns
+  if (n_rob_individual > 10) {
+    return(
+      list(
+        valid = FALSE,
+        message = glue::glue("A maximum of 10 individual risk of bias variables are allowed.")
+      )
+    )
+  }
+  
+  #Loop through the rob and indirectness columns
+  for (var in rob_indirectness_columns) {
+    #Check for studies that have more than one value
+    rob_table <- table(data[, c("Study", var)])
+    studies_with_multiple_rob <- dimnames(rob_table)$Study[as.vector(rowSums(rob_table != 0) > 1)]
+    if (length((studies_with_multiple_rob) > 0)) {
+      return(
+        list(
+          valid = FALSE,
+          message = glue::glue("Some studies do not have the same {var} value for every arm: {paste0(studies_with_multiple_rob, collapse = ', ')}.")
+        )
+      )
+    }
+    #Check for studies that have invalid values
+    studies_with_wrong_qa_values <- unique(data$Study[!data[, var] %in% 1:3])
+    if (length(studies_with_wrong_qa_values) > 0) {
+      return(
+        list(
+          valid = FALSE,
+          message = glue::glue("Some studies have values for {var} that are not 1, 2 or 3: {paste0(studies_with_wrong_qa_values, collapse = ', ')}")
+        )
+      )
+    }
+  }
+  
+  return(.valid_result)
+}
+
 
 # Regular expression explanation:
 # ^ = Start of string
@@ -371,7 +432,7 @@ ValidateUploadedData <- function(data, outcome, logger = NULL) {
   type_check = "is.character",
   type_name = "character (text)",
   pattern = "^(?i)Study(\\.([0-9]+))?$",
-  replacement ="Study\\1",
+  replacement = "Study\\1",
   number_group = NA
 )
 
@@ -381,7 +442,7 @@ ValidateUploadedData <- function(data, outcome, logger = NULL) {
   type_check = "is.character",
   type_name = "character (text)",
   pattern = "^(?i)T(\\.([0-9]+))?$",
-  replacement ="T\\1",
+  replacement = "T\\1",
   number_group = "\\2"
 )
 
@@ -391,7 +452,7 @@ ValidateUploadedData <- function(data, outcome, logger = NULL) {
   type_check = "is.numeric",
   type_name = "numeric",
   pattern = "^(?i)N(\\.([0-9]+))?$",
-  replacement ="N\\1",
+  replacement = "N\\1",
   number_group = "\\2"
 )
 
@@ -401,7 +462,7 @@ ValidateUploadedData <- function(data, outcome, logger = NULL) {
   type_check = "is.numeric",
   type_name = "numeric",
   pattern = "^(?i)Mean(\\.([0-9]+))?$",
-  replacement ="Mean\\1",
+  replacement = "Mean\\1",
   number_group = "\\2"
 )
 
@@ -411,7 +472,7 @@ ValidateUploadedData <- function(data, outcome, logger = NULL) {
   type_check = "is.numeric",
   type_name = "numeric",
   pattern = "^(?i)SD(\\.([0-9]+))?$",
-  replacement ="SD\\1",
+  replacement = "SD\\1",
   number_group = "\\2"
 )
 
@@ -421,7 +482,7 @@ ValidateUploadedData <- function(data, outcome, logger = NULL) {
   type_check = "is.numeric",
   type_name = "numeric",
   pattern = "^(?i)covar\\.(.+)$",
-  replacement ="covar.\\1",
+  replacement = "covar.\\1",
   number_group = NA
 )
 
@@ -431,8 +492,28 @@ ValidateUploadedData <- function(data, outcome, logger = NULL) {
   type_check = "is.numeric",
   type_name = "numeric",
   pattern = "^(?i)R(\\.([0-9]+))?$",
-  replacement ="R\\1",
+  replacement = "R\\1",
   number_group = "\\2"
+)
+
+.rob_definition <- data.frame(
+  name = "rob",
+  required = FALSE,
+  type_check = "is.numeric",
+  type_name = "numeric",
+  pattern = "^(?i)rob(\\..+)?$",
+  replacement = "rob\\1",
+  number_group = NA
+)
+
+.indirectness_definition <- data.frame(
+  name = "indirectness",
+  required = FALSE,
+  type_check = "is.numeric",
+  type_name = "numeric",
+  pattern = "^(?i)indirectness$",
+  replacement = "indirectness",
+  number_group = NA
 )
 
 continuous_column_names <- data.frame() |>
@@ -441,14 +522,18 @@ continuous_column_names <- data.frame() |>
   rbind(.n_definition) |>
   rbind(.mean_definition) |>
   rbind(.sd_definition) |>
-  rbind(.covariate_definition)
+  rbind(.covariate_definition) |>
+  rbind(.rob_definition) |>
+  rbind(.indirectness_definition)
 
 binary_column_names <- data.frame() |>
   rbind(.study_definition) |>
   rbind(.t_definition) |>
   rbind(.r_definition) |>
   rbind(.n_definition) |>
-  rbind(.covariate_definition)
+  rbind(.covariate_definition) |>
+  rbind(.rob_definition) |>
+  rbind(.indirectness_definition)
 
 
 
@@ -464,6 +549,7 @@ binary_column_names <- data.frame() |>
 
 # Column ordering
 .common_order = c("StudyID", "Study")
+.rob_order = c("rob", "indirectness")
 
 #' The column order for a continuous outcome, for wide and long data.
 #'
@@ -476,7 +562,7 @@ binary_column_names <- data.frame() |>
       function(x) paste0(c("T", "N", "Mean", "SD"), x)
     )
   )
-  return(c(.common_order, continuous_specific_order))
+  return(c(.common_order, continuous_specific_order, .rob_order))
 }
 
 #' The column order for a binary outcome, for wide and long data.
@@ -490,14 +576,12 @@ binary_column_names <- data.frame() |>
       function(x) paste0(c("T", "R", "N"), x)
     )
   )
-  return(c(.common_order, binary_specific_order))
+  return(c(.common_order, binary_specific_order, .rob_order))
 }
 
 .covariate_prefix <- "covar."
 .covariate_prefix_regex <- "^covar\\."
-
-.covariate_prefix <- "covar."
-.covariate_prefix_regex <- "^covar\\."
+.rob_individual_prefix_regex <- "^rob\\."
 
 
 #' Remove leading and trailing whitespace and collapse multiple whitespace characters between words.
@@ -505,7 +589,6 @@ binary_column_names <- data.frame() |>
 #' @param data Data frame to clean
 #' @return Cleaned data frame
 CleanData <- function(data) {
-  # return(dplyr::mutate(data, across(where(is.character), stringr::str_squish)))
   return(dplyr::mutate(data, across(where(is.character), .TidyStringItem)))
 }
 
@@ -843,7 +926,10 @@ ReorderColumns <- function(data, outcome_type) {
   covariate_column_names <- FindCovariateNames(data)
   covariate_column_indices <- match(covariate_column_names, names(data))
 
-  reordering_indices <- c(reordering_indices, covariate_column_indices)
+  rob_individual_column_names <- FindRobIndividualNames(data)
+  rob_individual_column_indices <- match(rob_individual_column_names, names(data))
+  
+  reordering_indices <- c(reordering_indices, rob_individual_column_indices, covariate_column_indices)
 
   return(data[, reordering_indices])
 }
@@ -942,7 +1028,12 @@ GetFriendlyCovariateName <- function(column_name) {
   return(stringr::str_replace(column_name, .covariate_prefix_regex, ""))
 }
 
-
+#' Find the names of all columns which contain an individual RoB variable.
+#' @param df Data frame in which to find covariate columns.
+#' @return Names of all covariate columns
+FindRobIndividualNames <- function(df) {
+  return(names(dplyr::select(df, dplyr::matches(.rob_individual_prefix_regex))))
+}
 
 #' Keep or delete rows in @param data corresponding to the control treatment in each study.
 #'

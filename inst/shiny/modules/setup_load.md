@@ -80,14 +80,33 @@ numeric treatment IDs in the "T" column(s) with the treatment names.
 </ul>
 <p>N.B. Continuity corrections will need to be applied to cells containing 0 values</p>
 </div>
-<p>The long format data file may also contain the following column:</p>
+<p>The long format data file may also contain the following columns:</p>
 <ul>
 <li>
 <strong>covar.&lt;COVARIATE_NAME&gt;</strong>
  contains the study-level covariate value, where &lt;COVARIATE_NAME&gt; is replaced by the name of the covariate. This must be identical for each arm of the study. The name of the covariate will be extracted and used in the analysis output.
 </li>
 </ul>
+<ul>
+<li>
+<strong>rob</strong>
+ contains the risk of bias of the study as required by CINeMA (https://cinema.ispm.unibe.ch/). This must be identical for each arm of the study. Low risk = 1, medium = 2, high = 3.
+</li>
+</ul>
+<ul>
+<li>
+<strong>indirectness</strong>
+ contains the indirectness of the study as required by CINeMA (https://cinema.ispm.unibe.ch/). This must be identical for each arm of the study. Low indirectness = 1, medium = 2, high = 3.
+</li>
+</ul>
+<ul>
+<li>
+<strong>rob.&lt;ROB_NAME_1&gt;, ... , rob.&lt;ROB_NAME_10&gt;</strong>
+ contain individual risk of bias components. Up to 10 such columns can be present. Low risk = 1, medium = 2, high = 3.
+</li>
+</ul>
 </div>
+
 
 <div class="wide_guidance" style = "display: none;">
 
@@ -155,14 +174,32 @@ numeric treatment IDs in the "T" column(s) with the treatment names.
     </ul>
   <p></p>
 </div>
-<p>The wide format data file may also contain the following column:</p>
+<p>The wide format data file may also contain the following columns:</p>
 <ul>
   <li>
     <strong>covar.&lt;COVARIATE_NAME&gt;</strong>
      contains the study-level covariate value, where &lt;COVARIATE_NAME&gt; is replaced by the name of the covariate. The name of the covariate will be extracted and used in the analysis output.
   </li>
 </ul>
-<p>
+<ul>
+<li>
+<strong>rob</strong>
+ contains the risk of bias of the study as required by CINeMA (https://cinema.ispm.unibe.ch/). This must be identical for each arm of the study. Low risk = 1, medium = 2, high = 3.
+</li>
+</ul>
+<ul>
+<li>
+<strong>indirectness</strong>
+ contains the indirectness of the study as required by CINeMA (https://cinema.ispm.unibe.ch/). This must be identical for each arm of the study. Low indirectness = 1, medium = 2, high = 3.
+</li>
+</ul>
+<ul>
+<li>
+<strong>rob.&lt;ROB_NAME_1&gt;, ... , rob.&lt;ROB_NAME_10&gt;</strong>
+ contain individual risk of bias components. Up to 10 such columns can be present. Low risk = 1, medium = 2, high = 3.
+</li>
+</ul>
+</div>
 </div>
 
 **REFERENCES**
