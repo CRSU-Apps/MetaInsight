@@ -9,7 +9,7 @@
 #' @param study_contributions The contribution matrix calculated by {netmeta}.
 #' @return A List with the described structure.
 .PrepareStudyContibutionsForCinema <- function(study_contributions) {
-  prepped_contributions <- sapply(
+  prepared_contributions <- sapply(
     simplify = FALSE,
     unique(study_contributions$comparison),
     function(comparison) {
@@ -29,7 +29,7 @@
     }
   )
   
-  return(prepped_contributions)
+  return(prepared_contributions)
 }
 
 #' Prepare data into a format that CINeMA can read.
@@ -112,7 +112,7 @@
     stop(glue::glue("Model type'{model_type}' not supported"))
   }
   
-  prepped_hat_matrix <- list(
+  prepared_hat_matrix <- list(
     colNames = colnames(hat_matrix),
     H = hat_matrix,
     model = jsonlite::unbox(model_type),
@@ -123,7 +123,7 @@
   prepared_analysis <- list(
     contributionMatrices = c(
       list(
-        hatmatrix = prepped_hat_matrix,
+        hatmatrix = prepared_hat_matrix,
         studycontributions = .PrepareStudyContibutionsForCinema(study_contributions)
       )
     )
@@ -150,21 +150,21 @@
 #' @param outcome_measure Outcome measure, one of: ["OR", "RR", "RD", "MD", "SMD"].
 #' @return A List with the described structure.
 .PrepareProjectForCinema <- function(data, treatment_ids, outcome_type, contributions, model_type, outcome_measure) {
-  prepped_data <- .PrepareDataForCinema(data, treatment_ids, outcome_type)
+  prepared_data <- .PrepareDataForCinema(data, treatment_ids, outcome_type)
   prepared_analysis <- .PrepareAnalysisForCinema(contributions, model_type, outcome_measure)
   
-  prepped_project = list(
+  prepared_project = list(
     project = list(
       CM = prepared_analysis,
       format = jsonlite::unbox("long"),
       type = jsonlite::unbox(tolower(outcome_type)),
       studies = list(
-        long = prepped_data
+        long = prepared_data
       )
     )
   )
   
-  return(prepped_project)
+  return(prepared_project)
 }
 
 #' Prepare project into a JSON format that CINeMA can read.
@@ -185,7 +185,7 @@
 #' @param outcome_measure Outcome measure, one of: ["OR", "RR", "RD", "MD", "SMD"].
 #' @return JSON string with the described structure.
 GenerateCinemaJson <- function(data, treatment_ids, outcome_type, contributions, model_type, outcome_measure) {
-  prepped_project <- .PrepareProjectForCinema(
+  prepared_project <- .PrepareProjectForCinema(
     data,
     treatment_ids,
     outcome_type,
@@ -193,5 +193,5 @@ GenerateCinemaJson <- function(data, treatment_ids, outcome_type, contributions,
     model_type,
     outcome_measure
   )
-  return(jsonlite::toJSON(prepped_project, pretty = TRUE))
+  return(jsonlite::toJSON(prepared_project, pretty = TRUE))
 }
