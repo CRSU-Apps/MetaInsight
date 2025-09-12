@@ -1,7 +1,7 @@
 #' Prepare study contributions into a format that CINeMA can read.
 #' This is a named list of lists. The top level list has item named "<TREATMENT_N>:<TREATMENT_M>"
 #' where "<TREATMENT_N>" and "<TREATMENT_M>" are the names of 2 treatments. There is an item
-#' for every possible comparion in the network.
+#' for every possible comparison in the network.
 #' Each item in the second level is a named list of numerical values for the contribution of each
 #' study towards the comparison. The name of each item is the name of the relevant study, and
 #' every study is included in the list. The values sum to 1.
@@ -90,24 +90,24 @@
 #' Prepare analysis into a format that CINeMA can read.
 #' This is a named list of lists. The top level list contains items:
 #' - "hatmatrix" Hat matrix from {netmeta}
-#'   - "colnames" Vector of column names in form "<TREATMENT_N>:<TREATMENT_M>"
+#'   - "colNames" Vector of column names in form "<TREATMENT_N>:<TREATMENT_M>"
 #'   - "H" Matrix of matrices
 #'   - "model" Type of model: "fixed" or "random"
-#'   - "rownames" Vector of row names in form "<TREATMENT_N>:<TREATMENT_M>"
+#'   - "rowNames" Vector of row names in form "<TREATMENT_N>:<TREATMENT_M>"
 #'   - "sm" Outcome measure, one of: ["OR", "RR", "RD", "MD", "SMD"]
 #' - "studycontributions" Output from `.PrepareStudyContibutionsForCinema()`
 #' 
-#' @param analysis Analysis from {netmeta}.
+#' @param contributions Contributions from {netmeta}.
 #' @param model_type Type of model: "fixed" or "random".
 #' @param outcome_measure Outcome measure, one of: ["OR", "RR", "RD", "MD", "SMD"].
 #' @return A List with the described structure.
-.PrepareAnalysisForCinema <- function(analysis, model_type, outcome_measure) {
+.PrepareAnalysisForCinema <- function(contributions, model_type, outcome_measure) {
   if (model_type == "fixed") {
-    hat_matrix <- analysis$common
-    study_contributions <- analysis$study.common
-  } else if (model_type == "fixed") {
-    hat_matrix <- analysis$random
-    study_contributions <- analysis$random
+    hat_matrix <- contributions$common
+    study_contributions <- contributions$study.common
+  } else if (model_type == "random") {
+    hat_matrix <- contributions$random
+    study_contributions <- contributions$study.random
   } else {
     stop(glue::glue("Model type'{model_type}' not supported"))
   }
@@ -145,13 +145,13 @@
 #' @param data The dataframe used in MetaInsight.
 #' @param treatment_ids  Data frame containing treatment names (Label), original tratment names (RawLabel) and IDs (Number).
 #' @param outcome_type Type of outcome for which to reorder, either 'Continuous' or 'Binary'.
-#' @param analysis Analysis from {netmeta}.
+#' @param contributions Contributions from {netmeta}.
 #' @param model_type Type of model: "fixed" or "random".
 #' @param outcome_measure Outcome measure, one of: ["OR", "RR", "RD", "MD", "SMD"].
 #' @return A List with the described structure.
-.PrepareProjectForCinema <- function(data, treatment_ids, outcome_type, analysis, model_type, outcome_measure) {
+.PrepareProjectForCinema <- function(data, treatment_ids, outcome_type, contributions, model_type, outcome_measure) {
   prepped_data <- .PrepareDataForCinema(data, treatment_ids, outcome_type)
-  prepared_analysis <- .PrepareAnalysisForCinema(analysis, model_type, outcome_measure)
+  prepared_analysis <- .PrepareAnalysisForCinema(contributions, model_type, outcome_measure)
   
   prepped_project = list(
     project = list(
@@ -180,16 +180,16 @@
 #' @param data The dataframe used in MetaInsight.
 #' @param treatment_ids  Data frame containing treatment names (Label), original tratment names (RawLabel) and IDs (Number).
 #' @param outcome_type Type of outcome for which to reorder, either 'Continuous' or 'Binary'.
-#' @param analysis Analysis from {netmeta}.
+#' @param contributions Contributions from {netmeta}.
 #' @param model_type Type of model: "fixed" or "random".
 #' @param outcome_measure Outcome measure, one of: ["OR", "RR", "RD", "MD", "SMD"].
 #' @return JSON string with the described structure.
-GenerateCinemaJson <- function(data, treatment_ids, outcome_type, analysis, model_type, outcome_measure) {
+GenerateCinemaJson <- function(data, treatment_ids, outcome_type, contributions, model_type, outcome_measure) {
   prepped_project <- .PrepareProjectForCinema(
     data,
     treatment_ids,
     outcome_type,
-    analysis,
+    contributions,
     model_type,
     outcome_measure
   )
