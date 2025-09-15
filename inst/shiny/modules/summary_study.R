@@ -13,6 +13,8 @@ summary_study_module_ui <- function(id) {
 summary_study_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
+  shinyjs::hide(selector = ".summary_study_div")
+
   observeEvent(input$run, {
     # WARNING ####
     if (is.null(common$freq_sub)){
@@ -55,11 +57,11 @@ summary_study_module_server <- function(id, common, parent_session) {
     content = function(file) {
 
       write_plot(file,
-                          common$download_format,
-                          function(){summary_study(common$freq_sub, common$outcome_measure, as.numeric(input$header), as.numeric(input$title))},
-                          width = 8,
-                          height = common$meta$summary_study$height
-                          )
+                  common$download_format,
+                  function(){summary_study(common$freq_sub, common$outcome_measure, as.numeric(input$header), as.numeric(input$title))},
+                  width = 8,
+                  height = common$meta$summary_study$height
+                  )
       }
   )
 
