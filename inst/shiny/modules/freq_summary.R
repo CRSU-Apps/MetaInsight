@@ -17,6 +17,12 @@ freq_summary_module_server <- function(id, common, parent_session) {
       common$logger |> writeLog(type = "error", "Please configure the analysis first in the Setup section")
       return()
     }
+
+    if (nrow(common$treatment_df) < 3 || nrow(common$treatment_df) > 10){
+      common$logger |> writeLog(type = "error", "Sorry this module is only available when there are between 3 and 10 treatments")
+      return()
+    }
+
     # TRIGGER
     trigger("freq_summary")
     shinyjs::show(selector = ".freq_summary_div")
