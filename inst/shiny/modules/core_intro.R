@@ -16,7 +16,7 @@ core_intro_module_server <- function(id, common, parent_session) {
   steps <- data.frame(c(NA, "Welcome to MetaInsight! This tour will show you various features of the application to help get you started", NA, NA),
                       c("aside[class=\"sidebar\"]", "This panel shows all of the possible modules in the app", "bottom", NA),
                       c("a[data-value=\"How to use\"]", "Detailed instructions can be found in the How To Use tab", "bottom","$('a[data-value=\"How To Use\"]').trigger('click');"),
-                      c("a[data-value=\"setup\"]", "Click on the tabs to move between components", "bottom", "$('a[data-value=\"setup\"]').trigger('click');"),
+                      c("a[data-value=\"setup\"]", "Click on the tabs to move between sections", "bottom", "$('a[data-value=\"setup\"]').trigger('click');"),
                       c("#setupSel", "Select a module to load the options", "bottom", "$('input[value=\"setup_load\"]').trigger('click');"),
                       c("#setup_loadHelp", "Click on the question mark to view instructions for the module - Note that these are mostly not yet written", "bottom", "$('a[data-value=\"Module Guidance\"]').trigger('click');"),
                       c("#setup_input_panel", "This panel shows possible options for the module.", "bottom", NA),
@@ -32,7 +32,7 @@ core_intro_module_server <- function(id, common, parent_session) {
                       c("a[data-value=\"Save\"]", "You can download a file which saves the state of the app", "left", "$('a[data-value=\"Save\"]').trigger('click');"),
                       c("a[data-value=\"setup\"]", "Next time you visit...", "bottom", "$('a[data-value=\"setup\"]').trigger('click');
                                                                                         $('input[value=\"setup_reload\"]').trigger('click');"),
-                      c("#reload_inputs", "you can upload the file in the setup component to restore the app", "bottom", NA),
+                      c("#reload_inputs", "you can upload the file in the setup section to restore the app", "bottom", NA),
                       c(NA, "You are ready to go!", NA, "$('input[value=\"setup_load\"]').trigger('click');
                                                          $('a[data-value=\"intro\"]').trigger('click');
                                                          $('a[data-value=\"About\"]').trigger('click');")
@@ -82,7 +82,7 @@ core_intro_module_server <- function(id, common, parent_session) {
     c("a[data-value=\"Save\"]", "You can also download a file which saves the state of the app and then ...", "left", "$('a[data-value=\"Save\"]').trigger('click');"),
     c("a[data-value=\"setup\"]", "... next time you visit ...", "bottom", "$('a[data-value=\"setup\"]').trigger('click');
                                                                       $('input[value=\"setup_reload\"]').trigger('click');"),
-    c("#reload_inputs", "you can upload the file in the setup component to restore the app", "bottom", NA),
+    c("#reload_inputs", "you can upload the file in the setup section to restore the app", "bottom", NA),
     c(NA, "You are ready to go! Please send any feedback to info@crsu.org.uk", NA, "$('input[value=\"setup_load\"]').trigger('click');
                                                                                     $('a[data-value=\"intro\"]').trigger('click');
                                                                                     $('a[data-value=\"About\"]').trigger('click');")
