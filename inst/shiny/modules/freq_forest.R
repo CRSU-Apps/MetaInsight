@@ -42,7 +42,7 @@ freq_forest_module_server <- function(id, common, parent_session) {
   observeEvent(input$run, {
     # WARNING ####
     if (is.null(common$freq_sub)){
-      common$logger |> writeLog(type = "error", "Please configure the analysis first in the Setup component")
+      common$logger |> writeLog(type = "error", "Please configure the analysis first in the Setup section")
       return()
     }
     # TRIGGER

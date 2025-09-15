@@ -89,7 +89,7 @@ insert_modules_ui <- function(component, long_component, exclude = NULL) {
   tagList(
     conditionalPanel(
       glue("input.tabs == '{component}'"),
-      div(glue("Component: {long_component}"), class = "componentName"),
+      div(glue("{long_component}"), class = "componentName"),
       shinyWidgets::radioGroupButtons(
         glue("{component}Sel"), "",
         choices = insert_modules_options(component, exclude = exclude),

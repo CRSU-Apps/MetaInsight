@@ -5,9 +5,9 @@ output: html_document
 
 #### WORKFLOW
 
-*metainsight* (v7.0.0) includes five components, or steps of a possible workflow. Each component includes two or more modules, which are possible analyses for that step.
+*metainsight* (v7.0.0) includes five sections, or steps of a possible workflow. Each section includes two or more modules, which are possible analyses for that step.
 
-**Components:**  
+**Sections:**  
 **1.** *Setup*
 - Load data
 - Configure analysis
