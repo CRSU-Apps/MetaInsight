@@ -61,6 +61,7 @@ Imports:
     rio,
     rintrojs,
     rmarkdown,
+    rsvg,
     shinyBS,
     shinyalert,
     shinybusy,
@@ -73,16 +74,16 @@ Imports:
     tidyr,
     tidyselect,
     tools,
+    xml2,
     zip
 Suggests:
     mockery,
     pdftools,
     shinytest2,
-    testthat,
-    xml2
+    testthat
 Remotes:
     audrey-b/BUGSnet
 License: GPL-3
 URL: 
 Encoding: UTF-8
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3

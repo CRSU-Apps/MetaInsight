@@ -1,16 +1,28 @@
+test_that("freq_summary produces functions correctly", {
+  freq_data <- defined_data_con$freq_all
+  result <- freq_forest(freq_data, "Placebo", "random", "OR", 0, 1, "title")
+
+  expect_match(result$svg, "<svg")
+  expect_gt(result$width, 100)
+  expect_lt(result$width, 1000)
+  expect_gt(result$height, 100)
+  expect_lt(result$height, 1000)
+
+})
+
 test_that("freq_summary produces errors for incorrect data types and invalid values", {
 
   freq_data <- defined_data_con$freq_all
 
-  expect_error(freq_forest("not_a_list", "Reference_Treatment", "random", "OR", 0, 1), "freq must be of class list")
-  expect_error(freq_forest(freq_data, 123, "random", "OR", 0, 1), "reference_treatment must be of class character")
-  expect_error(freq_forest(freq_data, "Reference_Treatment", 123, "OR", 0, 1), "model_type must be of class character")
-  expect_error(freq_forest(freq_data, "Reference_Treatment", "random", 123, 0, 1), "outcome_measure must be of class character")
-  expect_error(freq_forest(freq_data, "Reference_Treatment", "random", "OR", "not_numeric", 1), "xmin must be of class numeric")
-  expect_error(freq_forest(freq_data, "Reference_Treatment", "random", "OR", 0, "not_numeric"), "xmax must be of class numeric")
-  expect_error(freq_forest(freq_data, "Reference_Treatment", "invalid_model_type", "OR", 0, 1), "model_type must be 'fixed' or 'random'")
-  expect_error(freq_forest(freq_data, "Reference_Treatment", "random", "invalid_outcome_measure", 0, 1), "outcome_measure must be 'OR', 'RR', 'RD', 'MD' or 'SMD'")
-
+  expect_error(freq_forest("not_a_list", "Reference_Treatment", "random", "OR", 0, 1, "title"), "freq must be of class list")
+  expect_error(freq_forest(freq_data, 123, "random", "OR", 0, 1, "title"), "reference_treatment must be of class character")
+  expect_error(freq_forest(freq_data, "Reference_Treatment", 123, "OR", 0, 1, "title"), "model_type must be of class character")
+  expect_error(freq_forest(freq_data, "Reference_Treatment", "random", 123, 0, 1, "title"), "outcome_measure must be of class character")
+  expect_error(freq_forest(freq_data, "Reference_Treatment", "random", "OR", "not_numeric", 1, "title"), "xmin must be of class numeric")
+  expect_error(freq_forest(freq_data, "Reference_Treatment", "random", "OR", 0, "not_numeric", "title"), "xmax must be of class numeric")
+  expect_error(freq_forest(freq_data, "Reference_Treatment", "invalid_model_type", "OR", 0, 1, "title"), "model_type must be 'fixed' or 'random'")
+  expect_error(freq_forest(freq_data, "Reference_Treatment", "random", "invalid_outcome_measure", 0, 1, "title"), "outcome_measure must be 'OR', 'RR', 'RD', 'MD' or 'SMD'")
+  expect_error(freq_forest(freq_data, "Reference_Treatment", "random", "OR", 0, 1, 0), "title must be of class character")
 })
 
 test_that("summary_network produces downloadable plots", {

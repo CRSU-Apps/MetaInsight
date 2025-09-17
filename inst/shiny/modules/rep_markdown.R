@@ -114,6 +114,8 @@ rep_markdown_module_server <- function(id, common, parent_session, COMPONENT_MOD
         combined_rmd <- combined_rmd[-chunks_to_remove]
       }
       combined_rmd <- gsub("\\{r,", "```{r,", combined_rmd)
+      combined_rmd <- gsub("‘", "'", combined_rmd)
+      combined_rmd <- gsub("’", "'", combined_rmd)
 
       # fix any very long lines
       long_lines <- which(nchar(combined_rmd) > 4000)

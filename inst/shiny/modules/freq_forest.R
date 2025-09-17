@@ -3,7 +3,6 @@ freq_forest_module_ui <- function(id) {
   tagList(
     actionButton(ns("run"), "Generate plots", icon = icon("arrow-turn-down")),
     div(class = "freq_forest_div",
-      download_button_pair(id),
       fixedRow(
         p("Limits of the x-axis for all studies:"),
         column(
@@ -29,7 +28,8 @@ freq_forest_module_ui <- function(id) {
           align = "center",
           numericInput(ns("xmax_sub"), label = "Maximum", value = 5, step = 0.1)
         )
-      )
+      ),
+      download_button_pair(id)
     )
   )
 }
@@ -88,7 +88,8 @@ freq_forest_module_server <- function(id, common, parent_session) {
                 common$model_type,
                 common$outcome_measure,
                 as.numeric(input$xmin_all),
-                as.numeric(input$xmax_all))
+                as.numeric(input$xmax_all),
+                "Results for all studies")
   })
 
   result_sub <- reactive({
@@ -102,43 +103,25 @@ freq_forest_module_server <- function(id, common, parent_session) {
                 common$model_type,
                 common$outcome_measure,
                 as.numeric(input$xmin_sub),
-                as.numeric(input$xmax_sub))
+                as.numeric(input$xmax_sub),
+                "Results with selected studies excluded")
   })
-
 
   output$plot_sub <- renderUI({
     height <- result_sub()$height
     width <- result_sub()$width
-    common$meta$freq_forest$height_sub <- height
-    common$meta$freq_forest$width_sub <- width
-
-    svg_text <- svglite::xmlSVG(
-      {result_sub()$plot()
-        grid::grid.text("Results with selected studies excluded", 0.5, grid::unit(height - 0.25, "inches"), gp=grid::gpar(cex=1.2, fontface = "bold"))
-        grid::grid.text(result_sub()$annotation, 0.5, grid::unit(height - 0.65, "inches"), gp=grid::gpar(cex=1))},
-      height = height,
-      width = width)
 
     div(class = "svg_container",
-        HTML(paste(svg_text, collapse = "\n"))
+        HTML(result_sub()$svg)
     )
   })
 
   output$plot_all <- renderUI({
     height <- result_all()$height
     width <- result_all()$width
-    common$meta$freq_forest$height_all <- height
-    common$meta$freq_forest$width_all <- width
-
-    svg_text <- svglite::xmlSVG(
-      {result_all()$plot()
-       grid::grid.text("Results for all studies", 0.5, grid::unit(height - 0.25, "inches"), gp=grid::gpar(cex=1.2, fontface = "bold"))
-       grid::grid.text(result_all()$annotation, 0.5, grid::unit(height - 0.65, "inches"), gp=grid::gpar(cex=1))},
-      height = height,
-      width = width)
 
     div(class = "svg_container",
-        HTML(paste(svg_text, collapse = "\n"))
+        HTML(result_all()$svg)
     )
   })
 
@@ -146,23 +129,7 @@ freq_forest_module_server <- function(id, common, parent_session) {
     filename = function(){
       paste0("MetaInsight_frequentist_forest_all.", common$download_format)},
     content = function(file){
-
-      height <- common$meta$freq_forest$height_all
-      width <- common$meta$freq_forest$width_all
-
-      if (common$download_format == "pdf"){
-        pdf(file = file, height = height, width = width)
-      }
-      if (common$download_format == "png"){
-        png(file = file, height = height, width = width, units = "in", res = 300)
-      }
-      if (common$download_format == "svg"){
-        svg(file = file, height = height, width = width)
-      }
-      result_all()$plot()
-      grid::grid.text("Results for all studies", 0.5, grid::unit(height - 0.25, "inches"), gp=grid::gpar(cex=1.2, fontface = "bold"))
-      grid::grid.text(result_all()$annotation, 0.5, grid::unit(height - 0.65, "inches"), gp=grid::gpar(cex=1))
-      dev.off()
+      write_svg_plot(file, common$download_format, result_all()$svg, result_all()$height, result_all()$width)
     }
   )
 
@@ -170,23 +137,7 @@ freq_forest_module_server <- function(id, common, parent_session) {
     filename = function(){
       paste0("MetaInsight_frequentist_forest_sub.", common$download_format)},
     content = function(file){
-
-      height <- common$meta$freq_forest$height_sub
-      width <- common$meta$freq_forest$width_sub
-
-      if (common$download_format == "pdf"){
-        pdf(file = file, height = height, width = width)
-      }
-      if (common$download_format == "png"){
-        png(file = file, height = height, width = width, units = "in", res = 300)
-      }
-      if (common$download_format == "svg"){
-        svg(file = file, height = height, width = width)
-      }
-      result_sub()$plot()
-      grid::grid.text("Results with selected studies excluded", 0.5, grid::unit(height - 0.25, "inches"), gp=grid::gpar(cex=1.2, fontface = "bold"))
-      grid::grid.text(result_sub()$annotation, 0.5, grid::unit(height - 0.65, "inches"), gp=grid::gpar(cex=1))
-      dev.off()
+      write_svg_plot(file, common$download_format, result_sub()$svg, result_sub()$height, result_sub()$width)
     }
   )
 
@@ -224,10 +175,6 @@ freq_forest_module_rmd <- function(common){ list(
   freq_forest_xmin_all = common$meta$freq_forest$xmin_all,
   freq_forest_xmax_all = common$meta$freq_forest$xmax_all,
   freq_forest_xmin_sub = common$meta$freq_forest$xmin_sub,
-  freq_forest_xmax_sub = common$meta$freq_forest$xmax_sub,
-  freq_forest_height_all = common$meta$freq_forest$height_all,
-  freq_forest_width_all = common$meta$freq_forest$width_all,
-  freq_forest_height_sub = common$meta$freq_forest$height_sub,
-  freq_forest_width_sub = common$meta$freq_forest$width_sub)
+  freq_forest_xmax_sub = common$meta$freq_forest$xmax_sub)
 }
 

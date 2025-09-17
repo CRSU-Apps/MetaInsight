@@ -1,16 +1,42 @@
 #' Make a Bayesian forest plot
 #'
-#' @param model list Objected created by bayes_model()
+#' @param model list. Object created by bayes_model()
+#' @param treatment_df dataframe.
+#' @param reference_treatment character.
+#' @param title character. Title for the plot
+#' @param ranking logical. Whether the function is being used in `bayes_ranking`
 #' @param logger Stores all notification messages to be displayed in the Log
 #'   Window. Insert the logger reactive list here for running in
 #'   shiny, otherwise leave the default `NULL`
-#' @return None - produces a base plot
+#'
+#' @return List containing:
+#'  \item{svg}{character. SVG code to produce the plot}
+#'  \item{height}{numeric. Plot height in pixels}
+#'  \item{width}{numeric. Plot width in pixels}
+#'
 #' @export
-bayes_forest <- function(model, logger = NULL){
+bayes_forest <- function(model, treatment_df, reference_treatment, title, ranking = FALSE, logger = NULL){
 
   if (!inherits(model, "bayes_model")){
     logger |> writeLog(type = "error", "model must be an object created by bayes_model()")
     return()
   }
-  gemtc::forest(model$mtcRelEffects, digits = 3)
+
+  height <- forest_height(nrow(treatment_df), title = TRUE, annotation = TRUE)
+  width <- forest_width(14 + nchar(reference_treatment))
+
+  svg <- svglite::xmlSVG({
+    gemtc::forest(model$mtcRelEffects, digits = 3)
+    if (!ranking){
+      title(main = title)
+      mtext(CreateTauSentence(model), padj = 0.5)
+    }
+    },
+    width = width,
+    height = height,
+    web_fonts = list(
+      roboto = "https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap")
+  ) |> crop_svg()
+
+  return(svg)
 }

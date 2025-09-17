@@ -12,10 +12,12 @@ bayes_ranking_sub <- bayes_ranking(connected_data_sub, treatment_df_sub, bayes_m
 ```
 
 ```{asis, echo = {{bayes_ranking_knit}}, eval = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}
-{r, fig.align="center", fig.width = {{bayes_ranking_forest_width_all}}, fig.height = {{bayes_ranking_forest_height_all}}}
+{r, results = 'asis'}
 ```
 ```{r, echo = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}
-bayes_forest(bayes_model_all)
+bayes_ranking_forest_all <- bayes_forest(bayes_model_all, treatment_df, reference_treatment_all, "", TRUE)
+
+htmltools::HTML(bayes_ranking_forest_all$svg)
 ```
 
 ```{r, echo = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}
@@ -47,10 +49,12 @@ summary_network(frequentist_all, bugsnet_all, {{bayes_ranking_network_style}})
 ```
 
 ```{asis, echo = {{bayes_ranking_knit}}, eval = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}
-{r, fig.align="center", fig.width = {{bayes_ranking_forest_width_sub}}, fig.height = {{bayes_ranking_forest_height_sub}}}
+{r, results = 'asis'}
 ```
 ```{r, echo = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}
-bayes_forest(bayes_model_sub)
+bayes_ranking_forest_sub <- bayes_forest(bayes_model_sub, treatment_df_sub, reference_treatment_sub, "", TRUE)
+
+htmltools::HTML(bayes_ranking_forest_sub$svg)
 ```
 
 ```{r, echo = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}

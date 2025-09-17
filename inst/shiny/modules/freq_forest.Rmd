@@ -3,42 +3,33 @@
 ```
 
 ```{asis, echo = {{freq_forest_knit}}, eval = {{freq_forest_knit}}, include = {{freq_forest_knit}}}
-{r, fig.align="center", fig.width = {{freq_forest_width_all}}, fig.height = {{freq_forest_height_all}}}
+{r, results = 'asis'}
 ```
 ```{r, echo = {{freq_forest_knit}}, include = {{freq_forest_knit}}}
 
-frequentist_forest_xmin_all <- {{freq_forest_xmin_all}}
-frequentist_forest_xmax_all <- {{freq_forest_xmax_all}}
 frequentist_forest_all <- freq_forest(frequentist_all, 
                                       reference_treatment_all, 
                                       model_type,
                                       outcome_measure,
-                                      frequentist_forest_xmin_all,
-                                      frequentist_forest_xmax_all) 
+                                      {{freq_forest_xmin_all}},
+                                      {{freq_forest_xmax_all}},
+                                      "Results for all studies") 
 
-frequentist_forest_all_height <- {{freq_forest_height_all}}
-frequentist_forest_all$plot()
-grid::grid.text("Results for all studies", 0.5, grid::unit(frequentist_forest_all_height - 0.25, "inches"), gp=grid::gpar(cex=1.2, fontface = "bold"))
-grid::grid.text(frequentist_forest_all$annotation, 0.5, grid::unit(frequentist_forest_all_height - 0.65, "inches"), gp=grid::gpar(cex=1))
+htmltools::HTML(frequentist_forest_all$svg)
 ```
 
 ```{asis, echo = {{freq_forest_knit}}, eval = {{freq_forest_knit}}, include = {{freq_forest_knit}}}
-{r, fig.align="center", fig.width = {{freq_forest_width_sub}}, fig.height = {{freq_forest_height_sub}}}
+{r, results = 'asis'}
 ```
 ```{r, echo = {{freq_forest_knit}}, include = {{freq_forest_knit}}}
 
-frequentist_forest_xmin_sub <- {{freq_forest_xmin_sub}}
-frequentist_forest_xmax_sub <- {{freq_forest_xmax_sub}}
 frequentist_forest_sub <- freq_forest(frequentist_sub, 
                                       reference_treatment_sub,
                                       model_type,
                                       outcome_measure,
-                                      frequentist_forest_xmin_sub,
-                                      frequentist_forest_xmax_sub) 
+                                      {{freq_forest_xmin_sub}},
+                                      {{freq_forest_xmax_sub}},
+                                      "Results with selected studies excluded") 
 
-frequentist_forest_sub_height <- {{freq_forest_height_sub}}
-frequentist_forest_sub$plot()
-grid::grid.text("Results with selected studies excluded", 0.5, grid::unit(frequentist_forest_sub_height - 0.25, "inches"), gp=grid::gpar(cex=1.2, fontface = "bold"))
-grid::grid.text(frequentist_forest_sub$annotation, 0.5, grid::unit(frequentist_forest_sub_height - 0.65, "inches"), gp=grid::gpar(cex=1))
-
+htmltools::HTML(frequentist_forest_sub$svg)
 ```

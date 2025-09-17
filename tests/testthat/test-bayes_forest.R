@@ -1,21 +1,19 @@
 test_that("Check bayes_forest function works as expected", {
-  test_file <- tempfile(fileext = ".png")
+  result <- bayes_forest(fitted_bayes_model, loaded_data_con$treatment_df, "Placebo", "title")
 
-  png(test_file)
-  bayes_forest(fitted_bayes_model)
-  dev.off()
-
-  expect_true(file.exists(test_file))
-  expect_gt(file.size(test_file), 1000)
-  unlink(test_file)
+  expect_match(result$svg, "<svg")
+  expect_gt(result$width, 100)
+  expect_lt(result$width, 1000)
+  expect_gt(result$height, 100)
+  expect_lt(result$height, 1000)
 })
 
 test_that("Check bayes_forest function produces errors as expected", {
   faulty_model <- list(mtcRelEffects = 1:4)
 
-  expect_error(bayes_forest("faulty_model"), "model must be an object created by bayes_model")
-  expect_error(bayes_forest(list(a = 1)), "model must be an object created by bayes_model")
-  expect_error(bayes_forest(faulty_model), "model must be an object created by bayes_model")
+  expect_error(bayes_forest("faulty_model", loaded_data_con$treatment_df, "Placebo", "title"), "model must be an object created by bayes_model")
+  expect_error(bayes_forest(list(a = 1), loaded_data_con$treatment_df, "Placebo", "title"), "model must be an object created by bayes_model")
+  expect_error(bayes_forest(faulty_model, loaded_data_con$treatment_df, "Placebo", "title"), "model must be an object created by bayes_model")
 })
 
 test_that("{shinytest2} recording: e2e_bayes_forest", {

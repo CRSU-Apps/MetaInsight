@@ -65,38 +65,29 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
     observeEvent(run(),{
       req(common[[paste0("bayes_", id)]])
       common[[paste0("bayes_rank_", id)]] <- bayes_ranking(common[[connected_data]], common[[treatments]], common[[paste0("bayes_", id)]], common$ranking_option)
+      common$meta$bayes_ranking$used <- TRUE
       trigger(trigger)
     })
 
-    n_trt <- reactive({
+    forest_svg <- reactive({
       req(watch(trigger) > 0)
-      if (id == "all"){
-        return(nrow(common$treatment_df))
-      } else {
-        return(nrow(common$subsetted_treatment_df))
-      }
+      tdf <- ifelse(id == "all", "treatment_df", "subsetted_treatment_df")
+
+      bayes_forest(common[[paste0("bayes_", id)]],
+                   common[[tdf]],
+                   common[[paste0("reference_treatment_", id)]],
+                   "",
+                   TRUE)
     })
 
-    # this enables the plot to always fit in the column width
     output$forest <- renderUI({
       req(watch(trigger) > 0)
       req(common[[paste0("bayes_", id)]], run())
 
-      plot_height <- forest_height(n_trt(), title = TRUE)
-      plot_width <- forest_width(14 + nchar(common[[paste0("reference_treatment_", id)]]))
-      common$meta$bayes_ranking[[paste0("forest_height_", id)]] <- plot_height
-      common$meta$bayes_ranking[[paste0("forest_width_", id)]] <- plot_width
-
-      svg_text <- svglite::xmlSVG(
-        bayes_forest(common[[paste0("bayes_", id)]]),
-        height = plot_height,
-        width = plot_width)
-
-      div(class = "svg_container",
-        HTML(paste(svg_text, collapse = "\n"))
+      div(class = "svg_container_ranking",
+        HTML(forest_svg()$svg)
       )
     })
-
 
     ranking_plots <- eventReactive(watch(trigger), {
       req(watch(trigger) > 0)
@@ -157,10 +148,10 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
         summary_network(common[[paste0("freq_", id)]], common[[paste0("bugsnet_", id)]], network_style()),
         width = 5,
         height = 5
-      )
+      ) |> crop_svg()
 
-      div(class = "svg_container",
-          HTML(paste(svg_text, collapse = "\n"))
+      div(class = "svg_container_ranking",
+          HTML(svg_text$svg)
       )
 
     })
@@ -175,11 +166,11 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
           bayes_forest(common[[paste0("bayes_", id)]])
         }
 
-        write_plot(file,
-                   common$download_format,
-                   plot_func,
-                   width = common$meta$bayes_ranking[[paste0("forest_width_", id)]],
-                   height = as.integer(forest_height(n_trt(), title = TRUE)) + 0.5)
+        write_svg_plot(file,
+                       common$download_format,
+                       forest_svg()$svg,
+                       forest_svg()$width,
+                       forest_svg()$height)
       }
     )
 
@@ -352,10 +343,6 @@ bayes_ranking_module_result <- function(id) {
 
 bayes_ranking_module_rmd <- function(common){ list(
   bayes_ranking_knit = !is.null(common$meta$bayes_ranking$used),
-  bayes_ranking_forest_height_all = common$meta$bayes_ranking$forest_height_all,
-  bayes_ranking_forest_height_sub = common$meta$bayes_ranking$forest_height_sub,
-  bayes_ranking_forest_width_all = common$meta$bayes_ranking$forest_width_all,
-  bayes_ranking_forest_width_sub = common$meta$bayes_ranking$forest_width_sub,
   bayes_ranking_colourblind = common$meta$bayes_ranking$colourblind,
   bayes_ranking_simple = common$meta$bayes_ranking$simple,
   bayes_ranking_network_style = common$meta$bayes_ranking$network_style,

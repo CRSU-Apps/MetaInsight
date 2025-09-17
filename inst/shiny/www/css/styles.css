@@ -51,7 +51,7 @@ hr {
 }
 .componentName {
   display:inline-block;
-  font-size:16pt;
+  font-size:15pt;
   font-weight:bold;
 }
 .compHelpButton {
@@ -213,16 +213,32 @@ hr {
   background-color: var(--bs-light-bg-subtle);
 }
 
+.svg_container_ranking {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  overflow: hidden; /* Prevents any potential overflow */
+}
+
+.svg_container_ranking svg {
+  max-width: 100%;
+  max-height: 90vh;
+  width: auto;
+  height: auto;
+  object-fit: contain; /* This is key for maintaining aspect ratio */
+}
+
 .svg_container {
   width: 100%;
-  height: 0;
-  padding-bottom: 75%; /* 4:3 aspect ratio */
-  position: relative;
+  height: auto;
+  display: block;
+  overflow: hidden;
 }
+
 .svg_container svg {
-  position: absolute;
-  top: 0;
-  left: 0;
   width: 100%;
-  height: 100%;
+  height: auto;
+  display: block;
 }

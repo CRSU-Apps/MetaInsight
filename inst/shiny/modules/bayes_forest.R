@@ -19,32 +19,22 @@ bayes_forest_submodule_server <- function(id, common, model, run, title){
 
     shinyjs::hide("download")
 
-    n_trt <- reactive({
-      if (model == "bayes_all"){
-        return(nrow(common$treatment_df))
-      } else {
-        return(nrow(common$subsetted_treatment_df))
-      }
+    svg <- reactive({
+      tdf <- ifelse(id == "all", "treatment_df", "subsetted_treatment_df")
+
+      bayes_forest(common[[paste0("bayes_", id)]],
+                   common[[tdf]],
+                   common[[paste0("reference_treatment_", id)]],
+                   title)
     }) |> bindEvent(run())
 
     # this enables the plot to always fit in the column width
     output$plot <- renderUI({
-      req(n_trt())
       shinyjs::show("download")
-      plot_height <- forest_height(n_trt(), title = TRUE, annotation = TRUE)
-      plot_width <- forest_width(14 + nchar(common[[paste0("reference_treatment_", id)]]))
-      common$meta$bayes_forest[[paste0("plot_height_", id)]] <- plot_height
-      common$meta$bayes_forest[[paste0("plot_width_", id)]] <- plot_width
-
-      svg_text <- svglite::xmlSVG(
-        {bayes_forest(common[[paste0("bayes_", id)]])
-         title(main = title)
-         mtext(CreateTauSentence(common[[model]]), padj = 0.5)},
-         height = plot_height,
-         width = plot_width)
+      req(svg())
 
       div(class = "svg_container",
-          HTML(paste(svg_text, collapse = "\n"))
+          HTML(svg()$svg)
       )
     })
 
@@ -54,18 +44,11 @@ bayes_forest_submodule_server <- function(id, common, model, run, title){
       },
       content = function(file) {
 
-        plot_func <- function(){
-          bayes_forest(common[[model]])
-          title(main = title)
-          mtext(CreateTauSentence(common[[model]]), padj = 0.5)
-        }
-
-        write_plot(file,
-                   common$download_format,
-                   plot_func,
-                   width = common$meta$bayes_forest[[paste0("plot_width_", id)]],
-                   # not sure why but this needs to be slightly taller than in the app
-                   height = as.integer(forest_height(n_trt() + 1 , title = TRUE, annotation = TRUE)))
+        write_svg_plot(file,
+                       common$download_format,
+                       svg()$svg,
+                       svg()$width,
+                       svg()$height)
 
       }
     )
@@ -138,11 +121,7 @@ bayes_forest_module_result <- function(id) {
 
 
 bayes_forest_module_rmd <- function(common) {
-  list(bayes_forest_knit = !is.null(common$meta$bayes_forest$used),
-       bayes_forest_plot_height_all = common$meta$bayes_forest$plot_height_all,
-       bayes_forest_plot_height_sub = common$meta$bayes_forest$plot_height_sub,
-       bayes_forest_plot_width_all = common$meta$bayes_forest$plot_width_all,
-       bayes_forest_plot_width_sub = common$meta$bayes_forest$plot_width_sub
+  list(bayes_forest_knit = !is.null(common$meta$bayes_forest$used)
       )
 }
 

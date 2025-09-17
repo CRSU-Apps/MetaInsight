@@ -11,6 +11,7 @@ freq_forest(
   outcome_measure,
   xmin,
   xmax,
+  title,
   logger = NULL
 )
 }
@@ -29,16 +30,17 @@ freq_forest(
 
 \item{xmax}{numeric. Maximum x-axis limit.}
 
+\item{title}{character. Title for the plot.}
+
 \item{logger}{Stores all notification messages to be displayed in the Log
 Window. Insert the logger reactive list here for running in
 shiny, otherwise leave the default `NULL`}
 }
 \value{
 List containing:
- \item{plot}{function. Forest plot created using `meta::forest()`}
- \item{annotation}{character. Annotation to add to the plot}
- \item{height}{numeric. Plot height in inches}
- \item{width}{numeric. Plot width in inches}
+ \item{svg}{character. SVG code to produce the plot}
+ \item{height}{numeric. Plot height in pixels}
+ \item{width}{numeric. Plot width in pixels}
 }
 \description{
 Produce a forest plot and annotation

@@ -4,17 +4,35 @@
 \alias{bayes_forest}
 \title{Make a Bayesian forest plot}
 \usage{
-bayes_forest(model, logger = NULL)
+bayes_forest(
+  model,
+  treatment_df,
+  reference_treatment,
+  title,
+  ranking = FALSE,
+  logger = NULL
+)
 }
 \arguments{
-\item{model}{list Objected created by bayes_model()}
+\item{model}{list. Object created by bayes_model()}
+
+\item{treatment_df}{dataframe.}
+
+\item{reference_treatment}{character.}
+
+\item{title}{character. Title for the plot}
+
+\item{ranking}{logical. Whether the function is being used in `bayes_ranking`}
 
 \item{logger}{Stores all notification messages to be displayed in the Log
 Window. Insert the logger reactive list here for running in
 shiny, otherwise leave the default `NULL`}
 }
 \value{
-None - produces a base plot
+List containing:
+ \item{svg}{character. SVG code to produce the plot}
+ \item{height}{numeric. Plot height in pixels}
+ \item{width}{numeric. Plot width in pixels}
 }
 \description{
 Make a Bayesian forest plot
