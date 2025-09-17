@@ -44,11 +44,11 @@ tagList(
         core_intro_module_ui("core_intro"),
         includeMarkdown("Rmd/text_intro_tab.Rmd")
       ),
-      insert_modules_ui("setup", "Setup", exclude = "setup_exclude"),
-      insert_modules_ui("summary", "Summary"),
-      insert_modules_ui("freq", "Frequentist NMA"),
-      insert_modules_ui("bayes", "Bayesian NMA"),
-      insert_modules_ui("rep", "Reproduce")
+      insert_modules_ui("setup", "Setup the analysis", exclude = "setup_exclude"),
+      insert_modules_ui("summary", "Summarise the data"),
+      insert_modules_ui("freq", "Frequentist network meta-analysis"),
+      insert_modules_ui("bayes", "Bayesian network meta-analysis"),
+      insert_modules_ui("rep", "Reproduce the analysis")
       ),
       # --- RESULTS WINDOW ---
       conditionalPanel(
