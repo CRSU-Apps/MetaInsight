@@ -47,8 +47,9 @@ bayes_forest_submodule_server <- function(id, common, model, run, title){
         write_svg_plot(file,
                        common$download_format,
                        svg()$svg,
-                       svg()$width,
-                       svg()$height)
+                       svg()$height,
+                       svg()$width
+                       )
 
       }
     )

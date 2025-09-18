@@ -407,6 +407,13 @@ crop_svg <- function(input_svg, margin = 10){
        pixel_data[2,,] > 250 &
        pixel_data[3,,] > 250)
   )
+
+  # bodge to get around grey border pixels
+  is_content[, 1] <- FALSE
+  is_content[1, ] <- FALSE
+  is_content[nrow(is_content), ] <- FALSE
+  is_content[, ncol(is_content)] <- FALSE
+
   content_pixels <- which(is_content, arr.ind = TRUE)
 
   x_coords <- content_pixels[, 1]

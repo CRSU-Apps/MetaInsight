@@ -169,8 +169,9 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
         write_svg_plot(file,
                        common$download_format,
                        forest_svg()$svg,
-                       forest_svg()$width,
-                       forest_svg()$height)
+                       forest_svg()$height,
+                       forest_svg()$width
+                       )
       }
     )
 
