@@ -64,6 +64,13 @@ bayes_model_module_server <- function(id, common, parent_session) {
     observeEvent(list(watch("bayes_model"), watch("model")), {
       # trigger if run is pressed or if model is changed, but only if a model exists
       req((watch("bayes_model") > 0 || all(!is.null(common$bayes_all), watch("model") > 0)))
+
+      # prevent both models fitting at once if the data is large
+      if (nrow(common$treatment_df) > 20){
+        mirai::daemons(0)
+        mirai::daemons(1)
+      }
+
       if (is.null(common$bayes_all)){
         common$logger |> writeLog(type = "starting", "Fitting Bayesian models")
       } else {
@@ -120,6 +127,7 @@ bayes_model_module_server <- function(id, common, parent_session) {
       } else {
         common$logger |> writeLog(type = "error", result)
       }
+
       trigger("bayes_model_all")
       trigger("bayes_model_table_all")
     })
@@ -139,6 +147,12 @@ bayes_model_module_server <- function(id, common, parent_session) {
         } else {
           common$logger |> writeLog(type = "error", result)
         }
+        # reset daemons
+        if (nrow(common$treatment_df) > 20){
+          mirai::daemons(0)
+          mirai::daemons(4)
+        }
+
         trigger("bayes_model_sub")
         trigger("bayes_model_table_sub")
       }
