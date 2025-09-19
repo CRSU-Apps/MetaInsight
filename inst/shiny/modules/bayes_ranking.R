@@ -141,17 +141,15 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
       }
     )
 
-    output$network <- renderUI({
+    network_svg <- reactive({
       req(watch(trigger) > 0)
+      summary_network(common[[paste0("freq_", id)]], common[[paste0("bugsnet_", id)]], network_style(), 1, "")
+    })
 
-      svg_text <- svglite::xmlSVG(
-        summary_network(common[[paste0("freq_", id)]], common[[paste0("bugsnet_", id)]], network_style()),
-        width = 5,
-        height = 5
-      ) |> crop_svg()
-
+    output$network <- renderUI({
+      req(network_svg())
       div(class = "svg_container_ranking",
-          HTML(svg_text$svg)
+          HTML(network_svg()$svg)
       )
 
     })
@@ -207,12 +205,12 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
         paste0("MetaInsight_network_plot_", id, ".", common$download_format)
       },
       content = function(file) {
-
-        plot_func <- function(){
-          summary_network(common[[paste0("freq_", id)]], common[[paste0("bugsnet_", id)]], network_style())
-        }
-
-        write_plot(file, common$download_format, plot_func, width = 5, height = 5)
+        write_svg_plot(file,
+                       common$download_format,
+                       network_svg()$svg,
+                       network_svg()$height,
+                       network_svg()$width
+        )
       }
     )
 
@@ -301,16 +299,18 @@ bayes_ranking_submodule_result <- function(id, title) {
             cellArgs = list(style = "height: 500px; padding: 16px; border: 2px solid #005c8a; white-space: normal"),
             fluidRow(
               align = "center",
+                h4("Relative effects"),
                 uiOutput(ns("forest"))
             ),
             fluidRow(
               align = "center",
+                h4("Ranking results"),
                 plotOutput(ns("ranking")), # table_label = table_label)
               shinyWidgets::dropMenu(
                 shinyWidgets::dropdownButton(
                   circle = FALSE,
                   status = "default",
-                  label = "Ranking probabilities and \nSUCRA values for all treatments",
+                  label = "Ranking probabilities and SUCRA values",
                   inputId = ns("dropdown")
                 ),
                 tableOutput(ns("ranking_table"))
@@ -318,6 +318,7 @@ bayes_ranking_submodule_result <- function(id, title) {
             ),
             fluidRow(
               align = "center",
+                h4("Summary of evidence"),
                 uiOutput(ns("network"))
             )
           )

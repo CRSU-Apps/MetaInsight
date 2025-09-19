@@ -4,32 +4,60 @@
 #' @param bugsnet dataframe. Created by `bugsnetdata()`
 #' @param style character. The plot to produce, either `netgraph` or `netplot`
 #' @param label_size numeric. The size of labels in the plots. Default of 1.
+#' @param title character. Title of plot.
 #' @param logger Stores all notification messages to be displayed in the Log
 #'   Window. Insert the logger reactive list here for running in
 #'   shiny, otherwise leave the default `NULL`
-#' @return The plotting function
+#' @return List containing:
+#'  \item{svg}{character. SVG code to produce the plot}
+#'  \item{height}{numeric. Plot height in pixels}
+#'  \item{width}{numeric. Plot width in pixels}
+#'
 #' @export
 
-summary_network <- function(freq, bugsnet, style, label_size = 1, logger = NULL){
+summary_network <- function(freq, bugsnet, style, label_size = 1, title, logger = NULL){
 
-  check_param_classes(c("freq", "bugsnet", "style", "label_size"),
-                      c("list", "data.frame", "character", "numeric"), logger)
+  check_param_classes(c("freq", "bugsnet", "style", "label_size", "title"),
+                      c("list", "data.frame", "character", "numeric", "character"), logger)
 
-  if (style == "netgraph"){
-    return(netmeta::netgraph(freq$net1, lwd = 2, number.of.studies = TRUE, plastic = FALSE, points = TRUE,
-                             cex = label_size, cex.points = 2, col.points = 1, col = 8, pos.number.of.studies = 0.43,
-                             col.number.of.studies = "forestgreen", col.multiarm = "white",
-                             bg.number.of.studies = "forestgreen"))
-
-  } else if (style == "netplot"){
-    # I have removed an order = NULL parameter here (SS)
-    data.rh <- BUGSnet::data.prep(arm.data = bugsnet, varname.t = "T", varname.s = "Study")
-    return(BUGSnet::net.plot(data.rh, node.scale = 3, edge.scale = 1.5, node.lab.cex = label_size,
-                             layout.params = NULL))
-  } else {
+  if (!(style %in% c("netgraph", "netplot"))){
     logger |> writeLog(type = "error", "style must be either netgraph or netplot")
     return()
   }
+
+  n_trt <- freq$ntx
+  if (n_trt < 5){
+    height <- 5
+    width <- 5
+  } else {
+    width <- n_trt / 3
+    height <- n_trt / 3
+  }
+
+  svg <- svglite::xmlSVG({
+    if (style == "netgraph"){
+      netmeta::netgraph(freq$net1, lwd = 2, number.of.studies = TRUE, plastic = FALSE, points = TRUE,
+                               cex = label_size, cex.points = 2, col.points = 1, col = 8, pos.number.of.studies = 0.43,
+                               col.number.of.studies = "forestgreen", col.multiarm = "white",
+                               bg.number.of.studies = "white")
+      title(title)
+
+    } else if (style == "netplot"){
+      # I have removed an order = NULL parameter here (SS)
+      data.rh <- BUGSnet::data.prep(arm.data = bugsnet, varname.t = "T", varname.s = "Study")
+      BUGSnet::net.plot(data.rh, node.scale = 3, edge.scale = 1.5, node.lab.cex = label_size,
+                               layout.params = NULL)
+      title(title)
+    }
+  },
+  width = width,
+  height = height,
+  web_fonts = list(
+    arimo = "https://fonts.googleapis.com/css2?family=Arimo:wght@400;700&display=swap")
+  ) |> crop_svg()
+
+  return(svg)
+
 }
 
 #' Creates network connectivity info displayed under network plots

@@ -4,7 +4,7 @@
 \alias{summary_network}
 \title{Produce either a netgraph or netplot}
 \usage{
-summary_network(freq, bugsnet, style, label_size = 1, logger = NULL)
+summary_network(freq, bugsnet, style, label_size = 1, title, logger = NULL)
 }
 \arguments{
 \item{freq}{list. Created by `frequentist()`}
@@ -15,12 +15,17 @@ summary_network(freq, bugsnet, style, label_size = 1, logger = NULL)
 
 \item{label_size}{numeric. The size of labels in the plots. Default of 1.}
 
+\item{title}{character. Title of plot.}
+
 \item{logger}{Stores all notification messages to be displayed in the Log
 Window. Insert the logger reactive list here for running in
 shiny, otherwise leave the default `NULL`}
 }
 \value{
-The plotting function
+List containing:
+ \item{svg}{character. SVG code to produce the plot}
+ \item{height}{numeric. Plot height in pixels}
+ \item{width}{numeric. Plot width in pixels}
 }
 \description{
 Produce either a netgraph or netplot
