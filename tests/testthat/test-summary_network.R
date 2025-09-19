@@ -19,7 +19,7 @@ test_that("summary_network produces svg plot", {
 
 })
 
-test_that("setup_exclude produces errors for incorrect data types", {
+test_that("summary_network produces errors for incorrect data types", {
   expect_error(summary_network("not_a_list", defined_data$bugsnet_all, "netgraph", 1, "title"), "freq must be of class list")
   expect_error(summary_network(defined_data_con$freq_all, "not_a_dataframe", "netgraph", 1, "title"), "bugsnet must be of class data.frame")
   expect_error(summary_network(defined_data_con$freq_all, defined_data_con$bugsnet_all, 123, 1, "title"), "style must be of class character")
