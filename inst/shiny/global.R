@@ -17,7 +17,13 @@ source("ui_helpers.R")
 
 # The components that have modules. These names must match the values of the
 # tabs of the components in the UI.
-COMPONENTS <- c("Setup" = "setup", "Summary" = "summary", "Frequentist" = "freq", "Bayesian" = "bayes", "Reproduce" = "rep")
+COMPONENTS <- c("Setup" = "setup",
+                "Summary" = "summary",
+                "Frequentist" = "freq",
+                "Bayesian" = "bayes",
+                "Baseline" = "baseline",
+                "Covariate" = "covariate",
+                "Reproduce" = "rep")
 
 # Information about modules that various parts of the app need access to
 COMPONENT_MODULES <- list()
@@ -45,6 +51,26 @@ base_module_configs <- c(
   "modules/bayes_deviance.yml",
   "modules/bayes_mcmc.yml",
   "modules/bayes_details.yml",
+  "modules/baseline_summary.yml",
+  "modules/baseline_model.yml",
+  "modules/baseline_regression.yml",
+  "modules/baseline_forest.yml",
+  "modules/baseline_comparison.yml",
+  "modules/baseline_ranking.yml",
+  "modules/baseline_results.yml",
+  "modules/baseline_mcmc.yml",
+  "modules/baseline_deviance.yml",
+  "modules/baseline_details.yml",
+  "modules/covariate_summary.yml",
+  "modules/covariate_model.yml",
+  "modules/covariate_regression.yml",
+  "modules/covariate_forest.yml",
+  "modules/covariate_comparison.yml",
+  "modules/covariate_ranking.yml",
+  "modules/covariate_results.yml",
+  "modules/covariate_mcmc.yml",
+  "modules/covariate_deviance.yml",
+  "modules/covariate_details.yml",
   "modules/rep_markdown.yml",
   "modules/rep_renv.yml",
   "modules/rep_refPackages.yml"

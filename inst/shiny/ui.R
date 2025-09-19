@@ -26,6 +26,8 @@ tagList(
     nav_panel("Summary", value = "summary"),
     nav_panel("Frequentist", value = "freq"),
     nav_panel("Bayesian", value = "bayes"),
+    nav_panel("Baseline", value = "baseline"),
+    nav_panel("Covariate", value = "covariate"),
     nav_panel("Reproduce", value = "rep"),
     nav_menu("Save", icon = icon("floppy-disk"),
                HTML('<a href="#" id="save-button" class="action-button btn" onclick="Shiny.setInputValue(\'core_save-save\', Math.random())">Save session</a>')),
@@ -48,6 +50,8 @@ tagList(
       insert_modules_ui("summary", "Summarise the data"),
       insert_modules_ui("freq", "Frequentist network meta-analysis"),
       insert_modules_ui("bayes", "Bayesian network meta-analysis"),
+      insert_modules_ui("baseline", "Baseline risk analysis"),
+      insert_modules_ui("covariate", "Covariate analysis"),
       insert_modules_ui("rep", "Reproduce the analysis")
       ),
       # --- RESULTS WINDOW ---

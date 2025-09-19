@@ -1,0 +1,8 @@
+```{asis, echo = {{covariate_details_knit}}, eval = {{covariate_details_knit}}, include = {{covariate_details_knit}}}
+Description of what the code will do {{var1}}
+```
+
+```{r, echo = {{covariate_details_knit}}, include = {{covariate_details_knit}}}
+# R code to run {{var2}}
+# Populate using metadata()
+```

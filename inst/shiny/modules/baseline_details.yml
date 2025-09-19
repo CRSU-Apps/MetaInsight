@@ -1,0 +1,5 @@
+component: "baseline"
+short_name: "Model details"
+long_name: "Model details"
+authors: "Ryan Field, Tom Morris, Clareece Nevill, Janion Nevill, Simon Smart"
+package: [gemtc]

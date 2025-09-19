@@ -1,0 +1,5 @@
+component: "baseline"
+short_name: "Run model"
+long_name: "Run baseline regression model"
+authors: "Ryan Field, Tom Morris, Clareece Nevill, Janion Nevill, Simon Smart"
+package: [gemtc]

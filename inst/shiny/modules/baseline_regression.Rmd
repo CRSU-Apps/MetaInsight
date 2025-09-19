@@ -1,0 +1,8 @@
+```{asis, echo = {{baseline_regression_knit}}, eval = {{baseline_regression_knit}}, include = {{baseline_regression_knit}}}
+Description of what the code will do {{var1}}
+```
+
+```{r, echo = {{baseline_regression_knit}}, include = {{baseline_regression_knit}}}
+# R code to run {{var2}}
+# Populate using metadata()
+```

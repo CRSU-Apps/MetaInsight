@@ -1,0 +1,8 @@
+```{asis, echo = {{covariate_forest_knit}}, eval = {{covariate_forest_knit}}, include = {{covariate_forest_knit}}}
+Description of what the code will do {{var1}}
+```
+
+```{r, echo = {{covariate_forest_knit}}, include = {{covariate_forest_knit}}}
+# R code to run {{var2}}
+# Populate using metadata()
+```

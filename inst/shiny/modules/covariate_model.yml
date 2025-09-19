@@ -1,0 +1,5 @@
+component: "covariate"
+short_name: "Run model"
+long_name: "Run covariate regression model"
+authors: "Ryan Field, Tom Morris, Clareece Nevill, Janion Nevill, Simon Smart"
+package: [gemtc]
