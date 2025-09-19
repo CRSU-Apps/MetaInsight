@@ -35,7 +35,7 @@ bayes_forest <- function(model, treatment_df, reference_treatment, title, rankin
     width = width,
     height = height,
     web_fonts = list(
-      roboto = "https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap")
+      arimo = "https://fonts.googleapis.com/css2?family=Arimo:wght@400;700&display=swap")
   ) |> crop_svg()
 
   return(svg)
