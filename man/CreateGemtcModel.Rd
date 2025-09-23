@@ -4,14 +4,14 @@
 \alias{CreateGemtcModel}
 \title{Function for setting up covariate {gemtc} model object}
 \usage{
-CreateGemtcModel(data, model_type, outcome, regressor_type, ref_choice)
+CreateGemtcModel(data, model_type, outcome_measure, regressor_type, ref_choice)
 }
 \arguments{
 \item{data}{list containing armData and studyData (as created by PrepDataGemtc)}
 
 \item{model_type}{Whether the model is 'fixed' or 'random'}
 
-\item{outcome}{Type of outcome measure ('OR', 'RR', or 'MD')}
+\item{outcome_measure}{Type of outcome measure ('OR', 'RR', or 'MD')}
 
 \item{regressor_type}{Type of regression coefficient, either "shared", "unrelated", or "exchangeable"}
 

@@ -4,20 +4,20 @@
 \alias{baseline_summary}
 \title{baseline_summary}
 \usage{
-baseline_summary(x, logger = NULL)
+baseline_summary(connected_data, outcome, treatment_df, logger = NULL)
 }
 \arguments{
-\item{x}{x}
-
 \item{logger}{Stores all notification messages to be displayed in the Log
 Window. Insert the logger reactive list here for running in
 shiny, otherwise leave the default NULL}
+
+\item{x}{x}
 }
 \description{
 Does x
 }
 \examples{
 {
-y <- baseline_summary(1)  
+y <- baseline_summary(1)
 }
 }

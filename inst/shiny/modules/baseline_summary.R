@@ -1,55 +1,62 @@
 baseline_summary_module_ui <- function(id) {
-  ns <- shiny::NS(id)
+  ns <- NS(id)
   tagList(
-    # UI
-
-
-    actionButton(ns("run"), "Run module baseline_summary", icon = icon("arrow-turn-down"))
-
+    actionButton(ns("run"), "Generate plot", icon = icon("arrow-turn-down")),
+    downloadButton(ns("download"), "Download plot")
   )
 }
 
 baseline_summary_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
+  shinyjs::hide("download")
 
   observeEvent(input$run, {
     # WARNING ####
-
+    if (is.null(common$freq_sub)){
+      common$logger |> writeLog(type= "error", "Please configure the analysis first in the Setup section")
+      return()
+    }
     # FUNCTION CALL ####
-
-    # LOAD INTO COMMON ####
+    common$baseline_summary_plot <- baseline_summary(common$main_connected_data, common$outcome, common$treatment_df, common$logger)
 
     # METADATA ####
-    # Populate using metadata()
+    common$meta$baseline_summary$used <- TRUE
 
     # TRIGGER
     trigger("baseline_summary")
-
+    shinyjs::show("download")
 
   })
 
-  output$result <- renderText({
+  output$plot <- renderUI({
     watch("baseline_summary")
-    # Result
+    req(common$baseline_summary_plot)
+    div(class = "svg_container", style = "max-width: 800px;",
+        HTML(common$baseline_summary_plot$svg)
+    )
   })
 
-
+  output$download <- downloadHandler(
+    filename = function(){
+      paste0("MetaInsight_baseline_summary.", common$download_format)},
+    content = function(file){
+      write_svg_plot(file, common$download_format, common$baseline_summary_plot)
+    }
+  )
 
 })
 }
 
-
 baseline_summary_module_result <- function(id) {
   ns <- NS(id)
-
-  # Result UI
-  verbatimTextOutput(ns("result"))
+  div(align = "center",
+    uiOutput(ns("plot"))
+  )
 }
-
 
 baseline_summary_module_rmd <- function(common) {
-  # Variables used in the module's Rmd code
-  # Populate using metadata()
+  list(
+    baseline_summary_knit = !is.null(common$meta$baseline_summary$used)
+  )
 }
-
