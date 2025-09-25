@@ -73,6 +73,8 @@ summary_network_module_server <- function(id, common, parent_session) {
       )
     })
 
+    outputOptions(output, "plot_all", suspendWhenHidden = FALSE)
+
     output$plot_sub <- renderUI({
       req(plot_sub())
       div(class = "svg_container",

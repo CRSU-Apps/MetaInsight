@@ -39,6 +39,8 @@ freq_compare_module_server <- function(id, common, parent_session) {
     table_all()
   })
 
+  outputOptions(output, "table_all", suspendWhenHidden = FALSE)
+
   output$table_sub <- renderTable(colnames = FALSE, {
     table_sub()
   })

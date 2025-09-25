@@ -38,6 +38,8 @@ freq_inconsistent_module_server <- function(id, common, parent_session) {
     output$table_all <- renderTable(colnames = TRUE, table_all())
     output$table_sub <- renderTable(colnames = TRUE, table_sub())
 
+    outputOptions(output, "table_all", suspendWhenHidden = FALSE)
+
     output$download_all <- downloadHandler(
       filename = "MetaInsight_inconsistency_all.csv",
       content = function(file) {

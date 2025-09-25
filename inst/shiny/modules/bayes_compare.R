@@ -20,8 +20,11 @@ bayes_compare_submodule_server <- function(id, common, run){
   moduleServer(id, function(input, output, session) {
 
     output$table <- renderTable({
+      shinyjs::show(selector = ".bayes_compare_div")
       bayes_compare(common[[paste0("bayes_", id)]])
     }) |> bindEvent(run())
+
+    outputOptions(output, "table", suspendWhenHidden = FALSE)
 
     output$download <- downloadHandler(
       filename = function(){
