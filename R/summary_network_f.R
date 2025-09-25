@@ -4,7 +4,7 @@
 #' @param bugsnet dataframe. Created by `bugsnetdata()`
 #' @param style character. The plot to produce, either `netgraph` or `netplot`
 #' @param label_size numeric. The size of labels in the plots. Default of 1.
-#' @param title character. Title of plot.
+#' @param title character. Title of plot. Default of no title.
 #' @param logger Stores all notification messages to be displayed in the Log
 #'   Window. Insert the logger reactive list here for running in
 #'   shiny, otherwise leave the default `NULL`
@@ -15,7 +15,7 @@
 #'
 #' @export
 
-summary_network <- function(freq, bugsnet, style, label_size = 1, title, logger = NULL){
+summary_network <- function(freq, bugsnet, style, label_size = 1, title = "", logger = NULL){
 
   check_param_classes(c("freq", "bugsnet", "style", "label_size", "title"),
                       c("list", "data.frame", "character", "numeric", "character"), logger)
