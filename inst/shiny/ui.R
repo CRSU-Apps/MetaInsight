@@ -17,7 +17,7 @@ tagList(
         functions = c("scrollLogger", "disableModule", "enableModule", "runOnEnter")
       ),
       tags$link(href = "css/styles.css", rel = "stylesheet"),
-      includeHTML("favicon/favicon.html"),
+      includeHTML(file.path(resourcePath, "favicon", "favicon.html")),
       ),
     title = img(src = "logo.png", height = "40"),
     window_title = "MetaInsight",
