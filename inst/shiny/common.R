@@ -33,7 +33,10 @@ common_class <- R6::R6Class(
    bayes_deviance_sub = NULL,
    bayes_mcmc_all = NULL,
    bayes_mcmc_sub = NULL,
+   baseline_summary_plot = NULL,
+   covariate_summary_plot = NULL,
    download_format = NULL,
+   seed = NULL,
    meta = NULL,
    tasks = NULL,
    logger = NULL,
@@ -71,6 +74,8 @@ common_class <- R6::R6Class(
      self$bayes_deviance_sub <- NULL
      self$bayes_mcmc_all <- NULL
      self$bayes_mcmc_sub <- NULL
+     self$baseline_summary_plot <- NULL
+     self$covariate_summary_plot <- NULL
      self$meta <- NULL
      self$state <- NULL
      invisible(self)

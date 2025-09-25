@@ -7,13 +7,15 @@
 covariate_model(
   connected_data,
   treatment_df,
-  outcome_type,
   outcome,
+  outcome_measure,
   covariate,
   cov_friendly,
+  cov_value,
   model_type,
   regressor_type,
   reference_treatment,
+  mtc_run_output = NULL,
   logger = NULL
 )
 }
@@ -24,9 +26,13 @@ covariate_model(
 
 \item{outcome}{character. The type of outcome being measured either `Continuous` or `Binary`}
 
+\item{outcome_measure}{character. The analysis outcome measure. Either `MD`, `OR` or `RR`}
+
 \item{covariate}{character. Chosen covariate name as per uploaded data}
 
 \item{cov_friendly}{character. Friendly name of chosen covariate}
+
+\item{cov_value}{numeric.}
 
 \item{model_type}{character. The type of model. Either `random` or `fixed`}
 
@@ -37,8 +43,6 @@ covariate_model(
 \item{logger}{Stores all notification messages to be displayed in the Log
 Window. Insert the logger reactive list here for running in
 shiny, otherwise leave the default NULL}
-
-\item{outcome_measure}{character. The analysis outcome measure. Either `MD`, `OR` or `RR`}
 }
 \description{
 Does x

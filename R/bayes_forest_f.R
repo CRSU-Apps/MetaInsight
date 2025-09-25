@@ -18,7 +18,7 @@
 bayes_forest <- function(model, treatment_df, reference_treatment, title, ranking = FALSE, logger = NULL){
 
   if (!inherits(model, "bayes_model")){
-    logger |> writeLog(type = "error", "model must be an object created by bayes_model()")
+    logger |> writeLog(type = "error", "model must be an object created by bayes_model(), baseline_model() or covariate_model()")
     return()
   }
 

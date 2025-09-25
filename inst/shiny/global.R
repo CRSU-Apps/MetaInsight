@@ -176,9 +176,3 @@ for (module in core_modules){
   source(module, local = TRUE)
 }
 
-# load common object
-source(system.file("shiny", "common.R", package = "metainsight"))
-common <- common_class$new()
-
-
-

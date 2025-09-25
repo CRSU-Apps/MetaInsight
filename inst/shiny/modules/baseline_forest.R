@@ -1,11 +1,7 @@
 baseline_forest_module_ui <- function(id) {
-  ns <- shiny::NS(id)
+  ns <- NS(id)
   tagList(
-    # UI
-
-
-    actionButton(ns("run"), "Run module baseline_forest", icon = icon("arrow-turn-down"))
-
+    actionButton(ns("run"), "Generate plot", icon = icon("arrow-turn-down"))
   )
 }
 
@@ -25,13 +21,12 @@ baseline_forest_module_server <- function(id, common, parent_session) {
 
     # TRIGGER
     trigger("baseline_forest")
-
-
   })
 
-  output$result <- renderText({
+
+
+  output$plot <- renderUI({
     watch("baseline_forest")
-    # Result
   })
 
 
@@ -44,7 +39,7 @@ baseline_forest_module_result <- function(id) {
   ns <- NS(id)
 
   # Result UI
-  verbatimTextOutput(ns("result"))
+  uiOutput(ns("plot"))
 }
 
 

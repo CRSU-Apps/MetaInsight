@@ -6,10 +6,10 @@
 #'   shiny, otherwise leave the default NULL
 #' @return NULL
 #' @examples {
-#' y <- baseline_forest(1)  
+#' y <- baseline_forest(1)
 #' }
 #' @export
-baseline_forest <- function(x, logger = NULL){
-  NULL
+baseline_forest <- function(...){
+  bayes_forest(...)
 }
 

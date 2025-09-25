@@ -108,18 +108,12 @@ freq_forest_module_server <- function(id, common, parent_session) {
   })
 
   output$plot_sub <- renderUI({
-    height <- result_sub()$height
-    width <- result_sub()$width
-
     div(class = "svg_container",
         HTML(result_sub()$svg)
     )
   })
 
   output$plot_all <- renderUI({
-    height <- result_all()$height
-    width <- result_all()$width
-
     div(class = "svg_container",
         HTML(result_all()$svg)
     )
@@ -129,7 +123,7 @@ freq_forest_module_server <- function(id, common, parent_session) {
     filename = function(){
       paste0("MetaInsight_frequentist_forest_all.", common$download_format)},
     content = function(file){
-      write_svg_plot(file, common$download_format, result_all()$svg, result_all()$height, result_all()$width)
+      write_svg_plot(file, common$download_format, result_all())
     }
   )
 
@@ -137,7 +131,7 @@ freq_forest_module_server <- function(id, common, parent_session) {
     filename = function(){
       paste0("MetaInsight_frequentist_forest_sub.", common$download_format)},
     content = function(file){
-      write_svg_plot(file, common$download_format, result_sub()$svg, result_sub()$height, result_sub()$width)
+      write_svg_plot(file, common$download_format, result_sub())
     }
   )
 

@@ -2,22 +2,27 @@
 % Please edit documentation in R/covariate_summary_f.R
 \name{covariate_summary}
 \alias{covariate_summary}
-\title{covariate_summary}
+\title{baseline_summary}
 \usage{
-covariate_summary(x, logger = NULL)
+covariate_summary(connected_data, outcome, treatment_df, logger = NULL)
 }
 \arguments{
-\item{x}{x}
+\item{connected_data}{dataframe. Input data set created by `setup_configure()` or `setup_exclude`}
+
+\item{outcome}{character. The type of outcome being measured either `Continuous` or `Binary`}
+
+\item{treatment_df}{dataframe containing the treatment ID ('Number') and the treatment name ('Label').}
 
 \item{logger}{Stores all notification messages to be displayed in the Log
 Window. Insert the logger reactive list here for running in
 shiny, otherwise leave the default NULL}
 }
+\value{
+List containing:
+ \item{svg}{character. SVG code to produce the plot}
+ \item{height}{numeric. Plot height in pixels}
+ \item{width}{numeric. Plot width in pixels}
+}
 \description{
-Does x
-}
-\examples{
-{
-y <- covariate_summary(1)  
-}
+Creates a plot of the covariate value for each study arm
 }

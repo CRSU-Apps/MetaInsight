@@ -270,19 +270,17 @@ write_plot <- function(file, type, renderFunction, height = NULL, width = NULL) 
 #'
 #' @param file character. The file to which to write.
 #' @param type character. Type of file to which to write.
-#' @param svg character. The svg plot.
-#' @param height numeric. The height of the svg in pixels.
-#' @param width numeric. The width of the plot in inches for pdf, or user specified units for png.
+#' @param svg list. Containing the svg string, width and height returned from `crop_svg()`
 #' @export
-write_svg_plot <- function(file, type, svg, height, width) {
+write_svg_plot <- function(file, type, svg) {
   if (type == "pdf") {
-    rsvg::rsvg_pdf(charToRaw(svg), file, width, height)
+    rsvg::rsvg_pdf(charToRaw(svg$svg), file, svg$width, svg$height)
   }
   if (type == "png") {
-    rsvg::rsvg_png(charToRaw(svg), file, width * 3, height * 3)
+    rsvg::rsvg_png(charToRaw(svg$svg), file, svg$width * 3, svg$height * 3)
   }
   if (type == "svg") {
-    writeLines(svg, file)
+    writeLines(svg$svg, file)
   }
 }
 
@@ -377,7 +375,7 @@ CreateTauSentence <- function(model) {
 #' editing the svg viewBox property. The width and height are also returned
 #' to facilitate rendering to other formats.
 #'
-#' @param input_svg xml_document. Output from `svglite::xmlSVG()`
+#' @param svg xml_document. Output from `svglite::xmlSVG()`
 #' @param margin numeric. The margin in pixels to leave around the edge
 #' of the plot content. Defaults to 10.
 #' @return List containing:
@@ -386,20 +384,12 @@ CreateTauSentence <- function(model) {
 #'  \item{height}{numeric. The height of the viewBox in pixels}
 #' @export
 
-crop_svg <- function(input_svg, margin = 10){
+crop_svg <- function(svg, margin = 10){
 
-  # fix the background element
-  svg_node <- xml2::xml_find_first(input_svg, "//svg")
-  total_width <- gsub("pt", "", xml2::xml_attr(svg_node, "width"))
-  total_height <- gsub("pt", "", xml2::xml_attr(svg_node, "height"))
-  rect_node <- xml2::xml_find_first(input_svg, "//rect[@width='100%']")
-  xml2::xml_attr(rect_node, "width") <- total_width
-  xml2::xml_attr(rect_node, "height") <- total_height
+  pixel_data <- paste(svg, collapse = "\n") |>
+    magick::image_read_svg() |>
+    magick::image_data()
 
-  input_svg <- paste(input_svg, collapse = "\n")
-
-  img <- magick::image_read_svg(input_svg)
-  pixel_data <- magick::image_data(img)
   # Create a matrix of pixels containing content
   is_content <- !(
     # white (all RGB channels > 250)
@@ -434,18 +424,19 @@ crop_svg <- function(input_svg, margin = 10){
     height = height + (margin * 2)
   )
 
-  output_svg <- gsub(
-    'viewBox="[^"]*"',
-    paste('viewBox="', bbox$x, bbox$y, bbox$width, bbox$height,'"'),
-    input_svg
-  )
+  # update viewBox
+  svg_node <- xml2::xml_find_first(svg, "//svg")
+  xml2::xml_attr(svg_node, "viewBox") <- paste(bbox$x, bbox$y, bbox$width, bbox$height)
 
-  output_svg <- gsub("<svg",
-                     '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"',
-                     output_svg)
+  # fix the background element
+  total_width <- gsub("pt", "", xml2::xml_attr(svg_node, "width"))
+  total_height <- gsub("pt", "", xml2::xml_attr(svg_node, "height"))
+  rect_node <- xml2::xml_find_first(svg, "//rect[@width='100%']")
+  xml2::xml_attr(rect_node, "width") <- total_width
+  xml2::xml_attr(rect_node, "height") <- total_height
 
   list(
-    svg = output_svg,
+    svg = paste(svg, collapse = "\n"),
     width = bbox$width,
     height = bbox$height)
 }

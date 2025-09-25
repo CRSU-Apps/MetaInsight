@@ -6,10 +6,10 @@
 editing the svg viewBox property. The width and height are also returned
 to facilitate rendering to other formats.}
 \usage{
-crop_svg(input_svg, margin = 10)
+crop_svg(svg, margin = 10)
 }
 \arguments{
-\item{input_svg}{xml_document. Output from `svglite::xmlSVG()`}
+\item{svg}{xml_document. Output from `svglite::xmlSVG()`}
 
 \item{margin}{numeric. The margin in pixels to leave around the edge
 of the plot content. Defaults to 10.}

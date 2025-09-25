@@ -4,20 +4,43 @@
 \alias{covariate_regression}
 \title{covariate_regression}
 \usage{
-covariate_regression(x, logger = NULL)
+covariate_regression(
+  model_output,
+  connected_data,
+  covariate_column,
+  covariate_name,
+  treatment_df,
+  outcome,
+  outcome_measure,
+  model_type,
+  absolute_or_percentage,
+  weight_or_contribution,
+  treatment_or_covariate_effect,
+  comparators,
+  contribution_type,
+  include_covariate,
+  include_ghosts,
+  include_extrapolation,
+  include_confidence,
+  confidence_opacity,
+  include_contributions,
+  contribution_multiplier,
+  legend_position,
+  logger = NULL
+)
 }
 \arguments{
-\item{x}{x}
-
 \item{logger}{Stores all notification messages to be displayed in the Log
 Window. Insert the logger reactive list here for running in
 shiny, otherwise leave the default NULL}
+
+\item{x}{x}
 }
 \description{
 Does x
 }
 \examples{
 {
-y <- covariate_regression(1)  
+y <- covariate_regression(1)
 }
 }
