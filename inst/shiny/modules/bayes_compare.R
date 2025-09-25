@@ -48,13 +48,13 @@ bayes_compare_module_server <- function(id, common, parent_session) {
       } else {
         trigger("bayes_compare")
         common$meta$bayes_compare$used <- TRUE
-        shinyjs::show(selector = ".bayes_compare_div")
       }
     })
 
     # trigger for the main analysis - when run is clicked, but only if there is a valid model
     all_trigger <- reactive({
       if (watch("bayes_compare") > 0){
+        shinyjs::show(selector = ".bayes_compare_div")
         return(list(watch("bayes_compare"), watch("bayes_model_all")))
       }
     })

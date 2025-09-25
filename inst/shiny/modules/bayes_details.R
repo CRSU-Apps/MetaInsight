@@ -15,7 +15,7 @@ bayes_details_module_server <- function(id, common, parent_session) {
         common$logger |> writeLog(type = "error", "Please fit the Bayesian models first")
         return()
       } else {
-      shinyjs::show(selector = ".bayes_details_div")
+
       common$meta$bayes_details$used <- TRUE
       trigger("bayes_details")
       }
@@ -24,9 +24,12 @@ bayes_details_module_server <- function(id, common, parent_session) {
     output$code <- renderPrint({
       watch("bayes_model_all")
       req(watch("bayes_details") > 0)
+      shinyjs::show(selector = ".bayes_details_div")
       req(common$bayes_all)
       cat(common$bayes_all$mtcResults$model$code, fill = FALSE, labels = NULL, append = FALSE)
     })
+
+    outputOptions(output, "code", suspendWhenHidden = FALSE)
 
     output$download_code <- downloadHandler(
       filename = "MetaInsight_bayesian_model_code.txt",

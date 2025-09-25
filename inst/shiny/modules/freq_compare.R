@@ -19,12 +19,12 @@ freq_compare_module_server <- function(id, common, parent_session) {
     }
     # TRIGGER
     trigger("freq_compare")
-    shinyjs::show(selector = ".freq_compare_div")
   })
 
   table_all <- reactive({
     watch("model")
     req(watch("freq_compare") > 0)
+    shinyjs::show(selector = ".freq_compare_div")
     common$meta$freq_compare$used <- TRUE
     freq_compare(common$freq_all, common$model_type, common$ranking_option)
   })

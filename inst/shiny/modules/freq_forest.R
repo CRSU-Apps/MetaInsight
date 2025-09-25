@@ -153,7 +153,6 @@ freq_forest_module_server <- function(id, common, parent_session) {
     load = function(state) {
       ### Manual load start
       ### Manual load end
-      browser()
       updateNumericInput(session, "xmin_all", value = state$xmin_all)
       updateNumericInput(session, "xmax_all", value = state$xmax_all)
       updateNumericInput(session, "xmin_sub", value = state$xmin_sub)

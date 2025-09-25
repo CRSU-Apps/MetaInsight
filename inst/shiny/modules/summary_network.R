@@ -37,7 +37,6 @@ summary_network_module_server <- function(id, common, parent_session) {
       }
       # TRIGGER
       trigger("summary_network")
-      shinyjs::show(selector = ".summary_network_div")
       common$meta$summary_network$used <- TRUE
       common$meta$summary_network$label_all <- as.numeric(input$label_all)
       common$meta$summary_network$label_sub <- as.numeric(input$label_sub)
@@ -47,6 +46,7 @@ summary_network_module_server <- function(id, common, parent_session) {
 
     plot_all <- reactive({
       req(watch("summary_network") > 0)
+      shinyjs::show(selector = ".summary_network_div")
       summary_network(common$freq_all,
                       common$bugsnet_all,
                       input$style,

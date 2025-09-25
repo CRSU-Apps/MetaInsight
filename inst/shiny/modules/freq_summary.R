@@ -22,15 +22,14 @@ freq_summary_module_server <- function(id, common, parent_session) {
       common$logger |> writeLog(type = "error", "Sorry this module is only available when there are between 3 and 10 treatments")
       return()
     }
-
     # TRIGGER
     trigger("freq_summary")
-    shinyjs::show(selector = ".freq_summary_div")
   })
 
   output$plot_all <- renderPlot({
     watch("model")
     req(watch("freq_summary") > 0)
+    shinyjs::show(selector = ".freq_summary_div")
     common$meta$freq_summary$used <- TRUE
     common$meta$freq_summary$height <- 2.5 * nrow(common$treatment_df)
     common$meta$freq_summary$width <- 2.5 * nrow(common$treatment_df)

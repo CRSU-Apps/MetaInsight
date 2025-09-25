@@ -40,13 +40,14 @@ bayes_results_module_server <- function(id, common, parent_session) {
         return()
       } else {
         trigger("bayes_results")
-        shinyjs::show(selector = ".bayes_results_div")
+        common$meta$bayes_results$used <- TRUE
       }
     })
 
     # trigger for the main analysis - when run is clicked, but only if there is a valid model
     all_trigger <- reactive({
       if (watch("bayes_results") > 0){
+        shinyjs::show(selector = ".bayes_results_div")
         return(list(watch("bayes_results"), watch("bayes_model_all")))
       }
     })
