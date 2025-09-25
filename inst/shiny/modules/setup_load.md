@@ -90,13 +90,13 @@ numeric treatment IDs in the "T" column(s) with the treatment names.
 <ul>
 <li>
 <strong>rob</strong>
- contains the risk of bias of the study as required by CINeMA (https://cinema.ispm.unibe.ch/). This must be identical for each arm of the study. Low risk = 1, medium = 2, high = 3.
+ contains the risk of bias of the study as required by <a href="https://cinema.ispm.unibe.ch/" target="_blank">CINeMA</a>. This must be identical for each arm of the study. Low risk = 1, medium = 2, high = 3.
 </li>
 </ul>
 <ul>
 <li>
 <strong>indirectness</strong>
- contains the indirectness of the study as required by CINeMA (https://cinema.ispm.unibe.ch/). This must be identical for each arm of the study. Low indirectness = 1, medium = 2, high = 3.
+ contains the indirectness of the study as required by <a href="https://cinema.ispm.unibe.ch/" target="_blank">CINeMA</a>. This must be identical for each arm of the study. Low indirectness = 1, medium = 2, high = 3.
 </li>
 </ul>
 <ul>
@@ -184,13 +184,13 @@ numeric treatment IDs in the "T" column(s) with the treatment names.
 <ul>
 <li>
 <strong>rob</strong>
- contains the risk of bias of the study as required by CINeMA (https://cinema.ispm.unibe.ch/). This must be identical for each arm of the study. Low risk = 1, medium = 2, high = 3.
+ contains the risk of bias of the study as required by <a href="https://cinema.ispm.unibe.ch/" target="_blank">CINeMA</a>. This must be identical for each arm of the study. Low risk = 1, medium = 2, high = 3.
 </li>
 </ul>
 <ul>
 <li>
 <strong>indirectness</strong>
- contains the indirectness of the study as required by CINeMA (https://cinema.ispm.unibe.ch/). This must be identical for each arm of the study. Low indirectness = 1, medium = 2, high = 3.
+ contains the indirectness of the study as required by <a href="https://cinema.ispm.unibe.ch/" target="_blank">CINeMA</a>. This must be identical for each arm of the study. Low indirectness = 1, medium = 2, high = 3.
 </li>
 </ul>
 <ul>
