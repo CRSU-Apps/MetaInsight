@@ -14,17 +14,17 @@ bayes_nodesplit(
 )
 }
 \arguments{
-\item{connected_data}{dataframe. Input data set created by `setup_configure()` or `setup_exclude`}
+\item{connected_data}{dataframe. Input data set created by \code{setup_configure()} or \code{setup_exclude}}
 
 \item{treatment_df}{Dataframe containing treatment names ("Label") and IDs ("Number").}
 
-\item{outcome}{character. The type of outcome being measured either `Continuous` or `Binary`}
+\item{outcome}{character. The type of outcome being measured either \code{Continuous} or \code{Binary}}
 
-\item{outcome_measure}{character. The analysis outcome measure. Either `MD`, `OR` or `RR`}
+\item{outcome_measure}{character. The analysis outcome measure. Either \code{MD}, \code{OR} or \code{RR}}
 
-\item{model_type}{character. The type of model. Either `random` or `fixed`}
+\item{model_type}{character. The type of model. Either \code{random} or \code{fixed}}
 
-\item{async}{Whether or not the function is being used asynchronously. Default `FALSE`}
+\item{async}{Whether or not the function is being used asynchronously. Default \code{FALSE}}
 }
 \value{
 mtc.nodesplit object containing an mtc.result object for each node

@@ -7,9 +7,9 @@
 bayes_mcmc(model, async = FALSE)
 }
 \arguments{
-\item{model}{Output from `bayes_model()`}
+\item{model}{Output from \code{bayes_model()}}
 
-\item{async}{Whether or not the function is being used asynchronously. Default `FALSE`}
+\item{async}{Whether or not the function is being used asynchronously. Default \code{FALSE}}
 }
 \value{
 list containing:

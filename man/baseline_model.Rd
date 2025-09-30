@@ -4,20 +4,29 @@
 \alias{baseline_model}
 \title{baseline_model}
 \usage{
-baseline_model(x, logger = NULL)
+baseline_model(
+  connected_data,
+  treatment_df,
+  outcome,
+  reference_treatment,
+  model_type,
+  cov_parameters,
+  seed,
+  logger = NULL
+)
 }
 \arguments{
-\item{x}{x}
-
 \item{logger}{Stores all notification messages to be displayed in the Log
 Window. Insert the logger reactive list here for running in
 shiny, otherwise leave the default NULL}
+
+\item{x}{x}
 }
 \description{
 Does x
 }
 \examples{
 {
-y <- baseline_model(1)  
+y <- baseline_model(1)
 }
 }

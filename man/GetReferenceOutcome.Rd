@@ -4,14 +4,20 @@
 \alias{GetReferenceOutcome}
 \title{Get the outcome in the reference arm.}
 \usage{
-GetReferenceOutcome(data, treatment_ids, outcome_type, observed, model = NULL)
+GetReferenceOutcome(
+  connected_data,
+  treatment_df,
+  outcome,
+  observed,
+  model = NULL
+)
 }
 \arguments{
-\item{data}{Data in long format.}
+\item{connected_data}{Data in long format.}
 
-\item{treatment_ids}{Data frame containing treatment IDs and names in columns named 'Number' and 'Label' respectively.}
+\item{treatment_df}{Data frame containing treatment IDs and names in columns named 'Number' and 'Label' respectively.}
 
-\item{outcome_type}{"Binary" or "Continuous".}
+\item{outcome}{"Binary" or "Continuous".}
 
 \item{observed}{"Observed" or "Imputed". See @return.}
 
@@ -19,10 +25,10 @@ GetReferenceOutcome(data, treatment_ids, outcome_type, observed, model = NULL)
 }
 \value{
 Vector of reference arm outcomes, named by study.
-  If a study contains the reference treatment then the value returned is the observed outcome in the reference arm.
-  If a study does not contain the reference treatment then the value returned is:
-    - NA if @param observed == "Observed";
-    - The median of the study-specific intercept parameter if @param observed == "Imputed".
+If a study contains the reference treatment then the value returned is the observed outcome in the reference arm.
+If a study does not contain the reference treatment then the value returned is:
+- NA if @param observed == "Observed";
+- The median of the study-specific intercept parameter if @param observed == "Imputed".
 }
 \description{
 Get the outcome in the reference arm.

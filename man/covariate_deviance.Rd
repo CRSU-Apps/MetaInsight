@@ -4,7 +4,7 @@
 \alias{covariate_deviance}
 \title{covariate_deviance}
 \usage{
-covariate_deviance(x, logger = NULL)
+covariate_deviance(...)
 }
 \arguments{
 \item{x}{x}
@@ -18,6 +18,6 @@ Does x
 }
 \examples{
 {
-y <- covariate_deviance(1)  
+y <- covariate_deviance(1)
 }
 }

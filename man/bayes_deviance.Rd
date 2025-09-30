@@ -9,15 +9,15 @@ bayes_deviance(model, async = FALSE)
 \arguments{
 \item{model}{Bayesian model produced by bayes_model}
 
-\item{async}{Whether or not the function is being used asynchronously. Default `FALSE`}
+\item{async}{Whether or not the function is being used asynchronously. Default \code{FALSE}}
 }
 \value{
 list containing:
- \item{deviance_mtc}{results from `gemtc::mtc.deviance()` for model$mtcResults}
- \item{deviance_ume}{results from `gemtc::mtc.deviance()` for UME model}
- \item{scat_plot}{plotly object}
- \item{stem_plot}{plotly object}
- \item{lev_plot}{plotly object}
+\item{deviance_mtc}{results from \code{gemtc::mtc.deviance()} for model$mtcResults}
+\item{deviance_ume}{results from \code{gemtc::mtc.deviance()} for UME model}
+\item{scat_plot}{plotly object}
+\item{stem_plot}{plotly object}
+\item{lev_plot}{plotly object}
 }
 \description{
 Produce deviance plots

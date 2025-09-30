@@ -11,8 +11,10 @@
 }
 \value{
 Validation result in the form of a list:
-- "valid" = TRUE or FALSE defining whether data is valid
-- "message" = String describing any issues causing the data to be invalid
+\itemize{
+\item "valid" = TRUE or FALSE defining whether data is valid
+\item "message" = String describing any issues causing the data to be invalid
+}
 }
 \description{
 Validate that all studies have at least 2 arms.

@@ -4,7 +4,7 @@
 \alias{baseline_forest}
 \title{baseline_forest}
 \usage{
-baseline_forest(x, logger = NULL)
+baseline_forest(...)
 }
 \arguments{
 \item{x}{x}
@@ -18,6 +18,6 @@ Does x
 }
 \examples{
 {
-y <- baseline_forest(1)  
+y <- baseline_forest(1)
 }
 }

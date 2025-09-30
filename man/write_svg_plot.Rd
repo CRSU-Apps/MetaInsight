@@ -11,7 +11,7 @@ write_svg_plot(file, type, svg)
 
 \item{type}{character. Type of file to which to write.}
 
-\item{svg}{list. Containing the svg string, width and height returned from `crop_svg()`}
+\item{svg}{list. Containing the svg string, width and height returned from \code{crop_svg()}}
 }
 \description{
 Write an svg plot to either a png, pdf or svg file

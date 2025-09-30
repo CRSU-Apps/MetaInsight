@@ -23,13 +23,13 @@ freq_summary(
 
 \item{outcome_measure}{character. Type of outcome being plotted}
 
-\item{ranking_option}{character. `good` if the treatment effect is desirable, else `bad`}
+\item{ranking_option}{character. \code{good} if the treatment effect is desirable, else \code{bad}}
 
-\item{model_type}{character. `random` or `fixed` effects model being plotted}
+\item{model_type}{character. \code{random} or \code{fixed} effects model being plotted}
 
 \item{logger}{Stores all notification messages to be displayed in the Log
 Window. Insert the logger reactive list here for running in
-shiny, otherwise leave the default `NULL`}
+shiny, otherwise leave the default \code{NULL}}
 }
 \value{
 Summary forest matrix plot

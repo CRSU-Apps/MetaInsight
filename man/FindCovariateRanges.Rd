@@ -6,34 +6,36 @@
 This does noes not include studies which do not directly compare treatments to the reference.}
 \usage{
 FindCovariateRanges(
-  data,
+  connected_data,
   treatment_df,
-  reference,
+  reference_treatment,
   covariate_title,
   baseline_risk = FALSE,
-  outcome_type = NULL,
+  outcome = NULL,
   model = NULL
 )
 }
 \arguments{
-\item{data}{Data frame from which to find covariate ranges}
+\item{connected_data}{Data frame from which to find covariate ranges}
 
 \item{treatment_df}{data frame containing treatment names ("Label") and IDs ("Number")}
 
-\item{reference}{Name of reference treatment.}
+\item{reference_treatment}{Name of reference treatment.}
 
 \item{covariate_title}{Title of covariate column in data. Only required when @param baseline_risk == FALSE.}
 
 \item{baseline_risk}{TRUE if the covariate is baseline risk. Defaults to FALSE.}
 
-\item{outcome_type}{"Binary" or "Continuous". Only required when @param baseline_risk == TRUE. Defaults to NULL.}
+\item{outcome}{"Binary" or "Continuous". Only required when @param baseline_risk == TRUE. Defaults to NULL.}
 
 \item{model}{Model created by bnma::network.run(). Only required when @param baseline_risk == TRUE. Defaults to NULL.}
 }
 \value{
 The lowest and highest covariate values of relevant studies. This is structured as a list containing 2 items:
-- "min" a named vector of the lowest values, where the names are the treatment names.
-- "max" a named vector of the highest values, where the names are the treatment names.
+\itemize{
+\item "min" a named vector of the lowest values, where the names are the treatment names.
+\item "max" a named vector of the highest values, where the names are the treatment names.
+}
 }
 \description{
 Find the lowest and highest covariate values given by a study comparing the reference and comparator treatments.

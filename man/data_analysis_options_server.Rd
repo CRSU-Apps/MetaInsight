@@ -28,18 +28,20 @@ data_analysis_options_server(
 }
 \value{
 List of reactives:
-- "outcome_measure" contains the outcome measure being analysed.
-  This will be related to the outcome in "metaoutcome"
-- "model_effects" contains "random" or "fixed"
-- "exclusions" contains vector of names of studies being excluded from the sensitivity analysis
-- "rank_option" contains "good" or "bad" for whether a small value is desirable or not
-- "continuous_outcome" contains acronym of the continuous outcome:
-  "MD" for mean difference, or "SMD" for standardised mean difference
-- "binary_outcome" contains acronym of the binary outcome:
-  "OR" for odds ratio, "RR" for risk ratio, or "RD" for risk difference
-- "initial_data" contains the data frame of the connected subnetwork of the uploaded data
-- "sensitivity_data" contains the data frame of the connected subnetwork for the sensitivity analysis
-- "sensitivity_treatment_list" contains the treatment names ("Label") and IDs ("Number") for the sensitivity analysis data
+\itemize{
+\item "outcome_measure" contains the outcome measure being analysed.
+This will be related to the outcome in "metaoutcome"
+\item "model_effects" contains "random" or "fixed"
+\item "exclusions" contains vector of names of studies being excluded from the sensitivity analysis
+\item "rank_option" contains "good" or "bad" for whether a small value is desirable or not
+\item "continuous_outcome" contains acronym of the continuous outcome:
+"MD" for mean difference, or "SMD" for standardised mean difference
+\item "binary_outcome" contains acronym of the binary outcome:
+"OR" for odds ratio, "RR" for risk ratio, or "RD" for risk difference
+\item "initial_data" contains the data frame of the connected subnetwork of the uploaded data
+\item "sensitivity_data" contains the data frame of the connected subnetwork for the sensitivity analysis
+\item "sensitivity_treatment_list" contains the treatment names ("Label") and IDs ("Number") for the sensitivity analysis data
+}
 }
 \description{
 Module server for the data analysis options panel

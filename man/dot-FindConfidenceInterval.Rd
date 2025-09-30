@@ -16,7 +16,7 @@
 \item{parameter_name}{Name of the parameter for which to get the confidence interval.}
 }
 \value{
-Named vector of "2.5%" and "97.5" quantiles.
+Named vector of "2.5\%" and "97.5" quantiles.
 }
 \description{
 Find the confidence interval at a given covariate value.

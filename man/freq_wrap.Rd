@@ -21,11 +21,13 @@ freq_wrap(data, treat_list, model, outcome, CONBI, ref)
 }
 \value{
 List
- - 'net1': NMA results from netmeta::netmeta().
- - 'lstx': Vector of treatment labels.
- - 'ntx': Number of treatments.
- - 'd0': Data in contrast form.
- - 'd1': Same as 'd0' but with treatment labels.
+\itemize{
+\item 'net1': NMA results from netmeta::netmeta().
+\item 'lstx': Vector of treatment labels.
+\item 'ntx': Number of treatments.
+\item 'd0': Data in contrast form.
+\item 'd1': Same as 'd0' but with treatment labels.
+}
 }
 \description{
 Calls preliminary functions, finishing with frequentist analysis in freq.df(), then outputs the model results and related objects.

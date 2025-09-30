@@ -9,7 +9,7 @@ scat_plot(model, deviance, model_type, outcome_measure)
 \arguments{
 \item{model}{Bayesian model produced by bayes_model}
 
-\item{deviance}{Output produced by `gemtc::mtc.deviance()`}
+\item{deviance}{Output produced by \code{gemtc::mtc.deviance()}}
 
 \item{model_type}{Model effects type. "random" or "fixed".}
 

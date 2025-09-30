@@ -13,7 +13,7 @@ bayes_ranking(
 )
 }
 \arguments{
-\item{connected_data}{dataframe. Input data set created by `setup_configure()` or `setup_exclude`}
+\item{connected_data}{dataframe. Input data set created by \code{setup_configure()} or \code{setup_exclude}}
 
 \item{treatment_df}{Dataframe containing the treatment ID ('Number') and the treatment name ('Label').}
 
@@ -23,7 +23,7 @@ bayes_ranking(
 
 \item{logger}{Stores all notification messages to be displayed in the Log
 Window. Insert the logger reactive list here for running in
-shiny, otherwise leave the default `NULL`}
+shiny, otherwise leave the default \code{NULL}}
 }
 \value{
 List of output created by rankdata().

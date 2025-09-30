@@ -4,20 +4,18 @@
 \alias{covariate_forest}
 \title{covariate_forest}
 \usage{
-covariate_forest(x, logger = NULL)
+covariate_forest(...)
 }
 \arguments{
-\item{x}{x}
-
-\item{logger}{Stores all notification messages to be displayed in the Log
-Window. Insert the logger reactive list here for running in
-shiny, otherwise leave the default NULL}
+\item{...}{parameters passed to \code{bayes_forest()}}
+}
+\value{
+List containing:
+\item{svg}{character. SVG code to produce the plot}
+\item{height}{numeric. Plot height in pixels}
+\item{width}{numeric. Plot width in pixels}
 }
 \description{
-Does x
-}
-\examples{
-{
-y <- covariate_forest(1)  
-}
+Produce a forest plot from the covariate model. This is
+a wrapper for \code{bayes_forest()} - see that for documentation.
 }

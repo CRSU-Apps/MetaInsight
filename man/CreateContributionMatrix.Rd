@@ -52,15 +52,15 @@ CreateContributionMatrix(
 }
 \value{
 If @param full_output = FALSE:
-          The contribution matrix.
-        If @param full_output = TRUE:
-          List
-           - 'contribution' = contribution matrix.
-           - 'V' = The treatment effect variance matrix.
-           - 'X' = The design matrix.
-           - 'Z' = The Z matrix.
-           - 'Lambda_tau' = The Lambda_tau matrix (only included if @param effects_type == "random").
-           - 'Lambda_beta' = The Lambda_beta matrix (only included if @param cov_parameters == "exchangeable").
+The contribution matrix.
+If @param full_output = TRUE:
+List
+- 'contribution' = contribution matrix.
+- 'V' = The treatment effect variance matrix.
+- 'X' = The design matrix.
+- 'Z' = The Z matrix.
+- 'Lambda_tau' = The Lambda_tau matrix (only included if @param effects_type == "random").
+- 'Lambda_beta' = The Lambda_beta matrix (only included if @param cov_parameters == "exchangeable").
 }
 \description{
 Create the contribution matrix.

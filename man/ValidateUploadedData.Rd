@@ -13,8 +13,10 @@ ValidateUploadedData(data, outcome, logger = NULL)
 }
 \value{
 Validation result in the form of a list:
-- "valid" = TRUE or FALSE defining whether data is valid
-- "message" = String describing any issues causing the data to be invalid
+\itemize{
+\item "valid" = TRUE or FALSE defining whether data is valid
+\item "message" = String describing any issues causing the data to be invalid
+}
 }
 \description{
 Assess the data for validity. this checks the column names for required columns, and balanced wide format numbered columns.

@@ -16,16 +16,6 @@ covariate_regression(
   absolute_or_percentage,
   weight_or_contribution,
   treatment_or_covariate_effect,
-  comparators,
-  contribution_type,
-  include_covariate,
-  include_ghosts,
-  include_extrapolation,
-  include_confidence,
-  confidence_opacity,
-  include_contributions,
-  contribution_multiplier,
-  legend_position,
   logger = NULL
 )
 }

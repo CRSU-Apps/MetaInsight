@@ -55,14 +55,24 @@ CalculateContributions(
 }
 \value{
 List of contributions:
-- "direct"
-  - Matrix of direct contributions to the regression. Rows are studies, columns are treatments
-- "indirect"
-  - Matrix of indirect contributions to the regression. Rows are studies, columns are treatments
-- "relative_effect"
-  - Matrix of relative effects of treatments compared to the reference. Rows are studies, columns are treatments
-- "covariate_value"
-  - Vector of covariate values from the studies.
+\itemize{
+\item "direct"
+\itemize{
+\item Matrix of direct contributions to the regression. Rows are studies, columns are treatments
+}
+\item "indirect"
+\itemize{
+\item Matrix of indirect contributions to the regression. Rows are studies, columns are treatments
+}
+\item "relative_effect"
+\itemize{
+\item Matrix of relative effects of treatments compared to the reference. Rows are studies, columns are treatments
+}
+\item "covariate_value"
+\itemize{
+\item Vector of covariate values from the studies.
+}
+}
 }
 \description{
 Create the contribution matrix in a convenient format.

@@ -23,28 +23,28 @@ setup_exclude(
 
 \item{reference_treatment}{character. The reference treatment of the dataset}
 
-\item{outcome}{character. Outcome type for the dataset. Either `Binary` or
-`Continuous`.}
+\item{outcome}{character. Outcome type for the dataset. Either \code{Binary} or
+\code{Continuous}.}
 
 \item{outcome_measure}{character. Outcome measure of the dataset. Either
-`OR`, `RR` or `RD` when `outcome` is `Binary` or `MD` or `SMD` when
-`outcome` is `Continuous`}
+\code{OR}, \code{RR} or \code{RD} when \code{outcome} is \code{Binary} or \code{MD} or \code{SMD} when
+\code{outcome} is \code{Continuous}}
 
-\item{model_type}{character. Type of model to fit, either `random` or `fixed`}
+\item{model_type}{character. Type of model to fit, either \code{random} or \code{fixed}}
 
 \item{exclusions}{character. Vector of study names to exclude.}
 
 \item{logger}{Stores all notification messages to be displayed in the Log
 Window. Insert the logger reactive list here for running in
-shiny, otherwise leave the default `NULL`}
+shiny, otherwise leave the default \code{NULL}}
 }
 \value{
 List containing:
- \item{bugsnet_sub}{dataframe. Processed data for bugsnet analyses created by `bugsnetdata()`}
- \item{freq_sub}{list. Processed data for frequentist analyses created by `frequentist()`}
- \item{reference_treatment_sub}{character. Reference treatment for sensitivity analyses}
- \item{subsetted_data}{dataframe. Processed data}
- \item{subsetted_treatment_df}{dataframe. Treatments in processed data}
+\item{bugsnet_sub}{dataframe. Processed data for bugsnet analyses created by \code{bugsnetdata()}}
+\item{freq_sub}{list. Processed data for frequentist analyses created by \code{frequentist()}}
+\item{reference_treatment_sub}{character. Reference treatment for sensitivity analyses}
+\item{subsetted_data}{dataframe. Processed data}
+\item{subsetted_treatment_df}{dataframe. Treatments in processed data}
 }
 \description{
 Takes the uploaded data, removes any excluded studies and returns

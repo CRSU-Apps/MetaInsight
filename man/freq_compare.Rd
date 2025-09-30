@@ -9,13 +9,13 @@ freq_compare(freq, model_type, ranking_option, logger = NULL)
 \arguments{
 \item{freq}{List of NMA results created by freq_wrap().}
 
-\item{model_type}{Character. `fixed` or `random`.}
+\item{model_type}{Character. \code{fixed} or \code{random}.}
 
-\item{ranking_option}{Character. `good` or `bad`, referring to smaller outcome values.}
+\item{ranking_option}{Character. \code{good} or \code{bad}, referring to smaller outcome values.}
 
 \item{logger}{Stores all notification messages to be displayed in the Log
 Window. Insert the logger reactive list here for running in
-shiny, otherwise leave the default `NULL`}
+shiny, otherwise leave the default \code{NULL}}
 }
 \value{
 Ranking table created by netmeta::netleague().

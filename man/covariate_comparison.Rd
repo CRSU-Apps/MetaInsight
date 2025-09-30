@@ -4,7 +4,7 @@
 \alias{covariate_comparison}
 \title{covariate_comparison}
 \usage{
-covariate_comparison(x, logger = NULL)
+covariate_comparison(...)
 }
 \arguments{
 \item{x}{x}
@@ -18,6 +18,6 @@ Does x
 }
 \examples{
 {
-y <- covariate_comparison(1)  
+y <- covariate_comparison(1)
 }
 }

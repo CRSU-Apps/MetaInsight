@@ -9,7 +9,7 @@ GelmanPlots(gelman_data, parameters)
 \arguments{
 \item{parameters}{Vector of parameters mentioned in the previous argument.}
 
-\item{gelman_plots}{List of outputs from coda::gelman.plot(model$samples[, parm]), where parm is a parameter from the model.}
+\item{gelman_plots}{List of outputs from \code{coda::gelman.plot(model$samples[, parm])}, where parm is a parameter from the model.}
 }
 \value{
 A list of functions that produce Gelman plots mentioned in @param gelman_plots.

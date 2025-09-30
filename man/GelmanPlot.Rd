@@ -7,7 +7,7 @@
 GelmanPlot(gelman_data, parameter)
 }
 \arguments{
-\item{gelman_data}{Output from `coda::gelman.plot(model$samples[, parm])`, where `parm` is a parameter from the model.}
+\item{gelman_data}{Output from \code{coda::gelman.plot(model$samples[, parm])}, where \code{parm} is a parameter from the model.}
 
 \item{parameter}{The parameter from the previous argument, used as the title.}
 }

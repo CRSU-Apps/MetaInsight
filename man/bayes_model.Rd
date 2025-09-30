@@ -15,30 +15,30 @@ bayes_model(
 )
 }
 \arguments{
-\item{connected_data}{dataframe. Input data set created by `setup_configure()` or `setup_exclude`}
+\item{connected_data}{dataframe. Input data set created by \code{setup_configure()} or \code{setup_exclude}}
 
 \item{treatment_df}{dataframe containing the treatment ID ('Number') and the treatment name ('Label').}
 
-\item{outcome}{character. The type of outcome being measured either `Continuous` or `Binary`}
+\item{outcome}{character. The type of outcome being measured either \code{Continuous} or \code{Binary}}
 
-\item{outcome_measure}{character. The analysis outcome measure. Either `MD`, `OR` or `RR`}
+\item{outcome_measure}{character. The analysis outcome measure. Either \code{MD}, \code{OR} or \code{RR}}
 
-\item{model_type}{character. The type of model. Either `random` or `fixed`}
+\item{model_type}{character. The type of model. Either \code{random} or \code{fixed}}
 
 \item{reference_treatment}{character. Reference treatment}
 
-\item{async}{Whether or not the function is being used asynchronously. Default `FALSE`}
+\item{async}{Whether or not the function is being used asynchronously. Default \code{FALSE}}
 }
 \value{
 List containing:
- \item{mtcResults}{mtc.result. Output from `gemtc::mtc.run()`}
- \item{mtcRelEffects}{mtc.result. Output from `gemtc::relative.effect()`}
- \item{rel_eff_tbl}{mtc.relative.effect.table. Output from `gemtc::relative.effect.table()`}
- \item{sumresults}{summary.mtc.result. Output from `summary(mtcRelEffects)`}
- \item{mtcNetwork}{mtc.network. Output from `gemtc::mtc.network()`}
- \item{dic}{dataframe. Containing the statistics 'Dbar', 'pD', 'DIC', and 'data points'}
- \item{outcome_measure}{character. The input `outcome_measure`}
- \item{model_type}{dataframe. The input `model_type`}
+\item{mtcResults}{mtc.result. Output from \code{gemtc::mtc.run()}}
+\item{mtcRelEffects}{mtc.result. Output from \code{gemtc::relative.effect()}}
+\item{rel_eff_tbl}{mtc.relative.effect.table. Output from \code{gemtc::relative.effect.table()}}
+\item{sumresults}{summary.mtc.result. Output from \code{summary(mtcRelEffects)}}
+\item{mtcNetwork}{mtc.network. Output from \code{gemtc::mtc.network()}}
+\item{dic}{dataframe. Containing the statistics 'Dbar', 'pD', 'DIC', and 'data points'}
+\item{outcome_measure}{character. The input \code{outcome_measure}}
+\item{model_type}{dataframe. The input \code{model_type}}
 }
 \description{
 Run Bayesian models

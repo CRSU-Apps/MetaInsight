@@ -9,16 +9,16 @@ to facilitate rendering to other formats.}
 crop_svg(svg, margin = 10)
 }
 \arguments{
-\item{svg}{xml_document. Output from `svglite::xmlSVG()`}
+\item{svg}{xml_document. Output from \code{svglite::xmlSVG()}}
 
 \item{margin}{numeric. The margin in pixels to leave around the edge
 of the plot content. Defaults to 10.}
 }
 \value{
 List containing:
- \item{svg}{character. The cropped svg}
- \item{width}{numeric. The width of the viewBox in pixels}
- \item{height}{numeric. The height of the viewBox in pixels}
+\item{svg}{character. The cropped svg}
+\item{width}{numeric. The width of the viewBox in pixels}
+\item{height}{numeric. The height of the viewBox in pixels}
 }
 \description{
 Crops an svg object, by rendering it, locating the non-white pixels and

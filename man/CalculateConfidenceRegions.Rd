@@ -7,7 +7,7 @@
 CalculateConfidenceRegions(model_output)
 }
 \arguments{
-\item{model_output}{Return from `CovariateModelOutput()`.}
+\item{model_output}{Return from \code{CovariateModelOutput()}.}
 }
 \value{
 list of confidence region objects and confidence interval objects.
@@ -15,11 +15,13 @@ Regions cover treatments with a non-zero covariate range of direct contributions
 intervals cover treatments with a single covariate value from direct contributions.
 Any treatment with no direct contributions will not be present in either list.
 Each is a list of data frames for each treatment name. Each data frame contains 3 columns:
-- cov_value: The covariate value at which the confidence region is calculated.
-- lower: the 2.5% quantile.
-- upper: the 97.5% quantile.
+\itemize{
+\item cov_value: The covariate value at which the confidence region is calculated.
+\item lower: the 2.5\% quantile.
+\item upper: the 97.5\% quantile.
 Each data frame in "regions" contains 11 rows creating a 10-polygon region.
 Each data frame in "intervals" contains a single row at the covariate value of that single contribution.
+}
 }
 \description{
 Calculate the confidence regions within direct evidence for the regression model.

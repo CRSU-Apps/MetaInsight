@@ -16,7 +16,7 @@ covariate_model(
   regressor_type,
   reference_treatment,
   mtc_run_output = NULL,
-  logger = NULL
+  aync = FALSE
 )
 }
 \arguments{
@@ -24,9 +24,9 @@ covariate_model(
 
 \item{treatment_df}{dataframe. Containing the treatment ID ('Number') and the treatment name ('Label').}
 
-\item{outcome}{character. The type of outcome being measured either `Continuous` or `Binary`}
+\item{outcome}{character. The type of outcome being measured either \code{Continuous} or \code{Binary}}
 
-\item{outcome_measure}{character. The analysis outcome measure. Either `MD`, `OR` or `RR`}
+\item{outcome_measure}{character. The analysis outcome measure. Either \code{MD}, \code{OR} or \code{RR}}
 
 \item{covariate}{character. Chosen covariate name as per uploaded data}
 
@@ -34,15 +34,15 @@ covariate_model(
 
 \item{cov_value}{numeric.}
 
-\item{model_type}{character. The type of model. Either `random` or `fixed`}
+\item{model_type}{character. The type of model. Either \code{random} or \code{fixed}}
 
-\item{regressor_type}{character. Type of regression coefficient, either `shared`, `unrelated`, or `exchangeable`}
+\item{regressor_type}{character. Type of regression coefficient, either \code{shared}, \code{unrelated}, or \code{exchangeable}}
 
 \item{reference_treatment}{character. Reference treatment}
 
-\item{logger}{Stores all notification messages to be displayed in the Log
-Window. Insert the logger reactive list here for running in
-shiny, otherwise leave the default NULL}
+\item{covariate_model_output}{list. The output of the function. Default NULL.
+When supplied, only the output is recalculated for a given covariate value,
+rather than refitting the model.}
 }
 \description{
 Does x

@@ -4,7 +4,7 @@
 \alias{covariate_ranking}
 \title{covariate_ranking}
 \usage{
-covariate_ranking(x, logger = NULL)
+covariate_ranking(...)
 }
 \arguments{
 \item{x}{x}
@@ -18,6 +18,6 @@ Does x
 }
 \examples{
 {
-y <- covariate_ranking(1)  
+y <- covariate_ranking(1)
 }
 }

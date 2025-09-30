@@ -10,8 +10,10 @@
 \item{uploaded_data}{Data frame to validate.}
 
 \item{required_columns}{Data frame representing required numbered columns. Columns in this data frame are:
-- pattern = A regular expression defining the generic column title for wide or long format.
-- number_group = Regular expression replacement to extract the number from a column.}
+\itemize{
+\item pattern = A regular expression defining the generic column title for wide or long format.
+\item number_group = Regular expression replacement to extract the number from a column.
+}}
 }
 \value{
 TRUE if the columns are correctly numbered, else FALSE.

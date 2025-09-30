@@ -40,12 +40,14 @@ Find the next identifier at the current level.}
 \if{html}{\out{<a id="method-PageNumbering-new"></a>}}
 \if{latex}{\out{\hypertarget{method-PageNumbering-new}{}}}
 \subsection{Method \code{new()}}{
-Create a new instance of this [R6][R6::R6Class] class.
+Create a new instance of this \link[R6:R6Class]{R6} class.
 Add a child at the current level. The pages will be numbered with:
-- Hindu-Arabic numerals (eg. 1, 2, 3, 4)
-- Latin alphabet letters (eg. a, b, c, d)
-- Roman numerals (eg. i, ii, iii, iv)
+\itemize{
+\item Hindu-Arabic numerals (eg. 1, 2, 3, 4)
+\item Latin alphabet letters (eg. a, b, c, d)
+\item Roman numerals (eg. i, ii, iii, iv)
 These will be arranged in the repeating format "1b iii-...".
+}
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PageNumbering$new()}\if{html}{\out{</div>}}
 }

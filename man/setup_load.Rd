@@ -7,20 +7,20 @@
 setup_load(data_path = NULL, outcome, logger = NULL)
 }
 \arguments{
-\item{data_path}{character. Path to the file to be loaded or if `NULL` load the default data}
+\item{data_path}{character. Path to the file to be loaded or if \code{NULL} load the default data}
 
-\item{outcome}{character. Outcome type selected for the data. Either `Binary` or `Continuous`.}
+\item{outcome}{character. Outcome type selected for the data. Either \code{Binary} or \code{Continuous}.}
 
 \item{logger}{Stores all notification messages to be displayed in the Log
 Window. Insert the logger reactive list here for running in
-shiny, otherwise leave the default `NULL`}
+shiny, otherwise leave the default \code{NULL}}
 }
 \value{
 List containing:
- \item{is_data_valid}{logical. Whether the data is valid}
- \item{is_data_uploaded}{logical. Whether the data is uploaded}
- \item{data}{dataframe. The data that was uploaded or the default data if no data_path was provided}
- \item{treatment_df}{Dataframe of the treatments in the data. `NULL` if `is_data_valid` is `FALSE`}
+\item{is_data_valid}{logical. Whether the data is valid}
+\item{is_data_uploaded}{logical. Whether the data is uploaded}
+\item{data}{dataframe. The data that was uploaded or the default data if no data_path was provided}
+\item{treatment_df}{Dataframe of the treatments in the data. \code{NULL} if \code{is_data_valid} is \code{FALSE}}
 }
 \description{
 Assess the data for validity. this checks the column names for required columns, and balanced wide format numbered columns.
