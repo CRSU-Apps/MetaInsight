@@ -15,8 +15,8 @@ covariate_model(
   model_type,
   regressor_type,
   reference_treatment,
-  mtc_run_output = NULL,
-  aync = FALSE
+  covariate_model_output = NULL,
+  async = FALSE
 )
 }
 \arguments{
@@ -43,6 +43,27 @@ covariate_model(
 \item{covariate_model_output}{list. The output of the function. Default NULL.
 When supplied, only the output is recalculated for a given covariate value,
 rather than refitting the model.}
+}
+\value{
+List of gemtc related output:
+mtc_run_output = output from \code{gemtc::mtc.run()}
+mtcResults = model object itself carried through (needed to match existing code)
+mtcRelEffects = data relating to presenting relative effects;
+rel_eff_tbl = table of relative effects for each comparison;
+covariate_value = The covariate value originally passed into this function
+reference_name = The name of the reference treatment
+comparator_names = Vector containing the names of the comparators.
+a = text output stating whether fixed or random effects;
+sumresults = summary output of relative effects
+dic = data frame of model fit statistics
+cov_value_sentence = text output stating the value for which the covariate has been set to for producing output
+slopes = named list of slopes for the regression equations (unstandardised - equal to one 'increment')
+intercepts = named list of intercepts for the regression equations at cov_value
+outcome = The outcome type for the analysis eg. "MD" or "OR"
+mtcNetwork = The network object from GEMTC
+model = The type of linear model, either "fixed" or "random"
+covariate_min = Vector of minimum covariate values directly contributing to the regression.
+covariate_max = Vector of maximum covariate values directly contributing to the regression.
 }
 \description{
 Does x

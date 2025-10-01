@@ -13,18 +13,15 @@ covariate_regression(
   outcome,
   outcome_measure,
   model_type,
-  absolute_or_percentage,
-  weight_or_contribution,
-  treatment_or_covariate_effect,
-  logger = NULL
+  async = FALSE
 )
 }
 \arguments{
+\item{x}{x}
+
 \item{logger}{Stores all notification messages to be displayed in the Log
 Window. Insert the logger reactive list here for running in
 shiny, otherwise leave the default NULL}
-
-\item{x}{x}
 }
 \description{
 Does x

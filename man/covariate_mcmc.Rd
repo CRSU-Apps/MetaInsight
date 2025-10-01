@@ -4,7 +4,7 @@
 \alias{covariate_mcmc}
 \title{covariate_mcmc}
 \usage{
-covariate_mcmc(x, logger = NULL)
+covariate_mcmc(...)
 }
 \arguments{
 \item{x}{x}
@@ -18,6 +18,6 @@ Does x
 }
 \examples{
 {
-y <- covariate_mcmc(1)  
+y <- covariate_mcmc(1)
 }
 }

@@ -4,7 +4,7 @@
 \alias{covariate_details}
 \title{covariate_details}
 \usage{
-covariate_details(x, logger = NULL)
+covariate_details(...)
 }
 \arguments{
 \item{x}{x}
@@ -18,6 +18,6 @@ Does x
 }
 \examples{
 {
-y <- covariate_details(1)  
+y <- covariate_details(1)
 }
 }
