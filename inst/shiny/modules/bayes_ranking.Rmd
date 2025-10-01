@@ -38,10 +38,12 @@ knitr::kable(ranking_table(bayes_ranking_all), digits = 2)
 ```
 
 ```{asis, echo = {{bayes_ranking_knit}}, eval = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}
-{r, fig.align='center', fig.width = 5, fig.height = 5}
+{r, results = 'asis'}
 ```
 ```{r, echo = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}
-summary_network(frequentist_all, bugsnet_all, {{bayes_ranking_network_style}})
+bayes_ranking_network_all <- summary_network(frequentist_all, bugsnet_all, {{bayes_ranking_network_style}})
+
+htmltools::HTML(bayes_ranking_network_all$svg)
 ```
 
 ```{asis, echo = {{bayes_ranking_knit}}, eval = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}
@@ -75,8 +77,10 @@ knitr::kable(ranking_table(bayes_ranking_sub), digits = 2)
 ```
 
 ```{asis, echo = {{bayes_ranking_knit}}, eval = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}
-{r, fig.align='center', fig.width = 5, fig.height = 5}
+{r, results = 'asis'}
 ```
 ```{r, echo = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}
-summary_network(frequentist_sub, bugsnet_sub, {{bayes_ranking_network_style}})
+bayes_ranking_network_sub <- summary_network(frequentist_sub, bugsnet_sub, {{bayes_ranking_network_style}})
+
+htmltools::HTML(bayes_ranking_network_sub$svg)
 ```

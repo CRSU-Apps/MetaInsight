@@ -128,18 +128,14 @@ bayes_mcmc_submodule_result <- function(id, label) {
   ns <- NS(id)
   tagList(
     div(class = "bayes_mcmc_div",
-        h5(glue::glue("Gelman convergence assessment plots {label}"))
-    ),
-    # auto makes the output height the same as the render
-    plotOutput(ns("gelman"), height = "auto"),
-    div(class = "bayes_mcmc_div",
-        h5(glue::glue("Trace plots {label}"))
-    ),
-    plotOutput(ns("trace"), height = "auto"),
-    div(class = "bayes_mcmc_div",
-        h5(glue::glue("Posterior density plots {label}"))
-    ),
-    plotOutput(ns("density"), height = "auto")
+      h5(glue::glue("Gelman convergence assessment plots {label}")),
+      # auto makes the output height the same as the render
+      plotOutput(ns("gelman"), height = "auto"),
+      h5(glue::glue("Trace plots {label}")),
+      plotOutput(ns("trace"), height = "auto"),
+      h5(glue::glue("Posterior density plots {label}")),
+      plotOutput(ns("density"), height = "auto")
+    )
   )
 }
 

@@ -105,17 +105,13 @@ bayes_deviance_submodule_result <- function(id, label) {
   ns <- NS(id)
   tagList(
     div(class = "bayes_deviance_div",
-        h5(glue::glue("Residual deviance from NMA model and UME inconsistency model {label}"))
-    ),
-    plotly::plotlyOutput(ns("scat")),
-    div(class = "bayes_deviance_div",
-        h5(glue::glue("Per-arm residual deviance {label}"))
-    ),
-    plotly::plotlyOutput(ns("stem")),
-    div(class = "bayes_deviance_div",
-        h5(glue::glue("Leverage plot {label}"))
-    ),
-    plotly::plotlyOutput(ns("lev"))
+      h5(glue::glue("Residual deviance from NMA model and UME inconsistency model {label}")),
+      plotly::plotlyOutput(ns("scat")),
+      h5(glue::glue("Per-arm residual deviance {label}")),
+      plotly::plotlyOutput(ns("stem")),
+      h5(glue::glue("Leverage plot {label}")),
+      plotly::plotlyOutput(ns("lev"))
+    )
   )
 }
 
