@@ -1,40 +1,33 @@
 covariate_results_module_ui <- function(id) {
-  ns <- shiny::NS(id)
+  ns <- NS(id)
   tagList(
-    # UI
-
-
-    actionButton(ns("run"), "Run module covariate_results", icon = icon("arrow-turn-down"))
-
+    actionButton(ns("run"), "Generate tables", icon = icon("arrow-turn-down"))
   )
 }
 
 covariate_results_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
+    shinyjs::hide(selector = ".covariate_results_div")
 
-  observeEvent(input$run, {
-    # WARNING ####
+    observeEvent(input$run, {
+      if (is.null(common$covariate_model)){
+        common$logger |> writeLog(type = "error", "Please fit the covariate model first")
+        return()
+      } else {
+        trigger("covariate_results")
+        common$meta$covariate_results$used <- TRUE
+        shinyjs::show(selector = ".covariate_results_div")
+      }
+    })
 
-    # FUNCTION CALL ####
+    all_trigger <- reactive({
+      if (watch("covariate_results") > 0){
+        return(list(watch("covariate_results"), watch("covariate_model")))
+      }
+    })
 
-    # LOAD INTO COMMON ####
-
-    # METADATA ####
-    # Populate using metadata()
-
-    # TRIGGER
-    trigger("covariate_results")
-
-
-  })
-
-  output$result <- renderText({
-    watch("covariate_results")
-    # Result
-  })
-
-
+    bayes_results_submodule_server("all", common, "covariate_model", all_trigger)
 
 })
 }
@@ -42,14 +35,11 @@ covariate_results_module_server <- function(id, common, parent_session) {
 
 covariate_results_module_result <- function(id) {
   ns <- NS(id)
-
-  # Result UI
-  verbatimTextOutput(ns("result"))
+  bayes_results_submodule_result(ns("all"), "for covariate model", "covariate_results_div")
 }
 
 
 covariate_results_module_rmd <- function(common) {
-  # Variables used in the module's Rmd code
-  # Populate using metadata()
+  list(covariate_results_knit = !is.null(common$meta$covariate_results$used))
 }
 

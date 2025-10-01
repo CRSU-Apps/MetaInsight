@@ -1,8 +1,26 @@
 ```{asis, echo = {{covariate_deviance_knit}}, eval = {{covariate_deviance_knit}}, include = {{covariate_deviance_knit}}}
-Description of what the code will do {{var1}}
+### Deviance report
 ```
 
 ```{r, echo = {{covariate_deviance_knit}}, include = {{covariate_deviance_knit}}}
-# R code to run {{var2}}
-# Populate using metadata()
+covariate_deviance <- suppress_jags_output(covariate_deviance(covariate_model))
+```
+
+```{asis, echo = {{covariate_deviance_knit}}, eval = {{covariate_deviance_knit}}, include = {{covariate_deviance_knit}}}
+#### Residual deviance from NMA model and UME inconsistency model
+```
+```{r, echo = {{covariate_deviance_knit}}, include = {{covariate_deviance_knit}}}
+covariate_deviance$scat_plot
+```
+```{asis, echo = {{covariate_deviance_knit}}, eval = {{covariate_deviance_knit}}, include = {{covariate_deviance_knit}}}
+#### Per-arm residual deviance 
+```
+```{r, echo = {{covariate_deviance_knit}}, include = {{covariate_deviance_knit}}}
+covariate_deviance$stem_plot
+```
+```{asis, echo = {{covariate_deviance_knit}}, eval = {{covariate_deviance_knit}}, include = {{covariate_deviance_knit}}}
+#### Leverage plot
+```
+```{r, echo = {{covariate_deviance_knit}}, include = {{covariate_deviance_knit}}}
+covariate_deviance$lev_plot
 ```

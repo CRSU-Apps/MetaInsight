@@ -32,6 +32,7 @@ Imports:
     data.tree,
     dplyr,
     gemtc,
+    ggpubr,
     ggiraphExtra,
     ggplot2,
     ggrepel,
@@ -87,3 +88,4 @@ License: GPL-3
 URL: 
 Encoding: UTF-8
 RoxygenNote: 7.3.3
+Roxygen: list(markdown = TRUE)

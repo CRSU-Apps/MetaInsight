@@ -1,8 +1,31 @@
 ```{asis, echo = {{covariate_regression_knit}}, eval = {{covariate_regression_knit}}, include = {{covariate_regression_knit}}}
-Description of what the code will do {{var1}}
+### Covariate regression
 ```
 
 ```{r, echo = {{covariate_regression_knit}}, include = {{covariate_regression_knit}}}
-# R code to run {{var2}}
-# Populate using metadata()
+
+covariate_regression_data <- covariate_regression(covariate_model, 
+                                                  main_connected_data, 
+                                                  covariate_column,
+                                                  covariate_name,
+                                                  treatment_df, 
+                                                  outcome, 
+                                                  outcome_measure,
+                                                  model_type)
+
+covariate_regression_plot(covariate_model, 
+                          treatment_df,
+                          outcome_measure,
+                          {{covariate_regression_comparators}},
+                          covariate_regression_data$directness,
+                          covariate_regression_data$credible_regions,
+                          {{covariate_regression_covariate}},
+                          {{covariate_regression_ghosts}},
+                          {{covariate_regression_extrapolate}},
+                          {{covariate_regression_credible}},
+                          {{covariate_regression_credible_opacity}},
+                          {{covariate_regression_symbol}},
+                          {{covariate_regression_symbol_size}},
+                          {{covariate_regression_legend_position}}
+                          )
 ```

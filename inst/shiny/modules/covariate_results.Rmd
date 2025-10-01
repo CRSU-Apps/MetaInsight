@@ -1,8 +1,14 @@
 ```{asis, echo = {{covariate_results_knit}}, eval = {{covariate_results_knit}}, include = {{covariate_results_knit}}}
-Description of what the code will do {{var1}}
+### Summarise the results from the covariate model
 ```
 
 ```{r, echo = {{covariate_results_knit}}, include = {{covariate_results_knit}}}
-# R code to run {{var2}}
-# Populate using metadata()
+covariate_results(covariate_model)
+```
+```{r, echo = {{covariate_results_knit}}, include = {{covariate_results_knit}}}
+knitr::kable(covariate_model$sumresults$summaries$statistics, row.names = TRUE, caption = "Empirical mean and standard deviation for each variable,
+            plus standard error of the mean:")
+```
+```{r, echo = {{covariate_results_knit}}, include = {{covariate_results_knit}}}
+knitr::kable(covariate_model$sumresults$summaries$quantiles, row.names = TRUE, caption = "Quantiles for each variable:")
 ```

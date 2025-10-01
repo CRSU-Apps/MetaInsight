@@ -1,55 +1,22 @@
 covariate_details_module_ui <- function(id) {
-  ns <- shiny::NS(id)
-  tagList(
-    # UI
-
-
-    actionButton(ns("run"), "Run module covariate_details", icon = icon("arrow-turn-down"))
-
-  )
+  ns <- NS(id)
+  bayes_details_submodule_ui(ns("covariate"))
 }
 
 covariate_details_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
-
-
-  observeEvent(input$run, {
-    # WARNING ####
-
-    # FUNCTION CALL ####
-
-    # LOAD INTO COMMON ####
-
-    # METADATA ####
-    # Populate using metadata()
-
-    # TRIGGER
-    trigger("covariate_details")
-
-
+    bayes_details_submodule_server("covariate", common, "covariate_model", "covariate_model_fit", "covariate_details", "covariate_deviance", "covariate_deviance",
+                                   "Please fit the covariate models first")
   })
-
-  output$result <- renderText({
-    watch("covariate_details")
-    # Result
-  })
-
-
-
-})
 }
-
 
 covariate_details_module_result <- function(id) {
   ns <- NS(id)
-
-  # Result UI
-  verbatimTextOutput(ns("result"))
+  bayes_details_submodule_result(ns("covariate"), "covariate_details_div")
 }
 
-
 covariate_details_module_rmd <- function(common) {
-  # Variables used in the module's Rmd code
-  # Populate using metadata()
+  list(covariate_details_knit = !is.null(common$meta$covariate_details$used),
+       covariate_deviance_knit = !is.null(common$meta$covariate_deviance$used))
 }
 

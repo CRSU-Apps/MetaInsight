@@ -1,8 +1,37 @@
 ```{asis, echo = {{covariate_mcmc_knit}}, eval = {{covariate_mcmc_knit}}, include = {{covariate_mcmc_knit}}}
-Description of what the code will do {{var1}}
+### Markov chain Monte Carlo
 ```
 
 ```{r, echo = {{covariate_mcmc_knit}}, include = {{covariate_mcmc_knit}}}
-# R code to run {{var2}}
-# Populate using metadata()
+covariate_mcmc <- covariate_mcmc(covariate_model)
+```
+
+```{asis, echo = {{covariate_mcmc_knit}}, eval = {{covariate_mcmc_knit}}, include = {{covariate_mcmc_knit}}}
+#### Gelman convergence assessment plots
+{r, fig.align='center', fig.width = 9, fig.height = {{covariate_mcmc_height_250}}}
+```
+```{r, echo = {{covariate_mcmc_knit}}, include = {{covariate_mcmc_knit}}}
+par(mfrow = c(2, {{covariate_mcmc_n_rows}}))
+# this returns a list of functions, each of which generates a plot
+invisible(lapply(mcmc_all$gelman_plots, function(f) f()))
+```
+```{asis, echo = {{covariate_mcmc_knit}}, eval = {{covariate_mcmc_knit}}, include = {{covariate_mcmc_knit}}}
+#### Trace plots
+{r, fig.align='center', fig.width = 9, fig.height = {{covariate_mcmc_height_200}}}
+```
+```{r, echo = {{covariate_mcmc_knit}}, include = {{covariate_mcmc_knit}}}
+cowplot::plot_grid(
+  plotlist = mcmc_all$trace_plots,
+  ncol = {{covariate_mcmc_n_rows}}
+)
+```
+```{asis, echo = {{covariate_mcmc_knit}}, eval = {{covariate_mcmc_knit}}, include = {{covariate_mcmc_knit}}}
+#### Posterior density plots
+{r, fig.align='center', fig.width = 9, fig.height = {{covariate_mcmc_height_200}}}
+```
+```{r, echo = {{covariate_mcmc_knit}}, include = {{covariate_mcmc_knit}}}
+cowplot::plot_grid(
+  plotlist = mcmc_all$density_plots,
+  ncol = {{covariate_mcmc_n_rows}}
+)
 ```
