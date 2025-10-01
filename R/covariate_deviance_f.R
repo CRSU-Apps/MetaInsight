@@ -6,10 +6,10 @@
 #'   shiny, otherwise leave the default NULL
 #' @return NULL
 #' @examples {
-#' y <- covariate_deviance(1)  
+#' y <- covariate_deviance(1)
 #' }
 #' @export
-covariate_deviance <- function(x, logger = NULL){
-  NULL
+covariate_deviance <- function(...){
+  bayes_deviance(...)
 }
 

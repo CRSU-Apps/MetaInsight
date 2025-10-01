@@ -6,10 +6,10 @@
 #'   shiny, otherwise leave the default NULL
 #' @return NULL
 #' @examples {
-#' y <- covariate_details(1)  
+#' y <- covariate_details(1)
 #' }
 #' @export
-covariate_details <- function(x, logger = NULL){
-  NULL
+covariate_details <- function(...){
+  bayes_details(...)
 }
 

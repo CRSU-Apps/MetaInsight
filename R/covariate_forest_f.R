@@ -1,15 +1,14 @@
 #' @title covariate_forest
-#' @description Does x
-#' @param x x
-#' @param logger Stores all notification messages to be displayed in the Log
-#'   Window. Insert the logger reactive list here for running in
-#'   shiny, otherwise leave the default NULL
-#' @return NULL
-#' @examples {
-#' y <- covariate_forest(1)  
-#' }
+#' @description Produce a forest plot from the covariate model. This is
+#' a wrapper for `bayes_forest()` - see that for documentation.
+#' @param ... parameters passed to `bayes_forest()`
+#' @return List containing:
+#'  \item{svg}{character. SVG code to produce the plot}
+#'  \item{height}{numeric. Plot height in pixels}
+#'  \item{width}{numeric. Plot width in pixels}
+#'
 #' @export
-covariate_forest <- function(x, logger = NULL){
-  NULL
+covariate_forest <- function(...){
+  bayes_forest(...)
 }
 

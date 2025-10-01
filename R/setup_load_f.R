@@ -646,7 +646,7 @@ FindAllTreatments <- function(data, treatment_ids = NULL, study = NULL) {
 }
 
 #' Find all of the studies which include the given treatments, both for long and wide formats.
-#' 
+#'
 #' @param data Data frame in which to search for study names.
 #' @param treatments Vector of matching treatments.
 #' @param all_or_any Set to "all" to return studies containing all treatments. Set to "any" to return studies containing any of the treatments.
@@ -930,6 +930,7 @@ CleanTreatmentIds <- function(treatment_ids) {
 #'
 #' @param df Data frame in which to find covariate columns.
 #' @return Names of all covariate columns
+#' @export
 FindCovariateNames <- function(df) {
   return(names(dplyr::select(df, dplyr::matches(.covariate_prefix_regex))))
 }
@@ -938,6 +939,7 @@ FindCovariateNames <- function(df) {
 #'
 #' @param column_name Covariate column name to convert
 #' @return Friendly covariate name
+#' @export
 GetFriendlyCovariateName <- function(column_name) {
   return(stringr::str_replace(column_name, .covariate_prefix_regex, ""))
 }

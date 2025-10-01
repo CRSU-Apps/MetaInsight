@@ -130,7 +130,7 @@ IdentifySubNetworks <- function(data, treatment_df, reference_treatment_name = N
     reference_treatment <- new_reference_treatment
   }
 
-  graph <- .CreateGraph(data)
+  graph <- CreateGraph(data)
   components <- igraph::components(graph)
   membership <- components$membership
 

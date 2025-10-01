@@ -53,7 +53,7 @@ GelmanPlot <- function(gelman_data, parameter) {
 
 #' Creates Gelman plots for a gemtc or bnma model.
 #'
-#' @param gelman_plots List of outputs from coda::gelman.plot(model$samples[, parm]), where parm is a parameter from the model.
+#' @param gelman_plots List of outputs from `coda::gelman.plot(model$samples[, parm])`, where parm is a parameter from the model.
 #' @param parameters Vector of parameters mentioned in the previous argument.
 #' @return A list of functions that produce Gelman plots mentioned in @param gelman_plots.
 GelmanPlots <- function(gelman_data, parameters) {

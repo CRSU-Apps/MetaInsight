@@ -10,23 +10,43 @@
 #' @param model_type character. The type of model. Either `random` or `fixed`
 #' @param regressor_type character. Type of regression coefficient, either `shared`, `unrelated`, or `exchangeable`
 #' @param reference_treatment character. Reference treatment
-#' @param logger Stores all notification messages to be displayed in the Log
-#'   Window. Insert the logger reactive list here for running in
-#'   shiny, otherwise leave the default NULL
-#' @return NULL
+#' @param covariate_model_output list. The output of the function. Default NULL.
+#' When supplied, only the output is recalculated for a given covariate value,
+#' rather than refitting the model.
+#' @return List of gemtc related output:
+#'  mtc_run_output = output from `gemtc::mtc.run()`
+#'  mtcResults = model object itself carried through (needed to match existing code)
+#'  mtcRelEffects = data relating to presenting relative effects;
+#'  rel_eff_tbl = table of relative effects for each comparison;
+#'  covariate_value = The covariate value originally passed into this function
+#'  reference_name = The name of the reference treatment
+#'  comparator_names = Vector containing the names of the comparators.
+#'  a = text output stating whether fixed or random effects;
+#'  sumresults = summary output of relative effects
+#'  dic = data frame of model fit statistics
+#'  cov_value_sentence = text output stating the value for which the covariate has been set to for producing output
+#'  slopes = named list of slopes for the regression equations (unstandardised - equal to one 'increment')
+#'  intercepts = named list of intercepts for the regression equations at cov_value
+#'  outcome = The outcome type for the analysis eg. "MD" or "OR"
+#'  mtcNetwork = The network object from GEMTC
+#'  model = The type of linear model, either "fixed" or "random"
+#'  covariate_min = Vector of minimum covariate values directly contributing to the regression.
+#'  covariate_max = Vector of maximum covariate values directly contributing to the regression.
 #' @export
-covariate_model <- function(connected_data, treatment_df, outcome, outcome_measure, covariate, cov_friendly, cov_value, model_type, regressor_type, reference_treatment, mtc_run_output = NULL, logger = NULL){
+covariate_model <- function(connected_data, treatment_df, outcome, outcome_measure, covariate, cov_friendly, cov_value, model_type, regressor_type, reference_treatment, covariate_model_output = NULL, async = FALSE){
 
   # move checks from other functions
 
-  if (is.null(mtc_run_output)){
+  if (is.null(covariate_model_output)){
     prepped_data <- PrepDataGemtc(connected_data, treatment_df, outcome, covariate, cov_friendly)
     gemtc_model <- CreateGemtcModel(prepped_data, model_type, outcome_measure, regressor_type, reference_treatment)
     model_output <- gemtc::mtc.run(gemtc_model)
     model_info <- CovariateModelOutput(connected_data, treatment_df, model_output, covariate, cov_value, outcome_measure)
   } else {
-    model_info <- CovariateModelOutput(connected_data, treatment_df, mtc_run_output, covariate, cov_value, outcome_measure)
+    model_info <- CovariateModelOutput(connected_data, treatment_df, covariate_model_output$mtc_run_output, covariate, cov_value, outcome_measure)
   }
+
+  class(model_info) <- c("bayes_model", "covariate_model")
 
   return(model_info)
 }
@@ -145,7 +165,7 @@ CreateGemtcModel <- function(data, model_type, outcome_measure, regressor_type, 
 #'  model = The type of linear model, either "fixed" or "random"
 #'  covariate_min = Vector of minimum covariate values directly contributing to the regression.
 #'  covariate_max = Vector of maximum covariate values directly contributing to the regression.
-CovariateModelOutput <- function(data, treatment_df, model, covariate_title, cov_value, outcome_measure) {
+CovariateModelOutput <- function(connected_data, treatment_df, model, covariate_title, cov_value, outcome_measure) {
 
   mtc_run_output <- model
 
@@ -231,7 +251,7 @@ CovariateModelOutput <- function(data, treatment_df, model, covariate_title, cov
       cov_value_sentence = cov_value_sentence,
       slopes = slopes,
       intercepts = intercepts,
-      outcome = outcome_measure,
+      outcome_measure = outcome_measure,
       mtcNetwork = model$model$network, # why duplicate mtcResults?
       model_type = model$model$linearModel,
       covariate_min = min_max$min,
@@ -254,6 +274,7 @@ CovariateModelOutput <- function(data, treatment_df, model, covariate_title, cov
 #' @return The lowest and highest covariate values of relevant studies. This is structured as a list containing 2 items:
 #' - "min" a named vector of the lowest values, where the names are the treatment names.
 #' - "max" a named vector of the highest values, where the names are the treatment names.
+#' @export
 FindCovariateRanges <- function(connected_data, treatment_df, reference_treatment, covariate_title, baseline_risk = FALSE, outcome = NULL, model = NULL) {
 
   studies <- unique(connected_data$Study)
@@ -308,7 +329,7 @@ FindCovariateRanges <- function(connected_data, treatment_df, reference_treatmen
 
       if (treatment_name %in% study_treatments[, study] && reference_treatment %in% study_treatments[, study]) {
         if (!baseline_risk) {
-          covariate_value <- data[[covariate_title]][data$Study == study][1]
+          covariate_value <- connected_data[[covariate_title]][connected_data$Study == study][1]
         } else {
           covariate_value <- baseline_risk_covariate[study]
         }

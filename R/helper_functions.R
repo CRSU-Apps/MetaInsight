@@ -338,7 +338,7 @@ download_button_pair <- function(id){
 
 #' Create text with the point estimate and 95\% CrI of between-trial SD of treatment effects.
 #'
-#' @param model Output created by bayes_model()
+#' @param model Output created by `bayes_model()`
 #' @return Text with the point estimate and 95\% CrI of between-trial SD of treatment effects (all 0 if fixed effects)
 #' @export
 CreateTauSentence <- function(model) {
