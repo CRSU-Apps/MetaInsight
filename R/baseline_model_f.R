@@ -227,9 +227,9 @@ BaselineRiskModelOutput <- function(connected_data, treatment_df, model, outcome
 #'
 #' @param model bnma model object created by BaselineRiskRegression().
 #' @param covariate_value The covariate value at which to calculate relative effects.
-#' @return Matrix with the median and 95% credible interval relative effect
+#' @return Matrix with the median and 95\% credible interval relative effect
 #'  - columns: '50%', '2.5%' and '97.5%'
-#'  - rows: one row per non-reference treatment, named by the corresponding treatment parameter (e.g. the first one is d[2]).
+#'  - rows: one row per non-reference treatment, named by the corresponding treatment parameter (e.g. the first one is `d[2]`).
 BnmaRelativeEffects <- function(model, covariate_value) {
   model_summary <- summary(model)
   parameters <- rownames(model_summary$summary.samples$quantiles)
@@ -438,7 +438,7 @@ GetBnmaParameters <- function(all_parameters, effects_type, cov_parameters) {
 #' @param covariate_value The covariate value at which to calculate relative effects.
 #' @return Matrix with the median and 95% credible interval relative effect
 #'  - columns: '50%', '2.5%' and '97.5%'
-#'  - rows: one row per non-reference treatment, named by the corresponding treatment parameter (e.g. the first one is d[2]).
+#'  - rows: one row per non-reference treatment, named by the corresponding treatment parameter (e.g. the first one is `d[2]`).
 BnmaRelativeEffects <- function(model, covariate_value) {
 
   parameters <- colnames(model$samples[[1]])
