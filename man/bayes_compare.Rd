@@ -2,20 +2,23 @@
 % Please edit documentation in R/bayes_compare_f.R
 \name{bayes_compare}
 \alias{bayes_compare}
-\title{Creates a table of comparisons of all treatment pairs}
+\alias{covariate_comparison}
+\title{Creates a table of comparisons of all treatment pairs for Bayesian models}
 \usage{
 bayes_compare(model, logger = NULL)
+
+covariate_comparison(...)
 }
 \arguments{
-\item{model}{Model output created by bayes_model().}
+\item{model}{list. Object created by \code{bayes_model()} or \code{covariate_model()}}
 
 \item{logger}{Stores all notification messages to be displayed in the Log
 Window. Insert the logger reactive list here for running in
 shiny, otherwise leave the default \code{NULL}}
 }
 \value{
-Relative effects table created by gemtc::relative.effect.table().
+Relative effects table created by \code{gemtc::relative.effect.table()}
 }
 \description{
-Creates a table of comparisons of all treatment pairs
+Creates a table of comparisons of all treatment pairs for Bayesian models
 }

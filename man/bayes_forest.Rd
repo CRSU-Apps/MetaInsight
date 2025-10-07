@@ -2,6 +2,7 @@
 % Please edit documentation in R/bayes_forest_f.R
 \name{bayes_forest}
 \alias{bayes_forest}
+\alias{covariate_forest}
 \title{Make a Bayesian forest plot}
 \usage{
 bayes_forest(
@@ -12,6 +13,8 @@ bayes_forest(
   ranking = FALSE,
   logger = NULL
 )
+
+covariate_forest(...)
 }
 \arguments{
 \item{model}{list. Object created by \code{bayes_model()} or \code{covariate_model()}}

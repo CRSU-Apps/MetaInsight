@@ -43,3 +43,9 @@ bayes_forest <- function(model, treatment_df, reference_treatment, title = "", r
 
   return(svg)
 }
+
+#' @rdname bayes_forest
+#' @export
+covariate_forest <- function(...){
+  bayes_forest(...)
+}

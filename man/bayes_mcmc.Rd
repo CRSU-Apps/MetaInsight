@@ -2,12 +2,15 @@
 % Please edit documentation in R/bayes_mcmc_f.R
 \name{bayes_mcmc}
 \alias{bayes_mcmc}
+\alias{covariate_mcmc}
 \title{bayes_mcmc}
 \usage{
 bayes_mcmc(model, async = FALSE)
+
+covariate_mcmc(...)
 }
 \arguments{
-\item{model}{Output from \code{bayes_model()}}
+\item{model}{Output from \code{bayes_model()} or \code{covariate_model()}}
 
 \item{async}{Whether or not the function is being used asynchronously. Default \code{FALSE}}
 }

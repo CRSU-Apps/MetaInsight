@@ -1,14 +1,14 @@
 #' Function to create data regarding rank results - CRN
 #'
 #' @param connected_data dataframe. Input data set created by `setup_configure()` or `setup_exclude`
-#' @param treatment_df Dataframe containing the treatment ID ('Number') and the treatment name ('Label').
-#' @param model List. Output produced by bayes_model().
-#' @param ranking_option "good" or "bad", referring to small outcome values.
+#' @param treatment_df dataframe. containing the treatment ID (`Number`) and the treatment name (`Label`).
+#' @param model list. Output produced by `bayes_model()` or `covariate_model()`.
+#' @param ranking_option character. "good" or "bad", referring to small outcome values.
 #' @param logger Stores all notification messages to be displayed in the Log
 #'   Window. Insert the logger reactive list here for running in
 #'   shiny, otherwise leave the default `NULL`
 #'
-#' @return List of output created by rankdata().
+#' @return List of output created by `rankdata()`.
 #' @export
 bayes_ranking <- function(connected_data, treatment_df, model, ranking_option, logger = NULL) {
 
@@ -35,6 +35,14 @@ bayes_ranking <- function(connected_data, treatment_df, model, ranking_option, l
     package = "gemtc"
   )
 }
+
+#' @rdname bayes_ranking
+#' @export
+covariate_ranking <- function(...){
+  bayes_ranking(...)
+}
+
+
 
 #' Get SUCRA data.
 #'

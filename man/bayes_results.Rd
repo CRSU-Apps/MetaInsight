@@ -2,12 +2,15 @@
 % Please edit documentation in R/bayes_results_f.R
 \name{bayes_results}
 \alias{bayes_results}
-\title{Produces a summary of the fitted Bayesian model}
+\alias{covariate_results}
+\title{Produces a summary of a Bayesian model}
 \usage{
 bayes_results(model, logger = NULL)
+
+covariate_results(...)
 }
 \arguments{
-\item{model}{Various model output created by bayes_model()}
+\item{model}{list. Output produced by \code{bayes_model()} or \code{covariate_model()}.}
 
 \item{logger}{Stores all notification messages to be displayed in the Log
 Window. Insert the logger reactive list here for running in
@@ -17,5 +20,5 @@ shiny, otherwise leave the default \code{NULL}}
 HTML summary of the model
 }
 \description{
-Produces a summary of the fitted Bayesian model
+Produces a summary of a Bayesian model
 }

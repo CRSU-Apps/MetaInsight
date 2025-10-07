@@ -2,6 +2,7 @@
 % Please edit documentation in R/bayes_ranking_f.R
 \name{bayes_ranking}
 \alias{bayes_ranking}
+\alias{covariate_ranking}
 \title{Function to create data regarding rank results - CRN}
 \usage{
 bayes_ranking(
@@ -11,22 +12,24 @@ bayes_ranking(
   ranking_option,
   logger = NULL
 )
+
+covariate_ranking(...)
 }
 \arguments{
 \item{connected_data}{dataframe. Input data set created by \code{setup_configure()} or \code{setup_exclude}}
 
-\item{treatment_df}{Dataframe containing the treatment ID ('Number') and the treatment name ('Label').}
+\item{treatment_df}{dataframe. containing the treatment ID (\code{Number}) and the treatment name (\code{Label}).}
 
-\item{model}{List. Output produced by bayes_model().}
+\item{model}{list. Output produced by \code{bayes_model()} or \code{covariate_model()}.}
 
-\item{ranking_option}{"good" or "bad", referring to small outcome values.}
+\item{ranking_option}{character. "good" or "bad", referring to small outcome values.}
 
 \item{logger}{Stores all notification messages to be displayed in the Log
 Window. Insert the logger reactive list here for running in
 shiny, otherwise leave the default \code{NULL}}
 }
 \value{
-List of output created by rankdata().
+List of output created by \code{rankdata()}.
 }
 \description{
 Function to create data regarding rank results - CRN

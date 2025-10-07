@@ -1,6 +1,6 @@
 #' @title bayes_mcmc
 #' @description Produces Markov chain Monte Carlo plots
-#' @param model Output from `bayes_model()`
+#' @param model Output from `bayes_model()` or `covariate_model()`
 #' @param async Whether or not the function is being used asynchronously. Default `FALSE`
 #' @return list containing:
 #' \item{gelman_plots}{Gelman plots}
@@ -11,7 +11,7 @@
 bayes_mcmc <- function(model, async = FALSE){
 
   if (!inherits(model, "bayes_model")){
-    return(async |> asyncLog(type = "error", "model must be an object created by bayes_model()"))
+    logger |> writeLog(type = "error", "model must be an object created by bayes_model() or covariate_model()")
   }
 
   # prevent plots being produced
@@ -31,6 +31,14 @@ bayes_mcmc <- function(model, async = FALSE){
   plots$n_rows <- ceiling(length(parameters) / 2)
   plots
 }
+
+
+#' @rdname bayes_mcmc
+#' @export
+covariate_mcmc <- function(...){
+  bayes_mcmc(...)
+}
+
 
 #' Creates a Gelman plot for a gemtc or bnma model.
 #'

@@ -2,7 +2,7 @@
 % Please edit documentation in R/helper_functions.R
 \name{CreateTauSentence}
 \alias{CreateTauSentence}
-\title{Create text with the point estimate and 95\% CrI of between-trial SD of treatment effects.}
+\title{Create text with the point estimate and 95\\% CrI of between-trial SD of treatment effects.}
 \usage{
 CreateTauSentence(model)
 }
@@ -10,8 +10,8 @@ CreateTauSentence(model)
 \item{model}{Output created by \code{bayes_model()}}
 }
 \value{
-Text with the point estimate and 95\% CrI of between-trial SD of treatment effects (all 0 if fixed effects)
+Text with the point estimate and 95\\% CrI of between-trial SD of treatment effects (all 0 if fixed effects)
 }
 \description{
-Create text with the point estimate and 95\% CrI of between-trial SD of treatment effects.
+Create text with the point estimate and 95\\% CrI of between-trial SD of treatment effects.
 }
