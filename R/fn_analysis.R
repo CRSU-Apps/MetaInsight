@@ -36,14 +36,17 @@ frequentist <- function(data, metaoutcome, treatment_list, outcome_measure, mode
 #' Puts data in contrast form using meta::pairwise().
 #' 
 #' @param data Input dataset.
+#' @param treatment_ids Data frame containing treatment IDs and names in columns named 'Number' and 'Label' respectively
 #' @param outcome "MD", "SMD", "OR", "RR", or "RD".
 #' @param CONBI "Continuous" or "Binary".
 #' @return Input data in contrast form.
-contrastform.df <- function(data, outcome, CONBI) {
+contrastform.df <- function(data, treatment_ids, outcome, CONBI) {
 
   #Create a list of columns of the variables to be passed to meta::pairwise()
   treat_list <- CreateListOfWideColumns(wide_data = data, column_prefix = "T")
   n_list <-  CreateListOfWideColumns(wide_data = data, column_prefix = "N")
+  
+  data <- ReinstateTreatmentIds(data, treatment_ids)
   
   if (CONBI == 'Continuous') {
     
@@ -54,7 +57,7 @@ contrastform.df <- function(data, outcome, CONBI) {
                          n = n_list,
                          mean = mean_list,
                          sd = sd_list,
-                         data = data,                
+                         data = data,
                          sm = outcome,
                          studlab = data$Study)
   } else if (CONBI == 'Binary') {
@@ -70,6 +73,7 @@ contrastform.df <- function(data, outcome, CONBI) {
   } else {
     stop("CONBI must be 'Continuous' or 'Binary'")
   }
+  
   return(d1)
 }
 
@@ -128,6 +132,7 @@ freq.df <- function(model, outcome, dataf, ref) {
                            tol.multiarm = 0.05,
                            tol.multiarm.se = 0.2,
                            warn = TRUE)
+  
   return(net1) 
 }
 
@@ -156,7 +161,7 @@ freq_wrap <- function(data, treat_list, model, outcome, CONBI, ref) {
   progress <- shiny::Progress$new()   # Adding progress bars
   on.exit(progress$close())
   progress$set(message = "Updating", value = 0)
-  d0 <- contrastform.df(data, outcome, CONBI)    # transform data to contrast form
+  d0 <- contrastform.df(data, treat_list, outcome, CONBI)    # transform data to contrast form
   lstx <- treat_list$Label      #obtain treatment labels
   ntx <- length(lstx)     #count treatment numbers
   d1 <- labelmatching.df(d1 = d0, ntx = ntx, treat_list = treat_list) #matching treatment labels to treatment code

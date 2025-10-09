@@ -9,8 +9,11 @@
   'no_contact'
 )
 
-# Column ordering
-.common_order = c("StudyID", "Study")
+# Column ordering at start of data frame
+.common_order_head = c("StudyID", "Study")
+
+# Column ordering at end of data frame
+.common_order_tail = c("RoB", "Indirectness")
 
 #' The column order for a continuous outcome, for wide and long data.
 #' 
@@ -23,7 +26,7 @@
       function(x) paste0(c("T", "N", "Mean", "SD"), x)
     )
   )
-  return(c(.common_order, continuous_specific_order))
+  return(c(.common_order_head, continuous_specific_order, .common_order_tail))
 }
 
 #' The column order for a binary outcome, for wide and long data.
@@ -37,7 +40,7 @@
       function(x) paste0(c("T", "R", "N"), x)
     )
   )
-  return(c(.common_order, binary_specific_order))
+  return(c(.common_order_head, binary_specific_order, .common_order_tail))
 }
 
 .covariate_prefix <- "covar."
