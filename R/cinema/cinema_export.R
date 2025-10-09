@@ -57,14 +57,14 @@
     long_data <- data
   }
   
-  long_data <- ReinstateTreatmentIds(long_data, treatment_ids)
+  long_data <- ReinstateTreatmentIds(long_data, treatment_ids, raw_label = TRUE)
   
   prepared_data <- lapply(
     1:nrow(long_data),
     function(index) {
       item = list()
       
-      item$study <- jsonlite::unbox(long_data[index, "Study"])
+      item$study <- jsonlite::unbox(long_data[index, "RawStudy"])
       item$id <- jsonlite::unbox(long_data[index, "StudyID"])
       item$t <- jsonlite::unbox(long_data[index, "T"])
       item$n <- jsonlite::unbox(long_data[index, "N"])
@@ -112,11 +112,36 @@
     stop(glue::glue("Model type'{model_type}' not supported"))
   }
   
+  nma_col_names = c(
+    "Direct",
+    "DirectL",
+    "DirectU",
+    "Indirect",
+    "IndirectL",
+    "IndirectU",
+    "SideIF",
+    "SideIFlower",
+    "SideIFupper",
+    "SideZ",
+    "SidePvalue",
+    "PropDir",
+    "NMA treatment effect",
+    "se treat effect",
+    "lower CI",
+    "upper CI",
+    "lower PrI",
+    "upper PrI",
+    "PropDirNetmeta"
+  )
+  
   prepared_hat_matrix <- list(
     colNames = colnames(hat_matrix),
+    colNamesNMAresults = nma_col_names,
     H = hat_matrix,
     model = jsonlite::unbox(model_type),
+    NMAresults = .PrepareComparisonsForCinema(contributions, model_type, outcome_measure),
     rowNames = rownames(hat_matrix),
+    rowNamesNMAresults = rownames(hat_matrix),
     sm = jsonlite::unbox(outcome_measure)
   )
   
@@ -193,5 +218,164 @@ GenerateCinemaJson <- function(data, treatment_ids, outcome_type, contributions,
     model_type,
     outcome_measure
   )
-  return(jsonlite::toJSON(prepared_project, pretty = TRUE))
+  return(jsonlite::toJSON(prepared_project, pretty = TRUE, na = "null"))
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.PrepareComparisonsForCinema <- function(contributions, model_type, outcome_measure) {
+  if (model_type == "random") {
+    comparisons <- names(contributions$x$prop.direct.random)
+  } else if (model_type == "fixed") {
+    comparisons <- names(contributions$x$prop.direct.common)
+  } else {
+    stop(glue::glue("Model type '{model_type}' is not supported. Please use 'random' or 'fixed'"))
+  }
+  
+  
+  prepared_analysis <- lapply(
+    comparisons,
+    function(comparison) {
+      return(.PrepareComparisonForCinema(contributions$x, model_type, comparison))
+    }
+  )
+  
+  return(prepared_analysis)
+}
+
+.PrepareComparisonForCinema <- function(contributions, model_type, comparison) {
+  if (model_type != "random" && model_type != "fixed") {
+    stop(glue::glue("Model type '{model_type}' is not supported. Please use 'random' or 'fixed'"))
+  }
+  
+  x <<- contributions
+  
+  treatments <- stringr::str_extract(comparison, "^(.*?):(.*)$", c(1, 2))
+  row <- treatments[1]
+  col <- treatments[2]
+  
+  if (model_type == "random") {
+    direct <- contributions$TE.direct.random[row, col]
+    indirect <- contributions$TE.indirect.random[row, col]
+    
+    direct_lower <- contributions$lower.direct.random[row, col]
+    direct_upper <- contributions$upper.direct.random[row, col]
+    indirect_lower <- contributions$lower.indirect.random[row, col]
+    indirect_upper <- contributions$upper.indirect.random[row, col]
+    
+    sideif <- .CalculateSideif(direct, indirect, direct_lower, direct_upper, indirect_lower, indirect_upper)
+    
+    prepared_comparison <- list(
+      "Direct" = jsonlite::unbox(direct),
+      "DirectL" = jsonlite::unbox(direct_lower),
+      "DirectU" = jsonlite::unbox(direct_upper),
+      "Indirect" = jsonlite::unbox(indirect),
+      "IndirectL" = jsonlite::unbox(indirect_lower),
+      "IndirectU" = jsonlite::unbox(indirect_upper),
+      "SideIF" = jsonlite::unbox(sideif$sideif),
+      "SideIFlower" = jsonlite::unbox(sideif$sideif_lower),
+      "SideIFupper" = jsonlite::unbox(sideif$sideif_upper),
+      "SideZ" = jsonlite::unbox(sideif$sideif_z),
+      "SidePvalue" = jsonlite::unbox(sideif$sideif_pval),
+      "PropDir" = jsonlite::unbox(contributions$prop.direct.random[comparison]),
+      "NMA treatment effect" = jsonlite::unbox(contributions$TE.random[row, col]),
+      "se treat effect" = jsonlite::unbox(contributions$seTE.random[row, col]),
+      "lower CI" = jsonlite::unbox(contributions$lower.random[row, col]),
+      "upper CI" = jsonlite::unbox(contributions$upper.random[row, col]),
+      "lower PrI" = jsonlite::unbox(contributions$lower.predict[row, col]),
+      "upper PrI" = jsonlite::unbox(contributions$upper.predict[row, col]),
+      "PropDirNetmeta" = jsonlite::unbox(contributions$prop.direct.random[comparison]),
+      "_row" = jsonlite::unbox(comparison)
+    )
+  } else if (model_type == "fixed") {
+    direct <- contributions$TE.direct.common[row, col]
+    indirect <- contributions$TE.indirect.common[row, col]
+    
+    direct_lower <- contributions$lower.direct.common[row, col]
+    direct_upper <- contributions$upper.direct.common[row, col]
+    indirect_lower <- contributions$lower.indirect.common[row, col]
+    indirect_upper <- contributions$upper.indirect.common[row, col]
+    
+    sideif <- .CalculateSideif(direct, indirect, direct_lower, direct_upper, indirect_lower, indirect_upper)
+    
+    prepared_comparison <- list(
+      "Direct" = jsonlite::unbox(direct),
+      "DirectL" = jsonlite::unbox(direct_lower),
+      "DirectU" = jsonlite::unbox(direct_upper),
+      "Indirect" = jsonlite::unbox(indirect),
+      "IndirectL" = jsonlite::unbox(indirect_lower),
+      "IndirectU" = jsonlite::unbox(indirect_upper),
+      "SideIF" = jsonlite::unbox(sideif$sideif),
+      "SideIFlower" = jsonlite::unbox(sideif$sideif_lower),
+      "SideIFupper" = jsonlite::unbox(sideif$sideif_upper),
+      "SideZ" = jsonlite::unbox(sideif$sideif_z),
+      "SidePvalue" = jsonlite::unbox(sideif$sideif_pval),
+      "PropDir" = jsonlite::unbox(contributions$prop.direct.common[comparison]),
+      "NMA treatment effect" = jsonlite::unbox(contributions$TE.common[row, col]),
+      "se treat effect" = jsonlite::unbox(contributions$seTE.common[row, col]),
+      "lower CI" = jsonlite::unbox(contributions$lower.common[row, col]),
+      "upper CI" = jsonlite::unbox(contributions$upper.common[row, col]),
+      "lower PrI" = jsonlite::unbox(contributions$lower.predict[row, col]),
+      "upper PrI" = jsonlite::unbox(contributions$upper.predict[row, col]),
+      "PropDirNetmeta" = jsonlite::unbox(contributions$prop.direct.common[comparison]),
+      "_row" = jsonlite::unbox(comparison)
+    )
+  }
+  
+  return(prepared_comparison[!is.na(prepared_comparison)])
+}
+
+.CalculateSideif <- function(direct, indirect, direct_lower, direct_upper, indirect_lower, indirect_upper) {
+  direct_se <- (direct_upper - direct_lower) / (2 * 1.96)
+  indirect_se <- (indirect_upper - indirect_lower) / (2 * 1.96)
+  
+  sideif <- direct - indirect
+  sideif_se <- sqrt((direct_se * direct_se) + (indirect_se * indirect_se))
+  sideif_lower <- sideif - sideif_se * 1.96
+  sideif_upper <- sideif + sideif_se * 1.96
+  
+  sideif_z <- sideif / sideif_se
+  sideif_pval <- 2 * pnorm(q = -abs(sideif), mean = 0, sd = sideif_se)
+  
+  return(
+    list(
+      sideif = sideif,
+      sideif_lower = sideif_lower,
+      sideif_upper = sideif_upper,
+      sideif_z = sideif_z,
+      sideif_pval = sideif_pval
+    )
+  )
 }
