@@ -20,8 +20,17 @@ rep_markdown_module_server <- function(id, common, parent_session, COMPONENT_MOD
     .GlobalEnv$make_report <- function(rep_markdown_file_type){
 
       md_files <- c()
+
+      rmd_intro_file <- tempfile(pattern = "intro_", fileext = ".Rmd")
+      knit_params <- c(
+        file = "Rmd/userReport_intro.Rmd",
+        list(seed = common$seed)
+      )
+      intro_rmd <- do.call(knitr::knit_expand, knit_params)
+      writeLines(intro_rmd, rmd_intro_file)
+
       md_intro_file <- tempfile(pattern = "intro_", fileext = ".md")
-      rmarkdown::render("Rmd/userReport_intro.Rmd",
+      rmarkdown::render(rmd_intro_file,
                         output_format = rmarkdown::github_document(html_preview = FALSE),
                         output_file = md_intro_file,
                         clean = TRUE,
