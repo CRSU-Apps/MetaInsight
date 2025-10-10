@@ -9,13 +9,15 @@
 #' y <- baseline_model(1)
 #' }
 #' @export
-baseline_model <- function(connected_data, treatment_df, outcome, reference_treatment, model_type, cov_parameters, seed, logger = NULL){
+baseline_model <- function(connected_data, treatment_df, outcome, reference_treatment, model_type, cov_parameters, seed, async = FALSE){
 
   model <- BaselineRiskRegression(connected_data, treatment_df, outcome, reference_treatment, model_type, cov_parameters, seed)
 
   output <- BaselineRiskModelOutput(connected_data, treatment_df, model, outcome_measure)
 
-  return(list(output = output, model = model))
+  class(output) <- "baseline_model"
+
+  return(output)
 }
 
 #' Takes MetaInsight data and converts it into BNMA format
@@ -29,7 +31,7 @@ baseline_model <- function(connected_data, treatment_df, outcome, reference_trea
 #'  - 'Treat.order' = Vector of (unique) treatments, with the reference treatment first
 FormatForBnma <- function(connected_data, treatment_df, outcome, reference_treatment) {
   if (FindDataShape(connected_data) == "wide") {
-    br_data <- as.data.frame(WideToLong(connected_data, outcome_type = outcome))
+    br_data <- as.data.frame(WideToLong(connected_data, outcome = outcome))
   } else if (FindDataShape(connected_data) == "long") {
     br_data <- connected_data
   } else {
@@ -156,6 +158,7 @@ BaselineRiskRegression <- function(connected_data, treatment_df, outcome, refere
 #'  model = effects type, "fixed" or "random".
 #'  covariate_min = Vector of minimum covariate values directly contributing to the regression.
 #'  covariate_max = Vector of maximum covariate values directly contributing to the regression.
+#'  dic = Summary of model fit
 BaselineRiskModelOutput <- function(connected_data, treatment_df, model, outcome_measure) {
 
   treatments <- model$network$Treat.order
@@ -205,6 +208,8 @@ BaselineRiskModelOutput <- function(connected_data, treatment_df, model, outcome
     model = model
   )
 
+  dic <- BaselineRiskDicTable(model)
+
   return(list(mtcResults = model,
               covariate_value = mean_covariate_value,
               reference_name = reference_treatment,
@@ -216,7 +221,8 @@ BaselineRiskModelOutput <- function(connected_data, treatment_df, model, outcome
               outcome = outcome,
               model = model$network$type,
               covariate_min = min_max$min,
-              covariate_max = min_max$max
+              covariate_max = min_max$max,
+              dic = dic
   )
   )
 }
@@ -460,4 +466,12 @@ BnmaRelativeEffects <- function(model, covariate_value) {
 
   relative_effects <- MCMCvis::MCMCsummary(samples)
   return(as.matrix(relative_effects[, c("50%", "2.5%", "97.5%")]))
+}
+
+
+BaselineRiskDicTable <- function(br_model) {
+  summary <- summary(br_model)
+  dic_table <- c(summary$deviance, summary$total_n)
+  names(dic_table)[4] <- "Data points"
+  return(dic_table)
 }

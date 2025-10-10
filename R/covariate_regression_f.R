@@ -12,17 +12,17 @@
 covariate_regression <- function(model_output,
                                  connected_data,
                                  covariate_column,
-                                 covariate_name,
                                  treatment_df,
                                  outcome,
                                  outcome_measure,
                                  model_type,
                                  async = FALSE){
 
-  cov_parameters <- model_output$mtcResults$model$regressor$coefficient
+  # need to look this up
+  # cov_parameters <- model_output$mtcResults$model$regressor$coefficient
 
   if (FindDataShape(connected_data) == "wide") {
-    connected_data<- WideToLong(connected_data, outcome = outcome)
+    connected_data <- WideToLong(connected_data, outcome = outcome)
   }
   directness <- CalculateDirectness(
     data = connected_data,

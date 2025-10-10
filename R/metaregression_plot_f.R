@@ -23,7 +23,7 @@
 #'
 #' @return Created ggplot2 object.
 #' @export
-covariate_regression_plot <- function(
+metaregression_plot <- function(
     model_output,
     treatment_df,
     outcome_measure,

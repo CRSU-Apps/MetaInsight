@@ -1,5 +1,5 @@
 #' Produce deviance plots
-#' @param model list. Object created by `bayes_model()` or `covariate_model()`
+#' @param model Bayesian model produced by bayes_model
 #' @param async Whether or not the function is being used asynchronously. Default `FALSE`
 #' @return list containing:
 #'  \item{deviance_mtc}{results from `gemtc::mtc.deviance()` for model$mtcResults}
@@ -12,8 +12,7 @@
 bayes_deviance <- function(model, async = FALSE){
 
   if (!inherits(model, "bayes_model")){
-    logger |> writeLog(type = "error", "model must be an object created by bayes_model() or covariate_model()")
-    return()
+    return(async |> asyncLog(type = "error", "model must be an object created by bayes_model()"))
   }
 
   deviance <- gemtc::mtc.deviance(model$mtcResults)
@@ -26,13 +25,6 @@ bayes_deviance <- function(model, async = FALSE){
     stem_plot = stem_plot(deviance),
     lev_plot = lev_plot(deviance))
 }
-
-#' @rdname bayes_deviance
-#' @export
-covariate_deviance <- function(...){
-  bayes_deviance(...)
-}
-
 
 #' UME scatter plot
 #' @param model Bayesian model produced by bayes_model

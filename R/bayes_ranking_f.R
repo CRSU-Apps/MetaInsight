@@ -4,13 +4,14 @@
 #' @param treatment_df dataframe. containing the treatment ID (`Number`) and the treatment name (`Label`).
 #' @param model list. Output produced by `bayes_model()` or `covariate_model()`.
 #' @param ranking_option character. "good" or "bad", referring to small outcome values.
+#' @param cov_value numeric. Covariate value if a meta-regression. Default `NA`
 #' @param logger Stores all notification messages to be displayed in the Log
 #'   Window. Insert the logger reactive list here for running in
 #'   shiny, otherwise leave the default `NULL`
 #'
 #' @return List of output created by `rankdata()`.
 #' @export
-bayes_ranking <- function(connected_data, treatment_df, model, ranking_option, logger = NULL) {
+bayes_ranking <- function(connected_data, treatment_df, model, ranking_option, cov_value = NA, logger = NULL) {
 
   check_param_classes(c("connected_data", "treatment_df", "ranking_option"),
                       c("data.frame", "data.frame", "character"), logger)
@@ -20,7 +21,7 @@ bayes_ranking <- function(connected_data, treatment_df, model, ranking_option, l
     return()
   }
 
-  if (!inherits(model, "bayes_model")){
+  if (!inherits(model, "bayes_model") && !inherits(model, "baseline_model")){
     logger |> writeLog(type = "error", "model must be an object created by bayes_model()")
     return()
   }
@@ -31,8 +32,8 @@ bayes_ranking <- function(connected_data, treatment_df, model, ranking_option, l
     NMAdata = model$mtcResults,
     rankdirection = ranking_option,
     longdata = longsort,
-    cov_value = NA,
-    package = "gemtc"
+    cov_value = cov_value,
+    package = ifelse(inherits(model, "baseline_model"), "bnma", "gemtc")
   )
 }
 
