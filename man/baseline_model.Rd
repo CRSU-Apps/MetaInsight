@@ -12,15 +12,15 @@ baseline_model(
   model_type,
   cov_parameters,
   seed,
-  logger = NULL
+  async = FALSE
 )
 }
 \arguments{
+\item{x}{x}
+
 \item{logger}{Stores all notification messages to be displayed in the Log
 Window. Insert the logger reactive list here for running in
 shiny, otherwise leave the default NULL}
-
-\item{x}{x}
 }
 \description{
 Does x

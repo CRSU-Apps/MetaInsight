@@ -4,7 +4,16 @@
 \alias{baseline_regression}
 \title{baseline_regression}
 \usage{
-baseline_regression(x, logger = NULL)
+baseline_regression(
+  model_output,
+  connected_data,
+  covariate_title,
+  treatment_df,
+  outcome,
+  outcome_measure,
+  model_type,
+  async = FALSE
+)
 }
 \arguments{
 \item{x}{x}
@@ -18,6 +27,6 @@ Does x
 }
 \examples{
 {
-y <- baseline_regression(1)  
+y <- baseline_regression(1)
 }
 }

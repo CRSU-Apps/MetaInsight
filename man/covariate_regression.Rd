@@ -8,7 +8,6 @@ covariate_regression(
   model_output,
   connected_data,
   covariate_column,
-  covariate_name,
   treatment_df,
   outcome,
   outcome_measure,
