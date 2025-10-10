@@ -25,8 +25,8 @@
                     },
                     "colNamesNMAresults": {
                       "type": "array",
-                      "minItems": 19,
-                      "maxItems": 19,
+                      "minItems": 20,
+                      "maxItems": 20,
                       "uniqueItems": true,
                       "items": {
                         "type": "string",
@@ -49,7 +49,8 @@
                           "upper CI",
                           "lower PrI",
                           "upper PrI",
-                          "PropDirNetmeta"
+                          "PropDirNetmeta",
+                          "_row"
                         ]
                       }
                     },

@@ -3,7 +3,7 @@ test_that("Data wrangled from default continuous long file", {
   testServer(load_data_page_server, {
     session$setInputs("data_input_panel-metaoutcome" = 'Continuous')
 
-    expect_equal(colnames(wrangled_data()), c("StudyID", colnames(data())[c(1, 2, 5, 3, 4, 6)]),
+    expect_equal(colnames(wrangled_data()), c("StudyID", colnames(data())[1], "RawStudy", colnames(data())[c(2, 5, 3, 4, 6)]),
                  label = format_vector_to_string(colnames(wrangled_data())))
     
     expect_equal(wrangled_data()$StudyID, rep(1:45, each = 2),
@@ -83,8 +83,8 @@ test_that("Wrangled continuous long data passed back to module parent", {
 test_that("Data wrangled from default binary long file", {
   testServer(load_data_page_server, {
     session$setInputs("data_input_panel-metaoutcome" = 'Binary')
-
-    expect_equal(colnames(wrangled_data()), c("StudyID", colnames(data())[c(1, 2, 4, 3, 5)]),
+    
+    expect_equal(colnames(wrangled_data()), c("StudyID", colnames(data())[1], "RawStudy", colnames(data())[c(2, 4, 3, 5)]),
                  label = format_vector_to_string(colnames(wrangled_data())))
 
     expect_equal(wrangled_data()$StudyID, rep(1:12, each = 2),

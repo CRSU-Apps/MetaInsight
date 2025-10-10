@@ -131,7 +131,8 @@
     "upper CI",
     "lower PrI",
     "upper PrI",
-    "PropDirNetmeta"
+    "PropDirNetmeta",
+    "_row"
   )
   
   prepared_hat_matrix <- list(

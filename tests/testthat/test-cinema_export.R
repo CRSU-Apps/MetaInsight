@@ -3,7 +3,8 @@ LoadCinemaData <- function(file_path = "data/cinema_data/NMA_data_binary_FE_two_
   data <- CleanData(read.csv(file_path))
   outcome_type = "Binary"
   all_treatments <- FindAllTreatments(data)
-  treatment_ids <- CreateTreatmentIds(all_treatments)
+  treatment_ids <- CreateTreatmentIds(all_treatments) |>
+    CleanTreatmentIds()
   data <- WrangleUploadData(data, treatment_ids, outcome_type)
   
   return(
@@ -16,7 +17,7 @@ LoadCinemaData <- function(file_path = "data/cinema_data/NMA_data_binary_FE_two_
 }
 
 GenerateCinemaAnalysis <- function(cinema_data, model_type, outcome_measure) {
-  reference = cinema_data$treatment_ids$Label[cinema_data$treatment_ids$Number == 1]
+  reference <- cinema_data$treatment_ids$Label[cinema_data$treatment_ids$Number == 1]
   wide_data <- LongToWide(long_data = cinema_data$long_data, outcome_type = cinema_data$outcome_type)
   
   # transform data to contrast form
@@ -206,10 +207,14 @@ test_that("Should export expected row and column names", {
     exported_project$project$CM$contributionMatrices$hatmatrix$rowNamesNMAresults,
     "NMA result row names"
   )
+  
+  # "_row" column is a special case which is handled differently
+  exportedColNames <- exported_project$project$CM$contributionMatrices$hatmatrix$colNamesNMAresults
+  exportedColNames <- exportedColNames[-which(exportedColNames == "_row")]
 
   expect_equal_and_not_na(
     imported_project$project$CM$contributionMatrices$hatmatrix$colNamesNMAresults,
-    exported_project$project$CM$contributionMatrices$hatmatrix$colNamesNMAresults,
+    exportedColNames,
     "NMA result column names"
   )
 })
