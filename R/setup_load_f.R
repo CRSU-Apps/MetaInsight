@@ -48,7 +48,8 @@ setup_load <- function(data_path = NULL, outcome, logger = NULL){
     if (outcome == "Continuous"){
       data_path <- system.file("extdata", "continuous_long.csv", package = "metainsight")
     } else {
-      data_path <- system.file("extdata", "binary_long.csv", package = "metainsight")
+      data_path <- system.file("extdata", "diabetes.csv", package = "metainsight")
+      # data_path <- system.file("extdata", "binary_long.csv", package = "metainsight")
     }
   }
 

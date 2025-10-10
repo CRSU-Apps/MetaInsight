@@ -36,6 +36,7 @@ base_module_configs <- c(
   "modules/freq_compare.yml",
   "modules/freq_inconsistent.yml",
   "modules/freq_summary.yml",
+  "modules/freq_cinema_export.yml",
   "modules/bayes_model.yml",
   "modules/bayes_forest.yml",
   "modules/bayes_compare.yml",

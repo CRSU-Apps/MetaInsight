@@ -1,9 +1,14 @@
 setup_load_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
-    radioButtons(ns("outcome"), "Select outcome type", choices = c(
-      "Continuous (e.g. mean difference) " = "Continuous",
-      "Binary (e.g. Odds Ratio)" = "Binary")
+    radioButtons(
+      ns("outcome"),
+      "Select outcome type",
+      choices = c(
+        "Continuous (e.g. mean difference) " = "Continuous",
+        "Binary (e.g. Odds Ratio)" = "Binary"
+      ),
+      selected = "Binary"
     ),
     radioButtons(ns("format"), "Select data format", choices = c(
       "Long" = "long",
