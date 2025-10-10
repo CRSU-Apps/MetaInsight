@@ -12,9 +12,8 @@ covariate_ranking_module_server <- function(id, common, parent_session) {
 
     # check that a fitted model exists and error if not
     observeEvent(input$run, {
-      print("hello")
       if (is.null(common$covariate_model)){
-        common$logger |> writeLog(type = "error", "Please fit the Covariate model first")
+        common$logger |> writeLog(type = "error", "Please fit the covariate model first")
         return()
       } else {
         trigger("covariate_ranking")

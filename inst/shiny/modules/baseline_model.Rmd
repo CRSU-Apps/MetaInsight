@@ -1,8 +1,8 @@
 ```{asis, echo = {{baseline_model_knit}}, eval = {{baseline_model_knit}}, include = {{baseline_model_knit}}}
-Description of what the code will do {{var1}}
+### Fit the baseline risk model
 ```
 
 ```{r, echo = {{baseline_model_knit}}, include = {{baseline_model_knit}}}
-# R code to run {{var2}}
-# Populate using metadata()
+baseline_model <- baseline_model(main_connected_data, treatment_df, outcome, reference_treatment_all,
+                                 model_type, {{baseline_model_regressor}}, seed)
 ```

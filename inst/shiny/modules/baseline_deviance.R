@@ -49,7 +49,6 @@ baseline_deviance_module_result <- function(id) {
 
 
 baseline_deviance_module_rmd <- function(common) {
-  # Variables used in the module's Rmd code
-  # Populate using metadata()
+  list(baseline_deviance_knit = !is.null(common$meta$baseline_deviance$used))
 }
 

@@ -1,4 +1,4 @@
-covariate_forest_module_ui <- function(id) {
+metaregression_forest_module_ui <- function(id) {
   ns <- NS(id)
   tagList(
     actionButton(ns("run"), "Generate plot", icon = icon("arrow-turn-down")),
@@ -6,29 +6,39 @@ covariate_forest_module_ui <- function(id) {
   )
 }
 
-covariate_forest_module_server <- function(id, common, parent_session) {
+covariate_forest_module_ui <- function(id) {
+  ns <- NS(id)
+  metaregression_forest_module_ui(ns("covariate"))
+}
+
+
+metaregression_forest_module_server <- function(id, common) {
   moduleServer(id, function(input, output, session) {
 
     shinyjs::hide("download")
 
+    module <- glue::glue("{id}_forest")
+    model <- glue::glue("{id}_model")
+
     observeEvent(input$run, {
-      if (is.null(common$covariate_model)){
-        common$logger |> writeLog(type = "error", "Please fit the covariate model first")
+      if (is.null(common[[model]])){
+        common$logger |> writeLog(type = "error", glue::glue("Please fit the {id} model first"))
         return()
       } else {
-        common$meta$covariate_forest$used <- TRUE
+        common$meta[[module]]$used <- TRUE
         shinyjs::show("download")
-        trigger("covariate_forest")
+        trigger(module)
       }
     })
 
     svg <- reactive({
-      watch("covariate_model_fit")
-      req(watch("covariate_forest") > 0)
-      covariate_forest(common$covariate_model,
-                       common$treatment_df,
-                       common$reference_treatment_all,
-                       "Covariate regression analysis")
+      watch(glue::glue("{model}_fit"))
+      req(watch(module) > 0)
+      do.call(module, list(common[[model]],
+                           common$treatment_df,
+                           common$reference_treatment_all,
+                           glue::glue("{stringr::str_to_title(id)} regression analysis")
+                           ))
     })
 
     output$plot <- renderUI({
@@ -40,27 +50,37 @@ covariate_forest_module_server <- function(id, common, parent_session) {
 
     output$download <- downloadHandler(
       filename = function() {
-        "MetaInsight_covariate_forest_plot.{common$download_format}"
+        glue::glue("MetaInsight_{id}_forest_plot.{common$download_format}")
       },
       content = function(file) {
         write_svg_plot(file, common$download_format, svg())
       }
     )
 
+  })
+}
+
+covariate_forest_module_server <- function(id, common, parent_session) {
+  moduleServer(id, function(input, output, session) {
+    metaregression_forest_module_server("covariate", common)
 })
 }
 
 
-covariate_forest_module_result <- function(id) {
+metaregression_forest_module_result <- function(id) {
   ns <- NS(id)
   div(align = "center",
       uiOutput(ns("plot"))
   )
 }
 
+covariate_forest_module_result <- function(id) {
+  ns <- NS(id)
+  metaregression_forest_module_result(ns("covariate"))
+}
+
 
 covariate_forest_module_rmd <- function(common) {
-  # Variables used in the module's Rmd code
-  # Populate using metadata()
+  list(covariate_forest_knit = !is.null(common$meta$covariate_forest$used))
 }
 

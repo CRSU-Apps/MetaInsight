@@ -75,7 +75,13 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
 
     observeEvent(run(),{
       req(common[[model]])
-      common[[ranking]] <- bayes_ranking(common[[connected_data]], common[[treatments]], common[[model]], common$ranking_option)
+
+      if (ranking == "covariate_ranking"){
+        cov_value <- common$covariate_value
+      } else {
+        cov_value <- NA
+      }
+      common[[ranking]] <- bayes_ranking(common[[connected_data]], common[[treatments]], common[[model]], common$ranking_option, cov_value)
       trigger(trigger)
     })
 
@@ -83,11 +89,19 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
       req(watch(trigger) > 0)
       tdf <- ifelse(id == "all", "treatment_df", "subsetted_treatment_df")
 
-      bayes_forest(common[[model]],
-                   common[[tdf]],
-                   common[[paste0("reference_treatment_", id)]],
-                   "",
-                   TRUE)
+      if (ranking == "baseline_ranking"){
+        baseline_forest(common[[model]],
+                        common[[tdf]],
+                        common[[paste0("reference_treatment_", id)]],
+                        "")
+      } else {
+        bayes_forest(common[[model]],
+                     common[[tdf]],
+                     common[[paste0("reference_treatment_", id)]],
+                     "",
+                     TRUE)
+      }
+
     })
 
     output$forest <- renderUI({

@@ -2,11 +2,6 @@
 ### Produce forest plot of the covariate model
 ```
 
-```{r, echo = {{covariate_forest_knit}}, include = {{covariate_forest_knit}}}
-# R code to run {{var2}}
-# Populate using metadata()
-```
-
 ```{asis, echo = {{covariate_forest_knit}}, eval = {{covariate_forest_knit}}, include = {{covariate_forest_knit}}}
 {r, results = 'asis'}
 ```

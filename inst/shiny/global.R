@@ -1,11 +1,8 @@
 library(glue)
 library(metainsight)
-# shouldn't be necessary, but ..?
-library(magrittr)
 
-mirai::daemons(4)
+mirai::daemons(4) # add sync = TRUE for debugging
 onStop(function() mirai::daemons(0))
-
 
 MB <- 1024^2
 UPLOAD_SIZE_MB <- 5000

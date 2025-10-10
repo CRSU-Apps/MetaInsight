@@ -50,7 +50,6 @@ covariate_comparison_module_result <- function(id) {
 
 
 covariate_comparison_module_rmd <- function(common) {
-  # Variables used in the module's Rmd code
-  # Populate using metadata()
+  list(covariate_comparison_knit = !is.null(common$meta$covariate_comparison$used))
 }
 

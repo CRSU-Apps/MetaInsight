@@ -1,55 +1,65 @@
 baseline_ranking_module_ui <- function(id) {
-  ns <- shiny::NS(id)
+  ns <- NS(id)
   tagList(
-    # UI
-
-
-    actionButton(ns("run"), "Run module baseline_ranking", icon = icon("arrow-turn-down"))
-
+    bayes_ranking_module_ui("baseline_ranking")
   )
 }
 
 baseline_ranking_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
+    shinyjs::hide(selector = ".baseline_ranking_div")
 
-  observeEvent(input$run, {
-    # WARNING ####
+    # check that a fitted model exists and error if not
+    observeEvent(input$run, {
+      if (is.null(common$baseline_model)){
+        common$logger |> writeLog(type = "error", "Please fit the baseline model first")
+        return()
+      } else {
+        trigger("baseline_ranking")
+      }
+    })
 
-    # FUNCTION CALL ####
+    # trigger for the main analysis - when run is clicked, but only if there is a valid model
+    all_trigger <- reactive({
+      if (watch("baseline_ranking") > 0){
+        return(list(watch("baseline_ranking"), watch("baseline_model_fit")))
+      }
+    })
 
-    # LOAD INTO COMMON ####
 
-    # METADATA ####
-    # Populate using metadata()
+    # put these in an observe so that they are updated whenever the choices change
+    observe({
+      if (watch("baseline_ranking") > 0){
+        # METADATA ####
+        common$meta$baseline_ranking$used <- TRUE
+        common$meta$baseline_ranking$colourblind <- input$colourblind
+        common$meta$baseline_ranking$simple <- input$simple
+        common$meta$baseline_ranking$network_style <- input$network_style
+        common$meta$baseline_ranking$rank_style <- input$rank_style
+      }
+    })
 
-    # TRIGGER
-    trigger("baseline_ranking")
-
+    bayes_ranking_submodule_server("all", common, reactive(input$network_style), reactive(input$rank_style), reactive(input$colourblind), reactive(input$simple),
+                                   ".baseline_ranking_div", "baseline_model", "baseline_ranking", "main_connected_data", "treatment_df", all_trigger, "baseline_ranking_plot")
 
   })
-
-  output$result <- renderText({
-    watch("baseline_ranking")
-    # Result
-  })
-
-
-
-})
 }
 
 
 baseline_ranking_module_result <- function(id) {
   ns <- NS(id)
-
-  # Result UI
-  verbatimTextOutput(ns("result"))
+  fluidRow(
+    bayes_ranking_submodule_result(ns("all"), "Ranking panel for all studies", "baseline_ranking_div")
+  )
 }
 
 
-baseline_ranking_module_rmd <- function(common) {
-  # Variables used in the module's Rmd code
-  # Populate using metadata()
+baseline_ranking_module_rmd <- function(common) {list(
+  baseline_ranking_knit = !is.null(common$meta$baseline_ranking$used),
+  baseline_ranking_colourblind = common$meta$baseline_ranking$colourblind,
+  baseline_ranking_simple = common$meta$baseline_ranking$simple,
+  baseline_ranking_network_style = common$meta$baseline_ranking$network_style,
+  baseline_ranking_rank_style = common$meta$baseline_ranking$rank_style)
 }
 

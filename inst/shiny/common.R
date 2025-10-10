@@ -34,8 +34,12 @@ common_class <- R6::R6Class(
    bayes_mcmc_all = NULL,
    bayes_mcmc_sub = NULL,
    baseline_summary_plot = NULL,
+   baseline_model = NULL,
+   baseline_regression = NULL,
+   baseline_ranking = NULL,
    covariate_summary_plot = NULL,
    covariate_model = NULL,
+   covariate_value = NULL,
    covariate_column = NULL,
    covariate_name = NULL,
    covariate_regression = NULL,
@@ -82,8 +86,12 @@ common_class <- R6::R6Class(
      self$bayes_mcmc_all <- NULL
      self$bayes_mcmc_sub <- NULL
      self$baseline_summary_plot <- NULL
+     self$baseline_model <- NULL
+     self$baseline_regression <- NULL
+     self$baseline_ranking <- NULL
      self$covariate_summary_plot <- NULL
      self$covariate_model <- NULL
+     self$covariate_value <- NULL
      self$covariate_column <- NULL
      self$covariate_name <- NULL
      self$covariate_regression <- NULL

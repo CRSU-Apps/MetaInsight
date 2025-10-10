@@ -10,10 +10,10 @@ cat(covariate_model$mtcResults$model$code, fill = FALSE, labels = NULL, append =
 covariate_model$mtcResults$model$inits
 ```
 
-```{r, echo = {{all(covariate_details_knit, covariate_deviance_knit)}}, include = {{all(covariate_details_knit, bayes_deviance_knit)}}}
+```{r, echo = {{all(covariate_details_knit, covariate_deviance_knit)}}, include = {{all(covariate_details_knit, covariate_deviance_knit)}}}
 covariate_deviance$deviance_mtc
 ```
 
-```{r, echo = {{all(covariate_details_knit, covariate_deviance_knit)}}, include = {{all(covariate_details_knit, bayes_deviance_knit)}}}
+```{r, echo = {{all(covariate_details_knit, covariate_deviance_knit)}}, include = {{all(covariate_details_knit, covariate_deviance_knit)}}}
 covariate_deviance$deviance_ume
 ```

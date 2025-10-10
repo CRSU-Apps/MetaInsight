@@ -1,8 +1,30 @@
 ```{asis, echo = {{baseline_regression_knit}}, eval = {{baseline_regression_knit}}, include = {{baseline_regression_knit}}}
-Description of what the code will do {{var1}}
+### Baseline regression
 ```
 
 ```{r, echo = {{baseline_regression_knit}}, include = {{baseline_regression_knit}}}
-# R code to run {{var2}}
-# Populate using metadata()
+baseline_regression_data <- baseline_regression(baseline_model, 
+                                                  main_connected_data, 
+                                                  covariate_column,
+                                                  treatment_df, 
+                                                  outcome, 
+                                                  outcome_measure,
+                                                  model_type)
+
+metaregression_plot(baseline_model, 
+                    treatment_df,
+                    outcome_measure,
+                    {{baseline_regression_comparators}},
+                    baseline_regression_data$directness,
+                    baseline_regression_data$credible_regions,
+                    {{baseline_regression_covariate}},
+                    {{baseline_regression_ghosts}},
+                    {{baseline_regression_extrapolate}},
+                    {{baseline_regression_credible}},
+                    {{baseline_regression_credible_opacity}},
+                    {{baseline_regression_symbol}},
+                    {{baseline_regression_symbol_size}},
+                    {{baseline_regression_legend_position}}
+                    )
 ```
+

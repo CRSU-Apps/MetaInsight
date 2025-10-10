@@ -103,6 +103,7 @@ covariate_model_module_server <- function(id, common, parent_session) {
       model_result$suspend()
       if (inherits(result, "bayes_model")){
         common$covariate_model <- result
+        common$covariate_value <- common$meta$covariate_model$covariate_value
         shinyjs::runjs("Shiny.setInputValue('covariate_model-complete', 'complete');")
         common$logger |> writeLog(type = "complete", "Covariate model has been fitted")
       } else {
