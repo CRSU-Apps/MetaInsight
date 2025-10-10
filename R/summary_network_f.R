@@ -25,14 +25,9 @@ summary_network <- function(freq, bugsnet, style, label_size = 1, title = "", lo
     return()
   }
 
-  n_trt <- freq$ntx
-  if (n_trt < 5){
-    height <- 5
-    width <- 5
-  } else {
-    width <- n_trt / 3
-    height <- n_trt / 3
-  }
+  height <- 5
+  width <- 5
+
 
   svg <- svglite::xmlSVG({
     if (style == "netgraph"){
