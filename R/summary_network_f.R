@@ -30,8 +30,8 @@ summary_network <- function(freq, bugsnet, style, label_size = 1, title = "", lo
     height <- 5
     width <- 5
   } else {
-    width <- n_trt / 3
-    height <- n_trt / 3
+    width <- 5 + sqrt(n_trt-5)
+    height <- width
   }
 
   svg <- svglite::xmlSVG({
