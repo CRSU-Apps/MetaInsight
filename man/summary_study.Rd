@@ -9,7 +9,9 @@ summary_study(freq, outcome_measure, header, title, logger = NULL)
 \arguments{
 \item{freq}{list. NMA results created by freq_wrap().}
 
-\item{outcome_measure}{character. "MD", "SMD", "OR", "RR", or "RD".}
+\item{outcome_measure}{character. Outcome measure of the dataset. Either
+\code{OR}, \code{RR} or \code{RD} when \code{outcome} is \code{Binary} or \code{MD} or \code{SMD} when
+\code{outcome} is \code{Continuous}}
 
 \item{header}{numeric. Multiplier for size of text in treatment contrast headers.}
 
@@ -20,7 +22,7 @@ Window. Insert the logger reactive list here for running in
 shiny, otherwise leave the default \code{NULL}}
 }
 \value{
-Plot created by groupforest.df().
+Plot created by \code{metafor::forest()}
 }
 \description{
 Creates a summary forest plot of all the studies.

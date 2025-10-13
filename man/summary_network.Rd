@@ -7,7 +7,7 @@
 summary_network(freq, bugsnet, style, label_size = 1, title, logger = NULL)
 }
 \arguments{
-\item{freq}{list. Created by \code{frequentist()}}
+\item{freq}{list. NMA results created by freq_wrap().}
 
 \item{bugsnet}{dataframe. Created by \code{bugsnetdata()}}
 

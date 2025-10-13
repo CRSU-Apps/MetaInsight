@@ -1,7 +1,7 @@
 #' @title bayes_mcmc
 #' @description Produces Markov chain Monte Carlo plots
 #' @param model Output from `bayes_model()` or `covariate_model()`
-#' @param async Whether or not the function is being used asynchronously. Default `FALSE`
+#' @inheritParams common_params
 #' @return list containing:
 #' \item{gelman_plots}{Gelman plots}
 #' \item{trace_plots}{Gelman plots}

@@ -5,7 +5,7 @@
 \title{covariate_regression}
 \usage{
 covariate_regression(
-  model_output,
+  model,
   connected_data,
   covariate_column,
   treatment_df,
@@ -16,17 +16,31 @@ covariate_regression(
 )
 }
 \arguments{
-\item{x}{x}
+\item{model}{list. Output created by \code{covariate_model()}}
 
-\item{logger}{Stores all notification messages to be displayed in the Log
-Window. Insert the logger reactive list here for running in
-shiny, otherwise leave the default NULL}
+\item{connected_data}{dataframe. Input data set created by \code{setup_configure()} or \code{setup_exclude}}
+
+\item{covariate_column}{character. Name of the column containing the covariate data}
+
+\item{treatment_df}{dataframe. Treatments}
+
+\item{outcome}{character. Outcome type for the dataset. Either \code{Binary} or
+\code{Continuous}.}
+
+\item{outcome_measure}{character. Outcome measure of the dataset. Either
+\code{OR}, \code{RR} or \code{RD} when \code{outcome} is \code{Binary} or \code{MD} or \code{SMD} when
+\code{outcome} is \code{Continuous}}
+
+\item{model_type}{character. Type of model to fit, either \code{random} or \code{fixed}}
+
+\item{async}{Whether or not the function is being used asynchronously. Default \code{FALSE}}
+}
+\value{
+List containing:
+\item{directness}{list. Output from \code{CalculateDirectness()}}
+\item{credible_regions}{list. Output from \code{CalculateCredibleRegions()}}
 }
 \description{
-Does x
-}
-\examples{
-{
-y <- covariate_regression(1)
-}
+Calculate data from a covariate model required to produce a
+metaregression plot
 }

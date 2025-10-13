@@ -1,10 +1,6 @@
 #' Produce inconsistency tables
 #'
-#' @param freq list. NMA results created by freq_wrap().
-#' @param model_type  character. "fixed" or "random".
-#' @param logger Stores all notification messages to be displayed in the Log
-#'   Window. Insert the logger reactive list here for running in
-#'   shiny, otherwise leave the default `NULL`
+#' @inheritParams common_params
 #'
 #' @return Dataframe of inconsistency data:
 #'  - 'Comparison': Treatment comparison.

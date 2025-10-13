@@ -9,7 +9,7 @@ freq_inconsistent(freq, model_type, logger = NULL)
 \arguments{
 \item{freq}{list. NMA results created by freq_wrap().}
 
-\item{model_type}{character. "fixed" or "random".}
+\item{model_type}{character. Type of model to fit, either \code{random} or \code{fixed}}
 
 \item{logger}{Stores all notification messages to be displayed in the Log
 Window. Insert the logger reactive list here for running in

@@ -4,17 +4,29 @@
 \alias{baseline_forest}
 \title{baseline_forest}
 \usage{
-baseline_forest(...)
+baseline_forest(
+  model,
+  treatment_df,
+  reference_treatment,
+  title = "Baseline risk regression analysis",
+  logger = NULL
+)
 }
 \arguments{
-\item{x}{x}
+\item{model}{model output produced by \code{baseline_model()}}
+
+\item{treatment_df}{dataframe. Treatments}
+
+\item{reference_treatment}{character. The reference treatment of the dataset}
+
+\item{title}{character. Title for the plot. Defaults to \verb{Baseline risk regression analysis}}
 
 \item{logger}{Stores all notification messages to be displayed in the Log
 Window. Insert the logger reactive list here for running in
-shiny, otherwise leave the default NULL}
+shiny, otherwise leave the default \code{NULL}}
 }
 \description{
-Does x
+Produce a forest plot for a baseline risk model using \code{bnma::network.forest.plot()}
 }
 \examples{
 {

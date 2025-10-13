@@ -1,15 +1,14 @@
 #' @title covariate_regression
-#' @description Does x
-#' @param x x
-#' @param logger Stores all notification messages to be displayed in the Log
-#'   Window. Insert the logger reactive list here for running in
-#'   shiny, otherwise leave the default NULL
-#' @return NULL
-#' @examples {
-#' y <- covariate_regression(1)
-#' }
+#' @description Calculate data from a covariate model required to produce a
+#' metaregression plot
+#' @param model list. Output created by `covariate_model()`
+#' @param covariate_column character. Name of the column containing the covariate data
+#' @inheritParams common_params
+#' @return List containing:
+#'  \item{directness}{list. Output from `CalculateDirectness()`}
+#'  \item{credible_regions}{list. Output from `CalculateCredibleRegions()`}
 #' @export
-covariate_regression <- function(model_output,
+covariate_regression <- function(model,
                                  connected_data,
                                  covariate_column,
                                  treatment_df,
@@ -32,7 +31,7 @@ covariate_regression <- function(model_output,
     outcome_measure = outcome_measure,
     effects_type = model_type)
 
-  credible_regions <- CalculateCredibleRegions(model_output)
+  credible_regions <- CalculateCredibleRegions(model)
 
   list(directness = directness,
        credible_regions = credible_regions)

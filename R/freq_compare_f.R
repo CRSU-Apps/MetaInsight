@@ -1,12 +1,7 @@
 #' Produce comparison tables
 #'
-#' @param freq List of NMA results created by freq_wrap().
-#' @param model_type Character. `fixed` or `random`.
-#' @param ranking_option Character. `good` or `bad`, referring to smaller outcome values.
-#' @param logger Stores all notification messages to be displayed in the Log
-#'   Window. Insert the logger reactive list here for running in
-#'   shiny, otherwise leave the default `NULL`
-#' @return Ranking table created by netmeta::netleague().
+#' @inheritParams common_params
+#' @return Ranking table created by `netmeta::netleague()`
 #' @export
 freq_compare <- function(freq, model_type, ranking_option, logger = NULL) {
 

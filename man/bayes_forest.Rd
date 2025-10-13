@@ -19,9 +19,9 @@ covariate_forest(...)
 \arguments{
 \item{model}{list. Object created by \code{bayes_model()} or \code{covariate_model()}}
 
-\item{treatment_df}{dataframe.}
+\item{treatment_df}{dataframe. Treatments}
 
-\item{reference_treatment}{character.}
+\item{reference_treatment}{character. The reference treatment of the dataset}
 
 \item{title}{character. Title for the plot. Default is no title}
 

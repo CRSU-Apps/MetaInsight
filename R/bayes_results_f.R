@@ -1,9 +1,7 @@
 #' Produces a summary of a Bayesian model
 #'
 #' @param model list. Output produced by `bayes_model()` or `covariate_model()`.
-#' @param logger Stores all notification messages to be displayed in the Log
-#'   Window. Insert the logger reactive list here for running in
-#'   shiny, otherwise leave the default `NULL`
+#' @inheritParams common_params
 #' @return HTML summary of the model
 #' @export
 bayes_results <- function(model, logger = NULL){

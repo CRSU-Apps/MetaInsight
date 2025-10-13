@@ -2,16 +2,7 @@
 #' bugsnet and frequentist analyses
 #'
 #' @param data dataframe. Uploaded data
-#' @param treatment_df dataframe. Treatments
-#' @param outcome character. Outcome type for the dataset. Either `Binary` or
-#' `Continuous`.
-#' @param outcome_measure character. Outcome measure of the dataset. Either
-#' `OR`, `RR` or `RD` when `outcome` is `Binary` or `MD` or `SMD` when
-#' `outcome` is `Continuous`
-#' @param reference_treatment character. The reference treatment of the dataset
-#' @param logger Stores all notification messages to be displayed in the Log
-#'   Window. Insert the logger reactive list here for running in
-#'   shiny, otherwise leave the default `NULL`
+#' @inheritParams common_params
 #' @return List containing:
 #'  \item{wrangled_data}{dataframe. To be presented in the data table}
 #'  \item{treatment_df}{dataframe. Updated version of the input parameter}

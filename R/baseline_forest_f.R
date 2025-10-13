@@ -1,9 +1,8 @@
 #' @title baseline_forest
-#' @description Does x
-#' @param x x
-#' @param logger Stores all notification messages to be displayed in the Log
-#'   Window. Insert the logger reactive list here for running in
-#'   shiny, otherwise leave the default NULL
+#' @description Produce a forest plot for a baseline risk model using `bnma::network.forest.plot()`
+#' @param model model output produced by `baseline_model()`
+#' @param title character. Title for the plot. Defaults to `Baseline risk regression analysis`
+#' @inheritParams common_params
 #' @return NULL
 #' @examples {
 #' y <- baseline_forest(1)

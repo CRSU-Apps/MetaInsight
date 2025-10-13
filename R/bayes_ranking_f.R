@@ -1,13 +1,8 @@
 #' Function to create data regarding rank results - CRN
 #'
-#' @param connected_data dataframe. Input data set created by `setup_configure()` or `setup_exclude`
-#' @param treatment_df dataframe. containing the treatment ID (`Number`) and the treatment name (`Label`).
 #' @param model list. Output produced by `bayes_model()` or `covariate_model()`.
-#' @param ranking_option character. "good" or "bad", referring to small outcome values.
 #' @param cov_value numeric. Covariate value if a meta-regression. Default `NA`
-#' @param logger Stores all notification messages to be displayed in the Log
-#'   Window. Insert the logger reactive list here for running in
-#'   shiny, otherwise leave the default `NULL`
+#' @inheritParams common_params
 #'
 #' @return List of output created by `rankdata()`.
 #' @export
@@ -35,6 +30,12 @@ bayes_ranking <- function(connected_data, treatment_df, model, ranking_option, c
     cov_value = cov_value,
     package = ifelse(inherits(model, "baseline_model"), "bnma", "gemtc")
   )
+}
+
+#' @rdname bayes_ranking
+#' @export
+baseline_ranking <- function(...){
+  bayes_ranking(...)
 }
 
 #' @rdname bayes_ranking

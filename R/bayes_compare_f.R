@@ -1,9 +1,7 @@
 #' Creates a table of comparisons of all treatment pairs for Bayesian models
 #'
 #' @param model list. Object created by `bayes_model()` or `covariate_model()`
-#' @param logger Stores all notification messages to be displayed in the Log
-#'   Window. Insert the logger reactive list here for running in
-#'   shiny, otherwise leave the default `NULL`
+#' @inheritParams common_params
 #' @return Relative effects table created by `gemtc::relative.effect.table()`
 #' @export
 bayes_compare <- function(model, logger = NULL){

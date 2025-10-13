@@ -1,17 +1,26 @@
 #' @title baseline_model
-#' @description Does x
-#' @param x x
-#' @param logger Stores all notification messages to be displayed in the Log
-#'   Window. Insert the logger reactive list here for running in
-#'   shiny, otherwise leave the default NULL
-#' @return NULL
-#' @examples {
-#' y <- baseline_model(1)
-#' }
+#' @description Fit a baseline risk regression model with `bnma::network.run()`
+#' @param regressor_type character. Type of regression coefficient, either `shared`, `unrelated`, or `exchangeable`
+#' @param seed x
+#' @inheritParams common_params
+#' @return List of bnma related output:
+#'  mtcResults = model object itself carried through (needed to match existing code).
+#'  covariate_value = The mean covariate value, used for centring.
+#'  reference_name = The name of the reference treatment.
+#'  comparator_names = Vector containing the names of the comparators.
+#'  a = text output stating whether fixed or random effects.
+#'  cov_value_sentence = text output stating the value for which the covariate has been set to for producing output.
+#'  slopes = named list of slopes for the regression equations (unstandardised - equal to one 'increment').
+#'  intercepts = named list of intercepts for the regression equations at cov_value.
+#'  outcome = The outcome type for the analysis eg. "MD" or "OR".
+#'  model = effects type, "fixed" or "random".
+#'  covariate_min = Vector of minimum covariate values directly contributing to the regression.
+#'  covariate_max = Vector of maximum covariate values directly contributing to the regression.
+#'  dic = Summary of model fit
 #' @export
-baseline_model <- function(connected_data, treatment_df, outcome, reference_treatment, model_type, cov_parameters, seed, async = FALSE){
+baseline_model <- function(connected_data, treatment_df, outcome, reference_treatment, model_type, regressor_type, seed, async = FALSE){
 
-  model <- BaselineRiskRegression(connected_data, treatment_df, outcome, reference_treatment, model_type, cov_parameters, seed)
+  model <- BaselineRiskRegression(connected_data, treatment_df, outcome, reference_treatment, model_type, cregressor_type, seed)
 
   output <- BaselineRiskModelOutput(connected_data, treatment_df, model, outcome_measure)
 

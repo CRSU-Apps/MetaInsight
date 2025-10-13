@@ -9,7 +9,8 @@ setup_load(data_path = NULL, outcome, logger = NULL)
 \arguments{
 \item{data_path}{character. Path to the file to be loaded or if \code{NULL} load the default data}
 
-\item{outcome}{character. Outcome type selected for the data. Either \code{Binary} or \code{Continuous}.}
+\item{outcome}{character. Outcome type for the dataset. Either \code{Binary} or
+\code{Continuous}.}
 
 \item{logger}{Stores all notification messages to be displayed in the Log
 Window. Insert the logger reactive list here for running in

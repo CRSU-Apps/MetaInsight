@@ -2,18 +2,8 @@
 #' subsets of the data in formats for bugsnet and frequentist analyses
 #'
 #' @param non_covariate_data dataframe. Data processed by setup_configure()
-#' @param treatment_df dataframe. Treatments and their IDs
-#' @param reference_treatment character. The reference treatment of the dataset
-#' @param outcome character. Outcome type for the dataset. Either `Binary` or
-#' `Continuous`.
-#' @param outcome_measure character. Outcome measure of the dataset. Either
-#' `OR`, `RR` or `RD` when `outcome` is `Binary` or `MD` or `SMD` when
-#' `outcome` is `Continuous`
-#' @param model_type character. Type of model to fit, either `random` or `fixed`
 #' @param exclusions character. Vector of study names to exclude.
-#' @param logger Stores all notification messages to be displayed in the Log
-#'   Window. Insert the logger reactive list here for running in
-#'   shiny, otherwise leave the default `NULL`
+#' @inheritParams common_params
 #' @return List containing:
 #'  \item{bugsnet_sub}{dataframe. Processed data for bugsnet analyses created by `bugsnetdata()`}
 #'  \item{freq_sub}{list. Processed data for frequentist analyses created by `frequentist()`}

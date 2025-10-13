@@ -19,7 +19,7 @@ setup_exclude(
 \arguments{
 \item{non_covariate_data}{dataframe. Data processed by setup_configure()}
 
-\item{treatment_df}{dataframe. Treatments and their IDs}
+\item{treatment_df}{dataframe. Treatments}
 
 \item{reference_treatment}{character. The reference treatment of the dataset}
 

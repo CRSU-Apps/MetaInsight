@@ -1,17 +1,17 @@
 #' @title baseline_regression
-#' @description Does x
-#' @param x x
-#' @param logger Stores all notification messages to be displayed in the Log
-#'   Window. Insert the logger reactive list here for running in
-#'   shiny, otherwise leave the default NULL
-#' @return NULL
-#' @examples {
-#' y <- baseline_regression(1)
-#' }
+#' @description Generate data required to produce a metaregression plot
+#' for a baseline risk model.
+#' @param model list. model output produced by `baseline_model()`
+#' @param covariate_title character. Required for consistency with `covariate_regression()`.
+#' Do not change from the default `covar.baseline_risk`
+#' @inheritParams common_params
+#' @return List containing:
+#'  \item{directness}{list. Output from `CalculateDirectness()`}
+#'  \item{credible_regions}{list. Output from `CalculateCredibleRegions()`}
 #' @export
-baseline_regression <- function(model_output,
+baseline_regression <- function(model,
                                  connected_data,
-                                 covariate_title,
+                                 covariate_title = "covar.baseline_risk",
                                  treatment_df,
                                  outcome,
                                  outcome_measure,
@@ -22,7 +22,7 @@ baseline_regression <- function(model_output,
     connected_data <- WideToLong(connected_data, outcome = outcome)
   }
 
-  reference_outcome <- GetReferenceOutcome(connected_data, treatment_df, outcome, "Imputed", model_output)
+  reference_outcome <- GetReferenceOutcome(connected_data, treatment_df, outcome, "Imputed", model)
 
   data_with_covariates_removed <- dplyr::select(connected_data, !dplyr::starts_with("covar."))
   data_with_covariate <- merge(data_with_covariates_removed,

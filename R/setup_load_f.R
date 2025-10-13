@@ -1,11 +1,7 @@
 #' Assess the data for validity. this checks the column names for required columns, and balanced wide format numbered columns.
 #'
 #' @param data_path character. Path to the file to be loaded or if `NULL` load the default data
-#' @param outcome character. Outcome type selected for the data. Either `Binary` or `Continuous`.
-#' @param logger Stores all notification messages to be displayed in the Log
-#'   Window. Insert the logger reactive list here for running in
-#'   shiny, otherwise leave the default `NULL`
-#'
+#' @inheritParams common_params
 #' @return List containing:
 #'  \item{is_data_valid}{logical. Whether the data is valid}
 #'  \item{is_data_uploaded}{logical. Whether the data is uploaded}

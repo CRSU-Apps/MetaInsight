@@ -17,15 +17,18 @@ bayes_model(
 \arguments{
 \item{connected_data}{dataframe. Input data set created by \code{setup_configure()} or \code{setup_exclude}}
 
-\item{treatment_df}{dataframe containing the treatment ID ('Number') and the treatment name ('Label').}
+\item{treatment_df}{dataframe. Treatments}
 
-\item{outcome}{character. The type of outcome being measured either \code{Continuous} or \code{Binary}}
+\item{outcome}{character. Outcome type for the dataset. Either \code{Binary} or
+\code{Continuous}.}
 
-\item{outcome_measure}{character. The analysis outcome measure. Either \code{MD}, \code{OR} or \code{RR}}
+\item{outcome_measure}{character. Outcome measure of the dataset. Either
+\code{OR}, \code{RR} or \code{RD} when \code{outcome} is \code{Binary} or \code{MD} or \code{SMD} when
+\code{outcome} is \code{Continuous}}
 
-\item{model_type}{character. The type of model. Either \code{random} or \code{fixed}}
+\item{model_type}{character. Type of model to fit, either \code{random} or \code{fixed}}
 
-\item{reference_treatment}{character. Reference treatment}
+\item{reference_treatment}{character. The reference treatment of the dataset}
 
 \item{async}{Whether or not the function is being used asynchronously. Default \code{FALSE}}
 }

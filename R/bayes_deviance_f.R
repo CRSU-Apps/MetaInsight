@@ -1,6 +1,6 @@
 #' Produce deviance plots
 #' @param model Bayesian model produced by bayes_model
-#' @param async Whether or not the function is being used asynchronously. Default `FALSE`
+#' @inheritParams common_params
 #' @return list containing:
 #'  \item{deviance_mtc}{results from `gemtc::mtc.deviance()` for model$mtcResults}
 #'  \item{deviance_ume}{results from `gemtc::mtc.deviance()` for UME model}

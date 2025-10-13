@@ -9,13 +9,14 @@ covariate_summary(connected_data, outcome, treatment_df, logger = NULL)
 \arguments{
 \item{connected_data}{dataframe. Input data set created by \code{setup_configure()} or \code{setup_exclude}}
 
-\item{outcome}{character. The type of outcome being measured either \code{Continuous} or \code{Binary}}
+\item{outcome}{character. Outcome type for the dataset. Either \code{Binary} or
+\code{Continuous}.}
 
-\item{treatment_df}{dataframe containing the treatment ID ('Number') and the treatment name ('Label').}
+\item{treatment_df}{dataframe. Treatments}
 
 \item{logger}{Stores all notification messages to be displayed in the Log
 Window. Insert the logger reactive list here for running in
-shiny, otherwise leave the default NULL}
+shiny, otherwise leave the default \code{NULL}}
 }
 \value{
 List containing:

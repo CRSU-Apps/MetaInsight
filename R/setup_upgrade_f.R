@@ -2,10 +2,7 @@
 #'
 #' @param data_path character. Path to the file to be upgraded
 #' @param treatments character. The treatments in the data seperated by commas.
-#' @param logger Stores all notification messages to be displayed in the Log
-#'   Window. Insert the logger reactive list here for running in
-#'   shiny, otherwise leave the default `NULL`
-#'
+#' @inheritParams common_params
 #' @return Dataframe containing the upgraded data
 #' @export
 setup_upgrade <- function(data_path, treatments, logger = NULL){

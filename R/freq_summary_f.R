@@ -1,14 +1,7 @@
 #' Create a summary forest plot matrix.
 #'
-#' @param freq list. NMA results created by freq_wrap().
-#' @param treatment_df dataframe. containing the names and IDs of all treatments
 #' @param plot_title character. Title of the plot
-#' @param outcome_measure character. Type of outcome being plotted
-#' @param ranking_option character. `good` if the treatment effect is desirable, else `bad`
-#' @param model_type character. `random` or `fixed` effects model being plotted
-#' @param logger Stores all notification messages to be displayed in the Log
-#'   Window. Insert the logger reactive list here for running in
-#'   shiny, otherwise leave the default `NULL`
+#' @inheritParams common_params
 #'
 #' @return Summary forest matrix plot
 #' @export

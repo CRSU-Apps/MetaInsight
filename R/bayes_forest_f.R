@@ -1,13 +1,9 @@
 #' Make a Bayesian forest plot
 #'
 #' @param model list. Object created by `bayes_model()` or `covariate_model()`
-#' @param treatment_df dataframe.
-#' @param reference_treatment character.
 #' @param title character. Title for the plot. Default is no title
 #' @param ranking logical. Whether the function is being used in `bayes_ranking`
-#' @param logger Stores all notification messages to be displayed in the Log
-#'   Window. Insert the logger reactive list here for running in
-#'   shiny, otherwise leave the default `NULL`
+#' @inheritParams common_params
 #'
 #' @return List containing:
 #'  \item{svg}{character. SVG code to produce the plot}
