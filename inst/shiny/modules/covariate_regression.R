@@ -1,7 +1,4 @@
 metaregression_regression_module_ui <- function(id){
-  add_tooltip <- function(label, message){
-    span(label, tooltip(icon("circle-question"), message))
-  }
 
   ns <- NS(id)
   tagList(

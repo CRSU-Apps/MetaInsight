@@ -200,6 +200,16 @@ loading_spinner <- function(class) {
 ####################### #
 # CHANGING TABS #
 ####################### #
+#' @keywords internal
+#' @export
+add_tooltip <- function(label, message){
+  span(label, tooltip(icon("circle-question"), message))
+}
+
+
+####################### #
+# CHANGING TABS #
+####################### #
 
 #' @title show_results
 #' @description For internal use. Switches the view to the Results tab

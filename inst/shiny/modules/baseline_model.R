@@ -1,10 +1,11 @@
 baseline_model_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
-    selectInput(ns("regressor"), "Regression coefficient",
-                choices = c("Shared" = "shared",
-                            "Exchangable" = "exchangeable",
-                            "Unrelated" = "unrelated")),
+    radioButtons(ns("regressor"), "Regression coefficient",
+                 choiceNames = list(add_tooltip("Shared", "Coefficient is the same for all treatment comparisons"),
+                                    add_tooltip("Exchangable", "Coefficient is different for each treatment comparison but all come from a shared distribution"),
+                                    add_tooltip("Unrelated", "Coefficient is different for each treatment comparison")),
+                 choiceValues = list("shared", "exchangable", "unrelated")),
     input_task_button(ns("run"), "Run model", type = "default", icon = icon("arrow-turn-down"))
   )
 }
