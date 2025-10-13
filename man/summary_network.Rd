@@ -4,7 +4,14 @@
 \alias{summary_network}
 \title{Produce either a netgraph or netplot}
 \usage{
-summary_network(freq, bugsnet, style, label_size = 1, title, logger = NULL)
+summary_network(
+  freq,
+  bugsnet,
+  style,
+  label_size = 1,
+  title = "",
+  logger = NULL
+)
 }
 \arguments{
 \item{freq}{list. Created by `frequentist()`}
@@ -15,7 +22,7 @@ summary_network(freq, bugsnet, style, label_size = 1, title, logger = NULL)
 
 \item{label_size}{numeric. The size of labels in the plots. Default of 1.}
 
-\item{title}{character. Title of plot.}
+\item{title}{character. Title of plot. Default of no title.}
 
 \item{logger}{Stores all notification messages to be displayed in the Log
 Window. Insert the logger reactive list here for running in
