@@ -52,23 +52,23 @@ rather than refitting the model.}
 \value{
 List of gemtc related output:
 \item{mtc_run_output#'  \item{output from \code{gemtc::mtc.run()}
-\item{mtcResults}{model object itself carried through (needed to match existing code)
-\item{mtcRelEffects}{data relating to presenting relative effects;
-\item{rel_eff_tbl}{table of relative effects for each comparison;
-\item{covariate_value}{The covariate value originally passed into this function
-\item{reference_name}{The name of the reference treatment
-\item{comparator_names}{Vector containing the names of the comparators.
-\item{a}{text output stating whether fixed or random effects;
-\item{sumresults}{summary output of relative effects
-\item{dic}{data frame of model fit statistics
-\item{cov_value_sentence}{text output stating the value for which the covariate has been set to for producing output
-\item{slopes}{named list of slopes for the regression equations (unstandardised - equal to one 'increment')
-\item{intercepts}{named list of intercepts for the regression equations at cov_value
-\item{outcome}{The outcome type for the analysis eg. "MD" or "OR"
-\item{mtcNetwork}{The network object from GEMTC
-\item{model}{The type of linear model, either "fixed" or "random"
-\item{covariate_min}{Vector of minimum covariate values directly contributing to the regression.
-\item{covariate_max}{Vector of maximum covariate values directly contributing to the regression.
+\item{mtcResults}{model object itself carried through (needed to match existing code)}
+\item{mtcRelEffects}{data relating to presenting relative effects}
+\item{rel_eff_tbl}{table of relative effects for each comparison}
+\item{covariate_value}{The covariate value originally passed into this function}
+\item{reference_name}{The name of the reference treatment}
+\item{comparator_names}{Vector containing the names of the comparators}
+\item{a}{text output stating whether fixed or random effects}
+\item{sumresults}{summary output of relative effects}
+\item{dic}{data frame of model fit statistics}
+\item{cov_value_sentence}{text output stating the value for which the covariate has been set to for producing output}
+\item{slopes}{named list of slopes for the regression equations (unstandardised - equal to one 'increment')}
+\item{intercepts}{named list of intercepts for the regression equations at cov_value}
+\item{outcome}{The outcome type for the analysis eg. "MD" or "OR"}
+\item{mtcNetwork}{The network object from GEMTC}
+\item{model}{The type of linear model, either "fixed" or "random"}
+\item{covariate_min}{Vector of minimum covariate values directly contributing to the regression}
+\item{covariate_max}{Vector of maximum covariate values directly contributing to the regression}
 }
 \description{
 Does x

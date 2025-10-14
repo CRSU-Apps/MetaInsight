@@ -20,7 +20,7 @@
 #' @export
 baseline_model <- function(connected_data, treatment_df, outcome, reference_treatment, model_type, regressor_type, seed, async = FALSE){
 
-  model <- BaselineRiskRegression(connected_data, treatment_df, outcome, reference_treatment, model_type, cregressor_type, seed)
+  model <- BaselineRiskRegression(connected_data, treatment_df, outcome, reference_treatment, model_type, regressor_type, seed)
 
   output <- BaselineRiskModelOutput(connected_data, treatment_df, model, outcome_measure)
 
@@ -173,6 +173,7 @@ BaselineRiskModelOutput <- function(connected_data, treatment_df, model, outcome
   treatments <- model$network$Treat.order
   reference_treatment <- unname(treatments[1])
   comparator_names <- unname(treatments[-1])
+  browser()
   model_summary <- summary(model)
 
   connected_data$Treatment <- treatment_df$Label[match(connected_data$T, treatment_df$Number)]
