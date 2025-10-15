@@ -8,6 +8,7 @@ baseline_model(
   connected_data,
   treatment_df,
   outcome,
+  outcome_measure,
   reference_treatment,
   model_type,
   regressor_type,
@@ -23,13 +24,17 @@ baseline_model(
 \item{outcome}{character. Outcome type for the dataset. Either \code{Binary} or
 \code{Continuous}.}
 
+\item{outcome_measure}{character. Outcome measure of the dataset. Either
+\code{OR}, \code{RR} or \code{RD} when \code{outcome} is \code{Binary} or \code{MD} or \code{SMD} when
+\code{outcome} is \code{Continuous}}
+
 \item{reference_treatment}{character. The reference treatment of the dataset}
 
 \item{model_type}{character. Type of model to fit, either \code{random} or \code{fixed}}
 
 \item{regressor_type}{character. Type of regression coefficient, either \code{shared}, \code{unrelated}, or \code{exchangeable}}
 
-\item{seed}{x}
+\item{seed}{numeric. Seed used to fit the model}
 
 \item{async}{Whether or not the function is being used asynchronously. Default \code{FALSE}}
 }
@@ -48,6 +53,8 @@ model = effects type, "fixed" or "random".
 covariate_min = Vector of minimum covariate values directly contributing to the regression.
 covariate_max = Vector of maximum covariate values directly contributing to the regression.
 dic = Summary of model fit
+summary = Output of summary(model)
+regressor = regressor_type
 }
 \description{
 Fit a baseline risk regression model with \code{bnma::network.run()}

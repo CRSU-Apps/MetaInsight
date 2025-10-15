@@ -4,7 +4,7 @@
 \alias{bayes_ranking}
 \alias{baseline_ranking}
 \alias{covariate_ranking}
-\title{Function to create data regarding rank results - CRN}
+\title{Generate ranking data required to produce SUCRA plots from Bayesian models}
 \usage{
 bayes_ranking(
   connected_data,
@@ -15,16 +15,30 @@ bayes_ranking(
   logger = NULL
 )
 
-baseline_ranking(...)
+baseline_ranking(
+  connected_data,
+  treatment_df,
+  model,
+  ranking_option,
+  cov_value = NA,
+  logger = NULL
+)
 
-covariate_ranking(...)
+covariate_ranking(
+  connected_data,
+  treatment_df,
+  model,
+  ranking_option,
+  cov_value = NA,
+  logger = NULL
+)
 }
 \arguments{
 \item{connected_data}{dataframe. Input data set created by \code{setup_configure()} or \code{setup_exclude}}
 
 \item{treatment_df}{dataframe. Treatments}
 
-\item{model}{list. Output produced by \code{bayes_model()} or \code{covariate_model()}.}
+\item{model}{list. Output produced by \code{baseline_model()}, \code{bayes_model()} or \code{covariate_model()}.}
 
 \item{ranking_option}{character. \code{good} if the treatment effect is desirable, else \code{bad}}
 
@@ -38,5 +52,5 @@ shiny, otherwise leave the default \code{NULL}}
 List of output created by \code{rankdata()}.
 }
 \description{
-Function to create data regarding rank results - CRN
+Generate ranking data required to produce SUCRA plots from Bayesian models
 }

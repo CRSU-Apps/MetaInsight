@@ -51,8 +51,7 @@ rather than refitting the model.}
 }
 \value{
 List of gemtc related output:
-\item{mtc_run_output#'  \item{output from \code{gemtc::mtc.run()}
-\item{mtcResults}{model object itself carried through (needed to match existing code)}
+\item{mtcResults}{model object from \code{gemtc::mtc.run()} carried through (needed to match existing code)}
 \item{mtcRelEffects}{data relating to presenting relative effects}
 \item{rel_eff_tbl}{table of relative effects for each comparison}
 \item{covariate_value}{The covariate value originally passed into this function}

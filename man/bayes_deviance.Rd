@@ -2,12 +2,15 @@
 % Please edit documentation in R/bayes_deviance_f.R
 \name{bayes_deviance}
 \alias{bayes_deviance}
+\alias{covariate_deviance}
 \title{Produce deviance plots}
 \usage{
 bayes_deviance(model, async = FALSE)
+
+covariate_deviance(...)
 }
 \arguments{
-\item{model}{Bayesian model produced by bayes_model}
+\item{model}{Bayesian model produced by \code{bayes_model()} or \code{covariate_model()}}
 
 \item{async}{Whether or not the function is being used asynchronously. Default \code{FALSE}}
 }

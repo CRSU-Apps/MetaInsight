@@ -2,22 +2,28 @@
 % Please edit documentation in R/baseline_deviance_f.R
 \name{baseline_deviance}
 \alias{baseline_deviance}
-\title{baseline_deviance}
+\title{Produce deviance plots for baseline models}
 \usage{
-baseline_deviance(x, logger = NULL)
+baseline_deviance(model, logger = NULL)
 }
 \arguments{
-\item{x}{x}
+\item{model}{Baseline model produced by \code{baseline_model()}}
 
 \item{logger}{Stores all notification messages to be displayed in the Log
 Window. Insert the logger reactive list here for running in
-shiny, otherwise leave the default NULL}
+shiny, otherwise leave the default \code{NULL}}
+}
+\value{
+list containing:
+\item{deviance_mtc}{equivalent summary to that produced by \code{gemtc::mtc.deviance()}}
+\item{stem_plot}{plotly object}
+\item{lev_plot}{plotly object}
 }
 \description{
-Does x
+Produce deviance plots for baseline models
 }
 \examples{
 {
-y <- baseline_deviance(1)  
+y <- baseline_deviance(1)
 }
 }

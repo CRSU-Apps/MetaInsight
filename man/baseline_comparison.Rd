@@ -4,20 +4,20 @@
 \alias{baseline_comparison}
 \title{baseline_comparison}
 \usage{
-baseline_comparison(x, logger = NULL)
+baseline_comparison(model, logger = NULL)
 }
 \arguments{
-\item{x}{x}
-
 \item{logger}{Stores all notification messages to be displayed in the Log
 Window. Insert the logger reactive list here for running in
 shiny, otherwise leave the default NULL}
+
+\item{x}{x}
 }
 \description{
 Does x
 }
 \examples{
 {
-y <- baseline_comparison(1)  
+y <- baseline_comparison(1)
 }
 }
