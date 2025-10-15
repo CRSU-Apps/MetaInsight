@@ -1030,9 +1030,29 @@ GetFriendlyCovariateName <- function(column_name) {
 
 #' Find the names of all columns which contain an individual RoB variable.
 #' @param df Data frame in which to find covariate columns.
-#' @return Names of all covariate columns
+#' @return Names of all individual RoB columns
 FindRobIndividualNames <- function(df) {
   return(names(dplyr::select(df, dplyr::matches(.rob_individual_prefix_regex))))
+}
+
+#' Find the names of all columns which contain a RoB or indirectness variable.
+#' @param df Data frame in which to find covariate columns.
+#' @return Names of all RoB or indirectness columns
+FindRobNames <- function(df) {
+  return(names(dplyr::select(df, dplyr::matches(c(FindRobIndividualNames(df), "rob", "indirectness")))))
+}
+
+#' Shorten RoB and indirectness variable names.
+#' @param long_names Vector of risk of bias and indirectness variable names.
+#' @return Vector of the same length with shortened names.
+ShortenRobNames <- function(long_names) {
+  short_names <- long_names
+  short_names[long_names == "indirectness"] <- "ind"
+  rob_individual_index <- grep(pattern = "^rob\\.", x = long_names)
+  if (length(rob_individual_index) > 0) {
+    short_names[rob_individual_index] <- paste0("rob", 1:length(rob_individual_index))
+  }
+  return(short_names)
 }
 
 #' Keep or delete rows in @param data corresponding to the control treatment in each study.
