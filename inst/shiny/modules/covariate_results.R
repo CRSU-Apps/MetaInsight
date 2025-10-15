@@ -23,7 +23,7 @@ covariate_results_module_server <- function(id, common, parent_session) {
 
     all_trigger <- reactive({
       if (watch("covariate_results") > 0){
-        return(list(watch("covariate_results"), watch("covariate_model")))
+        return(list(watch("covariate_results"), watch("covariate_model_fit")))
       }
     })
 

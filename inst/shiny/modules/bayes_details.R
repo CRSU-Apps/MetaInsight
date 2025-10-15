@@ -1,22 +1,14 @@
-bayes_details_submodule_ui <- function(id) {
-  ns <- NS(id)
-  tagList(
-    actionButton(ns("run"), "Generate details", icon = icon("arrow-turn-down"))
-  )
-}
-
 bayes_details_module_ui <- function(id) {
   ns <- NS(id)
-  bayes_details_submodule_ui(ns("bayes"))
+  actionButton(ns("run"), "Generate details", icon = icon("arrow-turn-down"))
 }
 
-
-bayes_details_submodule_server <- function(id, common, model, model_trigger, module_id, deviance, deviance_trigger, error_message){
+bayes_details_submodule_server <- function(id, common, model, model_trigger, module_id, deviance, deviance_trigger, error_message, run){
   moduleServer(id, function(input, output, session) {
 
   shinyjs::hide(selector = glue::glue(".{module_id}_div"))
 
-  observeEvent(input$run, {
+  observeEvent(run(), {
     if (is.null(common[[model]])){
       common$logger |> writeLog(type = "error", error_message)
       return()
@@ -27,18 +19,49 @@ bayes_details_submodule_server <- function(id, common, model, model_trigger, mod
     }
   })
 
+  details <- reactive({
+    watch(model_trigger)
+    req(watch(module_id) > 0)
+    req(common[[model]])
+    bayes_details(common[[model]])
+  })
+
+  output$mcmc <- renderTable({
+    details()$mcmc
+  }, digits = 0, colnames = FALSE)
+
+  output$download_mcmc <- downloadHandler(
+    filename = "mcmc_characteristics.csv",
+    content = function(file) {
+      write.csv(details()$mcmc, file, row.names = FALSE, col.names = FALSE)
+    }
+  )
+
+  output$priors <- renderTable({
+    details()$priors
+  }, colnames = FALSE)
+
+  output$download_priors <- downloadHandler(
+    filename = "prior_distributions.csv",
+    content = function(file) {
+      write.csv(details()$priors, file, row.names = FALSE, col.names = FALSE)
+    }
+  )
+
   output$code <- renderPrint({
     watch(model_trigger)
     req(watch(module_id) > 0)
     req(common[[model]])
-    cat(common[[model]]$mtcResults$model$code, fill = FALSE, labels = NULL, append = FALSE)
+    location <- ifelse(model == "baseline_model", "network", "model")
+    cat(common[[model]]$mtcResults[[location]]$code, fill = FALSE, labels = NULL, append = FALSE)
   })
 
   output$download_code <- downloadHandler(
     filename = "MetaInsight_bayesian_model_code.txt",
     content = function(file) {
+      location <- ifelse(model == "baseline_model", "network", "model")
       cat(
-        common[[model]]$mtcResults$model$code,
+        common[[model]]$mtcResults[[location]]$code,
         file = file,
         fill = FALSE,
         labels = NULL,
@@ -51,7 +74,11 @@ bayes_details_submodule_server <- function(id, common, model, model_trigger, mod
     watch(model_trigger)
     req(watch(module_id) > 0)
     req(common[[model]])
-    common[[model]]$mtcResults$model$inits
+    if (model == "baseline_model"){
+      common[[model]]$mtcResults$inits
+    } else {
+      common[[model]]$mtcResults$model$inits
+    }
   })
 
   create_chain_initial_data_download_handler <- function(index) {
@@ -61,7 +88,7 @@ bayes_details_submodule_server <- function(id, common, model, model_trigger, mod
       filename = filename,
       content = function(file) {
         lapply(
-          common$bayes_all$mtcResults$model$inits,
+          common[[model]]$mtcResults$model$inits,
           write,
           file,
           append = TRUE,
@@ -80,7 +107,7 @@ bayes_details_submodule_server <- function(id, common, model, model_trigger, mod
     downloadHandler(
       filename = paste0("MetaInsight_bayesian_data_for_chain_", index, ".csv"),
       content = function(file) {
-        data <- as.data.frame(samples()[[index]])
+        data <- as.data.frame(common[[model]]$mtcResults$samples[[index]])
         write.csv(data, file)
       }
     )
@@ -103,8 +130,58 @@ bayes_details_submodule_server <- function(id, common, model, model_trigger, mod
     watch(deviance_trigger)
     watch(model_trigger)
     req(watch(module_id) > 0)
+    if (model == "bayes_all"){
+      validate(need(common[[deviance]], "Please run the Deviance report module first"))
+      common[[deviance]]$deviance_ume
+    } else {
+      NULL
+    }
+  })
+
+  # this is a bit messy, but the simplest way to display the _sub deviance
+  output$dev_mtc_sub <- renderPrint({
+    req(model == "bayes_all")
+    watch(gsub("all", "sub", deviance_trigger))
+    watch(gsub("all", "sub", model_trigger))
+    req(watch(module_id) > 0)
+    validate(need(common[[deviance]], "Please run the Deviance report module first"))
+    deviance <- gsub("all", "sub", deviance)
+    common[[deviance]]$deviance_mtc
+  })
+
+  output$dev_ume_sub <- renderPrint({
+    req(model == "bayes_all")
+    watch(gsub("all", "sub", deviance_trigger))
+    watch(gsub("all", "sub", model_trigger))
+    req(watch(module_id) > 0)
     validate(need(common[[deviance]], "Please run the Deviance report module first"))
     common[[deviance]]$deviance_ume
+  })
+
+  output$deviance <- renderUI({
+    ns <- session$ns
+    if (model == "bayes_all"){
+      tagList(
+        layout_columns(
+          div(
+            p("NMA (consistency) model for all studies"),
+            verbatimTextOutput(ns("dev_mtc")),
+            p("UME (inconsistency) model for all studies"),
+            verbatimTextOutput(ns("dev_ume"))
+          ),
+          div(
+            p("NMA (consistency) model excluding selected studies"),
+            verbatimTextOutput(ns("dev_mtc_sub")),
+            p("UME (inconsistency) model excluding selected studies"),
+            verbatimTextOutput(ns("dev_ume_sub"))
+          )
+        )
+      )
+    } else {
+      tagList(p("NMA (consistency) model"),
+              verbatimTextOutput(ns("dev_mtc"))
+             )
+    }
   })
 
   })
@@ -113,7 +190,7 @@ bayes_details_submodule_server <- function(id, common, model, model_trigger, mod
 bayes_details_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
     bayes_details_submodule_server("bayes", common, "bayes_all", "bayes_model_all", "bayes_details", "bayes_deviance_all", "bayes_deviance",
-                                   "Please fit the Bayesian models first")
+                                   "Please fit the Bayesian models first", reactive(input$run))
 })
 }
 
@@ -122,6 +199,18 @@ bayes_details_submodule_result <- function(id, class) {
   tagList(
     div(class = class,
         tabsetPanel(
+          tabPanel(
+            title = "MCMC characteristics and priors",
+            downloadButton(ns('download_mcmc'), "Download MCMC"),
+            downloadButton(ns('download_priors'), "Download priors"),
+            h4(tags$strong("MCMC characteristics")),
+            tableOutput(ns("mcmc")),
+            h4(tags$strong("Prior distributions")),
+            tableOutput(ns("priors")),
+            br(),
+            p("Note: Normal distributions are parameterized here as N(mean, variance) and in the JAGS code as N(mean, precision)."),
+            p("Note: For help on the scaled t-distribution see the JAGS manual.")
+          ),
           tabPanel(
             title = "Model codes",
             p(tags$strong("Model codes for analysis of all studies")),
@@ -147,10 +236,7 @@ bayes_details_submodule_result <- function(id, class) {
           ),
           tabPanel(
             title = "Deviance details",
-            p("NMA (consistency) model"),
-            verbatimTextOutput(ns("dev_mtc")),
-            p("UME (inconsistency) model"),
-            verbatimTextOutput(ns("dev_ume"))
+            uiOutput(ns("deviance"))
           )
         )
     )

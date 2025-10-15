@@ -1,54 +1,22 @@
+# see covariate_deviance for module source
 baseline_deviance_module_ui <- function(id) {
-  ns <- shiny::NS(id)
+  ns <- NS(id)
   tagList(
-    # UI
-
-
-    actionButton(ns("run"), "Run module baseline_deviance", icon = icon("arrow-turn-down"))
-
+    input_task_button(ns("run"), "Generate plots", type = "default", icon = icon("arrow-turn-down"))
   )
 }
 
 baseline_deviance_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
-
-
-  observeEvent(input$run, {
-    # WARNING ####
-
-    # FUNCTION CALL ####
-
-    # LOAD INTO COMMON ####
-
-    # METADATA ####
-    # Populate using metadata()
-
-    # TRIGGER
-    trigger("baseline_deviance")
-
-
+    metaregression_deviance_module_server("baseline", common, reactive(input$run))
   })
-
-  output$result <- renderText({
-    watch("baseline_deviance")
-    # Result
-  })
-
-
-
-})
 }
-
 
 baseline_deviance_module_result <- function(id) {
   ns <- NS(id)
-
-  # Result UI
-  verbatimTextOutput(ns("result"))
+  metaregression_deviance_module_result(ns("baseline"), "bnma", "baseline_deviance_div")
 }
-
 
 baseline_deviance_module_rmd <- function(common) {
   list(baseline_deviance_knit = !is.null(common$meta$baseline_deviance$used))
 }
-

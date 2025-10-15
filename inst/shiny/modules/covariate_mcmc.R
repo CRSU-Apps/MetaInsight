@@ -1,5 +1,5 @@
 covariate_mcmc_module_ui <- function(id) {
-  ns <- shiny::NS(id)
+  ns <- NS(id)
   tagList(
     input_task_button(ns("run"), "Generate plots", type = "default", icon = icon("arrow-turn-down"))
   )
@@ -37,74 +37,20 @@ covariate_mcmc_module_server <- function(id, common, parent_session) {
       shinyjs::show(selector = ".covariate_mcmc_div")
     })
 
-    n_rows <- reactive({
-      watch("covariate_mcmc")
-      req(common$covariate_mcmc)
-      n <- common$covariate_mcmc$n_rows
-      common$meta$covariate_mcmc$n_rows <- n
-      n
-    })
-
-    output$gelman <- renderPlot({
-      watch("covariate_mcmc")
-      req(common$covariate_mcmc)
-      shinyjs::show(selector = ".covariate_mcmc_div")
-      par(mfrow = c(2, n_rows()))
-      # this returns a list of functions, each of which generates a plot
-      invisible(lapply(common$covariate_mcmc$gelman_plots, function(f) f()))
-    }, height = function() {
-      n_rows() * 250
-    })
-
-    output$trace <- renderPlot({
-      watch("covariate_mcmc")
-      req(common$covariate_mcmc)
-      cowplot::plot_grid(
-        plotlist = common$covariate_mcmc$trace_plots,
-        ncol = 2
-      )
-    }, height = function() {
-      n_rows() * 200
-    })
-
-    output$density <- renderPlot({
-      watch("covariate_mcmc")
-      req(common$covariate_mcmc)
-      on.exit(shinyjs::runjs("Shiny.setInputValue('covariate_mcmc-complete', 'complete');"))
-      cowplot::plot_grid(
-        plotlist = common$covariate_mcmc$density_plots,
-        ncol = 2
-      )
-    }, height = function() {
-      n_rows() * 200
-    })
-
+    bayes_mcmc_submodule_server("all", common, "covariate_mcmc", "covariate_mcmc", "covariate_mcmc")
 
 })
 }
 
-
 covariate_mcmc_module_result <- function(id) {
   ns <- NS(id)
-  tagList(
-    div(align = "center",
-      div(class = "covariate_mcmc_div", style = "max-width: 800px;",
-        h5("Gelman convergence assessment plots for covariate model"),
-        # auto makes the output height the same as the render
-        plotOutput(ns("gelman"), height = "auto"),
-        h5("Trace plots for covariate model"),
-        plotOutput(ns("trace"), height = "auto"),
-        h5("Posterior density plots for covariate model"),
-        plotOutput(ns("density"), height = "auto")
-      )
-    )
-  )
+  bayes_mcmc_submodule_result(ns("all"), "covariate_mcmc_div", "for all studies")
 }
-
 
 covariate_mcmc_module_rmd <- function(common) {
   list(covariate_mcmc_knit = !is.null(common$meta$covariate_mcmc$used),
        covariate_mcmc_n_rows = common$meta$covariate_mcmc$n_rows,
+       covariate_mcmc_n_cols = common$meta$covariate_mcmc$n_cols,
        covariate_mcmc_height_200 = common$meta$covariate_mcmc$n_rows * (200/72),
        covariate_mcmc_height_250 = common$meta$covariate_mcmc$n_rows * (250/72))
 }

@@ -1,18 +1,17 @@
 metaregression_forest_module_ui <- function(id) {
   ns <- NS(id)
-  tagList(
-    actionButton(ns("run"), "Generate plot", icon = icon("arrow-turn-down")),
     downloadButton(ns("download"), "Download plot")
-  )
 }
 
 covariate_forest_module_ui <- function(id) {
   ns <- NS(id)
-  metaregression_forest_module_ui(ns("covariate"))
+  tagList(
+    actionButton(ns("run"), "Generate plot", icon = icon("arrow-turn-down")),
+    metaregression_forest_module_ui(ns("covariate"))
+  )
 }
 
-
-metaregression_forest_module_server <- function(id, common) {
+metaregression_forest_module_server <- function(id, common, run) {
   moduleServer(id, function(input, output, session) {
 
     shinyjs::hide("download")
@@ -20,7 +19,7 @@ metaregression_forest_module_server <- function(id, common) {
     module <- glue::glue("{id}_forest")
     model <- glue::glue("{id}_model")
 
-    observeEvent(input$run, {
+    observeEvent(run(), {
       if (is.null(common[[model]])){
         common$logger |> writeLog(type = "error", glue::glue("Please fit the {id} model first"))
         return()
@@ -62,8 +61,8 @@ metaregression_forest_module_server <- function(id, common) {
 
 covariate_forest_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
-    metaregression_forest_module_server("covariate", common)
-})
+    metaregression_forest_module_server("covariate", common, reactive(input$run))
+  })
 }
 
 

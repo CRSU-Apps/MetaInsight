@@ -5,34 +5,41 @@ bayes_mcmc_module_ui <- function(id) {
   )
 }
 
-bayes_mcmc_submodule_server <- function(id, common, trigger){
+bayes_mcmc_submodule_server <- function(id, common, module_id, mcmc, trigger){
   moduleServer(id, function(input, output, session) {
 
     n_rows <- reactive({
       watch(trigger)
-      req(common[[paste0("bayes_mcmc_", id)]])
-      n <- common[[paste0("bayes_mcmc_", id)]]$n_rows
-      common$meta$bayes_mcmc$n_rows <- n
+      req(common[[mcmc]])
+      n <- common[[mcmc]]$n_rows
+      common$meta[[module_id]]$n_rows <- n
+      n
+    })
+
+    n_cols <- reactive({
+      watch(trigger)
+      req(common[[mcmc]])
+      n <- common[[mcmc]]$n_cols
+      common$meta[[module_id]]$n_cols <- n
       n
     })
 
     output$gelman <- renderPlot({
       watch(trigger)
-      req(common[[paste0("bayes_mcmc_", id)]])
-      shinyjs::show(selector = ".bayes_mcmc_div")
-      par(mfrow = c(2, n_rows()))
+      req(common[[mcmc]])
+      par(mfrow = c(n_rows(), n_cols()))
       # this returns a list of functions, each of which generates a plot
-      invisible(lapply(common[[paste0("bayes_mcmc_", id)]]$gelman_plots, function(f) f()))
+      invisible(lapply(common[[mcmc]]$gelman_plots, function(f) f()))
     }, height = function() {
       n_rows() * 250
     })
 
     output$trace <- renderPlot({
       watch(trigger)
-      req(common[[paste0("bayes_mcmc_", id)]])
+      req(common[[mcmc]])
       cowplot::plot_grid(
-        plotlist = common[[paste0("bayes_mcmc_", id)]]$trace_plots,
-        ncol = 2
+        plotlist = common[[mcmc]]$trace_plots,
+        ncol = n_cols()
       )
     }, height = function() {
       n_rows() * 200
@@ -40,11 +47,11 @@ bayes_mcmc_submodule_server <- function(id, common, trigger){
 
     output$density <- renderPlot({
       watch(trigger)
-      req(common[[paste0("bayes_mcmc_", id)]])
-      on.exit(shinyjs::runjs(paste0("Shiny.setInputValue('bayes_mcmc-",id ,"-complete', 'complete');")))
+      req(common[[mcmc]])
+      on.exit(shinyjs::runjs(paste0("Shiny.setInputValue('", mcmc, "-complete', 'complete');")))
       cowplot::plot_grid(
-        plotlist = common[[paste0("bayes_mcmc_", id)]]$density_plots,
-        ncol = 2
+        plotlist = common[[mcmc]]$density_plots,
+        ncol = n_cols()
       )
     }, height = function() {
       n_rows() * 200
@@ -105,6 +112,7 @@ bayes_mcmc_module_server <- function(id, common, parent_session) {
       result_all$suspend()
       common$bayes_mcmc_all <- result
       common$logger |> writeLog(type = "complete", "Markov chain Monte Carlo plots have been generated")
+      shinyjs::show(selector = ".bayes_mcmc_div")
       trigger("bayes_mcmc_all")
     })
 
@@ -118,16 +126,16 @@ bayes_mcmc_module_server <- function(id, common, parent_session) {
       trigger("bayes_mcmc_sub")
     })
 
-    bayes_mcmc_submodule_server("all", common, "bayes_mcmc_all")
-    bayes_mcmc_submodule_server("sub", common, "bayes_mcmc_sub")
+    bayes_mcmc_submodule_server("all", common, "bayes_mcmc", "bayes_mcmc_all", "bayes_mcmc_all")
+    bayes_mcmc_submodule_server("sub", common, "bayes_mcmc", "bayes_mcmc_sub", "bayes_mcmc_sub")
 
   })
 }
 
-bayes_mcmc_submodule_result <- function(id, label) {
+bayes_mcmc_submodule_result <- function(id, class, label) {
   ns <- NS(id)
   tagList(
-    div(class = "bayes_mcmc_div",
+    div(class = class,
       h5(glue::glue("Gelman convergence assessment plots {label}")),
       # auto makes the output height the same as the render
       plotOutput(ns("gelman"), height = "auto"),
@@ -139,7 +147,6 @@ bayes_mcmc_submodule_result <- function(id, label) {
   )
 }
 
-
 bayes_mcmc_module_result <- function(id) {
   ns <- NS(id)
   tagList(
@@ -147,12 +154,12 @@ bayes_mcmc_module_result <- function(id) {
       column(
         width = 6,
         align = "center",
-        bayes_mcmc_submodule_result(ns("all"), "for all studies")
+        bayes_mcmc_submodule_result(ns("all"), "bayes_mcmc_div", "for all studies")
       ),
       column(
         width = 6,
         align = "center",
-        bayes_mcmc_submodule_result(ns("sub"), "excluding selected studies")
+        bayes_mcmc_submodule_result(ns("sub"), "bayes_mcmc_div", "excluding selected studies")
       )
     )
   )
@@ -161,6 +168,7 @@ bayes_mcmc_module_result <- function(id) {
 bayes_mcmc_module_rmd <- function(common) {
   list(bayes_mcmc_knit = !is.null(common$meta$bayes_mcmc$used),
        bayes_mcmc_n_rows = common$meta$bayes_mcmc$n_rows,
+       bayes_mcmc_n_cols = common$meta$bayes_mcmc$n_rows,
        bayes_mcmc_height_200 = common$meta$bayes_mcmc$n_rows * (200/72),
        bayes_mcmc_height_250 = common$meta$bayes_mcmc$n_rows * (250/72))
 }

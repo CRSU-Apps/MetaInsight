@@ -1,54 +1,56 @@
 baseline_mcmc_module_ui <- function(id) {
-  ns <- shiny::NS(id)
+  ns <- NS(id)
   tagList(
-    # UI
-
-
-    actionButton(ns("run"), "Run module baseline_mcmc", icon = icon("arrow-turn-down"))
-
+    input_task_button(ns("run"), "Generate plots", type = "default", icon = icon("arrow-turn-down"))
   )
 }
 
 baseline_mcmc_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
+    shinyjs::hide(selector = ".baseline_mcmc_div")
 
-  observeEvent(input$run, {
-    # WARNING ####
+    common$tasks$baseline_mcmc <- ExtendedTask$new(
+      function(...) mirai::mirai(run(...), run = baseline_mcmc, .args = environment())
+    ) |> bind_task_button("run")
 
-    # FUNCTION CALL ####
+    observeEvent(list(input$run, watch("baseline_model_fit")), {
+      req(watch("baseline_mcmc") > 0 || input$run > 0)
 
-    # LOAD INTO COMMON ####
+      if (is.null(common$baseline_model)){
+        common$logger |> writeLog(type = "error", "Please fit the baseline model first")
+        return()
+      }
 
-    # METADATA ####
-    # Populate using metadata()
+      common$logger |> writeLog(type = "starting", "Generating baseline Markov chain Monte Carlo plots")
+      common$tasks$baseline_mcmc$invoke(common$baseline_model)
+      common$meta$baseline_mcmc$used <- TRUE
+      result_all$resume()
+    })
 
-    # TRIGGER
-    trigger("baseline_mcmc")
+    result_all <- observe({
+      result <- common$tasks$baseline_mcmc$result()
+      result_all$suspend()
+      common$baseline_mcmc <- result
+      common$logger |> writeLog(type = "complete", "Baseline Markov chain Monte Carlo plots have been generated")
+      trigger("baseline_mcmc")
+      shinyjs::show(selector = ".baseline_mcmc_div")
+    })
 
+    bayes_mcmc_submodule_server("all", common, "baseline_mcmc", "baseline_mcmc", "baseline_mcmc")
 
   })
-
-  output$result <- renderText({
-    watch("baseline_mcmc")
-    # Result
-  })
-
-
-
-})
 }
-
 
 baseline_mcmc_module_result <- function(id) {
   ns <- NS(id)
-
-  # Result UI
-  verbatimTextOutput(ns("result"))
+  bayes_mcmc_submodule_result(ns("all"), "baseline_mcmc_div", "for all studies")
 }
-
 
 baseline_mcmc_module_rmd <- function(common) {
-  list(baseline_mcmc_knit = !is.null(common$meta$baseline_mcmc$used))
+  list(baseline_mcmc_knit = !is.null(common$meta$baseline_mcmc$used),
+       baseline_mcmc_n_rows = common$meta$baseline_mcmc$n_rows,
+       baseline_mcmc_n_cols = common$meta$baseline_mcmc$n_cols,
+       baseline_mcmc_height_200 = common$meta$baseline_mcmc$n_rows * (200/72),
+       baseline_mcmc_height_250 = common$meta$baseline_mcmc$n_rows * (250/72))
 }
-

@@ -5,7 +5,7 @@ baseline_model_module_ui <- function(id) {
                  choiceNames = list(add_tooltip("Shared", "Coefficient is the same for all treatment comparisons"),
                                     add_tooltip("Exchangable", "Coefficient is different for each treatment comparison but all come from a shared distribution"),
                                     add_tooltip("Unrelated", "Coefficient is different for each treatment comparison")),
-                 choiceValues = list("shared", "exchangable", "unrelated")),
+                 choiceValues = list("shared", "exchangeable", "unrelated")),
     input_task_button(ns("run"), "Run model", type = "default", icon = icon("arrow-turn-down"))
   )
 }
@@ -59,6 +59,7 @@ baseline_model_module_server <- function(id, common, parent_session) {
       common$tasks$baseline_model$invoke(common$main_connected_data,
                                          common$treatment_df,
                                          common$outcome,
+                                         common$outcome_measure,
                                          common$reference_treatment_all,
                                          common$model_type,
                                          input$regressor,
@@ -75,6 +76,14 @@ baseline_model_module_server <- function(id, common, parent_session) {
         common$baseline_model <- result
         shinyjs::runjs("Shiny.setInputValue('baseline_model-complete', 'complete');")
         common$logger |> writeLog(type = "complete", "Baseline model has been fitted")
+
+        if (common$baseline_model$mtcResults$max.gelman > 1.05){
+          common$logger |> writeLog(type = "warning", glue::glue(
+            "The Gelman-Rubin statistic is {round(common$baseline_model$mtcResults$max.gelman, 2)}.
+            A value greater than 1.05 may indicate lack of convergence. Please check the Gelman plot in the
+            Deviance report module"))
+        }
+
       } else {
         common$logger |> writeLog(type = "error", result)
       }

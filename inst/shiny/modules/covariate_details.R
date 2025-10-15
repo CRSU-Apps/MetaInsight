@@ -1,12 +1,12 @@
 covariate_details_module_ui <- function(id) {
   ns <- NS(id)
-  bayes_details_submodule_ui(ns("covariate"))
+  actionButton(ns("run"), "Generate details", icon = icon("arrow-turn-down"))
 }
 
 covariate_details_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
     bayes_details_submodule_server("covariate", common, "covariate_model", "covariate_model_fit", "covariate_details", "covariate_deviance", "covariate_deviance",
-                                   "Please fit the covariate models first")
+                                   "Please fit the covariate models first", reactive(input$run))
   })
 }
 

@@ -21,7 +21,7 @@ bayes_compare_submodule_server <- function(id, common, run){
 
     output$table <- renderTable({
       bayes_compare(common[[paste0("bayes_", id)]])
-    }) |> bindEvent(run())
+    }, rownames = TRUE) |> bindEvent(run())
 
     output$download <- downloadHandler(
       filename = function(){

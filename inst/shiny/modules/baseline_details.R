@@ -1,54 +1,24 @@
 baseline_details_module_ui <- function(id) {
-  ns <- shiny::NS(id)
+  ns <- NS(id)
   tagList(
-    # UI
-
-
-    actionButton(ns("run"), "Run module baseline_details", icon = icon("arrow-turn-down"))
-
+    actionButton(ns("run"), "Generate details", icon = icon("arrow-turn-down"))
   )
 }
 
 baseline_details_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
-
-
-  observeEvent(input$run, {
-    # WARNING ####
-
-    # FUNCTION CALL ####
-
-    # LOAD INTO COMMON ####
-
-    # METADATA ####
-    # Populate using metadata()
-
-    # TRIGGER
-    trigger("baseline_details")
-
-
-  })
-
-  output$result <- renderText({
-    watch("baseline_details")
-    # Result
-  })
-
-
-
+    bayes_details_submodule_server("baseline", common, "baseline_model", "baseline_model_fit", "baseline_details", "baseline_deviance", "baseline_deviance",
+                                   "Please fit the baseline models first", reactive(input$run))
 })
 }
 
-
 baseline_details_module_result <- function(id) {
   ns <- NS(id)
-
-  # Result UI
-  verbatimTextOutput(ns("result"))
+  bayes_details_submodule_result(ns("baseline"), "baseline_details_div")
 }
 
-
 baseline_details_module_rmd <- function(common) {
-  list(baseline_details_knit = !is.null(common$meta$baseline_details$used))
+  list(baseline_details_knit = !is.null(common$meta$baseline_details$used),
+       baseline_deviance_knit = !is.null(common$meta$baseline_deviance$used))
 }
 

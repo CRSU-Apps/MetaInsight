@@ -46,14 +46,12 @@ covariate_ranking_module_server <- function(id, common, parent_session) {
 })
 }
 
-
 covariate_ranking_module_result <- function(id) {
   ns <- NS(id)
   fluidRow(
     bayes_ranking_submodule_result(ns("all"), "Ranking panel for all studies", "covariate_ranking_div")
   )
 }
-
 
 covariate_ranking_module_rmd <- function(common) {list(
   covariate_ranking_knit = !is.null(common$meta$covariate_ranking$used),

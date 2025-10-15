@@ -18,7 +18,7 @@ bayes_ranking_submodule_ui <- function(id, download_label, class) {
 }
 
 bayes_ranking_module_ui <- function(id) {
-  ns <- shiny::NS(id)
+  ns <- NS(id)
 
   download_buttons <- function(id){
     class <- paste0(id, "_div")

@@ -8,7 +8,7 @@ covariate_model_module_ui <- function(id) {
                  choiceNames = list(add_tooltip("Shared", "Coefficient is the same for all treatment comparisons"),
                                     add_tooltip("Exchangable", "Coefficient is different for each treatment comparison but all come from a shared distribution"),
                                     add_tooltip("Unrelated", "Coefficient is different for each treatment comparison")),
-                 choiceValues = list("shared", "exchangable", "unrelated")),
+                 choiceValues = list("shared", "exchangeable", "unrelated")),
     input_task_button(ns("run"), "Run model", type = "default", icon = icon("arrow-turn-down"))
 
   )

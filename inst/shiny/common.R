@@ -37,6 +37,8 @@ common_class <- R6::R6Class(
    baseline_model = NULL,
    baseline_regression = NULL,
    baseline_ranking = NULL,
+   baseline_deviance = NULL,
+   baseline_mcmc = NULL,
    covariate_summary_plot = NULL,
    covariate_model = NULL,
    covariate_value = NULL,
@@ -88,6 +90,8 @@ common_class <- R6::R6Class(
      self$baseline_summary_plot <- NULL
      self$baseline_model <- NULL
      self$baseline_regression <- NULL
+     self$baseline_ranking <- NULL
+     self$baseline_mcmc <- NULL
      self$baseline_ranking <- NULL
      self$covariate_summary_plot <- NULL
      self$covariate_model <- NULL

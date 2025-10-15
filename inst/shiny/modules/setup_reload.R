@@ -55,7 +55,7 @@ setup_reload_module_server <- function(id, common, modules, parent_session) {
       # these are modules which setup data but don't need to be rerun on reloading
       setup_modules <- c("setup_load", "setup_configure", "setup_exclude", "model",
                          "bayes_model", "bayes_nodesplit", "bayes_deviance",
-                         "covariate_model")
+                         "covariate_model", "baseline_model")
 
       # these are used to trigger some outputs to reload
       if ("bayes_deviance" %in% used_modules){

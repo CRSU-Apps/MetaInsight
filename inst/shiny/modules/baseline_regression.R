@@ -2,12 +2,12 @@
 
 baseline_regression_module_ui <- function(id) {
   ns <- NS(id)
-  metaregression_regression_module_ui(ns("baseline"))
+  metaregression_regression_module_ui(ns("baseline"), "baseline_regression")
 }
 
 baseline_regression_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
-    metaregression_regression_module_server("baseline", common)
+    metaregression_regression_module_server("baseline", common, reactive(input$run))
 })
 }
 
