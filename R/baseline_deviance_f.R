@@ -1,15 +1,31 @@
-#' @title baseline_deviance
-#' @description Does x
-#' @param x x
-#' @param logger Stores all notification messages to be displayed in the Log
-#'   Window. Insert the logger reactive list here for running in
-#'   shiny, otherwise leave the default NULL
-#' @return NULL
+#' Produce deviance plots for baseline models
+#' @param model Baseline model produced by `baseline_model()`
+#' @inheritParams common_params
+#' @return list containing:
+#'  \item{deviance_mtc}{equivalent summary to that produced by `gemtc::mtc.deviance()`}
+#'  \item{stem_plot}{plotly object}
+#'  \item{lev_plot}{plotly object}
+#'
 #' @examples {
-#' y <- baseline_deviance(1)  
+#' y <- baseline_deviance(1)
 #' }
 #' @export
-baseline_deviance <- function(x, logger = NULL){
-  NULL
+baseline_deviance <- function(model, logger = NULL){
+
+  if (!inherits(model, "baseline_model")){
+    return(async |> asyncLog(type = "error", "model must be an object created by baseline_model()"))
+  }
+
+  deviance <- list(dev.ab = model$mtcResults$deviance$dev_arm,
+                   fit.ab = model$mtcResults$deviance$devtilda_arm,
+                   dev.re = NULL,
+                   fit.re = NULL,
+                   nd.ab = model$mtcResults$network$na,
+                   nd.re = NULL
+  )
+
+  list(deviance_mtc = deviance,
+       stem_plot = stem_plot(deviance),
+       lev_plot = lev_plot(deviance))
 }
 

@@ -198,7 +198,7 @@ loading_spinner <- function(class) {
 
 
 ####################### #
-# CHANGING TABS #
+# ADD TOOLTIP #
 ####################### #
 #' @keywords internal
 #' @export

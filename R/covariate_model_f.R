@@ -9,8 +9,7 @@
 #' rather than refitting the model.
 #' @inheritParams common_params
 #' @return List of gemtc related output:
-#'  \item{mtc_run_output#'  \item{output from `gemtc::mtc.run()`
-#'  \item{mtcResults}{model object itself carried through (needed to match existing code)}
+#'  \item{mtcResults}{model object from `gemtc::mtc.run()` carried through (needed to match existing code)}
 #'  \item{mtcRelEffects}{data relating to presenting relative effects}
 #'  \item{rel_eff_tbl}{table of relative effects for each comparison}
 #'  \item{covariate_value}{The covariate value originally passed into this function}
@@ -162,8 +161,6 @@ CreateGemtcModel <- function(data, model_type, outcome_measure, regressor_type, 
 #'  covariate_max = Vector of maximum covariate values directly contributing to the regression.
 CovariateModelOutput <- function(connected_data, treatment_df, model, covariate_title, cov_value, outcome_measure) {
 
-  mtc_run_output <- model
-
   model_levels = levels(model$model$data$reg.control)
   reference_name <- model_levels[model_levels %in% model$model$data$reg.control]
   comparator_names <- model_levels[!model_levels %in% model$model$data$reg.control]
@@ -233,7 +230,6 @@ CovariateModelOutput <- function(connected_data, treatment_df, model, covariate_
   # naming conventions to match current Bayesian functions
   return(
     list(
-      mtc_run_output = mtc_run_output,
       mtcResults = model,
       mtcRelEffects = rel_eff,
       rel_eff_tbl = rel_eff_tbl,

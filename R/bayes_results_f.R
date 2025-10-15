@@ -1,13 +1,13 @@
 #' Produces a summary of a Bayesian model
 #'
-#' @param model list. Output produced by `bayes_model()` or `covariate_model()`.
+#' @param model list. Output produced by `baseline_model()`, `bayes_model()` or `covariate_model()`.
 #' @inheritParams common_params
 #' @return HTML summary of the model
 #' @export
 bayes_results <- function(model, logger = NULL){
 
-  if (!inherits(model, "bayes_model")){
-    logger |> writeLog(type = "error", "model must be an object created by bayes_model() or covariate_model()")
+  if (!inherits(model, "bayes_model") && !inherits(model, "baseline_model")){
+    logger |> writeLog(type = "error", "model must be an object created by baseline_model(), bayes_model() or covariate_model()")
   }
 
   title <- glue::glue("Results on the {model$sumresults$measure} scale")
@@ -21,5 +21,11 @@ bayes_results <- function(model, logger = NULL){
 #' @rdname bayes_results
 #' @export
 covariate_results <- function(...){
+  bayes_results(...)
+}
+
+#' @rdname bayes_results
+#' @export
+baseline_results <- function(...){
   bayes_results(...)
 }

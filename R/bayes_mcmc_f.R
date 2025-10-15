@@ -10,15 +10,28 @@
 #' @export
 bayes_mcmc <- function(model, async = FALSE){
 
-  if (!inherits(model, "bayes_model")){
-    logger |> writeLog(type = "error", "model must be an object created by bayes_model() or covariate_model()")
+  if (!inherits(model, "bayes_model") && !inherits(model, "baseline_model")){
+    logger |> writeLog(type = "error", "model must be an object created by baseline_model(), bayes_model() or covariate_model()")
   }
 
   # prevent plots being produced
   pdf(file = NULL)
   on.exit(dev.off())
 
-  parameters <- model$mtcResults$model$monitors$enabled
+  if (inherits(model, "bayes_model")){
+    parameters <- model$mtcResults$model$monitors$enabled
+  } else {
+    parameters <- GetBnmaParameters(all_parameters = attr(model$mtcResults$samples[[1]], "dimnames")[[2]],
+                                    effects_type = model$mtcResults$network$type,
+                                    cov_parameters = model$regressor)
+  }
+
+  if (inherits(model, "baseline_model") || model$mtcResults$model$type == "regression"){
+    n_cols <- 4
+  } else {
+    n_cols <- 2
+  }
+
   gelman_data <- lapply(parameters,
                         function(parameter) {
                           return(coda::gelman.plot(model$mtcResults$samples[, parameter]))
@@ -28,7 +41,8 @@ bayes_mcmc <- function(model, async = FALSE){
   plots$gelman_plots <- GelmanPlots(gelman_data, parameters)
   plots$trace_plots <- TracePlots(model$mtcResults, parameters)
   plots$density_plots <- DensityPlots(model$mtcResults, parameters)
-  plots$n_rows <- ceiling(length(parameters) / 2)
+  plots$n_rows <- ceiling(length(parameters) / n_cols)
+  plots$n_cols <- n_cols
   plots
 }
 
@@ -37,6 +51,39 @@ bayes_mcmc <- function(model, async = FALSE){
 #' @export
 covariate_mcmc <- function(...){
   bayes_mcmc(...)
+}
+
+#' @rdname bayes_mcmc
+#' @export
+baseline_mcmc <- function(...){
+  bayes_mcmc(...)
+}
+
+
+#' Get the parameters that are to be displayed in Gelman plots.
+#'
+#' @param all_parameters Vector of monitored parameters from a bnma model.
+#' @param effects_type "fixed" or "random".
+#' @param cov_parameters "shared", "exchangeable", or "unrelated".
+#' @return Vector of treatment effect and covariate parameter names, plus random effects sd and/or exchangeable covariate sd.
+GetBnmaParameters <- function(all_parameters, effects_type, cov_parameters) {
+  #Extract parameters which begin with "d[" or "b_bl[", except d[1] and b_bl[1]
+  parameters <- grep(
+    "(d|b_bl)\\[([0-9][0-9]+|[2-9])\\]",
+    all_parameters,
+    value = TRUE
+  )
+  if (effects_type == "random") {
+    parameters <- c(parameters, "sd")
+  } else if (effects_type != "fixed") {
+    stop("effects_type must be 'fixed' or 'random'")
+  }
+  if (cov_parameters == "exchangeable") {
+    parameters <- c(parameters, "sdB")
+  } else if (!cov_parameters %in% c("shared", "unrelated")) {
+    stop("cov_parameters must be 'shared', 'exchangeable' or 'unrelated'")
+  }
+  return(parameters)
 }
 
 

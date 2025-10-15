@@ -40,7 +40,7 @@ baseline_regression <- function(model,
     outcome_measure = outcome_measure,
     effects_type = model_type)
 
-  credible_regions <- CalculateCredibleRegionsBnma(model_output)
+  credible_regions <- CalculateCredibleRegionsBnma(model)
 
   list(directness = directness,
        credible_regions = credible_regions)

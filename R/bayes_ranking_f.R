@@ -1,6 +1,6 @@
-#' Function to create data regarding rank results - CRN
+#' Generate ranking data required to produce SUCRA plots from Bayesian models
 #'
-#' @param model list. Output produced by `bayes_model()` or `covariate_model()`.
+#' @param model list. Output produced by `baseline_model()`, `bayes_model()` or `covariate_model()`.
 #' @param cov_value numeric. Covariate value if a meta-regression. Default `NA`
 #' @inheritParams common_params
 #'
@@ -44,7 +44,9 @@ covariate_ranking <- function(...){
   bayes_ranking(...)
 }
 
-
+# copies the parameters for autocomplete
+formals(baseline_ranking) <- formals(bayes_ranking)
+formals(covariate_ranking) <- formals(bayes_ranking)
 
 #' Get SUCRA data.
 #'

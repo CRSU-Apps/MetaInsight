@@ -1,7 +1,7 @@
 #' @title baseline_model
 #' @description Fit a baseline risk regression model with `bnma::network.run()`
 #' @param regressor_type character. Type of regression coefficient, either `shared`, `unrelated`, or `exchangeable`
-#' @param seed x
+#' @param seed numeric. Seed used to fit the model
 #' @inheritParams common_params
 #' @return List of bnma related output:
 #'  mtcResults = model object itself carried through (needed to match existing code).
@@ -17,13 +17,17 @@
 #'  covariate_min = Vector of minimum covariate values directly contributing to the regression.
 #'  covariate_max = Vector of maximum covariate values directly contributing to the regression.
 #'  dic = Summary of model fit
+#'  summary = Output of summary(model)
+#'  regressor = regressor_type
 #' @export
-baseline_model <- function(connected_data, treatment_df, outcome, reference_treatment, model_type, regressor_type, seed, async = FALSE){
+baseline_model <- function(connected_data, treatment_df, outcome, outcome_measure, reference_treatment, model_type, regressor_type, seed, async = FALSE){
 
   model <- BaselineRiskRegression(connected_data, treatment_df, outcome, reference_treatment, model_type, regressor_type, seed)
 
   output <- BaselineRiskModelOutput(connected_data, treatment_df, model, outcome_measure)
 
+  # store this to avoid conversion later
+  output$regressor <- regressor_type
   class(output) <- "baseline_model"
 
   return(output)
@@ -173,7 +177,6 @@ BaselineRiskModelOutput <- function(connected_data, treatment_df, model, outcome
   treatments <- model$network$Treat.order
   reference_treatment <- unname(treatments[1])
   comparator_names <- unname(treatments[-1])
-  browser()
   model_summary <- summary(model)
 
   connected_data$Treatment <- treatment_df$Label[match(connected_data$T, treatment_df$Number)]
@@ -220,6 +223,13 @@ BaselineRiskModelOutput <- function(connected_data, treatment_df, model, outcome
 
   dic <- BaselineRiskDicTable(model)
 
+  # for consistency with gemtc
+  names(model_summary)[1] <- "summaries"
+  model_summary$measure <- switch(outcome_measure,
+                                  "OR" = "Odds Ratio",
+                                  "RR" = "Risk Ratio",
+                                  "MD" = "Mean Difference")
+
   return(list(mtcResults = model,
               covariate_value = mean_covariate_value,
               reference_name = reference_treatment,
@@ -232,7 +242,8 @@ BaselineRiskModelOutput <- function(connected_data, treatment_df, model, outcome
               model = model$network$type,
               covariate_min = min_max$min,
               covariate_max = min_max$max,
-              dic = dic
+              dic = dic,
+              sumresults = model_summary
   )
   )
 }
