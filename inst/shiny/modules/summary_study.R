@@ -29,18 +29,6 @@ summary_study_module_server <- function(id, common, parent_session) {
   })
 
   # Determine the plot height in pixels
-  plot_height <- reactive({
-    watch("setup_exclude")
-    req(watch("summary_study") > 0)
-    # The rows that don't correspond to NA treatment effects
-    proper_comparison_rows <- !is.na(common$freq_sub$d0$TE)
-    # The number of comparisons, with NA rows dropped
-    n_proper_comparisons <- length(common$freq_sub$d0$TE[proper_comparison_rows])
-    # The number of unique treatments, with NA rows dropped
-    n_proper_treatments <- length(unique(c(common$freq_sub$d0$treat1[proper_comparison_rows],
-                                           common$freq_sub$d0$treat2[proper_comparison_rows])))
-    return(n_proper_comparisons * 25 + n_proper_treatments * 35)
-  })
 
 
   # #Set default values for the axes
@@ -50,40 +38,37 @@ summary_study_module_server <- function(id, common, parent_session) {
   #   updateNumericInput(inputId = "x_axis_max", value = unname(starting_x_limits["upper"]))
   # })
 
-  output$plot <- renderPlot({
-    watch("setup_exclude")
+  svg <- reactive({
     req(watch("summary_study") > 0)
-    common$meta$summary_study$used <- TRUE
-    common$meta$summary_study$title <- as.numeric(input$title)
-    common$meta$summary_study$header <- as.numeric(input$header)
-    common$meta$summary_study$height <- plot_height()/72 # pixels to inches
     summary_study(
       data = common$data,
       freq = common$freq_sub,
       outcome_measure = common$outcome_measure,
       x_limits = c(lower = input$x_axis_min, upper = input$x_axis_max)
     )
-  }, height = function(){plot_height()})
+  })
+
+  output$plot <- renderUI({
+    common$meta$summary_study$used <- TRUE
+    common$meta$summary_study$title <- as.numeric(input$title)
+    common$meta$summary_study$header <- as.numeric(input$header)
+    # common$meta$summary_study$height <- plot_height()/72 # pixels to inches
+    div(class = "svg_container",
+        HTML(svg()$svg)
+    )
+  })
 
   output$download <- downloadHandler(
     filename = function() {
       paste0('MetaInsight_study_results.', common$download_format)
     },
     content = function(file) {
-
-      write_plot(
+      write_svg_plot(
         file,
         common$download_format,
-        function() {
-          summary_study(
-            pairwise = pairwise(),
-            treatment_order = common$freq_sub$lstx,
-            outcome_measure = common$outcome_measure,
-            x_limits = c(lower = input$x_axis_min, upper = input$x_axis_max)
-          )
-        },
-        width = 8,
-        height = common$meta$summary_study$height
+        svg()$svg,
+        svg()$height,
+        svg()$width
       )
     }
   )
@@ -110,7 +95,7 @@ summary_study_module_server <- function(id, common, parent_session) {
 summary_study_module_result <- function(id) {
   ns <- NS(id)
   # set a maximum width whilst staying centered
-  div(style = "max-width: 1200px; margin: 0 auto;", plotOutput(ns("plot")))
+  div(style = "max-width: 1200px; margin: 0 auto;", uiOutput(ns("plot")))
 }
 
 summary_study_module_rmd <- function(common){ list(

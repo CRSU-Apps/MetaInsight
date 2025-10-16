@@ -60,90 +60,110 @@ summary_study <- function(data, freq, outcome_measure, x_limits) {
     outcome_type <- "binary"
   }
 
-  par(family = "Arimo")
-  par(mar = c(8, 0, 0, 0))
 
-  plot(
-    x = NA,
-    y = NA,
-    xlim = enlarged_x_limits,
-    ylim = c(0, max(pairwise_treatments$y_position_last) + 2),
-    yaxt = "n",
-    xaxt = "n",
-    ylab = "",
-    xlab = x_label
-  )
+  # plot height
+  # The rows that don't correspond to NA treatment effects
+  proper_comparison_rows <- !is.na(freq$d0$TE)
+  # The number of comparisons, with NA rows dropped
+  n_proper_comparisons <- length(freq$d0$TE[proper_comparison_rows])
+  # The number of unique treatments, with NA rows dropped
+  n_proper_treatments <- length(unique(c(freq$d0$treat1[proper_comparison_rows],
+                                         freq$d0$treat2[proper_comparison_rows])))
 
-  #Define the ticks and labels for the x-axis
-  if (outcome_type == "binary") {
-    x_labels <- signif(exp(x_ticks), digits = 1)
-  } else if (outcome_type == "continuous") {
-    x_labels <- x_ticks
-  }
+  # divide by 72 to go from pixels to inches
+  plot_height <- (n_proper_comparisons * 25 + n_proper_treatments * 35) / 72
 
-  #Add the x-axis
-  axis(
-    side = 1,
-    at = x_ticks,
-    labels = x_labels
-  )
+  # first attempt, but plot should be narrower when no ROB exist
+  plot_width <- ifelse(n_rob_variables > 0, 1200 / 72, 800 / 72)
 
-  #Add the line of no effect
-  lines(
-    x = rep(0, times = 2),
-    y = c(0, max(pairwise_treatments$y_position_last)),
-    lty = 2
-  )
+  svglite::xmlSVG({
+    par(family = "Arimo")
+    par(mar = c(8, 0, 0, 0))
 
-  #Add header of the within-study comparison-level outcomes
-  text(
-    x = x_outcome_position,
-    y = max(pairwise_treatments$y_position_last) + 1,
-    labels = paste0(x_label, " (95% CI)"),
-    adj = 0,
-    font = 2
-  )
+    plot(
+      x = NA,
+      y = NA,
+      xlim = enlarged_x_limits,
+      ylim = c(0, max(pairwise_treatments$y_position_last) + 2),
+      yaxt = "n",
+      xaxt = "n",
+      ylab = "",
+      xlab = x_label
+    )
 
-  #Add risk of bias header
-  if (n_rob_variables > 0) {
+    #Define the ticks and labels for the x-axis
+    if (outcome_type == "binary") {
+      x_labels <- signif(exp(x_ticks), digits = 1)
+    } else if (outcome_type == "continuous") {
+      x_labels <- x_ticks
+    }
+
+    #Add the x-axis
+    axis(
+      side = 1,
+      at = x_ticks,
+      labels = x_labels
+    )
+
+    #Add the line of no effect
+    lines(
+      x = rep(0, times = 2),
+      y = c(0, max(pairwise_treatments$y_position_last)),
+      lty = 2
+    )
+
+    #Add header of the within-study comparison-level outcomes
     text(
-      x = x_rob_positions - 0.25 * per_rob_factor * x_width,
+      x = x_outcome_position,
       y = max(pairwise_treatments$y_position_last) + 1,
-      labels = short_rob_names,
+      labels = paste0(x_label, " (95% CI)"),
       adj = 0,
       font = 2
     )
-    if (is.element("rob", rob_variables)) {
-      rob_position <- which(rob_variables == "rob")
-      lines(
-        x = rep(x_rob_positions[rob_position] - 0.5 * per_rob_factor * x_width, times = 2),
-        y = c(1, max(pairwise_treatments$y_position_last) + 1),
-        lty = 2,
-        col = "azure4"
+
+    #Add risk of bias header
+    if (n_rob_variables > 0) {
+      text(
+        x = x_rob_positions - 0.25 * per_rob_factor * x_width,
+        y = max(pairwise_treatments$y_position_last) + 1,
+        labels = short_rob_names,
+        adj = 0,
+        font = 2
+      )
+      if (is.element("rob", rob_variables)) {
+        rob_position <- which(rob_variables == "rob")
+        lines(
+          x = rep(x_rob_positions[rob_position] - 0.5 * per_rob_factor * x_width, times = 2),
+          y = c(1, max(pairwise_treatments$y_position_last) + 1),
+          lty = 2,
+          col = "azure4"
+        )
+      }
+    }
+
+    # Add legend
+    mtext("rob1: balbalbla", side = 1, line = 2.5, cex = 1, adj = 0.05)
+    mtext("rob2: dudada", side = 1, line = 3.5, cex = 1, adj = 0.05)
+    mtext("rob: Overall risk of bias", side = 1, line = 4.5, cex = 1, adj = 0.05)
+    mtext("ind: Indirectness", side = 1, line = 5.5, cex = 1, adj = 0.05)
+
+    for (row in 1:length(pairwise_treatments[[1]])) {
+      .AddTreatmentEffectBlock(
+        pairwise = pairwise,
+        outcome_type = outcome_type,
+        x_label_position = enlarged_x_limits[1],
+        x_outcome_position = x_outcome_position,
+        x_rob_positions = x_rob_positions,
+        y_header_position = pairwise_treatments$y_position_last[row],
+        y_positions = (pairwise_treatments$y_position_first[row] + 1):(pairwise_treatments$y_position_last[row] - 1),
+        treatment1 = pairwise_treatments$treat1[row],
+        treatment2 = pairwise_treatments$treat2[row],
+        rob_variables = rob_variables
       )
     }
-  }
-
-  # Add legend
-  mtext("rob1: balbalbla", side = 1, line = 2.5, cex = 1, adj = 0.05)
-  mtext("rob2: dudada", side = 1, line = 3.5, cex = 1, adj = 0.05)
-  mtext("rob: Overall risk of bias", side = 1, line = 4.5, cex = 1, adj = 0.05)
-  mtext("ind: Indirectness", side = 1, line = 5.5, cex = 1, adj = 0.05)
-
-  for (row in 1:length(pairwise_treatments[[1]])) {
-    .AddTreatmentEffectBlock(
-      pairwise = pairwise,
-      outcome_type = outcome_type,
-      x_label_position = enlarged_x_limits[1],
-      x_outcome_position = x_outcome_position,
-      x_rob_positions = x_rob_positions,
-      y_header_position = pairwise_treatments$y_position_last[row],
-      y_positions = (pairwise_treatments$y_position_first[row] + 1):(pairwise_treatments$y_position_last[row] - 1),
-      treatment1 = pairwise_treatments$treat1[row],
-      treatment2 = pairwise_treatments$treat2[row],
-      rob_variables = rob_variables
-    )
-  }
+  },
+  width = plot_width,
+  height = plot_height) |> crop_svg()
 }
 
 #' Finds suitable starting limits for the x-axis.
