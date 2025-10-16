@@ -241,4 +241,27 @@ hr {
   width: 100%;
   height: auto;
   display: block;
+
+}
+
+/* Display labels and input boxes inline */
+
+.inline_labels .form-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.inline_labels .form-group label {
+  flex: 0 0 55%;
+  margin-bottom: 0;
+}
+
+.inline_labels .form-group .form-control,
+.inline_labels .form-group select {
+  flex: 0 0 45%;
+}
+
+.inline_labels .form-group > div {
+  flex: 0 0 45%;
 }

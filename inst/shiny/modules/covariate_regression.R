@@ -32,30 +32,33 @@ metaregression_regression_module_ui <- function(id, module){
                   label = add_tooltip("Extrapolate regression lines?", "Extrapolate the regression lines beyond the range of the original data"),
                   value = TRUE
     ),
-    selectInput(ns("symbol"),
-                label = add_tooltip("Covariate symbol", "Show covariate values using a symbol of your choice"),
-                choices = c(
-                  "Nothing" = "none",
-                  "Circles" = "circle open",
-                  "Crosses" = "cross"
-                ),
-                selected = "circle open",
-                selectize = FALSE
-    ),
-    numericInput(ns("symbol_size"),
-                 label = "Covariate symbol size",
-                 min = 0,
-                 value = 10,
-                 step = 1),
-    selectInput(ns("legend_position"),
-                label = "Legend position",
-                choices = c(
-                  "Bottom-Right" = "BR",
-                  "Bottom-Left" = "BL",
-                  "Top-Right" = "TR",
-                  "Top-Left" = "TL"
-                ),
-                selectize = FALSE
+    # make labels and input boxes appear inline rather than above and below
+    div(class = "inline_labels",
+      selectInput(ns("symbol"),
+                  label = add_tooltip("Covariate symbol", "Show covariate values using a symbol of your choice"),
+                  choices = c(
+                    "Nothing" = "none",
+                    "Circles" = "circle open",
+                    "Crosses" = "cross"
+                  ),
+                  selected = "circle open",
+                  selectize = FALSE
+      ),
+      numericInput(ns("symbol_size"),
+                   label = "Covariate symbol size",
+                   min = 0,
+                   value = 10,
+                   step = 1),
+      selectInput(ns("legend_position"),
+                  label = "Legend position",
+                  choices = c(
+                    "Bottom-Right" = "BR",
+                    "Bottom-Left" = "BL",
+                    "Top-Right" = "TR",
+                    "Top-Left" = "TL"
+                  ),
+                  selectize = FALSE
+      )
     ),
     # this is needed so that enter key can still run the module
     input_task_button(paste(module, "run", sep = "-"), "Generate plot", type = "default", icon = icon("arrow-turn-down")),
