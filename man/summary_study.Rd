@@ -2,26 +2,22 @@
 % Please edit documentation in R/summary_study_f.R
 \name{summary_study}
 \alias{summary_study}
-\title{Creates a summary forest plot of all the studies.}
+\title{Create a forest plot of pairwise comparisons, grouped by treatment pairs.}
 \usage{
-summary_study(freq, outcome_measure, header, title, logger = NULL)
+summary_study(data, freq, outcome_measure, x_limits)
 }
 \arguments{
-\item{freq}{list. NMA results created by freq_wrap().}
+\item{outcome_measure}{One of "MD", "SMD", "OR", "RR", or "RD".}
 
-\item{outcome_measure}{character. "MD", "SMD", "OR", "RR", or "RD".}
+\item{x_limits}{Named vector of x-axis limits in the form (lower, upper).}
 
-\item{header}{numeric. Multiplier for size of text in treatment contrast headers.}
+\item{pairwise}{Output from meta::pairwise().}
 
-\item{title}{numeric. Multiplier for size of title.}
-
-\item{logger}{Stores all notification messages to be displayed in the Log
-Window. Insert the logger reactive list here for running in
-shiny, otherwise leave the default `NULL`}
+\item{treatment_order}{Vector of the treatments in the order they should appear in the forest plot.}
 }
 \value{
-Plot created by groupforest.df().
+Forest plot.
 }
 \description{
-Creates a summary forest plot of all the studies.
+Create a forest plot of pairwise comparisons, grouped by treatment pairs.
 }

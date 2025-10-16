@@ -27,7 +27,7 @@ summary_study_module_server <- function(id, common, parent_session) {
     trigger("summary_study")
     shinyjs::show(selector = ".summary_study_div")
   })
-  
+
   # Determine the plot height in pixels
   plot_height <- reactive({
     watch("setup_exclude")
@@ -41,32 +41,15 @@ summary_study_module_server <- function(id, common, parent_session) {
                                            common$freq_sub$d0$treat2[proper_comparison_rows])))
     return(n_proper_comparisons * 25 + n_proper_treatments * 35)
   })
-  
-  #Merge rob variables into the pairwise data
-  pairwise <- reactive({
-    watch("summary_study")
-    req(common$freq_sub)
-    rob_data_frame <- unique(common$data[, c("Study", FindRobNames(common$data))])
-    if (!is.data.frame(rob_data_frame)) {
-      return(common$freq_sub$d1)
-    } else {
-      return(
-        merge(
-          common$freq_sub$d1,
-          rob_data_frame,
-          by = "Study"
-        )
-      )
-    }
-  })
-  
-  #Set default values for the axes
-  observe({
-    starting_x_limits <- FindStartingXLimits(pairwise = pairwise())
-    updateNumericInput(inputId = "x_axis_min", value = unname(starting_x_limits["lower"]))
-    updateNumericInput(inputId = "x_axis_max", value = unname(starting_x_limits["upper"]))
-  })
-  
+
+
+  # #Set default values for the axes
+  # observe({
+  #   starting_x_limits <- FindStartingXLimits(pairwise = pairwise())
+  #   updateNumericInput(inputId = "x_axis_min", value = unname(starting_x_limits["lower"]))
+  #   updateNumericInput(inputId = "x_axis_max", value = unname(starting_x_limits["upper"]))
+  # })
+
   output$plot <- renderPlot({
     watch("setup_exclude")
     req(watch("summary_study") > 0)
@@ -75,8 +58,8 @@ summary_study_module_server <- function(id, common, parent_session) {
     common$meta$summary_study$header <- as.numeric(input$header)
     common$meta$summary_study$height <- plot_height()/72 # pixels to inches
     summary_study(
-      pairwise = pairwise(),
-      treatment_order = common$freq_sub$lstx,
+      data = common$data,
+      freq = common$freq_sub,
       outcome_measure = common$outcome_measure,
       x_limits = c(lower = input$x_axis_min, upper = input$x_axis_max)
     )
@@ -104,7 +87,7 @@ summary_study_module_server <- function(id, common, parent_session) {
       )
     }
   )
-  
+
   return(list(
     save = function() {list(
       ### Manual save start

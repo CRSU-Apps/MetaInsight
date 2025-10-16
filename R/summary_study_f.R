@@ -1,3 +1,150 @@
+#' Create a forest plot of pairwise comparisons, grouped by treatment pairs.
+#'
+#' @param pairwise Output from meta::pairwise().
+#' @param treatment_order Vector of the treatments in the order they should appear in the forest plot.
+#' @param outcome_measure One of "MD", "SMD", "OR", "RR", or "RD".
+#' @param x_limits Named vector of x-axis limits in the form (lower, upper).
+#' @export
+#' @return Forest plot.
+summary_study <- function(data, freq, outcome_measure, x_limits) {
+
+  rob_data_frame <- unique(data[, c("Study", FindRobNames(data))])
+  if (!is.data.frame(rob_data_frame)) {
+    pairwise <- freq$d1
+  } else {
+    pairwise <- merge(freq$d1, rob_data_frame, by = "Study")
+  }
+
+  pairwise_treatments <- PairwiseTreatments(
+    pairwise = pairwise,
+    treatment_order = freq$lstx
+  )
+
+  x_width <- unname(x_limits["upper"] - x_limits["lower"])
+  x_ticks <- .FindXTicks(lower = x_limits["lower"], upper = x_limits["upper"])
+
+  rob_variables <- FindRobNames(pairwise)
+  short_rob_names <- ShortenRobNames(rob_variables)
+  n_rob_variables <- length(rob_variables)
+
+  #Enlarge the x-axis to allow the labels to go on the left and the outcomes on the right
+  left_enlargement_factor <- 0.04 * (max(nchar(as.character(pairwise$treat1))) + max(nchar(as.character(pairwise$treat2))) + 4)
+  outcome_text_factor <-  0.9
+  per_rob_factor <- 0.2
+  right_enlargement_factor <- outcome_text_factor + per_rob_factor * n_rob_variables
+  enlarged_x_limits <- x_limits - c(left_enlargement_factor * x_width, 0) + c(0, right_enlargement_factor * x_width)
+
+  #x-position for the within-study comparison-level outcomes
+  x_outcome_position <- x_limits["upper"] + 0.1 * x_width
+  #x-position for the risk of bias
+  if (n_rob_variables > 0) {
+    x_rob_positions <- seq(
+      from = x_limits["upper"] + (outcome_text_factor + per_rob_factor) * x_width,
+      to = x_limits["upper"] + (outcome_text_factor + per_rob_factor * n_rob_variables) * x_width,
+      by = per_rob_factor * x_width
+    )
+  }
+
+  x_label <- switch(
+    outcome_measure,
+    "MD" = "Mean difference",
+    "SMD" = "Standardised MD",
+    "OR" = "Odds ratio",
+    "RR" = "Risk ratio",
+    "RD" = "Risk difference"
+  )
+
+  if (is.element(outcome_measure, c("MD", "SMD"))) {
+    outcome_type <- "continuous"
+  } else if (is.element(outcome_measure, c("OR", "RR", "RD"))) {
+    outcome_type <- "binary"
+  }
+
+  par(family = "Arimo")
+  par(mar = c(8, 0, 0, 0))
+
+  plot(
+    x = NA,
+    y = NA,
+    xlim = enlarged_x_limits,
+    ylim = c(0, max(pairwise_treatments$y_position_last) + 2),
+    yaxt = "n",
+    xaxt = "n",
+    ylab = "",
+    xlab = x_label
+  )
+
+  #Define the ticks and labels for the x-axis
+  if (outcome_type == "binary") {
+    x_labels <- signif(exp(x_ticks), digits = 1)
+  } else if (outcome_type == "continuous") {
+    x_labels <- x_ticks
+  }
+
+  #Add the x-axis
+  axis(
+    side = 1,
+    at = x_ticks,
+    labels = x_labels
+  )
+
+  #Add the line of no effect
+  lines(
+    x = rep(0, times = 2),
+    y = c(0, max(pairwise_treatments$y_position_last)),
+    lty = 2
+  )
+
+  #Add header of the within-study comparison-level outcomes
+  text(
+    x = x_outcome_position,
+    y = max(pairwise_treatments$y_position_last) + 1,
+    labels = paste0(x_label, " (95% CI)"),
+    adj = 0,
+    font = 2
+  )
+
+  #Add risk of bias header
+  if (n_rob_variables > 0) {
+    text(
+      x = x_rob_positions - 0.25 * per_rob_factor * x_width,
+      y = max(pairwise_treatments$y_position_last) + 1,
+      labels = short_rob_names,
+      adj = 0,
+      font = 2
+    )
+    if (is.element("rob", rob_variables)) {
+      rob_position <- which(rob_variables == "rob")
+      lines(
+        x = rep(x_rob_positions[rob_position] - 0.5 * per_rob_factor * x_width, times = 2),
+        y = c(1, max(pairwise_treatments$y_position_last) + 1),
+        lty = 2,
+        col = "azure4"
+      )
+    }
+  }
+
+  # Add legend
+  mtext("rob1: balbalbla", side = 1, line = 2.5, cex = 1, adj = 0.05)
+  mtext("rob2: dudada", side = 1, line = 3.5, cex = 1, adj = 0.05)
+  mtext("rob: Overall risk of bias", side = 1, line = 4.5, cex = 1, adj = 0.05)
+  mtext("ind: Indirectness", side = 1, line = 5.5, cex = 1, adj = 0.05)
+
+  for (row in 1:length(pairwise_treatments[[1]])) {
+    .AddTreatmentEffectBlock(
+      pairwise = pairwise,
+      outcome_type = outcome_type,
+      x_label_position = enlarged_x_limits[1],
+      x_outcome_position = x_outcome_position,
+      x_rob_positions = x_rob_positions,
+      y_header_position = pairwise_treatments$y_position_last[row],
+      y_positions = (pairwise_treatments$y_position_first[row] + 1):(pairwise_treatments$y_position_last[row] - 1),
+      treatment1 = pairwise_treatments$treat1[row],
+      treatment2 = pairwise_treatments$treat2[row],
+      rob_variables = rob_variables
+    )
+  }
+}
 
 #' Finds suitable starting limits for the x-axis.
 #'
@@ -121,7 +268,7 @@ FindStartingXLimits <- function(pairwise) {
 .AddRiskOfBias <- function(pairwise, outcome_type, x_rob_positions, y_position, studlab, treatment1, treatment2, rob_variables) {
   row <- which(pairwise$studlab == studlab & pairwise$treat1 == treatment1 & pairwise$treat2 == treatment2)
   colours <- c("chartreuse3", "darkgoldenrod1", "red")
-  
+
   points(
     x = x_rob_positions,
     y = rep(y_position, times = length(x_rob_positions)),
@@ -153,13 +300,13 @@ FindStartingXLimits <- function(pairwise) {
     adj = 0,
     font = 2
   )
-  
+
   #Select the rows comparing to the two treatments
   pairwise_subset <- pairwise[
     pairwise$treat1 == treatment1 & pairwise$treat2 == treatment2
     ,
   ]
-  
+
   #Study labels
   text(
     x = x_label_position,
@@ -169,7 +316,7 @@ FindStartingXLimits <- function(pairwise) {
   )
 
   include_rob <- length(rob_variables) > 0
-  
+
   for (row in 1:length(pairwise_subset$studlab)) {
     .AddTreatmentEffect(
       pairwise = pairwise,
@@ -204,7 +351,7 @@ FindStartingXLimits <- function(pairwise) {
 
 
 #' Creates a data frame of values used to set y co-ordinates.
-#' 
+#'
 #' @param pairwise Output from meta::pairwise().
 #' @param treatment_order Vector of the treatments in the order they should appear in the forest plot.
 #' @return Data frame with columns:
@@ -239,144 +386,8 @@ PairwiseTreatments <- function(pairwise, treatment_order) {
 }
 
 
-
-#' Create a forest plot of pairwise comparisons, grouped by treatment pairs.
-#'
-#' @param pairwise Output from meta::pairwise().
-#' @param treatment_order Vector of the treatments in the order they should appear in the forest plot.
-#' @param outcome_measure One of "MD", "SMD", "OR", "RR", or "RD".
-#' @param x_limits Named vector of x-axis limits in the form (lower, upper).
-#' @return Forest plot.
-summary_study <- function(pairwise, treatment_order, outcome_measure, x_limits) {
-  par(family = "Consolas")
-  par(mar = c(4, 0, 0, 0))
-
-  pairwise_treatments <- PairwiseTreatments(
-    pairwise = pairwise,
-    treatment_order = treatment_order
-  )
-
-  x_width <- unname(x_limits["upper"] - x_limits["lower"])
-  x_ticks <- .FindXTicks(lower = x_limits["lower"], upper = x_limits["upper"])
-
-  rob_variables <- FindRobNames(pairwise)
-  short_rob_names <- ShortenRobNames(rob_variables)
-  n_rob_variables <- length(rob_variables)
-  
-  #Enlarge the x-axis to allow the labels to go on the left and the outcomes on the right
-  left_enlargement_factor <- 0.04 * (max(nchar(as.character(pairwise$treat1))) + max(nchar(as.character(pairwise$treat2))) + 4)
-  outcome_text_factor <-  0.9
-  per_rob_factor <- 0.2
-  right_enlargement_factor <- outcome_text_factor + per_rob_factor * n_rob_variables
-  enlarged_x_limits <- x_limits - c(left_enlargement_factor * x_width, 0) + c(0, right_enlargement_factor * x_width)
-  
-  #x-position for the within-study comparison-level outcomes
-  x_outcome_position <- x_limits["upper"] + 0.1 * x_width
-  #x-position for the risk of bias
-  if (n_rob_variables > 0) {
-    x_rob_positions <- seq(
-      from = x_limits["upper"] + (outcome_text_factor + per_rob_factor) * x_width,
-      to = x_limits["upper"] + (outcome_text_factor + per_rob_factor * n_rob_variables) * x_width,
-      by = per_rob_factor * x_width
-    )
-  }
-  
-  x_label <- switch(
-    outcome_measure,
-    "MD" = "Mean difference",
-    "SMD" = "Standardised MD",
-    "OR" = "Odds ratio",
-    "RR" = "Risk ratio",
-    "RD" = "Risk difference"
-  )
-  
-  if (is.element(outcome_measure, c("MD", "SMD"))) {
-    outcome_type <- "continuous"
-  } else if (is.element(outcome_measure, c("OR", "RR", "RD"))) {
-    outcome_type <- "binary"
-  }
-  
-  plot(
-    x = NA,
-    y = NA,
-    xlim = enlarged_x_limits,
-    ylim = c(0, max(pairwise_treatments$y_position_last) + 2),
-    yaxt = "n",
-    xaxt = "n",
-    ylab = "",
-    xlab = x_label
-  )
-  
-  #Define the ticks and labels for the x-axis
-  if (outcome_type == "binary") {
-    x_labels <- signif(exp(x_ticks), digits = 1)
-  } else if (outcome_type == "continuous") {
-    x_labels <- x_ticks
-  }
-  
-  #Add the x-axis
-  axis(
-    side = 1,
-    at = x_ticks,
-    labels = x_labels
-  )
-  
-  #Add the line of no effect
-  lines(
-    x = rep(0, times = 2),
-    y = c(0, max(pairwise_treatments$y_position_last)),
-    lty = 2
-  )
-  
-  #Add header of the within-study comparison-level outcomes
-  text(
-    x = x_outcome_position,
-    y = max(pairwise_treatments$y_position_last) + 1,
-    labels = paste0(x_label, " (95% CI)"),
-    adj = 0,
-    font = 2
-  )
-  
-  #Add risk of bias header
-  if (n_rob_variables > 0) {
-    text(
-      x = x_rob_positions - 0.25 * per_rob_factor * x_width,
-      y = max(pairwise_treatments$y_position_last) + 1,
-      labels = short_rob_names,
-      adj = 0,
-      font = 2
-    )
-    if (is.element("rob", rob_variables)) {
-      rob_position <- which(rob_variables == "rob")
-      lines(
-        x = rep(x_rob_positions[rob_position] - 0.5 * per_rob_factor * x_width, times = 2),
-        y = c(1, max(pairwise_treatments$y_position_last) + 1),
-        lty = 2,
-        col = "azure4"
-      )
-    }
-  }
-  
-  for (row in 1:length(pairwise_treatments[[1]])) {
-    .AddTreatmentEffectBlock(
-      pairwise = pairwise,
-      outcome_type = outcome_type,
-      x_label_position = enlarged_x_limits[1],
-      x_outcome_position = x_outcome_position,
-      x_rob_positions = x_rob_positions,
-      y_header_position = pairwise_treatments$y_position_last[row],
-      y_positions = (pairwise_treatments$y_position_first[row] + 1):(pairwise_treatments$y_position_last[row] - 1),
-      treatment1 = pairwise_treatments$treat1[row],
-      treatment2 = pairwise_treatments$treat2[row],
-      rob_variables = rob_variables
-    )
-  }
-}
-
-
-
 #' Function to determine the height of the forest plot.
-#' 
+#'
 #' @param pairwise Output from meta::pairwise().
 #' @param treatment_order Vector of the treatments in the order they should appear in the forest plot.
 #' @return Forest plot height in pixels.
