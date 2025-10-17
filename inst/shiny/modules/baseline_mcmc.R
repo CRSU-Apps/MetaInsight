@@ -50,7 +50,6 @@ baseline_mcmc_module_result <- function(id) {
 baseline_mcmc_module_rmd <- function(common) {
   list(baseline_mcmc_knit = !is.null(common$meta$baseline_mcmc$used),
        baseline_mcmc_n_rows = common$meta$baseline_mcmc$n_rows,
-       baseline_mcmc_n_cols = common$meta$baseline_mcmc$n_cols,
        baseline_mcmc_height_200 = common$meta$baseline_mcmc$n_rows * (200/72),
        baseline_mcmc_height_250 = common$meta$baseline_mcmc$n_rows * (250/72))
 }

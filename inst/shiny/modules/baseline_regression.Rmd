@@ -5,7 +5,7 @@
 ```{r, echo = {{baseline_regression_knit}}, include = {{baseline_regression_knit}}}
 baseline_regression_data <- baseline_regression(baseline_model, 
                                                   main_connected_data, 
-                                                  covariate_column,
+                                                  "covar.baseline_risk",
                                                   treatment_df, 
                                                   outcome, 
                                                   outcome_measure,

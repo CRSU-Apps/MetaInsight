@@ -15,23 +15,9 @@ bayes_ranking(
   logger = NULL
 )
 
-baseline_ranking(
-  connected_data,
-  treatment_df,
-  model,
-  ranking_option,
-  cov_value = NA,
-  logger = NULL
-)
+baseline_ranking(...)
 
-covariate_ranking(
-  connected_data,
-  treatment_df,
-  model,
-  ranking_option,
-  cov_value = NA,
-  logger = NULL
-)
+covariate_ranking(...)
 }
 \arguments{
 \item{connected_data}{dataframe. Input data set created by \code{setup_configure()} or \code{setup_exclude}}

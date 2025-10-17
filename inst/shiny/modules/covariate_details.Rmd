@@ -13,7 +13,3 @@ covariate_model$mtcResults$model$inits
 ```{r, echo = {{all(covariate_details_knit, covariate_deviance_knit)}}, include = {{all(covariate_details_knit, covariate_deviance_knit)}}}
 covariate_deviance$deviance_mtc
 ```
-
-```{r, echo = {{all(covariate_details_knit, covariate_deviance_knit)}}, include = {{all(covariate_details_knit, covariate_deviance_knit)}}}
-covariate_deviance$deviance_ume
-```

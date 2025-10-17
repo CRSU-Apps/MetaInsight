@@ -6,7 +6,7 @@
 {r, results = 'asis'}
 ```
 ```{r, echo = {{bayes_forest_knit}}, include = {{bayes_forest_knit}}}
-bayes_forest_all <-bayes_forest(bayes_model_all, treatment_df_all, reference_treatment_all, "All studies")
+bayes_forest_all <- bayes_forest(bayes_model_all, treatment_df, reference_treatment_all, "All studies")
 
 htmltools::HTML(bayes_forest_all$svg)
 ```

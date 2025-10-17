@@ -1,7 +1,12 @@
 ```{asis, echo = {{baseline_forest_knit}}, eval = {{baseline_forest_knit}}, include = {{baseline_forest_knit}}}
-
+### Produce forest plot of the baseline risk model
 ```
 
+```{asis, echo = {{baseline_forest_knit}}, eval = {{baseline_forest_knit}}, include = {{baseline_forest_knit}}}
+{r, results = 'asis'}
+```
 ```{r, echo = {{baseline_forest_knit}}, include = {{baseline_forest_knit}}}
-# Populate using metadata()
+baseline_forest <- baseline_forest(baseline_model, treatment_df, reference_treatment_all)
+
+htmltools::HTML(baseline_forest$svg)
 ```

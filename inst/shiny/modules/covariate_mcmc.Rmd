@@ -11,9 +11,9 @@ covariate_mcmc <- covariate_mcmc(covariate_model)
 {r, fig.align='center', fig.width = 9, fig.height = {{covariate_mcmc_height_250}}}
 ```
 ```{r, echo = {{covariate_mcmc_knit}}, include = {{covariate_mcmc_knit}}}
-par(mfrow = c(2, {{covariate_mcmc_n_rows}}))
+par(mfrow = c({{covariate_mcmc_n_rows}}, 2))
 # this returns a list of functions, each of which generates a plot
-invisible(lapply(mcmc_all$gelman_plots, function(f) f()))
+invisible(lapply(covariate_mcmc$gelman_plots, function(f) f()))
 ```
 ```{asis, echo = {{covariate_mcmc_knit}}, eval = {{covariate_mcmc_knit}}, include = {{covariate_mcmc_knit}}}
 #### Trace plots
@@ -21,8 +21,8 @@ invisible(lapply(mcmc_all$gelman_plots, function(f) f()))
 ```
 ```{r, echo = {{covariate_mcmc_knit}}, include = {{covariate_mcmc_knit}}}
 cowplot::plot_grid(
-  plotlist = mcmc_all$trace_plots,
-  ncol = {{covariate_mcmc_n_rows}}
+  plotlist = covariate_mcmc$trace_plots,
+  ncol = 2
 )
 ```
 ```{asis, echo = {{covariate_mcmc_knit}}, eval = {{covariate_mcmc_knit}}, include = {{covariate_mcmc_knit}}}
@@ -31,7 +31,7 @@ cowplot::plot_grid(
 ```
 ```{r, echo = {{covariate_mcmc_knit}}, include = {{covariate_mcmc_knit}}}
 cowplot::plot_grid(
-  plotlist = mcmc_all$density_plots,
-  ncol = {{covariate_mcmc_n_rows}}
+  plotlist = covariate_mcmc$density_plots,
+  ncol = 2
 )
 ```

@@ -7,10 +7,6 @@ covariate_ranking <- covariate_ranking(main_connected_data, treatment_df, covari
 ```
 
 ```{asis, echo = {{covariate_ranking_knit}}, eval = {{covariate_ranking_knit}}, include = {{covariate_ranking_knit}}}
-#### For all studies
-```
-
-```{asis, echo = {{covariate_ranking_knit}}, eval = {{covariate_ranking_knit}}, include = {{covariate_ranking_knit}}}
 {r, results = 'asis'}
 ```
 ```{r, echo = {{covariate_ranking_knit}}, include = {{covariate_ranking_knit}}}

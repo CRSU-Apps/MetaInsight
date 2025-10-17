@@ -44,10 +44,6 @@ covariate_ranking <- function(...){
   bayes_ranking(...)
 }
 
-# copies the parameters for autocomplete
-formals(baseline_ranking) <- formals(bayes_ranking)
-formals(covariate_ranking) <- formals(bayes_ranking)
-
 #' Get SUCRA data.
 #'
 #' @param NMAdata Output from 'baye' function or from bnma::network.run.

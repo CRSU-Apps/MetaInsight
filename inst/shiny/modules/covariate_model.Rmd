@@ -7,8 +7,9 @@
 covariate_column <- {{covariate_model_covariate_column}}
 covariate_name <- {{covariate_model_covariate_name}}
 
-covariate_model <- covariate_model(main_connected_data, treatment_df, outcome, outcome_measure,
-                                   covariate_column, covariate_name, {{covariate_model_covariate_value}}, 
-                                   model_type, {{covariate_model_regressor}}, reference_treatment_all)
+covariate_model <- suppress_jags_output(
+  covariate_model(main_connected_data, treatment_df, outcome, outcome_measure,
+                  covariate_column, covariate_name, {{covariate_model_covariate_value}}, 
+                  model_type, {{covariate_model_regressor}}, reference_treatment_all))
 
 ```

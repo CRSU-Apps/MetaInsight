@@ -42,6 +42,8 @@ bayes_mcmc <- function(model, async = FALSE){
   plots$trace_plots <- TracePlots(model$mtcResults, parameters)
   plots$density_plots <- DensityPlots(model$mtcResults, parameters)
   plots$n_rows <- ceiling(length(parameters) / n_cols)
+  # always use 2 columns in the Rmd
+  plots$n_rows_rmd <- ceiling(length(parameters) / 2)
   plots$n_cols <- n_cols
   plots
 }

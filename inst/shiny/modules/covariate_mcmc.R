@@ -50,7 +50,6 @@ covariate_mcmc_module_result <- function(id) {
 covariate_mcmc_module_rmd <- function(common) {
   list(covariate_mcmc_knit = !is.null(common$meta$covariate_mcmc$used),
        covariate_mcmc_n_rows = common$meta$covariate_mcmc$n_rows,
-       covariate_mcmc_n_cols = common$meta$covariate_mcmc$n_cols,
        covariate_mcmc_height_200 = common$meta$covariate_mcmc$n_rows * (200/72),
        covariate_mcmc_height_250 = common$meta$covariate_mcmc$n_rows * (250/72))
 }

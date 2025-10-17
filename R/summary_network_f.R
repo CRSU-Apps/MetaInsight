@@ -12,7 +12,7 @@
 #'
 #' @export
 
-summary_network <- function(freq, bugsnet, style, label_size = 1, title, logger = NULL){
+summary_network <- function(freq, bugsnet, style, label_size = 1, title = "", logger = NULL){
 
   check_param_classes(c("freq", "bugsnet", "style", "label_size", "title"),
                       c("list", "data.frame", "character", "numeric", "character"), logger)

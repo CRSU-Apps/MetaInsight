@@ -23,7 +23,8 @@ if(!require("metainsight")) remotes::install_github("CRSU-Apps/MetaInsight", ref
 library(metainsight)
 
 # set a seed
-set.seed({{seed}})
+seed <- {{seed}}
+set.seed(seed)
 ```
 
 The *metainsight* session code .qmd file is composed of a chain of module functions that are internal to *metainsight*. Each of these functions corresponds to a single module that the user ran during the session. Users are encouraged to write custom code in the .qmd directly to modify their analysis, and even modify the module function code to further customize. To see the source code for any module function, just type its name into the R console and press Return.
