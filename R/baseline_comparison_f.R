@@ -1,13 +1,9 @@
 #' @title baseline_comparison
-#' @description Does x
-#' @param x x
-#' @param logger Stores all notification messages to be displayed in the Log
-#'   Window. Insert the logger reactive list here for running in
-#'   shiny, otherwise leave the default NULL
-#' @return NULL
-#' @examples {
-#' y <- baseline_comparison(1)
-#' }
+#' Creates a table of comparisons of all treatment pairs for baseline risk models
+#'
+#' @param model list. Object created by `baseline_model()`
+#' @inheritParams common_params
+#' @return Relative effects table created by `gemtc::relative.effect.table()`
 #' @export
 baseline_comparison <- function(model, logger = NULL){
 

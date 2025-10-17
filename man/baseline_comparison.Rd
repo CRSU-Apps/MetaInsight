@@ -2,22 +2,22 @@
 % Please edit documentation in R/baseline_comparison_f.R
 \name{baseline_comparison}
 \alias{baseline_comparison}
-\title{baseline_comparison}
+\title{baseline_comparison
+Creates a table of comparisons of all treatment pairs for baseline risk models}
 \usage{
 baseline_comparison(model, logger = NULL)
 }
 \arguments{
+\item{model}{list. Object created by \code{baseline_model()}}
+
 \item{logger}{Stores all notification messages to be displayed in the Log
 Window. Insert the logger reactive list here for running in
-shiny, otherwise leave the default NULL}
-
-\item{x}{x}
+shiny, otherwise leave the default \code{NULL}}
+}
+\value{
+Relative effects table created by \code{gemtc::relative.effect.table()}
 }
 \description{
-Does x
-}
-\examples{
-{
-y <- baseline_comparison(1)
-}
+baseline_comparison
+Creates a table of comparisons of all treatment pairs for baseline risk models
 }

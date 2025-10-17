@@ -4,7 +4,14 @@
 \alias{summary_network}
 \title{Produce either a netgraph or netplot}
 \usage{
-summary_network(freq, bugsnet, style, label_size = 1, title, logger = NULL)
+summary_network(
+  freq,
+  bugsnet,
+  style,
+  label_size = 1,
+  title = "",
+  logger = NULL
+)
 }
 \arguments{
 \item{freq}{list. NMA results created by freq_wrap().}

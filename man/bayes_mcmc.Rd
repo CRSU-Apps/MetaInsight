@@ -13,7 +13,7 @@ covariate_mcmc(...)
 baseline_mcmc(...)
 }
 \arguments{
-\item{model}{Output from \code{bayes_model()} or \code{covariate_model()}}
+\item{model}{Output from \code{baseline_model()}, \code{bayes_model()} or \code{covariate_model()}}
 
 \item{async}{Whether or not the function is being used asynchronously. Default \code{FALSE}}
 }

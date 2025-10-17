@@ -1,6 +1,6 @@
 #' @title bayes_mcmc
 #' @description Produces Markov chain Monte Carlo plots
-#' @param model Output from `bayes_model()` or `covariate_model()`
+#' @param model Output from `baseline_model()`, `bayes_model()` or `covariate_model()`
 #' @inheritParams common_params
 #' @return list containing:
 #' \item{gelman_plots}{Gelman plots}
