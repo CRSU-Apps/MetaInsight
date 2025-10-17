@@ -3,6 +3,23 @@
 ### Details of Bayesian model
 ```
 
+
+```{r, echo = {{baseline_details_knit}}, include = {{baseline_details_knit}}}
+baseline_details <- baseline_details(baseline_model)
+
+baseline_details$mcmc |> 
+  gt::gt() |>
+  gt::tab_options(column_labels.hidden = TRUE) |>
+  gt::tab_header(title = "MCMC characteristics") 
+```
+
+```{r, echo = {{baseline_details_knit}}, include = {{baseline_details_knit}}}
+baseline_details$priors |> 
+  gt::gt() |>
+  gt::tab_options(column_labels.hidden = TRUE) |>
+  gt::tab_header(title = "Prior distributions") 
+```
+
 ```{r, echo = {{baseline_details_knit}}, include = {{baseline_details_knit}}}
 cat(baseline_model$mtcResults$network$code, fill = FALSE, labels = NULL, append = FALSE)
 ```

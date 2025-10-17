@@ -3,6 +3,22 @@
 ```
 
 ```{r, echo = {{bayes_details_knit}}, include = {{bayes_details_knit}}}
+bayes_details <- bayes_details(bayes_model_all)
+
+bayes_details$mcmc |> 
+  gt::gt() |>
+  gt::tab_options(column_labels.hidden = TRUE) |>
+  gt::tab_header(title = "MCMC characteristics") 
+```
+
+```{r, echo = {{bayes_details_knit}}, include = {{bayes_details_knit}}}
+bayes_details$priors |> 
+  gt::gt() |>
+  gt::tab_options(column_labels.hidden = TRUE) |>
+  gt::tab_header(title = "Prior distributions") 
+```
+
+```{r, echo = {{bayes_details_knit}}, include = {{bayes_details_knit}}}
 cat(bayes_model_all$mtcResults$model$code, fill = FALSE, labels = NULL, append = FALSE)
 ```
 

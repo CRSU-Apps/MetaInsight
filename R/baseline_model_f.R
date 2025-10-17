@@ -221,7 +221,7 @@ BaselineRiskModelOutput <- function(connected_data, treatment_df, model, outcome
     model = model
   )
 
-  dic <- BaselineRiskDicTable(model)
+  dic <- BaselineRiskDicTable(model) |> as.data.frame()
 
   # for consistency with gemtc
   names(model_summary)[1] <- "summaries"

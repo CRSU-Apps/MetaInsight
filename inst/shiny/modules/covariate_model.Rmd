@@ -13,3 +13,12 @@ covariate_model <- suppress_jags_output(
                   model_type, {{covariate_model_regressor}}, reference_treatment_all))
 
 ```
+
+```{r, echo = {{covariate_model_knit}}, include = {{covariate_model_knit}}}
+covariate_model$dic |> 
+  gt::gt(rownames_to_stub = TRUE) |>
+  gt::tab_header(title = "Model fit for all studies") |>
+  gt::tab_options(column_labels.hidden = TRUE) |>
+  gt::fmt_number(rows = c(1:3), decimals = 3) |>
+  gt::fmt_number(rows = 4, decimals = 0)
+```
