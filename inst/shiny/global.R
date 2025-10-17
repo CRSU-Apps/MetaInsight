@@ -18,7 +18,7 @@ COMPONENTS <- c("Setup" = "setup",
                 "Summary" = "summary",
                 "Frequentist" = "freq",
                 "Bayesian" = "bayes",
-                "Baseline" = "baseline",
+                "Baseline risk" = "baseline",
                 "Covariate" = "covariate",
                 "Reproduce" = "rep")
 

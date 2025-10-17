@@ -26,7 +26,7 @@ tagList(
     nav_panel("Summary", value = "summary"),
     nav_panel("Frequentist", value = "freq"),
     nav_panel("Bayesian", value = "bayes"),
-    nav_panel("Baseline", value = "baseline"),
+    nav_panel("Baseline risk", value = "baseline"),
     nav_panel("Covariate", value = "covariate"),
     nav_panel("Reproduce", value = "rep"),
     nav_menu("Save", icon = icon("floppy-disk"),

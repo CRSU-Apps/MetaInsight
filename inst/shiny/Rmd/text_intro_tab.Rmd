@@ -5,7 +5,7 @@ output: html_document
 
 #### WORKFLOW
 
-*metainsight* (v7.0.0) includes five sections, or steps of a possible workflow. Each section includes two or more modules, which are possible analyses for that step.
+*metainsight* (v7.0.0) includes seven sections, or steps of a possible workflow. Each section includes two or more modules, which are possible analyses for that step.
 
 **Sections:**  
 **1.** *Setup*
@@ -36,7 +36,31 @@ output: html_document
 - Markov chain Monte Carlo
 - Model details
 
-**5.** *Reproduce*
+**5.** *Baseline risk*
+- Summary plot
+- Run model
+- Regression plot
+- Forest plot
+- Comparison
+- Ranking
+- Result details
+- Deviance report
+- Markov chain Monte Carlo
+- Model details
+
+**6.** *Covariate*
+- Summary plot
+- Run model
+- Regression plot
+- Forest plot
+- Comparison
+- Ranking
+- Result details
+- Deviance report
+- Markov chain Monte Carlo
+- Model details
+
+**7.** *Reproduce*
 - Download session code
 - Reproduce environment
 - Download package references
