@@ -56,9 +56,11 @@ spurious <- function(x) {
 #' @param logger The logger to write the text to. Can be NULL or a function
 #' @param ... Messages to write to the logger
 #' @param type One of "default", "info", "error", "warning"
+#' @param go_to character. The id of a module to navigate to when the modal is closed.
+#' Only used when `type = "error"`
 #' @keywords internal
 #' @export
-writeLog <- function(logger, ..., type = "default") {
+writeLog <- function(logger, ..., type = "default", go_to = NULL) {
   if (is.null(logger)) {
     if (type == "error") {
       stop(paste0(..., collapse = ""), call. = FALSE)
@@ -83,12 +85,25 @@ writeLog <- function(logger, ..., type = "default") {
       }
       pre <- paste0(icon("info", class = "log_info"), " ")
     } else if (type == "error") {
+
+        # navigate to selected module on close
+        callbackJS <- NULL
+        if (!is.null(go_to)) {
+          component <- stringr::str_split(go_to, "_")[[1]][1]
+          callbackJS <- paste0("function() {
+            document.querySelector('a[data-value=\"", component,"\"]').click();
+            document.querySelector('input[value=\"", go_to, "\"').click();
+          }")
+        }
+
       if (nchar(...) < 200){
         shinyalert::shinyalert(...,
-                               type = "error")
+                               type = "error",
+                               callbackJS = callbackJS)
       } else {
         shinyalert::shinyalert("Please, check Log window for more information ",
-                               type = "error")
+                               type = "error",
+                               callbackJS = callbackJS)
       }
       pre <- paste0(icon("xmark", class = "log_error"), " ")
     } else if (type == "warning") {
