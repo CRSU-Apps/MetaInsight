@@ -11,9 +11,10 @@ baseline_mcmc <- baseline_mcmc(baseline_model)
 {r, fig.align='center', fig.width = 9, fig.height = {{baseline_mcmc_height_250}}}
 ```
 ```{r, echo = {{baseline_mcmc_knit}}, include = {{baseline_mcmc_knit}}}
-par(mfrow = c({{baseline_mcmc_n_rows}}, 2))
-# this returns a list of functions, each of which generates a plot
-invisible(lapply(baseline_mcmc$gelman_plots, function(f) f()))
+cowplot::plot_grid(
+  plotlist = gelman_plots(baseline_mcmc$gelman_data, baseline_mcmc$parameters),
+  ncol = 2
+)
 ```
 ```{asis, echo = {{baseline_mcmc_knit}}, eval = {{baseline_mcmc_knit}}, include = {{baseline_mcmc_knit}}}
 ##### Trace plots
@@ -21,7 +22,7 @@ invisible(lapply(baseline_mcmc$gelman_plots, function(f) f()))
 ```
 ```{r, echo = {{baseline_mcmc_knit}}, include = {{baseline_mcmc_knit}}}
 cowplot::plot_grid(
-  plotlist = baseline_mcmc$trace_plots,
+  plotlist = trace_plots(baseline_model$mtcResults, baseline_mcmc$parameters),
   ncol = 2
 )
 ```
@@ -31,7 +32,7 @@ cowplot::plot_grid(
 ```
 ```{r, echo = {{baseline_mcmc_knit}}, include = {{baseline_mcmc_knit}}}
 cowplot::plot_grid(
-  plotlist = baseline_mcmc$density_plots,
+  plotlist = density_plots(baseline_model$mtcResults, baseline_mcmc$parameters),
   ncol = 2
 )
 ```

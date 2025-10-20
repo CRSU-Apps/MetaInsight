@@ -5,7 +5,7 @@ bayes_mcmc_module_ui <- function(id) {
   )
 }
 
-bayes_mcmc_submodule_server <- function(id, common, module_id, mcmc, trigger){
+bayes_mcmc_submodule_server <- function(id, common, module_id, model, mcmc, trigger){
   moduleServer(id, function(input, output, session) {
 
     # n_cols doesn't need storing as always = 2 in the Rmd
@@ -19,9 +19,10 @@ bayes_mcmc_submodule_server <- function(id, common, module_id, mcmc, trigger){
     output$gelman <- renderPlot({
       watch(trigger)
       req(common[[mcmc]])
-      par(mfrow = c(n_rows(), common[[mcmc]]$n_cols))
-      # this returns a list of functions, each of which generates a plot
-      invisible(lapply(common[[mcmc]]$gelman_plots, function(f) f()))
+      cowplot::plot_grid(
+        plotlist = gelman_plots(common[[mcmc]]$gelman_data, common[[mcmc]]$parameters),
+        ncol = common[[mcmc]]$n_cols
+      )
     }, height = function() {
       n_rows() * 250
     })
@@ -30,7 +31,7 @@ bayes_mcmc_submodule_server <- function(id, common, module_id, mcmc, trigger){
       watch(trigger)
       req(common[[mcmc]])
       cowplot::plot_grid(
-        plotlist = common[[mcmc]]$trace_plots,
+        plotlist = trace_plots(common[[model]]$mtcResults, common[[mcmc]]$parameters),
         ncol = common[[mcmc]]$n_cols
       )
     }, height = function() {
@@ -42,7 +43,7 @@ bayes_mcmc_submodule_server <- function(id, common, module_id, mcmc, trigger){
       req(common[[mcmc]])
       on.exit(shinyjs::runjs(paste0("Shiny.setInputValue('", mcmc, "-complete', 'complete');")))
       cowplot::plot_grid(
-        plotlist = common[[mcmc]]$density_plots,
+        plotlist = density_plots(common[[model]]$mtcResults, common[[mcmc]]$parameters),
         ncol = common[[mcmc]]$n_cols
       )
     }, height = function() {
@@ -82,7 +83,7 @@ bayes_mcmc_module_server <- function(id, common, parent_session) {
 
     observeEvent(list(watch("bayes_mcmc"), watch("bayes_model_all")), {
       req(watch("bayes_mcmc") > 0)
-      common$logger |> writeLog(type = "starting", "Generating Markov chain Monte Carlo plots")
+      common$logger |> writeLog(type = "starting", "Generating data for Markov chain Monte Carlo plots")
       common$tasks$bayes_mcmc_all$invoke(common$bayes_all)
       result_all$resume()
     })
@@ -92,7 +93,7 @@ bayes_mcmc_module_server <- function(id, common, parent_session) {
 
       # prevent showing on first run
       if (!is.null(common$bayes_mcmc_sub)){
-        common$logger |> writeLog(type = "starting", "Updating Markov chain Monte Carlo plots")
+        common$logger |> writeLog(type = "starting", "Updating data for Markov chain Monte Carlo plots")
       }
 
       common$tasks$bayes_mcmc_sub$invoke(common$bayes_sub)
@@ -103,7 +104,7 @@ bayes_mcmc_module_server <- function(id, common, parent_session) {
       result <- common$tasks$bayes_mcmc_all$result()
       result_all$suspend()
       common$bayes_mcmc_all <- result
-      common$logger |> writeLog(type = "complete", "Markov chain Monte Carlo plots have been generated")
+      common$logger |> writeLog(type = "complete", "Data for Markov chain Monte Carlo plots has been generated")
       shinyjs::show(selector = ".bayes_mcmc_div")
       trigger("bayes_mcmc_all")
     })
@@ -112,14 +113,14 @@ bayes_mcmc_module_server <- function(id, common, parent_session) {
       result <- common$tasks$bayes_mcmc_sub$result()
       result_sub$suspend()
       if (!is.null(common$bayes_mcmc_sub)){
-        common$logger |> writeLog(type = "complete", "Markov chain Monte Carlo plots have been updated")
+        common$logger |> writeLog(type = "complete", "Data for Markov chain Monte Carlo plots has been updated")
       }
       common$bayes_mcmc_sub <- result
       trigger("bayes_mcmc_sub")
     })
 
-    bayes_mcmc_submodule_server("all", common, "bayes_mcmc", "bayes_mcmc_all", "bayes_mcmc_all")
-    bayes_mcmc_submodule_server("sub", common, "bayes_mcmc", "bayes_mcmc_sub", "bayes_mcmc_sub")
+    bayes_mcmc_submodule_server("all", common, "bayes_mcmc", "bayes_model_all", "bayes_mcmc_all", "bayes_mcmc_all")
+    bayes_mcmc_submodule_server("sub", common, "bayes_mcmc", "bayes_model_sub", "bayes_mcmc_sub", "bayes_mcmc_sub")
 
   })
 }

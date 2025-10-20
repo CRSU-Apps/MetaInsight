@@ -13,9 +13,10 @@ mcmc_sub <- bayes_mcmc(bayes_model_sub)
 {r, fig.align='center', fig.width = 9, fig.height = {{bayes_mcmc_height_250}}}
 ```
 ```{r, echo = {{bayes_mcmc_knit}}, include = {{bayes_mcmc_knit}}}
-par(mfrow = c({{bayes_mcmc_n_rows}}, 2))
-# this returns a list of functions, each of which generates a plot
-invisible(lapply(mcmc_all$gelman_plots, function(f) f()))
+cowplot::plot_grid(
+  plotlist = gelman_plots(mcmc_all$gelman_data, mcmc_all$parameters),
+  ncol = 2
+)
 ```
 ```{asis, echo = {{bayes_mcmc_knit}}, eval = {{bayes_mcmc_knit}}, include = {{bayes_mcmc_knit}}}
 ##### Trace plots
@@ -23,7 +24,7 @@ invisible(lapply(mcmc_all$gelman_plots, function(f) f()))
 ```
 ```{r, echo = {{bayes_mcmc_knit}}, include = {{bayes_mcmc_knit}}}
 cowplot::plot_grid(
-  plotlist = mcmc_all$trace_plots,
+  plotlist = trace_plots(bayes_model_all$mtcResults, mcmc_all$parameters),
   ncol = 2
 )
 ```
@@ -33,7 +34,7 @@ cowplot::plot_grid(
 ```
 ```{r, echo = {{bayes_mcmc_knit}}, include = {{bayes_mcmc_knit}}}
 cowplot::plot_grid(
-  plotlist = mcmc_all$density_plots,
+  plotlist = density_plots(bayes_model_all$mtcResults, mcmc_all$parameters),
   ncol = 2
 )
 ```
@@ -44,9 +45,10 @@ cowplot::plot_grid(
 {r, fig.align='center', fig.width = 9, fig.height = {{bayes_mcmc_height_250}}}
 ```
 ```{r, echo = {{bayes_mcmc_knit}}, include = {{bayes_mcmc_knit}}}
-par(mfrow = c({{bayes_mcmc_n_rows}}, 2))
-# this returns a list of functions, each of which generates a plot
-invisible(lapply(mcmc_all$gelman_plots, function(f) f()))
+cowplot::plot_grid(
+  plotlist = gelman_plots(mcmc_sub$gelman_data, mcmc_sub$parameters),
+  ncol = 2
+)
 ```
 ```{asis, echo = {{bayes_mcmc_knit}}, eval = {{bayes_mcmc_knit}}, include = {{bayes_mcmc_knit}}}
 ##### Trace plots
@@ -54,7 +56,7 @@ invisible(lapply(mcmc_all$gelman_plots, function(f) f()))
 ```
 ```{r, echo = {{bayes_mcmc_knit}}, include = {{bayes_mcmc_knit}}}
 cowplot::plot_grid(
-  plotlist = mcmc_all$trace_plots,
+  plotlist = trace_plots(bayes_model_sub$mtcResults, mcmc_sub$parameters),
   ncol = 2
 )
 ```
@@ -64,7 +66,7 @@ cowplot::plot_grid(
 ```
 ```{r, echo = {{bayes_mcmc_knit}}, include = {{bayes_mcmc_knit}}}
 cowplot::plot_grid(
-  plotlist = mcmc_all$density_plots,
+  plotlist = density_plots(bayes_model_sub$mtcResults, mcmc_sub$parameters),
   ncol = 2
 )
 ```

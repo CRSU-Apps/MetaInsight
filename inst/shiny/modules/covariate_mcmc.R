@@ -21,8 +21,11 @@ covariate_mcmc_module_server <- function(id, common, parent_session) {
         common$logger |> writeLog(type = "error", "Please fit the covariate model first")
         return()
       }
-
-      common$logger |> writeLog(type = "starting", "Generating covariate Markov chain Monte Carlo plots")
+      if (is.null(common$covariate_mcmc)){
+        common$logger |> writeLog(type = "starting", "Generating data for covariate Markov chain Monte Carlo plots")
+      } else {
+        common$logger |> writeLog(type = "starting", "Updating data for covariate Markov chain Monte Carlo plots")
+      }
       common$tasks$covariate_mcmc$invoke(common$covariate_model)
       common$meta$covariate_mcmc$used <- TRUE
       result_all$resume()
@@ -31,13 +34,17 @@ covariate_mcmc_module_server <- function(id, common, parent_session) {
     result_all <- observe({
       result <- common$tasks$covariate_mcmc$result()
       result_all$suspend()
+      if (is.null(common$covariate_mcmc)){
+        common$logger |> writeLog(type = "starting", "Data for covariate Markov chain Monte Carlo plots has been generated")
+      } else {
+        common$logger |> writeLog(type = "starting", "Data for covariate Markov chain Monte Carlo plots has been updated")
+      }
       common$covariate_mcmc <- result
-      common$logger |> writeLog(type = "complete", "Covariate Markov chain Monte Carlo plots have been generated")
       trigger("covariate_mcmc")
       shinyjs::show(selector = ".covariate_mcmc_div")
     })
 
-    bayes_mcmc_submodule_server("all", common, "covariate_mcmc", "covariate_mcmc", "covariate_mcmc")
+    bayes_mcmc_submodule_server("all", common, "covariate_mcmc", "covariate_model", "covariate_mcmc", "covariate_mcmc")
 
 })
 }
