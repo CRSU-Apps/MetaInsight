@@ -3,13 +3,12 @@
 ```
 
 ```{asis, echo = {{summary_study_knit}}, eval = {{summary_study_knit}}, include = {{summary_study_knit}}}
-{r, fig.align='center', fig.width = 8, fig.height = {{summary_study_height}}}
+{r, results = 'asis'}
 ```
 ```{r, echo = {{summary_study_knit}}, include = {{summary_study_knit}}}
-summary_plot_title_size <- {{summary_study_title}}
-summary_plot_header_size <- {{summary_study_header}}
+summary_study_plot <- summary_study(uploaded_data, frequentist_sub, outcome_measure, {{summary_study_width}}, {{summary_study_colourblind}}, {{summary_study_x_min}}, {{summary_study_x_max}})
 
-summary_study(frequentist_sub, outcome_measure, summary_plot_header_size, summary_plot_title_size)
+htmltools::HTML(summary_study_plot$svg)
 ```
 
 

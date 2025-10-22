@@ -3,10 +3,10 @@ summary_study_module_ui <- function(id) {
   tagList(
     actionButton(ns("run"), "Generate plot", icon = icon("arrow-turn-down")),
     div(class = "summary_study_div",
-       numericInput(ns("title"), label = "Title text size:", value = 1, step = 0.1),
-       numericInput(ns("header"), label = "Group headers text size:", value = 1, step = 0.1),
-       numericInput(ns("x_axis_min"), label = "x-axis min:", value = 1, step = 0.1),
-       numericInput(ns("x_axis_max"), label = "x-axis max:", value = 10, step = 0.1),
+       checkboxInput(ns("colourblind"), "Use colourblind palette", FALSE),
+       numericInput(ns("width"), label = "Plot width:", value = 6, step = 1),
+       numericInput(ns("x_min"), label = "x-axis min:", value = 0, step = 0.1),
+       numericInput(ns("x_max"), label = "x-axis max:", value = 0, step = 0.1),
        downloadButton(ns("download")),
     )
   )
@@ -28,31 +28,34 @@ summary_study_module_server <- function(id, common, parent_session) {
     shinyjs::show(selector = ".summary_study_div")
   })
 
-  # Determine the plot height in pixels
-
-
-  # #Set default values for the axes
-  # observe({
-  #   starting_x_limits <- FindStartingXLimits(pairwise = pairwise())
-  #   updateNumericInput(inputId = "x_axis_min", value = unname(starting_x_limits["lower"]))
-  #   updateNumericInput(inputId = "x_axis_max", value = unname(starting_x_limits["upper"]))
-  # })
-
   svg <- reactive({
+    watch("setup_exclude")
     req(watch("summary_study") > 0)
     summary_study(
       data = common$data,
       freq = common$freq_sub,
       outcome_measure = common$outcome_measure,
-      x_limits = c(lower = input$x_axis_min, upper = input$x_axis_max)
+      plot_area_width = input$width,
+      colourblind = input$colourblind,
+      x_min = ifelse(input$x_min == 0, NA, input$x_min),
+      x_max = ifelse(input$x_max == 0, NA, input$x_max)
     )
+  })
+
+  # listen for default values for the axis but only after the initial run
+  # may want to adjust step too if binary?
+  min_max <- observe({
+    updateNumericInput(session, "x_min", value = svg()$x_min)
+    updateNumericInput(session, "x_max", value = svg()$x_max)
+    min_max$destroy()
   })
 
   output$plot <- renderUI({
     common$meta$summary_study$used <- TRUE
-    common$meta$summary_study$title <- as.numeric(input$title)
-    common$meta$summary_study$header <- as.numeric(input$header)
-    # common$meta$summary_study$height <- plot_height()/72 # pixels to inches
+    common$meta$summary_study$width <- as.numeric(input$width)
+    common$meta$summary_study$colourblind <- input$colourblind
+    common$meta$summary_study$x_min <- as.numeric(input$x_min)
+    common$meta$summary_study$x_max <- as.numeric(input$x_max)
     div(class = "svg_container",
         HTML(svg()$svg)
     )
@@ -77,16 +80,18 @@ summary_study_module_server <- function(id, common, parent_session) {
     save = function() {list(
       ### Manual save start
       ### Manual save end
-      title = input$title,
-      header = input$header,
-      format = input$format)
+      colourblind = input$colourblind, 
+      width = input$width, 
+      x_min = input$x_min, 
+      x_max = input$x_max)
     },
     load = function(state) {
       ### Manual load start
       ### Manual load end
-      updateNumericInput(session, "title", value = state$title)
-      updateNumericInput(session, "header", value = state$header)
-      updateRadioButtons(session, "format", selected = state$format)
+      updateCheckboxInput(session, "colourblind", value = state$colourblind) 
+      updateNumericInput(session, "width", value = state$width) 
+      updateNumericInput(session, "x_min", value = state$x_min) 
+      updateNumericInput(session, "x_max", value = state$x_max)
     }
   ))
 })
@@ -100,8 +105,10 @@ summary_study_module_result <- function(id) {
 
 summary_study_module_rmd <- function(common){ list(
   summary_study_knit = !is.null(common$meta$summary_study$used),
-  summary_study_title = common$meta$summary_study$title,
-  summary_study_header = common$meta$summary_study$header,
-  summary_study_height = common$meta$summary_study$height)
+  summary_study_width = common$meta$summary_study$width,
+  summary_study_colourblind = common$meta$summary_study$colourblind,
+  summary_study_x_min = common$meta$summary_study$x_min,
+  summary_study_x_max = common$meta$summary_study$x_max
+  )
 }
 
