@@ -6,13 +6,13 @@
 #' @param x_limits Named vector of x-axis limits in the form (lower, upper).
 #' @export
 #' @return Forest plot.
-summary_study <- function(data, freq, outcome_measure, x_limits) {
+summary_study <- function(data, freq, outcome_measure, colourblind = FALSE, x_min = NULL, x_max = NULL) {
 
   rob_data_frame <- unique(data[, c("Study", FindRobNames(data))])
   if (!is.data.frame(rob_data_frame)) {
     pairwise <- freq$d1
   } else {
-    pairwise <- merge(freq$d1, rob_data_frame, by = "Study")
+    pairwise <- as.data.frame(merge(freq$d1, rob_data_frame, by = "Study"))
   }
 
   pairwise_treatments <- PairwiseTreatments(
@@ -20,30 +20,20 @@ summary_study <- function(data, freq, outcome_measure, x_limits) {
     treatment_order = freq$lstx
   )
 
-  x_width <- unname(x_limits["upper"] - x_limits["lower"])
-  x_ticks <- .FindXTicks(lower = x_limits["lower"], upper = x_limits["upper"])
+  if (colourblind){
+    palette  <- c("#fed98e", "#fe9929", "#d95f0e")
+  } else {
+    palette <- c("chartreuse3", "darkgoldenrod1", "red")
+  }
+
+
+
+  # x_width <- unname(x_limits["upper"] - x_limits["lower"])
+  # x_ticks <- .FindXTicks(lower = x_limits["lower"], upper = x_limits["upper"])
 
   rob_variables <- FindRobNames(pairwise)
-  short_rob_names <- ShortenRobNames(rob_variables)
+  rob_names <- gsub("rob.", "", FindRobNames(data))
   n_rob_variables <- length(rob_variables)
-
-  #Enlarge the x-axis to allow the labels to go on the left and the outcomes on the right
-  left_enlargement_factor <- 0.04 * (max(nchar(as.character(pairwise$treat1))) + max(nchar(as.character(pairwise$treat2))) + 4)
-  outcome_text_factor <-  0.9
-  per_rob_factor <- 0.2
-  right_enlargement_factor <- outcome_text_factor + per_rob_factor * n_rob_variables
-  enlarged_x_limits <- x_limits - c(left_enlargement_factor * x_width, 0) + c(0, right_enlargement_factor * x_width)
-
-  #x-position for the within-study comparison-level outcomes
-  x_outcome_position <- x_limits["upper"] + 0.1 * x_width
-  #x-position for the risk of bias
-  if (n_rob_variables > 0) {
-    x_rob_positions <- seq(
-      from = x_limits["upper"] + (outcome_text_factor + per_rob_factor) * x_width,
-      to = x_limits["upper"] + (outcome_text_factor + per_rob_factor * n_rob_variables) * x_width,
-      by = per_rob_factor * x_width
-    )
-  }
 
   x_label <- switch(
     outcome_measure,
@@ -70,95 +60,143 @@ summary_study <- function(data, freq, outcome_measure, x_limits) {
   n_proper_treatments <- length(unique(c(freq$d0$treat1[proper_comparison_rows],
                                          freq$d0$treat2[proper_comparison_rows])))
 
-  # divide by 72 to go from pixels to inches
-  plot_height <- (n_proper_comparisons * 25 + n_proper_treatments * 35) / 72
+  if (is.null(x_min)){
+    x_min <- min(pairwise$TE - 1.96 * pairwise$seTE)
+  }
+
+  if (is.null(x_max)){
+    x_max <- max(pairwise$TE + 1.96 * pairwise$seTE)
+  }
+
+  x_ticks <- .FindXTicks(lower = x_min, upper = x_max)
+
+  inches_to_lines <- par("cin")[2]
+  top_line <- max(pairwise_treatments$y_position_last)
+
+  bottom_margin <- 4 + ifelse(n_rob_variables > 3, n_rob_variables, 3)
+  top_margin <- 4
+
+  plot_height <- (bottom_margin + top_margin + top_line) * inches_to_lines
 
   # first attempt, but plot should be narrower when no ROB exist
-  plot_width <- ifelse(n_rob_variables > 0, 1200 / 72, 800 / 72)
+  plot_width <- ifelse(n_rob_variables > 0, 900 / 72, 800 / 72)
 
   svglite::xmlSVG({
     par(family = "Arimo")
-    par(mar = c(8, 0, 0, 0))
+    par(mar = c(bottom_margin, 20, top_margin, 25))
 
     plot(
       x = NA,
       y = NA,
-      xlim = enlarged_x_limits,
+      xlim = c(x_min, x_max),
       ylim = c(0, max(pairwise_treatments$y_position_last) + 2),
       yaxt = "n",
       xaxt = "n",
       ylab = "",
-      xlab = x_label
+      xlab = x_label,
+      frame.plot = F, # remove border
+      yaxs = "i" # remove internal padding
     )
 
-    #Define the ticks and labels for the x-axis
+    title("Individual study results (with selected studies excluded)\n grouped by treatment comparison", line = 2)
+
+    # define the ticks and labels for the x-axis
     if (outcome_type == "binary") {
       x_labels <- signif(exp(x_ticks), digits = 1)
     } else if (outcome_type == "continuous") {
       x_labels <- x_ticks
     }
 
-    #Add the x-axis
+    pairwise$point_estimate <- pairwise$TE
+    pairwise$ci_lower <- pairwise$TE - 1.96 * pairwise$seTE
+    pairwise$ci_upper <- pairwise$TE + 1.96 * pairwise$seTE
+    if (outcome_type == "binary") {
+      pairwise$point_estimate <- exp(pairwise$point_estimate)
+      pairwise$ci_lower <- exp(pairwise$ci_lower)
+      pairwise$ci_upper <- exp(pairwise$ci_upper)
+    }
+    pairwise$point_estimate <- pairwise$point_estimate |> sprintf(fmt = "%-.2f")
+    pairwise$ci_lower <- pairwise$ci_lower |> sprintf(fmt = "%-.2f")
+    pairwise$ci_upper <- pairwise$ci_upper |> sprintf(fmt = "%-.2f")
+    pairwise$outcome <- paste0(pairwise$point_estimate, " (", pairwise$ci_lower, ", ", pairwise$ci_upper,  ")")
+
+    # find the longest label - needs to be after plot() is called
+    longest_treatment_label <- max(strwidth(paste(pairwise$treat1, " vs. ", pairwise$treat2), units = "in") / inches_to_lines)
+    longest_study_label <- max(strwidth(pairwise$studlab, units = "in") / inches_to_lines) + 1
+    longest_label <- max(longest_treatment_label, longest_study_label)
+
+    # user coordinates needed for legend
+    longest_treatment_label_user <- max(strwidth(paste(pairwise$treat1, " vs. ", pairwise$treat2)))
+    longest_study_label_user <- max(strwidth(pairwise$studlab))
+    x_range_offset <- abs(par("usr")[1])
+    longest_label_user <- max(longest_treatment_label_user, longest_study_label_user) + x_range_offset
+
+    outcome_width <- max(strwidth(pairwise$outcome, units = "in") / inches_to_lines)
+
+    # add the x-axis
     axis(
       side = 1,
       at = x_ticks,
       labels = x_labels
     )
 
-    #Add the line of no effect
+    # add the line of no effect
     lines(
       x = rep(0, times = 2),
-      y = c(0, max(pairwise_treatments$y_position_last)),
+      y = c(0, top_line),
       lty = 2
     )
 
-    #Add header of the within-study comparison-level outcomes
-    text(
-      x = x_outcome_position,
-      y = max(pairwise_treatments$y_position_last) + 1,
-      labels = paste0(x_label, " (95% CI)"),
-      adj = 0,
+    # add header of the within-study comparison-level outcomes
+    mtext(
+      text = c(x_label, "(95% CI)"),
+      side = 4,
+      at = c(top_line + 2.2, top_line + 1),
+      line = 1 + (outcome_width * 0.5), # centered
+      adj = 0.5,
+      las = 1,
       font = 2
     )
 
-    #Add risk of bias header
-    if (n_rob_variables > 0) {
-      text(
-        x = x_rob_positions - 0.25 * per_rob_factor * x_width,
-        y = max(pairwise_treatments$y_position_last) + 1,
-        labels = short_rob_names,
-        adj = 0,
-        font = 2
-      )
-      if (is.element("rob", rob_variables)) {
-        rob_position <- which(rob_variables == "rob")
-        lines(
-          x = rep(x_rob_positions[rob_position] - 0.5 * per_rob_factor * x_width, times = 2),
-          y = c(1, max(pairwise_treatments$y_position_last) + 1),
-          lty = 2,
-          col = "azure4"
-        )
-      }
+    n_rob <- length(rob_variables)
+    start_rob <- outcome_width + 2
+    if (n_rob > 0){
+
+      # add ROB labels
+      rob_letters <- c("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L")[1:n_rob]
+      rob_label_y <- max(pairwise_treatments$y_position_last) + 1
+      rob_label_x <- start_rob:(start_rob + n_rob - 1)
+
+      mtext(rob_letters, side = 4, line = rob_label_x, at = rob_label_y, las = 1, adj = 0.5, font = 2)
+
+      rob_legend <- paste(rob_letters, rob_names, sep = ": ")
+      rob_legend_y <- (4:(n_rob + 3))
+      legend_width_user <- max(strwidth(rob_legend))
+      spacer_width_user <- strwidth("••")
+
+      # legend for domains
+      mtext(rob_legend, side = 1, line = rob_legend_y, las = 1, at = -longest_label_user, adj = 0)
+
+      # legend for colours
+      rob_levels <- c("Low risk of bias", "Some concerns", "High risk of bias")
+      mtext(rep("•", 3), side = 1, line = (4:6) - 0.25, las = 1, at = -(longest_label_user - legend_width_user - spacer_width_user), adj = 0, padj = 0.5, cex = 3, col = palette)
+      mtext(rob_levels, side = 1, line = (4:6) - 0.25, las = 1, at = -(longest_label_user - legend_width_user - (3 * spacer_width_user)), adj = 0, padj = 0.5)
+
     }
 
-    # Add legend
-    mtext("rob1: balbalbla", side = 1, line = 2.5, cex = 1, adj = 0.05)
-    mtext("rob2: dudada", side = 1, line = 3.5, cex = 1, adj = 0.05)
-    mtext("rob: Overall risk of bias", side = 1, line = 4.5, cex = 1, adj = 0.05)
-    mtext("ind: Indirectness", side = 1, line = 5.5, cex = 1, adj = 0.05)
 
     for (row in 1:length(pairwise_treatments[[1]])) {
       .AddTreatmentEffectBlock(
         pairwise = pairwise,
         outcome_type = outcome_type,
-        x_label_position = enlarged_x_limits[1],
-        x_outcome_position = x_outcome_position,
-        x_rob_positions = x_rob_positions,
+        max_label_width = longest_label,
+        rob_x_position = start_rob,
         y_header_position = pairwise_treatments$y_position_last[row],
         y_positions = (pairwise_treatments$y_position_first[row] + 1):(pairwise_treatments$y_position_last[row] - 1),
         treatment1 = pairwise_treatments$treat1[row],
         treatment2 = pairwise_treatments$treat2[row],
-        rob_variables = rob_variables
+        rob_variables = rob_variables,
+        palette = palette
       )
     }
   },
@@ -219,18 +257,18 @@ FindStartingXLimits <- function(pairwise) {
 #' @param ci_limit_height Height of the vertical lines at the end of the confidence intervals. Defaults to 0.3.
 .AddTreatmentEffect <- function(pairwise, y_position, studlab, treatment1, treatment2, ci_limit_height = 0.3) {
   row <- which(pairwise$studlab == studlab & pairwise$treat1 == treatment1 & pairwise$treat2 == treatment2)
-  #Point estimate
+  # point estimate
   points(
     x = pairwise$TE[row],
     y = y_position,
     pch = 18
   )
-  #Horizontal line
+  # horizontal line
   lines(
     x = c(pairwise$TE[row] - 1.96 * pairwise$seTE[row], pairwise$TE[row] + 1.96 * pairwise$seTE[row]),
     y = rep(y_position, times = 2)
   )
-  #Vertical lines
+  # vertical lines
   lines(
     x = rep(pairwise$TE[row] - 1.96 * pairwise$seTE[row], times = 2),
     y = c(y_position - ci_limit_height, y_position + ci_limit_height)
@@ -247,12 +285,11 @@ FindStartingXLimits <- function(pairwise) {
 #'
 #' @param pairwise Output from meta::pairwise().
 #' @param outcome_type "binary" or "continuous".
-#' @param x_outcome_position x co-ordinate for the comparison-within-study outcomes.
 #' @param y_position y co-ordinate for the effect size and confidence interval.
 #' @param studlab Study.
 #' @param treatment1 First treatment in the comparison.
 #' @param treatment2 Second treatment in the comparison.
-.AddOutcomeText <- function(pairwise, outcome_type, x_outcome_position, y_position, studlab, treatment1, treatment2) {
+.AddOutcomeText <- function(pairwise, outcome_type, y_position, studlab, treatment1, treatment2) {
   row <- which(pairwise$studlab == studlab & pairwise$treat1 == treatment1 & pairwise$treat2 == treatment2)
   point_estimate <- pairwise$TE[row]
   ci_lower <- pairwise$TE[row] - 1.96 * pairwise$seTE[row]
@@ -265,10 +302,13 @@ FindStartingXLimits <- function(pairwise) {
   point_estimate <- point_estimate |> sprintf(fmt = "%-.2f")
   ci_lower <- ci_lower |> sprintf(fmt = "%-.2f")
   ci_upper <- ci_upper |> sprintf(fmt = "%-.2f")
-  text(
-    x = x_outcome_position,
-    y = y_position,
-    labels = paste0(point_estimate, " (", ci_lower, ", ", ci_upper,  ")"),
+
+  mtext(
+    text = paste0(point_estimate, " (", ci_lower, ", ", ci_upper,  ")"),
+    side = 4,
+    line = 1,
+    at = y_position,
+    las = 1,
     adj = 0
   )
 }
@@ -279,23 +319,27 @@ FindStartingXLimits <- function(pairwise) {
 #'
 #' @param pairwise Output from meta::pairwise().
 #' @param outcome_type "binary" or "continuous".
-#' @param x_rob_positions Vector of x co-ordinates for the circles.
+#' @param x_position x co-ordinate for the first circle.
 #' @param y_position y co-ordinate for the circles.
 #' @param studlab Study.
 #' @param treatment1 First treatment in the comparison.
 #' @param treatment2 Second treatment in the comparison.
 #' @param rob_variables Vector of RoB and indirectness variable names from 'pairwise'.
-.AddRiskOfBias <- function(pairwise, outcome_type, x_rob_positions, y_position, studlab, treatment1, treatment2, rob_variables) {
+#' @param palette Vector of colours to use
+.AddRiskOfBias <- function(pairwise, outcome_type, x_position, y_position, studlab, treatment1, treatment2, rob_variables, palette) {
   row <- which(pairwise$studlab == studlab & pairwise$treat1 == treatment1 & pairwise$treat2 == treatment2)
-  colours <- c("chartreuse3", "darkgoldenrod1", "red")
+  colours <- palette
+  start_x <- x_position
 
-  points(
-    x = x_rob_positions,
-    y = rep(y_position, times = length(x_rob_positions)),
-    pch = 19,
-    col = colours[sapply(pairwise[row, rob_variables], function(x){x[[1]]})],
-    cex = 2
-  )
+  mtext("•",
+        side = 4,
+        at = y_position,
+        line = start_x:(start_x + length(rob_variables) - 1),
+        las = 1,
+        adj = 0.5,
+        col = colours[sapply(pairwise[row, rob_variables], function(x){x[[1]]})],
+        cex = 3
+      )
 }
 
 
@@ -303,35 +347,40 @@ FindStartingXLimits <- function(pairwise) {
 #'
 #' @param pairwise Output from meta::pairwise().
 #' @param outcome_type "binary" or "continuous".
-#' @param x_label_position x co-ordinate for the header and study labels.
-#' @param x_outcome_position x co-ordinate for the comparison-within-study outcomes.
-#' @param x_rob_positions Vector of x co-ordinates for the circles.
+#' @param max_label_width
+#' @param rob_x_position
 #' @param y_header_position y co-ordinate for the header.
 #' @param y_positions Vector of y co-ordinates for the study labels and confidence intervals.
 #' @param treatment1 First treatment in the comparison.
 #' @param treatment2 Second treatment in the comparison.
 #' @param rob_variables Vector of RoB and indirectness variable names from 'pairwise'.
-.AddTreatmentEffectBlock <- function(pairwise, outcome_type, x_label_position, x_outcome_position, x_rob_positions, y_header_position, y_positions, treatment1, treatment2, rob_variables) {
-  #Header
-  text(
-    x = x_label_position,
-    y = y_header_position,
-    labels = paste0(treatment1, " vs. ", treatment2),
+#' @param palette Vector of colours to use
+.AddTreatmentEffectBlock <- function(pairwise, outcome_type, max_label_width, rob_x_position, y_header_position, y_positions, treatment1, treatment2, rob_variables, palette) {
+
+  # header
+  mtext(
+    text = paste0(treatment1, " vs. ", treatment2),
+    side = 2,
+    line = max_label_width,
+    at = y_header_position + 0.2,
+    las = 1,
     adj = 0,
     font = 2
   )
 
-  #Select the rows comparing to the two treatments
+  # select the rows comparing to the two treatments
   pairwise_subset <- pairwise[
     pairwise$treat1 == treatment1 & pairwise$treat2 == treatment2
     ,
   ]
 
-  #Study labels
-  text(
-    x = x_label_position,
-    y = y_positions,
-    labels = pairwise_subset$studlab,
+  # study labels
+  mtext(
+    text = pairwise_subset$studlab,
+    side = 2,
+    line = max_label_width - 1,
+    at = y_positions,
+    las = 1,
     adj = 0
   )
 
@@ -348,7 +397,6 @@ FindStartingXLimits <- function(pairwise) {
     .AddOutcomeText(
       pairwise = pairwise,
       outcome_type = outcome_type,
-      x_outcome_position = x_outcome_position,
       y_position = y_positions[row],
       studlab = pairwise_subset$studlab[row],
       treatment1 = pairwise_subset$treat1[row],
@@ -357,12 +405,13 @@ FindStartingXLimits <- function(pairwise) {
     if (include_rob) {
       .AddRiskOfBias(
         pairwise = pairwise,
-        x_rob_positions = x_rob_positions,
+        x_position = rob_x_position,
         y_position = y_positions[row],
         studlab = pairwise_subset$studlab[row],
         treatment1 = pairwise_subset$treat1[row],
         treatment2 = pairwise_subset$treat2[row],
-        rob_variables = rob_variables
+        rob_variables = rob_variables,
+        palette = palette
       )
     }
   }
