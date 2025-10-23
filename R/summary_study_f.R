@@ -8,8 +8,14 @@
 #' @param colourblind logical. Whether to use a colourblind-friendly palette. Defaults to `FALSE`
 #' @param x_min numeric. Minimum value for the x-axis. Defaults to `NA`
 #' @param x_max numeric. Maximum value for the x-axis. Defaults to `NA`
+#' @return List containing:
+#'  \item{svg}{character. SVG code to produce the plot}
+#'  \item{height}{numeric. Plot height in pixels}
+#'  \item{width}{numeric. Plot width in pixels}
+#'  \item{x_min}{numeric. Minimum value for the x-axis}
+#'  \item{x_max}{numeric. Maximum value for the x-axis}
+#'
 #' @export
-#' @return Forest plot.
 summary_study <- function(data, freq, outcome_measure, plot_area_width = 6, colourblind = FALSE, x_min = NA, x_max = NA) {
 
   rob_data_frame <- unique(data[, c("Study", FindRobNames(data))])
@@ -29,9 +35,6 @@ summary_study <- function(data, freq, outcome_measure, plot_area_width = 6, colo
   } else {
     palette <- c("chartreuse3", "darkgoldenrod1", "red")
   }
-
-  # x_width <- unname(x_limits["upper"] - x_limits["lower"])
-  # x_ticks <- .FindXTicks(lower = x_limits["lower"], upper = x_limits["upper"])
 
   rob_variables <- FindRobNames(pairwise)
   rob_names <- gsub("rob.", "", FindRobNames(data))
@@ -88,6 +91,7 @@ summary_study <- function(data, freq, outcome_measure, plot_area_width = 6, colo
   label_width_inches <- max(longest_treatment_label_inches, longest_study_label_inches)
   label_width <- label_width_inches / inches_to_lines
 
+  # set plot dimensions and margins
   top_line <- max(pairwise_treatments$y_position_last)
 
   bottom_margin <- 4 + ifelse(n_rob_variables > 3, n_rob_variables, 3)
@@ -129,19 +133,10 @@ summary_study <- function(data, freq, outcome_measure, plot_area_width = 6, colo
       x_labels <- x_ticks
     }
 
-
-    # user coordinates needed for legend layout
-    longest_treatment_label_user <- max(strwidth(paste(pairwise$treat1, " vs. ", pairwise$treat2)))
-    longest_study_label_user <- max(strwidth(pairwise$studlab))
-    outcome_width_user <- max(strwidth(pairwise$outcome))
-    x_range_offset <- abs(par("usr")[1]) # distance from 0 to xmin
-
     # final coordinates
     label_x_position <- label_width + 1 + outcome_width + 1
     outcome_x_position <- outcome_width + 1
-    # not quite right as ideally would include the 2 lines added above
-    legend_x_position <- max(longest_treatment_label_user, longest_study_label_user) + outcome_width_user + x_range_offset
-
+    legend_x_position <- label_x_position
 
     # add the x-axis
     axis(
@@ -176,34 +171,44 @@ summary_study <- function(data, freq, outcome_measure, plot_area_width = 6, colo
       rob_letters <- c("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L")[1:n_rob_variables]
       rob_label_y <- max(pairwise_treatments$y_position_last) + 1
       rob_label_x <- start_rob:(start_rob + n_rob_variables - 1)
-      mtext(rob_letters, side = 4, line = rob_label_x, at = rob_label_y, las = 1, adj = 0.5, font = 2)
+      mtext(rob_letters,
+            side = 4,
+            line = rob_label_x,
+            at = rob_label_y,
+            las = 1,
+            adj = 0.5,
+            font = 2)
 
       # ROB legend
       rob_legend <- paste(rob_letters, rob_names, sep = ": ")
-      rob_legend_y <- (2:(n_rob_variables + 1))
-      legend_width_user <- max(strwidth(rob_legend))
-      spacer_width_user <- strwidth("••")
+      rob_legend_y <- -(2:(n_rob_variables + 1))
+      legend_width <- max(strwidth(rob_legend, units = "inches")) / inches_to_lines
 
       # legend for domains
-      mtext(rob_legend, side = 1, line = rob_legend_y, las = 1, at = -legend_x_position, adj = 0)
+      mtext(rob_legend,
+            side = 2,
+            line = legend_x_position,
+            las = 1,
+            at = rob_legend_y,
+            adj = 0)
 
       # legend for colours
       rob_levels <- c("Low risk of bias", "Some concerns", "High risk of bias")
       mtext(rep("•", 3),
-            side = 1,
-            line = (2:4) - 0.25, # adjustment required to counter padj
+            side = 2,
+            line = legend_x_position - legend_width - 1,
             las = 1,
-            at = -(legend_x_position - legend_width_user - spacer_width_user),
+            at = -2:-4,
             adj = 0,
             padj = 0.5,
             cex = 3,
             col = palette)
 
       mtext(rob_levels,
-            side = 1,
-            line = (2:4) - 0.25,
+            side = 2,
+            line = legend_x_position - legend_width - 2,
             las = 1,
-            at = -(legend_x_position - legend_width_user - (3 * spacer_width_user)),
+            at = -2:-4,
             adj = 0,
             padj = 0.5)
 

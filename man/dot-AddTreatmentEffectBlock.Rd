@@ -7,26 +7,21 @@
 .AddTreatmentEffectBlock(
   pairwise,
   outcome_type,
-  x_label_position,
-  x_outcome_position,
-  x_rob_positions,
+  label_x_position,
+  outcome_x_position,
+  rob_x_position,
   y_header_position,
   y_positions,
   treatment1,
   treatment2,
-  rob_variables
+  rob_variables,
+  palette
 )
 }
 \arguments{
 \item{pairwise}{Output from meta::pairwise().}
 
 \item{outcome_type}{"binary" or "continuous".}
-
-\item{x_label_position}{x co-ordinate for the header and study labels.}
-
-\item{x_outcome_position}{x co-ordinate for the comparison-within-study outcomes.}
-
-\item{x_rob_positions}{Vector of x co-ordinates for the circles.}
 
 \item{y_header_position}{y co-ordinate for the header.}
 
@@ -37,6 +32,8 @@
 \item{treatment2}{Second treatment in the comparison.}
 
 \item{rob_variables}{Vector of RoB and indirectness variable names from 'pairwise'.}
+
+\item{palette}{Vector of colours to use}
 }
 \description{
 Add the treatment effect lines, confidence intervals, studies, and comparison header, for a single comparison.

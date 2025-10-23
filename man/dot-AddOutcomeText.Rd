@@ -7,7 +7,7 @@
 .AddOutcomeText(
   pairwise,
   outcome_type,
-  x_outcome_position,
+  x_position,
   y_position,
   studlab,
   treatment1,
@@ -19,7 +19,7 @@
 
 \item{outcome_type}{"binary" or "continuous".}
 
-\item{x_outcome_position}{x co-ordinate for the comparison-within-study outcomes.}
+\item{x_position}{x co-ordinate for the start if the text}
 
 \item{y_position}{y co-ordinate for the effect size and confidence interval.}
 

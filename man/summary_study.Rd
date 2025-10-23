@@ -4,19 +4,39 @@
 \alias{summary_study}
 \title{Create a forest plot of pairwise comparisons, grouped by treatment pairs.}
 \usage{
-summary_study(data, freq, outcome_measure, x_limits)
+summary_study(
+  data,
+  freq,
+  outcome_measure,
+  plot_area_width = 6,
+  colourblind = FALSE,
+  x_min = NA,
+  x_max = NA
+)
 }
 \arguments{
-\item{outcome_measure}{One of "MD", "SMD", "OR", "RR", or "RD".}
+\item{data}{dataframe. Uploaded data created by `setup_load()`}
 
-\item{x_limits}{Named vector of x-axis limits in the form (lower, upper).}
+\item{freq}{list. Frequentist analysis produced by `setup_configure()` or `setup_exclude()`}
 
-\item{pairwise}{Output from meta::pairwise().}
+\item{outcome_measure}{character. One of "MD", "SMD", "OR", "RR", or "RD".}
 
-\item{treatment_order}{Vector of the treatments in the order they should appear in the forest plot.}
+\item{plot_area_width}{numeric. The width of the plot area containing the
+treatment effects in inches. Defaults to `6`.}
+
+\item{colourblind}{logical. Whether to use a colourblind-friendly palette. Defaults to `FALSE`}
+
+\item{x_min}{numeric. Minimum value for the x-axis. Defaults to `NA`}
+
+\item{x_max}{numeric. Maximum value for the x-axis. Defaults to `NA`}
 }
 \value{
-Forest plot.
+List containing:
+ \item{svg}{character. SVG code to produce the plot}
+ \item{height}{numeric. Plot height in pixels}
+ \item{width}{numeric. Plot width in pixels}
+ \item{x_min}{numeric. Minimum value for the x-axis}
+ \item{x_max}{numeric. Maximum value for the x-axis}
 }
 \description{
 Create a forest plot of pairwise comparisons, grouped by treatment pairs.

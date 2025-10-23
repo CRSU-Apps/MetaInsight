@@ -7,12 +7,13 @@
 .AddRiskOfBias(
   pairwise,
   outcome_type,
-  x_rob_positions,
+  x_position,
   y_position,
   studlab,
   treatment1,
   treatment2,
-  rob_variables
+  rob_variables,
+  palette
 )
 }
 \arguments{
@@ -20,7 +21,7 @@
 
 \item{outcome_type}{"binary" or "continuous".}
 
-\item{x_rob_positions}{Vector of x co-ordinates for the circles.}
+\item{x_position}{x co-ordinate for the first circle.}
 
 \item{y_position}{y co-ordinate for the circles.}
 
@@ -31,6 +32,8 @@
 \item{treatment2}{Second treatment in the comparison.}
 
 \item{rob_variables}{Vector of RoB and indirectness variable names from 'pairwise'.}
+
+\item{palette}{Vector of colours to use}
 }
 \description{
 Add risk of bias circles for a single comparison in a single study.
