@@ -59,8 +59,9 @@ summary_study_module_server <- function(id, common, parent_session) {
     common$meta$summary_study$colourblind <- input$colourblind
     common$meta$summary_study$x_min <- as.numeric(input$x_min)
     common$meta$summary_study$x_max <- as.numeric(input$x_max)
-    div(class = "svg_container",
-        HTML(svg()$svg)
+    div(
+      class = "svg_container",
+      HTML(svg()$svg)
     )
   })
 
@@ -79,25 +80,29 @@ summary_study_module_server <- function(id, common, parent_session) {
     }
   )
 
-  return(list(
-    save = function() {list(
-      ### Manual save start
-      ### Manual save end
-      colourblind = input$colourblind,
-      width = input$width,
-      x_min = input$x_min,
-      x_max = input$x_max)
-    },
-    load = function(state) {
-      ### Manual load start
-      ### Manual load end
-      updateCheckboxInput(session, "colourblind", value = state$colourblind)
-      updateNumericInput(session, "width", value = state$width)
-      updateNumericInput(session, "x_min", value = state$x_min)
-      updateNumericInput(session, "x_max", value = state$x_max)
-    }
-  ))
-})
+  return(
+    list(
+      save = function() {
+        list(
+          ### Manual save start
+          ### Manual save end
+          colourblind = input$colourblind,
+          width = input$width,
+          x_min = input$x_min,
+          x_max = input$x_max
+          )
+        },
+      load = function(state) {
+        ### Manual load start
+        ### Manual load end
+        updateCheckboxInput(session, "colourblind", value = state$colourblind)
+        updateNumericInput(session, "width", value = state$width)
+        updateNumericInput(session, "x_min", value = state$x_min)
+        updateNumericInput(session, "x_max", value = state$x_max)
+      }
+    )
+  )
+  })
 }
 
 summary_study_module_result <- function(id) {
@@ -106,12 +111,13 @@ summary_study_module_result <- function(id) {
   div(style = "max-width: 1200px; margin: 0 auto;", uiOutput(ns("plot")))
 }
 
-summary_study_module_rmd <- function(common){ list(
-  summary_study_knit = !is.null(common$meta$summary_study$used),
-  summary_study_width = common$meta$summary_study$width,
-  summary_study_colourblind = common$meta$summary_study$colourblind,
-  summary_study_x_min = common$meta$summary_study$x_min,
-  summary_study_x_max = common$meta$summary_study$x_max
+summary_study_module_rmd <- function(common) {
+  list(
+    summary_study_knit = !is.null(common$meta$summary_study$used),
+    summary_study_width = common$meta$summary_study$width,
+    summary_study_colourblind = common$meta$summary_study$colourblind,
+    summary_study_x_min = common$meta$summary_study$x_min,
+    summary_study_x_max = common$meta$summary_study$x_max
   )
 }
 

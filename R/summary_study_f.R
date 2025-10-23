@@ -30,7 +30,7 @@ summary_study <- function(data, freq, outcome_measure, plot_area_width = 6, colo
     treatment_order = freq$lstx
   )
 
-  if (colourblind){
+  if (colourblind) {
     palette  <- c("#fed98e", "#fe9929", "#d95f0e")
   } else {
     palette <- c("chartreuse3", "darkgoldenrod1", "red")
@@ -55,11 +55,11 @@ summary_study <- function(data, freq, outcome_measure, plot_area_width = 6, colo
     outcome_type <- "binary"
   }
 
-  if (is.na(x_min)){
+  if (is.na(x_min)) {
     x_min <- min(pairwise$TE - 1.96 * pairwise$seTE)
   }
 
-  if (is.na(x_max)){
+  if (is.na(x_max)) {
     x_max <- max(pairwise$TE + 1.96 * pairwise$seTE)
   }
 
@@ -165,19 +165,21 @@ summary_study <- function(data, freq, outcome_measure, plot_area_width = 6, colo
 
     n_rob <- length(rob_variables)
     start_rob <- 2
-    if (n_rob_variables > 0){
+    if (n_rob_variables > 0) {
 
       # ROB labels above markers
-      rob_letters <- c("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L")[1:n_rob_variables]
+      rob_letters <- LETTERS[1:12][1:n_rob_variables]
       rob_label_y <- max(pairwise_treatments$y_position_last) + 1
       rob_label_x <- start_rob:(start_rob + n_rob_variables - 1)
-      mtext(rob_letters,
-            side = 4,
-            line = rob_label_x,
-            at = rob_label_y,
-            las = 1,
-            adj = 0.5,
-            font = 2)
+      mtext(
+        rob_letters,
+        side = 4,
+        line = rob_label_x,
+        at = rob_label_y,
+        las = 1,
+        adj = 0.5,
+        font = 2
+      )
 
       # ROB legend
       rob_legend <- paste(rob_letters, rob_names, sep = ": ")
@@ -185,32 +187,38 @@ summary_study <- function(data, freq, outcome_measure, plot_area_width = 6, colo
       legend_width <- max(strwidth(rob_legend, units = "inches")) / inches_to_lines
 
       # legend for domains
-      mtext(rob_legend,
-            side = 2,
-            line = legend_x_position,
-            las = 1,
-            at = rob_legend_y,
-            adj = 0)
+      mtext(
+        rob_legend,
+        side = 2,
+        line = legend_x_position,
+        las = 1,
+        at = rob_legend_y,
+        adj = 0
+      )
 
       # legend for colours
       rob_levels <- c("Low risk of bias", "Some concerns", "High risk of bias")
-      mtext(rep("•", 3),
-            side = 2,
-            line = legend_x_position - legend_width - 1,
-            las = 1,
-            at = -2:-4,
-            adj = 0,
-            padj = 0.5,
-            cex = 3,
-            col = palette)
+      mtext(
+        rep("•", 3),
+        side = 2,
+        line = legend_x_position - legend_width - 1,
+        las = 1,
+        at = -2:-4,
+        adj = 0,
+        padj = 0.5,
+        cex = 3,
+        col = palette
+      )
 
-      mtext(rob_levels,
-            side = 2,
-            line = legend_x_position - legend_width - 2,
-            las = 1,
-            at = -2:-4,
-            adj = 0,
-            padj = 0.5)
+      mtext(
+        rob_levels,
+        side = 2,
+        line = legend_x_position - legend_width - 2,
+        las = 1,
+        at = -2:-4,
+        adj = 0,
+        padj = 0.5
+      )
 
     }
 
@@ -218,7 +226,6 @@ summary_study <- function(data, freq, outcome_measure, plot_area_width = 6, colo
     for (row in 1:length(pairwise_treatments[[1]])) {
       .AddTreatmentEffectBlock(
         pairwise = pairwise,
-        outcome_type = outcome_type,
         label_x_position = label_x_position,
         outcome_x_position = outcome_x_position,
         rob_x_position = start_rob,
@@ -239,21 +246,7 @@ summary_study <- function(data, freq, outcome_measure, plot_area_width = 6, colo
   svg$x_min <- round(x_min, 1)
   svg$x_max <- round(x_max, 1)
 
-  svg
-}
-
-#' Finds suitable starting limits for the x-axis.
-#'
-#' @param pairwise Output from meta::pairwise().
-#' @return Named vector in the form c(lower, upper).
-FindStartingXLimits <- function(pairwise) {
-  #The lowest confidence interval bound
-  lower <- min(pairwise$TE - 1.96 * pairwise$seTE)
-  #The highest confidence interval bound
-  upper <- max(pairwise$TE + 1.96 * pairwise$seTE)
-  #Suitable x-axis limits and ticks
-  x_ticks <- .FindXTicks(lower = lower, upper = upper)
-  return(c(lower = x_ticks[1],  upper = x_ticks[length(x_ticks)]))
+  return(svg)
 }
 
 
@@ -322,13 +315,12 @@ FindStartingXLimits <- function(pairwise) {
 #' Add the effects size and confidence interval text for a single comparison in a single study.
 #'
 #' @param pairwise Output from meta::pairwise().
-#' @param outcome_type "binary" or "continuous".
-#' @param x_position x co-ordinate for the start if the text
+#' @param x_position x co-ordinate for the start of the text.
 #' @param y_position y co-ordinate for the effect size and confidence interval.
 #' @param studlab Study.
 #' @param treatment1 First treatment in the comparison.
 #' @param treatment2 Second treatment in the comparison.
-.AddOutcomeText <- function(pairwise, outcome_type, x_position, y_position, studlab, treatment1, treatment2) {
+.AddOutcomeText <- function(pairwise, x_position, y_position, studlab, treatment1, treatment2) {
   row <- which(pairwise$studlab == studlab & pairwise$treat1 == treatment1 & pairwise$treat2 == treatment2)
   mtext(
     text = paste0(pairwise$point_estimate[row], " (", pairwise$ci_lower[row], ", ", pairwise$ci_upper[row],  ")"),
@@ -345,7 +337,6 @@ FindStartingXLimits <- function(pairwise) {
 #' Add risk of bias circles for a single comparison in a single study.
 #'
 #' @param pairwise Output from meta::pairwise().
-#' @param outcome_type "binary" or "continuous".
 #' @param x_position x co-ordinate for the first circle.
 #' @param y_position y co-ordinate for the circles.
 #' @param studlab Study.
@@ -353,37 +344,37 @@ FindStartingXLimits <- function(pairwise) {
 #' @param treatment2 Second treatment in the comparison.
 #' @param rob_variables Vector of RoB and indirectness variable names from 'pairwise'.
 #' @param palette Vector of colours to use
-.AddRiskOfBias <- function(pairwise, outcome_type, x_position, y_position, studlab, treatment1, treatment2, rob_variables, palette) {
+.AddRiskOfBias <- function(pairwise, x_position, y_position, studlab, treatment1, treatment2, rob_variables, palette) {
   row <- which(pairwise$studlab == studlab & pairwise$treat1 == treatment1 & pairwise$treat2 == treatment2)
   colours <- palette
   start_x <- x_position
 
-  mtext("•",
-        side = 4,
-        at = y_position,
-        line = x_position:(x_position + length(rob_variables) - 1),
-        las = 1,
-        adj = 0.5,
-        col = colours[sapply(pairwise[row, rob_variables], function(x){x[[1]]})],
-        cex = 3
-      )
+  mtext(
+    "•",
+    side = 4,
+    at = y_position,
+    line = x_position:(x_position + length(rob_variables) - 1),
+    las = 1,
+    adj = 0.5,
+    col = colours[sapply(pairwise[row, rob_variables], function(x){x[[1]]})],
+    cex = 3
+  )
 }
 
 
 #' Add the treatment effect lines, confidence intervals, studies, and comparison header, for a single comparison.
 #'
 #' @param pairwise Output from meta::pairwise().
-#' @param outcome_type "binary" or "continuous".
-#' @param label_x_position
-
-#' @param rob_x_position
+#' @param label_x_position  x co-ordinate for the start of the labels.
+#' @param outcome_x_position x co-ordinate for the start of the text.
+#' @param rob_x_position x co-ordinate for the first circle.
 #' @param y_header_position y co-ordinate for the header.
 #' @param y_positions Vector of y co-ordinates for the study labels and confidence intervals.
 #' @param treatment1 First treatment in the comparison.
 #' @param treatment2 Second treatment in the comparison.
 #' @param rob_variables Vector of RoB and indirectness variable names from 'pairwise'.
 #' @param palette Vector of colours to use
-.AddTreatmentEffectBlock <- function(pairwise, outcome_type, label_x_position, outcome_x_position, rob_x_position, y_header_position, y_positions, treatment1, treatment2, rob_variables, palette) {
+.AddTreatmentEffectBlock <- function(pairwise, label_x_position, outcome_x_position, rob_x_position, y_header_position, y_positions, treatment1, treatment2, rob_variables, palette) {
 
   # header
   mtext(
@@ -424,7 +415,6 @@ FindStartingXLimits <- function(pairwise) {
     )
     .AddOutcomeText(
       pairwise = pairwise,
-      outcome_type = outcome_type,
       x_position = outcome_x_position,
       y_position = y_positions[row],
       studlab = pairwise_subset$studlab[row],
