@@ -4,9 +4,9 @@ summary_study_module_ui <- function(id) {
     actionButton(ns("run"), "Generate plot", icon = icon("arrow-turn-down")),
     div(class = "summary_study_div",
        checkboxInput(ns("colourblind"), "Use colourblind palette", FALSE),
-       numericInput(ns("width"), label = "Plot width:", value = 6, step = 1),
-       numericInput(ns("x_min"), label = "x-axis min:", value = 0, step = 0.1),
-       numericInput(ns("x_max"), label = "x-axis max:", value = 0, step = 0.1),
+       numericInput(ns("width"), "Plot area width:", value = 6, step = 1, min = 6, max = 20),
+       numericInput(ns("x_min"), "x-axis min:", value = 0, step = 0.1),
+       numericInput(ns("x_max"), "x-axis max:", value = 0, step = 0.1),
        downloadButton(ns("download")),
     )
   )
@@ -32,7 +32,7 @@ summary_study_module_server <- function(id, common, parent_session) {
     watch("setup_exclude")
     req(watch("summary_study") > 0)
     summary_study(
-      data = common$data,
+      data = common$main_connected_data,
       freq = common$freq_sub,
       outcome_measure = common$outcome_measure,
       plot_area_width = input$width,
@@ -43,10 +43,13 @@ summary_study_module_server <- function(id, common, parent_session) {
   })
 
   # listen for default values for the axis but only after the initial run
-  # may want to adjust step too if binary?
   min_max <- observe({
     updateNumericInput(session, "x_min", value = svg()$x_min)
     updateNumericInput(session, "x_max", value = svg()$x_max)
+    if (common$outcome == "Binary"){
+      updateNumericInput(session, "x_min", label = "x-axis min (log scale):")
+      updateNumericInput(session, "x_max", label = "x-axis max (log scale):")
+    }
     min_max$destroy()
   })
 
@@ -80,17 +83,17 @@ summary_study_module_server <- function(id, common, parent_session) {
     save = function() {list(
       ### Manual save start
       ### Manual save end
-      colourblind = input$colourblind, 
-      width = input$width, 
-      x_min = input$x_min, 
+      colourblind = input$colourblind,
+      width = input$width,
+      x_min = input$x_min,
       x_max = input$x_max)
     },
     load = function(state) {
       ### Manual load start
       ### Manual load end
-      updateCheckboxInput(session, "colourblind", value = state$colourblind) 
-      updateNumericInput(session, "width", value = state$width) 
-      updateNumericInput(session, "x_min", value = state$x_min) 
+      updateCheckboxInput(session, "colourblind", value = state$colourblind)
+      updateNumericInput(session, "width", value = state$width)
+      updateNumericInput(session, "x_min", value = state$x_min)
       updateNumericInput(session, "x_max", value = state$x_max)
     }
   ))
