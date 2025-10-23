@@ -239,9 +239,10 @@ summary_study <- function(data, freq, outcome_measure, plot_area_width = 6, colo
     arimo = "https://fonts.googleapis.com/css2?family=Arimo:wght@400;700&display=swap")
   ) |> crop_svg()
 
-  
-  svg$x_min <- round(x_min, -log10(increment) + 1)
-  svg$x_max <- round(x_max, -log10(increment) + 1)
+  step <- increment / 10
+  svg$x_min <- round(x_min, -log10(step))
+  svg$x_max <- round(x_max, -log10(step))
+  svg$step <- step
 
   return(svg)
 }
