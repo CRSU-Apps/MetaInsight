@@ -49,12 +49,6 @@ summary_study <- function(data, freq, outcome_measure, plot_area_width = 6, colo
     "RD" = "Risk difference"
   )
 
-  if (is.element(outcome_measure, c("MD", "SMD"))) {
-    outcome_type <- "continuous"
-  } else if (is.element(outcome_measure, c("OR", "RR", "RD"))) {
-    outcome_type <- "binary"
-  }
-
   if (is.na(x_min)) {
     x_min <- min(pairwise$TE - 1.96 * pairwise$seTE)
   }
@@ -64,6 +58,7 @@ summary_study <- function(data, freq, outcome_measure, plot_area_width = 6, colo
   }
 
   x_ticks <- .FindXTicks(lower = x_min, upper = x_max)
+  increment <- x_ticks[2] - x_ticks[1]
 
   inches_to_lines <- par("cin")[2]
 
@@ -71,7 +66,7 @@ summary_study <- function(data, freq, outcome_measure, plot_area_width = 6, colo
   pairwise$point_estimate <- pairwise$TE
   pairwise$ci_lower <- pairwise$TE - 1.96 * pairwise$seTE
   pairwise$ci_upper <- pairwise$TE + 1.96 * pairwise$seTE
-  if (outcome_type == "binary") {
+  if (is.element(outcome_measure, c("OR", "RR"))) {
     pairwise$point_estimate <- exp(pairwise$point_estimate)
     pairwise$ci_lower <- exp(pairwise$ci_lower)
     pairwise$ci_upper <- exp(pairwise$ci_upper)
@@ -127,9 +122,9 @@ summary_study <- function(data, freq, outcome_measure, plot_area_width = 6, colo
     title("Individual study results (with selected studies excluded)\n grouped by treatment comparison", line = 2)
 
     # define the ticks and labels for the x-axis
-    if (outcome_type == "binary") {
+    if (is.element(outcome_measure, c("OR", "RR"))) {
       x_labels <- signif(exp(x_ticks), digits = 1)
-    } else if (outcome_type == "continuous") {
+    } else if (is.element(outcome_measure, c("MD", "SMD", "RD"))) {
       x_labels <- x_ticks
     }
 
@@ -241,10 +236,12 @@ summary_study <- function(data, freq, outcome_measure, plot_area_width = 6, colo
   width = plot_width,
   height = plot_height,
   web_fonts = list(
-    arimo = "https://fonts.googleapis.com/css2?family=Arimo:wght@400;700&display=swap")) |> crop_svg()
+    arimo = "https://fonts.googleapis.com/css2?family=Arimo:wght@400;700&display=swap")
+  ) |> crop_svg()
 
-  svg$x_min <- round(x_min, 1)
-  svg$x_max <- round(x_max, 1)
+  
+  svg$x_min <- round(x_min, -log10(increment) + 1)
+  svg$x_max <- round(x_max, -log10(increment) + 1)
 
   return(svg)
 }
