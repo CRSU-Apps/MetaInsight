@@ -43,6 +43,6 @@ test_that("{shinytest2} recording: e2e_bayes_results", {
   expect_match(text_all$html, "Iterations")
   expect_match(text_sub$html, "Iterations")
 
-  app$stop
+  app$stop()
 })
 

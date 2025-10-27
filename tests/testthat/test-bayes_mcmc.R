@@ -25,9 +25,9 @@ test_that("Check bayes_mcmc function works as expected", {
 
 test_that("Check bayes_mcmc function produces errors as expected", {
   faulty_model <- list(mtcResults = 1:4)
-  expect_error(bayes_mcmc("faulty_model"), "model must be an object created by bayes_model")
-  expect_error(bayes_mcmc(list(a = 1)), "model must be an object created by bayes_model")
-  expect_error(bayes_mcmc(faulty_model), "model must be an object created by bayes_model")
+  expect_error(bayes_mcmc("faulty_model"), "model must be an object created by baseline_model(), bayes_model() or covariate_model()")
+  expect_error(bayes_mcmc(list(a = 1)), "model must be an object created by baseline_model(), bayes_model() or covariate_model()")
+  expect_error(bayes_mcmc(faulty_model), "model must be an object created by baseline_model(), bayes_model() or covariate_model()")
 })
 
 test_that("{shinytest2} recording: e2e_bayes_mcmc", {

@@ -11,9 +11,9 @@ test_that("Check bayes_forest function works as expected", {
 test_that("Check bayes_forest function produces errors as expected", {
   faulty_model <- list(mtcRelEffects = 1:4)
 
-  expect_error(bayes_forest("faulty_model", loaded_data_con$treatment_df, "Placebo", "title"), "model must be an object created by bayes_model")
-  expect_error(bayes_forest(list(a = 1), loaded_data_con$treatment_df, "Placebo", "title"), "model must be an object created by bayes_model")
-  expect_error(bayes_forest(faulty_model, loaded_data_con$treatment_df, "Placebo", "title"), "model must be an object created by bayes_model")
+  expect_error(bayes_forest("faulty_model", loaded_data_con$treatment_df, "Placebo", "title"), "model must be an object created by bayes_model() or covariate_model()")
+  expect_error(bayes_forest(list(a = 1), loaded_data_con$treatment_df, "Placebo", "title"), "model must be an object created by bayes_model() or covariate_model()")
+  expect_error(bayes_forest(faulty_model, loaded_data_con$treatment_df, "Placebo", "title"), "model must be an object created by bayes_model() or covariate_model()")
 })
 
 test_that("{shinytest2} recording: e2e_bayes_forest", {
@@ -37,5 +37,7 @@ test_that("{shinytest2} recording: e2e_bayes_forest", {
   expect_match(plot_sub$html, "<svg")
 
   test_bayes_plot_downloads(app, "bayes_forest", "")
+
+  app$stop()
 })
 

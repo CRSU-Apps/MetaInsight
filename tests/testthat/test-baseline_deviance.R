@@ -1,14 +1,46 @@
 test_that("Check baseline_deviance function works as expected", {
-  result <- baseline_deviance()
-  expect_true(is.null(result))
+  result <- baseline_deviance(fitted_baseline_model)
+  expect_type(result, "list")
+  expect_true(all(c("deviance_mtc", "deviance_ume", "scat_plot", "stem_plot", "lev_plot") %in% names(result)))
+  expect_is(result$deviance_mtc, "mtc.deviance")
+  expect_is(result$deviance_ume, "mtc.deviance")
+  expect_is(result$scat_plot, "plotly")
+  expect_is(result$stem_plot, "plotly")
+  expect_is(result$lev_plot, "plotly")
 })
 
-test_that("{shinytest2} recording: e2e_baseline_deviance", {
-  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_baseline_deviance")
+test_that("Check bayes_mcmc function produces errors as expected", {
+  faulty_model <- list(mtcResults = 1:4)
+  expect_error(baseline_deviance("faulty_model"), "model must be an object created by bayes_model() or covariate_model()")
+  expect_error(baseline_deviance(list(a = 1)), "model must be an object created by bayes_model() or covariate_model()")
+  expect_error(baseline_deviance(faulty_model), "model must be an object created by bayes_model() or covariate_model()")
+})
+
+test_that("{shinytest2} recording: e2e_bayes_deviance", {
+  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_bayes_deviance", timeout = 30000)
+  app$set_inputs(tabs = "setup")
+  app$set_inputs(setupSel = "setup_reload")
+  app$upload_file("setup_reload-load_session" = baseline_model_path)
+  app$click("setup_reload-goLoad_session")
+
   app$set_inputs(tabs = "baseline")
   app$set_inputs(baselineSel = "baseline_deviance")
   app$click("baseline_deviance-run")
-  common <- app$get_value(export = "common")
-  expect_true(is.null(common$upgraded_data))
-})
+  app$wait_for_value(output = "baseline_deviance-baseline-scat")
+  app$wait_for_value(output = "baseline_deviance-baseline-stem")
+  app$wait_for_value(output = "baseline_deviance-baseline-lev")
 
+  scat <- app$get_value(output = "baseline_deviance-baseline-scat")
+  stem <- app$get_value(output = "baseline_deviance-baseline-stem")
+  lev <- app$get_value(output = "baseline_deviance-baseline-lev")
+
+  expect_is(scat, "json")
+  expect_is(stem, "json")
+  expect_is(lev, "json")
+
+  expect_true(all(c("x", "evals", "jsHooks", "deps") %in% names(jsonlite::fromJSON(scat))))
+  expect_true(all(c("x", "evals", "jsHooks", "deps") %in% names(jsonlite::fromJSON(stem))))
+  expect_true(all(c("x", "evals", "jsHooks", "deps") %in% names(jsonlite::fromJSON(lev))))
+
+  app$stop()
+})

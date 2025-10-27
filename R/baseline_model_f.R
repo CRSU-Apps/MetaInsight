@@ -12,7 +12,7 @@
 #'  \item{cov_value_sentence}{text output stating the value for which the covariate has been set to for producing output}
 #'  \item{slopes}{named list of slopes for the regression equations (unstandardised - equal to one 'increment')}
 #'  \item{intercepts}{named list of intercepts for the regression equations at cov_value}
-#'  \item{outcome}{The outcome type for the analysis eg. "MD" or "OR"}
+#'  \item{outcome}{The outcome type for the analysis - Continuous or Binary}
 #'  \item{model}{effects type, "fixed" or "random"}
 #'  \item{covariate_min}{Vector of minimum covariate values directly contributing to the regression}
 #'  \item{covariate_max}{Vector of maximum covariate values directly contributing to the regression}
