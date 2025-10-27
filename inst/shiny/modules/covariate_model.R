@@ -19,14 +19,13 @@ covariate_model_module_server <- function(id, common, parent_session) {
 
     observe({
       watch("setup_configure")
-      req(common$main_connected_data)
-      # these could be moved to setup_configure and then not be exported
-      common$covariate_column <- FindCovariateNames(common$main_connected_data)
-      common$covariate_name <- GetFriendlyCovariateName(common$covariate_column)
-      min <- min(common$main_connected_data[[common$covariate_column]])
-      mean <- mean(common$main_connected_data[[common$covariate_column]])
-      max <- max(common$main_connected_data[[common$covariate_column]])
-      updateSliderInput(session, "covariate_value", min = min, max = max, value = mean, label = glue::glue("Covariate value ({common$covariate_name})"))
+      req(common$covariate_column)
+      if (!is.null(common$covariate_column)){
+        min <- min(common$main_connected_data[[common$covariate_column]])
+        mean <- mean(common$main_connected_data[[common$covariate_column]])
+        max <- max(common$main_connected_data[[common$covariate_column]])
+        updateSliderInput(session, "covariate_value", min = min, max = max, value = mean, label = glue::glue("Covariate value ({common$covariate_name})"))
+      }
     })
 
     # used to trigger summary table - needs to be separate to reload
@@ -49,8 +48,8 @@ covariate_model_module_server <- function(id, common, parent_session) {
       }
 
       if (is.null(common$covariate_column)){
-        common$logger |> writeLog(type = "error", paste("No covariate data exists. To add covariate data, add a column titled",
-        code("covar.*"), "where the", code("*"), "is replaced by the covariate name. eg. ", code("covar.age")))
+        common$logger |> writeLog(type = "error", paste("No covariate data exists. To add covariate data, add a column titled
+                                                         covar.* where the * is replaced by the covariate name. e.g. covar.age"))
         return()
       }
 
@@ -88,8 +87,6 @@ covariate_model_module_server <- function(id, common, parent_session) {
                                           common$treatment_df,
                                           common$outcome,
                                           common$outcome_measure,
-                                          common$covariate_column,
-                                          common$covariate_name,
                                           input$covariate_value,
                                           common$model_type,
                                           input$regressor,
@@ -134,8 +131,6 @@ covariate_model_module_result <- function(id) {
 covariate_model_module_rmd <- function(common){ list(
   covariate_model_knit = !is.null(common$meta$covariate_model$used),
   # covariate_model_dataset = common$meta$covariate_model$dataset,
-  covariate_model_covariate_column = common$covariate_column,
-  covariate_model_covariate_name = common$covariate_name,
   covariate_model_covariate_value = common$meta$covariate_model$covariate_value,
   covariate_model_regressor = common$meta$covariate_model$regressor)
 }

@@ -69,6 +69,14 @@ setup_configure <- function(data, treatment_df, outcome, outcome_measure, refere
 
   non_covariate_data_all <- RemoveCovariates(main_connected_data)
 
+  if (any(grepl("covar\\.", names(main_connected_data)))){
+    covariate_column <- FindCovariateNames(main_connected_data)
+    covariate_name <- GetFriendlyCovariateName(covariate_column)
+  } else {
+    covariate_column <- NULL
+    covariate_name <- NULL
+  }
+
   bugsnet_all <- bugsnetdata(non_covariate_data_all, outcome, treatment_df)
 
   # random is the default model type, this structure is updated in setup_exclude if the model type changes
@@ -86,6 +94,8 @@ setup_configure <- function(data, treatment_df, outcome, outcome_measure, refere
               disconnected_indices = disconnected_indices,
               main_connected_data = main_connected_data,
               non_covariate_data_all = non_covariate_data_all,
+              covariate_column = covariate_column,
+              covariate_name = covariate_name,
               bugsnet_all = bugsnet_all,
               freq_all = freq_all))
 }

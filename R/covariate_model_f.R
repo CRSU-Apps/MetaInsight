@@ -1,8 +1,6 @@
 #' @title covariate_model
 #' @description Does x
 #' @param covariate character. Chosen covariate name as per uploaded data
-#' @param cov_friendly character. Friendly name of chosen covariate
-#' @param cov_value numeric. Covariate value at which to produce predictions
 #' @param regressor_type character. Type of regression coefficient, either `shared`, `unrelated`, or `exchangeable`
 #' @param covariate_model_output list. The output of the function. Default NULL.
 #' When supplied, only the output is recalculated for a given covariate value,
@@ -27,9 +25,15 @@
 #'  \item{covariate_min}{Vector of minimum covariate values directly contributing to the regression}
 #'  \item{covariate_max}{Vector of maximum covariate values directly contributing to the regression}
 #' @export
-covariate_model <- function(connected_data, treatment_df, outcome, outcome_measure, covariate, cov_friendly, cov_value, model_type, regressor_type, reference_treatment, covariate_model_output = NULL, async = FALSE){
+covariate_model <- function(connected_data, treatment_df, outcome, outcome_measure, cov_value, model_type, regressor_type, reference_treatment, covariate_model_output = NULL, async = FALSE){
+
+  if (any(grepl("covar\\.", names(connected_data)))){
+    async |> asyncLog(type = "error", "connected_data does not contain a covariate column")
+  }
 
   # move checks from other functions
+  covariate <- FindCovariateNames(connected_data)
+  cov_friendly <- GetFriendlyCovariateName(covariate)
 
   if (is.null(covariate_model_output)){
     prepped_data <- PrepDataGemtc(connected_data, treatment_df, outcome, covariate, cov_friendly)

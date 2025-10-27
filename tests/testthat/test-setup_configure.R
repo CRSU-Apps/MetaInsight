@@ -22,7 +22,7 @@ test_that("setup_upgrade returns errors for faulty inputs", {
 test_that("setup_configure returns correctly structured objects", {
 
   expected_items <- c("wrangled_data", "treatment_df", "disconnected_indices", "main_connected_data",
-    "non_covariate_data_all", "bugsnet_all", "freq_all")
+    "non_covariate_data_all", "covariate_column", "covariate_name", "bugsnet_all", "freq_all")
 
   result <- setup_configure(mock_data, mock_treatment_df, "Continuous", "MD", "the Great")
   expect_type(result, "list")
@@ -33,6 +33,8 @@ test_that("setup_configure returns correctly structured objects", {
   expect_length(result$disconnected_indices, 0)
   expect_s3_class(result$main_connected_data, "data.frame")
   expect_s3_class(result$non_covariate_data_all, "data.frame")
+  expect_type(result$covariate_column, "character")
+  expect_type(result$covariate_name, "character")
   expect_s3_class(result$bugsnet_all, "data.frame")
   expect_type(result$freq_all, "list")
 })
@@ -54,6 +56,8 @@ test_that("setup_configure loads data into common correctly for continuous long 
   expect_length(common$disconnected_indices, 0)
   expect_s3_class(common$main_connected_data, "data.frame")
   expect_s3_class(common$non_covariate_data_all, "data.frame")
+  expect_type(common$covariate_column, "character")
+  expect_type(common$covariate_name, "character")
   expect_s3_class(common$bugsnet_all, "data.frame")
   expect_type(common$freq_all, "list")
   expect_equal(common$reference_treatment_all, "the_Great")
@@ -78,6 +82,8 @@ test_that("setup_configure loads data into common correctly for wide binary data
   expect_length(common$disconnected_indices, 0)
   expect_s3_class(common$main_connected_data, "data.frame")
   expect_s3_class(common$non_covariate_data_all, "data.frame")
+  expect_type(common$covariate_column, "character")
+  expect_type(common$covariate_name, "character")
   expect_s3_class(common$bugsnet_all, "data.frame")
   expect_type(common$freq_all, "list")
   expect_equal(common$reference_treatment_all, "Placebo")
