@@ -69,6 +69,8 @@ RecreateAnalysisFromCinemaProject <- function() {
     outcome_type = cinema_outcome_type
   )
   
+  cinema_project <<- cinema_project
+  
   calculated_analysis <- GenerateCinemaAnalysis(data, cinema_model_type, cinema_outcome_measure)
   
   exported_json <- GenerateCinemaJson(
@@ -89,56 +91,6 @@ RecreateAnalysisFromCinemaProject <- function() {
   )
 }
 
-expect_equal_and_not_na <- function(actual, expected, item_name, equality_expectation=expect_equal) {
-  # Unbox single item lists
-  if (typeof(actual) == "list" && length(actual) == 1) {
-    actual = unlist(actual)
-  }
-  if (typeof(expected) == "list" && length(expected) == 1) {
-    expected = unlist(expected)
-  }
-  
-  expect_equal(typeof(actual), typeof(expected))
-  
-  expect_false(all(is.na(actual), label = glue::glue("Actual {item_name} should not be NA")))
-  expect_false(all(is.null(expected), label = glue::glue("Expected {item_name} should not be NA")))
-  
-  expect_false(all(is.na(actual), label = glue::glue("Actual {item_name} should not be NULL")))
-  expect_false(all(is.null(expected), label = glue::glue("Expected {item_name} should not be NULL")))
-  
-  equality_expectation(actual, expected)
-}
-
-expect_data_frames_equal <- function(actual, expected, numerical_tolerance=0.0002) {
-  if (class(actual) != "data.frame" || class(expected) != "data.frame") {
-    stop("Not data frames")
-  }
-  
-  expect_equal(nrow(actual), nrow(expected))
-  expect_equal(ncol(actual), ncol(expected))
-  
-  matches <- lapply(
-    1:nrow(expected),
-    function(index) {
-      row_matches <- rep(TRUE, nrow(expected))
-      
-      for (name in names(expected)) {
-        if (is.na(expected[[name]][index])) {
-          row_matches <- row_matches & is.na(actual[[name]])
-        } else if (is.numeric(expected[[name]][index])) {
-          row_matches <- row_matches & (abs(actual[[name]] - expected[[name]][index]) <= numerical_tolerance)
-        } else {
-          row_matches <- row_matches & actual[[name]] == expected[[name]][index]
-        }
-      }
-      
-      return(length(which(row_matches)) == 1)
-    }
-  )
-  
-  expect_true(all(unlist(matches)))
-}
-
 
 recreated_project <- RecreateAnalysisFromCinemaProject()
 imported_project <- recreated_project$imported_project
@@ -153,7 +105,7 @@ test_that("Should produce valid JSON", {
 
   json <- GenerateCinemaJson(cinema_data$long_data, cinema_data$treatment_ids, cinema_data$outcome_type, cinema_analysis, model_type, outcome_measure)
   result <- jsonvalidate::json_validate(json, "../../cinema/cinema_schema.json", verbose = TRUE)
-
+  
   expect_true(result, label = result)
 })
 
@@ -207,13 +159,13 @@ test_that("Should export expected row and column names", {
     exported_project$project$CM$contributionMatrices$hatmatrix$rowNamesNMAresults,
     "NMA result row names"
   )
-  
+
   # "_row" column is a special case which is handled differently
-  exportedColNames <- exported_project$project$CM$contributionMatrices$hatmatrix$colNamesNMAresults
+  exportedColNames <- exported_project$project$CM$contributionMatrices$hatmatrix$colNamesNMAresults[[1]]
   exportedColNames <- exportedColNames[-which(exportedColNames == "_row")]
 
   expect_equal_and_not_na(
-    imported_project$project$CM$contributionMatrices$hatmatrix$colNamesNMAresults,
+    imported_project$project$CM$contributionMatrices$hatmatrix$colNamesNMAresults[[1]],
     exportedColNames,
     "NMA result column names"
   )
@@ -222,24 +174,30 @@ test_that("Should export expected row and column names", {
 test_that("Should export NMA results", {
   expect_equal_and_not_na(
     imported_project$project$CM$contributionMatrices$hatmatrix$NMAresults[[1]],
-    exported_project$project$CM$contributionMatrices$hatmatrix$NMAresults,
+    exported_project$project$CM$contributionMatrices$hatmatrix$NMAresults[[1]],
     "NMA results",
     equality_expectation = expect_data_frames_equal
   )
 })
 
 test_that("Should export H matrix", {
-  # expect_equal_and_not_na(
-  #   imported_project$project$CM$contributionMatrices$hatmatrix$H[[1]],
-  #   exported_project$project$CM$contributionMatrices$hatmatrix$H,
-  #   "H matrix"
-  # )
+  expect_equal_and_not_na(
+    imported_project$project$CM$contributionMatrices$hatmatrix$H[[1]],
+    exported_project$project$CM$contributionMatrices$hatmatrix$H[[1]],
+    "H matrix",
+    equality_expectation = function(actual, expected) {
+      expect_matrices_equal(actual, expected, numerical_tolerance = 0.1)
+    }
+  )
 })
 
 test_that("Should export study contributions", {
-  # expect_equal_and_not_na(
-  #   imported_project$project$CM$contributionMatrices$studycontributions[[1]],
-  #   exported_project$project$CM$contributionMatrices$studycontributions,
-  #   "study contributions"
-  # )
+  expect_equal_and_not_na(
+    jsonlite::flatten(imported_project$project$CM$contributionMatrices$studycontributions),
+    jsonlite::flatten(exported_project$project$CM$contributionMatrices$studycontributions),
+    "study contributions",
+    equality_expectation = function(actual, expected) {
+      expect_data_frames_equal(actual, expected, numerical_tolerance = 10)
+    }
+  )
 })

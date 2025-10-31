@@ -35,8 +35,9 @@ test_that("Should identify both outcome type", {
 })
 
 test_that("Should identify missing fields", {
-  # result <- jsonvalidate::json_validate(json_missing_fields, schema, verbose = TRUE)
-  # 
+  result <- jsonvalidate::json_validate(json_missing_fields, schema, verbose = TRUE)
+
+  # Skipped because jsonvalidate doesn't seem to be able to pickup on all of the errors here
   # expect_false(result)
   # expect_equal(nrow(attr(result, "errors")), nrow(json_missing_fields_errors))
   # expect_equal(attr(result, "errors"), json_missing_fields_errors)

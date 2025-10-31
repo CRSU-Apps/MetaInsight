@@ -8,19 +8,31 @@
 #' 
 #' @param study_contributions The contribution matrix calculated by {netmeta}.
 #' @return A List with the described structure.
-.PrepareStudyContibutionsForCinema <- function(study_contributions) {
+.PrepareStudyContibutionsForCinema <- function(study_contributions, data) {
   prepared_contributions <- sapply(
     simplify = FALSE,
     unique(study_contributions$comparison),
     function(comparison) {
+      studies_for_comparison <- study_contributions$study[study_contributions$comparison == comparison]
+      study_indices <- unlist(
+        lapply(
+          studies_for_comparison,
+          function(study) {
+            return(data$StudyID[data$Study == study][1])
+          }
+        )
+      ) |>
+        as.character()
+      
       return(
         sapply(
           simplify = FALSE,
-          study_contributions$study[study_contributions$comparison == comparison],
-          function(study) {
+          study_indices,
+          function(study_id) {
+            study <- data$Study[data$StudyID == study_id]
             return(
               jsonlite::unbox(
-                study_contributions$contribution[study_contributions$comparison == comparison & study_contributions$study == study]
+                100 * study_contributions$contribution[study_contributions$comparison == comparison & study_contributions$study == study]
               )
             )
           }
@@ -102,11 +114,12 @@
 #' @param outcome_measure Outcome measure, one of: ["OR", "RR", "RD", "MD", "SMD"].
 #' @return A List with the described structure.
 .PrepareAnalysisForCinema <- function(contributions, model_type, outcome_measure) {
+  hat_matrix = netmeta::hatmatrix(x = contributions$x, method = "Davies", type = "long")
   if (model_type == "fixed") {
-    hat_matrix <- contributions$common
+    h <- hat_matrix$common
     study_contributions <- contributions$study.common
   } else if (model_type == "random") {
-    hat_matrix <- contributions$random
+    h <- hat_matrix$random
     study_contributions <- contributions$study.random
   } else {
     stop(glue::glue("Model type'{model_type}' not supported"))
@@ -136,21 +149,21 @@
   )
   
   prepared_hat_matrix <- list(
-    colNames = colnames(hat_matrix),
+    colNames = colnames(h),
     colNamesNMAresults = nma_col_names,
-    H = hat_matrix,
+    H = h,
     model = jsonlite::unbox(model_type),
     NMAresults = .PrepareComparisonsForCinema(contributions, model_type, outcome_measure),
-    rowNames = rownames(hat_matrix),
-    rowNamesNMAresults = rownames(hat_matrix),
+    rowNames = rownames(h),
+    rowNamesNMAresults = rownames(h),
     sm = jsonlite::unbox(outcome_measure)
   )
   
   prepared_analysis <- list(
-    contributionMatrices = c(
+    contributionMatrices = list(
       list(
         hatmatrix = prepared_hat_matrix,
-        studycontributions = .PrepareStudyContibutionsForCinema(study_contributions)
+        studycontributions = .PrepareStudyContibutionsForCinema(study_contributions, contributions$x$data)
       )
     )
   )
@@ -280,9 +293,6 @@ GenerateCinemaJson <- function(data, treatment_ids, outcome_type, contributions,
   if (model_type != "random" && model_type != "fixed") {
     stop(glue::glue("Model type '{model_type}' is not supported. Please use 'random' or 'fixed'"))
   }
-  
-  x <<- contributions
-  
   treatments <- stringr::str_extract(comparison, "^(.*?):(.*)$", c(1, 2))
   row <- treatments[1]
   col <- treatments[2]
