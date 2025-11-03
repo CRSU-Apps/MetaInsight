@@ -10,8 +10,8 @@ test_that("Check baseline_mcmc function works as expected", {
   expect_is(result$n_rows_rmd, "numeric")
 
   gelman <- gelman_plots(result$gelman_data, result$parameters)
-  trace <- trace_plot(fitted_bayes_model$mtcResults, result$parameters)
-  density <- density_plot(fitted_bayes_model$mtcResults, result$parameters)
+  trace <- trace_plots(fitted_bayes_model$mtcResults, result$parameters)
+  density <- density_plots(fitted_bayes_model$mtcResults, result$parameters)
 
   expect_is(gelman[[1]], "ggplot")
   expect_is(trace[[1]], "ggplot")
@@ -25,9 +25,9 @@ test_that("Check baseline_mcmc function works as expected", {
 
 test_that("Check bayes_mcmc function produces errors as expected", {
   faulty_model <- list(mtcResults = 1:4)
-  expect_error(baseline_mcmc("faulty_model"), "model must be an object created by baseline_model(), bayes_model() or covariate_model()")
-  expect_error(baseline_mcmc(list(a = 1)), "model must be an object created by baseline_model(), bayes_model() or covariate_model()")
-  expect_error(baseline_mcmc(faulty_model), "model must be an object created by baseline_model(), bayes_model() or covariate_model()")
+  expect_error(baseline_mcmc("faulty_model"), "model must be an object created by baseline_model")
+  expect_error(baseline_mcmc(list(a = 1)), "model must be an object created by baseline_model")
+  expect_error(baseline_mcmc(faulty_model), "model must be an object created by baseline_model")
 })
 
 test_that("{shinytest2} recording: e2e_baseline_mcmc", {

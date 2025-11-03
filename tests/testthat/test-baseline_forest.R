@@ -20,10 +20,11 @@ test_that("{shinytest2} recording: e2e_baseline_forest", {
   app$set_inputs(baselineSel = "baseline_forest")
   app$click("baseline_forest-run")
 
-  app$wait_for_value(output = "baseline_forest-plot")
-  plot <- app$get_value(output = "baseline_forest-plot")
+  app$wait_for_value(output = "baseline_forest-baseline-plot")
+  plot <- app$get_value(output = "baseline_forest-baseline-plot")
   expect_match(plot$html, "<svg")
-  test_plot_downloads(app, "baseline_forest", FALSE)
+
+  test_plot_downloads(app, "baseline_forest-baseline", FALSE)
 
   app$stop()
 })

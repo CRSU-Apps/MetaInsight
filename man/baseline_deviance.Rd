@@ -4,14 +4,12 @@
 \alias{baseline_deviance}
 \title{Produce deviance plots for baseline models}
 \usage{
-baseline_deviance(model, logger = NULL)
+baseline_deviance(model, async = FALSE)
 }
 \arguments{
 \item{model}{Baseline model produced by \code{baseline_model()}}
 
-\item{logger}{Stores all notification messages to be displayed in the Log
-Window. Insert the logger reactive list here for running in
-shiny, otherwise leave the default \code{NULL}}
+\item{async}{Whether or not the function is being used asynchronously. Default \code{FALSE}}
 }
 \value{
 list containing:
@@ -21,9 +19,4 @@ list containing:
 }
 \description{
 Produce deviance plots for baseline models
-}
-\examples{
-{
-y <- baseline_deviance(1)
-}
 }

@@ -11,7 +11,7 @@
 bayes_mcmc <- function(model, async = FALSE){
 
   if (!inherits(model, "bayes_model") && !inherits(model, "baseline_model")){
-    logger |> writeLog(type = "error", "model must be an object created by baseline_model(), bayes_model() or covariate_model()")
+    async |> asyncLog(type = "error", "model must be an object created by baseline_model(), bayes_model() or covariate_model()")
   }
 
   if (inherits(model, "bayes_model")){

@@ -27,7 +27,7 @@
 #' @export
 covariate_model <- function(connected_data, treatment_df, outcome, outcome_measure, cov_value, model_type, regressor_type, reference_treatment, covariate_model_output = NULL, async = FALSE){
 
-  if (any(grepl("covar\\.", names(connected_data)))){
+  if (!any(grepl("covar\\.", names(connected_data)))){
     async |> asyncLog(type = "error", "connected_data does not contain a covariate column")
   }
 

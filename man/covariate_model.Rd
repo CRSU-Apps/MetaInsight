@@ -9,8 +9,6 @@ covariate_model(
   treatment_df,
   outcome,
   outcome_measure,
-  covariate,
-  cov_friendly,
   cov_value,
   model_type,
   regressor_type,
@@ -31,12 +29,6 @@ covariate_model(
 \code{OR}, \code{RR} or \code{RD} when \code{outcome} is \code{Binary} or \code{MD} or \code{SMD} when
 \code{outcome} is \code{Continuous}}
 
-\item{covariate}{character. Chosen covariate name as per uploaded data}
-
-\item{cov_friendly}{character. Friendly name of chosen covariate}
-
-\item{cov_value}{numeric. Covariate value at which to produce predictions}
-
 \item{model_type}{character. Type of model to fit, either \code{random} or \code{fixed}}
 
 \item{regressor_type}{character. Type of regression coefficient, either \code{shared}, \code{unrelated}, or \code{exchangeable}}
@@ -48,6 +40,8 @@ When supplied, only the output is recalculated for a given covariate value,
 rather than refitting the model.}
 
 \item{async}{Whether or not the function is being used asynchronously. Default \code{FALSE}}
+
+\item{covariate}{character. Chosen covariate name as per uploaded data}
 }
 \value{
 List of gemtc related output:

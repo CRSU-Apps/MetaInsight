@@ -7,9 +7,9 @@ test_that("Check baseline_comparison function works as expected", {
 
 test_that("Check bayes_mcmc function produces errors as expected", {
   faulty_model <- list(mtcResults = 1:4)
-  expect_error(baseline_comparison("faulty_model"), "model must be an object created by baseline_model()")
-  expect_error(baseline_comparison(list(a = 1)), "model must be an object created by baseline_model()")
-  expect_error(baseline_comparison(faulty_model), "model must be an object created by baseline_model()")
+  expect_error(baseline_comparison("faulty_model"), "model must be an object created by baseline_model")
+  expect_error(baseline_comparison(list(a = 1)), "model must be an object created by baseline_model")
+  expect_error(baseline_comparison(faulty_model), "model must be an object created by baseline_model")
 })
 
 test_that("{shinytest2} recording: e2e_baseline_comparison", {

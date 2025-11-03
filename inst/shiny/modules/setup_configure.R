@@ -33,6 +33,7 @@ setup_configure_module_server <- function(id, common, parent_session) {
     updateRadioButtons(session, "outcome_measure", outcome_label, outcome_choices)
     updateRadioButtons(session, "ranking_option", rank_label,
                        selected = RankingOrder(common$outcome, !common$is_data_uploaded))
+    shinyjs::runjs("Shiny.setInputValue('setup_configure-ready', 'complete');")
   })
 
   observeEvent(input$run, {

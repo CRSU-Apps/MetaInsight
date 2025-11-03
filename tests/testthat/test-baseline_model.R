@@ -17,7 +17,7 @@ test_that("Check baseline_model function works as expected", {
                     "dic",
                     "sumresults",
                     "regressor") %in% names(result)))
-  expect_is(result$mtcResults, "mtc.result")
+  expect_is(result$mtcResults, "network.result")
   expect_is(result$covariate_value, "numeric")
   expect_is(result$reference_name, "character")
   expect_is(result$comparator_names, "character")
@@ -36,17 +36,20 @@ test_that("Check baseline_model function works as expected", {
 })
 
 test_that("{shinytest2} recording: e2e_baseline_model", {
-  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_baseline_model")
+  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_baseline_model", timeout = 30000)
 
   app$set_inputs(tabs = "setup")
   app$set_inputs(setupSel = "setup_load")
   app$click("setup_load-run")
   app$set_inputs(setupSel = "setup_configure")
+  app$wait_for_value(input = "setup_configure-ready")
   app$click("setup_configure-run")
+  app$wait_for_value(input = "setup_exclude-complete")
 
   app$set_inputs(tabs = "baseline")
   app$set_inputs(baselineSel = "baseline_model")
   app$click("baseline_model-run")
+  app$wait_for_value(input = "baseline_model-complete")
   common <- app$get_value(export = "common")
 
   result <- common$baseline_model
@@ -67,7 +70,7 @@ test_that("{shinytest2} recording: e2e_baseline_model", {
                     "dic",
                     "sumresults",
                     "regressor") %in% names(result)))
-  expect_is(result$mtcResults, "mtc.result")
+  expect_is(result$mtcResults, "network.result")
   expect_is(result$covariate_value, "numeric")
   expect_is(result$reference_name, "character")
   expect_is(result$comparator_names, "character")

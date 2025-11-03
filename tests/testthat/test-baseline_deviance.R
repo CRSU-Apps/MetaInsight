@@ -1,19 +1,17 @@
 test_that("Check baseline_deviance function works as expected", {
   result <- baseline_deviance(fitted_baseline_model)
   expect_type(result, "list")
-  expect_true(all(c("deviance_mtc", "deviance_ume", "scat_plot", "stem_plot", "lev_plot") %in% names(result)))
+  expect_true(all(c("deviance_mtc", "stem_plot", "lev_plot") %in% names(result)))
   expect_is(result$deviance_mtc, "mtc.deviance")
-  expect_is(result$deviance_ume, "mtc.deviance")
-  expect_is(result$scat_plot, "plotly")
   expect_is(result$stem_plot, "plotly")
   expect_is(result$lev_plot, "plotly")
 })
 
 test_that("Check bayes_mcmc function produces errors as expected", {
   faulty_model <- list(mtcResults = 1:4)
-  expect_error(baseline_deviance("faulty_model"), "model must be an object created by bayes_model() or covariate_model()")
-  expect_error(baseline_deviance(list(a = 1)), "model must be an object created by bayes_model() or covariate_model()")
-  expect_error(baseline_deviance(faulty_model), "model must be an object created by bayes_model() or covariate_model()")
+  expect_error(baseline_deviance("faulty_model"), "model must be an object created by baseline_model")
+  expect_error(baseline_deviance(list(a = 1)), "model must be an object created by baseline_model")
+  expect_error(baseline_deviance(faulty_model), "model must be an object created by baseline_model")
 })
 
 test_that("{shinytest2} recording: e2e_bayes_deviance", {

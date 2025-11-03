@@ -6,11 +6,8 @@
 #'  \item{stem_plot}{plotly object}
 #'  \item{lev_plot}{plotly object}
 #'
-#' @examples {
-#' y <- baseline_deviance(1)
-#' }
 #' @export
-baseline_deviance <- function(model, logger = NULL){
+baseline_deviance <- function(model, async = FALSE){
 
   if (!inherits(model, "baseline_model")){
     return(async |> asyncLog(type = "error", "model must be an object created by baseline_model()"))
@@ -23,6 +20,9 @@ baseline_deviance <- function(model, logger = NULL){
                    nd.ab = model$mtcResults$network$na,
                    nd.re = NULL
   )
+
+  # for consistency
+  class(deviance) <- "mtc.deviance"
 
   list(deviance_mtc = deviance,
        stem_plot = stem_plot(deviance),

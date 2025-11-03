@@ -1,6 +1,5 @@
 baseline_forest_module_ui <- function(id) {
   ns <- NS(id)
-  ns <- NS(id)
   tagList(
     actionButton(ns("run"), "Generate plot", icon = icon("arrow-turn-down")),
     metaregression_forest_module_ui(ns("baseline"))
