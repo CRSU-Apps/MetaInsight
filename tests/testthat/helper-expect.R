@@ -98,9 +98,9 @@ expect_vector_equal <- function(actual, expected, enforce_order=FALSE) {
     expect_true(all(names(expected) %in% names(actual)))
     
     sapply(
-      names(x1),
+      names(expected),
       function(name) {
-        expect_equal(x1[[name]], x2[[name]])
+        expect_equal(actual[[name]], expected[[name]])
       }
     )
   }
