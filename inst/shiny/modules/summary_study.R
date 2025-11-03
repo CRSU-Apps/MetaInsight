@@ -43,6 +43,12 @@ summary_study_module_server <- function(id, common, parent_session) {
   })
 
   # listen for default values for the axis but only after the initial run
+  # or when setup_configure is rerun
+  observe({
+    watch("setup_configure")
+    min_max$resume()
+  })
+
   min_max <- observe({
     updateNumericInput(session, "x_min", value = svg()$x_min, step = svg()$step)
     updateNumericInput(session, "x_max", value = svg()$x_max, step = svg()$step)
@@ -50,7 +56,7 @@ summary_study_module_server <- function(id, common, parent_session) {
       updateNumericInput(session, "x_min", label = "x-axis min (log scale):")
       updateNumericInput(session, "x_max", label = "x-axis max (log scale):")
     }
-    min_max$destroy()
+    min_max$suspend()
   })
 
   output$plot <- renderUI({
