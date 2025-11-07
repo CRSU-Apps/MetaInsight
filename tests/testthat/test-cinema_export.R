@@ -69,8 +69,6 @@ RecreateAnalysisFromCinemaProject <- function() {
     outcome_type = cinema_outcome_type
   )
   
-  cinema_project <<- cinema_project
-  
   calculated_analysis <- GenerateCinemaAnalysis(data, cinema_model_type, cinema_outcome_measure)
   
   exported_json <- GenerateCinemaJson(
