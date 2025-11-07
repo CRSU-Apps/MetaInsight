@@ -44,6 +44,7 @@ common_class <- R6::R6Class(
    covariate_value = NULL,
    covariate_column = NULL,
    covariate_name = NULL,
+   covariate_type = NULL,
    covariate_regression = NULL,
    covariate_ranking = NULL,
    covariate_mcmc = NULL,
@@ -98,6 +99,7 @@ common_class <- R6::R6Class(
      self$covariate_value <- NULL
      self$covariate_column <- NULL
      self$covariate_name <- NULL
+     self$covariate_type <- NULL
      self$covariate_regression <- NULL
      self$covariate_mcmc <- NULL
      self$covariate_ranking <- NULL

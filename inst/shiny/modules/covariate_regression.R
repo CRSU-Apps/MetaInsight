@@ -60,8 +60,7 @@ metaregression_regression_module_ui <- function(id, module){
                   selectize = FALSE
       )
     ),
-    # this is needed so that enter key can still run the module
-    input_task_button(paste(module, "run", sep = "-"), "Generate plot", type = "default", icon = icon("arrow-turn-down")),
+    input_task_button(ns("run"), "Generate plot", type = "default", icon = icon("arrow-turn-down")),
     downloadButton(ns("download"), "Download plot")
   )
 }
@@ -73,7 +72,7 @@ covariate_regression_module_ui <- function(id) {
 }
 
 
-metaregression_regression_module_server <- function(id, common, run) {
+metaregression_regression_module_server <- function(id, common) {
   moduleServer(id, function(input, output, session) {
 
     module <- glue::glue("{id}_regression")
@@ -95,7 +94,7 @@ metaregression_regression_module_server <- function(id, common, run) {
       function(...) mirai::mirai(run(...), run = get(module), .args = environment())
     ) |> bind_task_button("run")
 
-    observeEvent(run(), {
+    observeEvent(input$run, {
       if (is.null(common[[model]])){
         common$logger |> writeLog(type = "error", glue::glue("Please fit the {id} model first"))
         return()
@@ -106,7 +105,7 @@ metaregression_regression_module_server <- function(id, common, run) {
 
     observeEvent(list(watch(model_fit), watch(module)), {
       # trigger if run is pressed or if model is changed, but only if a model exists
-      req((watch(module) > 0 && all(!is.null(common[[model]]), watch(model_fit) > 0)))
+      req((watch(module) > 0 && any(!is.null(common[[model]]), watch(model_fit) > 0)))
 
       if (is.null(common[[module]])){
         common$logger |> writeLog(type = "starting", glue::glue("Calculating {id} regression plot data"))
@@ -242,7 +241,7 @@ metaregression_regression_module_server <- function(id, common, run) {
 
 covariate_regression_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
-    metaregression_regression_module_server("covariate", common, reactive(input$run))
+    metaregression_regression_module_server("covariate", common)
 })
 }
 

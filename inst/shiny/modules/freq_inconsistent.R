@@ -59,13 +59,13 @@ freq_inconsistent_module_server <- function(id, common, parent_session) {
 freq_inconsistent_module_result <- function(id) {
   ns <- NS(id)
   tagList(
-    div(class = "freq_inconsistent_div",
-      h4("Assessment of inconsistency for all studies"),
-      tableOutput(ns("table_all")),
-      br(),
-      h4("Assessment of inconsistency with selected studies excluded"),
-      tableOutput(ns("table_sub"))
-    )
+    h4(class = "freq_inconsistent_div",
+       "Assessment of inconsistency for all studies"),
+    tableOutput(ns("table_all")),
+    br(),
+    h4(class = "freq_inconsistent_div",
+       "Assessment of inconsistency with selected studies excluded"),
+    tableOutput(ns("table_sub"))
   )
 }
 

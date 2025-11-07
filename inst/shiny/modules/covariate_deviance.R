@@ -46,6 +46,8 @@ metaregression_deviance_module_server <- function(id, common, run) {
       common[[module]]$stem_plot
     })
 
+    outputOptions(output, "stem", suspendWhenHidden = FALSE)
+
     output$lev <- plotly::renderPlotly({
       watch(module)
       req(common[[module]])

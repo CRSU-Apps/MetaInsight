@@ -107,9 +107,7 @@ summary_network_module_server <- function(id, common, parent_session) {
         write_svg_plot(
           file,
           common$download_format,
-          plot_all()$svg,
-          plot_all()$height,
-          plot_all()$width
+          plot_all()
         )
       }
     )
@@ -122,9 +120,7 @@ summary_network_module_server <- function(id, common, parent_session) {
         write_svg_plot(
           file,
           common$download_format,
-          plot_sub()$svg,
-          plot_sub()$height,
-          plot_sub()$width
+          plot_sub()
         )
       }
     )

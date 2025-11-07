@@ -198,8 +198,9 @@ bayes_details_submodule_result <- function(id, class) {
   ns <- NS(id)
   tagList(
     div(class = class,
-        tabsetPanel(
+        tabsetPanel(id = ns("tabs"),
           tabPanel(
+            value = "mcmc",
             title = "MCMC characteristics and priors",
             downloadButton(ns('download_mcmc'), "Download MCMC"),
             downloadButton(ns('download_priors'), "Download priors"),
@@ -212,12 +213,14 @@ bayes_details_submodule_result <- function(id, class) {
             p("Note: For help on the scaled t-distribution see the JAGS manual.")
           ),
           tabPanel(
+            value = "code",
             title = "Model codes",
             p(tags$strong("Model codes for analysis of all studies")),
             downloadButton(ns("download_code")),
             verbatimTextOutput(ns("code"))
           ),
           tabPanel(
+            value = "inits",
             title = "Initial values",
             p(tags$strong("Initial values")),
             downloadButton(ns('download_inits_1'), "Download initial values for chain 1"),
@@ -227,6 +230,7 @@ bayes_details_submodule_result <- function(id, class) {
             verbatimTextOutput(ns("inits"))
           ),
           tabPanel(
+            value = "sims",
             title = "Download simulations",
             p(tags$strong("Download simulated data")),
             downloadButton(ns('download_data1'), "Download data from chain 1"),
@@ -235,6 +239,7 @@ bayes_details_submodule_result <- function(id, class) {
             downloadButton(ns('download_data4'), "Download data from chain 4")
           ),
           tabPanel(
+            value = "dev",
             title = "Deviance details",
             uiOutput(ns("deviance"))
           )

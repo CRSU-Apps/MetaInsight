@@ -40,6 +40,8 @@ metaregression_comparison_module_server <- function(id, common, run) {
       do.call(module, list(common[[model]]))
     }, rownames = TRUE)
 
+    outputOptions(output, "table", suspendWhenHidden = FALSE)
+
     output$download <- downloadHandler(
       filename = function(){
         glue::glue("MetaInsight_{id}_comparison.csv")

@@ -67,6 +67,7 @@ setup_configure_module_server <- function(id, common, parent_session) {
     common$non_covariate_data_all <- result$non_covariate_data_all
     common$covariate_column <- result$covariate_column
     common$covariate_name <- result$covariate_name
+    common$covariate_type <- result$covariate_type
     common$bugsnet_all <- result$bugsnet_all
     common$freq_all <- result$freq_all
     common$reference_treatment_all <- result$reference_treatment

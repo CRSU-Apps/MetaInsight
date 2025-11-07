@@ -24,7 +24,9 @@ covariate_model_module_server <- function(id, common, parent_session) {
         min <- min(common$main_connected_data[[common$covariate_column]])
         mean <- mean(common$main_connected_data[[common$covariate_column]])
         max <- max(common$main_connected_data[[common$covariate_column]])
-        updateSliderInput(session, "covariate_value", min = min, max = max, value = mean, label = glue::glue("Covariate value ({common$covariate_name})"))
+        log_val <- round(log10(max - min))
+        step <- 10 ** (log_val - 2)
+        updateSliderInput(session, "covariate_value", min = min, max = max, value = mean, step = step, label = glue::glue("Covariate value ({common$covariate_name})"))
       }
     })
 

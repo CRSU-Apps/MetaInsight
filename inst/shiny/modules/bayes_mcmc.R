@@ -119,8 +119,8 @@ bayes_mcmc_module_server <- function(id, common, parent_session) {
       trigger("bayes_mcmc_sub")
     })
 
-    bayes_mcmc_submodule_server("all", common, "bayes_mcmc", "bayes_model_all", "bayes_mcmc_all", "bayes_mcmc_all")
-    bayes_mcmc_submodule_server("sub", common, "bayes_mcmc", "bayes_model_sub", "bayes_mcmc_sub", "bayes_mcmc_sub")
+    bayes_mcmc_submodule_server("all", common, "bayes_mcmc", "bayes_all", "bayes_mcmc_all", "bayes_mcmc_all")
+    bayes_mcmc_submodule_server("sub", common, "bayes_mcmc", "bayes_sub", "bayes_mcmc_sub", "bayes_mcmc_sub")
 
   })
 }
