@@ -1,5 +1,8 @@
+connected <- defined_data_con$main_connected_data
+t_df <- defined_data_con$treatment_df
+
 test_that("Check baseline_model function works as expected", {
-  result <- baseline_model(defined_data_con$main_connected_data, loaded_data_con$treatment_df, "Continuous", "MD", "Placebo", "random", "shared", 123)
+  result <- baseline_model(connected, t_df, "Continuous", "MD", "Placebo", "random", "shared", 123)
 
   expect_is(result, "baseline_model")
   expect_true(all(c("mtcResults",
@@ -25,7 +28,7 @@ test_that("Check baseline_model function works as expected", {
   expect_is(result$cov_value_sentence, "character")
   expect_is(result$slopes, "numeric")
   expect_is(result$intercepts, "numeric")
-  expect_is(result$outcome, "character")
+  expect_is(result$outcome_measure, "character")
   expect_is(result$model, "character")
   expect_is(result$covariate_min, "numeric")
   expect_is(result$covariate_max, "numeric")
@@ -34,6 +37,24 @@ test_that("Check baseline_model function works as expected", {
   expect_is(result$regressor, "character")
 
 })
+
+test_that("baseline_model produces errors for incorrect data types", {
+  expect_error(baseline_model("not_a_dataframe", t_df, "Continuous", "MD", "Placebo", "random", "shared", 999), "connected_data must be of class data.frame")
+  expect_error(baseline_model(connected, "not_a_dataframe", "Continuous", "MD", "Placebo", "random", "shared", 999), "treatment_df must be of class data.frame")
+  expect_error(baseline_model(connected, t_df, 123, "MD", "Placebo", "random", "shared", 999), "outcome must be of class character")
+  expect_error(baseline_model(connected, t_df, "Continuous", 123, "Placebo", "random", "shared", 999), "outcome_measure must be of class character")
+  expect_error(baseline_model(connected, t_df, "Continuous", "MD", 123, "random", "shared", 999), "reference_treatment must be of class character")
+  expect_error(baseline_model(connected, t_df, "Continuous", "MD", "Placebo", 123, "shared", 999), "model_type must be of class character")
+  expect_error(baseline_model(connected, t_df, "Continuous", "MD", "Placebo", "random", 123, 999), "regressor_type must be of class character")
+  expect_error(baseline_model(connected, t_df, "Continuous", "MD", "Placebo", "random", "shared", "seed"), "seed must be of class numeric")
+
+  expect_error(baseline_model(connected, t_df, "invalid_outcome", "MD", "Placebo", "random", "shared", 999), "outcome must be 'Binary' or 'Continuous'")
+  expect_error(baseline_model(connected, t_df, "Continuous", "invalid_measure", "Placebo", "random", "shared", 999), "outcome_measure must be 'OR', 'RR' or 'MD'")
+  expect_error(baseline_model(connected, t_df, "Continuous", "MD", "Placebo", "not_random", "shared", 999), "model_type must be 'fixed' or 'random'")
+  expect_error(baseline_model(connected, t_df, "Continuous", "MD", "not_a_placebo", "random", "shared", 999), "reference_treatment must be one of the treatments in treatment_df")
+  expect_error(baseline_model(connected, t_df, "Continuous", "MD", "Placebo", "random", "not_shared", 999), "regressor_type must be")
+})
+
 
 test_that("{shinytest2} recording: e2e_baseline_model", {
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_baseline_model", timeout = 30000)
@@ -78,7 +99,7 @@ test_that("{shinytest2} recording: e2e_baseline_model", {
   expect_is(result$cov_value_sentence, "character")
   expect_is(result$slopes, "numeric")
   expect_is(result$intercepts, "numeric")
-  expect_is(result$outcome, "character")
+  expect_is(result$outcome_measure, "character")
   expect_is(result$model, "character")
   expect_is(result$covariate_min, "numeric")
   expect_is(result$covariate_max, "numeric")

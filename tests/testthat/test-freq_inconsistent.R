@@ -22,6 +22,7 @@ test_that("freq_inconsistent produces downloadable tables", {
   app$set_inputs(tabs = "setup")
   app$set_inputs(setupSel = "setup_load")
   app$click("setup_load-run")
+  app$wait_for_value(input = "setup_configure-ready")
   app$set_inputs(setupSel = "setup_configure")
   app$click("setup_configure-run")
   app$set_inputs(tabs = "summary")
@@ -31,7 +32,12 @@ test_that("freq_inconsistent produces downloadable tables", {
   app$set_inputs(freqSel = "freq_inconsistent")
   app$click("freq_inconsistent-run")
 
-  common <- app$get_value(export = "common")
+  app$wait_for_value(output = "freq_inconsistent-table_all")
+  app$wait_for_value(output = "freq_inconsistent-table_sub")
+  table_all <- app$get_value(output = "freq_inconsistent-table_all")
+  table_sub <- app$get_value(output = "freq_inconsistent-table_sub")
+  expect_match(table_all, "<table")
+  expect_match(table_sub, "<table")
 
   table_all <- app$get_download("freq_inconsistent-download_all")
   df <- read.csv(table_all)

@@ -14,7 +14,7 @@ test_that("freq_summary produces errors for incorrect data types and invalid val
   expect_error(freq_summary(freq_data, treatment_data, "Title", "OR", "good", "invalid_model_type"), "model_type must be 'fixed' or 'random'")
 })
 
-test_that("summary_network produces downloadable plots", {
+test_that("freq_summary produces downloadable plots", {
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 30000)
   app$set_inputs(tabs = "setup")
   app$set_inputs(setupSel = "setup_load")

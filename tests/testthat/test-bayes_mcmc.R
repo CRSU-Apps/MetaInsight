@@ -40,8 +40,8 @@ test_that("{shinytest2} recording: e2e_bayes_mcmc", {
   app$set_inputs(tabs = "bayes")
   app$set_inputs(bayesSel = "bayes_mcmc")
   app$click("bayes_mcmc-run")
-  app$wait_for_value(input = "bayes_mcmc-all-complete")
-  app$wait_for_value(input = "bayes_mcmc-sub-complete")
+  app$wait_for_value(input = "bayes_mcmc_all-complete")
+  app$wait_for_value(input = "bayes_mcmc_sub-complete")
 
   gelman_all <- app$get_value(output = "bayes_mcmc-all-gelman")
   gelman_sub <- app$get_value(output = "bayes_mcmc-sub-gelman")

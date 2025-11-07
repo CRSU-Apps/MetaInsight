@@ -1,6 +1,6 @@
 test_that("Check baseline_comparison function works as expected", {
   result <- baseline_comparison(fitted_baseline_model)
-  expect_is(result, "data.frame")
+  expect_is(result, "matrix")
   expect_equal(nrow(result), 4)
   expect_equal(ncol(result), 4)
 })
@@ -24,7 +24,6 @@ test_that("{shinytest2} recording: e2e_baseline_comparison", {
   app$click("baseline_comparison-run")
 
   app$wait_for_value(output = "baseline_comparison-baseline-table")
-
   table <- app$get_value(output = "baseline_comparison-baseline-table")
 
   expect_match(table, "<table")
@@ -33,14 +32,13 @@ test_that("{shinytest2} recording: e2e_baseline_comparison", {
   expect_equal(stringr::str_count(table, "<tr"), 7)
 
   # Test number of columns
-  expect_equal(stringr::str_count(stringr::str_extract(table, "<tr>.+?</tr>"), "<th"), 6)
+  expect_equal(stringr::str_count(stringr::str_extract(table, "<tr>.+?</tr>"), "<th"), 7)
 
   table_all_dl <- app$get_download("baseline_comparison-baseline-download")
   df <- read.csv(table_all_dl)
   # extra column which is hidden in app, header becomes names
   expect_equal(nrow(df), 6)
   expect_equal(ncol(df), 7)
-
 
 })
 

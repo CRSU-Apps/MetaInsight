@@ -22,7 +22,7 @@ test_that("setup_upgrade returns errors for faulty inputs", {
 test_that("setup_configure returns correctly structured objects", {
 
   expected_items <- c("wrangled_data", "treatment_df", "disconnected_indices", "main_connected_data",
-    "non_covariate_data_all", "covariate_column", "covariate_name", "bugsnet_all", "freq_all")
+    "non_covariate_data_all", "covariate_column", "covariate_name", "covariate_type", "bugsnet_all", "freq_all")
 
   result <- setup_configure(mock_data, mock_treatment_df, "Continuous", "MD", "the Great")
   expect_type(result, "list")
@@ -35,6 +35,7 @@ test_that("setup_configure returns correctly structured objects", {
   expect_s3_class(result$non_covariate_data_all, "data.frame")
   expect_type(result$covariate_column, "character")
   expect_type(result$covariate_name, "character")
+  expect_type(result$covariate_type, "character")
   expect_s3_class(result$bugsnet_all, "data.frame")
   expect_type(result$freq_all, "list")
 })
@@ -58,6 +59,7 @@ test_that("setup_configure loads data into common correctly for continuous long 
   expect_s3_class(common$non_covariate_data_all, "data.frame")
   expect_type(common$covariate_column, "character")
   expect_type(common$covariate_name, "character")
+  expect_type(common$covariate_type, "character")
   expect_s3_class(common$bugsnet_all, "data.frame")
   expect_type(common$freq_all, "list")
   expect_equal(common$reference_treatment_all, "the_Great")
@@ -84,6 +86,7 @@ test_that("setup_configure loads data into common correctly for wide binary data
   expect_s3_class(common$non_covariate_data_all, "data.frame")
   expect_type(common$covariate_column, "character")
   expect_type(common$covariate_name, "character")
+  expect_type(common$covariate_type, "character")
   expect_s3_class(common$bugsnet_all, "data.frame")
   expect_type(common$freq_all, "list")
   expect_equal(common$reference_treatment_all, "Placebo")
@@ -127,6 +130,7 @@ test_that("Data wrangled from default continuous long file", {
   app$set_inputs(setupSel = "setup_load")
   app$click("setup_load-run")
   app$set_inputs(setupSel = "setup_configure")
+  app$wait_for_value(input = "setup_configure-ready")
   app$click("setup_configure-run")
   common <- app$get_value(export = "common")
 
@@ -164,6 +168,7 @@ test_that("Continuous wide data wrangled with treatment IDs", {
   app$upload_file("setup_load-file1" = system.file("extdata", "continuous_wide.csv", package = "metainsight"))
   app$click("setup_load-run")
   app$set_inputs(setupSel = "setup_configure")
+  app$wait_for_value(input = "setup_configure-ready")
   app$click("setup_configure-run")
   common <- app$get_value(export = "common")
 
@@ -210,6 +215,7 @@ test_that("Data wrangled from default binary long file", {
   app$set_inputs("setup_load-outcome" = "Binary")
   app$click("setup_load-run")
   app$set_inputs(setupSel = "setup_configure")
+  app$wait_for_value(input = "setup_configure-ready")
   app$click("setup_configure-run")
   common <- app$get_value(export = "common")
 
@@ -244,6 +250,7 @@ test_that("Binary wide data wrangled with treatment IDs", {
   app$upload_file("setup_load-file1" = system.file("extdata", "binary_wide.csv", package = "metainsight"))
   app$click("setup_load-run")
   app$set_inputs(setupSel = "setup_configure")
+  app$wait_for_value(input = "setup_configure-ready")
   app$click("setup_configure-run")
   common <- app$get_value(export = "common")
 

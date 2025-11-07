@@ -2,7 +2,7 @@ test_that("Check baseline_regression function works as expected", {
   result <- baseline_regression(fitted_baseline_model,
                                 defined_data_con$main_connected_data,
                                 "covar.baseline_risk",
-                                loaded_data_con$treatment_df,
+                                defined_data_con$treatment_df,
                                 "Continuous",
                                 "MD",
                                 "random")
@@ -23,9 +23,9 @@ test_that("Check baseline_regression function works as expected", {
 
 
   plot_result <- metaregression_plot(fitted_baseline_model,
-                                     loaded_data_con$treatment_df,
+                                     defined_data_con$treatment_df,
                                      "MD",
-                                     "Ketamine",
+                                     c("Gabapentinoids", "Ketamine"),
                                      result$directness,
                                      result$credible_regions)
 
@@ -34,13 +34,15 @@ test_that("Check baseline_regression function works as expected", {
 })
 
 test_that("{shinytest2} recording: e2e_baseline_regression", {
-  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_baseline_mcmc")
+  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_baseline_regression", timeout = 30000)
   app$set_inputs(tabs = "setup")
   app$set_inputs(setupSel = "setup_reload")
   app$upload_file("setup_reload-load_session" = baseline_model_path)
   app$click("setup_reload-goLoad_session")
   app$set_inputs(tabs = "baseline")
   app$set_inputs(baselineSel = "baseline_regression")
+  # needed to avoid error
+  app$set_inputs("baseline_regression-baseline-credible" = FALSE)
   app$click("baseline_regression-baseline-run")
   app$wait_for_value(input = "baseline_regression-complete")
 

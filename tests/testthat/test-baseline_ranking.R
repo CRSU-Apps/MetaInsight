@@ -1,6 +1,9 @@
+connected <- defined_data_con$main_connected_data
+t_df <- defined_data_con$treatment_df
+
 test_that("Check baseline_ranking function works as expected", {
-  result <- baseline_ranking(defined_data_con$main_connected_data,
-                              loaded_data_con$treatment_df,
+  result <- baseline_ranking(connected,
+                             t_df,
                               fitted_baseline_model,
                               "good")
 
@@ -11,10 +14,10 @@ test_that("Check baseline_ranking function works as expected", {
   expect_is(result$Cumulative, "data.frame")
   expect_is(result$Probabilities, "data.frame")
   expect_is(result$BUGSnetData, "BUGSnetData")
-  expect_equal(result$SUCRA$Treatment[1], "Gabapentinoids")
 
   table_result <- ranking_table(result)
   expect_is(table_result, "data.frame")
+  expect_equal(table_result$Treatment[1], "Gabapentinoids")
   expect_equal(nrow(table_result), 4)
   expect_equal(ncol(table_result), 6)
 
@@ -26,6 +29,21 @@ test_that("Check baseline_ranking function works as expected", {
   expect_is(sucra_result$Original, "ggplot")
   expect_is(sucra_result$Alternative, "ggplot")
 
+})
+
+test_that("baseline_ranking produces errors for incorrect data types", {
+
+  faulty_model <- list(mtcRelEffects = 1:4)
+
+  expect_error(baseline_ranking("not_a_dataframe", t_df, fitted_baseline_model, "good"), "connected_data must be of class data.frame")
+  expect_error(baseline_ranking(connected, "not_a_dataframe", fitted_baseline_model, "good"), "treatment_df must be of class data.frame")
+  expect_error(baseline_ranking(connected, t_df, fitted_baseline_model, 123), "ranking_option must be of class character")
+
+  expect_error(baseline_ranking(connected, t_df, faulty_model, "good"), "model must be an object created by baseline_model")
+  expect_error(baseline_ranking(connected, t_df, "faulty_model", "good"), "model must be an object created by baseline_model")
+  expect_error(baseline_ranking(connected, t_df, list(a = 1), "good"), "model must be an object created by baseline_model")
+
+  expect_error(baseline_ranking(connected, t_df, fitted_baseline_model, "not good"), "ranking_option must be either good or bad")
 })
 
 test_that("{shinytest2} recording: e2e_baseline_ranking", {
@@ -41,8 +59,8 @@ test_that("{shinytest2} recording: e2e_baseline_ranking", {
   app$wait_for_value(output = "baseline_ranking-all-forest")
 
   common <- app$get_value(export = "common")
-  expect_is(common$bayes_ranking, "list")
-  expect_true(all(c("SUCRA", "Colour", "Cumulative", "Probabilities", "BUGSnetData") %in% names(common$bayes_ranking)))
+  expect_is(common$baseline_ranking, "list")
+  expect_true(all(c("SUCRA", "Colour", "Cumulative", "Probabilities", "BUGSnetData") %in% names(common$baseline_ranking)))
 
   forest_all <- app$get_value(output = "baseline_ranking-all-forest")
   expect_match(forest_all$html, "<svg")

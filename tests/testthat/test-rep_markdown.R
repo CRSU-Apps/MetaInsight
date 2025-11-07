@@ -39,6 +39,7 @@ test_that("rep_markdown produces a renderable .Rmd file after an analysis", {
   expected_chunks <- expected_chunks + 1
 
   app$set_inputs(setupSel = "setup_configure")
+  app$wait_for_value(input = "setup_configure-ready")
   app$click("setup_configure-run")
   expected_chunks <- expected_chunks + 1
 
@@ -49,7 +50,7 @@ test_that("rep_markdown produces a renderable .Rmd file after an analysis", {
 
   app$set_inputs(main = "Results", wait_ = FALSE)
 
-  app$set_inputs(summarySel = "summary_char")
+  app$set_inputs(summarySel = "summary_char", wait_ = FALSE)
   app$click("summary_char-run")
   app$wait_for_value(output = "summary_char-table")
   expected_chunks <- expected_chunks + 1

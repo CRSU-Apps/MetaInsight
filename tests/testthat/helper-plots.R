@@ -74,6 +74,7 @@ test_plot_downloads <- function(app, module, pair = TRUE) {
 test_bayes_plot_downloads <- function(app, module, plot_id, dual = TRUE) {
   download_all_id <- paste0(module, "-all-download", plot_id)
 
+  app$set_inputs("download_format" = "pdf")
   pdf_all <- app$get_download(download_all_id)
   expect_gt(file.info(pdf_all)$size, 1000)
   expect_true(validate_plot(pdf_all, "pdf"))

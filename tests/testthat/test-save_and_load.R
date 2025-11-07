@@ -7,7 +7,10 @@ if (Sys.getenv("GITHUB_ACTIONS") == "true"){
 
 test_that("The app can be saved after an analysis and the data restored", {
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 60000)
+  app$set_inputs(tabs = "setup")
   app$click("setup_load-run")
+  app$set_inputs(setupSel = "setup_configure")
+  app$wait_for_value(input = "setup_configure-ready")
   app$click("setup_configure-run")
   app$set_inputs("setup_exclude-exclusions" = c("Study01", "Study25"))
   app$wait_for_value(input = "setup_exclude-complete")
