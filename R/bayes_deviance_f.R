@@ -18,12 +18,23 @@ bayes_deviance <- function(model, async = FALSE){
   deviance <- gemtc::mtc.deviance(model$mtcResults)
   scat <- scat_plot(model, deviance, model$model_type, model$outcome_measure)
 
+  if(model$mtcResults$model$type == "regression"){
+    return(
+      list(
+        deviance_mtc = deviance,
+        stem_plot = stem_plot(deviance),
+        lev_plot = lev_plot(deviance)
+      )
+    )
+  }
+
   list(
     deviance_mtc = deviance,
     deviance_ume = scat$y,
     scat_plot = scat$p,
     stem_plot = stem_plot(deviance),
-    lev_plot = lev_plot(deviance))
+    lev_plot = lev_plot(deviance)
+  )
 }
 
 #' @rdname bayes_deviance

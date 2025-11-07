@@ -10,8 +10,24 @@
 #' @export
 covariate_summary <- function(connected_data, outcome, treatment_df, logger = NULL){
 
-  # need to either always make connected data be long or convert wide
-  long_data <- connected_data
+  check_param_classes(c("connected_data", "outcome", "treatment_df"),
+                      c("data.frame", "character", "data.frame"), logger)
+
+  if (!any(grepl("covar\\.", names(connected_data)))){
+    logger |> asyncLog(type = "error", "connected_data does not contain a covariate column")
+    return()
+  }
+
+  if (!outcome %in% c("Binary", "Continuous")){
+    logger |> writeLog(type = "error", "outcome must be 'Binary' or 'Continuous'")
+    return()
+  }
+
+  if (FindDataShape(connected_data) == "wide") {
+    long_data <- as.data.frame(WideToLong(connected_data, outcome = outcome))
+  } else if (FindDataShape(connected_data) == "long") {
+    long_data <- connected_data
+  }
 
   caption_setting <- "covariate" # Text to add to caption
 
@@ -57,7 +73,6 @@ covariate_summary <- function(connected_data, outcome, treatment_df, logger = NU
     # necessary for ggplot
     print(plot)
   },
-  standalone = TRUE,
   width = 8,
   height = plot_height,
   web_fonts = list(

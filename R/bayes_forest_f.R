@@ -13,6 +13,9 @@
 #' @export
 bayes_forest <- function(model, treatment_df, reference_treatment, title = "", ranking = FALSE, logger = NULL){
 
+  check_param_classes(c("treatment_df", "reference_treatment", "title", "ranking"),
+                      c("data.frame", "character", "character", "logical"), logger)
+
   if (!inherits(model, "bayes_model")){
     logger |> writeLog(type = "error", "model must be an object created by bayes_model() or covariate_model()")
     return()

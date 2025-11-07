@@ -17,7 +17,7 @@ bayes_ranking <- function(connected_data, treatment_df, model, ranking_option, c
   }
 
   if (!inherits(model, "bayes_model") && !inherits(model, "baseline_model")){
-    logger |> writeLog(type = "error", "model must be an object created by bayes_model()")
+    logger |> writeLog(type = "error", "model must be an object created by baseline_model(), bayes_model() or covariate_model()")
     return()
   }
 
@@ -82,7 +82,7 @@ rankdata <- function(NMAdata, rankdirection, longdata, cov_value = NA, package =
   # probability rankings
   if (package == "gemtc"){
     prob <- as.data.frame(
-      print(
+      unclass( # required to convert
         gemtc::rank.probability(
           NMAdata,
           preferredDirection = direction,

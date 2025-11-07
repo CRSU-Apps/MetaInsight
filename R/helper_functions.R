@@ -460,6 +460,11 @@ crop_svg <- function(svg, margin = 10){
   xml2::xml_attr(rect_node, "width") <- total_width
   xml2::xml_attr(rect_node, "height") <- total_height
 
+  # set namespace
+  root <- xml2::xml_root(svg)
+  xml2::xml_set_attr(root, "xmlns", "http://www.w3.org/2000/svg")
+  xml2::xml_set_attr(root, "xmlns:xlink", "http://www.w3.org/1999/xlink")
+
   list(
     svg = paste(svg, collapse = "\n"),
     width = bbox$width,

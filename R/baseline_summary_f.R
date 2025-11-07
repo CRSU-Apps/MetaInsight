@@ -15,10 +15,19 @@
 #' @export
 baseline_summary <- function(connected_data, outcome, treatment_df, logger = NULL){
 
-  # add checks
+  check_param_classes(c("connected_data", "outcome", "treatment_df"),
+                      c("data.frame", "character", "data.frame"), logger)
 
-  # need to either always make connected data be long or convert wide
-  long_data <- connected_data
+  if (!outcome %in% c("Binary", "Continuous")){
+    logger |> writeLog(type = "error", "outcome must be 'Binary' or 'Continuous'")
+    return()
+  }
+
+  if (FindDataShape(connected_data) == "wide") {
+    long_data <- as.data.frame(WideToLong(connected_data, outcome = outcome))
+  } else if (FindDataShape(connected_data) == "long") {
+    long_data <- connected_data
+  }
 
   if (outcome == "Continuous") {
 

@@ -72,7 +72,7 @@ bayes_model <- function(connected_data, treatment_df, outcome, outcome_measure, 
   )
 
   # Run gemtc model object for analysis
-  mtcResults <- gemtc::mtc.run(mtcModel)
+  mtcResults <- suppress_jags_output(gemtc::mtc.run(mtcModel))
 
   mtcRelEffects <- gemtc::relative.effect(mtcResults, t1 = reference_treatment)  #Set reference treatment
   rel_eff_tbl <- gemtc::relative.effect.table(mtcResults)

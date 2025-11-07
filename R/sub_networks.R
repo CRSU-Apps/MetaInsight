@@ -28,7 +28,7 @@ CreateGraph <- function(data) {
 #'  - is_nodesplittable: TRUE or FALSE.
 #'  - reason: Text describing the reason there are no splittable nodes, or NULL when is_nodesplittable == TRUE.
 IsNodesplittable <- function(data, treatments) {
-  graph <- .CreateGraph(data = data)
+  graph <- CreateGraph(data = data)
   #If there are no loops then return FALSE
   if (igraph::is_acyclic(igraph::simplify(graph, remove.multiple = TRUE))) {
     return(

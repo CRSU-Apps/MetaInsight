@@ -1,7 +1,7 @@
 #' @title covariate_model
 #' @description Does x
-#' @param covariate character. Chosen covariate name as per uploaded data
 #' @param regressor_type character. Type of regression coefficient, either `shared`, `unrelated`, or `exchangeable`
+#' @param seed numeric. Seed used to fit the model
 #' @param covariate_model_output list. The output of the function. Default NULL.
 #' When supplied, only the output is recalculated for a given covariate value,
 #' rather than refitting the model.
@@ -25,20 +25,55 @@
 #'  \item{covariate_min}{Vector of minimum covariate values directly contributing to the regression}
 #'  \item{covariate_max}{Vector of maximum covariate values directly contributing to the regression}
 #' @export
-covariate_model <- function(connected_data, treatment_df, outcome, outcome_measure, cov_value, model_type, regressor_type, reference_treatment, covariate_model_output = NULL, async = FALSE){
+covariate_model <- function(connected_data, treatment_df, outcome, outcome_measure, cov_value, model_type, regressor_type, reference_treatment, seed, covariate_model_output = NULL, async = FALSE){
+
+  if (!async){ # only an issue if run outside the app
+    if (check_param_classes(c("connected_data", "treatment_df", "outcome", "outcome_measure", "cov_value", "model_type",  "reference_treatment", "regressor_type", "seed"),
+                            c("data.frame", "data.frame", "character", "character", "numeric", "character", "character", "character", "numeric"), NULL)){
+      return()
+    }
+  }
 
   if (!any(grepl("covar\\.", names(connected_data)))){
     async |> asyncLog(type = "error", "connected_data does not contain a covariate column")
   }
 
-  # move checks from other functions
+  if (!outcome %in% c("Binary", "Continuous")){
+    return(async |> asyncLog(type = "error", "outcome must be 'Binary' or 'Continuous'"))
+  }
+
+  if (!model_type %in% c("fixed", "random")){
+    return(async |> asyncLog(type = "error", "model_type must be 'fixed' or 'random'"))
+  }
+
+  if (!outcome_measure %in% c("OR", "RR", "MD")){
+    return(async |> asyncLog(type = "error", "outcome_measure must be 'OR', 'RR' or 'MD'"))
+  }
+
   covariate <- FindCovariateNames(connected_data)
+
+  if (cov_value < min(connected_data[[covariate]], na.rm = TRUE)){
+    return(async |> asyncLog(type = "error", "cov_value must not be lower than the minimum covariate value in connected_data"))
+  }
+
+  if (cov_value > max(connected_data[[covariate]], na.rm = TRUE)){
+    return(async |> asyncLog(type = "error", "cov_value must not be higher than the maximum covariate value in connected_data"))
+  }
+
+  if (!regressor_type %in% c("shared", "unrelated", "exchangeable")){
+    return(async |> asyncLog(type = "error", "regressor_type must be 'shared', 'unrelated', or 'exchangeable'"))
+  }
+
+  if (!reference_treatment %in% treatment_df$Label){
+    return(async |> asyncLog(type = "error", "reference_treatment must be one of the treatments in treatment_df"))
+  }
+
   cov_friendly <- GetFriendlyCovariateName(covariate)
 
   if (is.null(covariate_model_output)){
     prepped_data <- PrepDataGemtc(connected_data, treatment_df, outcome, covariate, cov_friendly)
-    gemtc_model <- CreateGemtcModel(prepped_data, model_type, outcome_measure, regressor_type, reference_treatment)
-    model_output <- gemtc::mtc.run(gemtc_model)
+    gemtc_model <- CreateGemtcModel(prepped_data, model_type, outcome_measure, regressor_type, reference_treatment, seed)
+    model_output <- suppress_jags_output(gemtc::mtc.run(gemtc_model))
     model_info <- CovariateModelOutput(connected_data, treatment_df, model_output, covariate, cov_value, outcome_measure)
   } else {
     model_info <- CovariateModelOutput(connected_data, treatment_df, covariate_model_output$mtc_run_output, covariate, cov_value, outcome_measure)
@@ -95,8 +130,9 @@ PrepDataGemtc <- function(data, treatment_df, outcome_type, covariate, cov_frien
 #' @param outcome_measure Type of outcome measure ('OR', 'RR', or 'MD')
 #' @param regressor_type Type of regression coefficient, either "shared", "unrelated", or "exchangeable"
 #' @param ref_choice The choice of reference treatment as selected by user
+#' @param seed Seed value to use when fitting model
 #' @return An object of class mtc.model
-CreateGemtcModel <- function(data, model_type, outcome_measure, regressor_type, ref_choice) {
+CreateGemtcModel <- function(data, model_type, outcome_measure, regressor_type, ref_choice, seed) {
   # Create 'network' object
   network_object <- gemtc::mtc.network(data.ab = data$armData,
                                        studies = data$studyData)
@@ -105,7 +141,7 @@ CreateGemtcModel <- function(data, model_type, outcome_measure, regressor_type, 
                     variable=colnames(data$studyData[2]),
                     control=ref_choice)
   # Create 'model' object
-  set.seed(145) # needs to be set before mtc.model
+  set.seed(seed) # needs to be set before mtc.model
   if (outcome_measure == "MD") {
     like <- "normal"
     link <- "identity"

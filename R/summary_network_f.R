@@ -23,7 +23,7 @@ summary_network <- function(freq, bugsnet, style, label_size = 1, title = "", lo
   }
 
   n_trt <- freq$ntx
-  if (n_trt < 5){
+  if (n_trt < 8){
     height <- 5
     width <- 5
   } else {

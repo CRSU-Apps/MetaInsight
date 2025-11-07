@@ -12,7 +12,7 @@
 #'  \item{cov_value_sentence}{text output stating the value for which the covariate has been set to for producing output}
 #'  \item{slopes}{named list of slopes for the regression equations (unstandardised - equal to one 'increment')}
 #'  \item{intercepts}{named list of intercepts for the regression equations at cov_value}
-#'  \item{outcome}{The outcome type for the analysis - Continuous or Binary}
+#'  \item{outcome_measure}{The outcome measures for the analysis}
 #'  \item{model}{effects type, "fixed" or "random"}
 #'  \item{covariate_min}{Vector of minimum covariate values directly contributing to the regression}
 #'  \item{covariate_max}{Vector of maximum covariate values directly contributing to the regression}
@@ -22,7 +22,36 @@
 #' @export
 baseline_model <- function(connected_data, treatment_df, outcome, outcome_measure, reference_treatment, model_type, regressor_type, seed, async = FALSE){
 
-  model <- BaselineRiskRegression(connected_data, treatment_df, outcome, reference_treatment, model_type, regressor_type, seed)
+  if (!async){ # only an issue if run outside the app
+    if (check_param_classes(c("connected_data", "treatment_df", "outcome", "outcome_measure", "model_type",  "reference_treatment", "regressor_type", "seed"),
+                            c("data.frame", "data.frame", "character", "character", "character", "character", "character", "numeric"), NULL)){
+      return()
+    }
+  }
+
+  if (!outcome %in% c("Binary", "Continuous")){
+    return(async |> asyncLog(type = "error", "outcome must be 'Binary' or 'Continuous'"))
+  }
+
+  if (!model_type %in% c("fixed", "random")){
+    return(async |> asyncLog(type = "error", "model_type must be 'fixed' or 'random'"))
+  }
+
+  if (!outcome_measure %in% c("OR", "RR", "MD")){
+    return(async |> asyncLog(type = "error", "outcome_measure must be 'OR', 'RR' or 'MD'"))
+  }
+
+  if (!regressor_type %in% c("shared", "unrelated", "exchangeable")){
+    return(async |> asyncLog(type = "error", "regressor_type must be 'shared', 'unrelated', or 'exchangeable'"))
+  }
+
+  if (!reference_treatment %in% treatment_df$Label){
+    return(async |> asyncLog(type = "error", "reference_treatment must be one of the treatments in treatment_df"))
+  }
+
+  model <- suppress_jags_output(
+    BaselineRiskRegression(connected_data, treatment_df, outcome, reference_treatment, model_type, regressor_type, seed)
+  )
 
   output <- BaselineRiskModelOutput(connected_data, treatment_df, model, outcome_measure)
 
@@ -52,7 +81,7 @@ FormatForBnma <- function(connected_data, treatment_df, outcome, reference_treat
   }
 
   #Use wrangled treatment names
-  br_data$Treat <- treatment_df$Label[match(connected_data$T, treatment_df$Number)]
+  br_data$Treat <- treatment_df$Label[match(br_data$T, treatment_df$Number)]
 
   #Treatment order (put reference_treatment first)
   Treat.order <- VectorWithItemFirst(vector = unique(br_data$Treat), first_item = reference_treatment)
@@ -167,7 +196,7 @@ BaselineRiskRegression <- function(connected_data, treatment_df, outcome, refere
 #'  cov_value_sentence = text output stating the value for which the covariate has been set to for producing output.
 #'  slopes = named list of slopes for the regression equations (unstandardised - equal to one 'increment').
 #'  intercepts = named list of intercepts for the regression equations at cov_value.
-#'  outcome = The outcome type for the analysis eg. "MD" or "OR".
+#'  outcome_measure = The outcome type for the analysis eg. "MD" or "OR".
 #'  model = effects type, "fixed" or "random".
 #'  covariate_min = Vector of minimum covariate values directly contributing to the regression.
 #'  covariate_max = Vector of maximum covariate values directly contributing to the regression.
@@ -238,7 +267,7 @@ BaselineRiskModelOutput <- function(connected_data, treatment_df, model, outcome
               cov_value_sentence = cov_value_sentence,
               slopes = slopes,
               intercepts = intercepts,
-              outcome = outcome,
+              outcome_measure = outcome_measure,
               model = model$network$type,
               covariate_min = min_max$min,
               covariate_max = min_max$max,

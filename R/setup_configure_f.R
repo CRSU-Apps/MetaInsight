@@ -72,9 +72,11 @@ setup_configure <- function(data, treatment_df, outcome, outcome_measure, refere
   if (any(grepl("covar\\.", names(main_connected_data)))){
     covariate_column <- FindCovariateNames(main_connected_data)
     covariate_name <- GetFriendlyCovariateName(covariate_column)
+    covariate_type <- InferCovariateType(main_connected_data[[covariate_column]])
   } else {
     covariate_column <- NULL
     covariate_name <- NULL
+    covariate_type <- NULL
   }
 
   bugsnet_all <- bugsnetdata(non_covariate_data_all, outcome, treatment_df)
@@ -96,6 +98,7 @@ setup_configure <- function(data, treatment_df, outcome, outcome_measure, refere
               non_covariate_data_all = non_covariate_data_all,
               covariate_column = covariate_column,
               covariate_name = covariate_name,
+              covariate_type = covariate_type,
               bugsnet_all = bugsnet_all,
               freq_all = freq_all))
 }
@@ -196,3 +199,81 @@ RankingOrder <- function(outcome, data) {
   }
   return(choice)
 }
+
+#' Create a copy of a data from which does not contain any covariate columns.
+#'
+#' @param data Data from which to remove covariate columns
+#' @return Data without covariate columns
+#' @export
+RemoveCovariates <- function(data) {
+  covariate_column_names <- FindCovariateNames(data)
+
+  if (length(covariate_column_names) == 0) {
+    return(data)
+  }
+
+  covariate_column_indices <- match(covariate_column_names, names(data))
+  return(data[, -covariate_column_indices])
+}
+
+
+InferCovariateType <- function(covariate_data) {
+  unique_items <- unique(covariate_data)
+  if (length(unique_items) == 2 && all(sort(unique_items) == c(0, 1))) {
+    return("Binary")
+  } else {
+    return("Continuous")
+  }
+}
+
+
+
+#' #' Validate the covariate and infer the type of the covariate from the data in the column.
+#' #'  In error cases, this function will throw exceptions:
+#' #' - If the data has any NAs
+#' #' - If the data has any non-numeric values
+#' #' - If every study has the same covariate value
+#' #' - If any study contains multiple different covariate values
+#' #'
+#' #' @param data Data frame containing all study data.
+#' #' @param covariate_title Name of the covariate column.
+#' #'
+#' #' @return "binary" if covariate has only 0 & 1 as numeric values,
+#' #' "continuous" if covariate has more than 2 numeric values
+#' ValidateAndInferCovariateType <- function(data, covariate_title) {
+#'   covariate_data <- data[[covariate_title]]
+#'
+#'   if (!is.numeric(covariate_data)) {
+#'     stop("One or more covariate values are non-numerical.")
+#'   }
+#'
+#'   covariate_values <- list()
+#'   for (study in unique(data$Study)) {
+#'     covariate_values[[study]] <- unique(covariate_data[data$Study == study])
+#'   }
+#'
+#'   .ThrowErrorForMatchingStudies(
+#'     values = covariate_values,
+#'     condition = function(study_values) {
+#'       any(is.na(study_values))
+#'     },
+#'     message = "Some studies do not define covariate values for all arms:"
+#'   )
+#'
+#'   .ThrowErrorForMatchingStudies(
+#'     values = covariate_values,
+#'     condition = function(study_values) {
+#'       length(study_values) > 1
+#'     },
+#'     message = "Some studies contain inconsistent covariate values between arms:"
+#'   )
+#'
+#'   unique_items <- unique(covariate_data)
+#'   if (length(unique_items) == 1) {
+#'     stop("Cannot analyse covariate with no variation.")
+#'   } else if (length(unique_items) == 2 && all(sort(unique_items) == c(0, 1))) {
+#'     return("Binary")
+#'   }
+#'
+#'   return("Continuous")
+#' }

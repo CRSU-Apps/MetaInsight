@@ -134,6 +134,14 @@ ValidateUploadedData <- function(data, outcome, logger = NULL) {
     return(result)
   }
 
+  covariate_name <- FindCovariateNames(data)
+  if (length(covariate_name) > 0){
+    result <- .ValidateCovariate(data, covariate_name)
+    if (!result$valid) {
+      return(result)
+    }
+  }
+
   return(.valid_result)
 }
 
@@ -571,22 +579,6 @@ LongToWide <- function(long_data, outcome_type) {
   return(as.data.frame(wide_data))
 }
 
-#' Create a copy of a data from which does not contain any covariate columns.
-#'
-#' @param data Data from which to remove covariate columns
-#' @return Data without covariate columns
-#' @export
-RemoveCovariates <- function(data) {
-  covariate_column_names <- FindCovariateNames(data)
-
-  if (length(covariate_column_names) == 0) {
-    return(data)
-  }
-
-  covariate_column_indices <- match(covariate_column_names, names(data))
-  return(data[, -covariate_column_indices])
-}
-
 #' Find which shape the data takes: either wide or long.
 #'
 #' @param data Data for which to check shape
@@ -940,6 +932,100 @@ GetFriendlyCovariateName <- function(column_name) {
   return(stringr::str_replace(column_name, .covariate_prefix_regex, ""))
 }
 
+#' Throw an error if any study meets given criteria.
+#'
+#' @param values covariate values in which to check.
+#' @param condition Function taking the covariate values to check.
+#' This should return TRUE in the error case.
+#' @param message Message to show before listing the problem studies or FALSE
+#' if no problems are found
+.ThrowErrorForMatchingStudies <- function(values, condition, message) {
+  study_conditions <- sapply(
+    names(values),
+    function(name) {
+      condition(values[[name]])
+    }
+  )
+
+  matching_studies <- names(study_conditions)[study_conditions]
+
+  if (length(matching_studies) > 0) {
+    studies_list <- glue::glue_collapse(matching_studies, sep = ", ")
+    return(
+      list(
+        valid = FALSE,
+        message = paste(message, studies_list, sep = " ")
+      )
+    )
+  } else {
+    FALSE
+  }
+}
+
+#' Validate the covariate and infer the type of the covariate from the data in the column.
+#'  In error cases, this function will throw exceptions:
+#' - If the data has any NAs
+#' - If the data has any non-numeric values
+#' - If every study has the same covariate value
+#' - If any study contains multiple different covariate values
+#'
+#' @param data Data frame containing all study data.
+#' @param covariate_title Name of the covariate column.
+#'
+#' @return list containing `valid` and `message` to pass to logger
+.ValidateCovariate <- function(data, covariate_title) {
+  covariate_data <- data[[covariate_title]]
+
+  if (!is.numeric(covariate_data)) {
+    return(
+      list(
+        valid = FALSE,
+        message = "One or more covariate values are non-numerical."
+      )
+    )
+  }
+
+  covariate_values <- list()
+  for (study in unique(data$Study)) {
+    covariate_values[[study]] <- unique(covariate_data[data$Study == study])
+  }
+
+  na_values <- .ThrowErrorForMatchingStudies(
+                  values = covariate_values,
+                  condition = function(study_values) {
+                    any(is.na(study_values))
+                  },
+                  message = "Some studies do not define covariate values for all arms:"
+                )
+
+  if (inherits(na_values, "list")){
+    return(na_values)
+  }
+
+  study_values <- .ThrowErrorForMatchingStudies(
+                    values = covariate_values,
+                    condition = function(study_values) {
+                      length(study_values) > 1
+                    },
+                    message = "Some studies contain inconsistent covariate values between arms:"
+                  )
+
+  if (inherits(study_values, "list")){
+    return(study_values)
+  }
+
+  unique_items <- unique(covariate_data)
+  if (length(unique_items) == 1) {
+    return(
+      list(
+        valid = FALSE,
+        message = "Cannot analyse covariate with no variation."
+      )
+    )
+  }
+
+  return(.valid_result)
+}
 
 
 #' Keep or delete rows in @param data corresponding to the control treatment in each study.

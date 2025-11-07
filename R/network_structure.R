@@ -70,7 +70,7 @@ network.structure <- function(data.nma, my_order = NA) {     # data.nma is a BUG
     dplyr::select(!!trial, trt) %>%
     dplyr::mutate(mtchvar = 1)
 
-  edges <- dplyr::left_join(pairs2, studylabs, by = "mtchvar") %>%
+  edges <- dplyr::left_join(pairs2, studylabs, by = "mtchvar", relationship = "many-to-many") %>%
     dplyr::ungroup() %>%
     dplyr::mutate(
       flag = ifelse(

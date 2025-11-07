@@ -3,12 +3,16 @@
 #' @param model model output produced by `baseline_model()`
 #' @param title character. Title for the plot. Defaults to `Baseline risk regression analysis`
 #' @inheritParams common_params
-#' @return NULL
-#' @examples {
-#' y <- baseline_forest(1)
-#' }
+#' @return List containing:
+#'  \item{svg}{character. SVG code to produce the plot}
+#'  \item{height}{numeric. Plot height in pixels}
+#'  \item{width}{numeric. Plot width in pixels}
+#'
 #' @export
 baseline_forest <- function(model, treatment_df, reference_treatment, title = "Baseline risk regression analysis", logger = NULL){
+
+  check_param_classes(c("treatment_df", "reference_treatment", "title"),
+                      c("data.frame", "character", "character"), logger)
 
   if (!inherits(model, "baseline_model")){
     logger |> writeLog(type = "error", "model must be an object created by baseline_model()")
