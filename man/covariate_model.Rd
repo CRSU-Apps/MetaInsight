@@ -13,6 +13,7 @@ covariate_model(
   model_type,
   regressor_type,
   reference_treatment,
+  seed,
   covariate_model_output = NULL,
   async = FALSE
 )
@@ -35,13 +36,13 @@ covariate_model(
 
 \item{reference_treatment}{character. The reference treatment of the dataset}
 
+\item{seed}{numeric. Seed used to fit the model}
+
 \item{covariate_model_output}{list. The output of the function. Default NULL.
 When supplied, only the output is recalculated for a given covariate value,
 rather than refitting the model.}
 
 \item{async}{Whether or not the function is being used asynchronously. Default \code{FALSE}}
-
-\item{covariate}{character. Chosen covariate name as per uploaded data}
 }
 \value{
 List of gemtc related output:

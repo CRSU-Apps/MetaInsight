@@ -25,11 +25,12 @@ baseline_forest(
 Window. Insert the logger reactive list here for running in
 shiny, otherwise leave the default \code{NULL}}
 }
+\value{
+List containing:
+\item{svg}{character. SVG code to produce the plot}
+\item{height}{numeric. Plot height in pixels}
+\item{width}{numeric. Plot width in pixels}
+}
 \description{
 Produce a forest plot for a baseline risk model using \code{bnma::network.forest.plot()}
-}
-\examples{
-{
-y <- baseline_forest(1)
-}
 }
