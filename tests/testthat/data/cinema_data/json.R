@@ -4,12 +4,34 @@ json_valid_binary <- '
 {
   "project": {
     "CM": {
-      "contributionMatrices": {
+      "contributionMatrices": [{
         "hatmatrix": {
           "colNames": [
             "sleep:salad",
             "sleep:exercise",
             "salad:exercise"
+          ],
+          "colNamesNMAresults": [
+            "Direct",
+            "DirectL",
+            "DirectU",
+            "Indirect",
+            "IndirectL",
+            "IndirectU",
+            "SideIF",
+            "SideIFlower",
+            "SideIFupper",
+            "SideZ",
+            "SidePvalue",
+            "PropDir",
+            "NMA treatment effect",
+            "se treat effect",
+            "lower CI",
+            "upper CI",
+            "lower PrI",
+            "upper PrI",
+            "PropDirNetmeta",
+            "_row"
           ],
           "H": [
             [ 0.1, 0.2, 0.3 ],
@@ -17,7 +39,64 @@ json_valid_binary <- '
             [ 0.111, 0.222, 0.333 ]
           ],
           "model": "fixed",
+          "NMAresults": [
+            {
+              "Direct": -0.1,
+              "DirectL": -0.1,
+              "DirectU": -0.1,
+              "Indirect": -1.1,
+              "IndirectL": -1.1,
+              "IndirectU": -1.1,
+              "SideIF": 0.1,
+              "SideIFlower": -0.1,
+              "SideIFupper": 0.1,
+              "SideZ": 0.1,
+              "SidePvalue": 0.1,
+              "PropDir": 0.1,
+              "NMA treatment effect": -0.1,
+              "se treat effect": 0.1,
+              "lower CI": -0.1,
+              "upper CI": -0.1,
+              "lower PrI": -0.1,
+              "upper PrI": -0.1,
+              "PropDirNetmeta": 0.1,
+              "_row": "sleep:salad"
+            },
+            {
+              "Indirect": -2.2,
+              "IndirectL": -2.2,
+              "IndirectU": -2.2,
+              "PropDir": 0.2,
+              "NMA treatment effect": -0.2,
+              "se treat effect": 0.2,
+              "lower CI": -0.2,
+              "upper CI": -0.2,
+              "lower PrI": -0.2,
+              "upper PrI": -0.2,
+              "PropDirNetmeta": 0.2,
+              "_row": "sleep:exercise"
+            },
+            {
+              "Direct": -0.3,
+              "DirectL": -0.3,
+              "DirectU": -0.3,
+              "PropDir": 0.3,
+              "NMA treatment effect": -0.3,
+              "se treat effect": 0.3,
+              "lower CI": -0.3,
+              "upper CI": -0.3,
+              "lower PrI": -0.3,
+              "upper PrI": -0.3,
+              "PropDirNetmeta": 0.3,
+              "_row": "salad:exercise"
+            }
+          ],
           "rowNames": [
+            "sleep:salad",
+            "sleep:exercise",
+            "salad:exercise"
+          ],
+          "rowNamesNMAresults": [
             "sleep:salad",
             "sleep:exercise",
             "salad:exercise"
@@ -41,7 +120,7 @@ json_valid_binary <- '
             "celery saunter": 0.8
           }
         }
-      }
+      }]
     },
     "format": "long",
     "type": "binary",
@@ -83,7 +162,6 @@ json_valid_binary <- '
           "rob": 2,
           "indirectness": 2
         },
-        
         {
           "study": "celery saunter",
           "id": 3,
@@ -112,12 +190,34 @@ json_valid_continuous <- '
 {
   "project": {
     "CM": {
-      "contributionMatrices": {
+      "contributionMatrices": [{
         "hatmatrix": {
           "colNames": [
             "sleep:salad",
             "sleep:exercise",
             "salad:exercise"
+          ],
+          "colNamesNMAresults": [
+            "Direct",
+            "DirectL",
+            "DirectU",
+            "Indirect",
+            "IndirectL",
+            "IndirectU",
+            "SideIF",
+            "SideIFlower",
+            "SideIFupper",
+            "SideZ",
+            "SidePvalue",
+            "PropDir",
+            "NMA treatment effect",
+            "se treat effect",
+            "lower CI",
+            "upper CI",
+            "lower PrI",
+            "upper PrI",
+            "PropDirNetmeta",
+            "_row"
           ],
           "H": [
             [ 0.1, 0.2, 0.3 ],
@@ -125,7 +225,64 @@ json_valid_continuous <- '
             [ 0.111, 0.222, 0.333 ]
           ],
           "model": "random",
+          "NMAresults": [
+            {
+              "Direct": -0.1,
+              "DirectL": -0.1,
+              "DirectU": -0.1,
+              "Indirect": -1.1,
+              "IndirectL": -1.1,
+              "IndirectU": -1.1,
+              "SideIF": 0.1,
+              "SideIFlower": -0.1,
+              "SideIFupper": 0.1,
+              "SideZ": 0.1,
+              "SidePvalue": 0.1,
+              "PropDir": 0.1,
+              "NMA treatment effect": -0.1,
+              "se treat effect": 0.1,
+              "lower CI": -0.1,
+              "upper CI": -0.1,
+              "lower PrI": -0.1,
+              "upper PrI": -0.1,
+              "PropDirNetmeta": 0.1,
+              "_row": "sleep:salad"
+            },
+            {
+              "Indirect": -2.2,
+              "IndirectL": -2.2,
+              "IndirectU": -2.2,
+              "PropDir": 0.2,
+              "NMA treatment effect": -0.2,
+              "se treat effect": 0.2,
+              "lower CI": -0.2,
+              "upper CI": -0.2,
+              "lower PrI": -0.2,
+              "upper PrI": -0.2,
+              "PropDirNetmeta": 0.2,
+              "_row": "sleep:exercise"
+            },
+            {
+              "Direct": -0.3,
+              "DirectL": -0.3,
+              "DirectU": -0.3,
+              "PropDir": 0.3,
+              "NMA treatment effect": -0.3,
+              "se treat effect": 0.3,
+              "lower CI": -0.3,
+              "upper CI": -0.3,
+              "lower PrI": -0.3,
+              "upper PrI": -0.3,
+              "PropDirNetmeta": 0.3,
+              "_row": "salad:exercise"
+            }
+          ],
           "rowNames": [
+            "sleep:salad",
+            "sleep:exercise",
+            "salad:exercise"
+          ],
+          "rowNamesNMAresults": [
             "sleep:salad",
             "sleep:exercise",
             "salad:exercise"
@@ -149,7 +306,7 @@ json_valid_continuous <- '
             "celery saunter": 0.8
           }
         }
-      }
+      }]
     },
     "format": "long",
     "type": "continuous",
@@ -195,7 +352,6 @@ json_valid_continuous <- '
           "rob": 2,
           "indirectness": 2
         },
-        
         {
           "study": "celery saunter",
           "id": 3,
@@ -226,19 +382,49 @@ json_incorrect_types <- '
 {
   "project": {
     "CM": {
-      "contributionMatrices": {
+      "contributionMatrices": [{
         "hatmatrix": {
           "colNames": 22.3,
+          "colNamesNMAresults": 4,
           "H": [
             [ 0.1, 0.2, 0.3 ],
             [ "eleven", 0.22, 0.33 ],
             [ 0.111, 0.222, 0.333 ]
           ],
           "model": [ 1, 2, 3 ],
+          "NMAresults": [
+            {
+              "Direct": true,
+              "DirectL": -0.1,
+              "DirectU": -0.1,
+              "Indirect": -1.1,
+              "IndirectL": -1.1,
+              "IndirectU": -1.1,
+              "SideIF": 0.1,
+              "SideIFlower": -0.1,
+              "SideIFupper": 0.1,
+              "SideZ": 0.1,
+              "SidePvalue": 0.1,
+              "PropDir": 0.1,
+              "NMA treatment effect": -0.1,
+              "se treat effect": 0.1,
+              "lower CI": -0.1,
+              "upper CI": -0.1,
+              "lower PrI": -0.1,
+              "upper PrI": -0.1,
+              "PropDirNetmeta": 0.1,
+              "_row": 444
+            }
+          ],
           "rowNames": [
             "sleep:salad",
             "sleep:exercise",
             false
+          ],
+          "rowNamesNMAresults": [
+            "sleep:salad",
+            "sleep:exercise",
+            444
           ],
           "sm": true
         },
@@ -259,7 +445,7 @@ json_incorrect_types <- '
             "celery saunter": true
           }
         }
-      }
+      }]
     },
     "format": "long",
     "type": "binary",
@@ -301,7 +487,6 @@ json_incorrect_types <- '
           "rob": 2,
           "indirectness": 2
         },
-        
         {
           "study": "celery saunter",
           "id": 3,
@@ -327,24 +512,50 @@ json_incorrect_types <- '
 '
 
 json_incorrect_types_errors <- data.frame() |>
-  rbind(data.frame(field = "data.project.CM.contributionMatrices.hatmatrix.colNames", message = "is the wrong type")) |>
-  rbind(data.frame(field = "data.project.CM.contributionMatrices.hatmatrix.H.1.0", message = "is the wrong type")) |>
-  rbind(data.frame(field = "data.project.CM.contributionMatrices.hatmatrix.model", message = "is the wrong type")) |>
-  rbind(data.frame(field = "data.project.CM.contributionMatrices.hatmatrix.rowNames.2", message = "is the wrong type")) |>
-  rbind(data.frame(field = "data.project.CM.contributionMatrices.hatmatrix.sm", message = "is the wrong type")) |>
-  rbind(data.frame(field = "data.project.CM.contributionMatrices.studycontributions[keys2.2][keys4.2]", message = "is the wrong type")) |>
+  rbind(data.frame(field = "data.project.CM.contributionMatrices.0.hatmatrix.colNames", message = "is the wrong type")) |>
+  rbind(data.frame(field = "data.project.CM.contributionMatrices.0.hatmatrix.colNamesNMAresults", message = "is the wrong type")) |>
+  rbind(data.frame(field = "data.project.CM.contributionMatrices.0.hatmatrix.H.1.0", message = "is the wrong type")) |>
+  rbind(data.frame(field = "data.project.CM.contributionMatrices.0.hatmatrix.model", message = "is the wrong type")) |>
+  rbind(data.frame(field = "data.project.CM.contributionMatrices.0.hatmatrix.NMAresults.0.Direct", message = "is the wrong type")) |>
+  rbind(data.frame(field = "data.project.CM.contributionMatrices.0.hatmatrix.NMAresults.0._row", message = "is the wrong type")) |>
+  rbind(data.frame(field = "data.project.CM.contributionMatrices.0.hatmatrix.rowNames.2", message = "is the wrong type")) |>
+  rbind(data.frame(field = "data.project.CM.contributionMatrices.0.hatmatrix.rowNamesNMAresults.2", message = "is the wrong type")) |>
+  rbind(data.frame(field = "data.project.CM.contributionMatrices.0.hatmatrix.sm", message = "is the wrong type")) |>
+  rbind(data.frame(field = "data.project.CM.contributionMatrices.0.studycontributions[keys3.2][keys5.2]", message = "is the wrong type")) |>
   rbind(data.frame(field = "data.project.studies.long.0.r", message = "is the wrong type"))
 
 json_data_mixed_outcome_type <- '
 {
   "project": {
     "CM": {
-      "contributionMatrices": {
+      "contributionMatrices": [{
         "hatmatrix": {
           "colNames": [
             "sleep:salad",
             "sleep:exercise",
             "salad:exercise"
+          ],
+          "colNamesNMAresults": [
+            "Direct",
+            "DirectL",
+            "DirectU",
+            "Indirect",
+            "IndirectL",
+            "IndirectU",
+            "SideIF",
+            "SideIFlower",
+            "SideIFupper",
+            "SideZ",
+            "SidePvalue",
+            "PropDir",
+            "NMA treatment effect",
+            "se treat effect",
+            "lower CI",
+            "upper CI",
+            "lower PrI",
+            "upper PrI",
+            "PropDirNetmeta",
+            "_row"
           ],
           "H": [
             [ 0.1, 0.2, 0.3 ],
@@ -352,7 +563,64 @@ json_data_mixed_outcome_type <- '
             [ 0.111, 0.222, 0.333 ]
           ],
           "model": "fixed",
+          "NMAresults": [
+            {
+              "Direct": -0.1,
+              "DirectL": -0.1,
+              "DirectU": -0.1,
+              "Indirect": -1.1,
+              "IndirectL": -1.1,
+              "IndirectU": -1.1,
+              "SideIF": 0.1,
+              "SideIFlower": -0.1,
+              "SideIFupper": 0.1,
+              "SideZ": 0.1,
+              "SidePvalue": 0.1,
+              "PropDir": 0.1,
+              "NMA treatment effect": -0.1,
+              "se treat effect": 0.1,
+              "lower CI": -0.1,
+              "upper CI": -0.1,
+              "lower PrI": -0.1,
+              "upper PrI": -0.1,
+              "PropDirNetmeta": 0.1,
+              "_row": "sleep:salad"
+            },
+            {
+              "Indirect": -2.2,
+              "IndirectL": -2.2,
+              "IndirectU": -2.2,
+              "PropDir": 0.2,
+              "NMA treatment effect": -0.2,
+              "se treat effect": 0.2,
+              "lower CI": -0.2,
+              "upper CI": -0.2,
+              "lower PrI": -0.2,
+              "upper PrI": -0.2,
+              "PropDirNetmeta": 0.2,
+              "_row": "sleep:exercise"
+            },
+            {
+              "Direct": -0.3,
+              "DirectL": -0.3,
+              "DirectU": -0.3,
+              "PropDir": 0.3,
+              "NMA treatment effect": -0.3,
+              "se treat effect": 0.3,
+              "lower CI": -0.3,
+              "upper CI": -0.3,
+              "lower PrI": -0.3,
+              "upper PrI": -0.3,
+              "PropDirNetmeta": 0.3,
+              "_row": "salad:exercise"
+            }
+          ],
           "rowNames": [
+            "sleep:salad",
+            "sleep:exercise",
+            "salad:exercise"
+          ],
+          "rowNamesNMAresults": [
             "sleep:salad",
             "sleep:exercise",
             "salad:exercise"
@@ -376,7 +644,7 @@ json_data_mixed_outcome_type <- '
             "celery saunter": 0.8
           }
         }
-      }
+      }]
     },
     "format": "long",
     "type": "binary",
@@ -422,7 +690,6 @@ json_data_mixed_outcome_type <- '
           "rob": 2,
           "indirectness": 2
         },
-        
         {
           "study": "celery saunter",
           "id": 3,
@@ -461,12 +728,34 @@ json_data_both_outcome_type <- '
 {
   "project": {
     "CM": {
-      "contributionMatrices": {
+      "contributionMatrices": [{
         "hatmatrix": {
           "colNames": [
             "sleep:salad",
             "sleep:exercise",
             "salad:exercise"
+          ],
+          "colNamesNMAresults": [
+            "Direct",
+            "DirectL",
+            "DirectU",
+            "Indirect",
+            "IndirectL",
+            "IndirectU",
+            "SideIF",
+            "SideIFlower",
+            "SideIFupper",
+            "SideZ",
+            "SidePvalue",
+            "PropDir",
+            "NMA treatment effect",
+            "se treat effect",
+            "lower CI",
+            "upper CI",
+            "lower PrI",
+            "upper PrI",
+            "PropDirNetmeta",
+            "_row"
           ],
           "H": [
             [ 0.1, 0.2, 0.3 ],
@@ -474,7 +763,64 @@ json_data_both_outcome_type <- '
             [ 0.111, 0.222, 0.333 ]
           ],
           "model": "fixed",
+          "NMAresults": [
+            {
+              "Direct": -0.1,
+              "DirectL": -0.1,
+              "DirectU": -0.1,
+              "Indirect": -1.1,
+              "IndirectL": -1.1,
+              "IndirectU": -1.1,
+              "SideIF": 0.1,
+              "SideIFlower": -0.1,
+              "SideIFupper": 0.1,
+              "SideZ": 0.1,
+              "SidePvalue": 0.1,
+              "PropDir": 0.1,
+              "NMA treatment effect": -0.1,
+              "se treat effect": 0.1,
+              "lower CI": -0.1,
+              "upper CI": -0.1,
+              "lower PrI": -0.1,
+              "upper PrI": -0.1,
+              "PropDirNetmeta": 0.1,
+              "_row": "sleep:salad"
+            },
+            {
+              "Indirect": -2.2,
+              "IndirectL": -2.2,
+              "IndirectU": -2.2,
+              "PropDir": 0.2,
+              "NMA treatment effect": -0.2,
+              "se treat effect": 0.2,
+              "lower CI": -0.2,
+              "upper CI": -0.2,
+              "lower PrI": -0.2,
+              "upper PrI": -0.2,
+              "PropDirNetmeta": 0.2,
+              "_row": "sleep:exercise"
+            },
+            {
+              "Direct": -0.3,
+              "DirectL": -0.3,
+              "DirectU": -0.3,
+              "PropDir": 0.3,
+              "NMA treatment effect": -0.3,
+              "se treat effect": 0.3,
+              "lower CI": -0.3,
+              "upper CI": -0.3,
+              "lower PrI": -0.3,
+              "upper PrI": -0.3,
+              "PropDirNetmeta": 0.3,
+              "_row": "salad:exercise"
+            }
+          ],
           "rowNames": [
+            "sleep:salad",
+            "sleep:exercise",
+            "salad:exercise"
+          ],
+          "rowNamesNMAresults": [
             "sleep:salad",
             "sleep:exercise",
             "salad:exercise"
@@ -498,7 +844,7 @@ json_data_both_outcome_type <- '
             "celery saunter": 0.8
           }
         }
-      }
+      }]
     },
     "format": "long",
     "type": "binary",
@@ -548,7 +894,6 @@ json_data_both_outcome_type <- '
           "rob": 2,
           "indirectness": 2
         },
-        
         {
           "study": "celery saunter",
           "id": 3,
@@ -589,15 +934,93 @@ json_missing_fields <- '
 {
   "project": {
     "CM": {
-      "contributionMatrices": {
+      "contributionMatrices": [{
         "hatmatrix": {
           "colNames": [
             "sleep:salad",
             "sleep:exercise",
             "salad:exercise"
           ],
+          "colNamesNMAresults": [
+            "Direct",
+            "DirectL",
+            "DirectU",
+            "Indirect",
+            "IndirectL",
+            "IndirectU",
+            "SideIF",
+            "SideIFlower",
+            "SideIFupper",
+            "SideZ",
+            "SidePvalue",
+            "PropDir",
+            "NMA treatment effect",
+            "se treat effect",
+            "lower CI",
+            "upper CI",
+            "lower PrI",
+            "upper PrI",
+            "PropDirNetmeta",
+            "_row"
+          ],
           "model": "fixed",
+          "NMAresults": [
+            {
+              "Direct": -0.1,
+              "DirectL": -0.1,
+              "DirectU": -0.1,
+              "Indirect": -1.1,
+              "IndirectL": -1.1,
+              "IndirectU": -1.1,
+              "SideIF": 0.1,
+              "SideIFlower": -0.1,
+              "SideIFupper": 0.1,
+              "SideZ": 0.1,
+              "SidePvalue": 0.1,
+              "PropDir": 0.1,
+              "NMA treatment effect": -0.1,
+              "se treat effect": 0.1,
+              "lower CI": -0.1,
+              "upper CI": -0.1,
+              "lower PrI": -0.1,
+              "upper PrI": -0.1,
+              "PropDirNetmeta": 0.1,
+              "_row": "sleep:salad"
+            },
+            {
+              "Indirect": -2.2,
+              "IndirectL": -2.2,
+              "IndirectU": -2.2,
+              "PropDir": 0.2,
+              "NMA treatment effect": -0.2,
+              "se treat effect": 0.2,
+              "lower CI": -0.2,
+              "upper CI": -0.2,
+              "lower PrI": -0.2,
+              "upper PrI": -0.2,
+              "PropDirNetmeta": 0.2
+            },
+            {
+              "Direct": -0.3,
+              "DirectL": -0.3,
+              "DirectU": -0.3,
+              "PropDir": 0.3,
+              "NMA treatment effect": -0.3,
+              "se treat effect": 0.3,
+              "lower CI": -0.3,
+              "upper CI": -0.3,
+              "lower PrI": -0.3,
+              "upper PrI": -0.3,
+              "PropDirNetmeta": 0.3,
+              "_row": "salad:exercise"
+            }
+          ],
           "rowNames": [
+            "sleep:salad",
+            "sleep:exercise",
+            "salad:exercise"
+          ],
+          "rowNamesNMAresults": [
             "sleep:salad",
             "sleep:exercise",
             "salad:exercise"
@@ -621,7 +1044,7 @@ json_missing_fields <- '
             "celery saunter": 0.8
           }
         }
-      }
+      }]
     },
     "format": "long",
     "type": "binary",
@@ -659,7 +1082,6 @@ json_missing_fields <- '
           "rob": 2,
           "indirectness": 2
         },
-        
         {
           "study": "celery saunter",
           "id": 3,
@@ -682,7 +1104,8 @@ json_missing_fields <- '
 '
 
 json_missing_fields_errors <- data.frame() |>
-  rbind(data.frame(field = "data.project.CM.contributionMatrices.hatmatrix.H", message = "is required")) |>
+  rbind(data.frame(field = "data.project.CM.contributionMatrices.0.hatmatrix.H", message = "is required")) |>
+  rbind(data.frame(field = "data.project.CM.contributionMatrices.0.hatmatrix.NMAresults.1._row", message = "is required")) |>
   rbind(data.frame(field = "data.project.studies.long.0.study", message = "is required")) |>
   rbind(data.frame(field = "data.project.studies.long.1.id", message = "is required")) |>
   rbind(data.frame(field = "data.project.studies.long.2.t", message = "is required")) |>
@@ -695,22 +1118,101 @@ json_values_out_of_bounds <- '
 {
   "project": {
     "CM": {
-      "contributionMatrices": {
+      "contributionMatrices": [{
         "hatmatrix": {
           "colNames": [
             "sleep-salad",
             "sleep:exercise",
             "salad:exercise"
           ],
+          "colNamesNMAresults": [
+            "SMELLY",
+            "DirectL",
+            "DirectU",
+            "Indirect",
+            "IndirectL",
+            "IndirectU",
+            "SideIF",
+            "SideIFlower",
+            "SideIFupper",
+            "SideZ",
+            "SidePvalue",
+            "PropDir",
+            "NMA treatment effect",
+            "se treat effect",
+            "lower CI",
+            "upper CI",
+            "lower PrI",
+            "upper PrI",
+            "PropDirNetmeta",
+            "_row"
+          ],
           "H": [
             [ -0.1, 0.2, 0.3 ],
             [ 0.11, 0.22, 0.33 ],
             [ 0.111, 0.222, 0.333 ]
           ],
+          "NMAresults": [
+            {
+              "Direct": -0.1,
+              "DirectL": -0.1,
+              "DirectU": -0.1,
+              "Indirect": -1.1,
+              "IndirectL": -1.1,
+              "IndirectU": -1.1,
+              "SideIF": 0.1,
+              "SideIFlower": -0.1,
+              "SideIFupper": 0.1,
+              "SideZ": 0.1,
+              "SidePvalue": 0.1,
+              "PropDir": 0.1,
+              "NMA treatment effect": -0.1,
+              "se treat effect": 0.1,
+              "lower CI": -0.1,
+              "upper CI": -0.1,
+              "lower PrI": -0.1,
+              "upper PrI": -0.1,
+              "PropDirNetmeta": 0.1,
+              "_row": "sleep:salad"
+            },
+            {
+              "Indirect": -2.2,
+              "IndirectL": -2.2,
+              "IndirectU": -2.2,
+              "PropDir": 0.2,
+              "NMA treatment effect": -0.2,
+              "se treat effect": 0.2,
+              "lower CI": -0.2,
+              "upper CI": -0.2,
+              "lower PrI": -0.2,
+              "upper PrI": -0.2,
+              "PropDirNetmeta": 0.2,
+              "_row": "sleep:exercise"
+            },
+            {
+              "Direct": -0.3,
+              "DirectL": -0.3,
+              "DirectU": -0.3,
+              "PropDir": 0.3,
+              "NMA treatment effect": -0.3,
+              "se treat effect": 0.3,
+              "lower CI": -0.3,
+              "upper CI": -0.3,
+              "lower PrI": -0.3,
+              "upper PrI": -0.3,
+              "PropDirNetmeta": 0.3,
+              "_row": "salad-exercise"
+            }
+          ],
           "model": "pseudo-random",
           "rowNames": [
             "sleep-salad",
             "sleep:exercise",
+            "salad:exercise"
+          ],
+          "rowNamesNMAresults": [
+            "sleep:salad",
+            "sleep-exercise",
             "salad:exercise"
           ],
           "sm": "Evens-Ratio"
@@ -732,7 +1234,7 @@ json_values_out_of_bounds <- '
             "celery saunter": 0.8
           }
         }
-      }
+      }]
     },
     "format": "longish",
     "type": "strawberry",
@@ -774,7 +1276,6 @@ json_values_out_of_bounds <- '
           "rob": 2,
           "indirectness": 2
         },
-        
         {
           "study": "celery saunter",
           "id": 3,
@@ -800,12 +1301,15 @@ json_values_out_of_bounds <- '
 '
 
 json_values_out_of_bounds_errors <- data.frame() |>
-  rbind(data.frame(field = "data.project.CM.contributionMatrices.hatmatrix.colNames.0", message = "pattern mismatch")) |>
-  rbind(data.frame(field = "data.project.CM.contributionMatrices.hatmatrix.model", message = "must be an enum value")) |>
-  rbind(data.frame(field = "data.project.CM.contributionMatrices.hatmatrix.rowNames.0", message = "pattern mismatch")) |>
-  rbind(data.frame(field = "data.project.CM.contributionMatrices.hatmatrix.sm", message = "must be an enum value")) |>
-  rbind(data.frame(field = "data.project.CM.contributionMatrices.studycontributions", message = "has additional properties")) |>
-  rbind(data.frame(field = "data.project.CM.contributionMatrices.studycontributions[keys2.1]", message = "has additional properties")) |>
+  rbind(data.frame(field = "data.project.CM.contributionMatrices.0.hatmatrix.colNames.0", message = "pattern mismatch")) |>
+  rbind(data.frame(field = "data.project.CM.contributionMatrices.0.hatmatrix.colNamesNMAresults.0", message = "must be an enum value")) |>
+  rbind(data.frame(field = "data.project.CM.contributionMatrices.0.hatmatrix.model", message = "must be an enum value")) |>
+  rbind(data.frame(field = "data.project.CM.contributionMatrices.0.hatmatrix.NMAresults.2._row", message = "pattern mismatch")) |>
+  rbind(data.frame(field = "data.project.CM.contributionMatrices.0.hatmatrix.rowNames.0", message = "pattern mismatch")) |>
+  rbind(data.frame(field = "data.project.CM.contributionMatrices.0.hatmatrix.rowNamesNMAresults.1", message = "pattern mismatch")) |>
+  rbind(data.frame(field = "data.project.CM.contributionMatrices.0.hatmatrix.sm", message = "must be an enum value")) |>
+  rbind(data.frame(field = "data.project.CM.contributionMatrices.0.studycontributions", message = "has additional properties")) |>
+  rbind(data.frame(field = "data.project.CM.contributionMatrices.0.studycontributions[keys3.1]", message = "has additional properties")) |>
   rbind(data.frame(field = "data.project.format", message = "must be an enum value")) |>
   rbind(data.frame(field = "data.project.type", message = "must be an enum value")) |>
   rbind(data.frame(field = "data.project.studies.long.0.id", message = "is less than minimum")) |>
@@ -819,12 +1323,15 @@ json_short_arrays <- '
 {
   "project": {
     "CM": {
-      "contributionMatrices": {
+      "contributionMatrices": [{
         "hatmatrix": {
           "colNames": [],
+          "colNamesNMAresults": [],
           "H": [],
           "model": "fixed",
+          "NMAresults": [],
           "rowNames": [],
+          "rowNamesNMAresults": [],
           "sm": "OR"
         },
         "studycontributions": {
@@ -844,7 +1351,7 @@ json_short_arrays <- '
             "celery saunter": 0.8
           }
         }
-      }
+      }]
     },
     "format": "long",
     "type": "binary",
@@ -866,16 +1373,19 @@ json_short_arrays <- '
 '
 
 json_short_arrays_errors <- data.frame() |>
-  rbind(data.frame(field = "data.project.CM.contributionMatrices.hatmatrix.colNames", message = "has less items than allowed")) |>
-  rbind(data.frame(field = "data.project.CM.contributionMatrices.hatmatrix.H", message = "has less items than allowed")) |>
-  rbind(data.frame(field = "data.project.CM.contributionMatrices.hatmatrix.rowNames", message = "has less items than allowed")) |>
+  rbind(data.frame(field = "data.project.CM.contributionMatrices.0.hatmatrix.colNames", message = "has less items than allowed")) |>
+  rbind(data.frame(field = "data.project.CM.contributionMatrices.0.hatmatrix.colNamesNMAresults", message = "has less items than allowed")) |>
+  rbind(data.frame(field = "data.project.CM.contributionMatrices.0.hatmatrix.H", message = "has less items than allowed")) |>
+  rbind(data.frame(field = "data.project.CM.contributionMatrices.0.hatmatrix.NMAresults", message = "has less items than allowed")) |>
+  rbind(data.frame(field = "data.project.CM.contributionMatrices.0.hatmatrix.rowNames", message = "has less items than allowed")) |>
+  rbind(data.frame(field = "data.project.CM.contributionMatrices.0.hatmatrix.rowNamesNMAresults", message = "has less items than allowed")) |>
   rbind(data.frame(field = "data.project.studies.long", message = "has less items than allowed"))
 
 json_duplicate_row_column_names <- '
 {
   "project": {
     "CM": {
-      "contributionMatrices": {
+      "contributionMatrices": [{
         "hatmatrix": {
           "colNames": [
             "sleep:salad",
@@ -883,13 +1393,93 @@ json_duplicate_row_column_names <- '
             "sleep:exercise",
             "salad:exercise"
           ],
+          "colNamesNMAresults": [
+            "Direct",
+            "Direct",
+            "DirectU",
+            "Indirect",
+            "IndirectL",
+            "IndirectU",
+            "SideIF",
+            "SideIFlower",
+            "SideIFupper",
+            "SideZ",
+            "SidePvalue",
+            "PropDir",
+            "NMA treatment effect",
+            "se treat effect",
+            "lower CI",
+            "upper CI",
+            "lower PrI",
+            "upper PrI",
+            "PropDirNetmeta",
+            "_row"
+          ],
           "H": [
             [ 0.1, 0.2, 0.3 ],
             [ 0.11, 0.22, 0.33 ],
             [ 0.111, 0.222, 0.333 ]
           ],
           "model": "fixed",
+          "NMAresults": [
+            {
+              "Direct": -0.1,
+              "DirectL": -0.1,
+              "DirectU": -0.1,
+              "Indirect": -1.1,
+              "IndirectL": -1.1,
+              "IndirectU": -1.1,
+              "SideIF": 0.1,
+              "SideIFlower": -0.1,
+              "SideIFupper": 0.1,
+              "SideZ": 0.1,
+              "SidePvalue": 0.1,
+              "PropDir": 0.1,
+              "NMA treatment effect": -0.1,
+              "se treat effect": 0.1,
+              "lower CI": -0.1,
+              "upper CI": -0.1,
+              "lower PrI": -0.1,
+              "upper PrI": -0.1,
+              "PropDirNetmeta": 0.1,
+              "_row": "sleep:salad"
+            },
+            {
+              "Indirect": -2.2,
+              "IndirectL": -2.2,
+              "IndirectU": -2.2,
+              "PropDir": 0.2,
+              "NMA treatment effect": -0.2,
+              "se treat effect": 0.2,
+              "lower CI": -0.2,
+              "upper CI": -0.2,
+              "lower PrI": -0.2,
+              "upper PrI": -0.2,
+              "PropDirNetmeta": 0.2,
+              "_row": "sleep:exercise"
+            },
+            {
+              "Direct": -0.3,
+              "DirectL": -0.3,
+              "DirectU": -0.3,
+              "PropDir": 0.3,
+              "NMA treatment effect": -0.3,
+              "se treat effect": 0.3,
+              "lower CI": -0.3,
+              "upper CI": -0.3,
+              "lower PrI": -0.3,
+              "upper PrI": -0.3,
+              "PropDirNetmeta": 0.3,
+              "_row": "salad:exercise"
+            }
+          ],
           "rowNames": [
+            "sleep:salad",
+            "sleep:salad",
+            "sleep:exercise",
+            "salad:exercise"
+          ],
+          "rowNamesNMAresults": [
             "sleep:salad",
             "sleep:salad",
             "sleep:exercise",
@@ -914,7 +1504,7 @@ json_duplicate_row_column_names <- '
             "celery saunter": 0.8
           }
         }
-      }
+      }]
     },
     "format": "long",
     "type": "binary",
@@ -956,7 +1546,6 @@ json_duplicate_row_column_names <- '
           "rob": 2,
           "indirectness": 2
         },
-        
         {
           "study": "celery saunter",
           "id": 3,
@@ -982,19 +1571,43 @@ json_duplicate_row_column_names <- '
 '
 
 json_duplicate_row_column_names_errors <- data.frame() |>
-  rbind(data.frame(field = "data.project.CM.contributionMatrices.hatmatrix.colNames", message = "must be unique")) |>
-  rbind(data.frame(field = "data.project.CM.contributionMatrices.hatmatrix.rowNames", message = "must be unique"))
+  rbind(data.frame(field = "data.project.CM.contributionMatrices.0.hatmatrix.colNames", message = "must be unique")) |>
+  rbind(data.frame(field = "data.project.CM.contributionMatrices.0.hatmatrix.colNamesNMAresults", message = "must be unique")) |>
+  rbind(data.frame(field = "data.project.CM.contributionMatrices.0.hatmatrix.rowNames", message = "must be unique")) |>
+  rbind(data.frame(field = "data.project.CM.contributionMatrices.0.hatmatrix.rowNamesNMAresults", message = "must be unique"))
 
 json_empty_strings <- '
 {
   "project": {
     "CM": {
-      "contributionMatrices": {
+      "contributionMatrices": [{
         "hatmatrix": {
           "colNames": [
             "",
             "sleep:exercise",
             "salad:exercise"
+          ],
+          "colNamesNMAresults": [
+            "",
+            "DirectL",
+            "DirectU",
+            "Indirect",
+            "IndirectL",
+            "IndirectU",
+            "SideIF",
+            "SideIFlower",
+            "SideIFupper",
+            "SideZ",
+            "SidePvalue",
+            "PropDir",
+            "NMA treatment effect",
+            "se treat effect",
+            "lower CI",
+            "upper CI",
+            "lower PrI",
+            "upper PrI",
+            "PropDirNetmeta",
+            "_row"
           ],
           "H": [
             [ 0.1, 0.2, 0.3 ],
@@ -1002,9 +1615,66 @@ json_empty_strings <- '
             [ 0.111, 0.222, 0.333 ]
           ],
           "model": "",
+          "NMAresults": [
+            {
+              "Direct": -0.1,
+              "DirectL": -0.1,
+              "DirectU": -0.1,
+              "Indirect": -1.1,
+              "IndirectL": -1.1,
+              "IndirectU": -1.1,
+              "SideIF": 0.1,
+              "SideIFlower": -0.1,
+              "SideIFupper": 0.1,
+              "SideZ": 0.1,
+              "SidePvalue": 0.1,
+              "PropDir": 0.1,
+              "NMA treatment effect": -0.1,
+              "se treat effect": 0.1,
+              "lower CI": -0.1,
+              "upper CI": -0.1,
+              "lower PrI": -0.1,
+              "upper PrI": -0.1,
+              "PropDirNetmeta": 0.1,
+              "_row": ""
+            },
+            {
+              "Indirect": -2.2,
+              "IndirectL": -2.2,
+              "IndirectU": -2.2,
+              "PropDir": 0.2,
+              "NMA treatment effect": -0.2,
+              "se treat effect": 0.2,
+              "lower CI": -0.2,
+              "upper CI": -0.2,
+              "lower PrI": -0.2,
+              "upper PrI": -0.2,
+              "PropDirNetmeta": 0.2,
+              "_row": "sleep:exercise"
+            },
+            {
+              "Direct": -0.3,
+              "DirectL": -0.3,
+              "DirectU": -0.3,
+              "PropDir": 0.3,
+              "NMA treatment effect": -0.3,
+              "se treat effect": 0.3,
+              "lower CI": -0.3,
+              "upper CI": -0.3,
+              "lower PrI": -0.3,
+              "upper PrI": -0.3,
+              "PropDirNetmeta": 0.3,
+              "_row": "salad:exercise"
+            }
+          ],
           "rowNames": [
             "",
             "sleep:exercise",
+            "salad:exercise"
+          ],
+          "rowNamesNMAresults": [
+            "sleep:salad",
+            "",
             "salad:exercise"
           ],
           "sm": ""
@@ -1026,7 +1696,7 @@ json_empty_strings <- '
             "celery saunter": 0.8
           }
         }
-      }
+      }]
     },
     "format": "",
     "type": "",
@@ -1068,7 +1738,6 @@ json_empty_strings <- '
           "rob": 2,
           "indirectness": 2
         },
-        
         {
           "study": "celery saunter",
           "id": 3,
@@ -1094,11 +1763,210 @@ json_empty_strings <- '
 '
 
 json_empty_strings_errors <- data.frame() |>
-  rbind(data.frame(field = "data.project.CM.contributionMatrices.hatmatrix.colNames.0", message = "pattern mismatch")) |>
-  rbind(data.frame(field = "data.project.CM.contributionMatrices.hatmatrix.model", message = "must be an enum value")) |>
-  rbind(data.frame(field = "data.project.CM.contributionMatrices.hatmatrix.rowNames.0", message = "pattern mismatch")) |>
-  rbind(data.frame(field = "data.project.CM.contributionMatrices.hatmatrix.sm", message = "must be an enum value")) |>
+  rbind(data.frame(field = "data.project.CM.contributionMatrices.0.hatmatrix.colNames.0", message = "pattern mismatch")) |>
+  rbind(data.frame(field = "data.project.CM.contributionMatrices.0.hatmatrix.colNamesNMAresults.0", message = "must be an enum value")) |>
+  rbind(data.frame(field = "data.project.CM.contributionMatrices.0.hatmatrix.model", message = "must be an enum value")) |>
+  rbind(data.frame(field = "data.project.CM.contributionMatrices.0.hatmatrix.NMAresults.0._row", message = "pattern mismatch")) |>
+  rbind(data.frame(field = "data.project.CM.contributionMatrices.0.hatmatrix.rowNames.0", message = "pattern mismatch")) |>
+  rbind(data.frame(field = "data.project.CM.contributionMatrices.0.hatmatrix.rowNamesNMAresults.1", message = "pattern mismatch")) |>
+  rbind(data.frame(field = "data.project.CM.contributionMatrices.0.hatmatrix.sm", message = "must be an enum value")) |>
   rbind(data.frame(field = "data.project.format", message = "must be an enum value")) |>
   rbind(data.frame(field = "data.project.type", message = "must be an enum value")) |>
   rbind(data.frame(field = "data.project.studies.long.0.study", message = "pattern mismatch")) |>
   rbind(data.frame(field = "data.project.studies.long.0.t", message = "pattern mismatch"))
+
+json_mismatched_direct_or_indirect <- '
+{
+  "project": {
+    "CM": {
+      "contributionMatrices": [{
+        "hatmatrix": {
+          "colNames": [
+            "sleep:salad",
+            "sleep:exercise",
+            "salad:exercise"
+          ],
+          "colNamesNMAresults": [
+            "Direct",
+            "DirectL",
+            "DirectU",
+            "Indirect",
+            "IndirectL",
+            "IndirectU",
+            "SideIF",
+            "SideIFlower",
+            "SideIFupper",
+            "SideZ",
+            "SidePvalue",
+            "PropDir",
+            "NMA treatment effect",
+            "se treat effect",
+            "lower CI",
+            "upper CI",
+            "lower PrI",
+            "upper PrI",
+            "PropDirNetmeta",
+            "_row"
+          ],
+          "H": [
+            [ 0.1, 0.2, 0.3 ],
+            [ 0.11, 0.22, 0.33 ],
+            [ 0.111, 0.222, 0.333 ]
+          ],
+          "model": "fixed",
+          "NMAresults": [
+            {
+              "Direct": -0.1,
+              "DirectL": -0.1,
+              "DirectU": -0.1,
+              "Indirect": -1.1,
+              "IndirectL": -1.1,
+              "IndirectU": -1.1,
+              "PropDir": 0.1,
+              "NMA treatment effect": -0.1,
+              "se treat effect": 0.1,
+              "lower CI": -0.1,
+              "upper CI": -0.1,
+              "lower PrI": -0.1,
+              "upper PrI": -0.1,
+              "PropDirNetmeta": 0.1,
+              "_row": "sleep:salad"
+            },
+            {
+              "Indirect": -2.2,
+              "IndirectL": -2.2,
+              "IndirectU": -2.2,
+              "SideIF": 0.1,
+              "SideIFlower": -0.1,
+              "SideIFupper": 0.1,
+              "SideZ": 0.1,
+              "SidePvalue": 0.1,
+              "PropDir": 0.2,
+              "NMA treatment effect": -0.2,
+              "se treat effect": 0.2,
+              "lower CI": -0.2,
+              "upper CI": -0.2,
+              "lower PrI": -0.2,
+              "upper PrI": -0.2,
+              "PropDirNetmeta": 0.2,
+              "_row": "sleep:exercise"
+            },
+            {
+              "Direct": -0.3,
+              "DirectL": -0.3,
+              "DirectU": -0.3,
+              "SideIF": 0.1,
+              "SideIFlower": -0.1,
+              "SideIFupper": 0.1,
+              "SideZ": 0.1,
+              "SidePvalue": 0.1,
+              "PropDir": 0.3,
+              "NMA treatment effect": -0.3,
+              "se treat effect": 0.3,
+              "lower CI": -0.3,
+              "upper CI": -0.3,
+              "lower PrI": -0.3,
+              "upper PrI": -0.3,
+              "PropDirNetmeta": 0.3,
+              "_row": "salad:exercise"
+            }
+          ],
+          "rowNames": [
+            "sleep:salad",
+            "sleep:exercise",
+            "salad:exercise"
+          ],
+          "rowNamesNMAresults": [
+            "sleep:salad",
+            "sleep:exercise",
+            "salad:exercise"
+          ],
+          "sm": "OR"
+        },
+        "studycontributions": {
+          "sleep:salad": {
+            "Sleepy celery": 0.8,
+            "Sleepy saunter": 0.1,
+            "celery saunter": 0.1
+          },
+          "sleep:exercise": {
+            "Sleepy celery": 0.1,
+            "Sleepy saunter": 0.8,
+            "celery saunter": 0.1
+          },
+          "salad:exercise": {
+            "Sleepy celery": 0.1,
+            "Sleepy saunter": 0.1,
+            "celery saunter": 0.8
+          }
+        }
+      }]
+    },
+    "format": "long",
+    "type": "binary",
+    "studies": {
+      "long": [
+        {
+          "study": "Sleepy celery",
+          "id": 1,
+          "t": "sleep",
+          "r": 4,
+          "n": 10,
+          "rob": 1,
+          "indirectness": 3
+        },
+        {
+          "study": "Sleepy celery",
+          "id": 1,
+          "t": "salad",
+          "r": 2,
+          "n": 10,
+          "rob": 1,
+          "indirectness": 3
+        },
+        {
+          "study": "Sleepy saunter",
+          "id": 2,
+          "t": "sleep",
+          "r": 4,
+          "n": 10,
+          "rob": 2,
+          "indirectness": 2
+        },
+        {
+          "study": "Sleepy saunter",
+          "id": 2,
+          "t": "exercise",
+          "r": 8,
+          "n": 10,
+          "rob": 2,
+          "indirectness": 2
+        },
+        {
+          "study": "celery saunter",
+          "id": 3,
+          "t": "salad",
+          "r": 2,
+          "n": 10,
+          "rob": 3,
+          "indirectness": 1
+        },
+        {
+          "study": "celery saunter",
+          "id": 3,
+          "t": "exercise",
+          "r": 8,
+          "n": 10,
+          "rob": 3,
+          "indirectness": 1
+        }
+      ]
+    }
+  }
+}
+'
+
+json_mismatched_direct_or_indirect_errors <- data.frame() |>
+  rbind(data.frame(field = "data.project.CM.contributionMatrices.0.hatmatrix.NMAresults.0", message = "no (or more than one) schemas match")) |>
+  rbind(data.frame(field = "data.project.CM.contributionMatrices.0.hatmatrix.NMAresults.1", message = "no (or more than one) schemas match")) |>
+  rbind(data.frame(field = "data.project.CM.contributionMatrices.0.hatmatrix.NMAresults.2", message = "no (or more than one) schemas match"))

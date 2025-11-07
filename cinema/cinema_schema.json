@@ -9,66 +9,209 @@
           "type": "object",
           "properties": {
             "contributionMatrices": {
-              "type": "object",
-              "properties": {
-                "hatmatrix": {
-                  "type": "object",
-                  "properties": {
-                    "colNames": {
-                      "type": "array",
-                      "minItems": 1,
-                      "uniqueItems": true,
-                      "items": {
-                        "type": "string",
-                        "pattern": "^[a-zA-Z0-9_]+:[a-zA-Z0-9_]+$"
-                      }
-                    },
-                    "H": {
-                      "type": "array",
-                      "minItems": 1,
-                      "items": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "properties": {
+                  "hatmatrix": {
+                    "type": "object",
+                    "properties": {
+                      "colNames": {
                         "type": "array",
                         "minItems": 1,
-                        "items": { "type": "number" }
-                      }
-                    },
-                    "model": {
-                      "type": "string",
-                      "enum": [ "random", "fixed" ]
-                    },
-                    "rowNames": {
-                      "type": "array",
-                      "minItems": 1,
-                      "uniqueItems": true,
-                      "items": {
+                        "uniqueItems": true,
+                        "items": {
+                          "type": "string",
+                          "pattern": "^[a-zA-Z0-9_]+:[a-zA-Z0-9_]+$"
+                        }
+                      },
+                      "colNamesNMAresults": {
+                        "type": "array",
+                        "minItems": 20,
+                        "maxItems": 20,
+                        "uniqueItems": true,
+                        "items": {
+                          "type": "string",
+                          "enum": [
+                            "Direct",
+                            "DirectL",
+                            "DirectU",
+                            "Indirect",
+                            "IndirectL",
+                            "IndirectU",
+                            "SideIF",
+                            "SideIFlower",
+                            "SideIFupper",
+                            "SideZ",
+                            "SidePvalue",
+                            "PropDir",
+                            "NMA treatment effect",
+                            "se treat effect",
+                            "lower CI",
+                            "upper CI",
+                            "lower PrI",
+                            "upper PrI",
+                            "PropDirNetmeta",
+                            "_row"
+                          ]
+                        }
+                      },
+                      "H": {
+                        "type": "array",
+                        "minItems": 1,
+                        "items": {
+                          "type": "array",
+                          "minItems": 1,
+                          "items": { "type": "number" }
+                        }
+                      },
+                      "model": {
                         "type": "string",
-                        "pattern": "^[a-zA-Z0-9_]+:[a-zA-Z0-9_]+$"
+                        "enum": [ "random", "fixed" ]
+                      },
+                      "NMAresults": {
+                        "type": "array",
+                        "minItems": 1,
+                        "items": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "Direct": { "type": "number" },
+                            "DirectL": { "type": "number" },
+                            "DirectU": { "type": "number" },
+                            "Indirect": { "type": "number" },
+                            "IndirectL": { "type": "number" },
+                            "IndirectU": { "type": "number" },
+                            "SideIF": { "type": "number" },
+                            "SideIFlower": { "type": "number" },
+                            "SideIFupper": { "type": "number" },
+                            "SideZ": { "type": "number" },
+                            "SidePvalue": { "type": "number" },
+                            "PropDir": { "type": "number" },
+                            "NMA treatment effect": { "type": "number" },
+                            "se treat effect": { "type": "number" },
+                            "lower CI": { "type": "number" },
+                            "upper CI": { "type": "number" },
+                            "lower PrI": { "type": "number" },
+                            "upper PrI": { "type": "number" },
+                            "PropDirNetmeta": { "type": "number" },
+                            "_row": {
+                              "type": "string",
+                              "pattern": "^[a-zA-Z0-9_]+:[a-zA-Z0-9_]+$"
+                            }
+                          },
+                          "required": [
+                            "PropDir",
+                            "NMA treatment effect",
+                            "se treat effect",
+                            "lower CI",
+                            "upper CI",
+                            "lower PrI",
+                            "upper PrI",
+                            "PropDirNetmeta",
+                            "_row"
+                          ],
+                          "oneOf": [
+                            {
+                              "allOf": [
+                                { "required": [ "Direct", "DirectL", "DirectU" ] },
+                                {
+                                  "not": {
+                                    "anyOf": [
+                                      { "required": [ "Indirect" ] },
+                                      { "required": [ "IndirectL" ] },
+                                      { "required": [ "IndirectU" ] },
+                                      { "required": [ "SideIF" ] },
+                                      { "required": [ "SideIFlower" ] },
+                                      { "required": [ "SideZ" ] },
+                                      { "required": [ "SidePvalue" ] }
+                                    ]
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "allOf": [
+                                { "required": [ "Indirect", "IndirectL", "IndirectU" ] },
+                                {
+                                  "not": {
+                                    "anyOf": [
+                                      { "required": [ "Direct" ] },
+                                      { "required": [ "DirectL" ] },
+                                      { "required": [ "DirectU" ] },
+                                      { "required": [ "SideIF" ] },
+                                      { "required": [ "SideIFlower" ] },
+                                      { "required": [ "SideZ" ] },
+                                      { "required": [ "SidePvalue" ] }
+                                    ]
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "required": [
+                                "Direct",
+                                "DirectL",
+                                "DirectU",
+                                "Indirect",
+                                "IndirectL",
+                                "IndirectU",
+                                "SideIF",
+                                "SideIFlower",
+                                "SideZ",
+                                "SidePvalue"
+                              ]
+                            }
+                          ]
+                        }
+                      },
+                      "rowNames": {
+                        "type": "array",
+                        "minItems": 1,
+                        "uniqueItems": true,
+                        "items": {
+                          "type": "string",
+                          "pattern": "^[a-zA-Z0-9_]+:[a-zA-Z0-9_]+$"
+                        }
+                      },
+                      "rowNamesNMAresults": {
+                        "type": "array",
+                        "minItems": 1,
+                        "uniqueItems": true,
+                        "items": {
+                          "type": "string",
+                          "pattern": "^[a-zA-Z0-9_]+:[a-zA-Z0-9_]+$"
+                        }
+                      },
+                      "sm": {
+                        "type": "string",
+                        "enum": [ "OR", "RR", "RD", "MD", "SMD" ]
                       }
                     },
-                    "sm": {
-                      "type": "string",
-                      "enum": [ "OR", "RR", "RD", "MD", "SMD" ]
-                    }
+                    "required": [
+                      "colNames",
+                      "colNamesNMAresults",
+                      "H",
+                      "model",
+                      "NMAresults",
+                      "rowNames",
+                      "rowNamesNMAresults",
+                      "sm"
+                    ]
                   },
-                  "required": [
-                    "colNames",
-                    "H",
-                    "model",
-                    "rowNames",
-                    "sm"
-                  ]
-                },
-                "studycontributions": {
-                  "type": "object",
-                  "minProperties": 1,
-                  "additionalProperties": false,
-                  "patternProperties": {
-                    "^[a-zA-Z0-9_]+:[a-zA-Z0-9_]+$": {
-                      "type": "object",
-                      "minProperties": 1,
-                      "additionalProperties": false,
-                      "patternProperties": {
-                        "^[a-zA-Z0-9_ ]+$": { "type": "number" }
+                  "studycontributions": {
+                    "type": "object",
+                    "minProperties": 1,
+                    "additionalProperties": false,
+                    "patternProperties": {
+                      "^[a-zA-Z0-9_]+:[a-zA-Z0-9_]+$": {
+                        "type": "object",
+                        "minProperties": 1,
+                        "additionalProperties": false,
+                        "patternProperties": {
+                          "^[a-zA-Z0-9_ ]+$": { "type": "number" }
+                        }
                       }
                     }
                   }
