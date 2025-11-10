@@ -141,7 +141,7 @@ metaregression_regression_module_server <- function(id, common) {
       trigger(glue::glue("{module}_plot"))
     })
 
-    output$plot <- renderPlot({
+    svg <- reactive({
       watch(glue::glue("{module}_plot"))
       req(common[[module]])
       on.exit(shinyjs::show("download"))
@@ -159,19 +159,26 @@ metaregression_regression_module_server <- function(id, common) {
       common$meta[[module]]$legend_position <- input$legend_position
 
       metaregression_plot(model_output = common[[model]],
-                      treatment_df = common$treatment_df,
-                      outcome_measure = common$outcome_measure,
-                      comparators = input$comparators,
-                      directness = common[[module]]$directness,
-                      credible_regions = common[[module]]$credible_regions,
-                      include_covariate = input$covariate,
-                      include_ghosts = input$ghosts,
-                      include_extrapolation = input$extrapolate,
-                      include_credible = input$credible,
-                      credible_opacity = input$credible_opacity,
-                      covariate_symbol = input$symbol,
-                      covariate_symbol_size = input$symbol_size,
-                      legend_position = input$legend_position
+                          treatment_df = common$treatment_df,
+                          outcome_measure = common$outcome_measure,
+                          comparators = input$comparators,
+                          directness = common[[module]]$directness,
+                          credible_regions = common[[module]]$credible_regions,
+                          include_covariate = input$covariate,
+                          include_ghosts = input$ghosts,
+                          include_extrapolation = input$extrapolate,
+                          include_credible = input$credible,
+                          credible_opacity = input$credible_opacity,
+                          covariate_symbol = input$symbol,
+                          covariate_symbol_size = input$symbol_size,
+                          legend_position = input$legend_position
+      )
+    })
+
+    output$plot <- renderUI({
+      req(svg())
+      div(class = "svg_container", style = "max-width: 1200px;",
+        HTML(svg()$svg)
       )
     })
 
@@ -180,27 +187,7 @@ metaregression_regression_module_server <- function(id, common) {
         return(glue::glue("MetaInsight_{id}_regression_plot.{common$download_format}"))
       },
       content = function(file) {
-        ggplot2::ggsave(
-          filename = file,
-          device = common$download_format,
-          bg = "#ffffff",
-          plot = metaregression_plot(
-            model_output = common[[model]],
-            treatment_df = common$treatment_df,
-            outcome_measure = common$outcome_measure,
-            comparators = input$comparators,
-            directness = common[[module]]$directness,
-            credible_regions = common[[module]]$credible_regions,
-            include_covariate = input$covariate,
-            include_ghosts = input$ghosts,
-            include_extrapolation = input$extrapolate,
-            include_credible = input$credible,
-            credible_opacity = input$credible_opacity,
-            covariate_symbol = input$symbol,
-            covariate_symbol_size = input$symbol_size,
-            legend_position = input$legend_position
-          )
-        )
+        write_svg_plot(file, common$download_format, svg())
       }
     )
 
@@ -247,7 +234,9 @@ covariate_regression_module_server <- function(id, common, parent_session) {
 
 metaregression_regression_module_result <- function(id) {
   ns <- NS(id)
-  plotOutput(ns("plot"), height = "800px")
+  div(align = "center",
+      uiOutput(ns("plot"))
+  )
 }
 
 covariate_regression_module_result <- function(id) {

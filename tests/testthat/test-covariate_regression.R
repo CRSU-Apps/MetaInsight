@@ -21,7 +21,6 @@ test_that("Check covariate_regression function works as expected", {
   expect_true(all(c("regions",
                     "intervals") %in% names(result$credible_regions)))
 
-
   plot_result <- metaregression_plot(fitted_covariate_model,
                                      defined_data_con$treatment_df,
                                      "MD",
@@ -29,7 +28,11 @@ test_that("Check covariate_regression function works as expected", {
                                      result$directness,
                                      result$credible_regions)
 
-  expect_is(plot_result, "ggplot")
+  expect_match(plot_result$svg, "<svg")
+  expect_gt(plot_result$width, 100)
+  expect_lt(plot_result$width, 2000)
+  expect_gt(plot_result$height, 100)
+  expect_lt(plot_result$height, 2000)
 
 })
 
@@ -65,7 +68,7 @@ test_that("{shinytest2} recording: e2e_covariate_regression", {
 
   app$wait_for_value(output = "covariate_regression-covariate-plot")
   plot <- app$get_value(output = "covariate_regression-covariate-plot")
-  expect_equal(substr(plot$src, 1, 10), "data:image")
+  expect_match(plot$html, "<svg")
 
   test_plot_downloads(app, "covariate_regression-covariate", FALSE)
 

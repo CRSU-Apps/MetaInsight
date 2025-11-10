@@ -3,9 +3,8 @@
 ```
 
 ```{r, echo = {{baseline_model_knit}}, include = {{baseline_model_knit}}}
-baseline_model <- suppress_jags_output(
-  baseline_model(main_connected_data, treatment_df, outcome, outcome_measure, 
-  reference_treatment_all, model_type, {{baseline_model_regressor}}, seed))
+baseline_model <- baseline_model(main_connected_data, treatment_df, outcome, outcome_measure, 
+  reference_treatment_all, model_type, {{baseline_model_regressor}}, seed)
 ```
 
 ```{r, echo = {{baseline_model_knit}}, include = {{baseline_model_knit}}}

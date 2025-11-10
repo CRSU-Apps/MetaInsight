@@ -57,7 +57,14 @@ metaregression_plot <- function(
   )
 
   if (covariate_symbol == "none") {
-    return(direct_plot)
+    return(
+      svglite::xmlSVG({
+        print(direct_plot)
+      },
+      height = 11,
+      width = 16
+      ) |> crop_svg()
+    )
   }
 
   indirect_plot <- CreateIndirectCovariatePlot(
@@ -91,7 +98,12 @@ metaregression_plot <- function(
     ncol = 1
   )
 
-  return(plot)
+  svglite::xmlSVG({
+    print(plot)
+  },
+  height = 11,
+  width = 16
+  ) |> crop_svg()
 }
 
 regression_ghost_name = "\"Other\""

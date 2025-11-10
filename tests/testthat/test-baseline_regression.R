@@ -29,7 +29,11 @@ test_that("Check baseline_regression function works as expected", {
                                      result$directness,
                                      result$credible_regions)
 
-  expect_is(plot_result, "ggplot")
+  expect_match(plot_result$svg, "<svg")
+  expect_gt(plot_result$width, 100)
+  expect_lt(plot_result$width, 2000)
+  expect_gt(plot_result$height, 100)
+  expect_lt(plot_result$height, 2000)
 
 })
 
@@ -65,7 +69,7 @@ test_that("{shinytest2} recording: e2e_baseline_regression", {
 
   app$wait_for_value(output = "baseline_regression-baseline-plot")
   plot <- app$get_value(output = "baseline_regression-baseline-plot")
-  expect_equal(substr(plot$src, 1, 10), "data:image")
+  expect_match(plot$html, "<svg")
 
   test_plot_downloads(app, "baseline_regression-baseline", FALSE)
 
