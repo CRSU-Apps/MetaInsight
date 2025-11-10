@@ -52,7 +52,10 @@ summary_study_module_server <- function(id, common, parent_session) {
   min_max <- observe({
     updateNumericInput(session, "x_min", value = svg()$x_min, step = svg()$step)
     updateNumericInput(session, "x_max", value = svg()$x_max, step = svg()$step)
-    if (is.element(common$outcome_measure, c("OR", "RR"))) {
+    if (is.element(common$outcome_measure, c("MD", "SMD", "RD"))) {
+      updateNumericInput(session, "x_min", label = "x-axis min:")
+      updateNumericInput(session, "x_max", label = "x-axis max:")
+    } else if (is.element(common$outcome_measure, c("OR", "RR"))) {
       updateNumericInput(session, "x_min", label = "x-axis min (log scale):")
       updateNumericInput(session, "x_max", label = "x-axis max (log scale):")
     }
