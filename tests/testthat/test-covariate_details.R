@@ -10,6 +10,13 @@ test_that("Check covariate_details function works as expected", {
   expect_equal(nrow(result$priors), 4)
 })
 
+test_that("Check covariate_details function produces errors as expected", {
+  faulty_model <- list(mtcResults = 1:4)
+  expect_error(covariate_details("faulty_model"), "model must be an object created by baseline_model")
+  expect_error(covariate_details(list(a = 1)), "model must be an object created by baseline_model")
+  expect_error(covariate_details(faulty_model), "model must be an object created by baseline_model")
+})
+
 test_that("{shinytest2} recording: e2e_covariate_details", {
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_covariate_details", timeout = 30000)
 
@@ -22,30 +29,26 @@ test_that("{shinytest2} recording: e2e_covariate_details", {
 
   app$set_inputs(covariateSel = "covariate_deviance")
   app$click("covariate_deviance-run")
-  app$wait_for_value(output = "covariate_deviance-covariate-stem")
+  app$wait_for_value(input = "covariate_deviance-complete")
 
   app$set_inputs(covariateSel = "covariate_details")
   app$click("covariate_details-run")
 
-  app$wait_for_value(output = "covariate_details-covariate-mcmc")
-  app$wait_for_value(output = "covariate_details-covariate-priors")
+  mcmc <- app$wait_for_value(output = "covariate_details-covariate-mcmc")
+  priors <- app$wait_for_value(output = "covariate_details-covariate-priors")
   app$set_inputs("covariate_details-covariate-tabs" = "code")
-  app$wait_for_value(output = "covariate_details-covariate-code")
+  code <- app$wait_for_value(output = "covariate_details-covariate-code")
   app$set_inputs("covariate_details-covariate-tabs" = "inits")
-  app$wait_for_value(output = "covariate_details-covariate-inits")
+  inits <- app$wait_for_value(output = "covariate_details-covariate-inits")
   app$set_inputs("covariate_details-covariate-tabs" = "dev")
-  app$wait_for_value(output = "covariate_details-covariate-dev_mtc")
-
-  mcmc <- app$get_value(output = "covariate_details-covariate-mcmc")
-  priors <- app$get_value(output = "covariate_details-covariate-priors")
-  code <- app$get_value(output = "covariate_details-covariate-code")
-  inits <- app$get_value(output = "covariate_details-covariate-inits")
-  dev_mtc <- app$get_value(output = "covariate_details-covariate-dev_mtc")
+  dev_mtc <- app$wait_for_value(output = "covariate_details-covariate-dev_mtc")
 
   expect_match(mcmc, "<table")
   expect_match(priors, "<table")
   expect_match(code, "model")
   expect_match(inits, "Wichmann-Hill")
   expect_match(dev_mtc, "dev\\.ab")
+
+  app$stop()
 })
 

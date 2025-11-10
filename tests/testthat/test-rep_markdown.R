@@ -28,7 +28,7 @@ test_that("rep_markdown produces can render a qmd to html when no analysis has b
   app$stop()
 })
 
-test_that("rep_markdown produces a renderable .Rmd file after an analysis", {
+test_that("rep_markdown produces a renderable .Rmd file after a frequentist analysis", {
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 60000)
 
   expected_chunks <- 1 #intro
@@ -105,3 +105,160 @@ test_that("rep_markdown produces a renderable .Rmd file after an analysis", {
   expect_gt(file.info(html_file)$size, 100000)
   app$stop()
 })
+
+test_that("rep_markdown produces a renderable .Rmd file after a covariate analysis", {
+  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 60000)
+
+  app$set_inputs(tabs = "setup")
+  app$set_inputs(setupSel = "setup_reload")
+  app$upload_file("setup_reload-load_session" = covariate_model_path)
+  app$click("setup_reload-goLoad_session")
+  app$set_inputs(tabs = "covariate")
+
+  #intro + setup_load + setup_configure + setup_exclude + covariate_model
+  expected_chunks <- 5
+
+  app$set_inputs(covariateSel = "covariate_regression")
+  # needed to avoid error
+  app$set_inputs("covariate_regression-covariate-credible" = FALSE)
+  app$click("covariate_regression-covariate-run")
+  app$wait_for_value(input = "covariate_regression-complete")
+  expected_chunks <- expected_chunks + 1
+
+  app$set_inputs(covariateSel = "covariate_forest")
+  app$click("covariate_forest-run")
+  app$wait_for_value(output = "covariate_forest-covariate-plot")
+  expected_chunks <- expected_chunks + 1
+
+  app$set_inputs(covariateSel = "covariate_comparison")
+  app$click("covariate_comparison-run")
+  app$wait_for_value(output = "covariate_comparison-covariate-table")
+  expected_chunks <- expected_chunks + 1
+
+  app$set_inputs(covariateSel = "covariate_deviance")
+  app$click("covariate_deviance-run")
+  app$wait_for_value(output = "covariate_deviance-covariate-stem")
+  expected_chunks <- expected_chunks + 4
+
+  app$set_inputs(covariateSel = "covariate_ranking")
+  app$click("covariate_ranking-run")
+  app$wait_for_value(output = "covariate_ranking-all-forest")
+  expected_chunks <- expected_chunks + 5
+
+  app$set_inputs(covariateSel = "covariate_mcmc")
+  app$click("covariate_mcmc-run")
+  app$wait_for_value(input = "covariate_mcmc-complete")
+  expected_chunks <- expected_chunks + 4
+
+  app$set_inputs(covariateSel = "covariate_details")
+  app$click("covariate_details-run")
+  app$wait_for_value(output = "covariate_details-covariate-mcmc")
+  expected_chunks <- expected_chunks + 5
+
+  app$set_inputs(covariateSel = "covariate_summary")
+  app$click("covariate_summary-run")
+  app$wait_for_value(output = "covariate_summary-plot")
+  expected_chunks <- expected_chunks + 1
+
+  app$set_inputs(covariateSel = "covariate_results")
+  app$click("covariate_results-run")
+  app$wait_for_idle()
+  app$wait_for_value(output = "covariate_results-all-statistics")
+  expected_chunks <- expected_chunks + 3
+
+  app$set_inputs(tabs = "rep")
+  app$set_inputs(repSel = "rep_markdown")
+  app$set_inputs("rep_markdown-file_type" = ".qmd")
+  app$click("rep_markdown-download")
+  app$wait_for_value(input = "rep_markdown-complete")
+  sess_file <- app$get_download("rep_markdown-dlRMD")
+
+  expect_false(is.null(sess_file))
+  lines <- readLines(sess_file)
+  chunks <- sum(grepl("```\\{r", lines))
+  expect_equal(chunks, expected_chunks)
+  quarto::quarto_render(sess_file)
+  html_file <- gsub("qmd", "html", sess_file)
+  expect_gt(file.info(html_file)$size, 100000)
+  app$stop()
+
+})
+
+test_that("rep_markdown produces a renderable .Rmd file after a baseline analysis", {
+  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 60000)
+
+  app$set_inputs(tabs = "setup")
+  app$set_inputs(setupSel = "setup_reload")
+  app$upload_file("setup_reload-load_session" = baseline_model_path)
+  app$click("setup_reload-goLoad_session")
+  app$set_inputs(tabs = "baseline")
+
+  #intro + setup_load + setup_configure + setup_exclude + baseline_model
+  expected_chunks <- 5
+
+  app$set_inputs(baselineSel = "baseline_regression")
+  # needed to avoid error
+  app$set_inputs("baseline_regression-baseline-credible" = FALSE)
+  app$click("baseline_regression-baseline-run")
+  app$wait_for_value(input = "baseline_regression-complete")
+  expected_chunks <- expected_chunks + 1
+
+  app$set_inputs(baselineSel = "baseline_forest")
+  app$click("baseline_forest-run")
+  app$wait_for_value(output = "baseline_forest-baseline-plot")
+  expected_chunks <- expected_chunks + 1
+
+  app$set_inputs(baselineSel = "baseline_comparison")
+  app$click("baseline_comparison-run")
+  app$wait_for_value(output = "baseline_comparison-baseline-table")
+  expected_chunks <- expected_chunks + 1
+
+  app$set_inputs(baselineSel = "baseline_deviance")
+  app$click("baseline_deviance-run")
+  app$wait_for_value(output = "baseline_deviance-baseline-stem")
+  expected_chunks <- expected_chunks + 4
+
+  app$set_inputs(baselineSel = "baseline_ranking")
+  app$click("baseline_ranking-run")
+  app$wait_for_value(output = "baseline_ranking-all-forest")
+  expected_chunks <- expected_chunks + 5
+
+  app$set_inputs(baselineSel = "baseline_mcmc")
+  app$click("baseline_mcmc-run")
+  app$wait_for_value(input = "baseline_mcmc-complete")
+  expected_chunks <- expected_chunks + 4
+
+  app$set_inputs(baselineSel = "baseline_details")
+  app$click("baseline_details-run")
+  app$wait_for_value(output = "baseline_details-baseline-mcmc")
+  expected_chunks <- expected_chunks + 5
+
+  app$set_inputs(baselineSel = "baseline_summary")
+  app$click("baseline_summary-run")
+  app$wait_for_value(output = "baseline_summary-plot")
+  expected_chunks <- expected_chunks + 1
+
+  app$set_inputs(baselineSel = "baseline_results")
+  app$click("baseline_results-run")
+  app$wait_for_idle()
+  app$wait_for_value(output = "baseline_results-all-statistics")
+  expected_chunks <- expected_chunks + 3
+
+  app$set_inputs(tabs = "rep")
+  app$set_inputs(repSel = "rep_markdown")
+  app$set_inputs("rep_markdown-file_type" = ".qmd")
+  app$click("rep_markdown-download")
+  app$wait_for_value(input = "rep_markdown-complete")
+  sess_file <- app$get_download("rep_markdown-dlRMD")
+
+  expect_false(is.null(sess_file))
+  lines <- readLines(sess_file)
+  chunks <- sum(grepl("```\\{r", lines))
+  expect_equal(chunks, expected_chunks)
+  quarto::quarto_render(sess_file)
+  html_file <- gsub("qmd", "html", sess_file)
+  expect_gt(file.info(html_file)$size, 100000)
+  app$stop()
+
+})
+

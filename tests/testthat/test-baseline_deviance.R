@@ -24,11 +24,10 @@ test_that("{shinytest2} recording: e2e_bayes_deviance", {
   app$set_inputs(tabs = "baseline")
   app$set_inputs(baselineSel = "baseline_deviance")
   app$click("baseline_deviance-run")
-  app$wait_for_value(output = "baseline_deviance-baseline-stem")
-  app$wait_for_value(output = "baseline_deviance-baseline-lev")
 
-  stem <- app$get_value(output = "baseline_deviance-baseline-stem")
-  lev <- app$get_value(output = "baseline_deviance-baseline-lev")
+  app$wait_for_value(input = "baseline_deviance-complete")
+  stem <- app$wait_for_value(output = "baseline_deviance-baseline-stem")
+  lev <- app$wait_for_value(output = "baseline_deviance-baseline-lev")
 
   expect_is(stem, "json")
   expect_is(lev, "json")

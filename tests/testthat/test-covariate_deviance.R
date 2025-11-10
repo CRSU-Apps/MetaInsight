@@ -24,11 +24,10 @@ test_that("{shinytest2} recording: e2e_covariate_deviance", {
   app$set_inputs(tabs = "covariate")
   app$set_inputs(covariateSel = "covariate_deviance")
   app$click("covariate_deviance-run")
-  app$wait_for_value(output = "covariate_deviance-covariate-stem")
-  app$wait_for_value(output = "covariate_deviance-covariate-lev")
+  app$wait_for_value(input = "covariate_deviance-complete")
 
-  stem <- app$get_value(output = "covariate_deviance-covariate-stem")
-  lev <- app$get_value(output = "covariate_deviance-covariate-lev")
+  stem <- app$wait_for_value(output = "covariate_deviance-covariate-stem")
+  lev <- app$wait_for_value(output = "covariate_deviance-covariate-lev")
 
   expect_is(stem, "json")
   expect_is(lev, "json")
