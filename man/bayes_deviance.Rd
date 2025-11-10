@@ -13,6 +13,8 @@ covariate_deviance(...)
 \item{model}{Bayesian model produced by \code{bayes_model()} or \code{covariate_model()}}
 
 \item{async}{Whether or not the function is being used asynchronously. Default \code{FALSE}}
+
+\item{...}{Parameters passed to \code{bayes_deviance()}}
 }
 \value{
 list containing:

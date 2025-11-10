@@ -18,6 +18,8 @@ baseline_results(...)
 \item{logger}{Stores all notification messages to be displayed in the Log
 Window. Insert the logger reactive list here for running in
 shiny, otherwise leave the default \code{NULL}}
+
+\item{...}{Parameters passed to \code{bayes_results()}}
 }
 \value{
 HTML summary of the model

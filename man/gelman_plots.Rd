@@ -7,9 +7,9 @@
 gelman_plots(gelman_data, parameters)
 }
 \arguments{
-\item{parameters}{Vector of parameters mentioned in the previous argument.}
+\item{gelman_data}{List of outputs from \code{coda:::gelman.preplot}}
 
-\item{gelman_plots}{List of outputs from \code{coda::gelman.plot(model$samples[, parm])}, where parm is a parameter from the model.}
+\item{parameters}{Vector of parameters mentioned in the previous argument.}
 }
 \value{
 List of ggplot Gelman plots

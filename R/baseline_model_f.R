@@ -151,7 +151,7 @@ BaselineRiskNetwork <- function(br_data, outcome, model_type, cov_parameters) {
 #' @param connected_data A data frame of data in MetaInsight format.
 #' @param treatment_df Data frame containing treatment IDs and names in columns named 'Number' and 'Label' respectively.
 #' @param outcome "Continuous" or "Binary".
-#' @param reference treatment An element of treatment_df$Label, the .
+#' @param reference_treatment treatment An element of treatment_df$Label, the .
 #' @param model_type "fixed" or "random".
 #' @param cov_parameters "shared", "exchangable", or "unrelated".
 #' @param seed Seed. Defaults to 123.

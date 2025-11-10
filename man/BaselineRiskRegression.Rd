@@ -21,13 +21,13 @@ BaselineRiskRegression(
 
 \item{outcome}{"Continuous" or "Binary".}
 
+\item{reference_treatment}{treatment An element of treatment_df$Label, the .}
+
 \item{model_type}{"fixed" or "random".}
 
 \item{cov_parameters}{"shared", "exchangable", or "unrelated".}
 
 \item{seed}{Seed. Defaults to 123.}
-
-\item{reference}{treatment An element of treatment_df$Label, the .}
 }
 \value{
 Output from bnma::network.run().

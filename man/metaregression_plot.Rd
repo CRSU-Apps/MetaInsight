@@ -59,7 +59,10 @@ Defaults to FALSE.}
 }}
 }
 \value{
-Created ggplot2 object.
+List containing:
+\item{svg}{character. SVG code to produce the plot}
+\item{height}{numeric. Plot height in pixels}
+\item{width}{numeric. Plot width in pixels}
 }
 \description{
 Create a composite meta-regression plot which comprises plots showing direct and indirect evidence.

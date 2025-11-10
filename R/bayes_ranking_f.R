@@ -33,12 +33,14 @@ bayes_ranking <- function(connected_data, treatment_df, model, ranking_option, c
 }
 
 #' @rdname bayes_ranking
+#' @param ... Parameters passed to `bayes_ranking()`
 #' @export
 baseline_ranking <- function(...){
   bayes_ranking(...)
 }
 
 #' @rdname bayes_ranking
+#' @param ... Parameters passed to `bayes_ranking()`
 #' @export
 covariate_ranking <- function(...){
   bayes_ranking(...)

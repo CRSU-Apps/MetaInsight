@@ -33,6 +33,8 @@ covariate_ranking(...)
 \item{logger}{Stores all notification messages to be displayed in the Log
 Window. Insert the logger reactive list here for running in
 shiny, otherwise leave the default \code{NULL}}
+
+\item{...}{Parameters passed to \code{bayes_ranking()}}
 }
 \value{
 List of output created by \code{rankdata()}.

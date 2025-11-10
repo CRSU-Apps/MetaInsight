@@ -1,8 +1,11 @@
 #' @title covariate_model
-#' @description Does x
+#' @description Fits a covariate regression model using `{gemtc}`
+#' @param cov_value numeric. The value at which to fit the model. Must be greater
+#' than or equal to the minimum value and less than or equal to the maximum
+#' value in `connected_data`
 #' @param regressor_type character. Type of regression coefficient, either `shared`, `unrelated`, or `exchangeable`
 #' @param seed numeric. Seed used to fit the model
-#' @param covariate_model_output list. The output of the function. Default NULL.
+#' @param covariate_model_output list. The output of the function. Default `NULL`.
 #' When supplied, only the output is recalculated for a given covariate value,
 #' rather than refitting the model.
 #' @inheritParams common_params

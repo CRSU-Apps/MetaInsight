@@ -44,6 +44,7 @@ bayes_forest <- function(model, treatment_df, reference_treatment, title = "", r
 }
 
 #' @rdname bayes_forest
+#' @param ... Parameters passed to `bayes_forest()`
 #' @export
 covariate_forest <- function(...){
   bayes_forest(...)

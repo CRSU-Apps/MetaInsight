@@ -21,7 +21,11 @@
 #' - "TR" - Top-right of the plot area
 #' - "TL" - Top-left of the plot area
 #'
-#' @return Created ggplot2 object.
+#' @return List containing:
+#'  \item{svg}{character. SVG code to produce the plot}
+#'  \item{height}{numeric. Plot height in pixels}
+#'  \item{width}{numeric. Plot width in pixels}
+#'
 #' @export
 metaregression_plot <- function(
     model_output,

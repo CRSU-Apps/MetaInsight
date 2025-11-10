@@ -60,6 +60,8 @@ bayes_deviance_submodule_server <- function(id, common, trigger){
     output$stem <- plotly::renderPlotly({
       watch(trigger)
       req(common[[paste0("bayes_deviance_", id)]])
+      # workaround for testing
+      on.exit(shinyjs::runjs(glue::glue("Shiny.setInputValue('bayes_deviance-complete', 'complete');")))
       common[[paste0("bayes_deviance_", id)]]$stem_plot
     })
 

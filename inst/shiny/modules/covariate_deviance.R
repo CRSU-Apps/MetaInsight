@@ -43,10 +43,10 @@ metaregression_deviance_module_server <- function(id, common, run) {
     output$stem <- plotly::renderPlotly({
       watch(module)
       req(common[[module]])
+      # workaround for testing
+      on.exit(shinyjs::runjs(glue::glue("Shiny.setInputValue('{module}-complete', 'complete');")))
       common[[module]]$stem_plot
     })
-
-    outputOptions(output, "stem", suspendWhenHidden = FALSE)
 
     output$lev <- plotly::renderPlotly({
       watch(module)

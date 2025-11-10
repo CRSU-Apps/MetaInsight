@@ -3,11 +3,7 @@
 ```
 
 ```{r, echo = {{covariate_model_knit}}, include = {{covariate_model_knit}}}
-
-covariate_model <- suppress_jags_output(
-  covariate_model(main_connected_data, treatment_df, outcome, outcome_measure, {{covariate_model_covariate_value}},
-                  model_type, {{covariate_model_regressor}}, reference_treatment_all, seed))
-
+covariate_model <- covariate_model(main_connected_data, treatment_df, outcome, outcome_measure, {{covariate_model_covariate_value}}, model_type, {{covariate_model_regressor}}, reference_treatment_all, seed)
 ```
 
 ```{r, echo = {{covariate_model_knit}}, include = {{covariate_model_knit}}}

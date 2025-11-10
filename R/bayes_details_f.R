@@ -23,12 +23,14 @@ bayes_details <- function(model, logger = NULL){
 }
 
 #' @rdname bayes_details
+#' @param ... Parameters passed to `bayes_details()`
 #' @export
 covariate_details <- function(...){
   bayes_details(...)
 }
 
 #' @rdname bayes_details
+#' @param ... Parameters passed to `bayes_details()`
 #' @export
 baseline_details <- function(...){
   bayes_details(...)

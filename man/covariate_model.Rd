@@ -30,6 +30,10 @@ covariate_model(
 \code{OR}, \code{RR} or \code{RD} when \code{outcome} is \code{Binary} or \code{MD} or \code{SMD} when
 \code{outcome} is \code{Continuous}}
 
+\item{cov_value}{numeric. The value at which to fit the model. Must be greater
+than or equal to the minimum value and less than or equal to the maximum
+value in \code{connected_data}}
+
 \item{model_type}{character. Type of model to fit, either \code{random} or \code{fixed}}
 
 \item{regressor_type}{character. Type of regression coefficient, either \code{shared}, \code{unrelated}, or \code{exchangeable}}
@@ -38,7 +42,7 @@ covariate_model(
 
 \item{seed}{numeric. Seed used to fit the model}
 
-\item{covariate_model_output}{list. The output of the function. Default NULL.
+\item{covariate_model_output}{list. The output of the function. Default \code{NULL}.
 When supplied, only the output is recalculated for a given covariate value,
 rather than refitting the model.}
 
@@ -65,5 +69,5 @@ List of gemtc related output:
 \item{covariate_max}{Vector of maximum covariate values directly contributing to the regression}
 }
 \description{
-Does x
+Fits a covariate regression model using \code{{gemtc}}
 }

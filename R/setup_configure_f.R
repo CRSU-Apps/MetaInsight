@@ -9,6 +9,9 @@
 #'  \item{disconnected_indices}{vector. Indices of studies that are not connected to the main network}
 #'  \item{main_connected_data}{dataframe. A subset of the data containing only connected studies}
 #'  \item{non_covariate_data_all}{dataframe. The uploaded data with covariates removed}
+#'  \item{covariate_column}{character. Name of the column containing covariate data}
+#'  \item{covariate_name}{character. Name of the covariate}
+#'  \item{covariate_type}{character. Whether the covariate is `Binary` or `Continuous`}
 #'  \item{bugsnet_all}{dataframe. Processed data for bugsnet analyses created by `bugsnetdata`}
 #'  \item{freq_all}{list. Processed data for frequentist analyses created by `frequentist()`}
 #' @export

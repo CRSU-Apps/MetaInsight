@@ -45,12 +45,14 @@ bayes_mcmc <- function(model, async = FALSE){
 }
 
 #' @rdname bayes_mcmc
+#' @param ... Parameters passed to `bayes_mcmc()`
 #' @export
 covariate_mcmc <- function(...){
   bayes_mcmc(...)
 }
 
 #' @rdname bayes_mcmc
+#' @param ... Parameters passed to `bayes_mcmc()`
 #' @export
 baseline_mcmc <- function(...){
   bayes_mcmc(...)
@@ -125,7 +127,7 @@ GelmanPlot <- function(gelman_data, parameter) {
 
 #' Creates Gelman plots for a gemtc or bnma model.
 #'
-#' @param gelman_plots List of outputs from `coda::gelman.plot(model$samples[, parm])`, where parm is a parameter from the model.
+#' @param gelman_data List of outputs from `coda:::gelman.preplot`
 #' @param parameters Vector of parameters mentioned in the previous argument.
 #' @return List of ggplot Gelman plots
 #' @export

@@ -46,14 +46,16 @@ bayes_nodesplit <- function(connected_data, treatment_df, outcome, outcome_measu
       sampleSize = data$N
     )
   }
-  mtcNetwork <- gemtc::mtc.network(
-    data.ab = armData,
-    description = "Network",
-    treatments = data.frame(
-      id = treatment_df$Label,
-      description = treatment_df$Label
+  mtcNetwork <- suppress_jags_output(
+    gemtc::mtc.network(
+      data.ab = armData,
+      description = "Network",
+      treatments = data.frame(
+        id = treatment_df$Label,
+        description = treatment_df$Label
+        )
+      )
     )
-  )
 
   if (outcome_measure == "MD") {
     like <- "normal"
@@ -77,11 +79,13 @@ bayes_nodesplit <- function(connected_data, treatment_df, outcome, outcome_measu
     )
   } else {
     return(
-      gemtc::mtc.nodesplit(
-        network = mtcNetwork,
-        linearModel = model_type,
-        likelihood = like,
-        link = link
+      suppress_jags_output(
+        gemtc::mtc.nodesplit(
+          network = mtcNetwork,
+          linearModel = model_type,
+          likelihood = like,
+          link = link
+        )
       )
     )
   }

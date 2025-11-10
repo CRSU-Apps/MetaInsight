@@ -37,13 +37,6 @@ spurious <- function(x) {
   shinyjs::disable(x)
   svglite::add_fonts(x)
   zip::deflate(x)
-
-  # to remove later on
-  bnma::contrast.network.data(x)
-  data.tree::Aggregate(a)
-  matrixcalc::commutation.matrix(x)
-  shinycssloaders::hidePageSpinner(x)
-  shinydashboard::box(x)
   return()
 }
 
@@ -245,7 +238,6 @@ show_table <- function(parent_session){
   bslib::accordion_panel_open("collapse_table", TRUE, session = parent_session)
 }
 
-
 ####################### #
 # SUPPRESS JAGS OUTPUT #
 ####################### #
@@ -255,15 +247,12 @@ show_table <- function(parent_session){
 #' html reports by wrapping model functions
 #' @param expr The model function to be used
 #' @keywords internal
-#' @export
 suppress_jags_output <- function(expr) {
   null_device <- if (.Platform$OS.type == "windows") "NUL" else "/dev/null"
   sink(null_device)
   on.exit(sink())  # Ensure output is restored even if an error occurs
   force(expr)
 }
-
-
 
 ####################### #
 # PLOTTING #
@@ -361,10 +350,10 @@ download_button_pair <- function(id){
   )
 }
 
-#' Create text with the point estimate and 95\% CrI of between-trial SD of treatment effects.
+#' Create text with the point estimate and 95% CrI of between-trial SD of treatment effects.
 #'
 #' @param model Output created by `bayes_model()`
-#' @return Text with the point estimate and 95\% CrI of between-trial SD of treatment effects (all 0 if fixed effects)
+#' @return Text with the point estimate and 95% CrI of between-trial SD of treatment effects (all 0 if fixed effects)
 #' @export
 CreateTauSentence <- function(model) {
   sumresults <- model$sumresults

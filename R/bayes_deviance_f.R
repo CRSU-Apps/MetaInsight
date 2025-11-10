@@ -38,6 +38,7 @@ bayes_deviance <- function(model, async = FALSE){
 }
 
 #' @rdname bayes_deviance
+#' @param ... Parameters passed to `bayes_deviance()`
 #' @export
 covariate_deviance <- function(...){
   bayes_deviance(...)

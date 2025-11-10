@@ -14,6 +14,9 @@ treatment_df <- configured_data$treatment_df
 disconnected_indices <- configured_data$disconnected_indices
 main_connected_data <- configured_data$main_connected_data
 non_covariate_data_all <- configured_data$non_covariate_data_all
+covariate_column <- configured_data$covariate_column
+covariate_name <- configured_data$covariate_name
+covariate_type <- configured_data$covariate_type
 bugsnet_all <- configured_data$bugsnet_all
 frequentist_all <- configured_data$freq_all
 reference_treatment_all <- configured_data$reference_treatment

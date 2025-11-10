@@ -19,12 +19,14 @@ bayes_results <- function(model, logger = NULL){
 }
 
 #' @rdname bayes_results
+#' @param ... Parameters passed to `bayes_results()`
 #' @export
 covariate_results <- function(...){
   bayes_results(...)
 }
 
 #' @rdname bayes_results
+#' @param ... Parameters passed to `bayes_results()`
 #' @export
 baseline_results <- function(...){
   bayes_results(...)
