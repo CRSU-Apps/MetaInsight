@@ -57,14 +57,12 @@ setup_exclude <- function(non_covariate_data, treatment_df, reference_treatment,
                              outcome,
                              treatment_df_sub)
 
-  freq_sub <- suppressWarnings(
-                frequentist(non_covariate_data_sub,
+  freq_sub <- frequentist(non_covariate_data_sub,
                           outcome,
                           treatment_df_sub,
                           outcome_measure,
                           model_type,
                           reference_treatment_sub)
-              )
 
   list(bugsnet_sub = bugsnet_sub,
        freq_sub = freq_sub,

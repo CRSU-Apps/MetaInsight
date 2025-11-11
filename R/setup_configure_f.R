@@ -85,13 +85,12 @@ setup_configure <- function(data, treatment_df, outcome, outcome_measure, refere
   bugsnet_all <- bugsnetdata(non_covariate_data_all, outcome, treatment_df)
 
   # random is the default model type, this structure is updated in setup_exclude if the model type changes
-  # suppressWarnings deprecation temporarily
-  freq_all <- suppressWarnings(frequentist(non_covariate_data_all,
+  freq_all <- frequentist(non_covariate_data_all,
                           outcome,
                           treatment_df,
                           outcome_measure,
                           "random",
-                          treatment_df$Label[treatment_df$Number == 1]))
+                          treatment_df$Label[treatment_df$Number == 1])
 
   return(list(wrangled_data = data,
               treatment_df = treatment_df,

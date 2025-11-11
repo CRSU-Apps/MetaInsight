@@ -134,6 +134,10 @@ rep_markdown_module_server <- function(id, common, parent_session, COMPONENT_MOD
         combined_rmd <- append(combined_rmd, split_lines, l-1)
       }
 
+      # remove blank lines
+      idx <- with(rle(combined_rmd == ""), rep(seq_along(lengths), lengths))
+      combined_rmd <- combined_rmd[!duplicated(idx) | combined_rmd != ""]
+
       result_file <- paste0("combined", rep_markdown_file_type)
       if (rep_markdown_file_type == ".qmd") {
         writeLines(combined_rmd, result_file, useBytes = TRUE)

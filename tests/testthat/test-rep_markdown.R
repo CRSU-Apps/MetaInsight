@@ -15,7 +15,6 @@ test_that("rep_markdown produces a renderable .qmd when no analysis has been con
   app$stop()
 })
 
-
 test_that("rep_markdown produces can render a qmd to html when no analysis has been conducted", {
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 60000)
   app$set_inputs(tabs = "rep")

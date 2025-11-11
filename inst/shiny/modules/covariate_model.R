@@ -15,6 +15,7 @@ covariate_model_module_ui <- function(id) {
 covariate_model_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
+    # update slider with relevant values
     observe({
       watch("setup_configure")
       req(common$covariate_column)
@@ -26,12 +27,10 @@ covariate_model_module_server <- function(id, common, parent_session) {
         label <- glue::glue("Covariate value ({common$covariate_name})")
         if (common$covariate_type == "Continuous"){
           step <- 10 ** (log_val - 2)
-          common$meta$covariate_model$covariate_step <- step
           updateSliderInput(session, "covariate_value", min = min, max = max, value = mean, step = step, label = label)
         }
         if (common$covariate_type == "Binary"){
           step <- 1
-          common$meta$covariate_model$covariate_step <- step
           # hide ticks
           on.exit(shinyjs::delay(100, shinyjs::runjs("$('#covariate_model-covariate_value').siblings('.irs').find('.irs-grid').hide();")))
           updateSliderInput(session, "covariate_value", min = min, max = max, value = 0, step = step, label = label)
@@ -130,32 +129,44 @@ covariate_model_module_server <- function(id, common, parent_session) {
   }, digits = 3, rownames = TRUE, colnames = FALSE)
 
   return(list(
-    save = function() {list(
-      ### Manual save start
-      covariate_min = min(common$main_connected_data[[common$covariate_column]]),
-      covariate_max = max(common$main_connected_data[[common$covariate_column]]),
-      covariate_step = common$meta$covariate_model$covariate_step,
-      covariate_label = glue::glue("Covariate value ({common$covariate_name})"),
-      covariate_tick = ifelse(common$covariate_type == "Continuous", TRUE, FALSE),
-      ### Manual save end
-      covariate_value = input$covariate_value,
-      regressor = input$regressor)
+    save = function() {
+      # only save covariate info when it exists
+      if (is.null(common$covariate_column)){
+        list()
+      } else {
+        covariate_min = min(common$main_connected_data[[common$covariate_column]])
+        covariate_max = max(common$main_connected_data[[common$covariate_column]])
+        log_val <- round(log10(covariate_max - covariate_min))
+        step <- 10 ** (log_val - 2)
+        list(
+          ### Manual save start
+          covariate_min = covariate_min,
+          covariate_max = covariate_min,
+          covariate_step = ifelse(common$covariate_type == "Continuous", step, 1),
+          covariate_label = glue::glue("Covariate value ({common$covariate_name})"),
+          covariate_tick = ifelse(common$covariate_type == "Continuous", TRUE, FALSE),
+          ### Manual save end
+          covariate_value = input$covariate_value,
+          regressor = input$regressor)
+      }
     },
     load = function(state) {
-      ### Manual load start
-      updateSliderInput(session, "covariate_value",
-                        min = state$covariate_min,
-                        max = state$covariate_max,
-                        value = state$covariate_value,
-                        step = state$covariate_step,
-                        label = state$covariate_label
-                        )
-      if (!state$covariate_tick){
-        # hide ticks
-        on.exit(shinyjs::delay(100, shinyjs::runjs("$('#covariate_model-covariate_value').siblings('.irs').find('.irs-grid').hide();")))
+      if (!is.null(state$covariate_min)){
+        ### Manual load start
+        updateSliderInput(session, "covariate_value",
+                          min = state$covariate_min,
+                          max = state$covariate_max,
+                          value = state$covariate_value,
+                          step = state$covariate_step,
+                          label = state$covariate_label
+                          )
+        if (!state$covariate_tick){
+          # hide ticks
+          on.exit(shinyjs::delay(100, shinyjs::runjs("$('#covariate_model-covariate_value').siblings('.irs').find('.irs-grid').hide();")))
+        }
+        ### Manual load end
+        updateRadioButtons(session, "regressor", selected = state$regressor)
       }
-      ### Manual load end
-      updateRadioButtons(session, "regressor", selected = state$regressor)
     }
   ))
 })

@@ -33,6 +33,7 @@ test_that("{shinytest2} recording: e2e_baseline_details", {
   app$set_inputs(baselineSel = "baseline_details")
   app$click("baseline_details-run")
 
+  app$wait_for_idle()
   app$wait_for_value(output = "baseline_details-baseline-mcmc")
   app$wait_for_value(output = "baseline_details-baseline-priors")
   app$set_inputs("baseline_details-baseline-tabs" = "code")

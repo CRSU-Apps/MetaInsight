@@ -3,8 +3,8 @@
 ```
 
 ```{r, echo = {{bayes_nodesplit_knit}}, include = {{bayes_nodesplit_knit}}}
-bayes_nodesplit_all <- suppress_jags_output(bayes_nodesplit(main_connected_data, treatment_df, outcome, outcome_measure, model_type))
-bayes_nodesplit_sub <- suppress_jags_output(bayes_nodesplit(connected_data_sub, treatment_df_sub, outcome, outcome_measure, model_type))
+bayes_nodesplit_all <- bayes_nodesplit(main_connected_data, treatment_df, outcome, outcome_measure, model_type)
+bayes_nodesplit_sub <- bayes_nodesplit(connected_data_sub, treatment_df_sub, outcome, outcome_measure, model_type)
 ```
 
 ```{asis, echo = {{bayes_nodesplit_knit}}, eval = {{bayes_nodesplit_knit}}, include = {{bayes_nodesplit_knit}}}

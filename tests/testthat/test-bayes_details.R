@@ -7,7 +7,7 @@ test_that("Check bayes_details function works as expected", {
   expect_equal(ncol(result$mcmc), 2)
   expect_equal(nrow(result$mcmc), 4)
   expect_equal(ncol(result$priors), 2)
-  expect_equal(nrow(result$priors), 4)
+  expect_equal(nrow(result$priors), 3)
 })
 
 test_that("Check bayes_details function produces errors as expected", {
@@ -34,6 +34,7 @@ test_that("{shinytest2} recording: e2e_bayes_details", {
   app$set_inputs(bayesSel = "bayes_details")
   app$click("bayes_details-run")
 
+  app$wait_for_idle()
   mcmc <- app$wait_for_value(output = "bayes_details-bayes-mcmc")
   priors <- app$wait_for_value(output = "bayes_details-bayes-priors")
   app$set_inputs("bayes_details-bayes-tabs" = "code")
@@ -41,13 +42,19 @@ test_that("{shinytest2} recording: e2e_bayes_details", {
   app$set_inputs("bayes_details-bayes-tabs" = "inits")
   inits <- app$wait_for_value(output = "bayes_details-bayes-inits")
   app$set_inputs("bayes_details-bayes-tabs" = "dev")
-  dev_mtc <- app$wait_for_value(output = "bayes_details-bayes-dev_mtc")
+  dev_mtc_all <- app$wait_for_value(output = "bayes_details-bayes-dev_mtc")
+  dev_ume_all <- app$wait_for_value(output = "bayes_details-bayes-dev_ume")
+  dev_mtc_sub <- app$wait_for_value(output = "bayes_details-bayes-dev_mtc_sub")
+  dev_ume_sub <- app$wait_for_value(output = "bayes_details-bayes-dev_ume_sub")
 
   expect_match(mcmc, "<table")
   expect_match(priors, "<table")
   expect_match(code, "model")
-  expect_match(inits, "Wichmann-Hill")
-  expect_match(dev_mtc, "dev\\.ab")
+  expect_match(inits, "delta")
+  expect_match(dev_mtc_all, "dev\\.ab")
+  expect_match(dev_ume_all, "dev\\.ab")
+  expect_match(dev_mtc_sub, "dev\\.ab")
+  expect_match(dev_ume_sub, "dev\\.ab")
 
   app$stop()
 })

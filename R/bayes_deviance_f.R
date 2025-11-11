@@ -15,7 +15,7 @@ bayes_deviance <- function(model, async = FALSE){
     return(async |> asyncLog(type = "error", "model must be an object created by bayes_model() or covariate_model()"))
   }
 
-  deviance <- gemtc::mtc.deviance(model$mtcResults)
+  deviance <- suppress_jags_output(gemtc::mtc.deviance(model$mtcResults))
   scat <- scat_plot(model, deviance, model$model_type, model$outcome_measure)
 
   if(model$mtcResults$model$type == "regression"){

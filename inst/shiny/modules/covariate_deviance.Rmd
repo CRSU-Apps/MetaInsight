@@ -3,7 +3,7 @@
 ```
 
 ```{r, echo = {{covariate_deviance_knit}}, include = {{covariate_deviance_knit}}}
-covariate_deviance <- suppress_jags_output(covariate_deviance(covariate_model))
+covariate_deviance <- covariate_deviance(covariate_model)
 ```
 
 ```{asis, echo = {{covariate_deviance_knit}}, eval = {{covariate_deviance_knit}}, include = {{covariate_deviance_knit}}}

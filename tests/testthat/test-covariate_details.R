@@ -34,6 +34,7 @@ test_that("{shinytest2} recording: e2e_covariate_details", {
   app$set_inputs(covariateSel = "covariate_details")
   app$click("covariate_details-run")
 
+  app$wait_for_idle()
   mcmc <- app$wait_for_value(output = "covariate_details-covariate-mcmc")
   priors <- app$wait_for_value(output = "covariate_details-covariate-priors")
   app$set_inputs("covariate_details-covariate-tabs" = "code")
