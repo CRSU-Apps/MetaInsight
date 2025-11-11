@@ -2,7 +2,24 @@ metaregression_regression_module_ui <- function(id, module){
 
   ns <- NS(id)
   tagList(
-    shinyWidgets::pickerInput(ns("comparators"), "Treatments to include", choices = c(), multiple = TRUE),
+    tags$div(
+      tags$label(
+        `for` = ns("comparators"),
+        "Treatments to include ",
+        tags$span(
+          style = "font-weight: normal; font-size: 0.9em;",
+          actionLink(ns("add_all_comparators"), "Add all", style = "margin-left: 10px;"),
+          " | ",
+          actionLink(ns("remove_all_comparators"), "Remove all")
+        )
+      ),
+      shinyWidgets::pickerInput(
+        ns("comparators"),
+        label = NULL,
+        choices = c(),
+        multiple = TRUE
+      )
+    ),
     # Covariate value
     checkboxInput(ns("covariate"),
                   label = add_tooltip("Show covariate value?", "Show the covariate value as a vertical line at the current value"),
@@ -75,23 +92,34 @@ covariate_regression_module_ui <- function(id) {
 metaregression_regression_module_server <- function(id, common) {
   moduleServer(id, function(input, output, session) {
 
-    module <- glue::glue("{id}_regression")
+    module_id <- glue::glue("{id}_regression")
     model <- glue::glue("{id}_model")
     model_fit <- glue::glue("{id}_model_fit")
 
     shinyjs::hide("download")
-    init(glue::glue("{module}_plot"))
+    init(glue::glue("{module_id}_plot"))
 
     observe({
       watch("setup_configure")
       req(common$reference_treatment_all)
       all_treatments <- unique(common$treatment_df$Label)
       treatments <- all_treatments[all_treatments != common$reference_treatment_all]
-      shinyWidgets::updatePickerInput(session, "comparators", choices = treatments, selected = treatments)
+      shinyWidgets::updatePickerInput(session, "comparators", choices = treatments, selected = character(0))
     })
 
-    common$tasks[[module]] <- ExtendedTask$new(
-      function(...) mirai::mirai(run(...), run = get(module), .args = environment())
+    observeEvent(input$add_all_comparators, {
+      req(common$reference_treatment_all)
+      all_treatments <- unique(common$treatment_df$Label)
+      treatments <- all_treatments[all_treatments != common$reference_treatment_all]
+      shinyWidgets::updatePickerInput(session, "comparators", selected = treatments)
+    })
+
+    observeEvent(input$remove_all_comparators, {
+      shinyWidgets::updatePickerInput(session, "comparators", selected = character(0))
+    })
+
+    common$tasks[[module_id]] <- ExtendedTask$new(
+      function(...) mirai::mirai(run(...), run = get(module_id), .args = environment())
     ) |> bind_task_button("run")
 
     observeEvent(input$run, {
@@ -99,21 +127,21 @@ metaregression_regression_module_server <- function(id, common) {
         common$logger |> writeLog(type = "error", go_to = glue::glue("{id}_model"), glue::glue("Please fit the {id} model first"))
         return()
       } else {
-        trigger(module)
+        trigger(module_id)
       }
     })
 
-    observeEvent(list(watch(model_fit), watch(module)), {
+    observeEvent(list(watch(model_fit), watch(module_id)), {
       # trigger if run is pressed or if model is changed, but only if a model exists
-      req((watch(module) > 0 && any(!is.null(common[[model]]), watch(model_fit) > 0)))
+      req((watch(module_id) > 0 && any(!is.null(common[[model]]), watch(model_fit) > 0)))
 
-      if (is.null(common[[module]])){
+      if (is.null(common[[module_id]])){
         common$logger |> writeLog(type = "starting", glue::glue("Calculating {id} regression plot data"))
       } else {
         common$logger |> writeLog(type = "starting", glue::glue("Updating {id} regression plot data"))
       }
 
-      common$tasks[[module]]$invoke(common[[model]],
+      common$tasks[[module_id]]$invoke(common[[model]],
                                      common$main_connected_data,
                                      ifelse(id == "covariate", common$covariate_column, "covar.baseline_risk"),
                                      common$treatment_df,
@@ -128,42 +156,42 @@ metaregression_regression_module_server <- function(id, common) {
 
     regress_result <- observe({
 
-      result <- common$tasks[[module]]$result()
+      result <- common$tasks[[module_id]]$result()
       regress_result$suspend()
       if (inherits(result, "list")){
-        common[[module]] <- result
-        shinyjs::runjs(glue::glue("Shiny.setInputValue('{module}-complete', 'complete');"))
+        common[[module_id]] <- result
+        shinyjs::runjs(glue::glue("Shiny.setInputValue('{module_id}-complete', 'complete');"))
         common$logger |> writeLog(type = "complete", glue::glue("{stringr::str_to_title(id)} regression plot data has been calculated"))
       } else {
         common$logger |> writeLog(type = "error", result)
       }
 
-      trigger(glue::glue("{module}_plot"))
+      trigger(glue::glue("{module_id}_plot"))
     })
 
     svg <- reactive({
-      watch(glue::glue("{module}_plot"))
-      req(common[[module]])
+      watch(glue::glue("{module_id}_plot"))
+      req(common[[module_id]])
       on.exit(shinyjs::show("download"))
 
       # METADATA ####
-      common$meta[[module]]$used <- TRUE
-      common$meta[[module]]$comparators <- input$comparators
-      common$meta[[module]]$covariate <- input$covariate
-      common$meta[[module]]$credible <- input$credible
-      common$meta[[module]]$credible_opacity <- as.numeric(input$credible_opacity)
-      common$meta[[module]]$ghosts <- input$ghosts
-      common$meta[[module]]$extrapolate <- input$extrapolate
-      common$meta[[module]]$symbol <- input$symbol
-      common$meta[[module]]$symbol_size <- as.numeric(input$symbol_size)
-      common$meta[[module]]$legend_position <- input$legend_position
+      common$meta[[module_id]]$used <- TRUE
+      common$meta[[module_id]]$comparators <- input$comparators
+      common$meta[[module_id]]$covariate <- input$covariate
+      common$meta[[module_id]]$credible <- input$credible
+      common$meta[[module_id]]$credible_opacity <- as.numeric(input$credible_opacity)
+      common$meta[[module_id]]$ghosts <- input$ghosts
+      common$meta[[module_id]]$extrapolate <- input$extrapolate
+      common$meta[[module_id]]$symbol <- input$symbol
+      common$meta[[module_id]]$symbol_size <- as.numeric(input$symbol_size)
+      common$meta[[module_id]]$legend_position <- input$legend_position
 
       metaregression_plot(model_output = common[[model]],
                           treatment_df = common$treatment_df,
                           outcome_measure = common$outcome_measure,
                           comparators = input$comparators,
-                          directness = common[[module]]$directness,
-                          credible_regions = common[[module]]$credible_regions,
+                          directness = common[[module_id]]$directness,
+                          credible_regions = common[[module_id]]$credible_regions,
                           include_covariate = input$covariate,
                           include_ghosts = input$ghosts,
                           include_extrapolation = input$extrapolate,
