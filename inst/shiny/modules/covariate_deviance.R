@@ -21,7 +21,7 @@ metaregression_deviance_module_server <- function(id, common, run) {
       req(watch(module) > 0 || run() > 0)
 
       if (is.null(common[[model]])){
-        common$logger |> writeLog(type = "error", glue::glue("Please fit the {id} model first"))
+        common$logger |> writeLog(type = "error", go_to = "{id}_model", glue::glue("Please fit the {id} model first"))
         return()
       }
 

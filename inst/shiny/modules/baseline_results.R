@@ -12,7 +12,7 @@ baseline_results_module_server <- function(id, common, parent_session) {
 
     observeEvent(input$run, {
       if (is.null(common$baseline_model)){
-        common$logger |> writeLog(type = "error", "Please fit the baseline model first")
+        common$logger |> writeLog(type = "error", go_to = "baseline_model", "Please fit the baseline model first")
         return()
       } else {
         trigger("baseline_results")

@@ -18,7 +18,7 @@ baseline_mcmc_module_server <- function(id, common, parent_session) {
       req(watch("baseline_mcmc") > 0 || input$run > 0)
 
       if (is.null(common$baseline_model)){
-        common$logger |> writeLog(type = "error", "Please fit the baseline model first")
+        common$logger |> writeLog(type = "error", go_to = "baseline_model", "Please fit the baseline model first")
         return()
       }
       if (is.null(common$baseline_mcmc)){

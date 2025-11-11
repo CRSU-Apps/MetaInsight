@@ -18,7 +18,7 @@ covariate_mcmc_module_server <- function(id, common, parent_session) {
       req(watch("covariate_mcmc") > 0 || input$run > 0)
 
       if (is.null(common$covariate_model)){
-        common$logger |> writeLog(type = "error", "Please fit the covariate model first")
+        common$logger |> writeLog(type = "error", go_to = "covariate_model", "Please fit the covariate model first")
         return()
       }
       if (is.null(common$covariate_mcmc)){

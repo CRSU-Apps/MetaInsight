@@ -10,7 +10,9 @@ bayes_details_submodule_server <- function(id, common, model, model_trigger, mod
 
   observeEvent(run(), {
     if (is.null(common[[model]])){
-      common$logger |> writeLog(type = "error", error_message)
+      common$logger |> writeLog(type = "error",
+                                go_to = glue::glue("{id}_model"),
+                                error_message)
       return()
     } else {
       common$meta[[module_id]]$used <- TRUE

@@ -24,7 +24,7 @@ metaregression_comparison_module_server <- function(id, common, run) {
 
     observeEvent(run(), {
       if (is.null(common[[model]])){
-        common$logger |> writeLog(type = "error", glue::glue("Please fit the {id} model first"))
+        common$logger |> writeLog(type = "error", go_to = "{id}_model", glue::glue("Please fit the {id} model first"))
         return()
       } else {
         common$meta[[module]]$used <- TRUE

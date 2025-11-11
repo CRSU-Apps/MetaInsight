@@ -39,7 +39,7 @@ bayes_results_module_server <- function(id, common, parent_session) {
     observeEvent(input$run, {
 
       if (is.null(common$bayes_all)){
-        common$logger |> writeLog(type = "error", "Please fit the Bayesian models first")
+        common$logger |> writeLog(type = "error", go_to = "bayes_model", "Please fit the Bayesian models first")
         return()
       } else {
         trigger("bayes_results")

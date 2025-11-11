@@ -68,7 +68,7 @@ bayes_mcmc_module_server <- function(id, common, parent_session) {
       # add check for a running model
 
       if (is.null(common$bayes_all)){
-        common$logger |> writeLog(type = "error", "Please fit the Bayesian models first")
+        common$logger |> writeLog(type = "error", go_to = "bayes_model", "Please fit the Bayesian models first")
         return()
       } else {
         common$meta$bayes_mcmc$used <- TRUE
