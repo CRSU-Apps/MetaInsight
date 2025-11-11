@@ -33,3 +33,11 @@ deviance_all$deviance_mtc
 ```{r, echo = {{all(bayes_details_knit, bayes_deviance_knit)}}, include = {{all(bayes_details_knit, bayes_deviance_knit)}}}
 deviance_all$deviance_ume
 ```
+
+```{r, echo = {{all(bayes_details_knit, bayes_deviance_knit)}}, include = {{all(bayes_details_knit, bayes_deviance_knit)}}}
+deviance_sub$deviance_mtc
+```
+
+```{r, echo = {{all(bayes_details_knit, bayes_deviance_knit)}}, include = {{all(bayes_details_knit, bayes_deviance_knit)}}}
+deviance_sub$deviance_ume
+```

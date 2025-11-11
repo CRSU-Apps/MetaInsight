@@ -105,6 +105,77 @@ test_that("rep_markdown produces a renderable .Rmd file after a frequentist anal
   app$stop()
 })
 
+
+test_that("rep_markdown produces a renderable .Rmd file after a bayesian analysis", {
+  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 60000)
+
+  app$set_inputs(tabs = "setup")
+  app$set_inputs(setupSel = "setup_reload")
+  app$upload_file("setup_reload-load_session" = bayes_model_path)
+  app$click("setup_reload-goLoad_session")
+  app$set_inputs(tabs = "bayes")
+
+  #intro + setup_load + setup_configure + setup_exclude + bayes_model (3)
+  expected_chunks <- 7
+
+  app$set_inputs(bayesSel = "bayes_forest")
+  app$click("bayes_forest-run")
+  app$wait_for_value(output = "bayes_forest-all-plot")
+  expected_chunks <- expected_chunks + 2
+
+  app$set_inputs(bayesSel = "bayes_compare")
+  app$click("bayes_compare-run")
+  app$wait_for_value(output = "bayes_compare-all-table")
+  expected_chunks <- expected_chunks + 2
+
+  app$set_inputs(bayesSel = "bayes_deviance")
+  app$click("bayes_deviance-run")
+  app$wait_for_value(input = "bayes_deviance-complete")
+  app$wait_for_value(output = "bayes_deviance-all-stem")
+  expected_chunks <- expected_chunks + 7
+
+  app$set_inputs(bayesSel = "bayes_ranking")
+  app$click("bayes_ranking-run")
+  app$wait_for_value(output = "bayes_ranking-all-forest")
+  expected_chunks <- expected_chunks + 9
+
+  app$set_inputs(bayesSel = "bayes_mcmc")
+  app$click("bayes_mcmc-run")
+  app$wait_for_value(input = "bayes_mcmc_all-complete")
+  app$wait_for_value(input = "bayes_mcmc_sub-complete")
+  expected_chunks <- expected_chunks + 7
+
+  app$set_inputs(bayesSel = "bayes_details")
+  app$click("bayes_details-run")
+  app$wait_for_value(output = "bayes_details-bayes-mcmc")
+  expected_chunks <- expected_chunks + 8
+
+  app$set_inputs(bayesSel = "bayes_results")
+  app$click("bayes_results-run")
+  app$wait_for_idle()
+  app$wait_for_value(output = "bayes_results-all-statistics")
+  expected_chunks <- expected_chunks + 6
+
+  app$set_inputs(tabs = "rep")
+  app$set_inputs(repSel = "rep_markdown")
+  app$set_inputs("rep_markdown-file_type" = ".qmd")
+  app$click("rep_markdown-download")
+  app$wait_for_value(input = "rep_markdown-complete")
+  sess_file <- app$get_download("rep_markdown-dlRMD")
+
+  expect_false(is.null(sess_file))
+  lines <- readLines(sess_file)
+  chunks <- sum(grepl("```\\{r", lines))
+  expect_equal(chunks, expected_chunks)
+  quarto::quarto_render(sess_file)
+  html_file <- gsub("qmd", "html", sess_file)
+  expect_gt(file.info(html_file)$size, 100000)
+  app$stop()
+
+})
+
+
+
 test_that("rep_markdown produces a renderable .Rmd file after a covariate analysis", {
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 60000)
 
@@ -136,7 +207,7 @@ test_that("rep_markdown produces a renderable .Rmd file after a covariate analys
 
   app$set_inputs(covariateSel = "covariate_deviance")
   app$click("covariate_deviance-run")
-  app$wait_for_value(output = "covariate_deviance-covariate-stem")
+  app$wait_for_value(input = "covariate_deviance-complete")
   expected_chunks <- expected_chunks + 4
 
   app$set_inputs(covariateSel = "covariate_ranking")
@@ -214,7 +285,7 @@ test_that("rep_markdown produces a renderable .Rmd file after a baseline analysi
 
   app$set_inputs(baselineSel = "baseline_deviance")
   app$click("baseline_deviance-run")
-  app$wait_for_value(output = "baseline_deviance-baseline-stem")
+  app$wait_for_value(input = "baseline_deviance-complete")
   expected_chunks <- expected_chunks + 4
 
   app$set_inputs(baselineSel = "baseline_ranking")
