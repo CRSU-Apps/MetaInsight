@@ -96,7 +96,7 @@ bayes_mcmc_module_server <- function(id, common, parent_session) {
 
       # prevent showing on first run
       if (!is.null(common$bayes_mcmc_sub)){
-        common$logger |> writeLog(type = "starting", "Updating data for Markov chain Monte Carlo plots")
+        common$logger |> writeLog(type = "complete", "Updating data for Markov chain Monte Carlo plots")
       }
 
       common$tasks$bayes_mcmc_sub$invoke(common$bayes_sub)

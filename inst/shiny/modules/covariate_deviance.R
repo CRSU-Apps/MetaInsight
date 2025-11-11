@@ -8,52 +8,52 @@ covariate_deviance_module_ui <- function(id) {
 metaregression_deviance_module_server <- function(id, common, run) {
   moduleServer(id, function(input, output, session) {
 
-    module <- glue::glue("{id}_deviance")
+    module_id <- glue::glue("{id}_deviance")
     model <- glue::glue("{id}_model")
     model_fit <- glue::glue("{id}_model_fit")
-    shinyjs::hide(selector = glue::glue(".{module}_div"))
+    shinyjs::hide(selector = glue::glue(".{module_id}_div"))
 
-    common$tasks[[module]] <- ExtendedTask$new(
-      function(...) mirai::mirai(run(...), run = get(module), .args = environment())
+    common$tasks[[module_id]] <- ExtendedTask$new(
+      function(...) mirai::mirai(run(...), run = get(module_id), .args = environment())
     ) |> bind_task_button("run")
 
     observeEvent(list(run(), watch(model_fit)), {
-      req(watch(module) > 0 || run() > 0)
+      req(watch(module_id) > 0 || run() > 0)
 
       if (is.null(common[[model]])){
-        common$logger |> writeLog(type = "error", go_to = "{id}_model", glue::glue("Please fit the {id} model first"))
+        common$logger |> writeLog(type = "error", go_to = model, glue::glue("Please fit the {id} model first"))
         return()
       }
 
       common$logger |> writeLog(type = "starting", glue::glue("Generating {id} deviance plots"))
-      common$tasks[[module]]$invoke(common[[model]])
-      common$meta[[module]]$used <- TRUE
+      common$tasks[[module_id]]$invoke(common[[model]])
+      common$meta[[module_id]]$used <- TRUE
       result_all$resume()
     })
 
     result_all <- observe({
-      result <- common$tasks[[module]]$result()
+      result <- common$tasks[[module_id]]$result()
       result_all$suspend()
-      common[[module]] <- result
-      common$logger |> writeLog(type = "complete", glue::glue("Covariate {id} plots have been generated"))
-      trigger(module)
+      common[[module_id]] <- result
+      common$logger |> writeLog(type = "complete", glue::glue("{stringr::str_to_sentence(id)} deviance plots have been generated"))
+      trigger(module_id)
     })
 
     output$stem <- plotly::renderPlotly({
-      watch(module)
-      req(common[[module]])
-      on.exit(shinyjs::show(selector = glue::glue(".{module}_div")))
+      watch(module_id)
+      req(common[[module_id]])
+      on.exit(shinyjs::show(selector = glue::glue(".{module_id}_div")))
       # workaround for testing
-      on.exit(shinyjs::runjs(glue::glue("Shiny.setInputValue('{module}-complete', 'complete');")), add = TRUE)
-      common[[module]]$stem_plot
+      on.exit(shinyjs::runjs(glue::glue("Shiny.setInputValue('{module_id}-complete', 'complete');")), add = TRUE)
+      common[[module_id]]$stem_plot
     })
 
     outputOptions(output, "stem", suspendWhenHidden = FALSE)
 
     output$lev <- plotly::renderPlotly({
-      watch(module)
-      req(common[[module]])
-      common[[module]]$lev_plot
+      watch(module_id)
+      req(common[[module_id]])
+      common[[module_id]]$lev_plot
     })
 
   })

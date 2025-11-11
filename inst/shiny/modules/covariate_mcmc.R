@@ -35,9 +35,9 @@ covariate_mcmc_module_server <- function(id, common, parent_session) {
       result <- common$tasks$covariate_mcmc$result()
       result_all$suspend()
       if (is.null(common$covariate_mcmc)){
-        common$logger |> writeLog(type = "starting", "Data for covariate Markov chain Monte Carlo plots has been generated")
+        common$logger |> writeLog(type = "complete", "Data for covariate Markov chain Monte Carlo plots has been generated")
       } else {
-        common$logger |> writeLog(type = "starting", "Data for covariate Markov chain Monte Carlo plots has been updated")
+        common$logger |> writeLog(type = "complete", "Data for covariate Markov chain Monte Carlo plots has been updated")
       }
       common$covariate_mcmc <- result
       trigger("covariate_mcmc")

@@ -14,30 +14,30 @@ covariate_comparison_module_ui <- function(id) {
 metaregression_comparison_module_server <- function(id, common, run) {
   moduleServer(id, function(input, output, session) {
 
-    module <- glue::glue("{id}_comparison")
+    module_id <- glue::glue("{id}_comparison")
     model <- glue::glue("{id}_model")
     model_fit <- glue::glue("{id}_model_fit")
-    class <- glue::glue(".{module}_div")
+    class <- glue::glue(".{module_id}_div")
 
     shinyjs::hide("download")
     shinyjs::hide(selector = class)
 
     observeEvent(run(), {
       if (is.null(common[[model]])){
-        common$logger |> writeLog(type = "error", go_to = "{id}_model", glue::glue("Please fit the {id} model first"))
+        common$logger |> writeLog(type = "error", go_to = model, glue::glue("Please fit the {id} model first"))
         return()
       } else {
-        common$meta[[module]]$used <- TRUE
-        trigger(module)
+        common$meta[[module_id]]$used <- TRUE
+        trigger(module_id)
       }
     })
 
     output$table <- renderTable({
       watch(model_fit)
-      req(watch(module) > 0)
+      req(watch(module_id) > 0)
       shinyjs::show("download")
       shinyjs::show(selector = class)
-      do.call(module, list(common[[model]]))
+      do.call(module_id, list(common[[model]]))
     }, rownames = TRUE)
 
     outputOptions(output, "table", suspendWhenHidden = FALSE)
@@ -47,7 +47,7 @@ metaregression_comparison_module_server <- function(id, common, run) {
         glue::glue("MetaInsight_{id}_comparison.csv")
       },
       content = function(file) {
-        write.csv(do.call(module, list(common[[model]])), file)
+        write.csv(do.call(module_id, list(common[[model]])), file)
       }
     )
   })

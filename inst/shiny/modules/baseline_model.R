@@ -13,7 +13,6 @@ baseline_model_module_ui <- function(id) {
 baseline_model_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
-
     # used to trigger summary table - needs to be separate to reload
     init("baseline_model_table")
     # used to trigger when model is fitted
@@ -22,7 +21,7 @@ baseline_model_module_server <- function(id, common, parent_session) {
     observeEvent(input$run, {
       if (is.null(common$main_connected_data)){
         common$logger |> writeLog(type = "error", go_to = "setup_configure",
-                                  "Please configure the analysis in the Setup section first.")
+                                  "Please configure the analysis in the Setup section first")
         return()
       }
 
@@ -37,7 +36,6 @@ baseline_model_module_server <- function(id, common, parent_session) {
 
       # METADATA ####
       common$meta$baseline_model$used <- TRUE
-      # common$meta$covariate_model$dataset <- input$dataset
       common$meta$baseline_model$regressor <- input$regressor
 
       trigger("baseline_model")

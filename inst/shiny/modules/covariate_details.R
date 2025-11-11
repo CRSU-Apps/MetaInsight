@@ -6,7 +6,7 @@ covariate_details_module_ui <- function(id) {
 covariate_details_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
     bayes_details_submodule_server("covariate", common, "covariate_model", "covariate_model_fit", "covariate_details", "covariate_deviance", "covariate_deviance",
-                                   "Please fit the covariate models first", reactive(input$run))
+                                   "Please fit the covariate model first", reactive(input$run))
   })
 }
 

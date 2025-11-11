@@ -40,12 +40,12 @@ setup_configure_module_server <- function(id, common, parent_session) {
     # WARNING ####
 
     if (is.null(common$data)) {
-      common$logger |> writeLog(type = "error", "Please load data first")
+      common$logger |> writeLog(type = "error", go_to = "setup_load", "Please load data first")
       return()
     }
 
     if (!common$is_data_valid) {
-      common$logger |> writeLog(type = "error", "Please upload valid data first")
+      common$logger |> writeLog(type = "error", go_to = "setup_load", "Please upload valid data first")
       return()
     }
 

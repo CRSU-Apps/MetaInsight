@@ -35,9 +35,9 @@ baseline_mcmc_module_server <- function(id, common, parent_session) {
       result <- common$tasks$baseline_mcmc$result()
       result_all$suspend()
       if (is.null(common$baseline_mcmc)){
-        common$logger |> writeLog(type = "starting", "Data for baseline risk Markov chain Monte Carlo plots has been generated")
+        common$logger |> writeLog(type = "complete", "Data for baseline risk Markov chain Monte Carlo plots has been generated")
       } else {
-        common$logger |> writeLog(type = "starting", "Data for baseline risk Markov chain Monte Carlo plots has been updated")
+        common$logger |> writeLog(type = "complete", "Data for baseline risk Markov chain Monte Carlo plots has been updated")
       }
       common$baseline_mcmc <- result
       trigger("baseline_mcmc")

@@ -16,24 +16,24 @@ metaregression_forest_module_server <- function(id, common, run) {
 
     shinyjs::hide("download")
 
-    module <- glue::glue("{id}_forest")
+    module_id <- glue::glue("{id}_forest")
     model <- glue::glue("{id}_model")
 
     observeEvent(run(), {
       if (is.null(common[[model]])){
-        common$logger |> writeLog(type = "error", go_to = "{id}_model", glue::glue("Please fit the {id} model first"))
+        common$logger |> writeLog(type = "error", go_to = model, glue::glue("Please fit the {id} model first"))
         return()
       } else {
-        common$meta[[module]]$used <- TRUE
-        trigger(module)
+        common$meta[[module_id]]$used <- TRUE
+        trigger(module_id)
       }
     })
 
     svg <- reactive({
       watch(glue::glue("{model}_fit"))
-      req(watch(module) > 0)
+      req(watch(module_id) > 0)
       shinyjs::show("download")
-      do.call(module, list(common[[model]],
+      do.call(module_id, list(common[[model]],
                            common$treatment_df,
                            common$reference_treatment_all,
                            glue::glue("{stringr::str_to_title(id)} regression analysis")
