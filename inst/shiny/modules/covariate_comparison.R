@@ -28,8 +28,6 @@ metaregression_comparison_module_server <- function(id, common, run) {
         return()
       } else {
         common$meta[[module]]$used <- TRUE
-        shinyjs::show("download")
-        shinyjs::show(selector = class)
         trigger(module)
       }
     })
@@ -37,6 +35,8 @@ metaregression_comparison_module_server <- function(id, common, run) {
     output$table <- renderTable({
       watch(model_fit)
       req(watch(module) > 0)
+      shinyjs::show("download")
+      shinyjs::show(selector = class)
       do.call(module, list(common[[model]]))
     }, rownames = TRUE)
 

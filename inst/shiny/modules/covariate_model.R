@@ -141,7 +141,7 @@ covariate_model_module_server <- function(id, common, parent_session) {
         list(
           ### Manual save start
           covariate_min = covariate_min,
-          covariate_max = covariate_min,
+          covariate_max = covariate_max,
           covariate_step = ifelse(common$covariate_type == "Continuous", step, 1),
           covariate_label = glue::glue("Covariate value ({common$covariate_name})"),
           covariate_tick = ifelse(common$covariate_type == "Continuous", TRUE, FALSE),

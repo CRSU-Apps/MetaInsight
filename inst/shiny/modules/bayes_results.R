@@ -8,10 +8,15 @@ bayes_results_module_ui <- function(id) {
 bayes_results_submodule_server <- function(id, common, model, run){
   moduleServer(id, function(input, output, session) {
 
+    component <- strsplit(model, "_")[[1]]
+
     output$text <- renderUI({
       req(common[[model]])
+      shinyjs::show(selector = glue::glue(".{component}_results_div"))
       bayes_results(common[[model]])
     }) |> bindEvent(run())
+
+    outputOptions(output, "text", suspendWhenHidden = FALSE)
 
     output$statistics <- renderTable({
       req(common[[model]])
@@ -33,15 +38,12 @@ bayes_results_module_server <- function(id, common, parent_session) {
     # check that a fitted model exists and error if not
     observeEvent(input$run, {
 
-      # add check for a running model
-
       if (is.null(common$bayes_all)){
         common$logger |> writeLog(type = "error", "Please fit the Bayesian models first")
         return()
       } else {
         trigger("bayes_results")
         common$meta$bayes_results$used <- TRUE
-        shinyjs::show(selector = ".bayes_results_div")
       }
     })
 

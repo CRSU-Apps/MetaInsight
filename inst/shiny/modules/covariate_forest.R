@@ -25,7 +25,6 @@ metaregression_forest_module_server <- function(id, common, run) {
         return()
       } else {
         common$meta[[module]]$used <- TRUE
-        shinyjs::show("download")
         trigger(module)
       }
     })
@@ -33,6 +32,7 @@ metaregression_forest_module_server <- function(id, common, run) {
     svg <- reactive({
       watch(glue::glue("{model}_fit"))
       req(watch(module) > 0)
+      shinyjs::show("download")
       do.call(module, list(common[[model]],
                            common$treatment_df,
                            common$reference_treatment_all,

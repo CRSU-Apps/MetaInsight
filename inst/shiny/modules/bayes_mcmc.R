@@ -19,6 +19,7 @@ bayes_mcmc_submodule_server <- function(id, common, module_id, model, mcmc, trig
     output$gelman <- renderPlot({
       watch(trigger)
       req(common[[mcmc]])
+      shinyjs::show(selector = glue::glue(".{module_id}_div"))
       cowplot::plot_grid(
         plotlist = gelman_plots(common[[mcmc]]$gelman_data, common[[mcmc]]$parameters),
         ncol = common[[mcmc]]$n_cols
@@ -26,6 +27,8 @@ bayes_mcmc_submodule_server <- function(id, common, module_id, model, mcmc, trig
     }, height = function() {
       n_rows() * 250
     })
+
+    outputOptions(output, "gelman", suspendWhenHidden = FALSE)
 
     output$trace <- renderPlot({
       watch(trigger)
@@ -105,7 +108,6 @@ bayes_mcmc_module_server <- function(id, common, parent_session) {
       result_all$suspend()
       common$bayes_mcmc_all <- result
       common$logger |> writeLog(type = "complete", "Data for Markov chain Monte Carlo plots has been generated")
-      shinyjs::show(selector = ".bayes_mcmc_div")
       trigger("bayes_mcmc_all")
     })
 

@@ -43,6 +43,24 @@ covariate_ranking_module_server <- function(id, common, parent_session) {
   bayes_ranking_submodule_server("all", common, reactive(input$network_style), reactive(input$rank_style), reactive(input$colourblind), reactive(input$simple),
                                  ".covariate_ranking_div", "covariate_model", "covariate_ranking", "main_connected_data", "treatment_df", all_trigger, "covariate_ranking_plot")
 
+  return(list(
+    save = function() {list(
+      ### Manual save start
+      ### Manual save end
+      colourblind = input$colourblind,
+      simple = input$simple,
+      network_style = input$network_style,
+      rank_style = input$rank_style)
+    },
+    load = function(state) {
+      ### Manual load start
+      ### Manual load end
+      updateCheckboxInput(session, "colourblind", value = state$colourblind)
+      updateCheckboxInput(session, "simple", value = state$simple)
+      updateRadioButtons(session, "network_style", selected = state$network_style)
+      updateRadioButtons(session, "rank_style", selected = state$rank_style)
+    }
+  ))
 })
 }
 

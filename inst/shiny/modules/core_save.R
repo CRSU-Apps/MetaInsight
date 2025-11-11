@@ -37,9 +37,8 @@ core_save_module_server <- function(id, common, modules, COMPONENTS, main_input)
 
         temp <- list()
         common_items <- names(common)
-        # exclude the non-public, function objects and mcmc as they are very large
-        save_items  <- common_items[!common_items %in% c("clone", ".__enclos_env__", "logger", "reset", "tasks",
-                                                         "bayes_mcmc_all", "bayes_mcmc_sub")]
+        # exclude the non-public, function objects
+        save_items  <- common_items[!common_items %in% c("clone", ".__enclos_env__", "logger", "reset", "tasks")]
         temp[save_items] <- as.list(common)[save_items]
         # save logger minus the header
         temp$logger <- strsplit(common$logger(), "-----<br>")[[1]][3]

@@ -13,7 +13,6 @@ bayes_details_submodule_server <- function(id, common, model, model_trigger, mod
       common$logger |> writeLog(type = "error", error_message)
       return()
     } else {
-      shinyjs::show(selector = glue::glue(".{module_id}_div"))
       common$meta[[module_id]]$used <- TRUE
       trigger(module_id)
     }
@@ -23,12 +22,15 @@ bayes_details_submodule_server <- function(id, common, model, model_trigger, mod
     watch(model_trigger)
     req(watch(module_id) > 0)
     req(common[[model]])
+    shinyjs::show(selector = glue::glue(".{module_id}_div"))
     bayes_details(common[[model]])
   })
 
   output$mcmc <- renderTable({
     details()$mcmc
   }, digits = 0, colnames = FALSE)
+
+  outputOptions(output, "mcmc", suspendWhenHidden = FALSE)
 
   output$download_mcmc <- downloadHandler(
     filename = "mcmc_characteristics.csv",

@@ -37,16 +37,18 @@ metaregression_deviance_module_server <- function(id, common, run) {
       common[[module]] <- result
       common$logger |> writeLog(type = "complete", glue::glue("Covariate {id} plots have been generated"))
       trigger(module)
-      shinyjs::show(selector = glue::glue(".{module}_div"))
     })
 
     output$stem <- plotly::renderPlotly({
       watch(module)
       req(common[[module]])
+      on.exit(shinyjs::show(selector = glue::glue(".{module}_div")))
       # workaround for testing
-      on.exit(shinyjs::runjs(glue::glue("Shiny.setInputValue('{module}-complete', 'complete');")))
+      on.exit(shinyjs::runjs(glue::glue("Shiny.setInputValue('{module}-complete', 'complete');")), add = TRUE)
       common[[module]]$stem_plot
     })
+
+    outputOptions(output, "stem", suspendWhenHidden = FALSE)
 
     output$lev <- plotly::renderPlotly({
       watch(module)

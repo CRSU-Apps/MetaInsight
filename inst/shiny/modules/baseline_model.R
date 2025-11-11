@@ -99,6 +99,18 @@ baseline_model_module_server <- function(id, common, parent_session) {
       common$baseline_model$dic
       }, digits = 3, rownames = TRUE, colnames = FALSE)
 
+    return(list(
+      save = function() {list(
+        ### Manual save start
+        ### Manual save end
+      regressor = input$regressor)
+      },
+      load = function(state) {
+        ### Manual load start
+        ### Manual load end
+      updateRadioButtons(session, "regressor", selected = state$regressor)
+      }
+    ))
 })
 }
 

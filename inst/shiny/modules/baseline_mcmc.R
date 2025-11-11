@@ -41,7 +41,6 @@ baseline_mcmc_module_server <- function(id, common, parent_session) {
       }
       common$baseline_mcmc <- result
       trigger("baseline_mcmc")
-      shinyjs::show(selector = ".baseline_mcmc_div")
     })
 
     bayes_mcmc_submodule_server("all", common, "baseline_mcmc", "baseline_model", "baseline_mcmc", "baseline_mcmc")

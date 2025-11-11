@@ -41,7 +41,6 @@ covariate_mcmc_module_server <- function(id, common, parent_session) {
       }
       common$covariate_mcmc <- result
       trigger("covariate_mcmc")
-      shinyjs::show(selector = ".covariate_mcmc_div")
     })
 
     bayes_mcmc_submodule_server("all", common, "covariate_mcmc", "covariate_model", "covariate_mcmc", "covariate_mcmc")
