@@ -96,7 +96,7 @@ metaregression_regression_module_server <- function(id, common) {
 
     observeEvent(input$run, {
       if (is.null(common[[model]])){
-        common$logger |> writeLog(type = "error", go_to = "{id}_model", glue::glue("Please fit the {id} model first"))
+        common$logger |> writeLog(type = "error", go_to = glue::glue("{id}_model"), glue::glue("Please fit the {id} model first"))
         return()
       } else {
         trigger(module)
