@@ -14,7 +14,8 @@ setup_load_module_ui <- function(id) {
     actionButton(ns("run"), "Load example data", icon = icon("arrow-turn-down")),
     uiOutput(ns("reset_out")),
     br(),
-    uiOutput(ns("download_out"))
+    uiOutput(ns("download_out")),
+    actionButton(ns("test"), "test")
   )
 }
 
@@ -22,6 +23,26 @@ setup_load_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
     ns <- session$ns
+
+    observeEvent(input$test, {
+      # common$reset()
+      # browser()
+      # blank outputs
+      #all_triggers <- names(session$userData)
+      # all_triggers <- names(COMPONENT_MODULES$covariate)
+      # for (trigger in all_triggers){
+      #   trigger(trigger)
+      # }
+
+      modules <- names(common$meta)
+      common$reset()
+      for (module in modules){
+        trigger(module)
+        # reset triggers
+        session$userData[[module]](0)
+      }
+
+    })
 
     # Toggle visibility of guidance depending on selection
     observe({
@@ -73,7 +94,7 @@ setup_load_module_server <- function(id, common, parent_session) {
     })
 
     observeEvent(input$reset, {
-      common$reset()
+      reset_data(common, session)
       updateActionButton(session, "run", label = "Load example data")
       file_id$value <- file_id$value + 1
       file_id$id <- paste0("file", file_id$value)

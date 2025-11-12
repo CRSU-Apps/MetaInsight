@@ -460,4 +460,25 @@ crop_svg <- function(svg, margin = 10){
     height = bbox$height)
 }
 
+####################### #
+# RESET DATA #
+####################### #
+
+#' @title reset_data
+#' @description For internal use. Clears the common structure of data and resets all plots etc.
+#' @keywords internal
+#' @param common The common data structure
+#' @export
+reset_data <- function(common, session){
+  # clear data
+  common$reset()
+  # browser()
+  # blank outputs
+  all_triggers <- names(session$userData)
+  for (trigger in all_triggers){
+    trigger(trigger)
+  }
+  # reset triggers
+  lapply(session$userData, function(f) f(0))
+}
 

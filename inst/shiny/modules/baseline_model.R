@@ -6,12 +6,15 @@ baseline_model_module_ui <- function(id) {
                                     add_tooltip("Exchangable", "Coefficient is different for each treatment comparison but all come from a shared distribution"),
                                     add_tooltip("Unrelated", "Coefficient is different for each treatment comparison")),
                  choiceValues = list("shared", "exchangeable", "unrelated")),
-    input_task_button(ns("run"), "Run model", type = "default", icon = icon("arrow-turn-down"))
+    input_task_button(ns("run"), "Run model", type = "default", icon = icon("arrow-turn-down")),
+    actionButton(ns("run_all"), "Run all modules", icon = icon("forward-fast"))
   )
 }
 
 baseline_model_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
+
+    shinyjs::hide("run_all")
 
     # used to trigger summary table - needs to be separate to reload
     init("baseline_model_table")
@@ -93,9 +96,29 @@ baseline_model_module_server <- function(id, common, parent_session) {
 
     output$table <- renderTable({
       watch("baseline_model_table")
+      shinyjs::show("run_all")
       req(common$baseline_model)
       common$baseline_model$dic
       }, digits = 3, rownames = TRUE, colnames = FALSE)
+
+    observeEvent(input$run_all, {
+      modules <- names(COMPONENT_MODULES$baseline)[which(names(COMPONENT_MODULES$baseline) != c("baseline_model"))]
+
+      modules <- paste0(ifelse(
+        grepl("regression", modules),
+        paste0(modules, "-", gsub("_regression", "", modules)),
+        modules
+      ), "-run")
+
+      shinyjs::runjs(
+        paste(
+          sprintf("$('#%s').click();", modules),
+        collapse = "\n"
+        )
+      )
+
+      common$logger |> writeLog(type = "info", "Running all modules. This might take several minutes but progress will appear in the logger.")
+    })
 
     return(list(
       save = function() {list(
