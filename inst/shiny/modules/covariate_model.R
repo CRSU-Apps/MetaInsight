@@ -7,13 +7,15 @@ covariate_model_module_ui <- function(id) {
                                     add_tooltip("Exchangable", "Coefficient is different for each treatment comparison but all come from a shared distribution"),
                                     add_tooltip("Unrelated", "Coefficient is different for each treatment comparison")),
                  choiceValues = list("shared", "exchangeable", "unrelated")),
-    input_task_button(ns("run"), "Run model", type = "default", icon = icon("arrow-turn-down"))
-
+    input_task_button(ns("run"), "Run model", type = "default", icon = icon("arrow-turn-down")),
+    actionButton(ns("run_all"), "Run all modules", icon = icon("forward-fast"))
   )
 }
 
 covariate_model_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
+
+    shinyjs::hide("run_all")
 
     # update slider with relevant values
     observe({
@@ -125,8 +127,13 @@ covariate_model_module_server <- function(id, common, parent_session) {
   output$table <- renderTable({
     watch("covariate_model_table")
     req(common$covariate_model)
+    shinyjs::show("run_all")
     common$covariate_model$dic
   }, digits = 3, rownames = TRUE, colnames = FALSE)
+
+  observeEvent(input$run_all, {
+    run_all("covariate", common$logger)
+  })
 
   return(list(
     save = function() {

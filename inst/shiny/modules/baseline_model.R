@@ -96,28 +96,13 @@ baseline_model_module_server <- function(id, common, parent_session) {
 
     output$table <- renderTable({
       watch("baseline_model_table")
-      shinyjs::show("run_all")
       req(common$baseline_model)
+      shinyjs::show("run_all")
       common$baseline_model$dic
       }, digits = 3, rownames = TRUE, colnames = FALSE)
 
     observeEvent(input$run_all, {
-      modules <- names(COMPONENT_MODULES$baseline)[which(names(COMPONENT_MODULES$baseline) != c("baseline_model"))]
-
-      modules <- paste0(ifelse(
-        grepl("regression", modules),
-        paste0(modules, "-", gsub("_regression", "", modules)),
-        modules
-      ), "-run")
-
-      shinyjs::runjs(
-        paste(
-          sprintf("$('#%s').click();", modules),
-        collapse = "\n"
-        )
-      )
-
-      common$logger |> writeLog(type = "info", "Running all modules. This might take several minutes but progress will appear in the logger.")
+      run_all("baseline", common$logger)
     })
 
     return(list(

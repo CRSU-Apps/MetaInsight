@@ -482,3 +482,51 @@ reset_data <- function(common, session){
   lapply(session$userData, function(f) f(0))
 }
 
+#' @title run_all
+#' @description For internal use. Runs all modules for a given component, excluding the model and nodesplit modules.
+#' @keywords internal
+#' @param component character. The component to run all the modules of.
+#' @param logger common$logger
+#' @export
+run_all <- function(component, logger){
+
+  all_modules <- names(COMPONENT_MODULES[[component]])
+
+  # exclude model and nodesplit modules
+  if (component != "freq"){
+    modules <- all_modules[-which(all_modules %in% c(glue::glue("{component}_model"), glue::glue("{component}_nodesplit")))]
+  } else {
+    modules <- all_modules
+  }
+
+  # workaround for regression modules where the run id differs
+  # and append -run to module id to get run button ids
+  modules <- paste0(ifelse(
+    grepl("regression", modules),
+    paste0(modules, "-", gsub("_regression", "", modules)),
+    modules
+  ), "-run")
+
+  # click the run buttons
+  shinyjs::runjs(
+    paste(
+      sprintf("$('#%s').click();", modules),
+      collapse = "\n"
+    )
+  )
+
+  # message for logger
+  full_component <- names(COMPONENTS[COMPONENTS == component])
+
+  if (component %in% c("bayes", "baseline", "covariate")){
+    nodesplit_message <- " apart from the nodesplit module"
+  } else {
+    nodesplit_message <- ""
+  }
+
+  logger |> writeLog(type = "info",
+                     glue::glue("Running all {full_component} modules{nodesplit_message}. This might
+                                take several minutes and progress will appear in the logger."))
+
+invisible()
+}
