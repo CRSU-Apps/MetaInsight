@@ -2,4 +2,4 @@ component: "baseline"
 short_name: "Deviance report"
 long_name: "Deviance report"
 authors: "Ryan Field, Tom Morris, Clareece Nevill, Janion Nevill, Simon Smart"
-package: [gemtc, plotly]
+package: [bnma, plotly]

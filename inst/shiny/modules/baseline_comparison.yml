@@ -2,4 +2,4 @@ component: "baseline"
 short_name: "Comparison"
 long_name: "Comparison of all treatment pairs"
 authors: "Ryan Field, Tom Morris, Clareece Nevill, Janion Nevill, Simon Smart"
-package: [gemtc]
+package: [bnma]
