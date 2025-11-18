@@ -97,11 +97,14 @@ baseline_model_module_server <- function(id, common, parent_session) {
     })
 
     output$table <- renderTable({
+      watch("baseline_model") # required for reset
       watch("baseline_model_table")
       req(common$baseline_model)
       shinyjs::show(selector = ".baseline_model_div")
       common$baseline_model$dic
       }, digits = 3, rownames = TRUE, colnames = FALSE)
+
+    outputOptions(output, "table", suspendWhenHidden = FALSE)
 
     observeEvent(input$run_all, {
       run_all("baseline", common$logger)
@@ -125,7 +128,10 @@ baseline_model_module_server <- function(id, common, parent_session) {
 
 baseline_model_module_result <- function(id) {
   ns <- NS(id)
-  tableOutput(ns("table"))
+  div(align = "center", class = "baseline_model_div",
+    p("Model fit for all studies:"),
+    tableOutput(ns("table"))
+  )
 }
 
 baseline_model_module_rmd <- function(common) {list(

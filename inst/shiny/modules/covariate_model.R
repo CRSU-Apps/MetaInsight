@@ -127,11 +127,14 @@ covariate_model_module_server <- function(id, common, parent_session) {
     })
 
   output$table <- renderTable({
+    watch("covariate_model") # required for reset
     watch("covariate_model_table")
     req(common$covariate_model)
     shinyjs::show(selector = ".covariate_model_div")
     common$covariate_model$dic
   }, digits = 3, rownames = TRUE, colnames = FALSE)
+
+  outputOptions(output, "table", suspendWhenHidden = FALSE)
 
   observeEvent(input$run_all, {
     run_all("covariate", common$logger)
@@ -184,7 +187,10 @@ covariate_model_module_server <- function(id, common, parent_session) {
 
 covariate_model_module_result <- function(id) {
   ns <- NS(id)
-  tableOutput(ns("table"))
+  div(align = "center", class = "covariate_model_div",
+      p("Model fit for all studies:"),
+      tableOutput(ns("table"))
+  )
 }
 
 covariate_model_module_rmd <- function(common){ list(

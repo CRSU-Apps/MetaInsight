@@ -12,6 +12,7 @@ bayes_model_submodule_server <- function(id, common){
   moduleServer(id, function(input, output, session) {
 
     output$table <- renderTable({
+      watch("bayes_model") # required for reset
       watch(paste0("bayes_model_table_", id))
       req(common[[paste0("bayes_", id)]])
       shinyjs::show(selector = ".bayes_model_div")
