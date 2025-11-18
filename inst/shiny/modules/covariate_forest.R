@@ -1,6 +1,6 @@
 metaregression_forest_module_ui <- function(id, parent_id) {
   ns <- NS(id)
-  div(class = glue::glue("{parent_id}_div"),
+  div(class = glue::glue("{parent_id}_div download_buttons"),
       downloadButton(ns("download"), "Download table")
   )
 }

@@ -7,7 +7,7 @@ bayes_compare_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
     actionButton(ns("run"), "Generate tables", icon = icon("arrow-turn-down")),
-    div(class = "bayes_compare_div",
+    div(class = "bayes_compare_div download_buttons",
       layout_columns(
         bayes_compare_submodule_ui(ns("all"), "All studies"),
         bayes_compare_submodule_ui(ns("sub"), "With selected studies excluded")

@@ -78,7 +78,7 @@ metaregression_regression_module_ui <- function(id, parent_id){
       )
     ),
     input_task_button(ns("run"), "Generate plot", type = "default", icon = icon("arrow-turn-down")),
-    div(class = glue::glue("{parent_id}_div"),
+    div(class = glue::glue("{parent_id}_div download_buttons"),
         downloadButton(ns("download"), "Download plot")
     )
   )

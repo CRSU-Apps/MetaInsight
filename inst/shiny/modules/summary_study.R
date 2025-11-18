@@ -2,7 +2,7 @@ summary_study_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
     actionButton(ns("run"), "Generate plot", icon = icon("arrow-turn-down")),
-    div(class = "summary_study_div",
+    div(class = "summary_study_div download_buttons",
        numericInput(ns("title"), label = "Title text size:", value = 1, step = 0.1),
        numericInput(ns("header"), label = "Group headers text size:", value = 1, step = 0.1),
        downloadButton(ns("download")),

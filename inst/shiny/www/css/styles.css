@@ -149,14 +149,6 @@ hr {
 
 .download_buttons .btn {
   flex: 1;
-}
-
-.download_buttons {
-  padding-top: 20px;
-  padding-bottom: 20px;
-}
-
-.download_buttons.btn-default {
   width: 100% !important;
   box-sizing: border-box !important;
 }

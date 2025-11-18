@@ -2,7 +2,7 @@ baseline_summary_module_ui <- function(id) {
   ns <- NS(id)
   tagList(
     actionButton(ns("run"), "Generate plot", icon = icon("arrow-turn-down")),
-    div(class = "baseline_summary_div",
+    div(class = "baseline_summary_div download_buttons",
       downloadButton(ns("download"), "Download plot")
     )
   )

@@ -1,17 +1,17 @@
 bayes_forest_submodule_ui <- function(id, download_label) {
   ns <- NS(id)
-  div(class = "bayes_forest_div",
-    downloadButton(ns("download"), download_label)
-  )
+  downloadButton(ns("download"), download_label)
 }
 
 bayes_forest_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
     actionButton(ns("run"), "Generate plots", icon = icon("arrow-turn-down")),
-    layout_columns(
-      bayes_forest_submodule_ui(ns("all"), "All studies"),
-      bayes_forest_submodule_ui(ns("sub"), "Selected studies excluded")
+    div(class = "bayes_forest_div download_buttons",
+      layout_columns(
+        bayes_forest_submodule_ui(ns("all"), "All studies"),
+        bayes_forest_submodule_ui(ns("sub"), "Selected studies excluded")
+      )
     )
   )
 }

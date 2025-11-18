@@ -8,7 +8,7 @@ covariate_model_module_ui <- function(id) {
                                     add_tooltip("Unrelated", "Coefficient is different for each treatment comparison")),
                  choiceValues = list("shared", "exchangeable", "unrelated")),
     input_task_button(ns("run"), "Run model", type = "default", icon = icon("arrow-turn-down")),
-    div(class = "covariate_model_div",
+    div(class = "covariate_model_div download_buttons",
         actionButton(ns("run_all"), "Run all modules", icon = icon("forward-fast"))
     )
   )
@@ -129,7 +129,7 @@ covariate_model_module_server <- function(id, common, parent_session) {
   output$table <- renderTable({
     watch("covariate_model_table")
     req(common$covariate_model)
-    shinyjs::show("run_all")
+    shinyjs::show(selector = ".covariate_model_div")
     common$covariate_model$dic
   }, digits = 3, rownames = TRUE, colnames = FALSE)
 

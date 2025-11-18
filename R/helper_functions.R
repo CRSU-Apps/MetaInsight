@@ -548,7 +548,6 @@ hide_and_show <- function(module_id, show = TRUE){
   observe({
     watch(module_id)
     if (watch(module_id) == 0){
-      print(glue::glue("hiding {module_id}"))
       shinyjs::hide(selector = glue::glue(".{module_id}_div"))
     } else {
       if (show){

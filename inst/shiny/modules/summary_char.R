@@ -2,7 +2,9 @@ summary_char_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
     actionButton(ns("run"), "Generate table", icon = icon("arrow-turn-down")),
-    div(class = "summary_char_div", downloadButton(ns("download")))
+    div(class = "summary_char_div download_buttons",
+        downloadButton(ns("download"))
+    )
   )
 }
 
