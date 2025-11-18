@@ -470,16 +470,15 @@ crop_svg <- function(svg, margin = 10){
 #' @param common The common data structure
 #' @export
 reset_data <- function(common, session){
+  modules <- names(common$meta)
   # clear data
   common$reset()
-  # browser()
   # blank outputs
-  all_triggers <- names(session$userData)
-  for (trigger in all_triggers){
-    trigger(trigger)
+  for (module in modules){
+    trigger(module)
+    # reset triggers
+    session$userData[[module]](0)
   }
-  # reset triggers
-  lapply(session$userData, function(f) f(0))
 }
 
 #' @title run_all

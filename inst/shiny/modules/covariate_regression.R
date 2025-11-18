@@ -121,6 +121,11 @@ metaregression_regression_module_server <- function(id, common) {
       shinyWidgets::updatePickerInput(session, "comparators", selected = character(0))
     })
 
+    observe({
+      watch("setup_reset")
+      shinyWidgets::updatePickerInput(session, "comparators", choices = c(), selected = character(0))
+    })
+
     common$tasks[[module_id]] <- ExtendedTask$new(
       function(...) mirai::mirai(run(...), run = get(module_id), .args = environment())
     ) |> bind_task_button("run")
@@ -173,6 +178,7 @@ metaregression_regression_module_server <- function(id, common) {
     })
 
     svg <- reactive({
+      watch(module_id) # enable reset
       watch(glue::glue("{module_id}_plot"))
       req(common[[module_id]])
       on.exit(shinyjs::show(selector = glue::glue(".{module_id}_div")))

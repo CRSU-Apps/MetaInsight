@@ -42,6 +42,13 @@ covariate_model_module_server <- function(id, common, parent_session) {
       }
     })
 
+    observe({
+      watch("setup_reset")
+      # show ticks
+      on.exit(shinyjs::delay(100, shinyjs::runjs("$('#covariate_model-covariate_value').siblings('.irs').find('.irs-grid').show();")))
+      updateSliderInput(session, "covariate_value", label = "Covariate value", min = 0, max = 100, step = 1, value = 50)
+    })
+
     # used to trigger summary table - needs to be separate to reload
     init("covariate_model_table")
     # used to trigger when model is fitted

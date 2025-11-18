@@ -3,8 +3,7 @@ setup_exclude_module_ui <- function(id) {
   tagList(
     radioButtons(ns("model"), label = "Model:",
                   choices = c("Random effect (RE)" = "random", "Fixed effect (FE)" = "fixed"), inline = TRUE),
-    shinyWidgets::pickerInput(ns("exclusions"), label = "Studies to exclude:", choices = c(), multiple = TRUE,
-                              options = shinyWidgets::pickerOptions(liveSearch = TRUE))
+    uiOutput(ns("exclusions_out"))
   )
 }
 
@@ -13,12 +12,20 @@ setup_exclude_module_server <- function(id, common, parent_session) {
 
     init("model")
 
-    observe({
+    # can't get updatePickerInput to reblank on reset
+    output$exclusions_out <- renderUI({
       watch("setup_configure")
-      req(common$wrangled_data)
-      shinyWidgets::updatePickerInput(session, "exclusions",
-                                      choices = unique(common$wrangled_data$Study),
-                                      choicesOpt = list(disabled = !c(unique(common$wrangled_data$Study) %in% unique(common$main_connected_data$Study))))
+      watch("setup_reset")
+      if (is.null(common$wrangled_data)){
+        shinyWidgets::pickerInput(session$ns("exclusions"), label = "Studies to exclude:", multiple = TRUE,
+                                  choices = c(),
+                                  options = shinyWidgets::pickerOptions(liveSearch = TRUE))
+      } else {
+        shinyWidgets::pickerInput(session$ns("exclusions"), label = "Studies to exclude:", multiple = TRUE,
+                                  choices = unique(common$wrangled_data$Study),
+                                  choicesOpt = list(disabled = !c(unique(common$wrangled_data$Study) %in% unique(common$main_connected_data$Study))),
+                                  options = shinyWidgets::pickerOptions(liveSearch = TRUE))
+      }
     })
 
     common$tasks$setup_exclude_all <- ExtendedTask$new(
