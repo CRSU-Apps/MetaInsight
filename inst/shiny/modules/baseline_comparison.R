@@ -2,7 +2,7 @@ baseline_comparison_module_ui <- function(id) {
   ns <- NS(id)
   tagList(
     actionButton(ns("run"), "Generate table", icon = icon("arrow-turn-down")),
-    metaregression_comparison_module_ui(ns("baseline"))
+    metaregression_comparison_module_ui(ns("baseline"), id)
   )
 }
 

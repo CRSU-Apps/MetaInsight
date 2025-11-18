@@ -11,7 +11,8 @@ metaregression_deviance_module_server <- function(id, common, run) {
     module_id <- glue::glue("{id}_deviance")
     model <- glue::glue("{id}_model")
     model_fit <- glue::glue("{id}_model_fit")
-    shinyjs::hide(selector = glue::glue(".{module_id}_div"))
+
+    hide_and_show(module_id, show = FALSE)
 
     common$tasks[[module_id]] <- ExtendedTask$new(
       function(...) mirai::mirai(run(...), run = get(module_id), .args = environment())

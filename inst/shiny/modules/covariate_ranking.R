@@ -8,7 +8,7 @@ covariate_ranking_module_ui <- function(id) {
 covariate_ranking_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
-    shinyjs::hide(selector = ".covariate_ranking_div")
+    hide_and_show(id, show = FALSE)
 
     # check that a fitted model exists and error if not
     observeEvent(input$run, {
@@ -27,8 +27,7 @@ covariate_ranking_module_server <- function(id, common, parent_session) {
       }
     })
 
-
-  # put these in an observe so that they are updated whenever the choices change
+  # update whenever the choices change
   observe({
     if (watch("covariate_ranking") > 0){
       # METADATA ####

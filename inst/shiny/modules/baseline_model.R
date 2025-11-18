@@ -7,14 +7,16 @@ baseline_model_module_ui <- function(id) {
                                     add_tooltip("Unrelated", "Coefficient is different for each treatment comparison")),
                  choiceValues = list("shared", "exchangeable", "unrelated")),
     input_task_button(ns("run"), "Run model", type = "default", icon = icon("arrow-turn-down")),
-    actionButton(ns("run_all"), "Run all modules", icon = icon("forward-fast"))
+    div(class = "baseline_model_div",
+        actionButton(ns("run_all"), "Run all modules", icon = icon("forward-fast"))
+    )
   )
 }
 
 baseline_model_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
-    shinyjs::hide("run_all")
+    hide_and_show(id, show = FALSE)
 
     # used to trigger summary table - needs to be separate to reload
     init("baseline_model_table")
@@ -97,7 +99,7 @@ baseline_model_module_server <- function(id, common, parent_session) {
     output$table <- renderTable({
       watch("baseline_model_table")
       req(common$baseline_model)
-      shinyjs::show("run_all")
+      shinyjs::show(selector = ".baseline_model_div")
       common$baseline_model$dic
       }, digits = 3, rownames = TRUE, colnames = FALSE)
 

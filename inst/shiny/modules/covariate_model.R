@@ -8,14 +8,16 @@ covariate_model_module_ui <- function(id) {
                                     add_tooltip("Unrelated", "Coefficient is different for each treatment comparison")),
                  choiceValues = list("shared", "exchangeable", "unrelated")),
     input_task_button(ns("run"), "Run model", type = "default", icon = icon("arrow-turn-down")),
-    actionButton(ns("run_all"), "Run all modules", icon = icon("forward-fast"))
+    div(class = "covariate_model_div",
+        actionButton(ns("run_all"), "Run all modules", icon = icon("forward-fast"))
+    )
   )
 }
 
 covariate_model_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
-    shinyjs::hide("run_all")
+    hide_and_show(id, show = FALSE)
 
     # update slider with relevant values
     observe({

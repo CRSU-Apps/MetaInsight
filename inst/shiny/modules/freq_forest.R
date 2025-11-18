@@ -38,7 +38,7 @@ freq_forest_module_ui <- function(id) {
 freq_forest_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
-  shinyjs::hide(selector = ".freq_forest_div")
+  hide_and_show("freq_forest")
 
   observeEvent(input$run, {
     # WARNING ####
@@ -83,7 +83,7 @@ freq_forest_module_server <- function(id, common, parent_session) {
     common$meta$freq_forest$used <- TRUE
     common$meta$freq_forest$xmin_all <- as.numeric(input$xmin_all)
     common$meta$freq_forest$xmax_all <- as.numeric(input$xmax_all)
-    shinyjs::show(selector = ".freq_forest_div")
+    # shinyjs::show(selector = ".freq_forest_div")
 
     freq_forest(common$freq_all,
                 common$reference_treatment_all,

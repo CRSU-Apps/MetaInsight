@@ -8,7 +8,7 @@ covariate_results_module_ui <- function(id) {
 covariate_results_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
-    shinyjs::hide(selector = ".covariate_results_div")
+    hide_and_show(id)
 
     observeEvent(input$run, {
       if (is.null(common$covariate_model)){
@@ -17,7 +17,6 @@ covariate_results_module_server <- function(id, common, parent_session) {
       } else {
         trigger("covariate_results")
         common$meta$covariate_results$used <- TRUE
-        shinyjs::show(selector = ".covariate_results_div")
       }
     })
 

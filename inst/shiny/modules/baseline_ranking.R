@@ -8,7 +8,7 @@ baseline_ranking_module_ui <- function(id) {
 baseline_ranking_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
-    shinyjs::hide(selector = ".baseline_ranking_div")
+    hide_and_show(id, show = FALSE)
 
     # check that a fitted model exists and error if not
     observeEvent(input$run, {
@@ -26,7 +26,6 @@ baseline_ranking_module_server <- function(id, common, parent_session) {
         return(list(watch("baseline_ranking"), watch("baseline_model_fit")))
       }
     })
-
 
     # put these in an observe so that they are updated whenever the choices change
     observe({

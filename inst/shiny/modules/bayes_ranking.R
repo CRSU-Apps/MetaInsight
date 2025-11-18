@@ -236,7 +236,7 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
 bayes_ranking_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
-    shinyjs::hide(selector = ".bayes_ranking_div")
+    hide_and_show(id, show = FALSE)
 
     # check that a fitted model exists and error if not
     observeEvent(input$run, {
@@ -263,7 +263,7 @@ bayes_ranking_module_server <- function(id, common, parent_session) {
       }
     })
 
-    # put these in an observe so that they are updated whenever the choices change
+    # update whenever the choices change
     observe({
       if (watch("bayes_ranking") > 0){
         # METADATA ####

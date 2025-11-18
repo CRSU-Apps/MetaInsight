@@ -11,6 +11,8 @@ freq_summary_module_ui <- function(id) {
 freq_summary_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
+  hide_and_show("freq_summary")
+
   observeEvent(input$run, {
     # WARNING ####
     if (is.null(common$freq_sub)){
@@ -26,7 +28,6 @@ freq_summary_module_server <- function(id, common, parent_session) {
 
     # TRIGGER
     trigger("freq_summary")
-    shinyjs::show(selector = ".freq_summary_div")
   })
 
   output$plot_all <- renderPlot({

@@ -528,5 +528,32 @@ run_all <- function(component, logger){
                      glue::glue("Running all {full_component} modules{nodesplit_message}. This might
                                 take several minutes and progress will appear in the logger."))
 
-invisible()
+  invisible()
+}
+
+
+#' @title hide_and_show
+#' @description For internal use. Hides content inside the <module_id>_div class
+#' when a module has not been run and shows it once `trigger(module_id)` has
+#' been called. The show option is `TRUE` by default but can be set to `FALSE`
+#' to manually control when the content is displayed e.g.  if it should
+#' be when an extendedtask completes instead of when the run button is
+#' pressed.
+#' @keywords internal
+#' @param module_id character. The module identifier.
+#' @param show logical. Whether to show the div when `trigger(module_id)` is
+#' called
+#' @export
+hide_and_show <- function(module_id, show = TRUE){
+  observe({
+    watch(module_id)
+    if (watch(module_id) == 0){
+      print(glue::glue("hiding {module_id}"))
+      shinyjs::hide(selector = glue::glue(".{module_id}_div"))
+    } else {
+      if (show){
+        shinyjs::show(selector = glue::glue(".{module_id}_div"))
+      }
+    }
+  })
 }

@@ -1,4 +1,4 @@
-metaregression_regression_module_ui <- function(id, module){
+metaregression_regression_module_ui <- function(id, parent_id){
 
   ns <- NS(id)
   tagList(
@@ -78,14 +78,16 @@ metaregression_regression_module_ui <- function(id, module){
       )
     ),
     input_task_button(ns("run"), "Generate plot", type = "default", icon = icon("arrow-turn-down")),
-    downloadButton(ns("download"), "Download plot")
+    div(class = glue::glue("{parent_id}_div"),
+        downloadButton(ns("download"), "Download plot")
+    )
   )
 }
 
 
 covariate_regression_module_ui <- function(id) {
   ns <- NS(id)
-  metaregression_regression_module_ui(ns("covariate"), "covariate_regression")
+  metaregression_regression_module_ui(ns("covariate"), id)
 }
 
 
@@ -96,8 +98,9 @@ metaregression_regression_module_server <- function(id, common) {
     model <- glue::glue("{id}_model")
     model_fit <- glue::glue("{id}_model_fit")
 
-    shinyjs::hide("download")
     init(glue::glue("{module_id}_plot"))
+
+    hide_and_show(module_id, show = FALSE)
 
     observe({
       watch("setup_configure")
@@ -172,7 +175,7 @@ metaregression_regression_module_server <- function(id, common) {
     svg <- reactive({
       watch(glue::glue("{module_id}_plot"))
       req(common[[module_id]])
-      on.exit(shinyjs::show("download"))
+      on.exit(shinyjs::show(selector = glue::glue(".{module_id}_div")))
 
       # METADATA ####
       common$meta[[module_id]]$used <- TRUE

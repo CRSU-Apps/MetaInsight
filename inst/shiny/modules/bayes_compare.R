@@ -38,7 +38,7 @@ bayes_compare_submodule_server <- function(id, common, run){
 bayes_compare_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
-    shinyjs::hide(selector = ".bayes_compare_div")
+    hide_and_show(id)
 
     # check that a fitted model exists and error if not
     observeEvent(input$run, {
@@ -48,7 +48,6 @@ bayes_compare_module_server <- function(id, common, parent_session) {
       } else {
         trigger("bayes_compare")
         common$meta$bayes_compare$used <- TRUE
-        shinyjs::show(selector = ".bayes_compare_div")
       }
     })
 

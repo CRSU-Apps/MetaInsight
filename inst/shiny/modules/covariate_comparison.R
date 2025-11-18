@@ -1,13 +1,15 @@
-metaregression_comparison_module_ui <- function(id){
+metaregression_comparison_module_ui <- function(id, parent_id){
   ns <- NS(id)
-  downloadButton(ns("download"), "Download table")
+  div(class = glue::glue("{parent_id}_div"),
+    downloadButton(ns("download"), "Download table")
+  )
 }
 
 covariate_comparison_module_ui <- function(id) {
   ns <- NS(id)
   tagList(
     actionButton(ns("run"), "Generate table", icon = icon("arrow-turn-down")),
-    metaregression_comparison_module_ui(ns("covariate"))
+    metaregression_comparison_module_ui(ns("covariate"), id)
   )
 }
 
@@ -19,8 +21,7 @@ metaregression_comparison_module_server <- function(id, common, run) {
     model_fit <- glue::glue("{id}_model_fit")
     class <- glue::glue(".{module_id}_div")
 
-    shinyjs::hide("download")
-    shinyjs::hide(selector = class)
+    hide_and_show(module_id)
 
     observeEvent(run(), {
       if (is.null(common[[model]])){
@@ -35,8 +36,6 @@ metaregression_comparison_module_server <- function(id, common, run) {
     output$table <- renderTable({
       watch(model_fit)
       req(watch(module_id) > 0)
-      shinyjs::show("download")
-      shinyjs::show(selector = class)
       do.call(module_id, list(common[[model]]))
     }, rownames = TRUE)
 

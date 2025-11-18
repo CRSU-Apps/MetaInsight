@@ -2,12 +2,14 @@ summary_char_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
     actionButton(ns("run"), "Generate table", icon = icon("arrow-turn-down")),
-    conditionalPanel("input.run > 0", downloadButton(ns("download")), ns = ns)
+    div(class = "summary_char_div", downloadButton(ns("download")))
   )
 }
 
 summary_char_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
+
+    hide_and_show(id)
 
     observeEvent(input$run, {
       # WARNING ####
@@ -39,7 +41,6 @@ summary_char_module_server <- function(id, common, parent_session) {
       df
     })
 
-    # Characteristics table of all studies
     output$table <- renderTable({
       table()
     }, rownames = TRUE)

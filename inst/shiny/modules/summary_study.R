@@ -13,7 +13,7 @@ summary_study_module_ui <- function(id) {
 summary_study_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
-  shinyjs::hide(selector = ".summary_study_div")
+  hide_and_show(id)
 
   observeEvent(input$run, {
     # WARNING ####
@@ -24,7 +24,6 @@ summary_study_module_server <- function(id, common, parent_session) {
     }
     # TRIGGER
     trigger("summary_study")
-    shinyjs::show(selector = ".summary_study_div")
   })
 
   # Determine the plot height in pixels

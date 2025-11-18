@@ -8,7 +8,7 @@ baseline_mcmc_module_ui <- function(id) {
 baseline_mcmc_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
-    shinyjs::hide(selector = ".baseline_mcmc_div")
+    hide_and_show(id, show = FALSE)
 
     common$tasks$baseline_mcmc <- ExtendedTask$new(
       function(...) mirai::mirai(run(...), run = baseline_mcmc, .args = environment())

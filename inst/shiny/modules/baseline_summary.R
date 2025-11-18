@@ -2,14 +2,16 @@ baseline_summary_module_ui <- function(id) {
   ns <- NS(id)
   tagList(
     actionButton(ns("run"), "Generate plot", icon = icon("arrow-turn-down")),
-    downloadButton(ns("download"), "Download plot")
+    div(class = "baseline_summary_div",
+      downloadButton(ns("download"), "Download plot")
+    )
   )
 }
 
 baseline_summary_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
-  shinyjs::hide("download")
+  hide_and_show(id)
 
   observeEvent(input$run, {
     # WARNING ####
@@ -26,8 +28,6 @@ baseline_summary_module_server <- function(id, common, parent_session) {
 
     # TRIGGER
     trigger("baseline_summary")
-    shinyjs::show("download")
-
   })
 
   output$plot <- renderUI({

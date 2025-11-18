@@ -27,7 +27,7 @@ summary_network_module_ui <- function(id) {
 summary_network_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
-    shinyjs::hide(selector = ".summary_network_div")
+    hide_and_show("summary_network")
 
     observeEvent(input$run, {
       # WARNING ####

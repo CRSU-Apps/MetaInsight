@@ -6,7 +6,7 @@ bayes_details_module_ui <- function(id) {
 bayes_details_submodule_server <- function(id, common, model, model_trigger, module_id, deviance, deviance_trigger, error_message, run){
   moduleServer(id, function(input, output, session) {
 
-  shinyjs::hide(selector = glue::glue(".{module_id}_div"))
+  hide_and_show(module_id, show = FALSE)
 
   observeEvent(run(), {
     if (is.null(common[[model]])){
@@ -201,7 +201,7 @@ bayes_details_module_server <- function(id, common, parent_session) {
 bayes_details_submodule_result <- function(id, class) {
   ns <- NS(id)
   tagList(
-    div(class = class,
+    div(class = paste(class, "details_download"),
         tabsetPanel(id = ns("tabs"),
           tabPanel(
             value = "mcmc",

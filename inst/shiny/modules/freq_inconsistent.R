@@ -9,7 +9,7 @@ freq_inconsistent_module_ui <- function(id) {
 freq_inconsistent_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
-    shinyjs::hide(selector = ".freq_inconsistent_div")
+    hide_and_show(id)
 
     observeEvent(input$run, {
       # WARNING ####
@@ -20,7 +20,6 @@ freq_inconsistent_module_server <- function(id, common, parent_session) {
       }
       # TRIGGER
       trigger("freq_inconsistent")
-      shinyjs::show(selector = ".freq_inconsistent_div")
     })
 
     table_all <- reactive({

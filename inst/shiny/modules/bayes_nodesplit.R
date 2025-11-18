@@ -1,6 +1,8 @@
 bayes_nodesplit_submodule_ui <- function(id, download_label) {
   ns <- NS(id)
-  downloadButton(ns("download"), download_label)
+  div(class = "bayes_nodesplit_div",
+      downloadButton(ns("download"), download_label)
+  )
 }
 
 bayes_nodesplit_module_ui <- function(id) {
@@ -17,8 +19,6 @@ bayes_nodesplit_module_ui <- function(id) {
 bayes_nodesplit_submodule_server <- function(id, common, nodesplit, run){
   moduleServer(id, function(input, output, session) {
 
-    shinyjs::hide("download")
-
     plot_height <- reactive({
       watch(run)
       # removed a -1 here to make room for the title
@@ -32,7 +32,7 @@ bayes_nodesplit_submodule_server <- function(id, common, nodesplit, run){
     output$plot <- renderPlot({
       watch(run)
       req(common[[nodesplit]])
-      shinyjs::show("download")
+      shinyjs::show(selector = ".bayes_nodesplit_div")
       on.exit(shinyjs::runjs(paste0("Shiny.setInputValue('bayes_nodesplit-",id ,"-complete', 'complete');")))
       common$meta$bayes_nodesplit[[paste0("plot_height_", id)]] <- plot_height() / 72
       plot(summary(common[[nodesplit]]), digits = 3)
@@ -67,6 +67,8 @@ bayes_nodesplit_module_server <- function(id, common, parent_session) {
 
     init("bayes_nodesplit_all")
     init("bayes_nodesplit_sub")
+
+    hide_and_show(id, show = FALSE)
 
     observeEvent(input$run, {
       if (is.null(common$main_connected_data)){

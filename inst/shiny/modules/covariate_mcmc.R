@@ -8,7 +8,7 @@ covariate_mcmc_module_ui <- function(id) {
 covariate_mcmc_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
-    shinyjs::hide(selector = ".covariate_mcmc_div")
+    hide_and_show(id, show = FALSE)
 
     common$tasks$covariate_mcmc <- ExtendedTask$new(
       function(...) mirai::mirai(run(...), run = covariate_mcmc, .args = environment())

@@ -1,23 +1,25 @@
-metaregression_forest_module_ui <- function(id) {
+metaregression_forest_module_ui <- function(id, parent_id) {
   ns <- NS(id)
-    downloadButton(ns("download"), "Download plot")
+  div(class = glue::glue("{parent_id}_div"),
+      downloadButton(ns("download"), "Download table")
+  )
 }
 
 covariate_forest_module_ui <- function(id) {
   ns <- NS(id)
   tagList(
     actionButton(ns("run"), "Generate plot", icon = icon("arrow-turn-down")),
-    metaregression_forest_module_ui(ns("covariate"))
+    metaregression_forest_module_ui(ns("covariate"), id)
   )
 }
 
 metaregression_forest_module_server <- function(id, common, run) {
   moduleServer(id, function(input, output, session) {
 
-    shinyjs::hide("download")
-
     module_id <- glue::glue("{id}_forest")
     model <- glue::glue("{id}_model")
+
+    hide_and_show(module_id)
 
     observeEvent(run(), {
       if (is.null(common[[model]])){
@@ -32,7 +34,6 @@ metaregression_forest_module_server <- function(id, common, run) {
     svg <- reactive({
       watch(glue::glue("{model}_fit"))
       req(watch(module_id) > 0)
-      shinyjs::show("download")
       do.call(module_id, list(common[[model]],
                            common$treatment_df,
                            common$reference_treatment_all,

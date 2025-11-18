@@ -34,7 +34,7 @@ bayes_model_module_server <- function(id, common, parent_session) {
     init("bayes_model_table_sub")
     init("bayes_model_table_all")
 
-    shinyjs::hide(selector = ".bayes_model_div")
+    hide_and_show(id, show = FALSE)
 
     observeEvent(input$run, {
       if (is.null(common$main_connected_data)){

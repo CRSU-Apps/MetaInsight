@@ -62,11 +62,9 @@ bayes_mcmc_module_server <- function(id, common, parent_session) {
 
     init("bayes_mcmc_all")
     init("bayes_mcmc_sub")
-    shinyjs::hide(selector = ".bayes_mcmc_div")
+    hide_and_show(id, show = FALSE)
 
     observeEvent(input$run, {
-      # add check for a running model
-
       if (is.null(common$bayes_all)){
         common$logger |> writeLog(type = "error", go_to = "bayes_model", "Please fit the Bayesian models first")
         return()

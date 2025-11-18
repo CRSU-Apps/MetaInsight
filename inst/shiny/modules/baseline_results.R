@@ -8,7 +8,7 @@ baseline_results_module_ui <- function(id) {
 baseline_results_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
-    shinyjs::hide(selector = ".baseline_results_div")
+    hide_and_show(id)
 
     observeEvent(input$run, {
       if (is.null(common$baseline_model)){
@@ -17,7 +17,6 @@ baseline_results_module_server <- function(id, common, parent_session) {
       } else {
         trigger("baseline_results")
         common$meta$baseline_results$used <- TRUE
-        shinyjs::show(selector = ".baseline_results_div")
       }
     })
 

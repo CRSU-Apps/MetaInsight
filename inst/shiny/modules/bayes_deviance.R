@@ -80,7 +80,7 @@ bayes_deviance_module_server <- function(id, common, parent_session) {
 
     init("bayes_deviance_all")
     init("bayes_deviance_sub")
-    shinyjs::hide(selector = ".bayes_deviance_div")
+    hide_and_show(id)
 
     observeEvent(input$run, {
       # add check for a running model
