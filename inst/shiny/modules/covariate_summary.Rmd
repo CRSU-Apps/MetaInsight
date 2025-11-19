@@ -1,0 +1,12 @@
+```{asis, echo = {{covariate_summary_knit}}, eval = {{covariate_summary_knit}}, include = {{covariate_summary_knit}}}
+### Covariate summary plot
+```
+
+```{asis, echo = {{covariate_summary_knit}}, eval = {{covariate_summary_knit}}, include = {{covariate_summary_knit}}}
+{r, results = 'asis'}
+```
+```{r, echo = {{covariate_summary_knit}}, include = {{covariate_summary_knit}}}
+covariate_summary_plot <- covariate_summary(main_connected_data, outcome, treatment_df)
+
+htmltools::HTML(covariate_summary_plot$svg)
+```

@@ -1,0 +1,12 @@
+```{asis, echo = {{covariate_comparison_knit}}, eval = {{covariate_comparison_knit}}, include = {{covariate_comparison_knit}}}
+### Produce tables comparing treatment pairs. 
+
+In contrast to the 'comparison of all treatment pairs' module in the frequentist NMA results,
+this table only contains the estimates from the network meta analysis, i.e. does not contain estimates from pairwise meta-analysis which only contains direct evidence. Pairwise meta-analysis results are not currently available
+```
+
+```{r, {{covariate_comparison_knit}}, include = {{covariate_comparison_knit}}}
+knitr::kable(covariate_comparison(covariate_model), 
+             caption = "Treatment effects for all studies: comparison of all treatment pairs.")
+```
+

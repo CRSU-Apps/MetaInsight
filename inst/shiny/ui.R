@@ -26,12 +26,14 @@ tagList(
     nav_panel("Summary", value = "summary"),
     nav_panel("Frequentist", value = "freq"),
     nav_panel("Bayesian", value = "bayes"),
+    nav_panel("Baseline risk", value = "baseline"),
+    nav_panel("Covariate", value = "covariate"),
     nav_panel("Reproduce", value = "rep"),
     nav_menu("Save", icon = icon("floppy-disk"),
                HTML('<a href="#" id="save-button" class="action-button btn" onclick="Shiny.setInputValue(\'core_save-save\', Math.random())">Save session</a>')),
     nav_menu("Support", icon = icon("life-ring"),
                HTML('<a href="https://github.com/CRSU-Apps/MetaInsight/issues" target="_blank">GitHub Issues</a>'),
-               HTML('<a href="mailto: info@crsu.org.uk" target="_blank">Send Email</a>'))
+               HTML('<a href="mailto: apps@crsu.org.uk" target="_blank">Send Email</a>'))
   ),
   layout_sidebar(
     sidebar = sidebar(
@@ -48,6 +50,8 @@ tagList(
       insert_modules_ui("summary", "Summarise the data"),
       insert_modules_ui("freq", "Frequentist network meta-analysis"),
       insert_modules_ui("bayes", "Bayesian network meta-analysis"),
+      insert_modules_ui("baseline", "Baseline risk analysis"),
+      insert_modules_ui("covariate", "Covariate analysis"),
       insert_modules_ui("rep", "Reproduce the analysis")
       ),
       # --- RESULTS WINDOW ---

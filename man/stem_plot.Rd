@@ -7,7 +7,7 @@
 stem_plot(deviance)
 }
 \arguments{
-\item{deviance}{Output produced by `gemtc::mtc.deviance()`}
+\item{deviance}{Output produced by \code{gemtc::mtc.deviance()}}
 }
 \description{
 Stem plot

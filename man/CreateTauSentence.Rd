@@ -7,7 +7,7 @@
 CreateTauSentence(model)
 }
 \arguments{
-\item{model}{Output created by bayes_model()}
+\item{model}{Output created by \code{bayes_model()}}
 }
 \value{
 Text with the point estimate and 95\% CrI of between-trial SD of treatment effects (all 0 if fixed effects)

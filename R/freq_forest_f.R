@@ -1,17 +1,9 @@
 #' Produce a forest plot and annotation
 #'
-#' @param freq list. NMA results created by freq_wrap().
-#' @param reference_treatment character. The reference treatment of the dataset
-#' @param model_type character. Type of model to fit, either `random` or `fixed`
-#' @param outcome_measure character. Outcome measure of the dataset. Either
-#' `OR`, `RR` or `RD` when `outcome` is `Binary` or `MD` or `SMD` when
-#' `outcome` is `Continuous`
 #' @param xmin numeric. Minimum x-axis limit.
 #' @param xmax numeric. Maximum x-axis limit.
 #' @param title character. Title for the plot.
-#' @param logger Stores all notification messages to be displayed in the Log
-#'   Window. Insert the logger reactive list here for running in
-#'   shiny, otherwise leave the default `NULL`
+#' @inheritParams common_params
 #'
 #' @return List containing:
 #'  \item{svg}{character. SVG code to produce the plot}

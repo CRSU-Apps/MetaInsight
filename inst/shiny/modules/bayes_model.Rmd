@@ -3,8 +3,8 @@
 ```
 
 ```{r, echo = {{bayes_model_knit}}, include = {{bayes_model_knit}}}
-bayes_model_all <- suppress_jags_output(bayes_model(main_connected_data, treatment_df, outcome, outcome_measure, model_type, reference_treatment_all))
-bayes_model_sub <- suppress_jags_output(bayes_model(connected_data_sub, treatment_df_sub, outcome, outcome_measure, model_type, reference_treatment_sub))
+bayes_model_all <- bayes_model(main_connected_data, treatment_df, outcome, outcome_measure, model_type, reference_treatment_all)
+bayes_model_sub <- bayes_model(connected_data_sub, treatment_df_sub, outcome, outcome_measure, model_type, reference_treatment_sub)
 ```
 
 ```{r, echo = {{bayes_model_knit}}, include = {{bayes_model_knit}}}

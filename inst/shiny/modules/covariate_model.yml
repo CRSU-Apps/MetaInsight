@@ -1,0 +1,5 @@
+component: "covariate"
+short_name: "Fit model"
+long_name: "Fit covariate regression model"
+authors: "Ryan Field, Tom Morris, Clareece Nevill, Janion Nevill, Simon Smart"
+package: [gemtc]

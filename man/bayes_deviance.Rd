@@ -2,22 +2,27 @@
 % Please edit documentation in R/bayes_deviance_f.R
 \name{bayes_deviance}
 \alias{bayes_deviance}
+\alias{covariate_deviance}
 \title{Produce deviance plots}
 \usage{
 bayes_deviance(model, async = FALSE)
+
+covariate_deviance(...)
 }
 \arguments{
-\item{model}{Bayesian model produced by bayes_model}
+\item{model}{Bayesian model produced by \code{bayes_model()} or \code{covariate_model()}}
 
-\item{async}{Whether or not the function is being used asynchronously. Default `FALSE`}
+\item{async}{Whether or not the function is being used asynchronously. Default \code{FALSE}}
+
+\item{...}{Parameters passed to \code{bayes_deviance()}}
 }
 \value{
 list containing:
- \item{deviance_mtc}{results from `gemtc::mtc.deviance()` for model$mtcResults}
- \item{deviance_ume}{results from `gemtc::mtc.deviance()` for UME model}
- \item{scat_plot}{plotly object}
- \item{stem_plot}{plotly object}
- \item{lev_plot}{plotly object}
+\item{deviance_mtc}{results from \code{gemtc::mtc.deviance()} for model$mtcResults}
+\item{deviance_ume}{results from \code{gemtc::mtc.deviance()} for UME model}
+\item{scat_plot}{plotly object}
+\item{stem_plot}{plotly object}
+\item{lev_plot}{plotly object}
 }
 \description{
 Produce deviance plots

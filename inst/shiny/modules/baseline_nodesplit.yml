@@ -1,0 +1,5 @@
+component: "baseline"
+short_name: "Nodesplit"
+long_name: "Nodesplit"
+authors: "Ryan Field, Tom Morris, Clareece Nevill, Janion Nevill, Simon Smart"
+package: [bnma]

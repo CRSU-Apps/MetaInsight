@@ -1,16 +1,12 @@
-#' Function to create data regarding rank results - CRN
+#' Generate ranking data required to produce SUCRA plots from Bayesian models
 #'
-#' @param connected_data dataframe. Input data set created by `setup_configure()` or `setup_exclude`
-#' @param treatment_df Dataframe containing the treatment ID ('Number') and the treatment name ('Label').
-#' @param model List. Output produced by bayes_model().
-#' @param ranking_option "good" or "bad", referring to small outcome values.
-#' @param logger Stores all notification messages to be displayed in the Log
-#'   Window. Insert the logger reactive list here for running in
-#'   shiny, otherwise leave the default `NULL`
+#' @param model list. Output produced by `baseline_model()`, `bayes_model()` or `covariate_model()`.
+#' @param cov_value numeric. Covariate value if a meta-regression. Default `NA`
+#' @inheritParams common_params
 #'
-#' @return List of output created by rankdata().
+#' @return List of output created by `rankdata()`.
 #' @export
-bayes_ranking <- function(connected_data, treatment_df, model, ranking_option, logger = NULL) {
+bayes_ranking <- function(connected_data, treatment_df, model, ranking_option, cov_value = NA, logger = NULL) {
 
   check_param_classes(c("connected_data", "treatment_df", "ranking_option"),
                       c("data.frame", "data.frame", "character"), logger)
@@ -20,8 +16,8 @@ bayes_ranking <- function(connected_data, treatment_df, model, ranking_option, l
     return()
   }
 
-  if (!inherits(model, "bayes_model")){
-    logger |> writeLog(type = "error", "model must be an object created by bayes_model()")
+  if (!inherits(model, "bayes_model") && !inherits(model, "baseline_model")){
+    logger |> writeLog(type = "error", "model must be an object created by baseline_model(), bayes_model() or covariate_model()")
     return()
   }
 
@@ -31,9 +27,23 @@ bayes_ranking <- function(connected_data, treatment_df, model, ranking_option, l
     NMAdata = model$mtcResults,
     rankdirection = ranking_option,
     longdata = longsort,
-    cov_value = NA,
-    package = "gemtc"
+    cov_value = cov_value,
+    package = ifelse(inherits(model, "baseline_model"), "bnma", "gemtc")
   )
+}
+
+#' @rdname bayes_ranking
+#' @param ... Parameters passed to `bayes_ranking()`
+#' @export
+baseline_ranking <- function(...){
+  bayes_ranking(...)
+}
+
+#' @rdname bayes_ranking
+#' @param ... Parameters passed to `bayes_ranking()`
+#' @export
+covariate_ranking <- function(...){
+  bayes_ranking(...)
 }
 
 #' Get SUCRA data.
@@ -74,7 +84,7 @@ rankdata <- function(NMAdata, rankdirection, longdata, cov_value = NA, package =
   # probability rankings
   if (package == "gemtc"){
     prob <- as.data.frame(
-      print(
+      unclass( # required to convert
         gemtc::rank.probability(
           NMAdata,
           preferredDirection = direction,

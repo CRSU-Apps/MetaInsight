@@ -46,7 +46,15 @@ shinyjs.runOnEnter = function(params) {
       // Check if a shinyalert modal is open
       const isModalOpen = $('.sweet-alert:visible').length > 0;
       if (!isModalOpen) {
-        const button = document.getElementById(`${params}-run`)
+        let buttonId = params[0];
+        // workaround for regression modules where run is in a submodule
+        if (params[0].includes('regression')) {
+          // e.g. covariate_regression-covariate
+          const baseName = params[0].replace('_regression', '');
+          buttonId = `${params[0]}-${baseName}`;
+        }
+
+        const button = document.getElementById(`${buttonId}-run`);
         if (button) {
           button.click();
         }

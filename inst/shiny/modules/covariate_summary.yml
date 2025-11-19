@@ -1,0 +1,6 @@
+component: "covariate"
+short_name: "Summary"
+long_name: "Summary"
+authors: "Ryan Field, Tom Morris, Clareece Nevill, Janion Nevill, Simon Smart"
+package: [gemtc]
+

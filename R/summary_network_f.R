@@ -1,6 +1,5 @@
 #' Produce either a netgraph or netplot
 #'
-#' @param freq list. Created by `frequentist()`
 #' @param bugsnet dataframe. Created by `bugsnetdata()`
 #' @param style character. The plot to produce, either `netgraph` or `netplot`
 #' @param label_size numeric. The size of labels in the plots. Default of 1.
@@ -26,7 +25,7 @@ summary_network <- function(freq, bugsnet, style, label_size = 1, title = "", lo
   }
 
   n_trt <- freq$ntx
-  if (n_trt < 5){
+  if (n_trt < 8){
     height <- 5
     width <- 5
   } else {

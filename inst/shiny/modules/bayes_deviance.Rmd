@@ -4,8 +4,8 @@
 ```
 
 ```{r, echo = {{bayes_deviance_knit}}, include = {{bayes_deviance_knit}}}
-deviance_all <- suppress_jags_output(bayes_deviance(bayes_model_all))
-deviance_sub <- suppress_jags_output(bayes_deviance(bayes_model_sub))
+deviance_all <- bayes_deviance(bayes_model_all)
+deviance_sub <- bayes_deviance(bayes_model_sub)
 ```
 
 ```{asis, echo = {{bayes_deviance_knit}}, eval = {{bayes_deviance_knit}}, include = {{bayes_deviance_knit}}}

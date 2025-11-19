@@ -14,20 +14,23 @@ bayes_nodesplit(
 )
 }
 \arguments{
-\item{connected_data}{dataframe. Input data set created by `setup_configure()` or `setup_exclude`}
+\item{connected_data}{dataframe. Input data set created by \code{setup_configure()} or \code{setup_exclude}}
 
-\item{treatment_df}{Dataframe containing treatment names ("Label") and IDs ("Number").}
+\item{treatment_df}{dataframe. Treatments}
 
-\item{outcome}{character. The type of outcome being measured either `Continuous` or `Binary`}
+\item{outcome}{character. Outcome type for the dataset. Either \code{Binary} or
+\code{Continuous}.}
 
-\item{outcome_measure}{character. The analysis outcome measure. Either `MD`, `OR` or `RR`}
+\item{outcome_measure}{character. Outcome measure of the dataset. Either
+\code{OR}, \code{RR} or \code{RD} when \code{outcome} is \code{Binary} or \code{MD} or \code{SMD} when
+\code{outcome} is \code{Continuous}}
 
-\item{model_type}{character. The type of model. Either `random` or `fixed`}
+\item{model_type}{character. Type of model to fit, either \code{random} or \code{fixed}}
 
-\item{async}{Whether or not the function is being used asynchronously. Default `FALSE`}
+\item{async}{Whether or not the function is being used asynchronously. Default \code{FALSE}}
 }
 \value{
-mtc.nodesplit object containing an mtc.result object for each node
+\code{mtc.nodesplit} object containing an mtc.result object for each node
 }
 \description{
 Run the nodesplit model

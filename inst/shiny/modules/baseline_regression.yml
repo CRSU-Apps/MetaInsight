@@ -1,0 +1,5 @@
+component: "baseline"
+short_name: "Regression plot"
+long_name: "Regression plot"
+authors: "Ryan Field, Tom Morris, Clareece Nevill, Janion Nevill, Simon Smart"
+package: [gemtc, ggplot2]

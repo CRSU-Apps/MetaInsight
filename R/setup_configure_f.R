@@ -2,22 +2,16 @@
 #' bugsnet and frequentist analyses
 #'
 #' @param data dataframe. Uploaded data
-#' @param treatment_df dataframe. Treatments
-#' @param outcome character. Outcome type for the dataset. Either `Binary` or
-#' `Continuous`.
-#' @param outcome_measure character. Outcome measure of the dataset. Either
-#' `OR`, `RR` or `RD` when `outcome` is `Binary` or `MD` or `SMD` when
-#' `outcome` is `Continuous`
-#' @param reference_treatment character. The reference treatment of the dataset
-#' @param logger Stores all notification messages to be displayed in the Log
-#'   Window. Insert the logger reactive list here for running in
-#'   shiny, otherwise leave the default `NULL`
+#' @inheritParams common_params
 #' @return List containing:
 #'  \item{wrangled_data}{dataframe. To be presented in the data table}
 #'  \item{treatment_df}{dataframe. Updated version of the input parameter}
 #'  \item{disconnected_indices}{vector. Indices of studies that are not connected to the main network}
 #'  \item{main_connected_data}{dataframe. A subset of the data containing only connected studies}
 #'  \item{non_covariate_data_all}{dataframe. The uploaded data with covariates removed}
+#'  \item{covariate_column}{character. Name of the column containing covariate data}
+#'  \item{covariate_name}{character. Name of the covariate}
+#'  \item{covariate_type}{character. Whether the covariate is `Binary` or `Continuous`}
 #'  \item{bugsnet_all}{dataframe. Processed data for bugsnet analyses created by `bugsnetdata`}
 #'  \item{freq_all}{list. Processed data for frequentist analyses created by `frequentist()`}
 #' @export
@@ -78,16 +72,25 @@ setup_configure <- function(data, treatment_df, outcome, outcome_measure, refere
 
   non_covariate_data_all <- RemoveCovariates(main_connected_data)
 
+  if (any(grepl("covar\\.", names(main_connected_data)))){
+    covariate_column <- FindCovariateNames(main_connected_data)
+    covariate_name <- GetFriendlyCovariateName(covariate_column)
+    covariate_type <- InferCovariateType(main_connected_data[[covariate_column]])
+  } else {
+    covariate_column <- NULL
+    covariate_name <- NULL
+    covariate_type <- NULL
+  }
+
   bugsnet_all <- bugsnetdata(non_covariate_data_all, outcome, treatment_df)
 
   # random is the default model type, this structure is updated in setup_exclude if the model type changes
-  # suppressWarnings deprecation temporarily
-  freq_all <- suppressWarnings(frequentist(non_covariate_data_all,
+  freq_all <- frequentist(non_covariate_data_all,
                           outcome,
                           treatment_df,
                           outcome_measure,
                           "random",
-                          treatment_df$Label[treatment_df$Number == 1]))
+                          treatment_df$Label[treatment_df$Number == 1])
 
   return(list(wrangled_data = data,
               treatment_df = treatment_df,
@@ -95,6 +98,9 @@ setup_configure <- function(data, treatment_df, outcome, outcome_measure, refere
               disconnected_indices = disconnected_indices,
               main_connected_data = main_connected_data,
               non_covariate_data_all = non_covariate_data_all,
+              covariate_column = covariate_column,
+              covariate_name = covariate_name,
+              covariate_type = covariate_type,
               bugsnet_all = bugsnet_all,
               freq_all = freq_all))
 }
@@ -130,7 +136,7 @@ IdentifySubNetworks <- function(data, treatment_df, reference_treatment_name = N
     reference_treatment <- new_reference_treatment
   }
 
-  graph <- .CreateGraph(data)
+  graph <- CreateGraph(data)
   components <- igraph::components(graph)
   membership <- components$membership
 
@@ -195,3 +201,81 @@ RankingOrder <- function(outcome, data) {
   }
   return(choice)
 }
+
+#' Create a copy of a data from which does not contain any covariate columns.
+#'
+#' @param data Data from which to remove covariate columns
+#' @return Data without covariate columns
+#' @export
+RemoveCovariates <- function(data) {
+  covariate_column_names <- FindCovariateNames(data)
+
+  if (length(covariate_column_names) == 0) {
+    return(data)
+  }
+
+  covariate_column_indices <- match(covariate_column_names, names(data))
+  return(data[, -covariate_column_indices])
+}
+
+
+InferCovariateType <- function(covariate_data) {
+  unique_items <- unique(covariate_data)
+  if (length(unique_items) == 2 && all(sort(unique_items) == c(0, 1))) {
+    return("Binary")
+  } else {
+    return("Continuous")
+  }
+}
+
+
+
+#' #' Validate the covariate and infer the type of the covariate from the data in the column.
+#' #'  In error cases, this function will throw exceptions:
+#' #' - If the data has any NAs
+#' #' - If the data has any non-numeric values
+#' #' - If every study has the same covariate value
+#' #' - If any study contains multiple different covariate values
+#' #'
+#' #' @param data Data frame containing all study data.
+#' #' @param covariate_title Name of the covariate column.
+#' #'
+#' #' @return "binary" if covariate has only 0 & 1 as numeric values,
+#' #' "continuous" if covariate has more than 2 numeric values
+#' ValidateAndInferCovariateType <- function(data, covariate_title) {
+#'   covariate_data <- data[[covariate_title]]
+#'
+#'   if (!is.numeric(covariate_data)) {
+#'     stop("One or more covariate values are non-numerical.")
+#'   }
+#'
+#'   covariate_values <- list()
+#'   for (study in unique(data$Study)) {
+#'     covariate_values[[study]] <- unique(covariate_data[data$Study == study])
+#'   }
+#'
+#'   .ThrowErrorForMatchingStudies(
+#'     values = covariate_values,
+#'     condition = function(study_values) {
+#'       any(is.na(study_values))
+#'     },
+#'     message = "Some studies do not define covariate values for all arms:"
+#'   )
+#'
+#'   .ThrowErrorForMatchingStudies(
+#'     values = covariate_values,
+#'     condition = function(study_values) {
+#'       length(study_values) > 1
+#'     },
+#'     message = "Some studies contain inconsistent covariate values between arms:"
+#'   )
+#'
+#'   unique_items <- unique(covariate_data)
+#'   if (length(unique_items) == 1) {
+#'     stop("Cannot analyse covariate with no variation.")
+#'   } else if (length(unique_items) == 2 && all(sort(unique_items) == c(0, 1))) {
+#'     return("Binary")
+#'   }
+#'
+#'   return("Continuous")
+#' }

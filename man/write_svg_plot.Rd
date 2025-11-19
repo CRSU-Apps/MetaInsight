@@ -4,18 +4,14 @@
 \alias{write_svg_plot}
 \title{Write an svg plot to either a png, pdf or svg file}
 \usage{
-write_svg_plot(file, type, svg, height, width)
+write_svg_plot(file, type, svg)
 }
 \arguments{
 \item{file}{character. The file to which to write.}
 
 \item{type}{character. Type of file to which to write.}
 
-\item{svg}{character. The svg plot.}
-
-\item{height}{numeric. The height of the svg in pixels.}
-
-\item{width}{numeric. The width of the plot in inches for pdf, or user specified units for png.}
+\item{svg}{list. Containing the svg string, width and height returned from \code{crop_svg()}}
 }
 \description{
 Write an svg plot to either a png, pdf or svg file

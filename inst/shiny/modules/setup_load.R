@@ -12,9 +12,10 @@ setup_load_module_ui <- function(id) {
     p(tags$strong("See the Guidance tab for instructions")),
     uiOutput(ns("data_out")),
     actionButton(ns("run"), "Load example data", icon = icon("arrow-turn-down")),
-    uiOutput(ns("reset_out")),
-    br(),
-    uiOutput(ns("download_out"))
+    div(class = "download_buttons",
+        actionButton(ns("reset"), "Delete data", icon = icon("trash"), style = "margin-bottom: 15px" ),
+        downloadButton(ns("download"), "Download example data")
+    )
   )
 }
 
@@ -40,7 +41,6 @@ setup_load_module_server <- function(id, common, parent_session) {
                      ", selection))
     })
 
-
     # Create a definable reactive value to allow reloading of data
     init("setup_reset")
 
@@ -60,45 +60,56 @@ setup_load_module_server <- function(id, common, parent_session) {
       }
     })
 
-    output$reset_out <- renderUI({
+    observe({
       watch("setup_load")
       watch("setup_reset")
-      req(common$is_data_uploaded)
-      div(
-        style = "float:right",
-        actionButton(ns("reset"), "Delete data",
-                     icon = icon("trash"),
-                     style = "color: #fff; background-color: #dc3545; border-color: #dc3545")
-      )
+      if (is.null(common$data)){
+        shinyjs::hide("reset")
+      } else {
+        shinyjs::show("reset")
+      }
+      if (is.null(common$is_data_uploaded) || !common$is_data_uploaded){
+        shinyjs::show("download")
+      } else {
+        shinyjs::hide("download")
+      }
     })
 
     observeEvent(input$reset, {
-      common$reset()
-      updateActionButton(session, "run", label = "Load example data")
-      file_id$value <- file_id$value + 1
-      file_id$id <- paste0("file", file_id$value)
-      trigger("setup_reset")
+      shinyalert::shinyalert(title = "Delete data and generated outputs?",
+                             type = "info",
+                             confirmButtonText = "Yes",
+                             showCancelButton = TRUE,
+                             cancelButtonText = "No",
+                             immediate = TRUE,
+                             inputId = "reset_confirm")
     })
 
-    output$download_out <- renderUI({
-      watch("setup_load")
-      watch("setup_reset")
-      if (is.null(common$is_data_uploaded) || !common$is_data_uploaded){
-        downloadButton(ns("download"), "Download example data")
+    observeEvent(input$reset_confirm, {
+      if(input$reset_confirm){
+        reset_data(common, session)
+        updateActionButton(session, "run", label = "Load example data")
+        file_id$value <- file_id$value + 1
+        file_id$id <- paste0("file", file_id$value)
+        trigger("setup_reset")
       }
     })
 
     observeEvent(input$run, {
       # WARNING ####
-      # none for this module
+     if (!is.null(common$data)){
+       common$logger |> writeLog(type = "error", "Data has already been loaded - please delete it first")
+       return()
+     }
+
       # FUNCTION CALL ####
       result <- setup_load(input[[file_id$id]]$datapath, input$outcome, common$logger)
 
       if (result$is_data_valid){
         if (result$is_data_uploaded){
-          common$logger |> writeLog(type= "complete", "Data was uploaded successfully")
+          common$logger |> writeLog(type = "complete", "Data has been uploaded successfully")
         } else {
-          common$logger |> writeLog(type= "complete", glue::glue("Default {tolower(input$outcome)} data has been loaded"))
+          common$logger |> writeLog(type = "complete", glue::glue("Default {tolower(input$outcome)} data has been loaded"))
         }
       }
 

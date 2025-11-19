@@ -53,6 +53,7 @@ test_that("setup_exclude loads data into common correctly", {
   app$set_inputs(setupSel = "setup_load")
   app$click("setup_load-run")
   app$set_inputs(setupSel = "setup_configure")
+  app$wait_for_value(input = "setup_configure-ready")
   app$click("setup_configure-run")
   app$set_inputs(tabs = "summary")
   app$set_inputs("setup_exclude-exclusions" = c("Study01", "Study25"))

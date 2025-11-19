@@ -1,0 +1,5 @@
+component: "baseline"
+short_name: "Markov chain Monte Carlo"
+long_name: "Markov chain Monte Carlo"
+authors: "Ryan Field, Tom Morris, Clareece Nevill, Janion Nevill, Simon Smart"
+package: [coda, bayesplot]

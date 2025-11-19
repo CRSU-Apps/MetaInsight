@@ -27,12 +27,13 @@ summary_network_module_ui <- function(id) {
 summary_network_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
-    shinyjs::hide(selector = ".summary_network_div")
+    hide_and_show("summary_network")
 
     observeEvent(input$run, {
       # WARNING ####
       if (is.null(common$freq_sub)){
-        common$logger |> writeLog(type = "error", "Please configure the analysis first in the Setup section")
+        common$logger |> writeLog(type = "error", go_to = "setup_configure",
+                                  "Please configure the analysis first in the Setup section")
         return()
       }
       # TRIGGER
@@ -108,9 +109,7 @@ summary_network_module_server <- function(id, common, parent_session) {
         write_svg_plot(
           file,
           common$download_format,
-          plot_all()$svg,
-          plot_all()$height,
-          plot_all()$width
+          plot_all()
         )
       }
     )
@@ -123,9 +122,7 @@ summary_network_module_server <- function(id, common, parent_session) {
         write_svg_plot(
           file,
           common$download_format,
-          plot_sub()$svg,
-          plot_sub()$height,
-          plot_sub()$width
+          plot_sub()
         )
       }
     )

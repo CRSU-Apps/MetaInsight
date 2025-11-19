@@ -7,7 +7,7 @@ bayes_compare_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
     actionButton(ns("run"), "Generate tables", icon = icon("arrow-turn-down")),
-    div(class = "bayes_compare_div",
+    div(class = "bayes_compare_div download_buttons",
       layout_columns(
         bayes_compare_submodule_ui(ns("all"), "All studies"),
         bayes_compare_submodule_ui(ns("sub"), "With selected studies excluded")
@@ -22,7 +22,7 @@ bayes_compare_submodule_server <- function(id, common, run){
     output$table <- renderTable({
       shinyjs::show(selector = ".bayes_compare_div")
       bayes_compare(common[[paste0("bayes_", id)]])
-    }) |> bindEvent(run())
+    }, rownames = TRUE) |> bindEvent(run())
 
     outputOptions(output, "table", suspendWhenHidden = FALSE)
 
@@ -41,12 +41,12 @@ bayes_compare_submodule_server <- function(id, common, run){
 bayes_compare_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
-    shinyjs::hide(selector = ".bayes_compare_div")
+    hide_and_show(id)
 
     # check that a fitted model exists and error if not
     observeEvent(input$run, {
       if (is.null(common$bayes_all)){
-        common$logger |> writeLog(type = "error", "Please fit the Bayesian models first")
+        common$logger |> writeLog(type = "error", go_to = "bayes_model", "Please fit the Bayesian models first")
         return()
       } else {
         trigger("bayes_compare")

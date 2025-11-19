@@ -2,6 +2,7 @@ freq_forest_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
     actionButton(ns("run"), "Generate plots", icon = icon("arrow-turn-down")),
+    actionButton(ns("run_all"), "Run all modules", icon = icon("forward-fast")),
     div(class = "freq_forest_div",
       fixedRow(
         p("Limits of the x-axis for all studies:"),
@@ -37,12 +38,13 @@ freq_forest_module_ui <- function(id) {
 freq_forest_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
-  shinyjs::hide(selector = ".freq_forest_div")
+  hide_and_show("freq_forest")
 
   observeEvent(input$run, {
     # WARNING ####
     if (is.null(common$freq_sub)){
-      common$logger |> writeLog(type = "error", "Please configure the analysis first in the Setup section")
+      common$logger |> writeLog(type = "error", go_to = "setup_configure",
+                                 "Please configure the analysis first in the Setup section")
       return()
     }
     # TRIGGER
@@ -81,7 +83,7 @@ freq_forest_module_server <- function(id, common, parent_session) {
     common$meta$freq_forest$used <- TRUE
     common$meta$freq_forest$xmin_all <- as.numeric(input$xmin_all)
     common$meta$freq_forest$xmax_all <- as.numeric(input$xmax_all)
-    shinyjs::show(selector = ".freq_forest_div")
+    # shinyjs::show(selector = ".freq_forest_div")
 
     freq_forest(common$freq_all,
                 common$reference_treatment_all,
@@ -108,18 +110,12 @@ freq_forest_module_server <- function(id, common, parent_session) {
   })
 
   output$plot_sub <- renderUI({
-    height <- result_sub()$height
-    width <- result_sub()$width
-
     div(class = "svg_container",
         HTML(result_sub()$svg)
     )
   })
 
   output$plot_all <- renderUI({
-    height <- result_all()$height
-    width <- result_all()$width
-
     div(class = "svg_container",
         HTML(result_all()$svg)
     )
@@ -129,7 +125,7 @@ freq_forest_module_server <- function(id, common, parent_session) {
     filename = function(){
       paste0("MetaInsight_frequentist_forest_all.", common$download_format)},
     content = function(file){
-      write_svg_plot(file, common$download_format, result_all()$svg, result_all()$height, result_all()$width)
+      write_svg_plot(file, common$download_format, result_all())
     }
   )
 
@@ -137,9 +133,18 @@ freq_forest_module_server <- function(id, common, parent_session) {
     filename = function(){
       paste0("MetaInsight_frequentist_forest_sub.", common$download_format)},
     content = function(file){
-      write_svg_plot(file, common$download_format, result_sub()$svg, result_sub()$height, result_sub()$width)
+      write_svg_plot(file, common$download_format, result_sub())
     }
   )
+
+  observeEvent(input$run_all, {
+    if (is.null(common$freq_sub)){
+      common$logger |> writeLog(type = "error", go_to = "setup_configure",
+                                "Please configure the analysis first in the Setup section")
+      return()
+    }
+    run_all("freq", common$logger)
+  })
 
   return(list(
     save = function() {list(

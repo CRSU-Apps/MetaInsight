@@ -17,6 +17,7 @@ htmltools::HTML(summary_network_all$svg)
 ```
 ```{r, echo = {{summary_network_knit}}, include = {{summary_network_knit}}}
 summary_network_sub <- summary_network(frequentist_sub, bugsnet_sub, network_style, {{summary_network_label_sub}}, "Network plot with selected \n studies excluded")
+
 htmltools::HTML(summary_network_sub$svg)
 ```
 

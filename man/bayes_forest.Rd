@@ -2,37 +2,42 @@
 % Please edit documentation in R/bayes_forest_f.R
 \name{bayes_forest}
 \alias{bayes_forest}
+\alias{covariate_forest}
 \title{Make a Bayesian forest plot}
 \usage{
 bayes_forest(
   model,
   treatment_df,
   reference_treatment,
-  title,
+  title = "",
   ranking = FALSE,
   logger = NULL
 )
+
+covariate_forest(...)
 }
 \arguments{
-\item{model}{list. Object created by bayes_model()}
+\item{model}{list. Object created by \code{bayes_model()} or \code{covariate_model()}}
 
-\item{treatment_df}{dataframe.}
+\item{treatment_df}{dataframe. Treatments}
 
-\item{reference_treatment}{character.}
+\item{reference_treatment}{character. The reference treatment of the dataset}
 
-\item{title}{character. Title for the plot}
+\item{title}{character. Title for the plot. Default is no title}
 
-\item{ranking}{logical. Whether the function is being used in `bayes_ranking`}
+\item{ranking}{logical. Whether the function is being used in \code{bayes_ranking}}
 
 \item{logger}{Stores all notification messages to be displayed in the Log
 Window. Insert the logger reactive list here for running in
-shiny, otherwise leave the default `NULL`}
+shiny, otherwise leave the default \code{NULL}}
+
+\item{...}{Parameters passed to \code{bayes_forest()}}
 }
 \value{
 List containing:
- \item{svg}{character. SVG code to produce the plot}
- \item{height}{numeric. Plot height in pixels}
- \item{width}{numeric. Plot width in pixels}
+\item{svg}{character. SVG code to produce the plot}
+\item{height}{numeric. Plot height in pixels}
+\item{width}{numeric. Plot width in pixels}
 }
 \description{
 Make a Bayesian forest plot

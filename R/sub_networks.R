@@ -4,7 +4,7 @@
 #' @param data Data for which to create graph.
 #'
 #' @return Created igraph object.
-.CreateGraph <- function(data) {
+CreateGraph <- function(data) {
   # Find links
   links = c()
   for (study in unique(data$Study)) {
@@ -17,19 +17,18 @@
   }
 
   # Build network (Mathematical structure is called a 'graph')
-  return(suppressWarnings(igraph::graph(links, directed = FALSE)))
+  return(igraph::make_graph(links, directed = FALSE))
 }
 
-
 #' Determine if the network contains any splittable nodes. If not, state the reason.
-#' 
+#'
 #' @param data The dataset from which to create the network.
 #' @param treatments Vector of treatments in order.
 #' @return List:
 #'  - is_nodesplittable: TRUE or FALSE.
 #'  - reason: Text describing the reason there are no splittable nodes, or NULL when is_nodesplittable == TRUE.
 IsNodesplittable <- function(data, treatments) {
-  graph <- .CreateGraph(data = data)
+  graph <- CreateGraph(data = data)
   #If there are no loops then return FALSE
   if (igraph::is_acyclic(igraph::simplify(graph, remove.multiple = TRUE))) {
     return(

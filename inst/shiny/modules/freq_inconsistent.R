@@ -9,12 +9,13 @@ freq_inconsistent_module_ui <- function(id) {
 freq_inconsistent_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
-    shinyjs::hide(selector = ".freq_inconsistent_div")
+    hide_and_show(id)
 
     observeEvent(input$run, {
       # WARNING ####
       if (is.null(common$freq_all)){
-        common$logger |> writeLog(type = "error", "Please configure the analysis first in the Setup section")
+        common$logger |> writeLog(type = "error", go_to = "setup_configure",
+                                  "Please configure the analysis first in the Setup section")
         return()
       }
       # TRIGGER
@@ -60,13 +61,13 @@ freq_inconsistent_module_server <- function(id, common, parent_session) {
 freq_inconsistent_module_result <- function(id) {
   ns <- NS(id)
   tagList(
-    div(class = "freq_inconsistent_div",
-      h4("Assessment of inconsistency for all studies"),
-      tableOutput(ns("table_all")),
-      br(),
-      h4("Assessment of inconsistency with selected studies excluded"),
-      tableOutput(ns("table_sub"))
-    )
+    h4(class = "freq_inconsistent_div",
+       "Assessment of inconsistency for all studies"),
+    tableOutput(ns("table_all")),
+    br(),
+    h4(class = "freq_inconsistent_div",
+       "Assessment of inconsistency with selected studies excluded"),
+    tableOutput(ns("table_sub"))
   )
 }
 

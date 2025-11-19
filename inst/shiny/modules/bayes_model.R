@@ -1,7 +1,10 @@
 bayes_model_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
-    input_task_button(ns("run"), "Run models", type = "default", icon = icon("arrow-turn-down"))
+    input_task_button(ns("run"), "Fit models", type = "default", icon = icon("arrow-turn-down")),
+    div(class = "bayes_model_div download_buttons",
+        actionButton(ns("run_all"), "Run all modules", icon = icon("forward-fast"))
+    )
   )
 }
 
@@ -9,6 +12,7 @@ bayes_model_submodule_server <- function(id, common){
   moduleServer(id, function(input, output, session) {
 
     output$table <- renderTable({
+      watch("bayes_model") # required for reset
       watch(paste0("bayes_model_table_", id))
       req(common[[paste0("bayes_", id)]])
       shinyjs::show(selector = ".bayes_model_div")
@@ -31,11 +35,12 @@ bayes_model_module_server <- function(id, common, parent_session) {
     init("bayes_model_table_sub")
     init("bayes_model_table_all")
 
-    shinyjs::hide(selector = ".bayes_model_div")
+    hide_and_show(id, show = FALSE)
 
     observeEvent(input$run, {
       if (is.null(common$main_connected_data)){
-        common$logger |> writeLog(type = "error", "Please configure the analysis in the Setup component first.")
+        common$logger |> writeLog(type = "error", go_to = "setup_configure",
+                                  "Please configure the analysis in the Setup component first.")
         return()
       }
       if (common$outcome_measure == "SMD") {
@@ -161,6 +166,9 @@ bayes_model_module_server <- function(id, common, parent_session) {
     bayes_model_submodule_server("all", common)
     bayes_model_submodule_server("sub", common)
 
+    observeEvent(input$run_all, {
+      run_all("bayes", common$logger)
+    })
 
 })
 }

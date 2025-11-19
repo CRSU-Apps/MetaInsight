@@ -13,6 +13,8 @@ bayes_results_submodule_server <- function(id, common, model, run){
       bayes_results(common[[model]])
     }) |> bindEvent(run())
 
+    outputOptions(output, "text", suspendWhenHidden = FALSE)
+
     output$statistics <- renderTable({
       req(common[[model]])
       common[[model]]$sumresults$summaries$statistics
@@ -28,15 +30,13 @@ bayes_results_submodule_server <- function(id, common, model, run){
 bayes_results_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
-    shinyjs::hide(selector = ".bayes_results_div")
+    hide_and_show(id)
 
     # check that a fitted model exists and error if not
     observeEvent(input$run, {
 
-      # add check for a running model
-
       if (is.null(common$bayes_all)){
-        common$logger |> writeLog(type = "error", "Please fit the Bayesian models first")
+        common$logger |> writeLog(type = "error", go_to = "bayes_model", "Please fit the Bayesian models first")
         return()
       } else {
         trigger("bayes_results")
@@ -66,25 +66,21 @@ bayes_results_module_server <- function(id, common, parent_session) {
 }
 
 
-bayes_results_submodule_result <- function(id, label) {
+bayes_results_submodule_result <- function(id, label, class) {
   ns <- NS(id)
   tagList(
-    tagList(
-      div(class = "bayes_results_div",
-          br(),
-          h5(glue::glue("Results details {label}"))
-      ),
-      uiOutput(ns("text")),
-      div(class = "bayes_results_div",
+    div(class = class,
+      tagList(
+        br(),
+        h5(glue::glue("Results details {label}")),
+        uiOutput(ns("text")),
         br(),
         h5("Empirical mean and standard deviation for each variable,
-            plus standard error of the mean:")
-        ),
-      tableOutput(ns("statistics")),
-      div(class = "bayes_results_div",
-          h5("Quantiles for each variable:")
-          ),
-      tableOutput(ns("quantiles"))
+            plus standard error of the mean:"),
+        tableOutput(ns("statistics")),
+        h5("Quantiles for each variable:"),
+        tableOutput(ns("quantiles"))
+      )
     )
   )
 }
@@ -95,24 +91,17 @@ bayes_results_module_result <- function(id) {
     fluidRow(
       column(
         width = 6,
-        bayes_results_submodule_result(ns("all"), "for all studies")
+        bayes_results_submodule_result(ns("all"), "for all studies", "bayes_results_div")
       ),
       column(
         width = 6,
-        bayes_results_submodule_result(ns("sub"), "excluding selected studies")
+        bayes_results_submodule_result(ns("sub"), "excluding selected studies", "bayes_results_div")
       )
     )
   )
 }
 
-
 bayes_results_module_rmd <- function(common) {
   list(bayes_results_knit = !is.null(common$meta$bayes_results$used))
 }
-
-
-
-
-
-
 

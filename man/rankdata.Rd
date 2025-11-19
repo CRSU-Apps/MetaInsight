@@ -20,26 +20,36 @@ rankdata(NMAdata, rankdirection, longdata, cov_value = NA, package = "gemtc")
 }
 \value{
 List:
-- 'SUCRA' = Data frame of SUCRA data.
-    - 'Treatment'
-    - 'SUCRA' = Sucra percentages.
-    - 'N' = Total number of patients in 'Treatment' arms (summed over all studies).
-    - 'SizeO' = Size of points (relative to 'N') in original SUCRA plot.
-    - 'SizeA' = Size of points (relative to 'N') in alternative SUCRA plot.
-- 'Colour' = Data frame of colours.
-    - 'SUCRA' = Possible SUCRA values.
-    - 'colour' = Colour values corresponding to 'SUCRA'.
-- 'Cumulative' = Data frame of cumulative ranking probabilities, in long format.
-    - 'Treatment'
-    - 'Rank'
-    - 'Cumulative_Probability'
-    - 'SUCRA'
-- 'Probabilities' = Data frame of ranking probabilities.
-    - 'Treatment'
-    - 'Rank 1' = Probability 'Treatment' is ranked first.
-    - ...
-    - 'Rank n_t' = Probability 'Treatment' is ranked last (n_t = number of treatments).
-- 'BUGSnetData' = Output from BUGSnet::data.prep with arguments from @param longdata.
+\itemize{
+\item 'SUCRA' = Data frame of SUCRA data.
+\itemize{
+\item 'Treatment'
+\item 'SUCRA' = Sucra percentages.
+\item 'N' = Total number of patients in 'Treatment' arms (summed over all studies).
+\item 'SizeO' = Size of points (relative to 'N') in original SUCRA plot.
+\item 'SizeA' = Size of points (relative to 'N') in alternative SUCRA plot.
+}
+\item 'Colour' = Data frame of colours.
+\itemize{
+\item 'SUCRA' = Possible SUCRA values.
+\item 'colour' = Colour values corresponding to 'SUCRA'.
+}
+\item 'Cumulative' = Data frame of cumulative ranking probabilities, in long format.
+\itemize{
+\item 'Treatment'
+\item 'Rank'
+\item 'Cumulative_Probability'
+\item 'SUCRA'
+}
+\item 'Probabilities' = Data frame of ranking probabilities.
+\itemize{
+\item 'Treatment'
+\item 'Rank 1' = Probability 'Treatment' is ranked first.
+\item ...
+\item 'Rank n_t' = Probability 'Treatment' is ranked last (n_t = number of treatments).
+}
+\item 'BUGSnetData' = Output from BUGSnet::data.prep with arguments from @param longdata.
+}
 }
 \description{
 Get SUCRA data.

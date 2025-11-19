@@ -1,16 +1,13 @@
-#' Produces a summary of the fitted Bayesian model
+#' Produces a summary of a Bayesian model
 #'
-#' @param model Various model output created by bayes_model()
-#' @param logger Stores all notification messages to be displayed in the Log
-#'   Window. Insert the logger reactive list here for running in
-#'   shiny, otherwise leave the default `NULL`
+#' @param model list. Output produced by `baseline_model()`, `bayes_model()` or `covariate_model()`.
+#' @inheritParams common_params
 #' @return HTML summary of the model
 #' @export
 bayes_results <- function(model, logger = NULL){
 
-  if (!inherits(model, "bayes_model")){
-    logger |> writeLog(type = "error", "model must be an object created by bayes_model()")
-    return()
+  if (!inherits(model, "bayes_model") && !inherits(model, "baseline_model")){
+    logger |> writeLog(type = "error", "model must be an object created by baseline_model(), bayes_model() or covariate_model()")
   }
 
   title <- glue::glue("Results on the {model$sumresults$measure} scale")
@@ -19,4 +16,18 @@ bayes_results <- function(model, logger = NULL){
   chains <- glue::glue("Number of chains = {model$sumresults$summaries$nchain}")
   sample <- glue::glue("Sample size per chain = {(model$sumresults$summaries$end + 1) - model$sumresults$summaries$start}")
   HTML(paste(title, "", iterations, thinning, chains, sample, sep = "<br/>"))
+}
+
+#' @rdname bayes_results
+#' @param ... Parameters passed to `bayes_results()`
+#' @export
+covariate_results <- function(...){
+  bayes_results(...)
+}
+
+#' @rdname bayes_results
+#' @param ... Parameters passed to `bayes_results()`
+#' @export
+baseline_results <- function(...){
+  bayes_results(...)
 }

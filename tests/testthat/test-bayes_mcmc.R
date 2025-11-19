@@ -1,23 +1,33 @@
 test_that("Check bayes_mcmc function works as expected", {
   result <- bayes_mcmc(fitted_bayes_model)
   expect_type(result, "list")
-  expect_true(all(c("gelman_plots", "trace_plots", "density_plots", "n_rows") %in% names(result)))
-  expect_is(result$gelman_plots[[1]], "function")
-  expect_is(result$trace_plots[[1]], "ggplot")
-  expect_is(result$density_plots[[1]], "ggplot")
-  expect_is(result$n_rows, "numeric")
+  expect_true(all(c("parameters", "gelman_data", "n_cols", "n_rows", "n_rows_rmd") %in% names(result)))
 
-  expect_length(result$gelman_plots, 4)
-  expect_length(result$trace_plots, 4)
-  expect_length(result$density_plots, 4)
+  expect_is(result$parameters, "character")
+  expect_is(result$gelman_data, "list")
+  expect_is(result$n_cols, "numeric")
+  expect_is(result$n_rows, "numeric")
+  expect_is(result$n_rows_rmd, "numeric")
+
+  gelman <- gelman_plots(result$gelman_data, result$parameters)
+  trace <- trace_plots(fitted_bayes_model$mtcResults, result$parameters)
+  density <- density_plots(fitted_bayes_model$mtcResults, result$parameters)
+
+  expect_is(gelman[[1]], "ggplot")
+  expect_is(trace[[1]], "ggplot")
+  expect_is(density[[1]], "ggplot")
+
+  expect_length(gelman, 4)
+  expect_length(trace, 4)
+  expect_length(density, 4)
   expect_equal(result$n_rows, 2)
 })
 
 test_that("Check bayes_mcmc function produces errors as expected", {
   faulty_model <- list(mtcResults = 1:4)
-  expect_error(bayes_mcmc("faulty_model"), "model must be an object created by bayes_model")
-  expect_error(bayes_mcmc(list(a = 1)), "model must be an object created by bayes_model")
-  expect_error(bayes_mcmc(faulty_model), "model must be an object created by bayes_model")
+  expect_error(bayes_mcmc("faulty_model"), "model must be an object created by baseline_model")
+  expect_error(bayes_mcmc(list(a = 1)), "model must be an object created by baseline_model")
+  expect_error(bayes_mcmc(faulty_model), "model must be an object created by baseline_model")
 })
 
 test_that("{shinytest2} recording: e2e_bayes_mcmc", {
@@ -30,8 +40,8 @@ test_that("{shinytest2} recording: e2e_bayes_mcmc", {
   app$set_inputs(tabs = "bayes")
   app$set_inputs(bayesSel = "bayes_mcmc")
   app$click("bayes_mcmc-run")
-  app$wait_for_value(input = "bayes_mcmc-all-complete")
-  app$wait_for_value(input = "bayes_mcmc-sub-complete")
+  app$wait_for_value(input = "bayes_mcmc_all-complete")
+  app$wait_for_value(input = "bayes_mcmc_sub-complete")
 
   gelman_all <- app$get_value(output = "bayes_mcmc-all-gelman")
   gelman_sub <- app$get_value(output = "bayes_mcmc-sub-gelman")

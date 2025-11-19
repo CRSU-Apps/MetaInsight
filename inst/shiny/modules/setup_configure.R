@@ -33,18 +33,19 @@ setup_configure_module_server <- function(id, common, parent_session) {
     updateRadioButtons(session, "outcome_measure", outcome_label, outcome_choices)
     updateRadioButtons(session, "ranking_option", rank_label,
                        selected = RankingOrder(common$outcome, !common$is_data_uploaded))
+    shinyjs::runjs("Shiny.setInputValue('setup_configure-ready', 'complete');")
   })
 
   observeEvent(input$run, {
     # WARNING ####
 
     if (is.null(common$data)) {
-      common$logger |> writeLog(type = "error", "Please load data first")
+      common$logger |> writeLog(type = "error", go_to = "setup_load", "Please load data first")
       return()
     }
 
     if (!common$is_data_valid) {
-      common$logger |> writeLog(type = "error", "Please upload valid data first")
+      common$logger |> writeLog(type = "error", go_to = "setup_load", "Please upload valid data first")
       return()
     }
 
@@ -64,6 +65,9 @@ setup_configure_module_server <- function(id, common, parent_session) {
     common$disconnected_indices <- result$disconnected_indices
     common$main_connected_data <- result$main_connected_data
     common$non_covariate_data_all <- result$non_covariate_data_all
+    common$covariate_column <- result$covariate_column
+    common$covariate_name <- result$covariate_name
+    common$covariate_type <- result$covariate_type
     common$bugsnet_all <- result$bugsnet_all
     common$freq_all <- result$freq_all
     common$reference_treatment_all <- result$reference_treatment

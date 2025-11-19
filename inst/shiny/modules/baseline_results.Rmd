@@ -1,0 +1,14 @@
+```{asis, echo = {{baseline_results_knit}}, eval = {{baseline_results_knit}}, include = {{baseline_results_knit}}}
+### Summarise the results from the baseline risk model
+```
+
+```{r, echo = {{baseline_results_knit}}, include = {{baseline_results_knit}}}
+baseline_results(baseline_model)
+```
+```{r, echo = {{baseline_results_knit}}, include = {{baseline_results_knit}}}
+knitr::kable(baseline_model$sumresults$summaries$statistics, row.names = TRUE, caption = "Empirical mean and standard deviation for each variable,
+            plus standard error of the mean:")
+```
+```{r, echo = {{baseline_results_knit}}, include = {{baseline_results_knit}}}
+knitr::kable(baseline_model$sumresults$summaries$quantiles, row.names = TRUE, caption = "Quantiles for each variable:")
+```

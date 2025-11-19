@@ -9,12 +9,12 @@ extract_ci(freq, outcome)
 \arguments{
 \item{freq}{list. NMA results created by freq_wrap().}
 
-\item{outcome}{character. `Binary` or `Continuous`}
+\item{outcome}{character. \code{Binary} or \code{Continuous}}
 }
 \value{
 List containing:
- \item{xmin}{numeric. Minimum confidence interval}
- \item{xmax}{numeric. Maximum confidence interval}
+\item{xmin}{numeric. Minimum confidence interval}
+\item{xmax}{numeric. Maximum confidence interval}
 }
 \description{
 Extract the minimum and maximum confidence intervals from the summary produced by netmeta

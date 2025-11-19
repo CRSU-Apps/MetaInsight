@@ -1,0 +1,44 @@
+baseline_results_module_ui <- function(id) {
+  ns <- NS(id)
+  tagList(
+    actionButton(ns("run"), "Generate tables", icon = icon("arrow-turn-down"))
+  )
+}
+
+baseline_results_module_server <- function(id, common, parent_session) {
+  moduleServer(id, function(input, output, session) {
+
+    hide_and_show(id)
+
+    observeEvent(input$run, {
+      if (is.null(common$baseline_model)){
+        common$logger |> writeLog(type = "error", go_to = "baseline_model", "Please fit the baseline model first")
+        return()
+      } else {
+        trigger("baseline_results")
+        common$meta$baseline_results$used <- TRUE
+      }
+    })
+
+    all_trigger <- reactive({
+      if (watch("baseline_results") > 0){
+        return(list(watch("baseline_results"), watch("baseline_model_fit")))
+      }
+    })
+
+    bayes_results_submodule_server("all", common, "baseline_model", all_trigger)
+
+  })
+}
+
+
+baseline_results_module_result <- function(id) {
+  ns <- NS(id)
+  bayes_results_submodule_result(ns("all"), "for baseline model", "baseline_results_div")
+}
+
+
+baseline_results_module_rmd <- function(common) {
+  list(baseline_results_knit = !is.null(common$meta$baseline_results$used))
+}
+

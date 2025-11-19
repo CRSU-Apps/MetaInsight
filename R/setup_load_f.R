@@ -1,11 +1,7 @@
 #' Assess the data for validity. this checks the column names for required columns, and balanced wide format numbered columns.
 #'
 #' @param data_path character. Path to the file to be loaded or if `NULL` load the default data
-#' @param outcome character. Outcome type selected for the data. Either `Binary` or `Continuous`.
-#' @param logger Stores all notification messages to be displayed in the Log
-#'   Window. Insert the logger reactive list here for running in
-#'   shiny, otherwise leave the default `NULL`
-#'
+#' @inheritParams common_params
 #' @return List containing:
 #'  \item{is_data_valid}{logical. Whether the data is valid}
 #'  \item{is_data_uploaded}{logical. Whether the data is uploaded}
@@ -137,10 +133,18 @@ ValidateUploadedData <- function(data, outcome, logger = NULL) {
   if (!result$valid) {
     return(result)
   }
-  
+
   result <- .ValidateQualityColumns(data)
   if (!result$valid) {
     return(result)
+  }
+
+  covariate_name <- FindCovariateNames(data)
+  if (length(covariate_name) > 0){
+    result <- .ValidateCovariate(data, covariate_name)
+    if (!result$valid) {
+      return(result)
+    }
   }
 
   return(.valid_result)
@@ -372,14 +376,14 @@ ValidateUploadedData <- function(data, outcome, logger = NULL) {
 .ValidateQualityColumns <- function(data) {
   #The rob and indirectness columns
   rob_indirectness_columns <- grep(pattern = "^rob|^indirectness$", x = names(data), value = TRUE)
-  
+
   if (length(rob_indirectness_columns) == 0) {
     return(.valid_result)
   }
-  
+
   #The number of individual RoB columns
   n_rob_individual <- length(grep(pattern = "^rob\\..+$", x = names(data)))
-  
+
   #Check there are no more than 10 individual RoB columns
   if (n_rob_individual > 10) {
     return(
@@ -389,7 +393,7 @@ ValidateUploadedData <- function(data, outcome, logger = NULL) {
       )
     )
   }
-  
+
   #Loop through the rob and indirectness columns
   for (var in rob_indirectness_columns) {
     #Check for studies that have more than one value
@@ -414,7 +418,7 @@ ValidateUploadedData <- function(data, outcome, logger = NULL) {
       )
     }
   }
-  
+
   return(.valid_result)
 }
 
@@ -658,22 +662,6 @@ LongToWide <- function(long_data, outcome_type) {
   return(as.data.frame(wide_data))
 }
 
-#' Create a copy of a data from which does not contain any covariate columns.
-#'
-#' @param data Data from which to remove covariate columns
-#' @return Data without covariate columns
-#' @export
-RemoveCovariates <- function(data) {
-  covariate_column_names <- FindCovariateNames(data)
-
-  if (length(covariate_column_names) == 0) {
-    return(data)
-  }
-
-  covariate_column_indices <- match(covariate_column_names, names(data))
-  return(data[, -covariate_column_indices])
-}
-
 #' Find which shape the data takes: either wide or long.
 #'
 #' @param data Data for which to check shape
@@ -729,7 +717,7 @@ FindAllTreatments <- function(data, treatment_ids = NULL, study = NULL) {
 }
 
 #' Find all of the studies which include the given treatments, both for long and wide formats.
-#' 
+#'
 #' @param data Data frame in which to search for study names.
 #' @param treatments Vector of matching treatments.
 #' @param all_or_any Set to "all" to return studies containing all treatments. Set to "any" to return studies containing any of the treatments.
@@ -928,7 +916,7 @@ ReorderColumns <- function(data, outcome_type) {
 
   rob_individual_column_names <- FindRobIndividualNames(data)
   rob_individual_column_indices <- match(rob_individual_column_names, names(data))
-  
+
   reordering_indices <- c(reordering_indices, rob_individual_column_indices, covariate_column_indices)
 
   return(data[, reordering_indices])
@@ -1016,6 +1004,7 @@ CleanTreatmentIds <- function(treatment_ids) {
 #'
 #' @param df Data frame in which to find covariate columns.
 #' @return Names of all covariate columns
+#' @export
 FindCovariateNames <- function(df) {
   return(names(dplyr::select(df, dplyr::matches(.covariate_prefix_regex))))
 }
@@ -1024,6 +1013,7 @@ FindCovariateNames <- function(df) {
 #'
 #' @param column_name Covariate column name to convert
 #' @return Friendly covariate name
+#' @export
 GetFriendlyCovariateName <- function(column_name) {
   return(stringr::str_replace(column_name, .covariate_prefix_regex, ""))
 }
@@ -1033,6 +1023,101 @@ GetFriendlyCovariateName <- function(column_name) {
 #' @return Names of all covariate columns
 FindRobIndividualNames <- function(df) {
   return(names(dplyr::select(df, dplyr::matches(.rob_individual_prefix_regex))))
+}
+
+#' Throw an error if any study meets given criteria.
+#'
+#' @param values covariate values in which to check.
+#' @param condition Function taking the covariate values to check.
+#' This should return TRUE in the error case.
+#' @param message Message to show before listing the problem studies or FALSE
+#' if no problems are found
+.ThrowErrorForMatchingStudies <- function(values, condition, message) {
+  study_conditions <- sapply(
+    names(values),
+    function(name) {
+      condition(values[[name]])
+    }
+  )
+
+  matching_studies <- names(study_conditions)[study_conditions]
+
+  if (length(matching_studies) > 0) {
+    studies_list <- glue::glue_collapse(matching_studies, sep = ", ")
+    return(
+      list(
+        valid = FALSE,
+        message = paste(message, studies_list, sep = " ")
+      )
+    )
+  } else {
+    FALSE
+  }
+}
+
+#' Validate the covariate and infer the type of the covariate from the data in the column.
+#'  In error cases, this function will throw exceptions:
+#' - If the data has any NAs
+#' - If the data has any non-numeric values
+#' - If every study has the same covariate value
+#' - If any study contains multiple different covariate values
+#'
+#' @param data Data frame containing all study data.
+#' @param covariate_title Name of the covariate column.
+#'
+#' @return list containing `valid` and `message` to pass to logger
+.ValidateCovariate <- function(data, covariate_title) {
+  covariate_data <- data[[covariate_title]]
+
+  if (!is.numeric(covariate_data)) {
+    return(
+      list(
+        valid = FALSE,
+        message = "One or more covariate values are non-numerical."
+      )
+    )
+  }
+
+  covariate_values <- list()
+  for (study in unique(data$Study)) {
+    covariate_values[[study]] <- unique(covariate_data[data$Study == study])
+  }
+
+  na_values <- .ThrowErrorForMatchingStudies(
+                  values = covariate_values,
+                  condition = function(study_values) {
+                    any(is.na(study_values))
+                  },
+                  message = "Some studies do not define covariate values for all arms:"
+                )
+
+  if (inherits(na_values, "list")){
+    return(na_values)
+  }
+
+  study_values <- .ThrowErrorForMatchingStudies(
+                    values = covariate_values,
+                    condition = function(study_values) {
+                      length(study_values) > 1
+                    },
+                    message = "Some studies contain inconsistent covariate values between arms:"
+                  )
+
+  if (inherits(study_values, "list")){
+    return(study_values)
+  }
+
+  unique_items <- unique(covariate_data)
+  if (length(unique_items) == 1) {
+    return(
+      list(
+        valid = FALSE,
+        message = "Cannot analyse covariate with no variation."
+      )
+    )
+  }
+
+  return(.valid_result)
 }
 
 #' Keep or delete rows in @param data corresponding to the control treatment in each study.

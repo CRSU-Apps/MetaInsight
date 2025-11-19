@@ -9,12 +9,13 @@ freq_compare_module_ui <- function(id) {
 freq_compare_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
-  shinyjs::hide(selector = ".freq_compare_div")
+  hide_and_show(id)
 
   observeEvent(input$run, {
     # WARNING ####
     if (is.null(common$freq_all)){
-      common$logger |> writeLog(type = "error", "Please configure the analysis first in the Setup section")
+      common$logger |> writeLog(type = "error", go_to = "setup_configure",
+                                "Please configure the analysis first in the Setup section")
       return()
     }
     # TRIGGER
@@ -65,14 +66,15 @@ freq_compare_module_server <- function(id, common, parent_session) {
 freq_compare_module_result <- function(id) {
   ns <- NS(id)
   tagList(
-    div(class = "freq_compare_div",
-      h4("Treatments are ranked from best to worst along the leading diagonal. Above the leading diagonal are estimates from pairwise meta-analyses, below the leading diagonal are estimates from network meta-analyses"),
-      h4("Relative treatment effects in ranked order for all studies"),
-      tableOutput(ns("table_all")),
-      br(),
-      h4("Relative treatment effects in ranked order with selected studies excluded"),
-      tableOutput(ns("table_sub"))
-    )
+    h4(class = "freq_compare_div",
+       "Treatments are ranked from best to worst along the leading diagonal. Above the leading diagonal are estimates from pairwise meta-analyses, below the leading diagonal are estimates from network meta-analyses"),
+    h4(class = "freq_compare_div",
+       "Relative treatment effects in ranked order for all studies"),
+    tableOutput(ns("table_all")),
+    br(),
+    h4(class = "freq_compare_div",
+       "Relative treatment effects in ranked order with selected studies excluded"),
+    tableOutput(ns("table_sub"))
   )
 }
 

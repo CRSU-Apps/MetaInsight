@@ -33,6 +33,7 @@ test_that("summary_network produces downloadable plots", {
   app$set_inputs(tabs = "setup")
   app$set_inputs(setupSel = "setup_load")
   app$click("setup_load-run")
+  app$wait_for_value(input = "setup_configure-ready")
   app$set_inputs(setupSel = "setup_configure")
   app$click("setup_configure-run")
   app$set_inputs(tabs = "summary")

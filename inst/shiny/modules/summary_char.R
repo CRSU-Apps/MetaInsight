@@ -2,17 +2,22 @@ summary_char_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
     actionButton(ns("run"), "Generate table", icon = icon("arrow-turn-down")),
-    conditionalPanel("input.run > 0", downloadButton(ns("download")), ns = ns)
+    div(class = "summary_char_div download_buttons",
+        downloadButton(ns("download"))
+    )
   )
 }
 
 summary_char_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
+    hide_and_show(id)
+
     observeEvent(input$run, {
       # WARNING ####
       if (is.null(common$bugsnet_sub)){
-        common$logger |> writeLog(type = "error", "Please configure the analysis first in the Setup section")
+        common$logger |> writeLog(type = "error", go_to = "setup_configure",
+                                  "Please configure the analysis first in the Setup section")
         return()
       }
       # TRIGGER
@@ -38,7 +43,6 @@ summary_char_module_server <- function(id, common, parent_session) {
       df
     })
 
-    # Characteristics table of all studies
     output$table <- renderTable({
       table()
     }, rownames = TRUE)

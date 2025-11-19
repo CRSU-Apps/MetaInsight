@@ -1,13 +1,8 @@
 #' Run the nodesplit model
 #'
-#' @param connected_data dataframe. Input data set created by `setup_configure()` or `setup_exclude`
-#' @param treatment_df Dataframe containing treatment names ("Label") and IDs ("Number").
-#' @param outcome character. The type of outcome being measured either `Continuous` or `Binary`
-#' @param outcome_measure character. The analysis outcome measure. Either `MD`, `OR` or `RR`
-#' @param model_type character. The type of model. Either `random` or `fixed`
-#' @param async Whether or not the function is being used asynchronously. Default `FALSE`
+#' @inheritParams common_params
 #'
-#' @return mtc.nodesplit object containing an mtc.result object for each node
+#' @return `mtc.nodesplit` object containing an mtc.result object for each node
 #' @export
 bayes_nodesplit <- function(connected_data, treatment_df, outcome, outcome_measure, model_type, async = FALSE) {
 
@@ -51,14 +46,16 @@ bayes_nodesplit <- function(connected_data, treatment_df, outcome, outcome_measu
       sampleSize = data$N
     )
   }
-  mtcNetwork <- gemtc::mtc.network(
-    data.ab = armData,
-    description = "Network",
-    treatments = data.frame(
-      id = treatment_df$Label,
-      description = treatment_df$Label
+  mtcNetwork <- suppress_jags_output(
+    gemtc::mtc.network(
+      data.ab = armData,
+      description = "Network",
+      treatments = data.frame(
+        id = treatment_df$Label,
+        description = treatment_df$Label
+        )
+      )
     )
-  )
 
   if (outcome_measure == "MD") {
     like <- "normal"
@@ -82,11 +79,13 @@ bayes_nodesplit <- function(connected_data, treatment_df, outcome, outcome_measu
     )
   } else {
     return(
-      gemtc::mtc.nodesplit(
-        network = mtcNetwork,
-        linearModel = model_type,
-        likelihood = like,
-        link = link
+      suppress_jags_output(
+        gemtc::mtc.nodesplit(
+          network = mtcNetwork,
+          linearModel = model_type,
+          likelihood = like,
+          link = link
+        )
       )
     )
   }

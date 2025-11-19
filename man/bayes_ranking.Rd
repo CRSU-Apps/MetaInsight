@@ -2,32 +2,43 @@
 % Please edit documentation in R/bayes_ranking_f.R
 \name{bayes_ranking}
 \alias{bayes_ranking}
-\title{Function to create data regarding rank results - CRN}
+\alias{baseline_ranking}
+\alias{covariate_ranking}
+\title{Generate ranking data required to produce SUCRA plots from Bayesian models}
 \usage{
 bayes_ranking(
   connected_data,
   treatment_df,
   model,
   ranking_option,
+  cov_value = NA,
   logger = NULL
 )
+
+baseline_ranking(...)
+
+covariate_ranking(...)
 }
 \arguments{
-\item{connected_data}{dataframe. Input data set created by `setup_configure()` or `setup_exclude`}
+\item{connected_data}{dataframe. Input data set created by \code{setup_configure()} or \code{setup_exclude}}
 
-\item{treatment_df}{Dataframe containing the treatment ID ('Number') and the treatment name ('Label').}
+\item{treatment_df}{dataframe. Treatments}
 
-\item{model}{List. Output produced by bayes_model().}
+\item{model}{list. Output produced by \code{baseline_model()}, \code{bayes_model()} or \code{covariate_model()}.}
 
-\item{ranking_option}{"good" or "bad", referring to small outcome values.}
+\item{ranking_option}{character. \code{good} if the treatment effect is desirable, else \code{bad}}
+
+\item{cov_value}{numeric. Covariate value if a meta-regression. Default \code{NA}}
 
 \item{logger}{Stores all notification messages to be displayed in the Log
 Window. Insert the logger reactive list here for running in
-shiny, otherwise leave the default `NULL`}
+shiny, otherwise leave the default \code{NULL}}
+
+\item{...}{Parameters passed to \code{bayes_ranking()}}
 }
 \value{
-List of output created by rankdata().
+List of output created by \code{rankdata()}.
 }
 \description{
-Function to create data regarding rank results - CRN
+Generate ranking data required to produce SUCRA plots from Bayesian models
 }

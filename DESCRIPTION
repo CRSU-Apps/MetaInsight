@@ -29,9 +29,9 @@ Imports:
     cowplot,
     DT (>= 0.5),
     data.table,
-    data.tree,
     dplyr,
     gemtc,
+    ggpubr,
     ggiraphExtra,
     ggplot2,
     ggrepel,
@@ -65,8 +65,6 @@ Imports:
     shinyBS,
     shinyalert,
     shinybusy,
-    shinycssloaders,
-    shinydashboard,
     shinyjs,
     stringr,
     shinyWidgets (>= 0.6.0),
@@ -87,3 +85,4 @@ License: GPL-3
 URL: 
 Encoding: UTF-8
 RoxygenNote: 7.3.3
+Roxygen: list(markdown = TRUE)

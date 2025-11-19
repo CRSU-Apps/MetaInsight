@@ -1,0 +1,5 @@
+component: "baseline"
+short_name: "Ranking"
+long_name: "Ranking"
+authors: "Ryan Field, Tom Morris, Clareece Nevill, Janion Nevill, Simon Smart"
+package: [bnma, ggplot2]

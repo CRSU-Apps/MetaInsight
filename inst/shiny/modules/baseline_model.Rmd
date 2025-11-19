@@ -1,0 +1,15 @@
+```{asis, echo = {{baseline_model_knit}}, eval = {{baseline_model_knit}}, include = {{baseline_model_knit}}}
+### Fit the baseline risk model
+```
+
+```{r, echo = {{baseline_model_knit}}, include = {{baseline_model_knit}}}
+baseline_model <- baseline_model(main_connected_data, treatment_df, outcome, outcome_measure, 
+  reference_treatment_all, model_type, {{baseline_model_regressor}}, seed)
+
+baseline_model$dic |> 
+  gt::gt(rownames_to_stub = TRUE) |>
+  gt::tab_header(title = "Model fit for all studies") |>
+  gt::tab_options(column_labels.hidden = TRUE) |>
+  gt::fmt_number(rows = c(1:3), decimals = 3) |>
+  gt::fmt_number(rows = 4, decimals = 0)
+```

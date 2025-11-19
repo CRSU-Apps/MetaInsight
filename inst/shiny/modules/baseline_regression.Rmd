@@ -1,0 +1,33 @@
+```{asis, echo = {{baseline_regression_knit}}, eval = {{baseline_regression_knit}}, include = {{baseline_regression_knit}}}
+### Baseline regression
+{r, results = 'asis'}
+```
+
+```{r, echo = {{baseline_regression_knit}}, include = {{baseline_regression_knit}}}
+baseline_regression_data <- baseline_regression(baseline_model, 
+                                                  main_connected_data, 
+                                                  "covar.baseline_risk",
+                                                  treatment_df, 
+                                                  outcome, 
+                                                  outcome_measure,
+                                                  model_type)
+
+baseline_regression_plot <- metaregression_plot(baseline_model, 
+                                                treatment_df,
+                                                outcome_measure,
+                                                {{baseline_regression_comparators}},
+                                                baseline_regression_data$directness,
+                                                baseline_regression_data$credible_regions,
+                                                {{baseline_regression_covariate}},
+                                                {{baseline_regression_ghosts}},
+                                                {{baseline_regression_extrapolate}},
+                                                {{baseline_regression_credible}},
+                                                {{baseline_regression_credible_opacity}},
+                                                {{baseline_regression_symbol}},
+                                                {{baseline_regression_symbol_size}},
+                                                {{baseline_regression_legend_position}}
+                                                )
+
+htmltools::HTML(baseline_regression_plot$svg)
+```
+

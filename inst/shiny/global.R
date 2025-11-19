@@ -1,11 +1,8 @@
 library(glue)
 library(metainsight)
-# shouldn't be necessary, but ..?
-library(magrittr)
 
-mirai::daemons(4)
+mirai::daemons(4) # add sync = TRUE for debugging
 onStop(function() mirai::daemons(0))
-
 
 MB <- 1024^2
 UPLOAD_SIZE_MB <- 5000
@@ -17,7 +14,13 @@ source("ui_helpers.R")
 
 # The components that have modules. These names must match the values of the
 # tabs of the components in the UI.
-COMPONENTS <- c("Setup" = "setup", "Summary" = "summary", "Frequentist" = "freq", "Bayesian" = "bayes", "Reproduce" = "rep")
+COMPONENTS <- c("Setup" = "setup",
+                "Summary" = "summary",
+                "Frequentist" = "freq",
+                "Bayesian" = "bayes",
+                "Baseline risk" = "baseline",
+                "Covariate" = "covariate",
+                "Reproduce" = "rep")
 
 # Information about modules that various parts of the app need access to
 COMPONENT_MODULES <- list()
@@ -45,6 +48,28 @@ base_module_configs <- c(
   "modules/bayes_deviance.yml",
   "modules/bayes_mcmc.yml",
   "modules/bayes_details.yml",
+  "modules/baseline_summary.yml",
+  "modules/baseline_model.yml",
+  "modules/baseline_regression.yml",
+  "modules/baseline_forest.yml",
+  "modules/baseline_comparison.yml",
+  "modules/baseline_ranking.yml",
+  "modules/baseline_nodesplit.yml",
+  "modules/baseline_results.yml",
+  "modules/baseline_mcmc.yml",
+  "modules/baseline_deviance.yml",
+  "modules/baseline_details.yml",
+  "modules/covariate_summary.yml",
+  "modules/covariate_model.yml",
+  "modules/covariate_regression.yml",
+  "modules/covariate_forest.yml",
+  "modules/covariate_comparison.yml",
+  "modules/covariate_ranking.yml",
+  "modules/covariate_nodesplit.yml",
+  "modules/covariate_results.yml",
+  "modules/covariate_mcmc.yml",
+  "modules/covariate_deviance.yml",
+  "modules/covariate_details.yml",
   "modules/rep_markdown.yml",
   "modules/rep_renv.yml",
   "modules/rep_refPackages.yml"
@@ -75,13 +100,13 @@ for (module_config_file in all_module_configs) {
 
   missing <- required_fields[!required_fields %in% names(module_config)]
   if (length(missing) > 0) {
-    stop(glue("Module {id}: Some required fields are missing: {join(missing)}"),
+    stop(glue("Module {id}: Some required fields are missing: {paste(missing, collapse = ', ')}"),
          call. = FALSE)
   }
 
   if (!module_config$component %in% COMPONENTS) {
     stop(glue("Module {id}: Invalid component `{module_config$component}` ",
-              "(options are: {join(COMPONENTS)})"), call. = FALSE)
+              "(options are: {paste(COMPONENTS, collapse = ', ')})"), call. = FALSE)
   }
 
   module_config$instructions <- suppressWarnings(
@@ -149,10 +174,4 @@ core_modules <- file.path("modules", list.files(system.file("shiny", "modules", 
 for (module in core_modules){
   source(module, local = TRUE)
 }
-
-# load common object
-source(system.file("shiny", "common.R", package = "metainsight"))
-common <- common_class$new()
-
-
 

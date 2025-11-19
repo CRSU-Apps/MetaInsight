@@ -7,6 +7,16 @@ function(input, output, session) {
   core_intro_module_server("core_intro")
 
   ########################## #
+  # LOAD COMMON ####
+  ########################## #
+
+  source(system.file("shiny", "common.R", package = "metainsight"))
+  common <- common_class$new()
+
+  common$seed <- sample.int(n = 1000, size = 1)
+  set.seed(common$seed)
+
+  ########################## #
   # LOGGING ####
   ########################## #
 

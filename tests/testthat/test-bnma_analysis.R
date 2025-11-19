@@ -1,15 +1,15 @@
 test_that("FormatForBnma() gives correct data for wide binary", {
 
   # process data as would be in app
-  data <- read.csv("data/Binary_wide_continuous_cov.csv")
+  data <- read.csv(file.path(test_data_dir, "Binary_wide_continuous_cov.csv"))
   treatment_ids <- CreateTreatmentIds(FindAllTreatments(data))
   data <- WrangleUploadData(data, treatment_ids, "Binary")
   wrangled_treatment_list <- CleanTreatmentIds(treatment_ids)
 
-  bnma_data <- FormatForBnma(br_data=data,
-                             treatment_ids=wrangled_treatment_list,
-                             outcome_type="Binary",
-                             ref="the_Little")
+  bnma_data <- FormatForBnma(connected_data=data,
+                             treatment_df=wrangled_treatment_list,
+                             outcome="Binary",
+                             reference_treatment="the_Little")
 
   expected_ArmLevel <- data.frame(
     Study = c(rep("Constantine", 3), rep("Leo", 3), rep("Justinian", 2)),
@@ -28,15 +28,15 @@ test_that("FormatForBnma() gives correct data for wide binary", {
 
 test_that("FormatForBnma() gives correct data for long binary", {
 
-  data <- read.csv("data/Binary_long_continuous_cov.csv")
+  data <- read.csv(file.path(test_data_dir, "Binary_long_continuous_cov.csv"))
   treatment_ids <- CreateTreatmentIds(FindAllTreatments(data))
   data <- WrangleUploadData(data, treatment_ids, "Binary")
   wrangled_treatment_list <- CleanTreatmentIds(treatment_ids)
 
-  bnma_data <- FormatForBnma(br_data=data,
-                             treatment_ids=wrangled_treatment_list,
-                             outcome_type="Binary",
-                             ref="the_Little")
+  bnma_data <- FormatForBnma(connected_data=data,
+                             treatment_df=wrangled_treatment_list,
+                             outcome="Binary",
+                             reference_treatment="the_Little")
 
   expected_ArmLevel <- data.frame(
     Study = c(rep("Constantine", 3), rep("Leo", 3), rep("Justinian", 2)),
@@ -56,15 +56,15 @@ test_that("FormatForBnma() gives correct data for long binary", {
 
 test_that("FormatForBnma() gives correct data for wide continuous", {
 
-  data <- read.csv("data/Cont_wide_continuous_cov.csv")
+  data <- read.csv(file.path(test_data_dir, "Cont_wide_continuous_cov.csv"))
   treatment_ids <- CreateTreatmentIds(FindAllTreatments(data))
   data <- WrangleUploadData(data, treatment_ids, "Continuous")
   wrangled_treatment_list <- CleanTreatmentIds(treatment_ids)
 
-  bnma_data <- FormatForBnma(br_data=data,
-                             treatment_ids=wrangled_treatment_list,
-                             outcome_type="Continuous",
-                             ref="the_Little")
+  bnma_data <- FormatForBnma(connected_data=data,
+                             treatment_df=wrangled_treatment_list,
+                             outcome="Continuous",
+                             reference_treatment="the_Little")
 
   expected_ArmLevel <- data.frame(
     Study = c(rep("Constantine", 3), rep("Leo", 3), rep("Justinian", 2)),
@@ -89,10 +89,10 @@ test_that("FormatForBnma() gives correct data for long continuous", {
   data <- WrangleUploadData(data, treatment_ids, "Continuous")
   wrangled_treatment_list <- CleanTreatmentIds(treatment_ids)
 
-  bnma_data <- FormatForBnma(br_data=data,
-                             treatment_ids=wrangled_treatment_list,
-                             outcome_type="Continuous",
-                             ref="the_Little")
+  bnma_data <- FormatForBnma(connected_data=data,
+                             treatment_df=wrangled_treatment_list,
+                             outcome="Continuous",
+                             reference_treatment="the_Little")
 
   expected_ArmLevel <- data.frame(
     Study = c(rep("Constantine", 3), rep("Leo", 3), rep("Justinian", 2)),
@@ -122,8 +122,8 @@ test_that("BaselineRiskNetwork() assigns model type, covariate type and referenc
   data$Treat.order <- VectorWithItemFirst(vector = unique(data$ArmLevel$Treat), first_item = "the_Great")
 
   bnma_network <- BaselineRiskNetwork(br_data = data,
-                                      outcome_type = "Binary",
-                                      effects_type = "random",
+                                      outcome = "Binary",
+                                      model_type = "random",
                                       cov_parameters = "unrelated")
 
   expect_equal(bnma_network$response, "binomial")
@@ -144,8 +144,8 @@ test_that("BaselineRiskNetwork() has correct model settings for Binary outcome",
   data$Treat.order <- VectorWithItemFirst(vector = unique(data$ArmLevel$Treat), first_item = "the_Great")
 
   bnma_network <- BaselineRiskNetwork(br_data = data,
-                                      outcome_type = "Binary",
-                                      effects_type = "random",
+                                      outcome = "Binary",
+                                      model_type = "random",
                                       cov_parameters = "unrelated")
 
   expect_equal(bnma_network$response, "binomial")
@@ -164,8 +164,8 @@ test_that("BaselineRiskNetwork() has correct model settings for Continuous outco
   data$Treat.order <- VectorWithItemFirst(vector = unique(data$ArmLevel$Treat), first_item = "the_Great")
 
   bnma_network <- BaselineRiskNetwork(br_data = data,
-                                      outcome_type = "Continuous",
-                                      effects_type = "fixed",
+                                      outcome = "Continuous",
+                                      model_type = "fixed",
                                       cov_parameters = "exchangeable")
 
   expect_equal(bnma_network$response, "normal")
@@ -229,19 +229,19 @@ test_that("1. BaselineRiskRegression() sets RNGs correctly;
   treatment_ids <- data.frame(Number = 1:6,
                               Label = c("the_Great", "the_Younger", "the_Dung_named", "the_Little", "the_Butcher", "the_Slit_nosed"))
 
-  result_1 <- BaselineRiskRegression(br_data = data$ArmLevel,
-                                     treatment_ids = treatment_ids,
-                                     outcome_type = "Continuous",
-                                     ref = "the_Great",
-                                     effects_type = "random",
+  result_1 <- BaselineRiskRegression(connected_data = data$ArmLevel,
+                                     treatment_df = treatment_ids,
+                                     outcome = "Continuous",
+                                     reference_treatment = "the_Great",
+                                     model_type = "random",
                                      cov_parameters = "exchangeable",
                                      seed = 97531)
 
-  result_2 <- BaselineRiskRegression(br_data = data$ArmLevel,
-                                     treatment_ids = treatment_ids,
-                                     outcome_type = "Continuous",
-                                     ref = "the_Great",
-                                     effects_type = "random",
+  result_2 <- BaselineRiskRegression(connected_data = data$ArmLevel,
+                                     treatment_df = treatment_ids,
+                                     outcome = "Continuous",
+                                     reference_treatment = "the_Great",
+                                     model_type = "random",
                                      cov_parameters = "exchangeable",
                                      seed = 97531)
 
@@ -259,8 +259,8 @@ test_that("1. BaselineRiskRegression() sets RNGs correctly;
   expect_equal(result_1$samples[4], result_2$samples[4])
   #-------------------------------------------------------------------
 
-  model_output <- BaselineRiskModelOutput(data = data$ArmLevel,
-                                          treatment_ids = treatment_ids,
+  model_output <- BaselineRiskModelOutput(connected_data = data$ArmLevel,
+                                          treatment_df = treatment_ids,
                                           model = result_1,
                                           outcome_measure = "MD")
 
@@ -277,12 +277,18 @@ test_that("1. BaselineRiskRegression() sets RNGs correctly;
   expected_centred_intercepts <- summary_1$summary.samples$quantiles[c("d[2]", "d[3]", "d[4]", "d[5]", "d[6]"), "50%"]
   expected_intercepts <- expected_centred_intercepts - expected_slopes * expected_covariate_value
   names(expected_intercepts) <- expected_comparator_names
-  expected_outcome <- "MD"
+  expected_outcome_measure <- "MD"
   expected_effects_type <- "random"
   expected_covariate_min <- c(-1, -1, -1.4, -1.4, NA)
   names(expected_covariate_min) <- expected_comparator_names
   expected_covariate_max <- c(-1, -1, -1.4, -1.4, NA)
   names(expected_covariate_max) <- expected_comparator_names
+  expected_dic <- c(8.28356554717643, 7.27638437849017, 15.5599499256666, 9) |> as.data.frame()
+  rownames(expected_dic) <- c("Dbar", "pD", "DIC", "Data points")
+  colnames(expected_dic) <- "BaselineRiskDicTable(model)"
+  expected_summary <- summary_1
+  names(expected_summary)[1] <- "summaries"
+  expected_summary$measure <- "Mean Difference"
 
   expected_model_output <- list(
     mtcResults = expected_mtcResults,
@@ -293,10 +299,12 @@ test_that("1. BaselineRiskRegression() sets RNGs correctly;
     cov_value_sentence = expected_cov_value_sentence,
     slopes = expected_slopes,
     intercepts = expected_intercepts,
-    outcome = expected_outcome,
+    outcome_measure = expected_outcome_measure,
     model = expected_effects_type,
     covariate_min = expected_covariate_min,
-    covariate_max = expected_covariate_max
+    covariate_max = expected_covariate_max,
+    dic = expected_dic,
+    sumresults = expected_summary
   )
 
   #Unit test 3

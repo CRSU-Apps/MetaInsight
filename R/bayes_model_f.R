@@ -1,12 +1,6 @@
 #' Run Bayesian models
 #'
-#' @param connected_data dataframe. Input data set created by `setup_configure()` or `setup_exclude`
-#' @param treatment_df dataframe containing the treatment ID ('Number') and the treatment name ('Label').
-#' @param outcome character. The type of outcome being measured either `Continuous` or `Binary`
-#' @param outcome_measure character. The analysis outcome measure. Either `MD`, `OR` or `RR`
-#' @param model_type character. The type of model. Either `random` or `fixed`
-#' @param reference_treatment character. Reference treatment
-#' @param async Whether or not the function is being used asynchronously. Default `FALSE`
+#' @inheritParams common_params
 #' @return List containing:
 #'  \item{mtcResults}{mtc.result. Output from `gemtc::mtc.run()`}
 #'  \item{mtcRelEffects}{mtc.result. Output from `gemtc::relative.effect()`}
@@ -78,7 +72,7 @@ bayes_model <- function(connected_data, treatment_df, outcome, outcome_measure, 
   )
 
   # Run gemtc model object for analysis
-  mtcResults <- gemtc::mtc.run(mtcModel)
+  mtcResults <- suppress_jags_output(gemtc::mtc.run(mtcModel))
 
   mtcRelEffects <- gemtc::relative.effect(mtcResults, t1 = reference_treatment)  #Set reference treatment
   rel_eff_tbl <- gemtc::relative.effect.table(mtcResults)

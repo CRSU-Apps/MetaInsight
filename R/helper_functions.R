@@ -37,13 +37,6 @@ spurious <- function(x) {
   shinyjs::disable(x)
   svglite::add_fonts(x)
   zip::deflate(x)
-
-  # to remove later on
-  bnma::contrast.network.data(x)
-  data.tree::Aggregate(a)
-  matrixcalc::commutation.matrix(x)
-  shinycssloaders::hidePageSpinner(x)
-  shinydashboard::box(x)
   return()
 }
 
@@ -56,9 +49,11 @@ spurious <- function(x) {
 #' @param logger The logger to write the text to. Can be NULL or a function
 #' @param ... Messages to write to the logger
 #' @param type One of "default", "info", "error", "warning"
+#' @param go_to character. The id of a module to navigate to when the modal is closed.
+#' Only used when `type = "error"`
 #' @keywords internal
 #' @export
-writeLog <- function(logger, ..., type = "default") {
+writeLog <- function(logger, ..., type = "default", go_to = NULL) {
   if (is.null(logger)) {
     if (type == "error") {
       stop(paste0(..., collapse = ""), call. = FALSE)
@@ -83,12 +78,25 @@ writeLog <- function(logger, ..., type = "default") {
       }
       pre <- paste0(icon("info", class = "log_info"), " ")
     } else if (type == "error") {
+
+        # navigate to selected module on close
+        callbackJS <- NULL
+        if (!is.null(go_to)) {
+          component <- stringr::str_split(go_to, "_")[[1]][1]
+          callbackJS <- paste0("function() {
+            document.querySelector('a[data-value=\"", component,"\"]').click();
+            document.querySelector('input[value=\"", go_to, "\"').click();
+          }")
+        }
+
       if (nchar(...) < 200){
         shinyalert::shinyalert(...,
-                               type = "error")
+                               type = "error",
+                               callbackJS = callbackJS)
       } else {
         shinyalert::shinyalert("Please, check Log window for more information ",
-                               type = "error")
+                               type = "error",
+                               callbackJS = callbackJS)
       }
       pre <- paste0(icon("xmark", class = "log_error"), " ")
     } else if (type == "warning") {
@@ -198,6 +206,16 @@ loading_spinner <- function(class) {
 
 
 ####################### #
+# ADD TOOLTIP #
+####################### #
+#' @keywords internal
+#' @export
+add_tooltip <- function(label, message){
+  span(label, tooltip(icon("circle-question"), message))
+}
+
+
+####################### #
 # CHANGING TABS #
 ####################### #
 
@@ -220,7 +238,6 @@ show_table <- function(parent_session){
   bslib::accordion_panel_open("collapse_table", TRUE, session = parent_session)
 }
 
-
 ####################### #
 # SUPPRESS JAGS OUTPUT #
 ####################### #
@@ -230,15 +247,12 @@ show_table <- function(parent_session){
 #' html reports by wrapping model functions
 #' @param expr The model function to be used
 #' @keywords internal
-#' @export
 suppress_jags_output <- function(expr) {
   null_device <- if (.Platform$OS.type == "windows") "NUL" else "/dev/null"
   sink(null_device)
   on.exit(sink())  # Ensure output is restored even if an error occurs
   force(expr)
 }
-
-
 
 ####################### #
 # PLOTTING #
@@ -270,19 +284,17 @@ write_plot <- function(file, type, renderFunction, height = NULL, width = NULL) 
 #'
 #' @param file character. The file to which to write.
 #' @param type character. Type of file to which to write.
-#' @param svg character. The svg plot.
-#' @param height numeric. The height of the svg in pixels.
-#' @param width numeric. The width of the plot in inches for pdf, or user specified units for png.
+#' @param svg list. Containing the svg string, width and height returned from `crop_svg()`
 #' @export
-write_svg_plot <- function(file, type, svg, height, width) {
+write_svg_plot <- function(file, type, svg) {
   if (type == "pdf") {
-    rsvg::rsvg_pdf(charToRaw(svg), file, width, height)
+    rsvg::rsvg_pdf(charToRaw(svg$svg), file, svg$width, svg$height)
   }
   if (type == "png") {
-    rsvg::rsvg_png(charToRaw(svg), file, width * 3, height * 3)
+    rsvg::rsvg_png(charToRaw(svg$svg), file, svg$width * 3, svg$height * 3)
   }
   if (type == "svg") {
-    writeLines(svg, file)
+    writeLines(svg$svg, file)
   }
 }
 
@@ -338,10 +350,10 @@ download_button_pair <- function(id){
   )
 }
 
-#' Create text with the point estimate and 95\% CrI of between-trial SD of treatment effects.
+#' Create text with the point estimate and 95% CrI of between-trial SD of treatment effects.
 #'
-#' @param model Output created by bayes_model()
-#' @return Text with the point estimate and 95\% CrI of between-trial SD of treatment effects (all 0 if fixed effects)
+#' @param model Output created by `bayes_model()`
+#' @return Text with the point estimate and 95% CrI of between-trial SD of treatment effects (all 0 if fixed effects)
 #' @export
 CreateTauSentence <- function(model) {
   sumresults <- model$sumresults
@@ -377,7 +389,7 @@ CreateTauSentence <- function(model) {
 #' editing the svg viewBox property. The width and height are also returned
 #' to facilitate rendering to other formats.
 #'
-#' @param input_svg xml_document. Output from `svglite::xmlSVG()`
+#' @param svg xml_document. Output from `svglite::xmlSVG()`
 #' @param margin numeric. The margin in pixels to leave around the edge
 #' of the plot content. Defaults to 10.
 #' @return List containing:
@@ -386,20 +398,12 @@ CreateTauSentence <- function(model) {
 #'  \item{height}{numeric. The height of the viewBox in pixels}
 #' @export
 
-crop_svg <- function(input_svg, margin = 10){
+crop_svg <- function(svg, margin = 10){
 
-  # fix the background element
-  svg_node <- xml2::xml_find_first(input_svg, "//svg")
-  total_width <- gsub("pt", "", xml2::xml_attr(svg_node, "width"))
-  total_height <- gsub("pt", "", xml2::xml_attr(svg_node, "height"))
-  rect_node <- xml2::xml_find_first(input_svg, "//rect[@width='100%']")
-  xml2::xml_attr(rect_node, "width") <- total_width
-  xml2::xml_attr(rect_node, "height") <- total_height
+  pixel_data <- paste(svg, collapse = "\n") |>
+    magick::image_read_svg() |>
+    magick::image_data()
 
-  input_svg <- paste(input_svg, collapse = "\n")
-
-  img <- magick::image_read_svg(input_svg)
-  pixel_data <- magick::image_data(img)
   # Create a matrix of pixels containing content
   is_content <- !(
     # white (all RGB channels > 250)
@@ -434,20 +438,120 @@ crop_svg <- function(input_svg, margin = 10){
     height = height + (margin * 2)
   )
 
-  output_svg <- gsub(
-    'viewBox="[^"]*"',
-    paste('viewBox="', bbox$x, bbox$y, bbox$width, bbox$height,'"'),
-    input_svg
-  )
+  # update viewBox
+  svg_node <- xml2::xml_find_first(svg, "//svg")
+  xml2::xml_attr(svg_node, "viewBox") <- paste(bbox$x, bbox$y, bbox$width, bbox$height)
 
-  output_svg <- gsub("<svg",
-                     '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"',
-                     output_svg)
+  # fix the background element
+  total_width <- gsub("pt", "", xml2::xml_attr(svg_node, "width"))
+  total_height <- gsub("pt", "", xml2::xml_attr(svg_node, "height"))
+  rect_node <- xml2::xml_find_first(svg, "//rect[@width='100%']")
+  xml2::xml_attr(rect_node, "width") <- total_width
+  xml2::xml_attr(rect_node, "height") <- total_height
+
+  # set namespace
+  root <- xml2::xml_root(svg)
+  xml2::xml_set_attr(root, "xmlns", "http://www.w3.org/2000/svg")
+  xml2::xml_set_attr(root, "xmlns:xlink", "http://www.w3.org/1999/xlink")
 
   list(
-    svg = output_svg,
+    svg = paste(svg, collapse = "\n"),
     width = bbox$width,
     height = bbox$height)
 }
 
+####################### #
+# RESET DATA #
+####################### #
 
+#' @title reset_data
+#' @description For internal use. Clears the common structure of data and resets all plots etc.
+#' @keywords internal
+#' @param common The common data structure
+#' @export
+reset_data <- function(common, session){
+  modules <- names(common$meta)
+  # clear data
+  common$reset()
+  # blank outputs
+  for (module in modules){
+    trigger(module)
+    # reset triggers
+    session$userData[[module]](0)
+  }
+}
+
+#' @title run_all
+#' @description For internal use. Runs all modules for a given component, excluding the model and nodesplit modules.
+#' @keywords internal
+#' @param component character. The component to run all the modules of.
+#' @param logger common$logger
+#' @export
+run_all <- function(component, logger){
+
+  all_modules <- names(COMPONENT_MODULES[[component]])
+
+  # exclude model and nodesplit modules
+  if (component != "freq"){
+    modules <- all_modules[-which(all_modules %in% c(glue::glue("{component}_model"), glue::glue("{component}_nodesplit")))]
+  } else {
+    modules <- all_modules
+  }
+
+  # workaround for regression modules where the run id differs
+  # and append -run to module id to get run button ids
+  modules <- paste0(ifelse(
+    grepl("regression", modules),
+    paste0(modules, "-", gsub("_regression", "", modules)),
+    modules
+  ), "-run")
+
+  # click the run buttons
+  shinyjs::runjs(
+    paste(
+      sprintf("$('#%s').click();", modules),
+      collapse = "\n"
+    )
+  )
+
+  # message for logger
+  full_component <- names(COMPONENTS[COMPONENTS == component])
+
+  if (component %in% c("bayes", "baseline", "covariate")){
+    nodesplit_message <- " apart from the nodesplit module"
+  } else {
+    nodesplit_message <- ""
+  }
+
+  logger |> writeLog(type = "info",
+                     glue::glue("Running all {full_component} modules{nodesplit_message}. This might
+                                take several minutes and progress will appear in the logger."))
+
+  invisible()
+}
+
+
+#' @title hide_and_show
+#' @description For internal use. Hides content inside the <module_id>_div class
+#' when a module has not been run and shows it once `trigger(module_id)` has
+#' been called. The show option is `TRUE` by default but can be set to `FALSE`
+#' to manually control when the content is displayed e.g.  if it should
+#' be when an extendedtask completes instead of when the run button is
+#' pressed.
+#' @keywords internal
+#' @param module_id character. The module identifier.
+#' @param show logical. Whether to show the div when `trigger(module_id)` is
+#' called
+#' @export
+hide_and_show <- function(module_id, show = TRUE){
+  observe({
+    watch(module_id)
+    if (watch(module_id) == 0){
+      shinyjs::hide(selector = glue::glue(".{module_id}_div"))
+    } else {
+      if (show){
+        shinyjs::show(selector = glue::glue(".{module_id}_div"))
+      }
+    }
+  })
+}

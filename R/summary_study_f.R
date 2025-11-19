@@ -1,14 +1,10 @@
 #' Creates a summary forest plot of all the studies.
 #'
-#' @param freq list. NMA results created by freq_wrap().
-#' @param outcome_measure character. "MD", "SMD", "OR", "RR", or "RD".
 #' @param header numeric. Multiplier for size of text in treatment contrast headers.
 #' @param title numeric. Multiplier for size of title.
-#' @param logger Stores all notification messages to be displayed in the Log
-#'   Window. Insert the logger reactive list here for running in
-#'   shiny, otherwise leave the default `NULL`
+#' @inheritParams common_params
 #'
-#' @return Plot created by groupforest.df().
+#' @return Plot created by `metafor::forest()`
 #' @export
 summary_study <- function(freq, outcome_measure, header, title, logger = NULL) {
 

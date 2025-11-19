@@ -42,6 +42,7 @@ knitr::kable(ranking_table(bayes_ranking_all), digits = 2)
 ```
 ```{r, echo = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}
 bayes_ranking_network_all <- summary_network(frequentist_all, bugsnet_all, {{bayes_ranking_network_style}})
+
 HTML(bayes_ranking_network_all$svg)
 ```
 
@@ -79,5 +80,7 @@ knitr::kable(ranking_table(bayes_ranking_sub), digits = 2)
 ```
 ```{r, echo = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}
 bayes_ranking_network_sub <- summary_network(frequentist_sub, bugsnet_sub, {{bayes_ranking_network_style}})
+
 HTML(bayes_ranking_network_sub$svg)
+
 ```

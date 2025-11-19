@@ -13,8 +13,10 @@ IsNodesplittable(data, treatments)
 }
 \value{
 List:
- - is_nodesplittable: TRUE or FALSE.
- - reason: Text describing the reason there are no splittable nodes, or NULL when is_nodesplittable == TRUE.
+\itemize{
+\item is_nodesplittable: TRUE or FALSE.
+\item reason: Text describing the reason there are no splittable nodes, or NULL when is_nodesplittable == TRUE.
+}
 }
 \description{
 Determine if the network contains any splittable nodes. If not, state the reason.

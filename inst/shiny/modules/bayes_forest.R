@@ -7,17 +7,17 @@ bayes_forest_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
     actionButton(ns("run"), "Generate plots", icon = icon("arrow-turn-down")),
-    layout_columns(
-      bayes_forest_submodule_ui(ns("all"), "All studies"),
-      bayes_forest_submodule_ui(ns("sub"), "Selected studies excluded")
+    div(class = "bayes_forest_div download_buttons",
+      layout_columns(
+        bayes_forest_submodule_ui(ns("all"), "All studies"),
+        bayes_forest_submodule_ui(ns("sub"), "Selected studies excluded")
+      )
     )
   )
 }
 
 bayes_forest_submodule_server <- function(id, common, model, run, title){
   moduleServer(id, function(input, output, session) {
-
-    shinyjs::hide("download")
 
     svg <- reactive({
       tdf <- ifelse(id == "all", "treatment_df", "subsetted_treatment_df")
@@ -30,7 +30,6 @@ bayes_forest_submodule_server <- function(id, common, model, run, title){
 
     # this enables the plot to always fit in the column width
     output$plot <- renderUI({
-      shinyjs::show("download")
       req(svg())
 
       div(class = "svg_container",
@@ -46,9 +45,7 @@ bayes_forest_submodule_server <- function(id, common, model, run, title){
 
         write_svg_plot(file,
                        common$download_format,
-                       svg()$svg,
-                       svg()$height,
-                       svg()$width
+                       svg()
                        )
 
       }
@@ -60,13 +57,12 @@ bayes_forest_submodule_server <- function(id, common, model, run, title){
 bayes_forest_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
+    hide_and_show(id)
+
     # check that a fitted model exists and error if not
     observeEvent(input$run, {
-
-      # add check for a running model
-
       if (is.null(common$bayes_all)){
-        common$logger |> writeLog(type = "error", "Please fit the Bayesian models first")
+        common$logger |> writeLog(type = "error", go_to = "bayes_model", "Please fit the Bayesian models first")
         return()
       } else {
         common$meta$bayes_forest$used <- TRUE

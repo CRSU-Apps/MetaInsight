@@ -1,6 +1,6 @@
 #' Produce deviance plots
-#' @param model Bayesian model produced by bayes_model
-#' @param async Whether or not the function is being used asynchronously. Default `FALSE`
+#' @param model Bayesian model produced by `bayes_model()` or `covariate_model()`
+#' @inheritParams common_params
 #' @return list containing:
 #'  \item{deviance_mtc}{results from `gemtc::mtc.deviance()` for model$mtcResults}
 #'  \item{deviance_ume}{results from `gemtc::mtc.deviance()` for UME model}
@@ -12,18 +12,36 @@
 bayes_deviance <- function(model, async = FALSE){
 
   if (!inherits(model, "bayes_model")){
-    return(async |> asyncLog(type = "error", "model must be an object created by bayes_model()"))
+    return(async |> asyncLog(type = "error", "model must be an object created by bayes_model() or covariate_model()"))
   }
 
-  deviance <- gemtc::mtc.deviance(model$mtcResults)
+  deviance <- suppress_jags_output(gemtc::mtc.deviance(model$mtcResults))
   scat <- scat_plot(model, deviance, model$model_type, model$outcome_measure)
+
+  if(model$mtcResults$model$type == "regression"){
+    return(
+      list(
+        deviance_mtc = deviance,
+        stem_plot = stem_plot(deviance),
+        lev_plot = lev_plot(deviance)
+      )
+    )
+  }
 
   list(
     deviance_mtc = deviance,
     deviance_ume = scat$y,
     scat_plot = scat$p,
     stem_plot = stem_plot(deviance),
-    lev_plot = lev_plot(deviance))
+    lev_plot = lev_plot(deviance)
+  )
+}
+
+#' @rdname bayes_deviance
+#' @param ... Parameters passed to `bayes_deviance()`
+#' @export
+covariate_deviance <- function(...){
+  bayes_deviance(...)
 }
 
 #' UME scatter plot

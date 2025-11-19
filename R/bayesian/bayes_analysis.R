@@ -99,10 +99,10 @@ baye <- function(data, treat_list, model, outcome, CONBI, ref) {
 #'  - 'mtcResults' = Output from gemtc::mtc.run
 #'  - 'sumresults' = summary(mtcRelEffects)
 #'  - 'a' = "fixed effect" or "random effect"
-#' @param outcome One of "SMD", "RD", "MD", "OR". Anything else is interpreted as RR. (TM: Probably don't need this, as it's included as @param results$outcome)
+#' @param outcome One of "SMD", "RD", "MD", "OR". Anything else is interpreted as RR. (TM: Probably don't need this, as it's included as `results$outcome`)
 #' @return Text with the point estimate and 95% CrI of between-trial SD of treatment effects (all 0 if fixed effects)
 #' @export
-CreateTauSentence <- function(results, outcome) {
+CreateTauSentence_old <- function(results, outcome) {
   if (!outcome %in% c('OR', 'RR', 'MD')) {
     stop(glue::glue("Outcome type '{outcome}' is not supported. Please use one of: 'MD', 'OR', 'RR'"))
   }
@@ -159,7 +159,7 @@ FormatForCreateTauSentence <- function(br_model){
   )
 }
 
-
+CreateTauSentence()
 
 ### 3c. Ranking results
 

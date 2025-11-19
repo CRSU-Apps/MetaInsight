@@ -14,11 +14,11 @@ summary_network(
 )
 }
 \arguments{
-\item{freq}{list. Created by `frequentist()`}
+\item{freq}{list. NMA results created by freq_wrap().}
 
-\item{bugsnet}{dataframe. Created by `bugsnetdata()`}
+\item{bugsnet}{dataframe. Created by \code{bugsnetdata()}}
 
-\item{style}{character. The plot to produce, either `netgraph` or `netplot`}
+\item{style}{character. The plot to produce, either \code{netgraph} or \code{netplot}}
 
 \item{label_size}{numeric. The size of labels in the plots. Default of 1.}
 
@@ -26,13 +26,13 @@ summary_network(
 
 \item{logger}{Stores all notification messages to be displayed in the Log
 Window. Insert the logger reactive list here for running in
-shiny, otherwise leave the default `NULL`}
+shiny, otherwise leave the default \code{NULL}}
 }
 \value{
 List containing:
- \item{svg}{character. SVG code to produce the plot}
- \item{height}{numeric. Plot height in pixels}
- \item{width}{numeric. Plot width in pixels}
+\item{svg}{character. SVG code to produce the plot}
+\item{height}{numeric. Plot height in pixels}
+\item{width}{numeric. Plot width in pixels}
 }
 \description{
 Produce either a netgraph or netplot

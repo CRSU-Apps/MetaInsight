@@ -100,7 +100,7 @@ test_that("CreateGemtcModel() assigns model type, covariate type, reference trea
       study = c("Constantine", "Leo", "Justinian"),
       age = c(99, 98, 97))
   )
-  gemtc_model <- CreateGemtcModel(data, 'random', 'OR', 'unrelated', 'the_Great')
+  gemtc_model <- CreateGemtcModel(data, 'random', 'OR', 'unrelated', 'the_Great', 123)
 
   expect_equal(gemtc_model$linearModel, "random")
   expect_equal(gemtc_model$regressor$coefficient, "unrelated")
@@ -123,7 +123,7 @@ test_that("CreateGemtcModel() has correct model settings for OR outcome", {
       study = c("Constantine", "Leo", "Justinian"),
       age = c(99, 98, 97))
   )
-  gemtc_model <- CreateGemtcModel(data, 'random', 'OR', 'shared', 'the_Great')
+  gemtc_model <- CreateGemtcModel(data, 'random', 'OR', 'shared', 'the_Great', 123)
 
   expect_equal(gemtc_model$likelihood, "binom")
   expect_equal(gemtc_model$link, "logit")
@@ -141,7 +141,7 @@ test_that("CreateGemtcModel() has correct model settings for RR outcome", {
       study = c("Constantine", "Leo", "Justinian"),
       age = c(99, 98, 97))
   )
-  gemtc_model <- CreateGemtcModel(data, 'random', 'RR', 'shared', 'the_Great')
+  gemtc_model <- CreateGemtcModel(data, 'random', 'RR', 'shared', 'the_Great', 123)
 
   expect_equal(gemtc_model$likelihood, "binom")
   expect_equal(gemtc_model$link, "log")
@@ -160,59 +160,74 @@ test_that("CreateGemtcModel() has correct model settings for MD outcome", {
       study = c("Constantine", "Leo", "Justinian"),
       age = c(99, 98, 97))
   )
-  gemtc_model <- CreateGemtcModel(data, 'random', 'MD', 'shared', 'the_Great')
+  gemtc_model <- CreateGemtcModel(data, 'random', 'MD', 'shared', 'the_Great', 123)
 
   expect_equal(gemtc_model$likelihood, "normal")
   expect_equal(gemtc_model$link, "identity")
 
 })
 
-test_that("RunCovariateModel() gives reproducible output. Follow on: FindCovariateDefault() & CovariateModelOutput() gives correct output", {
-  reference = "the_Little"
+# RunCovariateModel doesn't exist - needs refactoring into test-covariate_model
+#
+# test_that("RunCovariateModel() gives reproducible output.
+#           FindCovariateDefault() gives correct output.
+#           CovariateModelOutput() gives correct output.
+#           GetGemtcMcmcCharacteristics() returns correct MCMC data.", {
+#   reference = "the_Little"
+#
+#   data <- read.csv("data/Binary_wide_continuous_cov.csv")
+#   treatment_ids <- CreateTreatmentIds(FindAllTreatments(data), reference_treatment = reference)
+#   data <- WrangleUploadData(data, treatment_ids, "Binary")
+#   wrangled_treatment_list <- CleanTreatmentIds(treatment_ids)
+#   outcome_measure = "OR"
+#
+#   result_1 <- RunCovariateModel(data, wrangled_treatment_list, "Binary", outcome_measure, "covar.age", "age", 'random', 'unrelated', reference)
+#   result_2 <- RunCovariateModel(data, wrangled_treatment_list, "Binary", outcome_measure, "covar.age", "age", 'random', 'unrelated', reference)
+#
+#   expect_equal(result_1$samples[1], result_2$samples[1])
+#   expect_equal(result_1$samples[2], result_2$samples[2])
+#   expect_equal(result_1$samples[3], result_2$samples[3])
+#   expect_equal(result_1$samples[4], result_2$samples[4])
+#
+#   default <- FindCovariateDefault(result_1)
+#
+#   covariate_value = 98
+#
+#   expect_equal(default, covariate_value)
+#
+#   output_1 <- CovariateModelOutput(
+#     data = data,
+#     treatment_ids = wrangled_treatment_list,
+#     model = result_1,
+#     covariate_title = "covar.age",
+#     cov_value = default,
+#     outcome_measure = outcome_measure,
+#     covariate_type = "Continuous"
+#   )
+#
+#   expect_equal(length(output_1), 17)
+#
+#   expect_equal(output_1$a, "random effect")
+#   expect_equal(output_1$cov_value_sentence, "Value for covariate age set at 98")
+#   expect_equal(output_1$outcome, outcome_measure)
+#   expect_equal(output_1$model, "random")
+#   expect_equal(output_1$covariate_value, covariate_value)
+#   expect_equal(output_1$reference_name, reference)
+#   expect_equal(output_1$comparator_names, c("the_Butcher", "the_Dung_named", "the_Great", "the_Slit_nosed", "the_Younger"))
+#
+#   expected_mcmc_table <- data.frame(characteristic = c("Chains",
+#                                                        "Burn-in iterations",
+#                                                        "Sample iterations",
+#                                                        "Thinning factor"),
+#                                     value = c(4, 5000, 20000, 1))
+#
+#   expect_equal(GetGemtcMcmcCharacteristics(result_1), expected_mcmc_table)
+# })
 
-  data <- read.csv("data/Binary_wide_continuous_cov.csv")
-  treatment_ids <- CreateTreatmentIds(FindAllTreatments(data), reference_treatment = reference)
-  data <- WrangleUploadData(data, treatment_ids, "Binary")
-  wrangled_treatment_list <- CleanTreatmentIds(treatment_ids)
-  outcome_measure = "OR"
 
-  result_1 <- RunCovariateModel(data, wrangled_treatment_list, "Binary", outcome_measure, "covar.age", "age", 'random', 'unrelated', reference)
-  result_2 <- RunCovariateModel(data, wrangled_treatment_list, "Binary", outcome_measure, "covar.age", "age", 'random', 'unrelated', reference)
-
-  expect_equal(result_1$samples[1], result_2$samples[1])
-  expect_equal(result_1$samples[2], result_2$samples[2])
-  expect_equal(result_1$samples[3], result_2$samples[3])
-  expect_equal(result_1$samples[4], result_2$samples[4])
-
-  default <- FindCovariateDefault(result_1)
-
-  covariate_value = 98
-
-  expect_equal(default, covariate_value)
-
-  output_1 <- CovariateModelOutput(
-    data = data,
-    treatment_ids = wrangled_treatment_list,
-    model = result_1,
-    covariate_title = "covar.age",
-    cov_value = default,
-    outcome_measure = outcome_measure
-  )
-
-  expect_equal(length(output_1), 17)
-
-  expect_equal(output_1$a, "random effect")
-  expect_equal(output_1$cov_value_sentence, "Value for covariate age set at 98")
-  expect_equal(output_1$outcome, outcome_measure)
-  expect_equal(output_1$model, "random")
-  expect_equal(output_1$covariate_value, covariate_value)
-  expect_equal(output_1$reference_name, reference)
-  expect_equal(output_1$comparator_names, c("the_Butcher", "the_Dung_named", "the_Great", "the_Slit_nosed", "the_Younger"))
-})
-
-test_that("CalculateConfidenceRegions() gives nothing for NA evidence range", {
+test_that("CalculateCredibleRegions() gives nothing for NA evidence range", {
   mtc_results <- list()
-  
+
   model_output <- list(
     mtcResults = mtc_results,
     reference_name = "Placebo",
@@ -220,12 +235,12 @@ test_that("CalculateConfidenceRegions() gives nothing for NA evidence range", {
     covariate_min = c(Ibuprofen = NA),
     covariate_max = c(Ibuprofen = NA)
   )
-  
-  result <- CalculateConfidenceRegions(model_output)
-  
+
+  result <- CalculateCredibleRegions(model_output)
+
   expect_equal(names(result$intervals), c("Ibuprofen"))
   expect_equal(names(result$regions), c("Ibuprofen"))
-  
+
   expect_equal(
     result$intervals["Ibuprofen"],
     list(
@@ -240,9 +255,9 @@ test_that("CalculateConfidenceRegions() gives nothing for NA evidence range", {
   )
 })
 
-test_that("CalculateConfidenceRegions() gives interval for zero-width evidence range", {
+test_that("CalculateCredibleRegions() gives interval for zero-width evidence range", {
   mtc_results <- list()
-  
+
   model_output <- list(
     mtcResults = mtc_results,
     reference_name = "Placebo",
@@ -250,22 +265,22 @@ test_that("CalculateConfidenceRegions() gives interval for zero-width evidence r
     covariate_min = c(Ibuprofen = 7),
     covariate_max = c(Ibuprofen = 7)
   )
-  
+
   interval <- c("2.5%" = 11, "97.5%" = 11)
-  
+
   rel_eff_summary <- list(
     summaries = list(
       quantiles = interval
     )
   )
-  
-  mockery::stub(CalculateConfidenceRegions, ".FindConfidenceInterval", interval)
-  
-  result <- CalculateConfidenceRegions(model_output)
-  
+
+  mockery::stub(CalculateCredibleRegions, ".FindCredibleInterval", interval)
+
+  result <- CalculateCredibleRegions(model_output)
+
   expect_equal(names(result$regions), c("Ibuprofen"))
   expect_equal(names(result$intervals), c("Ibuprofen"))
-  
+
   expect_equal(
     result$intervals["Ibuprofen"],
     list(
@@ -280,9 +295,11 @@ test_that("CalculateConfidenceRegions() gives interval for zero-width evidence r
   )
 })
 
-test_that("CalculateConfidenceRegions() gives region for non-zero-width evidence range", {
+test_that("CalculateCredibleRegions() gives region for non-zero-width evidence range", {
   mtc_results <- list()
-  
+  mtc_results$model <- list()
+  mtc_results$model$regressor <- list(type="continuous")
+
   model_output <- list(
     mtcResults = mtc_results,
     reference_name = "Placebo",
@@ -290,7 +307,7 @@ test_that("CalculateConfidenceRegions() gives region for non-zero-width evidence
     covariate_min = c(Ibuprofen = 7),
     covariate_max = c(Ibuprofen = 17)
   )
-  
+
   interval <- matrix(
     data = c(
       11, 12,
@@ -313,29 +330,29 @@ test_that("CalculateConfidenceRegions() gives region for non-zero-width evidence
     ),
     byrow = TRUE
   )
-  
+
   rel_eff_summary <- list(
     summaries = list(
       quantiles = interval
     )
   )
-  
+
   n <- 1
   mockery::stub(
-    CalculateConfidenceRegions,
-    ".FindConfidenceInterval",
+    CalculateCredibleRegions,
+    ".FindCredibleInterval",
     function(...) {
       this_interval <- interval[n, c("2.5%", "97.5%")]
       n <<- n + 1
       return(this_interval)
     }
   )
-  
-  result <- CalculateConfidenceRegions(model_output)
-  
+
+  result <- CalculateCredibleRegions(model_output)
+
   expect_equal(names(result$intervals), c("Ibuprofen"))
   expect_equal(names(result$regions), c("Ibuprofen"))
-  
+
   expect_equal(
     result$regions["Ibuprofen"],
     list(
