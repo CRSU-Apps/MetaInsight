@@ -1,7 +1,7 @@
 bayes_model_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
-    input_task_button(ns("run"), "Run models", type = "default", icon = icon("arrow-turn-down")),
+    input_task_button(ns("run"), "Fit models", type = "default", icon = icon("arrow-turn-down")),
     div(class = "bayes_model_div download_buttons",
         actionButton(ns("run_all"), "Run all modules", icon = icon("forward-fast"))
     )
