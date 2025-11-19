@@ -31,7 +31,7 @@ This version of *MetaInsight* was built using *<a href = "https://cran.r-project
 
 ### **Contact us**
 
-Please <a href="mailto:info@crsu.org.uk" target="_blank">email us</a> with any other questions.
+Please <a href="mailto:apps@crsu.org.uk" target="_blank">email us</a> with any other questions.
 
 ### **Funding and Support Acknowledgement**
 

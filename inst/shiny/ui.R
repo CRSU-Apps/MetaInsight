@@ -33,7 +33,7 @@ tagList(
                HTML('<a href="#" id="save-button" class="action-button btn" onclick="Shiny.setInputValue(\'core_save-save\', Math.random())">Save session</a>')),
     nav_menu("Support", icon = icon("life-ring"),
                HTML('<a href="https://github.com/CRSU-Apps/MetaInsight/issues" target="_blank">GitHub Issues</a>'),
-               HTML('<a href="mailto: info@crsu.org.uk" target="_blank">Send Email</a>'))
+               HTML('<a href="mailto: apps@crsu.org.uk" target="_blank">Send Email</a>'))
   ),
   layout_sidebar(
     sidebar = sidebar(
