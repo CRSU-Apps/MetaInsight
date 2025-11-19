@@ -1,11 +1,13 @@
 rep_markdown_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
+    actionButton(ns("exclude"), "Exclude modules?"),
+    uiOutput(ns("modules_out")),
     selectInput(ns("file_type"), label = "Select download file type",
                 choices = c("HTML" = ".html", "Quarto" = ".qmd")),
     conditionalPanel("input.file_type == '.html'",
                      bslib::input_switch(ns("render"), "Include outputs?", value = TRUE), ns = ns),
-    bslib::input_task_button(ns("download"), "Download", icon = shiny::icon("download"), type = "default"),
+    bslib::input_task_button(ns("download"), "Download report", icon = shiny::icon("download"), type = "default"),
     div(style = "visibility: hidden;",
         downloadButton(ns("dlRMD"), "")
     )
@@ -14,6 +16,66 @@ rep_markdown_module_ui <- function(id) {
 
 rep_markdown_module_server <- function(id, common, parent_session, COMPONENT_MODULES) {
   moduleServer(id, function(input, output, session) {
+
+    # create a nicely formatted list of used modules
+    choices <- reactive({
+      req(input$exclude > 0)
+      used_modules <- names(common$meta)
+      req(length(used_modules) > 0)
+
+      choices <- list()
+
+      components <- unique(sapply(strsplit(used_modules, "_"), `[`, 1))
+      # remove setup modules
+      components <- components[-which(components == "setup")]
+
+      for (component in components) {
+        module_ids <- used_modules[grepl(paste0("^", component, "_"), used_modules)]
+
+        module_names <- sapply(module_ids, function(id) {
+          COMPONENT_MODULES[[component]][[id]]$short_name
+        })
+
+        # reverse names and values
+        module_names <- setNames(names(module_names), module_names)
+        full_component_name <- names(COMPONENTS[COMPONENTS == component])
+        choices[[full_component_name]] <- module_names
+      }
+
+      choices
+    })
+
+    # create picker with choices
+    output$modules_out <- renderUI({
+      req(choices())
+      shinyWidgets::pickerInput(
+        inputId = session$ns("selected_modules"),
+        label = "Modules to include:",
+        choices = choices(),
+        selected = unname(unlist(choices())),
+        multiple = TRUE,
+        options = list(
+          `selected-text-format` = "count > 3",
+          `count-selected-text` = "{0} modules selected"
+        )
+      )
+    })
+
+    # remove all other modules when a model is deselected
+    observe({
+      req(choices())
+      all_modules <- unname(unlist(choices()))
+      selected_modules <- input$selected_modules
+
+      not_selected <- all_modules[!(all_modules %in% selected_modules)]
+      unselected_models <- not_selected[grepl("model", not_selected)]
+      if (length(unselected_models) > 0){
+        unselected_model_component <- unique(sapply(strsplit(unselected_models, "_"), `[`, 1))
+        updated_selection <- selected_modules[!grepl(paste0(unselected_model_component, "_"), selected_modules)]
+        shinyWidgets::updatePickerInput(session, "selected_modules", selected = updated_selection)
+      }
+
+    })
 
     # function to create report
     # GlobalEnv ensures that rmd_functions can be found
@@ -49,6 +111,10 @@ rep_markdown_module_server <- function(id, common, parent_session, COMPONENT_MOD
 
       for (component in components) {
         for (module in COMPONENT_MODULES[[component]]) {
+
+          if (length(selected_modules) > 0){
+            if (!(module$id %in% selected_modules)) next
+          }
 
           rmd_file <- module$rmd_file
           rmd_function <- module$rmd_function
@@ -167,6 +233,12 @@ rep_markdown_module_server <- function(id, common, parent_session, COMPONENT_MOD
     observe({
       rep_markdown_file_type <<- input$file_type
       render_html <<- input$render
+      if (is.null(input$selected_modules)){
+        selected_modules <<- c()
+      } else {
+        # always include setup modules
+        selected_modules <<- c("setup_load", "setup_configure", "setup_exclude", input$selected_modules)
+      }
     })
 
     # task that calls the function
