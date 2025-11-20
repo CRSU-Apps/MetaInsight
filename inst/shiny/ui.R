@@ -41,8 +41,6 @@ tagList(
       open = "always",
       conditionalPanel(
         "input.tabs == 'intro'",
-        # actionButton("debug_button", "debug"),
-        # textOutput("debug"),
         core_intro_module_ui("core_intro"),
         includeMarkdown("Rmd/text_intro_tab.Rmd")
       ),

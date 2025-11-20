@@ -176,17 +176,6 @@ function(input, output, session) {
   setup_reload_module_server("setup_reload", common, modules, session)
 
   ################################
-  ### DEBUGGING ####
-  ################################
-
-  # options("gargoyle.talkative" = TRUE)
-
-  # output$debug <- renderPrint({
-  #   browser()
-  #   "debug"
-  # }) |> bindEvent(input$debug_button)
-
-  ################################
   ### EXPORT TEST VALUES ####
   ################################
 
