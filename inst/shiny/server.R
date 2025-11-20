@@ -189,7 +189,9 @@ function(input, output, session) {
   ################################
   ### EXPORT TEST VALUES ####
   ################################
-  exportTestValues(common = common,
+
+  # very ugly but only export the data
+  exportTestValues(common = as.list(common)[names(common)[!names(common) %in% c("clone", ".__enclos_env__", "logger", "reset", "tasks")]],
                    logger = common$logger())
 }
 
