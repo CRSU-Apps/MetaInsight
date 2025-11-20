@@ -38,7 +38,7 @@ covariate_model <- function(connected_data, treatment_df, outcome, outcome_measu
   }
 
   if (!any(grepl("covar\\.", names(connected_data)))){
-    async |> asyncLog(type = "error", "connected_data does not contain a covariate column")
+    return(async |> asyncLog(type = "error", "connected_data does not contain a covariate column"))
   }
 
   if (!outcome %in% c("Binary", "Continuous")){
@@ -73,13 +73,14 @@ covariate_model <- function(connected_data, treatment_df, outcome, outcome_measu
 
   cov_friendly <- GetFriendlyCovariateName(covariate)
 
-  if (is.null(covariate_model_output)){
+  # only run these parts if it hasn't run before, or if the regressor_type has changed
+  if (is.null(covariate_model_output) || covariate_model_output$mtcResults$model$regressor$coefficient != regressor_type){
     prepped_data <- PrepDataGemtc(connected_data, treatment_df, outcome, covariate, cov_friendly)
     gemtc_model <- CreateGemtcModel(prepped_data, model_type, outcome_measure, regressor_type, reference_treatment, seed)
     model_output <- suppress_jags_output(gemtc::mtc.run(gemtc_model))
     model_info <- CovariateModelOutput(connected_data, treatment_df, model_output, covariate, cov_value, outcome_measure)
   } else {
-    model_info <- CovariateModelOutput(connected_data, treatment_df, covariate_model_output$mtc_run_output, covariate, cov_value, outcome_measure)
+    model_info <- CovariateModelOutput(connected_data, treatment_df, covariate_model_output$mtcResults, covariate, cov_value, outcome_measure)
   }
 
   class(model_info) <- c("bayes_model", "covariate_model")

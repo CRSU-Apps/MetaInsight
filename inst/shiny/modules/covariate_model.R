@@ -4,7 +4,7 @@ covariate_model_module_ui <- function(id) {
     sliderInput(ns("covariate_value"), "Covariate value", min = 0, max = 100, step = 1, value = 50),
     radioButtons(ns("regressor"), "Regression coefficient",
                  choiceNames = list(add_tooltip("Shared", "Coefficient is the same for all treatment comparisons"),
-                                    add_tooltip("Exchangable", "Coefficient is different for each treatment comparison but all come from a shared distribution"),
+                                    add_tooltip("Exchangeable", "Coefficient is different for each treatment comparison but all come from a shared distribution"),
                                     add_tooltip("Unrelated", "Coefficient is different for each treatment comparison")),
                  choiceValues = list("shared", "exchangeable", "unrelated")),
     input_task_button(ns("run"), "Fit model", type = "default", icon = icon("arrow-turn-down")),
@@ -54,13 +54,6 @@ covariate_model_module_server <- function(id, common, parent_session) {
     # used to trigger when model is fitted
     init("covariate_model_fit")
 
-    # blank the output when the regressor is updated thereby
-    # refitting the whole model
-    observe({
-      input$regressor
-      common$covariate_model <- NULL
-    })
-
     observeEvent(input$run, {
       if (is.null(common$main_connected_data)){
         common$logger |> writeLog(type = "error", go_to = "setup_configure",
@@ -90,13 +83,20 @@ covariate_model_module_server <- function(id, common, parent_session) {
       trigger("covariate_model")
     })
 
+    # needed to cancel in progress
+    cov_model <- NULL
     common$tasks$covariate_model <- ExtendedTask$new(
-      function(...) mirai::mirai(run(...), run = covariate_model, .args = environment())
+      function(...) cov_model <<- mirai::mirai(run(...), run = covariate_model, .args = environment())
     ) |> bind_task_button("run")
 
-    observeEvent(list(watch("covariate_model"), watch("model"), input$covariate_value, input$regressor), {
+    observeEvent(list(watch("covariate_model"), watch("model"), debounce(input$covariate_value, 1000), input$regressor), {
       # trigger if run is pressed or if model is changed, but only if a model exists
       req((watch("covariate_model") > 0 || all(!is.null(common$covariate_model), watch("model") > 0)))
+
+      # cancel if the model is already updating
+      if (common$tasks$covariate_model$status() == "running"){
+        mirai::stop_mirai(cov_model)
+      }
 
       if (is.null(common$covariate_model)){
         common$logger |> writeLog(type = "starting", "Fitting covariate model")
@@ -111,26 +111,29 @@ covariate_model_module_server <- function(id, common, parent_session) {
                                           common$model_type,
                                           input$regressor,
                                           common$reference_treatment_all,
+                                          common$seed,
                                           common$covariate_model,
                                           async = TRUE)
       model_result$resume()
     })
 
     model_result <- observe({
+      # prevent loading when the task is cancelled
+      if (common$tasks$covariate_model$status() == "success"){
+        result <- common$tasks$covariate_model$result()
+        model_result$suspend()
+        if (inherits(result, "bayes_model")){
+          common$covariate_model <- result
+          common$covariate_value <- common$meta$covariate_model$covariate_value
+          shinyjs::runjs("Shiny.setInputValue('covariate_model-complete', 'complete');")
+          common$logger |> writeLog(type = "complete", "Covariate model has been fitted")
+        } else {
+          common$logger |> writeLog(type = "error", result)
+        }
 
-      result <- common$tasks$covariate_model$result()
-      model_result$suspend()
-      if (inherits(result, "bayes_model")){
-        common$covariate_model <- result
-        common$covariate_value <- common$meta$covariate_model$covariate_value
-        shinyjs::runjs("Shiny.setInputValue('covariate_model-complete', 'complete');")
-        common$logger |> writeLog(type = "complete", "Covariate model has been fitted")
-      } else {
-        common$logger |> writeLog(type = "error", result)
+        trigger("covariate_model_table")
+        trigger("covariate_model_fit")
       }
-
-      trigger("covariate_model_table")
-      trigger("covariate_model_fit")
     })
 
   output$table <- renderTable({

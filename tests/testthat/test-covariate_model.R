@@ -2,7 +2,12 @@ connected <- defined_data_con$main_connected_data
 t_df <- defined_data_con$treatment_df
 
 test_that("Check covariate_model function works as expected", {
+
+  # time to compare later
+  start_time <- proc.time()
   result <- covariate_model(connected, t_df, "Continuous", "MD", 50, "random", "shared", "Placebo", 123)
+  end_time <- proc.time()
+  elapsed <- end_time - start_time
 
   expect_is(result, "bayes_model")
   expect_true(all(c("mtcResults",
@@ -41,6 +46,19 @@ test_that("Check covariate_model function works as expected", {
   expect_is(result$model_type, "character")
   expect_is(result$covariate_min, "numeric")
   expect_is(result$covariate_max, "numeric")
+
+  # adjust the output for a different covariate value. This should take less time than for result
+  start_time <- proc.time()
+  result2 <- covariate_model(connected, t_df, "Continuous", "MD", 55, "random", "shared", "Placebo", 123, result)
+  end_time <- proc.time()
+  elapsed2 <- end_time - start_time
+  expect_false(identical(result, result2))
+  expect_gt(elapsed[3], elapsed2[3])
+
+  # adjust the output for a different regressor type
+  result3 <- covariate_model(connected, t_df, "Continuous", "MD", 55, "random", "unrelated", "Placebo", 123, result)
+  expect_false(identical(result2, result3))
+
 })
 
 test_that("FindCovariateRanges() finds ranges for continuous long data", {
