@@ -43,6 +43,65 @@ test_that("Check covariate_model function works as expected", {
   expect_is(result$covariate_max, "numeric")
 })
 
+test_that("FindCovariateRanges() finds ranges for continuous long data", {
+  load <- setup_load(file.path(test_data_dir, "Contribution_continuous_long_continuous_cov.csv"), outcome = "Continuous")
+  config <- setup_configure(load$data, load$treatment_df, "Continuous", "MD", "Paracetamol")
+
+  ranges <- FindCovariateRanges(
+    connected_data = config$main_connected_data,
+    treatment_df = config$treatment_df,
+    reference_treatment = "Paracetamol",
+    covariate_title = "covar.age"
+  )
+
+  expected_min = c(
+    "Ibuprofen" = 98,
+    "A_stiff_drink" = 95,
+    "Sleep" = 97,
+    "Exercise" = NA
+  )
+
+  expected_max = c(
+    "Ibuprofen" = 99,
+    "A_stiff_drink" = 99,
+    "Sleep" = 98,
+    "Exercise" = NA
+  )
+
+  expect_mapequal(!!expected_min, !!ranges$min)
+  expect_mapequal(!!expected_max, !!ranges$max)
+})
+
+test_that("FindCovariateRanges() finds ranges for continuous wide data", {
+
+  load <- setup_load(file.path(test_data_dir, "Contribution_continuous_wide_continuous_cov.csv"), outcome = "Continuous")
+  config <- setup_configure(load$data, load$treatment_df, "Continuous", "MD", "Paracetamol")
+
+  ranges <- FindCovariateRanges(
+    connected_data = config$main_connected_data,
+    treatment_df = config$treatment_df,
+    reference_treatment = "Paracetamol",
+    covariate_title = "covar.age"
+  )
+
+  expected_min = c(
+    "Ibuprofen" = 98,
+    "A_stiff_drink" = 95,
+    "Sleep" = 97,
+    "Exercise" = NA
+  )
+
+  expected_max = c(
+    "Ibuprofen" = 99,
+    "A_stiff_drink" = 99,
+    "Sleep" = 98,
+    "Exercise" = NA
+  )
+
+  expect_mapequal(!!expected_min, !!ranges$min)
+  expect_mapequal(!!expected_max, !!ranges$max)
+})
+
 test_that("covariate_model produces errors for incorrect data types", {
   expect_error(covariate_model("not_a_dataframe", t_df, "Continuous", "MD", 50, "random", "shared", "Placebo", 999), "connected_data must be of class data.frame")
   expect_error(covariate_model(connected, "not_a_dataframe", "Continuous", "MD", 50, "random", "shared", "Placebo", 999), "treatment_df must be of class data.frame")
@@ -85,8 +144,20 @@ test_that("{shinytest2} recording: e2e_covariate_model", {
   app$set_inputs(covariateSel = "covariate_model")
   app$click("covariate_model-run")
   app$wait_for_value(input = "covariate_model-complete")
-  common <- app$get_value(export = "common")
 
+  # check slider updates
+  slider_label <- app$get_text("#covariate_model-covariate_value-label")
+  expect_equal(slider_label, "Covariate value (age)")
+
+  min_value <- app$get_text(".form-group:has(#covariate_model-covariate_value) .irs-min")
+  mean_value <- app$get_text(".form-group:has(#covariate_model-covariate_value) .irs-single")
+  max_value <- app$get_text(".form-group:has(#covariate_model-covariate_value) .irs-max")
+
+  expect_equal(min_value, "24")
+  expect_equal(mean_value, "55")
+  expect_equal(max_value, "75.5")
+
+  common <- app$get_value(export = "common")
   result <- common$covariate_model
 
   expect_is(result, "bayes_model")
@@ -129,3 +200,28 @@ test_that("{shinytest2} recording: e2e_covariate_model", {
 
 })
 
+test_that("sliderinput updates for binary covariate", {
+  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_covariate_model", timeout = 30000)
+  app$set_inputs(tabs = "setup")
+  app$upload_file("setup_load-file1" = file.path(test_data_dir, "Cont_wide_binary_cov.csv"))
+  app$set_inputs(setupSel = "setup_load")
+  app$click("setup_load-run")
+  app$set_inputs(setupSel = "setup_configure")
+  app$wait_for_value(input = "setup_configure-ready")
+  app$click("setup_configure-run")
+  app$wait_for_value(input = "setup_exclude-complete")
+
+  app$set_inputs(tabs = "covariate")
+  app$set_inputs(covariateSel = "covariate_model")
+
+  slider_label <- app$get_text("#covariate_model-covariate_value-label")
+  expect_equal(slider_label, "Covariate value (handedness)")
+
+  min_value <- app$get_text(".form-group:has(#covariate_model-covariate_value) .irs-min")
+  mean_value <- app$get_text(".form-group:has(#covariate_model-covariate_value) .irs-single")
+  max_value <- app$get_text(".form-group:has(#covariate_model-covariate_value) .irs-max")
+
+  expect_equal(min_value, "0")
+  expect_equal(mean_value, "0")
+  expect_equal(max_value, "1")
+})

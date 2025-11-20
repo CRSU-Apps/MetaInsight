@@ -209,8 +209,8 @@ test_that("FindExpectedReferenceTreatment() returns first matching treatment whe
 
 test_that(".FixColumnNameCases() fixes cases for continuous long data with covariate and QA", {
   data <- CleanData(read.csv("data/Cont_long_quality_assessment.csv"))
-  names(data) <- c("sTuDy", "t", "n", "mEaN", "sD", "CoVaR.age", "RoB", "iNdIrEcTnEsS")
-  allowed_names = c("Study", "T", "N", "Mean", "SD", "covar.age", "rob", "indirectness")
+  names(data) <- c("sTuDy", "t", "n", "mEaN", "sD", "CoVaR.age", "RoB", "iNdIrEcTnEsS", "RoB.component1", "ROB.component2")
+  allowed_names = c("Study", "T", "N", "Mean", "SD", "covar.age", "rob", "indirectness", "rob.component1", "rob.component2")
 
   expect(all(!names(data) %in% allowed_names), failure_message = "Column names were not setup for the test correctly.")
 
