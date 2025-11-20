@@ -9,7 +9,7 @@
   z-index: 5;
 }
 #messageLog {
-  height:100px;
+  height:150px;
   width:450px;
   padding:5px;
   overflow:auto;

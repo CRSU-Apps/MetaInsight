@@ -22,7 +22,7 @@ function(input, output, session) {
 
   initLogMsg <- function() {
     intro <- "***WELCOME TO METAINSIGHT***"
-    brk <- paste(rep("------", 14), collapse = "")
+    brk <- paste(rep("------", 13), collapse = "")
     expl <- "Please find messages for the user in this log window."
     logInit <- gsub(".{4}$", "", paste(intro, brk, expl, brk, "", sep = "<br>"))
     logInit
