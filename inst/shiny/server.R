@@ -7,6 +7,12 @@ function(input, output, session) {
   core_intro_module_server("core_intro")
 
   ########################## #
+  # ANALYTICS ####
+  ########################## #
+
+  # core_analytics_module_server("core_analytics", reactive(input$cookies), "G-H3241DM66M", module)
+
+  ########################## #
   # LOAD COMMON ####
   ########################## #
 
