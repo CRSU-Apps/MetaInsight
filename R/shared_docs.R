@@ -11,6 +11,7 @@
 #' @param reference_treatment character. The reference treatment of the dataset
 #' @param model_type character. Type of model to fit, either `random` or `fixed`
 #' @param connected_data dataframe. Input data set created by `setup_configure()` or `setup_exclude`
+#' @param seed numeric. Seed used to fit the model
 #' @param logger Stores all notification messages to be displayed in the Log
 #'   Window. Insert the logger reactive list here for running in
 #'   shiny, otherwise leave the default `NULL`

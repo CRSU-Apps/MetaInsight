@@ -36,6 +36,10 @@ test_that("Check baseline_model function works as expected", {
   expect_is(result$sumresults, "summary.network.result")
   expect_is(result$regressor, "character")
 
+  # check results are reproducible
+  result_2 <- baseline_model(connected, t_df, "Continuous", "MD", "Placebo", "random", "shared", 123)
+  expect_true(identical(result, result_2))
+
 })
 
 test_that("baseline_model produces errors for incorrect data types", {

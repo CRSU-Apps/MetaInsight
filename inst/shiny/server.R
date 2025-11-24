@@ -20,7 +20,6 @@ function(input, output, session) {
   common <- common_class$new()
 
   common$seed <- sample.int(n = 1000, size = 1)
-  set.seed(common$seed)
 
   ########################## #
   # LOGGING ####

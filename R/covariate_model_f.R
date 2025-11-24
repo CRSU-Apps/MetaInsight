@@ -4,7 +4,6 @@
 #' than or equal to the minimum value and less than or equal to the maximum
 #' value in `connected_data`
 #' @param regressor_type character. Type of regression coefficient, either `shared`, `unrelated`, or `exchangeable`
-#' @param seed numeric. Seed used to fit the model
 #' @param covariate_model_output list. The output of the function. Default `NULL`.
 #' When supplied, only the output is recalculated for a given covariate value,
 #' rather than refitting the model.

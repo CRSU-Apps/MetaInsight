@@ -5,11 +5,11 @@ test_that("Check covariate_model function works as expected", {
 
   # time to compare later
   start_time <- proc.time()
-  result <- covariate_model(connected, t_df, "Continuous", "MD", 50, "random", "shared", "Placebo", 123)
+  result_1 <- covariate_model(connected, t_df, "Continuous", "MD", 50, "random", "shared", "Placebo", 123)
   end_time <- proc.time()
-  elapsed <- end_time - start_time
+  elapsed_1 <- end_time - start_time
 
-  expect_is(result, "bayes_model")
+  expect_is(result_1, "bayes_model")
   expect_true(all(c("mtcResults",
                     "mtcRelEffects",
                     "rel_eff_tbl",
@@ -27,37 +27,57 @@ test_that("Check covariate_model function works as expected", {
                     "model_type",
                     "covariate_min",
                     "covariate_max"
-                    ) %in% names(result)))
+                    ) %in% names(result_1)))
 
-  expect_is(result$mtcResults, "mtc.result")
-  expect_is(result$mtcRelEffects, "mtc.result")
-  expect_is(result$rel_eff_tbl, "mtc.relative.effect.table")
-  expect_is(result$covariate_value, "numeric")
-  expect_is(result$reference_name, "character")
-  expect_is(result$comparator_names, "character")
-  expect_is(result$a, "character")
-  expect_is(result$sumresults, "summary.mtc.result")
-  expect_is(result$dic, "data.frame")
-  expect_is(result$cov_value_sentence, "character")
-  expect_is(result$slopes, "numeric")
-  expect_is(result$intercepts, "numeric")
-  expect_is(result$outcome_measure, "character")
-  expect_is(result$mtcNetwork, "mtc.network")
-  expect_is(result$model_type, "character")
-  expect_is(result$covariate_min, "numeric")
-  expect_is(result$covariate_max, "numeric")
+  expect_is(result_1$mtcResults, "mtc.result")
+  expect_is(result_1$mtcRelEffects, "mtc.result")
+  expect_is(result_1$rel_eff_tbl, "mtc.relative.effect.table")
+  expect_is(result_1$covariate_value, "numeric")
+  expect_is(result_1$reference_name, "character")
+  expect_is(result_1$comparator_names, "character")
+  expect_is(result_1$a, "character")
+  expect_is(result_1$sumresults, "summary.mtc.result")
+  expect_is(result_1$dic, "data.frame")
+  expect_is(result_1$cov_value_sentence, "character")
+  expect_is(result_1$slopes, "numeric")
+  expect_is(result_1$intercepts, "numeric")
+  expect_is(result_1$outcome_measure, "character")
+  expect_is(result_1$mtcNetwork, "mtc.network")
+  expect_is(result_1$model_type, "character")
+  expect_is(result_1$covariate_min, "numeric")
+  expect_is(result_1$covariate_max, "numeric")
+
+  expect_equal(result_1$a, "random effect")
+  expect_equal(result_1$cov_value_sentence, "Value for covariate age set at 50")
+  expect_equal(result_1$outcome_measure, "MD")
+  expect_equal(result_1$model, "random")
+  expect_equal(result_1$covariate_value, 50)
+  expect_equal(result_1$reference_name, "Placebo")
+  expect_equal(result_1$comparator_names, c("Gabapentinoids", "Glucocorticoids", "Ketamine"))
+
+  expected_mcmc_table <- data.frame(characteristic = c("Chains",
+                                                       "Burn-in iterations",
+                                                       "Sample iterations",
+                                                       "Thinning factor"),
+                                    value = c(4, 5000, 20000, 1))
+
+  expect_equal(GetGemtcMcmcCharacteristics(result_1$mtcResults), expected_mcmc_table)
 
   # adjust the output for a different covariate value. This should take less time than for result
   start_time <- proc.time()
-  result2 <- covariate_model(connected, t_df, "Continuous", "MD", 55, "random", "shared", "Placebo", 123, result)
+  result_2 <- covariate_model(connected, t_df, "Continuous", "MD", 55, "random", "shared", "Placebo", 123, result_1)
   end_time <- proc.time()
-  elapsed2 <- end_time - start_time
-  expect_false(identical(result, result2))
-  expect_gt(elapsed[3], elapsed2[3])
+  elapsed_2 <- end_time - start_time
+  expect_false(identical(remove_igraph(result_1), remove_igraph(result_2)))
+  expect_gt(elapsed_1[3], elapsed_2[3])
 
   # adjust the output for a different regressor type
-  result3 <- covariate_model(connected, t_df, "Continuous", "MD", 55, "random", "unrelated", "Placebo", 123, result)
-  expect_false(identical(result2, result3))
+  result_3 <- covariate_model(connected, t_df, "Continuous", "MD", 55, "random", "unrelated", "Placebo", 123, result_1)
+  expect_false(identical(remove_igraph(result_2), remove_igraph(result_3)))
+
+  # refit the first to ensure reproducibility
+  result_4 <- covariate_model(connected, t_df, "Continuous", "MD", 50, "random", "shared", "Placebo", 123)
+  expect_true(identical(remove_igraph(result_1), remove_igraph(result_4)))
 
 })
 

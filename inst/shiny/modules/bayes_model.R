@@ -27,6 +27,8 @@ bayes_model_submodule_server <- function(id, common){
 bayes_model_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
+    # browser()
+
     # used to trigger downstream actions when model is rerun
     init("bayes_model_sub")
     init("bayes_model_all")
@@ -87,6 +89,7 @@ bayes_model_module_server <- function(id, common, parent_session) {
                                           common$outcome_measure,
                                           common$model_type,
                                           common$reference_treatment_all,
+                                          common$seed,
                                           async = TRUE)
 
 
@@ -116,6 +119,7 @@ bayes_model_module_server <- function(id, common, parent_session) {
                                           common$outcome_measure,
                                           common$model_type,
                                           common$reference_treatment_sub,
+                                          common$seed,
                                           async = TRUE)
       result_sub$resume()
     })
@@ -145,6 +149,7 @@ bayes_model_module_server <- function(id, common, parent_session) {
         if (inherits(result, "bayes_model")){
           # prevent showing on first run
           if (!is.null(common$bayes_sub)){
+            shinyjs::runjs("Shiny.setInputValue('bayes_model-sub-updated', 'updated');")
             common$logger |> writeLog(type = "complete", "The Bayesian model for the sensitivity analysis has been updated")
           }
           common$bayes_sub <- result

@@ -23,6 +23,8 @@
 
 \item{connected_data}{dataframe. Input data set created by \code{setup_configure()} or \code{setup_exclude}}
 
+\item{seed}{numeric. Seed used to fit the model}
+
 \item{logger}{Stores all notification messages to be displayed in the Log
 Window. Insert the logger reactive list here for running in
 shiny, otherwise leave the default \code{NULL}}

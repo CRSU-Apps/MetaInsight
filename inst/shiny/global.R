@@ -1,14 +1,13 @@
 library(glue)
 library(metainsight)
 
-mirai::daemons(4) # add sync = TRUE for debugging
-onStop(function() mirai::daemons(0))
-
 MB <- 1024^2
 UPLOAD_SIZE_MB <- 5000
 options(shiny.maxRequestSize = UPLOAD_SIZE_MB*MB)
-
 SAVE_SESSION_SIZE_MB_WARNING <- 100
+
+mirai::daemons(4) # add sync = TRUE for debugging
+onStop(function() mirai::daemons(0))
 
 source("ui_helpers.R")
 

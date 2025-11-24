@@ -167,64 +167,6 @@ test_that("CreateGemtcModel() has correct model settings for MD outcome", {
 
 })
 
-# RunCovariateModel doesn't exist - needs refactoring into test-covariate_model
-#
-# test_that("RunCovariateModel() gives reproducible output.
-#           FindCovariateDefault() gives correct output.
-#           CovariateModelOutput() gives correct output.
-#           GetGemtcMcmcCharacteristics() returns correct MCMC data.", {
-#   reference = "the_Little"
-#
-#   data <- read.csv("data/Binary_wide_continuous_cov.csv")
-#   treatment_ids <- CreateTreatmentIds(FindAllTreatments(data), reference_treatment = reference)
-#   data <- WrangleUploadData(data, treatment_ids, "Binary")
-#   wrangled_treatment_list <- CleanTreatmentIds(treatment_ids)
-#   outcome_measure = "OR"
-#
-#   result_1 <- RunCovariateModel(data, wrangled_treatment_list, "Binary", outcome_measure, "covar.age", "age", 'random', 'unrelated', reference)
-#   result_2 <- RunCovariateModel(data, wrangled_treatment_list, "Binary", outcome_measure, "covar.age", "age", 'random', 'unrelated', reference)
-#
-#   expect_equal(result_1$samples[1], result_2$samples[1])
-#   expect_equal(result_1$samples[2], result_2$samples[2])
-#   expect_equal(result_1$samples[3], result_2$samples[3])
-#   expect_equal(result_1$samples[4], result_2$samples[4])
-#
-#   default <- FindCovariateDefault(result_1)
-#
-#   covariate_value = 98
-#
-#   expect_equal(default, covariate_value)
-#
-#   output_1 <- CovariateModelOutput(
-#     data = data,
-#     treatment_ids = wrangled_treatment_list,
-#     model = result_1,
-#     covariate_title = "covar.age",
-#     cov_value = default,
-#     outcome_measure = outcome_measure,
-#     covariate_type = "Continuous"
-#   )
-#
-#   expect_equal(length(output_1), 17)
-#
-#   expect_equal(output_1$a, "random effect")
-#   expect_equal(output_1$cov_value_sentence, "Value for covariate age set at 98")
-#   expect_equal(output_1$outcome, outcome_measure)
-#   expect_equal(output_1$model, "random")
-#   expect_equal(output_1$covariate_value, covariate_value)
-#   expect_equal(output_1$reference_name, reference)
-#   expect_equal(output_1$comparator_names, c("the_Butcher", "the_Dung_named", "the_Great", "the_Slit_nosed", "the_Younger"))
-#
-#   expected_mcmc_table <- data.frame(characteristic = c("Chains",
-#                                                        "Burn-in iterations",
-#                                                        "Sample iterations",
-#                                                        "Thinning factor"),
-#                                     value = c(4, 5000, 20000, 1))
-#
-#   expect_equal(GetGemtcMcmcCharacteristics(result_1), expected_mcmc_table)
-# })
-
-
 test_that("CalculateCredibleRegions() gives nothing for NA evidence range", {
   mtc_results <- list()
 

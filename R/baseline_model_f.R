@@ -1,7 +1,6 @@
 #' @title baseline_model
 #' @description Fit a baseline risk regression model with `bnma::network.run()`
 #' @param regressor_type character. Type of regression coefficient, either `shared`, `unrelated`, or `exchangeable`
-#' @param seed numeric. Seed used to fit the model
 #' @inheritParams common_params
 #' @return List of bnma related output:
 #'  \item{mtcResults}{model object itself carried through (needed to match existing code)}

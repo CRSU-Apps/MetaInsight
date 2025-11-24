@@ -14,8 +14,6 @@ summary_network(
 )
 }
 \arguments{
-\item{freq}{list. NMA results created by freq_wrap().}
-
 \item{bugsnet}{dataframe. Created by \code{bugsnetdata()}}
 
 \item{style}{character. The plot to produce, either \code{netgraph} or \code{netplot}}

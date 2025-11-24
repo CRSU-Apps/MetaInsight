@@ -11,6 +11,7 @@ bayes_model(
   outcome_measure,
   model_type,
   reference_treatment,
+  seed,
   async = FALSE
 )
 }
@@ -29,6 +30,8 @@ bayes_model(
 \item{model_type}{character. Type of model to fit, either \code{random} or \code{fixed}}
 
 \item{reference_treatment}{character. The reference treatment of the dataset}
+
+\item{seed}{numeric. Seed used to fit the model}
 
 \item{async}{Whether or not the function is being used asynchronously. Default \code{FALSE}}
 }

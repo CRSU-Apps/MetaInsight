@@ -12,11 +12,11 @@
 #'  \item{model_type}{dataframe. The input `model_type`}
 #' @export
 
-bayes_model <- function(connected_data, treatment_df, outcome, outcome_measure, model_type, reference_treatment, async = FALSE){
+bayes_model <- function(connected_data, treatment_df, outcome, outcome_measure, model_type, reference_treatment, seed, async = FALSE){
 
   if (!async){ # only an issue if run outside the app
-    if (check_param_classes(c("connected_data", "treatment_df", "outcome", "outcome_measure", "model_type",  "reference_treatment"),
-                            c("data.frame", "data.frame", "character", "character", "character", "character"), NULL)){
+    if (check_param_classes(c("connected_data", "treatment_df", "outcome", "outcome_measure", "model_type",  "reference_treatment", "seed"),
+                            c("data.frame", "data.frame", "character", "character", "character", "character", "numeric"), NULL)){
       return()
     }
   }
@@ -36,6 +36,8 @@ bayes_model <- function(connected_data, treatment_df, outcome, outcome_measure, 
   if (!reference_treatment %in% treatment_df$Label){
     return(async |> asyncLog(type = "error", "reference_treatment must be one of the treatments in treatment_df"))
   }
+
+  set.seed(seed)
 
   longsort <- dataform.df(connected_data, treatment_df, outcome)
 
@@ -70,6 +72,15 @@ bayes_model <- function(connected_data, treatment_df, outcome, outcome_measure, 
     link = link,
     dic = TRUE
   )
+
+  # Settings for JAGS seeds and generator types for reproducible results (code taken from mtc.model manual)
+  seeds <- sample.int(4, n = .Machine$integer.max) # 4 chains
+  mtcModel$inits <- mapply(c, mtcModel$inits, list(
+    list(.RNG.name = "base::Wichmann-Hill", .RNG.seed = seeds[1]),
+    list(.RNG.name = "base::Marsaglia-Multicarry", .RNG.seed = seeds[2]),
+    list(.RNG.name = "base::Super-Duper", .RNG.seed = seeds[3]),
+    list(.RNG.name = "base::Mersenne-Twister", .RNG.seed = seeds[4])),
+    SIMPLIFY = FALSE)
 
   # Run gemtc model object for analysis
   mtcResults <- suppress_jags_output(gemtc::mtc.run(mtcModel))
