@@ -160,7 +160,10 @@ BaselineRiskRegression <- function(connected_data, treatment_df, outcome, refere
                                   outcome = outcome, reference_treatment = reference_treatment)
   network <- BaselineRiskNetwork(br_data = formatted_data, outcome = outcome,
                                  model_type = model_type, cov_parameters = cov_parameters)
-  #Select random seeds for the four chains based on 'seed'
+
+  # use same RNG inside and outside of mirai
+  RNGkind("L'Ecuyer-CMRG")
+  # select random seeds for the four chains based on 'seed'
   set.seed(seed)
   seeds <- sample.int(4, n = .Machine$integer.max)
 

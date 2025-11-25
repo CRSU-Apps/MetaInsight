@@ -9,14 +9,14 @@
 #'  \item{lev_plot}{plotly object}
 #'
 #' @export
-bayes_deviance <- function(model, async = FALSE){
+bayes_deviance <- function(model, seed = NULL, async = FALSE){
 
   if (!inherits(model, "bayes_model")){
     return(async |> asyncLog(type = "error", "model must be an object created by bayes_model() or covariate_model()"))
   }
 
   deviance <- suppress_jags_output(gemtc::mtc.deviance(model$mtcResults))
-  scat <- scat_plot(model, deviance, model$model_type, model$outcome_measure)
+  scat <- scat_plot(model, deviance, model$model_type, model$outcome_measure, seed)
 
   if(model$mtcResults$model$type == "regression"){
     return(
@@ -49,7 +49,7 @@ covariate_deviance <- function(...){
 #' @param deviance Output produced by `gemtc::mtc.deviance()`
 #' @param model_type Model effects type. "random" or "fixed".
 #' @param outcome_measure Outcome measure being analysed: one of "OR". "RR", "MD".
-scat_plot <- function(model, deviance, model_type, outcome_measure) {
+scat_plot <- function(model, deviance, model_type, outcome_measure, seed) {
   if (outcome_measure == "MD") {
     like <- "normal"
     link <- "identity"
@@ -63,14 +63,30 @@ scat_plot <- function(model, deviance, model_type, outcome_measure) {
   c <- data.frame(deviance$dev.ab)
   c$names <- rownames(c)
 
-  ume <- gemtc::mtc.model(network = model$mtcNetwork,
-                         type = "ume",
-                         linearModel = model_type,
-                         likelihood = like,
-                         link = link,
-                         dic = TRUE)
-  ume_results <- gemtc::mtc.run(ume)
-  y <- gemtc::mtc.deviance(ume_results)
+  # use same RNG inside and outside of mirai
+  RNGkind("L'Ecuyer-CMRG")
+  set.seed(seed)
+  # needs to be set before mtc.model
+  ume <- suppress_jags_output(
+    gemtc::mtc.model(network = model$mtcNetwork,
+                     type = "ume",
+                     linearModel = model_type,
+                     likelihood = like,
+                     link = link,
+                     dic = TRUE)
+    )
+
+  seeds <- sample.int(4, n = .Machine$integer.max) # 4 chains
+
+  ume$inits <- mapply(c, ume$inits, list(
+    list(.RNG.name = "base::Wichmann-Hill", .RNG.seed = seeds[1]),
+    list(.RNG.name = "base::Marsaglia-Multicarry", .RNG.seed = seeds[2]),
+    list(.RNG.name = "base::Super-Duper", .RNG.seed = seeds[3]),
+    list(.RNG.name = "base::Mersenne-Twister", .RNG.seed = seeds[4])),
+    SIMPLIFY = FALSE)
+
+  ume_results <- suppress_jags_output(gemtc::mtc.run(ume))
+  y <- suppress_jags_output(gemtc::mtc.deviance(ume_results))
   inc <- data.frame(y$dev.ab)
   inc$names <- rownames(inc)
   all <- merge(c, inc, by = "names")

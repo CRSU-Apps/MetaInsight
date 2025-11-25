@@ -84,8 +84,8 @@ bayes_forest_module_server <- function(id, common, parent_session) {
       }
     })
 
-    bayes_forest_submodule_server("all", common, "bayes_all", all_trigger, "Results for all studies")
-    bayes_forest_submodule_server("sub", common, "bayes_sub", sub_trigger, "Results with selected studies excluded")
+    bayes_forest_submodule_server("all", common, "bayes_all", all_trigger, "All studies")
+    bayes_forest_submodule_server("sub", common, "bayes_sub", sub_trigger, "With selected studies excluded")
 
   })
 }

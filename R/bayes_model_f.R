@@ -37,6 +37,8 @@ bayes_model <- function(connected_data, treatment_df, outcome, outcome_measure, 
     return(async |> asyncLog(type = "error", "reference_treatment must be one of the treatments in treatment_df"))
   }
 
+  # use same RNG inside and outside of mirai
+  RNGkind("L'Ecuyer-CMRG")
   set.seed(seed)
 
   longsort <- dataform.df(connected_data, treatment_df, outcome)

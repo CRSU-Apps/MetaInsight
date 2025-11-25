@@ -34,10 +34,17 @@ metaregression_forest_module_server <- function(id, common, run) {
     svg <- reactive({
       watch(glue::glue("{model}_fit"))
       req(watch(module_id) > 0)
+
+      if (id == "covariate"){
+        plot_title  <- "Covariate regression analysis"
+      } else {
+        plot_title  <- "Baseline risk regression analysis"
+      }
+
       do.call(module_id, list(common[[model]],
                            common$treatment_df,
                            common$reference_treatment_all,
-                           glue::glue("{stringr::str_to_title(id)} regression analysis")
+                           plot_title
                            ))
     })
 

@@ -29,3 +29,26 @@ remove_igraph <- function(result){
 
   result
 }
+
+
+
+# Function to extract text content from each SVG in HTML file
+extract_svg_text_from_html <- function(html_file) {
+  html_doc <- xml2::read_html(html_file)
+
+  svg_nodes <- xml2::xml_find_all(html_doc, "//svg")
+
+  svg_text_list <- lapply(svg_nodes, function(svg_node) {
+    text_nodes <- xml2::xml_find_all(svg_node, ".//text")
+    text_content <- xml2::xml_text(text_nodes)
+    return(text_content)
+  })
+
+  return(svg_text_list)
+}
+
+extract_svg_text_from_svg <- function(svg){
+  doc <- xml2::read_html(svg)
+  text_nodes <- xml2::xml_find_all(doc, ".//text")
+  xml2::xml_text(text_nodes)
+}

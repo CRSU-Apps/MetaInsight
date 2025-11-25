@@ -143,8 +143,7 @@ CreateGemtcModel <- function(data, model_type, outcome_measure, regressor_type, 
   regressor <- list(coefficient=regressor_type,
                     variable=colnames(data$studyData[2]),
                     control=ref_choice)
-  # Create 'model' object
-  set.seed(seed) # needs to be set before mtc.model
+
   if (outcome_measure == "MD") {
     like <- "normal"
     link <- "identity"
@@ -158,6 +157,13 @@ CreateGemtcModel <- function(data, model_type, outcome_measure, regressor_type, 
   } else {
     paste0("Outcome can only be OR, RR, or MD")
   }
+
+  # use same RNG inside and outside of mirai
+  RNGkind("L'Ecuyer-CMRG")
+  # needs to be set before mtc.model
+  set.seed(seed)
+
+  # Create 'model' object
   model_object <- gemtc::mtc.model(network_object,
                                    type = "regression",
                                    likelihood=like,

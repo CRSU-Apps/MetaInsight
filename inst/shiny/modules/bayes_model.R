@@ -27,8 +27,6 @@ bayes_model_submodule_server <- function(id, common){
 bayes_model_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
-    # browser()
-
     # used to trigger downstream actions when model is rerun
     init("bayes_model_sub")
     init("bayes_model_all")

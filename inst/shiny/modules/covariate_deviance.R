@@ -27,7 +27,8 @@ metaregression_deviance_module_server <- function(id, common, run) {
       }
 
       common$logger |> writeLog(type = "starting", glue::glue("Generating {id} deviance plots"))
-      common$tasks[[module_id]]$invoke(common[[model]])
+      common$tasks[[module_id]]$invoke(common[[model]],
+                                       async = TRUE)
       common$meta[[module_id]]$used <- TRUE
       result_all$resume()
     })
