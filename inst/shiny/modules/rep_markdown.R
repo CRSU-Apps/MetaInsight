@@ -279,7 +279,7 @@ rep_markdown_module_server <- function(id, common, parent_session, COMPONENT_MOD
         paste0("metainsight-session-", Sys.Date(), input$file_type)
       },
       content = function(file) {
-        file.rename(task$result(), file)
+        file.copy(task$result(), file)
       }
     )
 
