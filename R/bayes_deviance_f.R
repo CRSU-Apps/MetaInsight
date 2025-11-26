@@ -1,13 +1,25 @@
 #' Produce deviance plots
 #' @param model Bayesian model produced by `bayes_model()` or `covariate_model()`
+#' @param seed numeric. Seed value to use for calculating UME model. Only required
+#' when `model` was produced by `bayes_model()`
 #' @inheritParams common_params
-#' @return list containing:
-#'  \item{deviance_mtc}{results from `gemtc::mtc.deviance()` for model$mtcResults}
-#'  \item{deviance_ume}{results from `gemtc::mtc.deviance()` for UME model}
-#'  \item{scat_plot}{plotly object}
-#'  \item{stem_plot}{plotly object}
-#'  \item{lev_plot}{plotly object}
 #'
+#' @return A list containing different elements depending on the input model:
+#'
+#' When model was created by `bayes_model()` containing:
+#' \itemize{
+#' \item{deviance_mtc}{results from `gemtc::mtc.deviance()` for model$mtcResults}
+#' \item{deviance_ume}{results from `gemtc::mtc.deviance()` for UME model}
+#' \item{scat_plot}{plotly object}
+#' \item{stem_plot}{plotly object}
+#' \item{lev_plot}{plotly object}
+#' }
+#' When model was created by `covariate_model()` containing:
+#' \itemize{
+#' \item{deviance_mtc}{results from `gemtc::mtc.deviance()` for model$mtcResults}
+#' \item{stem_plot}{plotly object}
+#' \item{lev_plot}{plotly object}
+#' }
 #' @export
 bayes_deviance <- function(model, seed = NULL, async = FALSE){
 
@@ -16,8 +28,8 @@ bayes_deviance <- function(model, seed = NULL, async = FALSE){
   }
 
   deviance <- suppress_jags_output(gemtc::mtc.deviance(model$mtcResults))
-  scat <- scat_plot(model, deviance, model$model_type, model$outcome_measure, seed)
 
+  # return these for covariate models
   if(model$mtcResults$model$type == "regression"){
     return(
       list(
@@ -27,6 +39,13 @@ bayes_deviance <- function(model, seed = NULL, async = FALSE){
       )
     )
   }
+
+  # check a seed exists and produce the scatter plot for non-covariate models
+  if (is.null(seed) || !is.numeric(seed)){
+    return(async |> asyncLog(type = "error", "Please provide a numeric seed value"))
+  }
+
+  scat <- scat_plot(model, deviance, model$model_type, model$outcome_measure, seed)
 
   list(
     deviance_mtc = deviance,

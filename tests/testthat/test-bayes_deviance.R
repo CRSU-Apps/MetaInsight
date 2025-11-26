@@ -19,6 +19,9 @@ test_that("Check bayes_mcmc function produces errors as expected", {
   expect_error(bayes_deviance("faulty_model", 123), "model must be an object created by bayes_model")
   expect_error(bayes_deviance(list(a = 1), 123), "model must be an object created by bayes_model")
   expect_error(bayes_deviance(faulty_model, 123), "model must be an object created by bayes_model")
+  expect_error(bayes_deviance(fitted_bayes_model), "Please provide a numeric seed value")
+  expect_error(bayes_deviance(fitted_bayes_model, NULL), "Please provide a numeric seed value")
+  expect_error(bayes_deviance(fitted_bayes_model, "NULL"), "Please provide a numeric seed value")
 })
 
 test_that("{shinytest2} recording: e2e_bayes_deviance", {
