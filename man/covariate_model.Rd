@@ -9,9 +9,10 @@ covariate_model(
   treatment_df,
   outcome,
   outcome_measure,
-  cov_value,
+  covariate_value,
   model_type,
   regressor_type,
+  covariate_type,
   reference_treatment,
   seed,
   covariate_model_output = NULL,
@@ -30,13 +31,15 @@ covariate_model(
 \code{OR}, \code{RR} or \code{RD} when \code{outcome} is \code{Binary} or \code{MD} or \code{SMD} when
 \code{outcome} is \code{Continuous}}
 
-\item{cov_value}{numeric. The value at which to fit the model. Must be greater
+\item{covariate_value}{numeric. The value at which to fit the model. Must be greater
 than or equal to the minimum value and less than or equal to the maximum
 value in \code{connected_data}}
 
 \item{model_type}{character. Type of model to fit, either \code{random} or \code{fixed}}
 
 \item{regressor_type}{character. Type of regression coefficient, either \code{shared}, \code{unrelated}, or \code{exchangeable}}
+
+\item{covariate_type}{character. Whether the covariate values are \code{Continuous} or \code{Binary}}
 
 \item{reference_treatment}{character. The reference treatment of the dataset}
 
@@ -61,7 +64,7 @@ List of gemtc related output:
 \item{dic}{data frame of model fit statistics}
 \item{cov_value_sentence}{text output stating the value for which the covariate has been set to for producing output}
 \item{slopes}{named list of slopes for the regression equations (unstandardised - equal to one 'increment')}
-\item{intercepts}{named list of intercepts for the regression equations at cov_value}
+\item{intercepts}{named list of intercepts for the regression equations at covariate_value}
 \item{outcome}{The outcome type for the analysis eg. "MD" or "OR"}
 \item{mtcNetwork}{The network object from GEMTC}
 \item{model}{The type of linear model, either "fixed" or "random"}

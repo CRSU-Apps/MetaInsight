@@ -5,7 +5,7 @@ test_that("Check covariate_model function works as expected", {
 
   # time to compare later
   start_time <- proc.time()
-  result_1 <- covariate_model(connected, t_df, "Continuous", "MD", 50, "random", "shared", "Placebo", 123)
+  result_1 <- covariate_model(connected, t_df, "Continuous", "MD", 50, "random", "shared", "Continuous", "Placebo",  123)
   end_time <- proc.time()
   elapsed_1 <- end_time - start_time
 
@@ -61,22 +61,22 @@ test_that("Check covariate_model function works as expected", {
                                                        "Thinning factor"),
                                     value = c(4, 5000, 20000, 1))
 
-  expect_equal(GetGemtcMcmcCharacteristics(result_1$mtcResults), expected_mcmc_table)
+  expect_equal(metainsight:::GetGemtcMcmcCharacteristics(result_1$mtcResults), expected_mcmc_table)
 
   # adjust the output for a different covariate value. This should take less time than for result
   start_time <- proc.time()
-  result_2 <- covariate_model(connected, t_df, "Continuous", "MD", 55, "random", "shared", "Placebo", 123, result_1)
+  result_2 <- covariate_model(connected, t_df, "Continuous", "MD", 55, "random", "shared", "Continuous", "Placebo", 123, result_1)
   end_time <- proc.time()
   elapsed_2 <- end_time - start_time
   expect_false(identical(remove_igraph(result_1), remove_igraph(result_2)))
   expect_gt(elapsed_1[3], elapsed_2[3])
 
   # adjust the output for a different regressor type
-  result_3 <- covariate_model(connected, t_df, "Continuous", "MD", 55, "random", "unrelated", "Placebo", 123, result_1)
+  result_3 <- covariate_model(connected, t_df, "Continuous", "MD", 55, "random", "unrelated", "Continuous", "Placebo", 123, result_1)
   expect_false(identical(remove_igraph(result_2), remove_igraph(result_3)))
 
   # refit the first to ensure reproducibility
-  result_4 <- covariate_model(connected, t_df, "Continuous", "MD", 50, "random", "shared", "Placebo", 123)
+  result_4 <- covariate_model(connected, t_df, "Continuous", "MD", 50, "random", "shared", "Continuous", "Placebo", 123)
   expect_true(identical(remove_igraph(result_1), remove_igraph(result_4)))
 
 })
@@ -141,30 +141,32 @@ test_that("FindCovariateRanges() finds ranges for continuous wide data", {
 })
 
 test_that("covariate_model produces errors for incorrect data types", {
-  expect_error(covariate_model("not_a_dataframe", t_df, "Continuous", "MD", 50, "random", "shared", "Placebo", 999), "connected_data must be of class data.frame")
-  expect_error(covariate_model(connected, "not_a_dataframe", "Continuous", "MD", 50, "random", "shared", "Placebo", 999), "treatment_df must be of class data.frame")
-  expect_error(covariate_model(connected, t_df, 123, "MD", 50, "random", "shared", "Placebo", 999), "outcome must be of class character")
-  expect_error(covariate_model(connected, t_df, "Continuous", 123, 50, "random", "shared", "Placebo", 999), "outcome_measure must be of class character")
-  expect_error(covariate_model(connected, t_df, "Continuous", "MD", "not_numeric", "random", "shared", "Placebo", 999), "cov_value must be of class numeric")
-  expect_error(covariate_model(connected, t_df, "Continuous", "MD", 50, 123, "shared", "Placebo", 999), "model_type must be of class character")
-  expect_error(covariate_model(connected, t_df, "Continuous", "MD", 50, "random", 123, "Placebo", 999), "regressor_type must be of class character")
-  expect_error(covariate_model(connected, t_df, "Continuous", "MD", 50, "random", "shared", 123, 999), "reference_treatment must be of class character")
-  expect_error(covariate_model(connected, t_df, "Continuous", "MD", 50, "random", "shared", "Placebo", "not_seed"), "seed must be of class numeric")
+  expect_error(covariate_model("not_a_dataframe", t_df, "Continuous", "MD", 50, "random", "shared", "Continuous", "Placebo", 999), "connected_data must be of class data.frame")
+  expect_error(covariate_model(connected, "not_a_dataframe", "Continuous", "MD", 50, "random", "shared", "Continuous", "Placebo", 999), "treatment_df must be of class data.frame")
+  expect_error(covariate_model(connected, t_df, 123, "MD", 50, "random", "shared", "Continuous", "Placebo", 999), "outcome must be of class character")
+  expect_error(covariate_model(connected, t_df, "Continuous", 123, 50, "random", "shared", "Continuous", "Placebo", 999), "outcome_measure must be of class character")
+  expect_error(covariate_model(connected, t_df, "Continuous", "MD", "not_numeric", "random", "shared", "Continuous", "Placebo", 999), "covariate_value must be of class numeric")
+  expect_error(covariate_model(connected, t_df, "Continuous", "MD", 50, 123, "shared", "Continuous", "Placebo", 999), "model_type must be of class character")
+  expect_error(covariate_model(connected, t_df, "Continuous", "MD", 50, "random", 123, "Continuous", "Placebo", 999), "regressor_type must be of class character")
+  expect_error(covariate_model(connected, t_df, "Continuous", "MD", 50, "random", "shared", 123, "Placebo", 999), "covariate_type must be of class character")
+  expect_error(covariate_model(connected, t_df, "Continuous", "MD", 50, "random", "shared", "Continuous", 123, 999), "reference_treatment must be of class character")
+  expect_error(covariate_model(connected, t_df, "Continuous", "MD", 50, "random", "shared", "Continuous", "Placebo", "not_seed"), "seed must be of class numeric")
 
   # when no covariate exists
   no_cov_load <- setup_load(file.path(test_data_dir, "Cont_long.csv"), "Continuous")
   no_cov_con <- setup_configure(no_cov_load$data, no_cov_load$treatment_df, "Continuous", "MD", "the_Great")
-  expect_error(covariate_model(no_cov_con$main_connected_data, no_cov_con$treatment_df, "Continuous", "MD", 99, "random", "shared", "the_Great", 999), "connected_data does not contain a covariate column")
+  expect_error(covariate_model(no_cov_con$main_connected_data, no_cov_con$treatment_df, "Continuous", "MD", 99, "random", "shared", "Continuous", "the_Great", 999), "connected_data does not contain a covariate column")
 
   # when covariate_value is out of range
-  expect_error(covariate_model(connected, t_df, "Continuous", "MD", 1, "random", "shared", "Placebo", 999), "cov_value must not be lower than the minimum")
-  expect_error(covariate_model(connected, t_df, "Continuous", "MD", 1000, "random", "shared", "Placebo", 999), "cov_value must not be higher than the maximum")
+  expect_error(covariate_model(connected, t_df, "Continuous", "MD", 1, "random", "shared", "Continuous", "Placebo", 999), "covariate_value must not be lower than the minimum")
+  expect_error(covariate_model(connected, t_df, "Continuous", "MD", 1000, "random", "shared", "Continuous", "Placebo", 999), "covariate_value must not be higher than the maximum")
 
-  expect_error(covariate_model(connected, t_df, "invalid_outcome", "MD", 50, "random", "shared", "Placebo", 999), "outcome must be 'Binary' or 'Continuous'")
-  expect_error(covariate_model(connected, t_df, "Continuous", "invalid_measure", 50, "random", "shared", "Placebo", 999), "outcome_measure must be 'OR', 'RR' or 'MD'")
-  expect_error(covariate_model(connected, t_df, "Continuous", "MD", 50, "not_random", "shared", "Placebo", 999), "model_type must be 'fixed' or 'random'")
-  expect_error(covariate_model(connected, t_df, "Continuous", "MD", 50, "random", "not_shared", "Placebo", 999), "regressor_type must be")
-  expect_error(covariate_model(connected, t_df, "Continuous", "MD", 50, "random", "shared", "not_placebo", 999), "reference_treatment must be one of the treatments in treatment_df")
+  expect_error(covariate_model(connected, t_df, "invalid_outcome", "MD", 50, "random", "shared", "Continuous", "Placebo", 999), "outcome must be 'Binary' or 'Continuous'")
+  expect_error(covariate_model(connected, t_df, "Continuous", "invalid_measure", 50, "random", "shared", "Continuous", "Placebo", 999), "outcome_measure must be 'OR', 'RR' or 'MD'")
+  expect_error(covariate_model(connected, t_df, "Continuous", "MD", 50, "not_random", "shared", "Continuous", "Placebo", 999), "model_type must be 'fixed' or 'random'")
+  expect_error(covariate_model(connected, t_df, "Continuous", "MD", 50, "random", "not_shared", "Continuous", "Placebo", 999), "regressor_type must be")
+  expect_error(covariate_model(connected, t_df, "Continuous", "MD", 50, "random", "shared", "invalid_outcome", "Placebo", 999), "covariate_type must be 'Binary' or 'Continuous'")
+  expect_error(covariate_model(connected, t_df, "Continuous", "MD", 50, "random", "shared", "Continuous", "not_placebo", 999), "reference_treatment must be one of the treatments in treatment_df")
 
 })
 
@@ -221,7 +223,7 @@ test_that("{shinytest2} recording: e2e_covariate_model", {
   expect_is(result$mtcResults, "mtc.result")
   expect_is(result$mtcRelEffects, "mtc.result")
   expect_is(result$rel_eff_tbl, "mtc.relative.effect.table")
-  expect_is(result$covariate_value, "numeric")
+  expect_is(result$covariate_value, "integer")
   expect_is(result$reference_name, "character")
   expect_is(result$comparator_names, "character")
   expect_is(result$a, "character")

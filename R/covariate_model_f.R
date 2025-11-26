@@ -1,9 +1,10 @@
 #' @title covariate_model
 #' @description Fits a covariate regression model using `{gemtc}`
-#' @param cov_value numeric. The value at which to fit the model. Must be greater
+#' @param covariate_value numeric. The value at which to fit the model. Must be greater
 #' than or equal to the minimum value and less than or equal to the maximum
 #' value in `connected_data`
 #' @param regressor_type character. Type of regression coefficient, either `shared`, `unrelated`, or `exchangeable`
+#' @param covariate_type character. Whether the covariate values are `Continuous` or `Binary`
 #' @param covariate_model_output list. The output of the function. Default `NULL`.
 #' When supplied, only the output is recalculated for a given covariate value,
 #' rather than refitting the model.
@@ -20,18 +21,31 @@
 #'  \item{dic}{data frame of model fit statistics}
 #'  \item{cov_value_sentence}{text output stating the value for which the covariate has been set to for producing output}
 #'  \item{slopes}{named list of slopes for the regression equations (unstandardised - equal to one 'increment')}
-#'  \item{intercepts}{named list of intercepts for the regression equations at cov_value}
+#'  \item{intercepts}{named list of intercepts for the regression equations at covariate_value}
 #'  \item{outcome}{The outcome type for the analysis eg. "MD" or "OR"}
 #'  \item{mtcNetwork}{The network object from GEMTC}
 #'  \item{model}{The type of linear model, either "fixed" or "random"}
 #'  \item{covariate_min}{Vector of minimum covariate values directly contributing to the regression}
 #'  \item{covariate_max}{Vector of maximum covariate values directly contributing to the regression}
 #' @export
-covariate_model <- function(connected_data, treatment_df, outcome, outcome_measure, cov_value, model_type, regressor_type, reference_treatment, seed, covariate_model_output = NULL, async = FALSE){
+covariate_model <- function(connected_data,
+                            treatment_df,
+                            outcome,
+                            outcome_measure,
+                            covariate_value,
+                            model_type,
+                            regressor_type,
+                            covariate_type,
+                            reference_treatment,
+                            seed,
+                            covariate_model_output = NULL,
+                            async = FALSE){
 
   if (!async){ # only an issue if run outside the app
-    if (check_param_classes(c("connected_data", "treatment_df", "outcome", "outcome_measure", "cov_value", "model_type",  "reference_treatment", "regressor_type", "seed"),
-                            c("data.frame", "data.frame", "character", "character", "numeric", "character", "character", "character", "numeric"), NULL)){
+    if (check_param_classes(c("connected_data", "treatment_df", "outcome", "outcome_measure", "covariate_value",
+                              "model_type",  "reference_treatment", "regressor_type", "covariate_type", "seed"),
+                            c("data.frame", "data.frame", "character", "character", "numeric",
+                              "character", "character", "character", "character", "numeric"), NULL)){
       return()
     }
   }
@@ -44,6 +58,10 @@ covariate_model <- function(connected_data, treatment_df, outcome, outcome_measu
     return(async |> asyncLog(type = "error", "outcome must be 'Binary' or 'Continuous'"))
   }
 
+  if (!covariate_type %in% c("Binary", "Continuous")){
+    return(async |> asyncLog(type = "error", "covariate_type must be 'Binary' or 'Continuous'"))
+  }
+
   if (!model_type %in% c("fixed", "random")){
     return(async |> asyncLog(type = "error", "model_type must be 'fixed' or 'random'"))
   }
@@ -54,12 +72,12 @@ covariate_model <- function(connected_data, treatment_df, outcome, outcome_measu
 
   covariate <- FindCovariateNames(connected_data)
 
-  if (cov_value < min(connected_data[[covariate]], na.rm = TRUE)){
-    return(async |> asyncLog(type = "error", "cov_value must not be lower than the minimum covariate value in connected_data"))
+  if (covariate_value < min(connected_data[[covariate]], na.rm = TRUE)){
+    return(async |> asyncLog(type = "error", "covariate_value must not be lower than the minimum covariate value in connected_data"))
   }
 
-  if (cov_value > max(connected_data[[covariate]], na.rm = TRUE)){
-    return(async |> asyncLog(type = "error", "cov_value must not be higher than the maximum covariate value in connected_data"))
+  if (covariate_value > max(connected_data[[covariate]], na.rm = TRUE)){
+    return(async |> asyncLog(type = "error", "covariate_value must not be higher than the maximum covariate value in connected_data"))
   }
 
   if (!regressor_type %in% c("shared", "unrelated", "exchangeable")){
@@ -74,12 +92,36 @@ covariate_model <- function(connected_data, treatment_df, outcome, outcome_measu
 
   # only run these parts if it hasn't run before, or if the regressor_type has changed
   if (is.null(covariate_model_output) || covariate_model_output$mtcResults$model$regressor$coefficient != regressor_type){
-    prepped_data <- PrepDataGemtc(connected_data, treatment_df, outcome, covariate, cov_friendly)
-    gemtc_model <- CreateGemtcModel(prepped_data, model_type, outcome_measure, regressor_type, reference_treatment, seed)
+    prepped_data <- PrepDataGemtc(connected_data,
+                                  treatment_df,
+                                  outcome,
+                                  covariate,
+                                  cov_friendly)
+
+    gemtc_model <- CreateGemtcModel(prepped_data,
+                                    model_type,
+                                    outcome_measure,
+                                    regressor_type,
+                                    reference_treatment,
+                                    seed)
+
     model_output <- suppress_jags_output(gemtc::mtc.run(gemtc_model))
-    model_info <- CovariateModelOutput(connected_data, treatment_df, model_output, covariate, cov_value, outcome_measure)
+
+    model_info <- CovariateModelOutput(connected_data,
+                                       treatment_df,
+                                       model_output,
+                                       covariate,
+                                       covariate_value,
+                                       outcome_measure,
+                                       covariate_type)
   } else {
-    model_info <- CovariateModelOutput(connected_data, treatment_df, covariate_model_output$mtcResults, covariate, cov_value, outcome_measure)
+    model_info <- CovariateModelOutput(connected_data,
+                                       treatment_df,
+                                       covariate_model_output$mtcResults,
+                                       covariate,
+                                       covariate_value,
+                                       outcome_measure,
+                                       covariate_type)
   }
 
   class(model_info) <- c("bayes_model", "covariate_model")
@@ -188,8 +230,9 @@ CreateGemtcModel <- function(data, model_type, outcome_measure, regressor_type, 
 #' @param treatment_df Data frame containing treatment IDs (Number) and names (Label)
 #' @param model Completed model object after running RunCovariateRegression()
 #' @param covariate_title Covariate name as per uploaded data
-#' @param cov_value Value of covariate for which to give output (default value the mean of study covariates)
+#' @param covariate_value Value of covariate for which to give output (default value the mean of study covariates)
 #' @param outcome_measure The outcome measure for the analysis: One of: "OR", "RR", "MD"
+#' @param covariate_type character. Whether the covariate values are `Continuous` or `Binary`
 #' @return List of gemtc related output:
 #'  mtcResults = model object itself carried through (needed to match existing code)
 #'  mtcRelEffects = data relating to presenting relative effects;
@@ -202,32 +245,37 @@ CreateGemtcModel <- function(data, model_type, outcome_measure, regressor_type, 
 #'  dic = data frame of model fit statistics
 #'  cov_value_sentence = text output stating the value for which the covariate has been set to for producing output
 #'  slopes = named list of slopes for the regression equations (unstandardised - equal to one 'increment')
-#'  intercepts = named list of intercepts for the regression equations at cov_value
+#'  intercepts = named list of intercepts for the regression equations at covariate_value
 #'  outcome = The outcome type for the analysis eg. "MD" or "OR"
 #'  mtcNetwork = The network object from GEMTC
 #'  model = The type of linear model, either "fixed" or "random"
 #'  covariate_min = Vector of minimum covariate values directly contributing to the regression.
 #'  covariate_max = Vector of maximum covariate values directly contributing to the regression.
-CovariateModelOutput <- function(connected_data, treatment_df, model, covariate_title, cov_value, outcome_measure) {
+CovariateModelOutput <- function(connected_data, treatment_df, model, covariate_title, covariate_value, outcome_measure, covariate_type) {
 
   model_levels = levels(model$model$data$reg.control)
   reference_name <- model_levels[model_levels %in% model$model$data$reg.control]
   comparator_names <- model_levels[!model_levels %in% model$model$data$reg.control]
 
+  # If the covariate type has been selected as continuous and gemtc has inferred it as binary, overwrite it
+  if (covariate_type == "Continuous" & model$model$regressor$type == "binary") {
+    model$model$regressor$type <- "continuous"
+  }
+
   # Create text for random/fixed effect
   model_text <- paste(model$model$linearModel, "effect", sep = " ")
 
   # Relative Effects raw data
-  rel_eff <- gemtc::relative.effect(model, as.character(model$model$regressor$control), covariate = cov_value)
+  rel_eff <- gemtc::relative.effect(model, as.character(model$model$regressor$control), covariate = covariate_value)
 
   # Relative Effects table of all comparisons
-  rel_eff_tbl <- gemtc::relative.effect.table(model, covariate = cov_value)
+  rel_eff_tbl <- gemtc::relative.effect.table(model, covariate = covariate_value)
 
   # Table of Model fit stats
   fit_stats <- as.data.frame(summary(model)$DIC)
 
   # Summary sentence of where covariate value has been set for results
-  cov_value_sentence <- paste0("Value for covariate ", model$model$regressor$variable, " set at ", cov_value)
+  cov_value_sentence <- paste0("Value for covariate ", model$model$regressor$variable, " set at ", covariate_value)
 
   # Obtain slope(s)
   slope_indices <- grep(ifelse(model$model$regressor$coefficient == "shared", "^B$", "^beta\\[[0-9]+\\]$"), model$model$monitors$enabled)
@@ -282,7 +330,7 @@ CovariateModelOutput <- function(connected_data, treatment_df, model, covariate_
       mtcResults = model,
       mtcRelEffects = rel_eff,
       rel_eff_tbl = rel_eff_tbl,
-      covariate_value = cov_value,
+      covariate_value = covariate_value,
       reference_name = reference_name,
       comparator_names = comparator_names,
       a = model_text,

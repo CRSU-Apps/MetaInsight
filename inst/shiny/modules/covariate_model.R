@@ -110,6 +110,7 @@ covariate_model_module_server <- function(id, common, parent_session) {
                                           input$covariate_value,
                                           common$model_type,
                                           input$regressor,
+                                          common$covariate_type,
                                           common$reference_treatment_all,
                                           common$seed,
                                           common$covariate_model,

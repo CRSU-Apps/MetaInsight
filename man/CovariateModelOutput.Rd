@@ -9,8 +9,9 @@ CovariateModelOutput(
   treatment_df,
   model,
   covariate_title,
-  cov_value,
-  outcome_measure
+  covariate_value,
+  outcome_measure,
+  covariate_type
 )
 }
 \arguments{
@@ -22,9 +23,11 @@ CovariateModelOutput(
 
 \item{covariate_title}{Covariate name as per uploaded data}
 
-\item{cov_value}{Value of covariate for which to give output (default value the mean of study covariates)}
+\item{covariate_value}{Value of covariate for which to give output (default value the mean of study covariates)}
 
 \item{outcome_measure}{The outcome measure for the analysis: One of: "OR", "RR", "MD"}
+
+\item{covariate_type}{character. Whether the covariate values are \code{Continuous} or \code{Binary}}
 }
 \value{
 List of gemtc related output:
@@ -39,7 +42,7 @@ sumresults = summary output of relative effects
 dic = data frame of model fit statistics
 cov_value_sentence = text output stating the value for which the covariate has been set to for producing output
 slopes = named list of slopes for the regression equations (unstandardised - equal to one 'increment')
-intercepts = named list of intercepts for the regression equations at cov_value
+intercepts = named list of intercepts for the regression equations at covariate_value
 outcome = The outcome type for the analysis eg. "MD" or "OR"
 mtcNetwork = The network object from GEMTC
 model = The type of linear model, either "fixed" or "random"
