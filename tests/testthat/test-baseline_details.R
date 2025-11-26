@@ -34,25 +34,40 @@ test_that("{shinytest2} recording: e2e_baseline_details", {
   app$click("baseline_details-run")
 
   app$wait_for_idle()
-  app$wait_for_value(output = "baseline_details-baseline-mcmc")
-  app$wait_for_value(output = "baseline_details-baseline-priors")
+  mcmc <- app$wait_for_value(output = "baseline_details-baseline-mcmc")
+  expect_match(mcmc, "<table")
+  priors <- app$wait_for_value(output = "baseline_details-baseline-priors")
+  expect_match(priors, "<table")
+  mcmc_dl <- app$get_download("baseline_details-baseline-download_mcmc")
+  expect_equal(nrow(read.csv(mcmc_dl)), 4)
+  priors_dl <- app$get_download("baseline_details-baseline-download_priors")
+  expect_equal(nrow(read.csv(priors_dl)), 4)
+
+  app$set_inputs("baseline_details-baseline-tabs" = "sims")
+  for (n in 1:4){
+    sim <- app$get_download(glue::glue("baseline_details-baseline-download_data_{n}"))
+    expect_gt(nrow(read.csv(sim)), 10)
+  }
+
   app$set_inputs("baseline_details-baseline-tabs" = "code")
-  app$wait_for_value(output = "baseline_details-baseline-code")
+  code <- app$wait_for_value(output = "baseline_details-baseline-code")
+  expect_match(code, "model")
+  code_dl <- app$get_download("baseline_details-baseline-download_code")
+  # this gives a warning about an incomplete line, but opens fine
+  code_dl_lines <- suppressWarnings(readLines(code_dl))
+  expect_gt(length(code_dl_lines), 10)
+
   app$set_inputs("baseline_details-baseline-tabs" = "inits")
-  app$wait_for_value(output = "baseline_details-baseline-inits")
+  inits <- app$wait_for_value(output = "baseline_details-baseline-inits")
+  expect_match(inits, "Wichmann-Hill")
+  for (n in 1:4){
+    init <- app$get_download(glue::glue("baseline_details-baseline-download_inits_{n}"))
+    expect_equal(length(readLines(init)), 8)
+  }
+
   app$set_inputs("baseline_details-baseline-tabs" = "dev")
   app$wait_for_value(output = "baseline_details-baseline-dev_mtc")
-
-  mcmc <- app$get_value(output = "baseline_details-baseline-mcmc")
-  priors <- app$get_value(output = "baseline_details-baseline-priors")
-  code <- app$get_value(output = "baseline_details-baseline-code")
-  inits <- app$get_value(output = "baseline_details-baseline-inits")
-  dev_mtc <- app$get_value(output = "baseline_details-baseline-dev_mtc")
-
-  expect_match(mcmc, "<table")
-  expect_match(priors, "<table")
-  expect_match(code, "model")
-  expect_match(inits, "Wichmann-Hill")
+  dev_mtc <- app$wait_for_value(output = "baseline_details-baseline-dev_mtc")
   expect_match(dev_mtc, "dev\\.ab")
 
   app$stop()

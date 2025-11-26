@@ -7,9 +7,33 @@ excluded_data_con <- setup_exclude(defined_data_con$non_covariate_data_all, defi
 loaded_data_bin <- setup_load(outcome = "Binary")
 defined_data_bin <- setup_configure(loaded_data_bin$data, loaded_data_bin$treatment_df, "Binary", "OR", "Placebo")
 
-fitted_bayes_model <- bayes_model(defined_data_con$main_connected_data, loaded_data_con$treatment_df, "Continuous", "MD", "random", "Placebo", 123)
-fitted_baseline_model <- baseline_model(defined_data_con$main_connected_data, loaded_data_con$treatment_df, "Continuous", "MD", "Placebo", "random", "shared", 123)
-fitted_covariate_model <- covariate_model(defined_data_con$main_connected_data, defined_data_con$treatment_df, "Continuous", "MD", 50, "random", "shared", "Placebo", 123)
+fitted_bayes_model <- bayes_model(defined_data_con$main_connected_data,
+                                  loaded_data_con$treatment_df,
+                                  "Continuous",
+                                  "MD",
+                                  "random",
+                                  "Placebo",
+                                  123)
+
+fitted_baseline_model <- baseline_model(defined_data_con$main_connected_data,
+                                        loaded_data_con$treatment_df,
+                                        "Continuous",
+                                        "MD",
+                                        "Placebo",
+                                        "random",
+                                        "shared",
+                                        123)
+
+fitted_covariate_model <- covariate_model(defined_data_con$main_connected_data,
+                                          defined_data_con$treatment_df,
+                                          "Continuous",
+                                          "MD",
+                                          50,
+                                          "random",
+                                          "shared",
+                                          "Continuous",
+                                          "Placebo",
+                                          123)
 
 # fit a Bayesian model and save it so it can be reloaded in other tests
 bayes_model_path <- "~/temprds/bayes.rds" #tempfile(fileext = ".rds")

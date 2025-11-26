@@ -8,6 +8,12 @@ bayes_details_submodule_server <- function(id, common, model, model_trigger, mod
 
   hide_and_show(module_id, show = FALSE)
 
+  # for file names
+  model_type <- switch(id,
+                       "all" = "Bayesian",
+                       "baseline" = "baseline_risk",
+                       "covariate" = "covariate")
+
   observeEvent(run(), {
     if (is.null(common[[model]])){
       common$logger |> writeLog(type = "error",
@@ -35,7 +41,7 @@ bayes_details_submodule_server <- function(id, common, model, model_trigger, mod
   outputOptions(output, "mcmc", suspendWhenHidden = FALSE)
 
   output$download_mcmc <- downloadHandler(
-    filename = "mcmc_characteristics.csv",
+    filename = glue::glue("MetaInsight_{model_type}_mcmc_characteristics.csv"),
     content = function(file) {
       write.csv(details()$mcmc, file, row.names = FALSE, col.names = FALSE)
     }
@@ -46,7 +52,7 @@ bayes_details_submodule_server <- function(id, common, model, model_trigger, mod
   }, colnames = FALSE)
 
   output$download_priors <- downloadHandler(
-    filename = "prior_distributions.csv",
+    filename = glue::glue("MetaInsight_{model_type}_prior_distributions.csv"),
     content = function(file) {
       write.csv(details()$priors, file, row.names = FALSE, col.names = FALSE)
     }
@@ -61,7 +67,7 @@ bayes_details_submodule_server <- function(id, common, model, model_trigger, mod
   })
 
   output$download_code <- downloadHandler(
-    filename = "MetaInsight_bayesian_model_code.txt",
+    filename = glue::glue("MetaInsight_{model_type}_model_code.txt"),
     content = function(file) {
       location <- ifelse(model == "baseline_model", "network", "model")
       cat(
@@ -86,18 +92,31 @@ bayes_details_submodule_server <- function(id, common, model, model_trigger, mod
   })
 
   create_chain_initial_data_download_handler <- function(index) {
-    filename <- paste0("MetaInsight_bayesian_initial_values_chain_", index, ".txt")
-
     downloadHandler(
-      filename = filename,
+      filename = glue::glue("MetaInsight_{model_type}_initial_values_chain_{index}.txt"),
       content = function(file) {
-        lapply(
-          common[[model]]$mtcResults$model$inits,
-          write,
-          file,
-          append = TRUE,
-          ncolumns = 1000
-        )
+        # this should be able to be more elegant, but I can't get it to work.
+        if (model == "baseline_model") {
+          lapply(
+            paste(names(common[[model]]$mtcResults$inits[[index]]),
+                  common[[model]]$mtcResults$inits[[index]],
+                  "\n"),
+            write,
+            file,
+            append = TRUE,
+            ncolumns = 1000
+          )
+        } else {
+          lapply(
+            paste(names(common[[model]]$mtcResults$model$inits[[index]]),
+                  common[[model]]$mtcResults$model$inits[[index]],
+                  "\n"),
+            write,
+            file,
+            append = TRUE,
+            ncolumns = 1000
+          )
+        }
       }
     )
   }
@@ -109,7 +128,7 @@ bayes_details_submodule_server <- function(id, common, model, model_trigger, mod
 
   create_chain_data_download_handler <- function(index) {
     downloadHandler(
-      filename = paste0("MetaInsight_bayesian_data_for_chain_", index, ".csv"),
+      filename = glue::glue("MetaInsight_{model_type}_data_for_chain_{index}.csv"),
       content = function(file) {
         data <- as.data.frame(common[[model]]$mtcResults$samples[[index]])
         write.csv(data, file)
@@ -117,10 +136,10 @@ bayes_details_submodule_server <- function(id, common, model, model_trigger, mod
     )
   }
 
-  output$download_data1 <- create_chain_data_download_handler(1)
-  output$download_data2 <- create_chain_data_download_handler(2)
-  output$download_data3 <- create_chain_data_download_handler(3)
-  output$download_data4 <- create_chain_data_download_handler(4)
+  output$download_data_1 <- create_chain_data_download_handler(1)
+  output$download_data_2 <- create_chain_data_download_handler(2)
+  output$download_data_3 <- create_chain_data_download_handler(3)
+  output$download_data_4 <- create_chain_data_download_handler(4)
 
   output$dev_mtc <- renderPrint({
     watch(deviance_trigger)
@@ -238,10 +257,10 @@ bayes_details_submodule_result <- function(id, class) {
             value = "sims",
             title = "Download simulations",
             p(tags$strong("Download simulated data")),
-            downloadButton(ns('download_data1'), "Download data from chain 1"),
-            downloadButton(ns('download_data2'), "Download data from chain 2"),
-            downloadButton(ns('download_data3'), "Download data from chain 3"),
-            downloadButton(ns('download_data4'), "Download data from chain 4")
+            downloadButton(ns('download_data_1'), "Download data from chain 1"),
+            downloadButton(ns('download_data_2'), "Download data from chain 2"),
+            downloadButton(ns('download_data_3'), "Download data from chain 3"),
+            downloadButton(ns('download_data_4'), "Download data from chain 4")
           ),
           tabPanel(
             value = "dev",
