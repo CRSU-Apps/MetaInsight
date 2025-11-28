@@ -2,10 +2,13 @@ setup_reload_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
     h4("Load session"),
-    includeMarkdown("Rmd/text_loadsesh.Rmd"),
+    p("You can stop and save your work and resume at a later time.
+    Clicking the Save button in the top navigation bar saves your progress as an RDS file (.rds).
+    This file can be uploaded here, allowing you to continue where you left off."),
+    # used to locate in intro
     div(id = "reload_inputs",
       fileInput(ns("load_session"), "", accept = ".rds"),
-      actionButton(ns("goLoad_session"), "Load RDS")
+      actionButton(ns("goLoad_session"), "Load session", width = "100%" )
     )
   )
 }
@@ -14,7 +17,7 @@ setup_reload_module_server <- function(id, common, modules, parent_session) {
   moduleServer(id, function(input, output, session) {
 
     observe({
-      shinyjs::toggleState("goLoad_session", !is.null(input$load_session$datapath))
+      shinyjs::toggle("goLoad_session", !is.null(input$load_session$datapath))
     })
 
     load_session <- function(temp){
