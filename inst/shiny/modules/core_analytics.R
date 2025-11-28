@@ -95,7 +95,7 @@ AddAnalytics <- function(google_analytics_id) {
         tags$script(
           # Substitute in the GTag ID
           stringr::str_replace_all(
-            readr::read_file(file.path("resources", "js", "google_analytics.js")),
+            readr::read_file(system.file("shiny", "www", "js", "google_analytics.js", package = "metainsight")),
             "<<GOOGLE_ANALYTICS_ID>>",
             google_analytics_id
           )

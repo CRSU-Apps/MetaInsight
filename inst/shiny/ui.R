@@ -17,8 +17,8 @@ tagList(
         functions = c("scrollLogger", "disableModule", "enableModule", "runOnEnter")
       ),
       tags$link(href = "css/styles.css", rel = "stylesheet"),
-      includeHTML(file.path(resourcePath, "favicon", "favicon.html"))
-      # core_analytics_module_ui("core_analytics")
+      includeHTML(file.path(resourcePath, "favicon", "favicon.html")),
+      core_analytics_module_ui("core_analytics")
       ),
     title = img(src = "logo.png", height = "40"),
     window_title = "MetaInsight",
