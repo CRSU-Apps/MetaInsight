@@ -9,11 +9,13 @@ Developers are listed in alphabetical order:
 
 <a href="https://github.com/nabury" target="_blank">Naomi Bradbury</a> is a Research Associate in the Biostatistics Research Group and developed the initial version of *MetaInsight*.
 
+<a href="https://github.com/nabury" target="_blank">Ryan Field</a> is a Research Software Engineer at the University of Glasgow.
+
 <a href="https://github.com/tommorris168" target="_blank">Tom Morris</a> is a Research Associate in the Biostatistics Research Group.
 
 <a href="https://github.com/BalancedmonkeY" target="_blank">Clareece Nevill</a> is a Research Associate in the Biostatistics Research Group, where she spends half of her time as part of an NIHR Evidence Synthesis Group and the other half on my PhD. She developed the Ranking panel in the Bayesian analysis.
 
-<a href="https://github.com/JanionNevill" target="_blank">Janion Nevill</a> is a Research Software Engineer in the Biostatistics Research Group with significant experience writing desktop software in Java and Python. 
+<a href="https://github.com/JanionNevill" target="_blank">Janion Nevill</a> is a Research Software Engineer in the School of Medical Sciences, Public Health and Epidemiology at the University of Leicester. He has been responsible for introducing best practices to the development team, including modularising and testing code. He has also been involved in long-term maintenance and improvement to the app.
 
 Rhiannon Owen developed the initial version of *MetaInsight*.
 

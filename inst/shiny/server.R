@@ -7,12 +7,27 @@ function(input, output, session) {
   core_intro_module_server("core_intro")
 
   ########################## #
+  # ANALYTICS ####
+  ########################## #
+
+  core_analytics_module_server("core_analytics", reactive(input$cookies), "G-H3241DM66M", module)
+
+  ########################## #
+  # LOAD COMMON ####
+  ########################## #
+
+  source(system.file("shiny", "common.R", package = "metainsight"))
+  common <- common_class$new()
+
+  common$seed <- sample.int(n = 1000, size = 1)
+
+  ########################## #
   # LOGGING ####
   ########################## #
 
   initLogMsg <- function() {
     intro <- "***WELCOME TO METAINSIGHT***"
-    brk <- paste(rep("------", 14), collapse = "")
+    brk <- paste(rep("------", 13), collapse = "")
     expl <- "Please find messages for the user in this log window."
     logInit <- gsub(".{4}$", "", paste(intro, brk, expl, brk, "", sep = "<br>"))
     logInit
@@ -166,20 +181,11 @@ function(input, output, session) {
   setup_reload_module_server("setup_reload", common, modules, session)
 
   ################################
-  ### DEBUGGING ####
-  ################################
-
-  # options("gargoyle.talkative" = TRUE)
-
-  # output$debug <- renderPrint({
-  #   browser()
-  #   "debug"
-  # }) |> bindEvent(input$debug_button)
-
-  ################################
   ### EXPORT TEST VALUES ####
   ################################
-  exportTestValues(common = common,
+
+  # very ugly but only export the data
+  exportTestValues(common = as.list(common)[names(common)[!names(common) %in% c("clone", ".__enclos_env__", "logger", "reset", "tasks")]],
                    logger = common$logger())
 }
 

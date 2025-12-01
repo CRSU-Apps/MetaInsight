@@ -13,10 +13,10 @@ summary_network_module_ui <- function(id) {
       fluidRow(
         tags$label("Label size"),
         column(width = 6,
-               numericInput(ns("label_all"), label = "All studies", value = 1.2, step = 0.1)
+               numericInput(ns("label_all"), label = "All studies", value = 1, step = 0.1)
         ),
         column(width = 6,
-               numericInput(ns('label_sub'), label = "Selected studies excluded", value = 1.2, step = 0.1)
+               numericInput(ns('label_sub'), label = "Selected studies excluded", value = 1, step = 0.1)
         )
       ),
       download_button_pair(id)
@@ -27,42 +27,60 @@ summary_network_module_ui <- function(id) {
 summary_network_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
-    shinyjs::hide(selector = ".summary_network_div")
+    hide_and_show("summary_network")
 
     observeEvent(input$run, {
       # WARNING ####
       if (is.null(common$freq_sub)){
-        common$logger |> writeLog(type = "error", "Please define the data first in the Setup component")
+        common$logger |> writeLog(type = "error", go_to = "setup_configure",
+                                  "Please configure the analysis first in the Setup section")
         return()
       }
       # TRIGGER
       trigger("summary_network")
-      shinyjs::show(selector = ".summary_network_div")
       common$meta$summary_network$used <- TRUE
       common$meta$summary_network$label_all <- as.numeric(input$label_all)
       common$meta$summary_network$label_sub <- as.numeric(input$label_sub)
       common$meta$summary_network$style <- input$style
     })
 
-    output$plot_all <- renderPlot({
+
+    plot_all <- reactive({
       req(watch("summary_network") > 0)
+      shinyjs::show(selector = ".summary_network_div")
       summary_network(common$freq_all,
                       common$bugsnet_all,
                       input$style,
                       as.numeric(input$label_all),
+                      "Network plot of all studies",
                       common$logger)
-      title("Network plot of all studies")
     })
 
-    output$plot_sub <- renderPlot({
+    plot_sub <- reactive({
       watch("setup_exclude")
       req(watch("summary_network") > 0)
       summary_network(common$freq_sub,
                       common$bugsnet_sub,
                       input$style,
                       as.numeric(input$label_sub),
+                      "Network plot with selected \n studies excluded",
                       common$logger)
-      title("Network plot with selected studies excluded")
+    })
+
+    output$plot_all <- renderUI({
+      req(plot_all())
+      div(class = "svg_container",
+        HTML(plot_all()$svg)
+      )
+    })
+
+    outputOptions(output, "plot_all", suspendWhenHidden = FALSE)
+
+    output$plot_sub <- renderUI({
+      req(plot_sub())
+      div(class = "svg_container",
+          HTML(plot_sub()$svg)
+      )
     })
 
     netconnect_all <- reactive({
@@ -88,16 +106,10 @@ summary_network_module_server <- function(id, common, parent_session) {
         paste0("MetaInsight_network_plot_all.", common$download_format)
       },
       content = function(file) {
-        draw_network <- function() {
-          summary_network(common$freq_all, common$bugsnet_all, input$style, input$label_all, common$logger)
-          title("Network plot of all studies")
-        }
-        write_plot(
+        write_svg_plot(
           file,
           common$download_format,
-          draw_network,
-          height = 6,
-          width = 9
+          plot_all()
         )
       }
     )
@@ -107,16 +119,10 @@ summary_network_module_server <- function(id, common, parent_session) {
         paste0("MetaInsight_network_plot_sub.", common$download_format)
       },
       content = function(file) {
-        draw_network <- function() {
-          summary_network(common$freq_sub, common$bugsnet_sub, input$style, input$label_sub, common$logger)
-          title("Network plot with selected studies excluded")
-        }
-        write_plot(
+        write_svg_plot(
           file,
           common$download_format,
-          draw_network,
-          height = 6,
-          width = 9
+          plot_sub()
         )
       }
     )
@@ -159,10 +165,10 @@ summary_network_module_result <- function(id) {
         h4("The size of the nodes and thickness of edges represent the number of studies that examined a treatment and compared two given treatments respectively.")
       ),
       column(width = 6,
-             plotOutput(ns("plot_all"))
+             uiOutput(ns("plot_all"))
       ),
       column(width = 6,
-             plotOutput(ns("plot_sub"))
+             uiOutput(ns("plot_sub"))
       ),
       div(style = "display: flex; justify-content: center; padding-top: 50px", tableOutput(ns("table")))
     )

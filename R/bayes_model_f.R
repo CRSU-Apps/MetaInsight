@@ -1,28 +1,28 @@
 #' Run Bayesian models
 #'
-#' @param connected_data dataframe. Input data set created by `setup_configure()` or `setup_exclude`
-#' @param treatment_df Data frame containing the treatment ID ('Number') and the treatment name ('Label').
-#' @param outcome "Continuous" or "Binary".
-#' @param outcome_measure "MD", "OR" or "RR".
-#' @param model_type "fixed" or "random".
-#' @param reference_treatment Reference treatment
-#' @param async Whether or not the function is being used asynchronously. Default `FALSE`
-#' @return List:
-#'  - 'mtcResults' = Output from gemtc::mtc.run
-#'  - 'mtcRelEffects' = Output from gemtc::relative.effect
-#'  - 'rel_eff_tbl = Output from gemtc::relative.effect.table
-#'  - 'sumresults' = summary(mtcRelEffects)
-#'  - 'mtcNetwork' = Output from gemtc::mtc.network
-#'  - 'dic' = Data frame containing the statistics 'Dbar', 'pD', 'DIC', and 'data points'
+#' @inheritParams common_params
+#' @return List containing:
+#'  \item{mtcResults}{mtc.result. Output from `gemtc::mtc.run()`}
+#'  \item{mtcRelEffects}{mtc.result. Output from `gemtc::relative.effect()`}
+#'  \item{rel_eff_tbl}{mtc.relative.effect.table. Output from `gemtc::relative.effect.table()`}
+#'  \item{sumresults}{summary.mtc.result. Output from `summary(mtcRelEffects)`}
+#'  \item{mtcNetwork}{mtc.network. Output from `gemtc::mtc.network()`}
+#'  \item{dic}{dataframe. Containing the statistics 'Dbar', 'pD', 'DIC', and 'data points'}
+#'  \item{outcome_measure}{character. The input `outcome_measure`}
+#'  \item{model_type}{dataframe. The input `model_type`}
 #' @export
 
-bayes_model <- function(connected_data, treatment_df, outcome, outcome_measure, model_type, reference_treatment, async = FALSE){
+bayes_model <- function(connected_data, treatment_df, outcome, outcome_measure, model_type, reference_treatment, seed, async = FALSE){
 
   if (!async){ # only an issue if run outside the app
-    if (check_param_classes(c("connected_data", "treatment_df", "outcome", "outcome_measure", "model_type",  "reference_treatment"),
-                            c("data.frame", "data.frame", "character", "character", "character", "character"), NULL)){
+    if (check_param_classes(c("connected_data", "treatment_df", "outcome", "outcome_measure", "model_type",  "reference_treatment", "seed"),
+                            c("data.frame", "data.frame", "character", "character", "character", "character", "numeric"), NULL)){
       return()
     }
+  }
+
+  if (!outcome %in% c("Binary", "Continuous")){
+    return(async |> asyncLog(type = "error", "outcome must be either Binary or Continuous"))
   }
 
   if (!model_type %in% c("fixed", "random")){
@@ -32,6 +32,14 @@ bayes_model <- function(connected_data, treatment_df, outcome, outcome_measure, 
   if (!outcome_measure %in% c("OR", "RR", "MD")){
     return(async |> asyncLog(type = "error", "outcome_measure must be 'OR', 'RR' or 'MD'"))
   }
+
+  if (!reference_treatment %in% treatment_df$Label){
+    return(async |> asyncLog(type = "error", "reference_treatment must be one of the treatments in treatment_df"))
+  }
+
+  # use same RNG inside and outside of mirai
+  RNGkind("L'Ecuyer-CMRG")
+  set.seed(seed)
 
   longsort <- dataform.df(connected_data, treatment_df, outcome)
 
@@ -67,8 +75,17 @@ bayes_model <- function(connected_data, treatment_df, outcome, outcome_measure, 
     dic = TRUE
   )
 
+  # Settings for JAGS seeds and generator types for reproducible results (code taken from mtc.model manual)
+  seeds <- sample.int(4, n = .Machine$integer.max) # 4 chains
+  mtcModel$inits <- mapply(c, mtcModel$inits, list(
+    list(.RNG.name = "base::Wichmann-Hill", .RNG.seed = seeds[1]),
+    list(.RNG.name = "base::Marsaglia-Multicarry", .RNG.seed = seeds[2]),
+    list(.RNG.name = "base::Super-Duper", .RNG.seed = seeds[3]),
+    list(.RNG.name = "base::Mersenne-Twister", .RNG.seed = seeds[4])),
+    SIMPLIFY = FALSE)
+
   # Run gemtc model object for analysis
-  mtcResults <- gemtc::mtc.run(mtcModel)
+  mtcResults <- suppress_jags_output(gemtc::mtc.run(mtcModel))
 
   mtcRelEffects <- gemtc::relative.effect(mtcResults, t1 = reference_treatment)  #Set reference treatment
   rel_eff_tbl <- gemtc::relative.effect.table(mtcResults)

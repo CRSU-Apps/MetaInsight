@@ -4,23 +4,33 @@
 \alias{summary_network}
 \title{Produce either a netgraph or netplot}
 \usage{
-summary_network(freq, bugsnet, style, label_size = 1, logger = NULL)
+summary_network(
+  freq,
+  bugsnet,
+  style,
+  label_size = 1,
+  title = "",
+  logger = NULL
+)
 }
 \arguments{
-\item{freq}{list. Created by `frequentist()`}
+\item{bugsnet}{dataframe. Created by \code{bugsnetdata()}}
 
-\item{bugsnet}{dataframe. Created by `bugsnetdata()`}
-
-\item{style}{character. The plot to produce, either `netgraph` or `netplot`}
+\item{style}{character. The plot to produce, either \code{netgraph} or \code{netplot}}
 
 \item{label_size}{numeric. The size of labels in the plots. Default of 1.}
 
+\item{title}{character. Title of plot. Default of no title.}
+
 \item{logger}{Stores all notification messages to be displayed in the Log
 Window. Insert the logger reactive list here for running in
-shiny, otherwise leave the default `NULL`}
+shiny, otherwise leave the default \code{NULL}}
 }
 \value{
-The plotting function
+List containing:
+\item{svg}{character. SVG code to produce the plot}
+\item{height}{numeric. Plot height in pixels}
+\item{width}{numeric. Plot width in pixels}
 }
 \description{
 Produce either a netgraph or netplot

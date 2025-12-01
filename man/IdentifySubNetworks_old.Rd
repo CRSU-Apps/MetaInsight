@@ -22,8 +22,10 @@ IdentifySubNetworks_old(
 }
 \value{
 List of subnetworks, where each subnetwork is a list containing:
-- "treatments" = The IDs of the treatments included in the given network
-- "studies" = The names of the studies included in the given subnetwork
+\itemize{
+\item "treatments" = The IDs of the treatments included in the given network
+\item "studies" = The names of the studies included in the given subnetwork
+}
 }
 \description{
 Identify all of the disconnected subnetworks contained in the data.

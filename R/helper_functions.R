@@ -29,6 +29,7 @@ spurious <- function(x) {
   markdown::html_format(x)
   mirai::call_mirai(x)
   quarto::is_using_quarto(x)
+  R6::is.R6Class(x)
   rintrojs::hintjs(x)
   rmarkdown::github_document(x)
   shinyWidgets::pickerInput(x)
@@ -36,13 +37,6 @@ spurious <- function(x) {
   shinyjs::disable(x)
   svglite::add_fonts(x)
   zip::deflate(x)
-
-  # to remove later on
-  bnma::contrast.network.data(x)
-  data.tree::Aggregate(a)
-  matrixcalc::commutation.matrix(x)
-  shinycssloaders::hidePageSpinner(x)
-  shinydashboard::box(x)
   return()
 }
 
@@ -55,9 +49,11 @@ spurious <- function(x) {
 #' @param logger The logger to write the text to. Can be NULL or a function
 #' @param ... Messages to write to the logger
 #' @param type One of "default", "info", "error", "warning"
+#' @param go_to character. The id of a module to navigate to when the modal is closed.
+#' Only used when `type = "error"`
 #' @keywords internal
 #' @export
-writeLog <- function(logger, ..., type = "default") {
+writeLog <- function(logger, ..., type = "default", go_to = NULL) {
   if (is.null(logger)) {
     if (type == "error") {
       stop(paste0(..., collapse = ""), call. = FALSE)
@@ -82,12 +78,25 @@ writeLog <- function(logger, ..., type = "default") {
       }
       pre <- paste0(icon("info", class = "log_info"), " ")
     } else if (type == "error") {
+
+        # navigate to selected module on close
+        callbackJS <- NULL
+        if (!is.null(go_to)) {
+          component <- stringr::str_split(go_to, "_")[[1]][1]
+          callbackJS <- paste0("function() {
+            document.querySelector('a[data-value=\"", component,"\"]').click();
+            document.querySelector('input[value=\"", go_to, "\"').click();
+          }")
+        }
+
       if (nchar(...) < 200){
         shinyalert::shinyalert(...,
-                               type = "error")
+                               type = "error",
+                               callbackJS = callbackJS)
       } else {
         shinyalert::shinyalert("Please, check Log window for more information ",
-                               type = "error")
+                               type = "error",
+                               callbackJS = callbackJS)
       }
       pre <- paste0(icon("xmark", class = "log_error"), " ")
     } else if (type == "warning") {
@@ -142,7 +151,7 @@ asyncLog <- function(async, ..., type = "default"){
 check_param_classes <- function(params, classes, logger){
   for (i in seq_along(params)) {
     if (!inherits(get(params[i], envir = parent.frame()), classes[i])) {
-      logger %>% writeLog(type = "error", paste0(params[i], " must be of class ", classes[i]))
+      logger |> writeLog(type = "error", paste0(params[i], " must be of class ", classes[i]))
       return(TRUE)
     }
   }
@@ -197,6 +206,16 @@ loading_spinner <- function(class) {
 
 
 ####################### #
+# ADD TOOLTIP #
+####################### #
+#' @keywords internal
+#' @export
+add_tooltip <- function(label, message){
+  span(label, tooltip(icon("circle-question"), message))
+}
+
+
+####################### #
 # CHANGING TABS #
 ####################### #
 
@@ -219,7 +238,6 @@ show_table <- function(parent_session){
   bslib::accordion_panel_open("collapse_table", TRUE, session = parent_session)
 }
 
-
 ####################### #
 # SUPPRESS JAGS OUTPUT #
 ####################### #
@@ -229,15 +247,12 @@ show_table <- function(parent_session){
 #' html reports by wrapping model functions
 #' @param expr The model function to be used
 #' @keywords internal
-#' @export
 suppress_jags_output <- function(expr) {
   null_device <- if (.Platform$OS.type == "windows") "NUL" else "/dev/null"
   sink(null_device)
   on.exit(sink())  # Ensure output is restored even if an error occurs
   force(expr)
 }
-
-
 
 ####################### #
 # PLOTTING #
@@ -265,13 +280,33 @@ write_plot <- function(file, type, renderFunction, height = NULL, width = NULL) 
   grDevices::dev.off()
 }
 
-#' Calculate the pixel height of a forest plot for a given number of treatments
+#' Write an svg plot to either a png, pdf or svg file
+#'
+#' @param file character. The file to which to write.
+#' @param type character. Type of file to which to write.
+#' @param svg list. Containing the svg string, width and height returned from `crop_svg()`
+#' @export
+write_svg_plot <- function(file, type, svg) {
+  if (type == "pdf") {
+    rsvg::rsvg_pdf(charToRaw(svg$svg), file, svg$width, svg$height)
+  }
+  if (type == "png") {
+    rsvg::rsvg_png(charToRaw(svg$svg), file, svg$width * 3, svg$height * 3)
+  }
+  if (type == "svg") {
+    writeLines(svg$svg, file)
+  }
+}
+
+#' Calculate the height in inches of a forest plot for a given number of treatments
 #'
 #' @param notrt The number of treatments in the plot
 #' @param title TRUE if the title is included in the plot
+#' @param annotation TRUE if an annotation is included in the plot
 #' @return The height of the plot in pixels
 #' @export
-forest_height_pixels <- function(notrt, title=FALSE, annotation = FALSE) {    # input is total number of treatments and whether title is included in plot
+forest_height <- function(notrt, title=FALSE, annotation = FALSE) {
+  # original calculations are pixel-based
   height <- 15 * (notrt - 1) + 60
 
   if (title) {
@@ -282,8 +317,23 @@ forest_height_pixels <- function(notrt, title=FALSE, annotation = FALSE) {    # 
     height <- height + 80
   }
 
-  return(height)
+  # return in inches at 72 dpi
+  return(height / 72)
 }
+
+
+#' Calculate the width in inches of a forest plot for a given label.
+#'
+#' @param n_chars The number of characters in the widest label.
+#' For frequentist plots this should be the longest treatment name.
+#' For Bayesian plots this should be 'Compared to {reference treatment}'
+#' @return The width of the plot in inches
+#' @export
+forest_width <- function(n_chars) {
+  5 + (n_chars / 10)
+}
+
+
 
 #' Create a pair of download buttons
 #'
@@ -300,17 +350,17 @@ download_button_pair <- function(id){
   )
 }
 
-#' Create text with the point estimate and 95\% CrI of between-trial SD of treatment effects.
+#' Create text with the point estimate and 95% CrI of between-trial SD of treatment effects.
 #'
-#' @param model Output created by bayes_model()
-#' @return Text with the point estimate and 95\% CrI of between-trial SD of treatment effects (all 0 if fixed effects)
+#' @param model Output created by `bayes_model()`
+#' @return Text with the point estimate and 95% CrI of between-trial SD of treatment effects (all 0 if fixed effects)
 #' @export
 CreateTauSentence <- function(model) {
   sumresults <- model$sumresults
   if (model$model_type == "random") {   #SD and its 2.5% and 97.5%
     sd_mean <- round(sumresults$summaries$statistics["sd.d", "Mean"], digits = 2)
     sd_lowCI <- round(sumresults$summaries$quantiles["sd.d", "2.5%"], digits = 2)
-    sd_highCI <- round(sumresults$summaries$quantiles["sd.d", "97.5%"], digits=2)
+    sd_highCI <- round(sumresults$summaries$quantiles["sd.d", "97.5%"], digits = 2)
   }   else {
     sd_mean = 0
     sd_lowCI = 0
@@ -318,19 +368,190 @@ CreateTauSentence <- function(model) {
   }
   if (model$model_type=="random") {
     if (model$outcome=="OR") {
-      paste("Between-study standard deviation (log-odds scale):", sd_mean, ".\n 95% credible interval:",sd_lowCI,", ", sd_highCI, ".")
+      paste("Between-study standard deviation (log-odds scale):", sd_mean, "\n 95% credible interval:", sd_lowCI, ",", sd_highCI)
     } else if (model$outcome=="RR") {
-      paste ("Between-study standard deviation (log probability scale):", sd_mean, ".\n 95% credible interval:",sd_lowCI,", ", sd_highCI, ".")
+      paste("Between-study standard deviation (log probability scale):", sd_mean, "\n 95% credible interval:", sd_lowCI, ",", sd_highCI)
     } else {
-      paste ("Between-study standard deviation:", sd_mean, ".\n 95% credible interval:",sd_lowCI,", ", sd_highCI, ".")
+      paste("Between-study standard deviation:", sd_mean, "\n 95% credible interval:", sd_lowCI, ",", sd_highCI)
     }
   } else{
     if (model$outcome=="OR") {
-      paste("Between-study standard deviation (log-odds scale) set at 0")
+      "Between-study standard deviation (log-odds scale) set at 0"
     } else if (model$outcome=="RR") {
-      paste("Between-study standard deviation (log probability scale) set at 0")
+      "Between-study standard deviation (log probability scale) set at 0"
     } else {
-      paste("Between-study standard deviation set at 0")
+      "Between-study standard deviation set at 0"
     }
   }
+}
+
+#' Crops an svg object, by rendering it, locating the non-white pixels and
+#' editing the svg viewBox property. The width and height are also returned
+#' to facilitate rendering to other formats.
+#'
+#' @param svg xml_document. Output from `svglite::xmlSVG()`
+#' @param margin numeric. The margin in pixels to leave around the edge
+#' of the plot content. Defaults to 10.
+#' @return List containing:
+#'  \item{svg}{character. The cropped svg}
+#'  \item{width}{numeric. The width of the viewBox in pixels}
+#'  \item{height}{numeric. The height of the viewBox in pixels}
+#' @export
+
+crop_svg <- function(svg, margin = 10){
+
+  pixel_data <- paste(svg, collapse = "\n") |>
+    magick::image_read_svg() |>
+    magick::image_data()
+
+  # Create a matrix of pixels containing content
+  is_content <- !(
+    # white (all RGB channels > 250)
+    (pixel_data[1,,] > 250 &
+       pixel_data[2,,] > 250 &
+       pixel_data[3,,] > 250)
+  )
+
+  # bodge to get around grey border pixels
+  is_content[, 1] <- FALSE
+  is_content[1, ] <- FALSE
+  is_content[nrow(is_content), ] <- FALSE
+  is_content[, ncol(is_content)] <- FALSE
+
+  content_pixels <- which(is_content, arr.ind = TRUE)
+
+  x_coords <- content_pixels[, 1]
+  y_coords <- content_pixels[, 2]
+
+  x_min <- min(x_coords)
+  x_max <- max(x_coords)
+  y_min <- min(y_coords)
+  y_max <- max(y_coords)
+
+  width <- x_max - x_min
+  height <- y_max - y_min
+
+  bbox <- list(
+    x = x_min - margin,
+    y = y_min - margin,
+    width = width + (margin * 2),
+    height = height + (margin * 2)
+  )
+
+  # update viewBox
+  svg_node <- xml2::xml_find_first(svg, "//svg")
+  xml2::xml_attr(svg_node, "viewBox") <- paste(bbox$x, bbox$y, bbox$width, bbox$height)
+
+  # fix the background element
+  total_width <- gsub("pt", "", xml2::xml_attr(svg_node, "width"))
+  total_height <- gsub("pt", "", xml2::xml_attr(svg_node, "height"))
+  rect_node <- xml2::xml_find_first(svg, "//rect[@width='100%']")
+  xml2::xml_attr(rect_node, "width") <- total_width
+  xml2::xml_attr(rect_node, "height") <- total_height
+
+  # set namespace
+  root <- xml2::xml_root(svg)
+  xml2::xml_set_attr(root, "xmlns", "http://www.w3.org/2000/svg")
+  xml2::xml_set_attr(root, "xmlns:xlink", "http://www.w3.org/1999/xlink")
+
+  list(
+    svg = paste(svg, collapse = "\n"),
+    width = bbox$width,
+    height = bbox$height)
+}
+
+####################### #
+# RESET DATA #
+####################### #
+
+#' @title reset_data
+#' @description For internal use. Clears the common structure of data and resets all plots etc.
+#' @keywords internal
+#' @param common The common data structure
+#' @export
+reset_data <- function(common, session){
+  modules <- names(common$meta)
+  # clear data
+  common$reset()
+  # blank outputs
+  for (module in modules){
+    trigger(module)
+    # reset triggers
+    session$userData[[module]](0)
+  }
+}
+
+#' @title run_all
+#' @description For internal use. Runs all modules for a given component, excluding the model and nodesplit modules.
+#' @keywords internal
+#' @param component character. The component to run all the modules of.
+#' @param logger common$logger
+#' @export
+run_all <- function(component, logger){
+
+  all_modules <- names(COMPONENT_MODULES[[component]])
+
+  # exclude model and nodesplit modules
+  if (component != "freq"){
+    modules <- all_modules[-which(all_modules %in% c(glue::glue("{component}_model"), glue::glue("{component}_nodesplit")))]
+  } else {
+    modules <- all_modules
+  }
+
+  # workaround for regression modules where the run id differs
+  # and append -run to module id to get run button ids
+  modules <- paste0(ifelse(
+    grepl("regression", modules),
+    paste0(modules, "-", gsub("_regression", "", modules)),
+    modules
+  ), "-run")
+
+  # click the run buttons
+  shinyjs::runjs(
+    paste(
+      sprintf("$('#%s').click();", modules),
+      collapse = "\n"
+    )
+  )
+
+  # message for logger
+  full_component <- names(COMPONENTS[COMPONENTS == component])
+
+  if (component %in% c("bayes", "baseline", "covariate")){
+    nodesplit_message <- " apart from the nodesplit module"
+  } else {
+    nodesplit_message <- ""
+  }
+
+  logger |> writeLog(type = "info",
+                     glue::glue("Running all {full_component} modules{nodesplit_message}. This might
+                                take several minutes and progress will appear in the logger."))
+
+  invisible()
+}
+
+
+#' @title hide_and_show
+#' @description For internal use. Hides content inside the <module_id>_div class
+#' when a module has not been run and shows it once `trigger(module_id)` has
+#' been called. The show option is `TRUE` by default but can be set to `FALSE`
+#' to manually control when the content is displayed e.g.  if it should
+#' be when an extendedtask completes instead of when the run button is
+#' pressed.
+#' @keywords internal
+#' @param module_id character. The module identifier.
+#' @param show logical. Whether to show the div when `trigger(module_id)` is
+#' called
+#' @export
+hide_and_show <- function(module_id, show = TRUE){
+  observe({
+    watch(module_id)
+    if (watch(module_id) == 0){
+      shinyjs::hide(selector = glue::glue(".{module_id}_div"))
+    } else {
+      if (show){
+        shinyjs::show(selector = glue::glue(".{module_id}_div"))
+      }
+    }
+  })
 }

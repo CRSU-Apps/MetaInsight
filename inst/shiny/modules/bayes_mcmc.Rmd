@@ -10,61 +10,63 @@ mcmc_sub <- bayes_mcmc(bayes_model_sub)
 
 ```{asis, echo = {{bayes_mcmc_knit}}, eval = {{bayes_mcmc_knit}}, include = {{bayes_mcmc_knit}}}
 ##### Gelman convergence assessment plots
-{r, fig.width = 9, fig.height = {{bayes_mcmc_height_250}}}
-```
-```{r, echo = {{bayes_mcmc_knit}}, include = {{bayes_mcmc_knit}}}
-par(mfrow = c(2, {{bayes_mcmc_n_rows}}))
-# this returns a list of functions, each of which generates a plot
-invisible(lapply(mcmc_all$gelman_plots, function(f) f()))
-```
-```{asis, echo = {{bayes_mcmc_knit}}, eval = {{bayes_mcmc_knit}}, include = {{bayes_mcmc_knit}}}
-##### Trace plots
-{r, fig.width = 9, fig.height = {{bayes_mcmc_height_200}}}
+{r, fig.align='center', fig.width = 9, fig.height = {{bayes_mcmc_height_250}}}
 ```
 ```{r, echo = {{bayes_mcmc_knit}}, include = {{bayes_mcmc_knit}}}
 cowplot::plot_grid(
-  plotlist = mcmc_all$trace_plots,
-  ncol = {{bayes_mcmc_n_rows}}
+  plotlist = gelman_plots(mcmc_all$gelman_data, mcmc_all$parameters),
+  ncol = 2
+)
+```
+```{asis, echo = {{bayes_mcmc_knit}}, eval = {{bayes_mcmc_knit}}, include = {{bayes_mcmc_knit}}}
+##### Trace plots
+{r, fig.align='center', fig.width = 9, fig.height = {{bayes_mcmc_height_200}}}
+```
+```{r, echo = {{bayes_mcmc_knit}}, include = {{bayes_mcmc_knit}}}
+cowplot::plot_grid(
+  plotlist = trace_plots(bayes_model_all$mtcResults, mcmc_all$parameters),
+  ncol = 2
 )
 ```
 ```{asis, echo = {{bayes_mcmc_knit}}, eval = {{bayes_mcmc_knit}}, include = {{bayes_mcmc_knit}}}
 ##### Posterior density plots
-{r, fig.width = 9, fig.height = {{bayes_mcmc_height_200}}}
+{r, fig.align='center', fig.width = 9, fig.height = {{bayes_mcmc_height_200}}}
 ```
 ```{r, echo = {{bayes_mcmc_knit}}, include = {{bayes_mcmc_knit}}}
 cowplot::plot_grid(
-  plotlist = mcmc_all$density_plots,
-  ncol = {{bayes_mcmc_n_rows}}
+  plotlist = density_plots(bayes_model_all$mtcResults, mcmc_all$parameters),
+  ncol = 2
 )
 ```
 
 ```{asis, echo = {{bayes_mcmc_knit}}, eval = {{bayes_mcmc_knit}}, include = {{bayes_mcmc_knit}}}
 #### Excluding selected studies
 ##### Gelman convergence assessment plots
-{r, fig.width = 9, fig.height = {{bayes_mcmc_height_250}}}
-```
-```{r, echo = {{bayes_mcmc_knit}}, include = {{bayes_mcmc_knit}}}
-par(mfrow = c(2, {{bayes_mcmc_n_rows}}))
-# this returns a list of functions, each of which generates a plot
-invisible(lapply(mcmc_all$gelman_plots, function(f) f()))
-```
-```{asis, echo = {{bayes_mcmc_knit}}, eval = {{bayes_mcmc_knit}}, include = {{bayes_mcmc_knit}}}
-##### Trace plots
-{r, fig.width = 9, fig.height = {{bayes_mcmc_height_200}}}
+{r, fig.align='center', fig.width = 9, fig.height = {{bayes_mcmc_height_250}}}
 ```
 ```{r, echo = {{bayes_mcmc_knit}}, include = {{bayes_mcmc_knit}}}
 cowplot::plot_grid(
-  plotlist = mcmc_all$trace_plots,
+  plotlist = gelman_plots(mcmc_sub$gelman_data, mcmc_sub$parameters),
+  ncol = 2
+)
+```
+```{asis, echo = {{bayes_mcmc_knit}}, eval = {{bayes_mcmc_knit}}, include = {{bayes_mcmc_knit}}}
+##### Trace plots
+{r, fig.align='center', fig.width = 9, fig.height = {{bayes_mcmc_height_200}}}
+```
+```{r, echo = {{bayes_mcmc_knit}}, include = {{bayes_mcmc_knit}}}
+cowplot::plot_grid(
+  plotlist = trace_plots(bayes_model_sub$mtcResults, mcmc_sub$parameters),
   ncol = 2
 )
 ```
 ```{asis, echo = {{bayes_mcmc_knit}}, eval = {{bayes_mcmc_knit}}, include = {{bayes_mcmc_knit}}}
 ##### Posterior density plots
-{r, fig.width = 9, fig.height = {{bayes_mcmc_height_200}}}
+{r, fig.align='center', fig.width = 9, fig.height = {{bayes_mcmc_height_200}}}
 ```
 ```{r, echo = {{bayes_mcmc_knit}}, include = {{bayes_mcmc_knit}}}
 cowplot::plot_grid(
-  plotlist = mcmc_all$density_plots,
+  plotlist = density_plots(bayes_model_sub$mtcResults, mcmc_sub$parameters),
   ncol = 2
 )
 ```

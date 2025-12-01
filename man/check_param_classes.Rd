@@ -15,7 +15,7 @@ check_param_classes(params, classes, logger)
 Window or returned as errors.}
 }
 \value{
-`TRUE` if any errors are found. `FALSE` if not
+\code{TRUE} if any errors are found. \code{FALSE} if not
 }
 \description{
 Utility function for checking classes of function parameters

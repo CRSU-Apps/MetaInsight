@@ -11,6 +11,7 @@ freq_forest(
   outcome_measure,
   xmin,
   xmax,
+  title,
   logger = NULL
 )
 }
@@ -19,22 +20,27 @@ freq_forest(
 
 \item{reference_treatment}{character. The reference treatment of the dataset}
 
-\item{model_type}{character. Type of model to fit, either `random` or `fixed`}
+\item{model_type}{character. Type of model to fit, either \code{random} or \code{fixed}}
 
 \item{outcome_measure}{character. Outcome measure of the dataset. Either
-`OR`, `RR` or `RD` when `outcome` is `Binary` or `MD` or `SMD` when
-`outcome` is `Continuous`}
+\code{OR}, \code{RR} or \code{RD} when \code{outcome} is \code{Binary} or \code{MD} or \code{SMD} when
+\code{outcome} is \code{Continuous}}
 
 \item{xmin}{numeric. Minimum x-axis limit.}
 
 \item{xmax}{numeric. Maximum x-axis limit.}
 
+\item{title}{character. Title for the plot.}
+
 \item{logger}{Stores all notification messages to be displayed in the Log
 Window. Insert the logger reactive list here for running in
-shiny, otherwise leave the default `NULL`}
+shiny, otherwise leave the default \code{NULL}}
 }
 \value{
-Forest plot created using metafor::forest().
+List containing:
+\item{svg}{character. SVG code to produce the plot}
+\item{height}{numeric. Plot height in pixels}
+\item{width}{numeric. Plot width in pixels}
 }
 \description{
 Produce a forest plot and annotation

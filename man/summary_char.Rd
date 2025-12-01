@@ -7,14 +7,14 @@
 summary_char(bugsnet_data, outcome, logger = NULL)
 }
 \arguments{
-\item{bugsnet_data}{dataframe. Dataframe produced by `bugsnetdata()`}
+\item{bugsnet_data}{dataframe. Dataframe produced by \code{bugsnetdata()}}
 
-\item{outcome}{character. Outcome type for the dataset. Either `Binary` or
-`Continuous`.}
+\item{outcome}{character. Outcome type for the dataset. Either \code{Binary} or
+\code{Continuous}.}
 
 \item{logger}{Stores all notification messages to be displayed in the Log
 Window. Insert the logger reactive list here for running in
-shiny, otherwise leave the default `NULL`}
+shiny, otherwise leave the default \code{NULL}}
 }
 \value{
 dataframe of characteristics

@@ -1,23 +1,20 @@
 #' Produce a forest plot and annotation
 #'
-#' @param freq list. NMA results created by freq_wrap().
-#' @param reference_treatment character. The reference treatment of the dataset
-#' @param model_type character. Type of model to fit, either `random` or `fixed`
-#' @param outcome_measure character. Outcome measure of the dataset. Either
-#' `OR`, `RR` or `RD` when `outcome` is `Binary` or `MD` or `SMD` when
-#' `outcome` is `Continuous`
 #' @param xmin numeric. Minimum x-axis limit.
 #' @param xmax numeric. Maximum x-axis limit.
-#' @param logger Stores all notification messages to be displayed in the Log
-#'   Window. Insert the logger reactive list here for running in
-#'   shiny, otherwise leave the default `NULL`
+#' @param title character. Title for the plot.
+#' @inheritParams common_params
 #'
-#' @return Forest plot created using metafor::forest().
+#' @return List containing:
+#'  \item{svg}{character. SVG code to produce the plot}
+#'  \item{height}{numeric. Plot height in pixels}
+#'  \item{width}{numeric. Plot width in pixels}
+#'
 #' @export
-freq_forest <- function(freq, reference_treatment, model_type, outcome_measure, xmin, xmax, logger = NULL) {
+freq_forest <- function(freq, reference_treatment, model_type, outcome_measure, xmin, xmax, title, logger = NULL) {
 
-  check_param_classes(c("freq", "reference_treatment", "model_type", "outcome_measure", "xmin", "xmax"),
-                      c("list", "character", "character", "character", "numeric", "numeric"), logger)
+  check_param_classes(c("freq", "reference_treatment", "model_type", "outcome_measure", "xmin", "xmax", "title"),
+                      c("list", "character", "character", "character", "numeric", "numeric", "character"), logger)
 
   if (!model_type %in% c("fixed", "random")){
     logger |> writeLog(type = "error", "model_type must be 'fixed' or 'random'")
@@ -29,22 +26,30 @@ freq_forest <- function(freq, reference_treatment, model_type, outcome_measure, 
     return()
   }
 
-  plot <- function(){meta::forest(freq$net1, reference.group = reference_treatment, pooled = model_type, xlim = c(xmin, xmax))}
-  annotation <- forest_annotation(freq, model_type, outcome_measure)
   n_treatments <- length(levels(freq$net1$data$treat1))
-  height_pixels <- forest_height_pixels(n_treatments, title = TRUE, annotation = TRUE)
+  annotation <- forest_annotation(freq, model_type, outcome_measure)
+  height = forest_height(n_treatments, title = TRUE, annotation = TRUE)
+  width = forest_width(max(nchar(freq$lstx)))
 
-  return(list(plot = plot,
-              annotation = annotation,
-              height_pixels = height_pixels
-              ))
+  svg <- svglite::xmlSVG({
+   meta::forest(freq$net1, reference.group = reference_treatment, pooled = model_type, xlim = c(xmin, xmax))
+   grid::grid.text(title, 0.5, grid::unit(height - 0.25, "inches"), gp=grid::gpar(cex=1.2, fontface = "bold"))
+   grid::grid.text(annotation, 0.5, grid::unit(height - 0.65, "inches"), gp=grid::gpar(cex=1))
+  },
+  height = height,
+  width = width,
+  web_fonts = list(
+    Arimo = "https://fonts.googleapis.com/css2?family=Arimo:wght@400;700&display=swap")
+  ) |> crop_svg()
+
+  return(svg)
 }
 
 
 #' Extract the minimum and maximum confidence intervals from the summary produced by netmeta
 #'
 #' @param freq list. NMA results created by freq_wrap().
-#' @param outcome. character. `Binary` or `Continuous`
+#' @param outcome character. `Binary` or `Continuous`
 #'
 #' @return List containing:
 #'  \item{xmin}{numeric. Minimum confidence interval}
@@ -84,9 +89,7 @@ extract_ci <- function(freq, outcome){
 
 #' Creates the text to be displayed underneath the forest plots, with between-study SD, number of studies and number of treatments.
 #'
-#' @param tau Between study standard deviation.
-#' @param k Number of studies.
-#' @param n Number of treatments.
+#' @param freq list. NMA results created by freq_wrap().
 #' @param model_type "fixed" or "random".
 #' @param outcome_measure "MD", "SMD", "OR", "RR", or "RD".
 #' @return Text as described above.

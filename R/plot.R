@@ -255,7 +255,7 @@ levplot <- function(model, package = "gemtc") {
 
 #' Creates a Gelman plot for a BNMA baseline-risk model.
 #'
-#' @param gelman_plot Output from coda::gelman.plot(bnma_model$samples[, parm]), where parm is a parameter from 'bnma_model'.
+#' @param gelman_plot Output from `coda::gelman.plot(bnma_model$samples[, parm])`, where parm is a parameter from 'bnma_model'.
 #' @param parameter The parameter from the previous argument, used as the title.
 #' @return Reproduces the Gelman plot mentioned in @param gelman_plot as a plot that can be put in a grid.
 BnmaGelmanPlot <- function(gelman_plot, parameter){
@@ -273,7 +273,7 @@ BnmaGelmanPlot <- function(gelman_plot, parameter){
 
 #' Creates Gelman plots for a BNMA baseline-risk model.
 #'
-#' @param gelman_plots List of outputs from coda::gelman.plot(bnma_model$samples[, parm]), where parm is a parameter from bnma_model.
+#' @param gelman_plots List of outputs from `coda::gelman.plot(bnma_model$samples[, parm])`, where parm is a parameter from bnma_model.
 #' @param parameters Vector of parameters mentioned in the previous argument.
 #' @return Plots the Gelman plots mentioned in @param gelman_plots.
 BnmaGelmanPlots <- function(gelman_plots, parameters){

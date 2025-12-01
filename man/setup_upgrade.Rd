@@ -13,7 +13,7 @@ setup_upgrade(data_path, treatments, logger = NULL)
 
 \item{logger}{Stores all notification messages to be displayed in the Log
 Window. Insert the logger reactive list here for running in
-shiny, otherwise leave the default `NULL`}
+shiny, otherwise leave the default \code{NULL}}
 }
 \value{
 Dataframe containing the upgraded data

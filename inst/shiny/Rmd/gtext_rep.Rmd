@@ -3,7 +3,7 @@ title: "Reproduce"
 output: html_document
 ---
 
-### **Component: Reproduce**
+### **Section: Reproduce**
 
 **ORIENTATION**
 

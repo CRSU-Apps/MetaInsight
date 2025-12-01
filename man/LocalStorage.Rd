@@ -4,7 +4,7 @@
 \alias{LocalStorage}
 \title{Local Storage}
 \description{
-Class for accessing the browser local storage from within a *Shiny* app.
+Class for accessing the browser local storage from within a \emph{Shiny} app.
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
@@ -39,7 +39,7 @@ Class for accessing the browser local storage from within a *Shiny* app.
 \if{html}{\out{<a id="method-Local Storage-new"></a>}}
 \if{latex}{\out{\hypertarget{method-Local Storage-new}{}}}
 \subsection{Method \code{new()}}{
-Create a new instance of this [R6][R6::R6Class] class.
+Create a new instance of this \link[R6:R6Class]{R6} class.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{LocalStorage$new()}\if{html}{\out{</div>}}
 }
@@ -57,10 +57,10 @@ Write a value to the browser local storage. This will overwrite the value if it 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{id}}{(`character(1)`)\cr
+\item{\code{id}}{(\code{character(1)})\cr
 Name of the value to store.}
 
-\item{\code{value}}{(`any`)\cr
+\item{\code{value}}{(\code{any})\cr
 Value to store.}
 }
 \if{html}{\out{</div>}}
@@ -78,7 +78,7 @@ Remove a value from the browser local storage.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{id}}{(`character(1)`)\cr
+\item{\code{id}}{(\code{character(1)})\cr
 Name of the value to remove}
 }
 \if{html}{\out{</div>}}
@@ -96,7 +96,7 @@ Retrieve a value from the browser local storage. This does not take a reactive d
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{id}}{(`character(1)`)\cr
+\item{\code{id}}{(\code{character(1)})\cr
 Name of the value to retrieve.}
 }
 \if{html}{\out{</div>}}

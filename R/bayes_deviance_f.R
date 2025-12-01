@@ -1,29 +1,66 @@
 #' Produce deviance plots
-#' @param model Bayesian model produced by bayes_model
-#' @param async Whether or not the function is being used asynchronously. Default `FALSE`
-#' @return list containing:
-#'  \item{deviance_mtc}{results from `gemtc::mtc.deviance()` for model$mtcResults}
-#'  \item{deviance_ume}{results from `gemtc::mtc.deviance()` for UME model}
-#'  \item{scat_plot}{plotly object}
-#'  \item{stem_plot}{plotly object}
-#'  \item{lev_plot}{plotly object}
+#' @param model Bayesian model produced by `bayes_model()` or `covariate_model()`
+#' @param seed numeric. Seed value to use for calculating UME model. Only required
+#' when `model` was produced by `bayes_model()`
+#' @inheritParams common_params
 #'
+#' @return A list containing different elements depending on the input model:
+#'
+#' When model was created by `bayes_model()` containing:
+#' \itemize{
+#' \item{deviance_mtc}{results from `gemtc::mtc.deviance()` for model$mtcResults}
+#' \item{deviance_ume}{results from `gemtc::mtc.deviance()` for UME model}
+#' \item{scat_plot}{plotly object}
+#' \item{stem_plot}{plotly object}
+#' \item{lev_plot}{plotly object}
+#' }
+#' When model was created by `covariate_model()` containing:
+#' \itemize{
+#' \item{deviance_mtc}{results from `gemtc::mtc.deviance()` for model$mtcResults}
+#' \item{stem_plot}{plotly object}
+#' \item{lev_plot}{plotly object}
+#' }
 #' @export
-bayes_deviance <- function(model, async = FALSE){
+bayes_deviance <- function(model, seed = NULL, async = FALSE){
 
   if (!inherits(model, "bayes_model")){
-    return(async |> asyncLog(type = "error", "model must be an object created by bayes_model()"))
+    return(async |> asyncLog(type = "error", "model must be an object created by bayes_model() or covariate_model()"))
   }
 
-  deviance <- gemtc::mtc.deviance(model$mtcResults)
-  scat <- scat_plot(model, deviance, model$model_type, model$outcome_measure)
+  deviance <- suppress_jags_output(gemtc::mtc.deviance(model$mtcResults))
+
+  # return these for covariate models
+  if(model$mtcResults$model$type == "regression"){
+    return(
+      list(
+        deviance_mtc = deviance,
+        stem_plot = stem_plot(deviance),
+        lev_plot = lev_plot(deviance)
+      )
+    )
+  }
+
+  # check a seed exists and produce the scatter plot for non-covariate models
+  if (is.null(seed) || !is.numeric(seed)){
+    return(async |> asyncLog(type = "error", "Please provide a numeric seed value"))
+  }
+
+  scat <- scat_plot(model, deviance, model$model_type, model$outcome_measure, seed)
 
   list(
     deviance_mtc = deviance,
     deviance_ume = scat$y,
     scat_plot = scat$p,
     stem_plot = stem_plot(deviance),
-    lev_plot = lev_plot(deviance))
+    lev_plot = lev_plot(deviance)
+  )
+}
+
+#' @rdname bayes_deviance
+#' @param ... Parameters passed to `bayes_deviance()`
+#' @export
+covariate_deviance <- function(...){
+  bayes_deviance(...)
 }
 
 #' UME scatter plot
@@ -31,7 +68,7 @@ bayes_deviance <- function(model, async = FALSE){
 #' @param deviance Output produced by `gemtc::mtc.deviance()`
 #' @param model_type Model effects type. "random" or "fixed".
 #' @param outcome_measure Outcome measure being analysed: one of "OR". "RR", "MD".
-scat_plot <- function(model, deviance, model_type, outcome_measure) {
+scat_plot <- function(model, deviance, model_type, outcome_measure, seed) {
   if (outcome_measure == "MD") {
     like <- "normal"
     link <- "identity"
@@ -45,14 +82,30 @@ scat_plot <- function(model, deviance, model_type, outcome_measure) {
   c <- data.frame(deviance$dev.ab)
   c$names <- rownames(c)
 
-  ume <- gemtc::mtc.model(network = model$mtcNetwork,
-                         type = "ume",
-                         linearModel = model_type,
-                         likelihood = like,
-                         link = link,
-                         dic = TRUE)
-  ume_results <- gemtc::mtc.run(ume)
-  y <- gemtc::mtc.deviance(ume_results)
+  # use same RNG inside and outside of mirai
+  RNGkind("L'Ecuyer-CMRG")
+  set.seed(seed)
+  # needs to be set before mtc.model
+  ume <- suppress_jags_output(
+    gemtc::mtc.model(network = model$mtcNetwork,
+                     type = "ume",
+                     linearModel = model_type,
+                     likelihood = like,
+                     link = link,
+                     dic = TRUE)
+    )
+
+  seeds <- sample.int(4, n = .Machine$integer.max) # 4 chains
+
+  ume$inits <- mapply(c, ume$inits, list(
+    list(.RNG.name = "base::Wichmann-Hill", .RNG.seed = seeds[1]),
+    list(.RNG.name = "base::Marsaglia-Multicarry", .RNG.seed = seeds[2]),
+    list(.RNG.name = "base::Super-Duper", .RNG.seed = seeds[3]),
+    list(.RNG.name = "base::Mersenne-Twister", .RNG.seed = seeds[4])),
+    SIMPLIFY = FALSE)
+
+  ume_results <- suppress_jags_output(gemtc::mtc.run(ume))
+  y <- suppress_jags_output(gemtc::mtc.deviance(ume_results))
   inc <- data.frame(y$dev.ab)
   inc$names <- rownames(inc)
   all <- merge(c, inc, by = "names")

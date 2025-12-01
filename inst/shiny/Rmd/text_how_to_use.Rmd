@@ -6,10 +6,10 @@ output: html_document
 ### **Overview of** ***MetaInsight***
 This information is designed to orient users and developers to the *MetaInsight* interface. Two guided tours are also available - one for new users to *MetaInsight* and one for users of previous versions of *MetaInsight*.
 
-#### **Components and modules**
-*MetaInsight* is composed of **Components** – discrete steps in the workflow. Navigate through the components by clicking on the names in the top navigation panel. You must use the Setup component to either load your own data or example data, but afterwards you can choose to either use a single component or all of them.
+#### **sections and modules**
+*MetaInsight* is composed of **Sections** – discrete steps in the workflow. Navigate through the sections by clicking on the names in the top navigation panel. You must use the Setup section to either load your own data or example data, but afterwards you can choose to either use a single section or all of them.
   
-Within each component, there are various major options that can be run. These are the ***modules***. Selecting a module opens the control panel to make decisions and run the module’s functionalities. In some components, some modules have to be run before you can move on to later steps - for example in the Setup component, both the *Load data* and *Configure analysis* modules must be used, but most can be run independently and if you try to run a module prematurely, error messages will tell you which module needs to be run in order to proceed.
+Within each section, there are various major options that can be run. These are the ***modules***. Selecting a module opens the control panel to make decisions and run the module’s functionalities. In some sections, some modules have to be run before you can move on to later steps - for example in the Setup section, both the *Load data* and *Configure analysis* modules must be used, but most can be run independently and if you try to run a module prematurely, error messages will tell you which module needs to be run in order to proceed.
   
 #### **Log window and visualization panel**
 Analyses performed will be detailed in the log window. This is also where error messages appear.
@@ -24,11 +24,11 @@ As the user proceeds through the workflow, the relevant guidance texts can be fo
 If more support is needed, the Support tab in the navigation bar at the top provides links to the MetaInsight Issues page and email. 
 
 #### **Saving and reproducing results**
-Users can stop an analysis and restart it later, by saving the workflow progress as an RDS file, found in the Save tab. This file can be loaded into *MetaInsight* later using the *Reload previous session* module in the Setup component to restart the analysis where the user left off. 
+Users can stop an analysis and restart it later, by saving the workflow progress as an RDS file, found in the Save tab. This file can be loaded into *MetaInsight* later using the *Reload previous session* module in the Setup section to restart the analysis where the user left off. 
 
 Additionally, *MetaInsight* allows the user to download their results. After each step of analysis (i.e. after running each module), the results for that particular step may be downloaded from the control panel of the module.
 
-This version of *MetaInsight* is fully reproducible meaning that you can rerun the analysis outside of the app and produce the same results. This is useful for archiving and validation. To download the session code use the **Reproduce** component. This includes the option of a quarto file that can be opened and rerun in R, or an HTML file which can be opened in web browsers and contains a tab of results for each component of the app.
+This version of *MetaInsight* is fully reproducible meaning that you can rerun the analysis outside of the app and produce the same results. This is useful for archiving and validation. To download the session code use the **Reproduce** section. This includes the option of a quarto file that can be opened and rerun in R, or an HTML file which can be opened in web browsers and contains a tab of results for each section of the app.
 
   
 

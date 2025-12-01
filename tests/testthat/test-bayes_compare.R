@@ -36,8 +36,8 @@ test_that("{shinytest2} recording: e2e_bayes_compare", {
   expect_equal(stringr::str_count(table_sub, "<tr"), 5)
 
   # Test number of columns
-  expect_equal(stringr::str_count(stringr::str_extract(table_all, "<tr>.+?</tr>"), "<th"), 6)
-  expect_equal(stringr::str_count(stringr::str_extract(table_sub, "<tr>.+?</tr>"), "<th"), 4)
+  expect_equal(stringr::str_count(stringr::str_extract(table_all, "<tr>.+?</tr>"), "<th"), 7)
+  expect_equal(stringr::str_count(stringr::str_extract(table_sub, "<tr>.+?</tr>"), "<th"), 5)
 
   table_all_dl <- app$get_download("bayes_compare-all-download")
   df <- read.csv(table_all_dl)

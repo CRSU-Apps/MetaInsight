@@ -4,7 +4,7 @@
 \alias{writeLog}
 \title{writeLog}
 \usage{
-writeLog(logger, ..., type = "default")
+writeLog(logger, ..., type = "default", go_to = NULL)
 }
 \arguments{
 \item{logger}{The logger to write the text to. Can be NULL or a function}
@@ -12,6 +12,9 @@ writeLog(logger, ..., type = "default")
 \item{...}{Messages to write to the logger}
 
 \item{type}{One of "default", "info", "error", "warning"}
+
+\item{go_to}{character. The id of a module to navigate to when the modal is closed.
+Only used when \code{type = "error"}}
 }
 \description{
 For internal use. Add text to a logger

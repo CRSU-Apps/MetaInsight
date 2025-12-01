@@ -2,17 +2,27 @@ freq_summary_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
     actionButton(ns("run"), "Generate plots", icon = icon("arrow-turn-down")),
-    conditionalPanel("input.run > 0", download_button_pair(id), ns = ns)
+    div(class = "freq_summary_div",
+      download_button_pair(id)
+    )
   )
 }
 
 freq_summary_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
+  hide_and_show("freq_summary")
+
   observeEvent(input$run, {
     # WARNING ####
     if (is.null(common$freq_sub)){
-      common$logger |> writeLog(type = "error", "Please define the data first in the Setup component")
+      common$logger |> writeLog(type = "error", go_to = "setup_configure",
+                                "Please configure the analysis first in the Setup section")
+      return()
+    }
+
+    if (nrow(common$treatment_df) < 3 || nrow(common$treatment_df) > 10){
+      common$logger |> writeLog(type = "error", "Sorry this module is only available when there are between 3 and 10 treatments")
       return()
     }
     # TRIGGER
@@ -22,6 +32,7 @@ freq_summary_module_server <- function(id, common, parent_session) {
   output$plot_all <- renderPlot({
     watch("model")
     req(watch("freq_summary") > 0)
+    shinyjs::show(selector = ".freq_summary_div")
     common$meta$freq_summary$used <- TRUE
     common$meta$freq_summary$height <- 2.5 * nrow(common$treatment_df)
     common$meta$freq_summary$width <- 2.5 * nrow(common$treatment_df)

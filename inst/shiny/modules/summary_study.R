@@ -2,21 +2,24 @@ summary_study_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
     actionButton(ns("run"), "Generate plot", icon = icon("arrow-turn-down")),
-    conditionalPanel("input.run > 0",
+    div(class = "summary_study_div download_buttons",
        numericInput(ns("title"), label = "Title text size:", value = 1, step = 0.1),
        numericInput(ns("header"), label = "Group headers text size:", value = 1, step = 0.1),
        downloadButton(ns("download")),
-       ns = ns)
+    )
   )
 }
 
 summary_study_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
+  hide_and_show(id)
+
   observeEvent(input$run, {
     # WARNING ####
     if (is.null(common$freq_sub)){
-      common$logger |> writeLog(type= "error", "Please define the data first in the Setup component")
+      common$logger |> writeLog(type= "error", go_to = "setup_configure",
+                                "Please configure the analysis first in the Setup section")
       return()
     }
     # TRIGGER
@@ -54,11 +57,11 @@ summary_study_module_server <- function(id, common, parent_session) {
     content = function(file) {
 
       write_plot(file,
-                          common$download_format,
-                          function(){summary_study(common$freq_sub, common$outcome_measure, as.numeric(input$header), as.numeric(input$title))},
-                          width = 8,
-                          height = common$meta$summary_study$height
-                          )
+                  common$download_format,
+                  function(){summary_study(common$freq_sub, common$outcome_measure, as.numeric(input$header), as.numeric(input$title))},
+                  width = 8,
+                  height = common$meta$summary_study$height
+                  )
       }
   )
 

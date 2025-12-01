@@ -7,7 +7,7 @@
 BnmaGelmanPlot(gelman_plot, parameter)
 }
 \arguments{
-\item{gelman_plot}{Output from coda::gelman.plot(bnma_model$samples[, parm]), where parm is a parameter from 'bnma_model'.}
+\item{gelman_plot}{Output from \code{coda::gelman.plot(bnma_model$samples[, parm])}, where parm is a parameter from 'bnma_model'.}
 
 \item{parameter}{The parameter from the previous argument, used as the title.}
 }

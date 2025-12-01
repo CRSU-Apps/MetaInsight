@@ -19,28 +19,31 @@ setup_configure(
 
 \item{treatment_df}{dataframe. Treatments}
 
-\item{outcome}{character. Outcome type for the dataset. Either `Binary` or
-`Continuous`.}
+\item{outcome}{character. Outcome type for the dataset. Either \code{Binary} or
+\code{Continuous}.}
 
 \item{outcome_measure}{character. Outcome measure of the dataset. Either
-`OR`, `RR` or `RD` when `outcome` is `Binary` or `MD` or `SMD` when
-`outcome` is `Continuous`}
+\code{OR}, \code{RR} or \code{RD} when \code{outcome} is \code{Binary} or \code{MD} or \code{SMD} when
+\code{outcome} is \code{Continuous}}
 
 \item{reference_treatment}{character. The reference treatment of the dataset}
 
 \item{logger}{Stores all notification messages to be displayed in the Log
 Window. Insert the logger reactive list here for running in
-shiny, otherwise leave the default `NULL`}
+shiny, otherwise leave the default \code{NULL}}
 }
 \value{
 List containing:
- \item{wrangled_data}{dataframe. To be presented in the data table}
- \item{treatment_df}{dataframe. Updated version of the input parameter}
- \item{disconnected_indices}{vector. Indices of studies that are not connected to the main network}
- \item{main_connected_data}{dataframe. A subset of the data containing only connected studies}
- \item{non_covariate_data_all}{dataframe. The uploaded data with covariates removed}
- \item{bugsnet_all}{dataframe. Processed data for bugsnet analyses created by `bugsnetdata`}
- \item{freq_all}{list. Processed data for frequentist analyses created by `frequentist()`}
+\item{wrangled_data}{dataframe. To be presented in the data table}
+\item{treatment_df}{dataframe. Updated version of the input parameter}
+\item{disconnected_indices}{vector. Indices of studies that are not connected to the main network}
+\item{main_connected_data}{dataframe. A subset of the data containing only connected studies}
+\item{non_covariate_data_all}{dataframe. The uploaded data with covariates removed}
+\item{covariate_column}{character. Name of the column containing covariate data}
+\item{covariate_name}{character. Name of the covariate}
+\item{covariate_type}{character. Whether the covariate is \code{Binary} or \code{Continuous}}
+\item{bugsnet_all}{dataframe. Processed data for bugsnet analyses created by \code{bugsnetdata}}
+\item{freq_all}{list. Processed data for frequentist analyses created by \code{frequentist()}}
 }
 \description{
 Checks the connectivity of the uploaded data and converts it into formats for

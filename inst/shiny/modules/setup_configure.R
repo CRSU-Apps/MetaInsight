@@ -33,21 +33,23 @@ setup_configure_module_server <- function(id, common, parent_session) {
     updateRadioButtons(session, "outcome_measure", outcome_label, outcome_choices)
     updateRadioButtons(session, "ranking_option", rank_label,
                        selected = RankingOrder(common$outcome, !common$is_data_uploaded))
+    shinyjs::runjs("Shiny.setInputValue('setup_configure-ready', 'complete');")
   })
 
   observeEvent(input$run, {
     # WARNING ####
 
     if (is.null(common$data)) {
-      common$logger |> writeLog(type = "error", "Please load data first")
+      common$logger |> writeLog(type = "error", go_to = "setup_load", "Please load data first")
       return()
     }
 
     if (!common$is_data_valid) {
-      common$logger |> writeLog(type = "error", "Please upload valid data first")
+      common$logger |> writeLog(type = "error", go_to = "setup_load", "Please upload valid data first")
       return()
     }
 
+    # this is closed in setup_exclude once that has run
     show_loading_modal("Configuring analysis...")
 
     # FUNCTION CALL ####
@@ -63,24 +65,25 @@ setup_configure_module_server <- function(id, common, parent_session) {
     common$disconnected_indices <- result$disconnected_indices
     common$main_connected_data <- result$main_connected_data
     common$non_covariate_data_all <- result$non_covariate_data_all
+    common$covariate_column <- result$covariate_column
+    common$covariate_name <- result$covariate_name
+    common$covariate_type <- result$covariate_type
     common$bugsnet_all <- result$bugsnet_all
     common$freq_all <- result$freq_all
-    # clean the selected id as per CleanStrings()
-    common$reference_treatment_all <- input$reference_treatment |>
-      stringr::str_replace_all("(?![a-zA-Z0-9_]).", "_") |>
-      stringr::str_replace_all("(_+)", "_")
+    common$reference_treatment_all <- result$reference_treatment
     common$treatment_df <- result$treatment_df
     common$outcome_measure <- input$outcome_measure
     common$ranking_option <- input$ranking_option
 
-    # update with cleaned id
+    # update with cleaned ids
     updateSelectInput(session, "reference_treatment", choices = common$treatment_df$Label,
-                      selected = FindExpectedReferenceTreatment(common$treatment_df$Label))
+                      selected = result$reference_treatment)
 
     common$logger |> writeLog(type = "complete", "The analysis has been configured")
 
     # METADATA ####
     common$meta$setup_configure$used <- TRUE
+    # this is the uncleaned version
     common$meta$setup_configure$reference_treatment <- input$reference_treatment
     common$meta$setup_configure$ranking_option <- input$ranking_option
     common$meta$setup_configure$outcome_measure <- input$outcome_measure
@@ -88,7 +91,7 @@ setup_configure_module_server <- function(id, common, parent_session) {
     # TRIGGER
     trigger("setup_configure")
     show_table(parent_session)
-    close_loading_modal()
+
   })
 
   return(list(

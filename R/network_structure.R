@@ -1,6 +1,9 @@
 ### Function taken and adapted from BUGSnet GitHub ###
 network.structure <- function(data.nma, my_order = NA) {     # data.nma is a BUGSnetData item, created using data.prep(arm.data=longdata, varname.t = "T", varname.s="Study")
 
+  # not sure why, but can't replace with native pipes
+  library(magrittr)
+
   # Bind Variables to function
   from <- NULL
   to <- NULL
@@ -67,7 +70,7 @@ network.structure <- function(data.nma, my_order = NA) {     # data.nma is a BUG
     dplyr::select(!!trial, trt) %>%
     dplyr::mutate(mtchvar = 1)
 
-  edges <- dplyr::left_join(pairs2, studylabs, by = "mtchvar") %>%
+  edges <- dplyr::left_join(pairs2, studylabs, by = "mtchvar", relationship = "many-to-many") %>%
     dplyr::ungroup() %>%
     dplyr::mutate(
       flag = ifelse(

@@ -1,21 +1,23 @@
 test_that("Check bayes_forest function works as expected", {
-  test_file <- tempfile(fileext = ".png")
+  result <- bayes_forest(fitted_bayes_model, loaded_data_con$treatment_df, "Placebo", "title")
 
-  png(test_file)
-  bayes_forest(fitted_bayes_model)
-  dev.off()
-
-  expect_true(file.exists(test_file))
-  expect_gt(file.size(test_file), 1000)
-  unlink(test_file)
+  expect_match(result$svg, "<svg")
+  expect_gt(result$width, 100)
+  expect_lt(result$width, 1000)
+  expect_gt(result$height, 100)
+  expect_lt(result$height, 1000)
 })
 
 test_that("Check bayes_forest function produces errors as expected", {
   faulty_model <- list(mtcRelEffects = 1:4)
 
-  expect_error(bayes_forest("faulty_model"), "model must be an object created by bayes_model")
-  expect_error(bayes_forest(list(a = 1)), "model must be an object created by bayes_model")
-  expect_error(bayes_forest(faulty_model), "model must be an object created by bayes_model")
+  expect_error(bayes_forest(fitted_bayes_model, "not_a_dataframe", "Placebo", "title"), "treatment_df must be of class data.frame")
+  expect_error(bayes_forest(fitted_bayes_model, loaded_data_con$treatment_df, 123, "title"), "reference_treatment must be of class character")
+  expect_error(bayes_forest(fitted_bayes_model, loaded_data_con$treatment_df, "Placebo", 123), "title must be of class character")
+
+  expect_error(bayes_forest("faulty_model", loaded_data_con$treatment_df, "Placebo", "title"), "model must be an object created by bayes_model")
+  expect_error(bayes_forest(list(a = 1), loaded_data_con$treatment_df, "Placebo", "title"), "model must be an object created by bayes_model")
+  expect_error(bayes_forest(faulty_model, loaded_data_con$treatment_df, "Placebo", "title"), "model must be an object created by bayes_model")
 })
 
 test_that("{shinytest2} recording: e2e_bayes_forest", {
@@ -29,21 +31,17 @@ test_that("{shinytest2} recording: e2e_bayes_forest", {
   app$set_inputs(bayesSel = "bayes_forest")
   app$click("bayes_forest-run")
 
-  app$wait_for_value(output = "bayes_forest-all-plot_wrap")
-  app$wait_for_value(output = "bayes_forest-sub-plot_wrap")
-
-  plot_wrap_all <- app$get_value(output = "bayes_forest-all-plot_wrap")
-  plot_wrap_sub <- app$get_value(output = "bayes_forest-sub-plot_wrap")
-
-  expect_match(plot_wrap_all$html, "bayes_forest-all-plot")
-  expect_match(plot_wrap_sub$html, "bayes_forest-sub-plot")
+  app$wait_for_value(output = "bayes_forest-all-plot")
+  app$wait_for_value(output = "bayes_forest-sub-plot")
 
   plot_all <- app$get_value(output = "bayes_forest-all-plot")
   plot_sub <- app$get_value(output = "bayes_forest-sub-plot")
 
-  expect_equal(substr(plot_all$src, 1, 10), "data:image")
-  expect_equal(substr(plot_sub$src, 1, 10), "data:image")
+  expect_match(plot_all$html, "<svg")
+  expect_match(plot_sub$html, "<svg")
 
   test_bayes_plot_downloads(app, "bayes_forest", "")
+
+  app$stop()
 })
 

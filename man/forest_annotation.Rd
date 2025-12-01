@@ -7,15 +7,11 @@
 forest_annotation(freq, model_type, outcome_measure)
 }
 \arguments{
+\item{freq}{list. NMA results created by freq_wrap().}
+
 \item{model_type}{"fixed" or "random".}
 
 \item{outcome_measure}{"MD", "SMD", "OR", "RR", or "RD".}
-
-\item{tau}{Between study standard deviation.}
-
-\item{k}{Number of studies.}
-
-\item{n}{Number of treatments.}
 }
 \value{
 Text as described above.

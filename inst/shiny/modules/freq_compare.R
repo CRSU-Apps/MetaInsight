@@ -9,22 +9,23 @@ freq_compare_module_ui <- function(id) {
 freq_compare_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
-  shinyjs::hide(selector = ".freq_compare_div")
+  hide_and_show(id)
 
   observeEvent(input$run, {
     # WARNING ####
     if (is.null(common$freq_all)){
-      common$logger |> writeLog(type = "error", "Please define the data first in the Setup component")
+      common$logger |> writeLog(type = "error", go_to = "setup_configure",
+                                "Please configure the analysis first in the Setup section")
       return()
     }
     # TRIGGER
     trigger("freq_compare")
-    shinyjs::show(selector = ".freq_compare_div")
   })
 
   table_all <- reactive({
     watch("model")
     req(watch("freq_compare") > 0)
+    shinyjs::show(selector = ".freq_compare_div")
     common$meta$freq_compare$used <- TRUE
     freq_compare(common$freq_all, common$model_type, common$ranking_option)
   })
@@ -38,6 +39,8 @@ freq_compare_module_server <- function(id, common, parent_session) {
   output$table_all <- renderTable(colnames = FALSE, {
     table_all()
   })
+
+  outputOptions(output, "table_all", suspendWhenHidden = FALSE)
 
   output$table_sub <- renderTable(colnames = FALSE, {
     table_sub()
@@ -63,14 +66,15 @@ freq_compare_module_server <- function(id, common, parent_session) {
 freq_compare_module_result <- function(id) {
   ns <- NS(id)
   tagList(
-    div(class = "freq_compare_div",
-      h4("Treatments are ranked from best to worst along the leading diagonal. Above the leading diagonal are estimates from pairwise meta-analyses, below the leading diagonal are estimates from network meta-analyses"),
-      h4("Relative treatment effects in ranked order for all studies"),
-      tableOutput(ns("table_all")),
-      br(),
-      h4("Relative treatment effects in ranked order with selected studies excluded"),
-      tableOutput(ns("table_sub"))
-    )
+    h4(class = "freq_compare_div",
+       "Treatments are ranked from best to worst along the leading diagonal. Above the leading diagonal are estimates from pairwise meta-analyses, below the leading diagonal are estimates from network meta-analyses"),
+    h4(class = "freq_compare_div",
+       "Relative treatment effects in ranked order for all studies"),
+    tableOutput(ns("table_all")),
+    br(),
+    h4(class = "freq_compare_div",
+       "Relative treatment effects in ranked order with selected studies excluded"),
+    tableOutput(ns("table_sub"))
   )
 }
 

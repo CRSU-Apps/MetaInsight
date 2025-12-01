@@ -7,9 +7,11 @@ bayes_forest_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
     actionButton(ns("run"), "Generate plots", icon = icon("arrow-turn-down")),
-    layout_columns(
-      bayes_forest_submodule_ui(ns("all"), "All studies"),
-      bayes_forest_submodule_ui(ns("sub"), "With selected studies excluded")
+    div(class = "bayes_forest_div download_buttons",
+      layout_columns(
+        bayes_forest_submodule_ui(ns("all"), "All studies"),
+        bayes_forest_submodule_ui(ns("sub"), "Selected studies excluded")
+      )
     )
   )
 }
@@ -17,61 +19,34 @@ bayes_forest_module_ui <- function(id) {
 bayes_forest_submodule_server <- function(id, common, model, run, title){
   moduleServer(id, function(input, output, session) {
 
-    shinyjs::hide("download")
+    svg <- reactive({
+      tdf <- ifelse(id == "all", "treatment_df", "subsetted_treatment_df")
 
-    # for some reason width doesn't adjust to screen size if this is a bindEvent
-    output$plot <- renderPlot({
-      run()
-      req(common[[model]], run())
-      shinyjs::show("download")
-      bayes_forest(common[[model]])
-      title(main = title)
-    })
-
-    n_trt <- reactive({
-      if (model == "bayes_all"){
-        return(nrow(common$treatment_df))
-      } else {
-        return(nrow(common$subsetted_treatment_df))
-      }
+      bayes_forest(common[[paste0("bayes_", id)]],
+                   common[[tdf]],
+                   common[[paste0("reference_treatment_", id)]],
+                   title)
     }) |> bindEvent(run())
 
-    output$plot_wrap <- renderUI({
-      req(n_trt())
-      plot_height = forest_height_pixels(n_trt(), title = TRUE)
-      common$meta$bayes_forest[[paste0("plot_height_", id)]] <- plot_height / 72
-      tagList(
-        plotOutput(session$ns("plot"), height = plot_height),
-        # stop it appearing without running
-        p("Model fit:")
+    # this enables the plot to always fit in the column width
+    output$plot <- renderUI({
+      req(svg())
+
+      div(class = "svg_container",
+          HTML(svg()$svg)
       )
     })
 
-    output$table <- renderTable({
-      common[[model]]$dic
-    }, digits = 3, rownames = TRUE, colnames = FALSE, label = "Test") |> bindEvent(run())
-
-    output$text <- renderUI({
-      req(common[[model]])
-      CreateTauSentence(common[[model]])
-    }) |> bindEvent(run())
-
     output$download <- downloadHandler(
       filename = function() {
-        glue::glue("MetaInsight_bayesian_forest_plot{id}.{common$download_format}")
+        glue::glue("MetaInsight_bayesian_forest_plot_{id}.{common$download_format}")
       },
       content = function(file) {
 
-        plot_func <- function(){
-          bayes_forest(common[[model]])
-          title(main = title)
-        }
-
-        write_plot(file,
-                   common$download_format,
-                   plot_func,
-                   width = 9,
-                   height = as.integer(forest_height_pixels(n_trt(), title = TRUE) / 72) + 0.5)
+        write_svg_plot(file,
+                       common$download_format,
+                       svg()
+                       )
 
       }
     )
@@ -82,13 +57,12 @@ bayes_forest_submodule_server <- function(id, common, model, run, title){
 bayes_forest_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
+    hide_and_show(id)
+
     # check that a fitted model exists and error if not
     observeEvent(input$run, {
-
-      # add check for a running model
-
       if (is.null(common$bayes_all)){
-        common$logger |> writeLog(type = "error", "Please fit the Bayesian models first")
+        common$logger |> writeLog(type = "error", go_to = "bayes_model", "Please fit the Bayesian models first")
         return()
       } else {
         common$meta$bayes_forest$used <- TRUE
@@ -110,8 +84,8 @@ bayes_forest_module_server <- function(id, common, parent_session) {
       }
     })
 
-    bayes_forest_submodule_server("all", common, "bayes_all", all_trigger, "All studies:")
-    bayes_forest_submodule_server("sub", common, "bayes_sub", sub_trigger, "With selected studies excluded:")
+    bayes_forest_submodule_server("all", common, "bayes_all", all_trigger, "All studies")
+    bayes_forest_submodule_server("sub", common, "bayes_sub", sub_trigger, "With selected studies excluded")
 
   })
 }
@@ -120,9 +94,7 @@ bayes_forest_module_server <- function(id, common, parent_session) {
 bayes_forest_submodule_result <- function(id) {
   ns <- NS(id)
   tagList(
-    uiOutput(ns("plot_wrap")),
-    tableOutput(ns("table")),
-    uiOutput(ns("text"))
+    uiOutput(ns("plot"))
   )
 }
 
@@ -146,9 +118,7 @@ bayes_forest_module_result <- function(id) {
 
 
 bayes_forest_module_rmd <- function(common) {
-  list(bayes_forest_knit = !is.null(common$meta$bayes_forest$used),
-       bayes_forest_plot_height_all = common$meta$bayes_forest$plot_height_all,
-       bayes_forest_plot_height_sub = common$meta$bayes_forest$plot_height_sub
+  list(bayes_forest_knit = !is.null(common$meta$bayes_forest$used)
       )
 }
 

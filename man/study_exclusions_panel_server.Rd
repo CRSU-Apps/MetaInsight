@@ -17,9 +17,11 @@ study_exclusions_panel_server(id, data, treatment_df, reference_treatment)
 }
 \value{
 List of reactives:
-- "initial_data" contains the data frame of the connected subnetwork of the uploaded data
-- "sensitivity_data" contains the data frame of the connected subnetwork for the sensitivity analysis
-- "sensitivity_treatment_list" contains the treatment names ("Label") and IDs ("Number") for the sensitivity analysis data
+\itemize{
+\item "initial_data" contains the data frame of the connected subnetwork of the uploaded data
+\item "sensitivity_data" contains the data frame of the connected subnetwork for the sensitivity analysis
+\item "sensitivity_treatment_list" contains the treatment names ("Label") and IDs ("Number") for the sensitivity analysis data
+}
 }
 \description{
 Module server for the study exclusion panel.

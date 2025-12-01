@@ -111,7 +111,7 @@ labelmatching.df <- function(d1, ntx, treat_list) {
 #' @return NMA results from netmeta::netmeta().
 freq.df <- function(model, outcome, dataf, lstx, ref) {
   net1 <- netmeta::netmeta(TE = TE, seTE = seTE, treat1 = treat1, treat2 = treat2, studlab = studlab, data = dataf, subset=NULL,
-                  sm = outcome, level = 0.95, level.comb=0.95, random = (model == "random"),
+                  sm = outcome, level = 0.95, level.ma = 0.95, random = (model == "random"),
                   common = (model == "fixed"), reference.group = ref, all.treatments = NULL, seq = NULL,
                   tau.preset = NULL, tol.multiarm = 0.05, tol.multiarm.se = 0.2, warn = TRUE)
   return(net1)

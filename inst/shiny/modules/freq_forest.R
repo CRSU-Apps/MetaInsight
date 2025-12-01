@@ -2,8 +2,8 @@ freq_forest_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
     actionButton(ns("run"), "Generate plots", icon = icon("arrow-turn-down")),
-    conditionalPanel("input.run > 0",
-      download_button_pair(id),
+    actionButton(ns("run_all"), "Run all modules", icon = icon("forward-fast")),
+    div(class = "freq_forest_div",
       fixedRow(
         p("Limits of the x-axis for all studies:"),
         column(
@@ -29,18 +29,22 @@ freq_forest_module_ui <- function(id) {
           align = "center",
           numericInput(ns("xmax_sub"), label = "Maximum", value = 5, step = 0.1)
         )
-      )
-    , ns = ns),
+      ),
+      download_button_pair(id)
+    )
   )
 }
 
 freq_forest_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
+  hide_and_show("freq_forest")
+
   observeEvent(input$run, {
     # WARNING ####
     if (is.null(common$freq_sub)){
-      common$logger |> writeLog(type = "error", "Please define the data first in the Setup component")
+      common$logger |> writeLog(type = "error", go_to = "setup_configure",
+                                 "Please configure the analysis first in the Setup section")
       return()
     }
     # TRIGGER
@@ -79,13 +83,15 @@ freq_forest_module_server <- function(id, common, parent_session) {
     common$meta$freq_forest$used <- TRUE
     common$meta$freq_forest$xmin_all <- as.numeric(input$xmin_all)
     common$meta$freq_forest$xmax_all <- as.numeric(input$xmax_all)
+    # shinyjs::show(selector = ".freq_forest_div")
 
     freq_forest(common$freq_all,
                 common$reference_treatment_all,
                 common$model_type,
                 common$outcome_measure,
                 as.numeric(input$xmin_all),
-                as.numeric(input$xmax_all))
+                as.numeric(input$xmax_all),
+                "Results for all studies")
   })
 
   result_sub <- reactive({
@@ -99,62 +105,27 @@ freq_forest_module_server <- function(id, common, parent_session) {
                 common$model_type,
                 common$outcome_measure,
                 as.numeric(input$xmin_sub),
-                as.numeric(input$xmax_sub))
+                as.numeric(input$xmax_sub),
+                "Results with selected studies excluded")
   })
 
-
-  output$plot_all <- renderPlot({
-
-    common$meta$freq_forest$height_all <- (result_all()$height_pixels) / 72 # divide by 72 dpi
-    # make width responsive to treatment label
-    common$meta$freq_forest$width_all <- 5 + (max(nchar(common$treatment_df$Label)) / 10)
-
-    result_all()$plot()
-    title("Results for all studies")
-    mtext(result_all()$annotation, padj = 0.5)
+  output$plot_sub <- renderUI({
+    div(class = "svg_container",
+        HTML(result_sub()$svg)
+    )
   })
 
-  output$plot_sub <- renderPlot({
-    common$meta$freq_forest$height_sub <- (result_sub()$height_pixels) / 72 # divide by 72 dpi
-    # make width responsive to treatment label
-    common$meta$freq_forest$width_sub <- 5 + (max(nchar(common$treatment_df$Label)) / 10)
-
-    result_sub()$plot()
-    title("Results with selected studies excluded")
-    mtext(result_sub()$annotation, padj = 0.5)
-  })
-
-  output$plot_wrap_all <- renderUI({
-    # required for testing
-    shinyjs::runjs("Shiny.setInputValue('freq_forest-complete', 'complete');")
-    plotOutput(session$ns("plot_all"), height = result_all()$height_pixels)
-  })
-
-  output$plot_wrap_sub <- renderUI({
-    plotOutput(session$ns("plot_sub"), height = result_sub()$height_pixels)
+  output$plot_all <- renderUI({
+    div(class = "svg_container",
+        HTML(result_all()$svg)
+    )
   })
 
   output$download_all <- downloadHandler(
     filename = function(){
       paste0("MetaInsight_frequentist_forest_all.", common$download_format)},
     content = function(file){
-
-      height <- common$meta$freq_forest$height_all
-      width <- common$meta$freq_forest$width_all
-
-      if (common$download_format == "pdf"){
-        pdf(file = file, height = height, width = width)
-      }
-      if (common$download_format == "png"){
-        png(file = file, height = height, width = width, units = "in", res = 300)
-      }
-      if (common$download_format == "svg"){
-        svg(file = file, height = height, width = width)
-      }
-      result_all()$plot()
-      grid::grid.text("Results for all studies", 0.5, grid::unit(height - 0.25, "inches"), gp=grid::gpar(cex=1.2, fontface = "bold"))
-      grid::grid.text(result_all()$annotation, 0.5, grid::unit(height - 0.65, "inches"), gp=grid::gpar(cex=1))
-      dev.off()
+      write_svg_plot(file, common$download_format, result_all())
     }
   )
 
@@ -162,25 +133,18 @@ freq_forest_module_server <- function(id, common, parent_session) {
     filename = function(){
       paste0("MetaInsight_frequentist_forest_sub.", common$download_format)},
     content = function(file){
-
-      height <- common$meta$freq_forest$height_sub
-      width <- common$meta$freq_forest$width_sub
-
-      if (common$download_format == "pdf"){
-        pdf(file = file, height = height, width = width)
-      }
-      if (common$download_format == "png"){
-        png(file = file, height = height, width = width, units = "in", res = 300)
-      }
-      if (common$download_format == "svg"){
-        svg(file = file, height = height, width = width)
-      }
-      result_sub()$plot()
-      grid::grid.text("Results with selected studies excluded", 0.5, grid::unit(height - 0.25, "inches"), gp=grid::gpar(cex=1.2, fontface = "bold"))
-      grid::grid.text(result_sub()$annotation, 0.5, grid::unit(height - 0.65, "inches"), gp=grid::gpar(cex=1))
-      dev.off()
+      write_svg_plot(file, common$download_format, result_sub())
     }
   )
+
+  observeEvent(input$run_all, {
+    if (is.null(common$freq_sub)){
+      common$logger |> writeLog(type = "error", go_to = "setup_configure",
+                                "Please configure the analysis first in the Setup section")
+      return()
+    }
+    run_all("freq", common$logger)
+  })
 
   return(list(
     save = function() {list(
@@ -205,17 +169,10 @@ freq_forest_module_server <- function(id, common, parent_session) {
 
 freq_forest_module_result <- function(id) {
   ns <- NS(id)
-  fluidRow(
-    column(
-      width = 6,
-      uiOutput(ns("plot_wrap_all")),
-    ),
-    column(
-      width = 6,
-      uiOutput(ns("plot_wrap_sub"))
-    )
+  layout_columns(
+    uiOutput(ns("plot_all")),
+    uiOutput(ns("plot_sub"))
   )
-
 }
 
 freq_forest_module_rmd <- function(common){ list(
@@ -223,10 +180,6 @@ freq_forest_module_rmd <- function(common){ list(
   freq_forest_xmin_all = common$meta$freq_forest$xmin_all,
   freq_forest_xmax_all = common$meta$freq_forest$xmax_all,
   freq_forest_xmin_sub = common$meta$freq_forest$xmin_sub,
-  freq_forest_xmax_sub = common$meta$freq_forest$xmax_sub,
-  freq_forest_height_all = common$meta$freq_forest$height_all,
-  freq_forest_width_all = common$meta$freq_forest$width_all,
-  freq_forest_height_sub = common$meta$freq_forest$height_sub,
-  freq_forest_width_sub = common$meta$freq_forest$width_sub)
+  freq_forest_xmax_sub = common$meta$freq_forest$xmax_sub)
 }
 

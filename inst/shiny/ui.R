@@ -16,21 +16,25 @@ tagList(
         script = file.path("resources", "js", "shinyjs-funcs.js"),
         functions = c("scrollLogger", "disableModule", "enableModule", "runOnEnter")
       ),
-      tags$head(tags$link(href = "css/styles.css", rel = "stylesheet"),
-      )),
-    title = img(src = "logo.png", height = "50", width = "50"),
+      tags$link(href = "css/styles.css", rel = "stylesheet"),
+      includeHTML(file.path(resourcePath, "favicon", "favicon.html")),
+      core_analytics_module_ui("core_analytics")
+      ),
+    title = img(src = "logo.png", height = "40"),
     window_title = "MetaInsight",
     nav_panel("Intro", value = "intro"),
     nav_panel("Setup", value = "setup"),
     nav_panel("Summary", value = "summary"),
     nav_panel("Frequentist", value = "freq"),
     nav_panel("Bayesian", value = "bayes"),
+    nav_panel("Baseline risk", value = "baseline"),
+    nav_panel("Covariate", value = "covariate"),
     nav_panel("Reproduce", value = "rep"),
     nav_menu("Save", icon = icon("floppy-disk"),
                HTML('<a href="#" id="save-button" class="action-button btn" onclick="Shiny.setInputValue(\'core_save-save\', Math.random())">Save session</a>')),
     nav_menu("Support", icon = icon("life-ring"),
                HTML('<a href="https://github.com/CRSU-Apps/MetaInsight/issues" target="_blank">GitHub Issues</a>'),
-               HTML('<a href="mailto: info@crsu.org.uk" target="_blank">Send Email</a>'))
+               HTML('<a href="mailto: apps@crsu.org.uk" target="_blank">Send Email</a>'))
   ),
   layout_sidebar(
     sidebar = sidebar(
@@ -38,16 +42,16 @@ tagList(
       open = "always",
       conditionalPanel(
         "input.tabs == 'intro'",
-        # actionButton("debug_button", "debug"),
-        # textOutput("debug"),
         core_intro_module_ui("core_intro"),
         includeMarkdown("Rmd/text_intro_tab.Rmd")
       ),
-      insert_modules_ui("setup", "Setup", exclude = "setup_exclude"),
-      insert_modules_ui("summary", "Summary"),
-      insert_modules_ui("freq", "Frequentist NMA"),
-      insert_modules_ui("bayes", "Bayesian NMA"),
-      insert_modules_ui("rep", "Reproduce")
+      insert_modules_ui("setup", "Setup the analysis", exclude = "setup_exclude"),
+      insert_modules_ui("summary", "Summarise the data"),
+      insert_modules_ui("freq", "Frequentist network meta-analysis"),
+      insert_modules_ui("bayes", "Bayesian network meta-analysis"),
+      insert_modules_ui("baseline", "Baseline risk analysis"),
+      insert_modules_ui("covariate", "Covariate analysis"),
+      insert_modules_ui("rep", "Reproduce the analysis")
       ),
       # --- RESULTS WINDOW ---
       conditionalPanel(

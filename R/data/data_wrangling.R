@@ -173,26 +173,37 @@ FindAllTreatments <- function(data, treatment_ids = NULL, study = NULL) {
   }
 }
 
-#' Find all of the study names which include the given treatment names, both for long and wide formats.
+#' Find all of the studies which include the given treatments, both for long and wide formats.
 #' 
-#' @param data Data frame in which to search for study names
-#' @param treatments Vector of matching treatments
-#' @return Vector of all matching study names
-FindStudiesIncludingTreatments <- function(data, treatments) {
+#' @param data Data frame in which to search for study names.
+#' @param treatments Vector of matching treatments.
+#' @param all_or_any Set to "all" to return studies containing all treatments. Set to "any" to return studies containing any of the treatments.
+#' @return Vector of all matching study names.
+FindStudiesIncludingTreatments <- function(data, treatments, all_or_any) {
   if ("T" %in% colnames(data)) {
     # Long format
-    return(unique(data$Study[data$T %in% treatments]))
+    table <- table(data[, c("Study", "T")])
+    table <- table[, colnames(table) %in% treatments]
+    n_treatments_in_study <- rowSums(table)
+    if (all_or_any == "any") {
+      return(names(n_treatments_in_study[n_treatments_in_study > 0]))
+    } else if (all_or_any == "all") {
+      return(names(n_treatments_in_study[n_treatments_in_study == length(treatments)]))
+    }
   } else {
     # Wide format
-    studies <- c()
-    index <- 1
-    col <- paste0("T.", index)
-    while (col %in% colnames(data)) {
-      studies <- c(studies, data$Study[data[[col]] %in% treatments])
-      index <- index + 1
-      col <- paste0("T.", index)
-    }
-    return(unique(studies))
+    T_columns <- grep(pattern = "^T\\.", x = names(data), value = TRUE)
+    data <- data[, c("Study", T_columns)]
+    long_data <- reshape2::melt(data, id.vars = "Study")
+    long_data <- long_data[, c("Study", "value")]
+    names(long_data)[names(long_data) == "value"] <- "T"
+    return(
+      FindStudiesIncludingTreatments(
+        data = long_data,
+        treatments = treatments,
+        all_or_any = all_or_any
+      )
+    )
   }
 }
 

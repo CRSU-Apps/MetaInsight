@@ -10,8 +10,10 @@
 \item{data}{Data frame in which to find missing columns.}
 
 \item{required_columns}{Data frame defining required columns. Columns in this data frame are:
-- pattern = A regular expression defining the generic column title for wide or long format.
-- name = The generic name of the column.}
+\itemize{
+\item pattern = A regular expression defining the generic column title for wide or long format.
+\item name = The generic name of the column.
+}}
 }
 \value{
 Vector containing names of any columns which are required, but are missing.

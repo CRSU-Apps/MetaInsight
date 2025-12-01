@@ -3,8 +3,7 @@ setup_exclude_module_ui <- function(id) {
   tagList(
     radioButtons(ns("model"), label = "Model:",
                   choices = c("Random effect (RE)" = "random", "Fixed effect (FE)" = "fixed"), inline = TRUE),
-    shinyWidgets::pickerInput(ns("exclusions"), label = "Studies to exclude:", choices = c(), multiple = TRUE,
-                              options = shinyWidgets::pickerOptions(liveSearch = TRUE))
+    uiOutput(ns("exclusions_out"))
   )
 }
 
@@ -13,12 +12,20 @@ setup_exclude_module_server <- function(id, common, parent_session) {
 
     init("model")
 
-    observe({
+    # can't get updatePickerInput to reblank on reset
+    output$exclusions_out <- renderUI({
       watch("setup_configure")
-      req(common$wrangled_data)
-      shinyWidgets::updatePickerInput(session, "exclusions",
-                                      choices = unique(common$wrangled_data$Study),
-                                      choicesOpt = list(disabled = !c(unique(common$wrangled_data$Study) %in% unique(common$main_connected_data$Study))))
+      watch("setup_reset")
+      if (is.null(common$wrangled_data)){
+        shinyWidgets::pickerInput(session$ns("exclusions"), label = "Studies to exclude:", multiple = TRUE,
+                                  choices = c(),
+                                  options = shinyWidgets::pickerOptions(liveSearch = TRUE))
+      } else {
+        shinyWidgets::pickerInput(session$ns("exclusions"), label = "Studies to exclude:", multiple = TRUE,
+                                  choices = unique(common$wrangled_data$Study),
+                                  choicesOpt = list(disabled = !c(unique(common$wrangled_data$Study) %in% unique(common$main_connected_data$Study))),
+                                  options = shinyWidgets::pickerOptions(liveSearch = TRUE))
+      }
     })
 
     common$tasks$setup_exclude_all <- ExtendedTask$new(
@@ -48,7 +55,7 @@ setup_exclude_module_server <- function(id, common, parent_session) {
     # listen to all the triggers but only fire once they're static for 1200ms
     exclusion_triggers <- reactive({
       # prevent it triggering on reload
-      req((!identical(input$exclusions, common$excluded_studies) || watch("setup_configure") > 0))
+      req((!identical(input$exclusions, common$excluded_studies) || watch("setup_configure") > 0 || watch("model") > 0))
       list(input$exclusions,
            input$model,
            watch("setup_configure"))
@@ -71,7 +78,7 @@ setup_exclude_module_server <- function(id, common, parent_session) {
                                               input$exclusions)
 
       if (length(common$freq_sub) == 0){
-        common$logger |> writeLog(type = "starting", "Running initial sensitivity analysis")
+        common$logger |> writeLog(type = "starting", "Running initial frequentist analysis")
       } else {
         common$logger |> writeLog(type = "starting", "Updating sensitivity analysis")
       }
@@ -115,8 +122,10 @@ setup_exclude_module_server <- function(id, common, parent_session) {
                                               has been removed from the network of sensitivity analysis."))
         }
 
+        # if opened in setup_configure
+        close_loading_modal()
         if (initial){
-          common$logger |> writeLog(type = "complete", "Initial sensitivity analysis is complete")
+          common$logger |> writeLog(type = "complete", "Initial frequentist analysis is complete")
         } else {
           common$logger |> writeLog(type = "complete", "Sensitivity analysis has been updated")
         }
@@ -127,12 +136,13 @@ setup_exclude_module_server <- function(id, common, parent_session) {
       }
     })
 
-    observeEvent(input$model, {
+    # stop triggering at app load, but do so once data is loaded
+    observeEvent(list(input$model, watch("setup_load")), {
       # prevent it triggering on reload
       req(!identical(input$model, common$model_type))
       common$model_type <- input$model
       trigger("model")
-    })
+    }, ignoreInit = TRUE)
 
   return(list(
     save = function() {list(

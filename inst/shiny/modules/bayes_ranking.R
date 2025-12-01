@@ -1,7 +1,7 @@
-bayes_ranking_submodule_ui <- function(id, download_label) {
+bayes_ranking_submodule_ui <- function(id, download_label, class) {
   ns <- NS(id)
   tagList(
-    div(class = "bayes_ranking_div",
+    div(class = class,
       div(
         style = "height: 40px; margin-bottom: 10px; display: flex; text-align: center; align-items: flex-end; justify-content: center;",
         tags$label(download_label)
@@ -18,7 +18,27 @@ bayes_ranking_submodule_ui <- function(id, download_label) {
 }
 
 bayes_ranking_module_ui <- function(id) {
-  ns <- shiny::NS(id)
+  ns <- NS(id)
+
+  download_buttons <- function(id){
+    class <- paste0(id, "_div")
+    if (id == "bayes_ranking"){
+      fixedRow(
+        column(
+          width = 6,
+          bayes_ranking_submodule_ui(ns("all"), "All studies:", class)
+        ),
+        column(
+          width = 6,
+          bayes_ranking_submodule_ui(ns("sub"), "With selected studies excluded:", class)
+        )
+      )
+    } else {
+      bayes_ranking_submodule_ui(ns("all"), "Downloads:", class)
+    }
+
+  }
+
   tagList(
     radioButtons(ns("network_style"),
                  label = "Network plot style",
@@ -44,73 +64,69 @@ bayes_ranking_module_ui <- function(id) {
       #p("Radial SUCRA plot: Higher SUCRA values indicate better treatments; size of nodes represent number of participants and thickness of lines indicate number of trials conducted")
     ),
     input_task_button(ns("run"), "Generate plots", type = "default", icon = icon("arrow-turn-down")),
-    fixedRow(
-      column(
-        width = 6,
-        bayes_ranking_submodule_ui(ns("all"), "All studies:")
-      ),
-      column(
-        width = 6,
-        bayes_ranking_submodule_ui(ns("sub"), "With selected studies excluded:")
-      )
-    )
+    download_buttons(id)
   )
 }
 
-bayes_ranking_submodule_server <- function(id, common, network_style, rank_style, colourblind, simple, connected_data, treatments, run, trigger){
+bayes_ranking_submodule_server <- function(id, common, network_style, rank_style, colourblind, simple, class, model, ranking, connected_data, treatments, run, trigger){
   moduleServer(id, function(input, output, session) {
 
     init(trigger)
 
     observeEvent(run(),{
-      req(common[[paste0("bayes_", id)]])
-      common[[paste0("bayes_rank_", id)]] <- bayes_ranking(common[[connected_data]], common[[treatments]], common[[paste0("bayes_", id)]], common$ranking_option)
+      req(common[[model]])
+
+      if (ranking == "covariate_ranking"){
+        cov_value <- common$covariate_value
+      } else {
+        cov_value <- NA
+      }
+      common[[ranking]] <- bayes_ranking(common[[connected_data]], common[[treatments]], common[[model]], common$ranking_option, cov_value)
       trigger(trigger)
     })
 
-    n_trt <- reactive({
+    forest_svg <- reactive({
       req(watch(trigger) > 0)
-      if (id == "all"){
-        return(nrow(common$treatment_df))
+      tdf <- ifelse(id == "all", "treatment_df", "subsetted_treatment_df")
+
+      if (ranking == "baseline_ranking"){
+        baseline_forest(common[[model]],
+                        common[[tdf]],
+                        common[[paste0("reference_treatment_", id)]],
+                        "")
       } else {
-        return(nrow(common$subsetted_treatment_df))
+        bayes_forest(common[[model]],
+                     common[[tdf]],
+                     common[[paste0("reference_treatment_", id)]],
+                     "",
+                     TRUE)
       }
+
     })
 
-    # this enables the plot to always fit in the column width
     output$forest <- renderUI({
       req(watch(trigger) > 0)
-      req(common[[paste0("bayes_", id)]], run())
+      req(common[[model]], run())
 
-      plot_height <- forest_height_pixels(n_trt(), title = TRUE) / 72
-      common$meta$bayes_ranking[[paste0("forest_height_", id)]] <- plot_height
-
-      svg_text <- svglite::xmlSVG(
-        bayes_forest(common[[paste0("bayes_", id)]]),
-        height = plot_height,
-        width = 6.5)
-
-      div(class = "svg_container",
-        HTML(paste(svg_text, collapse = "\n"))
+      div(class = "svg_container_ranking",
+        HTML(forest_svg()$svg)
       )
     })
-
-    regression_text <- reactive("")
 
     ranking_plots <- eventReactive(watch(trigger), {
       req(watch(trigger) > 0)
       plots <- list(
-        litmus = LitmusRankOGram(common[[paste0("bayes_rank_", id)]], colourblind = FALSE, regression_text = regression_text()),
-        radial = RadialSUCRA(common[[paste0("bayes_rank_", id)]], colourblind = FALSE, regression_text = regression_text()),
-        litmus_blind = LitmusRankOGram(common[[paste0("bayes_rank_", id)]], colourblind = TRUE, regression_text = regression_text()),
-        radial_blind = RadialSUCRA(common[[paste0("bayes_rank_", id)]], colourblind = TRUE, regression_text = regression_text())
+        litmus = LitmusRankOGram(common[[ranking]], colourblind = FALSE),
+        radial = RadialSUCRA(common[[ranking]], colourblind = FALSE),
+        litmus_blind = LitmusRankOGram(common[[ranking]], colourblind = TRUE),
+        radial_blind = RadialSUCRA(common[[ranking]], colourblind = TRUE)
       )
       return(plots)
     })
 
     output$ranking <- renderPlot({
       req(watch(trigger) > 0)
-      on.exit(shinyjs::show(selector = ".bayes_ranking_div"))
+      on.exit(shinyjs::show(selector = class))
       if (rank_style() == "litmus" && colourblind() == FALSE){
         return(ranking_plots()$litmus)
       }
@@ -135,31 +151,29 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
     outputOptions(output, "ranking", suspendWhenHidden = FALSE)
 
     output$ranking_table <- renderTable({
-      ranking_table(common[[paste0("bayes_rank_", id)]])
+      ranking_table(common[[ranking]])
       }, digits = 2)
 
     output$download_ranking_table <- downloadHandler(
       filename = paste0("MetaInsight_bayesian_ranking_table_", id, ".csv"),
       content = function(file) {
         write.csv(
-          ranking_table(common[[paste0("bayes_rank_", id)]]),
+          ranking_table(common[[ranking]]),
           file,
           row.names = FALSE
         )
       }
     )
 
-    output$network <- renderUI({
+    network_svg <- reactive({
       req(watch(trigger) > 0)
+      summary_network(common[[paste0("freq_", id)]], common[[paste0("bugsnet_", id)]], network_style(), 1, "")
+    })
 
-      svg_text <- svglite::xmlSVG(
-        summary_network(common[[paste0("freq_", id)]], common[[paste0("bugsnet_", id)]], network_style()),
-        width = 5,
-        height = 5
-      )
-
-      div(class = "svg_container",
-          HTML(paste(svg_text, collapse = "\n"))
+    output$network <- renderUI({
+      req(network_svg())
+      div(class = "svg_container_ranking",
+          HTML(network_svg()$svg)
       )
 
     })
@@ -170,11 +184,10 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
       },
       content = function(file) {
 
-        plot_func <- function(){
-          bayes_forest(common[[paste0("bayes_", id)]])
-        }
-
-        write_plot(file, common$download_format, plot_func, width = 6.5, height = as.integer(forest_height_pixels(n_trt(), title = TRUE) / 72) + 0.5)
+        write_svg_plot(file,
+                       common$download_format,
+                       forest_svg()
+                       )
       }
     )
 
@@ -210,12 +223,10 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
         paste0("MetaInsight_network_plot_", id, ".", common$download_format)
       },
       content = function(file) {
-
-        plot_func <- function(){
-          summary_network(common[[paste0("freq_", id)]], common[[paste0("bugsnet_", id)]], network_style())
-        }
-
-        write_plot(file, common$download_format, plot_func, width = 5, height = 5)
+        write_svg_plot(file,
+                       common$download_format,
+                       network_svg()
+        )
       }
     )
 
@@ -225,12 +236,12 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
 bayes_ranking_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
-    shinyjs::hide(selector = ".bayes_ranking_div")
+    hide_and_show(id, show = FALSE)
 
     # check that a fitted model exists and error if not
     observeEvent(input$run, {
       if (is.null(common$bayes_all)){
-        common$logger |> writeLog(type = "error", "Please fit the Bayesian models first")
+        common$logger |> writeLog(type = "error", go_to = "bayes_model", "Please fit the Bayesian models first")
         return()
       } else {
         trigger("bayes_ranking")
@@ -252,10 +263,11 @@ bayes_ranking_module_server <- function(id, common, parent_session) {
       }
     })
 
-    # put these in an observe so that they are updated whenever the choices change
+    # update whenever the choices change
     observe({
       if (watch("bayes_ranking") > 0){
         # METADATA ####
+        common$meta$bayes_ranking$used <- TRUE
         common$meta$bayes_ranking$colourblind <- input$colourblind
         common$meta$bayes_ranking$simple <- input$simple
         common$meta$bayes_ranking$network_style <- input$network_style
@@ -264,9 +276,9 @@ bayes_ranking_module_server <- function(id, common, parent_session) {
     })
 
     bayes_ranking_submodule_server("all", common, reactive(input$network_style), reactive(input$rank_style), reactive(input$colourblind), reactive(input$simple),
-                                   "main_connected_data", "treatment_df", all_trigger, "bayes_ranking_all")
+                                   ".bayes_ranking_div", "bayes_all", "bayes_rank_all", "main_connected_data", "treatment_df", all_trigger, "bayes_ranking_all")
     bayes_ranking_submodule_server("sub", common, reactive(input$network_style), reactive(input$rank_style), reactive(input$colourblind), reactive(input$simple),
-                                   "subsetted_data", "subsetted_treatment_df", sub_trigger, "bayes_ranking_sub")
+                                   ".bayes_ranking_div", "bayes_sub", "bayes_rank_sub", "subsetted_data", "subsetted_treatment_df", sub_trigger, "bayes_ranking_sub")
 
     return(list(
     save = function() {list(
@@ -291,10 +303,10 @@ bayes_ranking_module_server <- function(id, common, parent_session) {
 }
 
 
-bayes_ranking_submodule_result <- function(id, title) {
+bayes_ranking_submodule_result <- function(id, title, class) {
   ns <- NS(id)
   tagList(
-    div(class = "bayes_ranking_div",
+    div(class = class,
       accordion(
         open = TRUE,
         accordion_panel(
@@ -304,16 +316,18 @@ bayes_ranking_submodule_result <- function(id, title) {
             cellArgs = list(style = "height: 500px; padding: 16px; border: 2px solid #005c8a; white-space: normal"),
             fluidRow(
               align = "center",
+                h4("Relative effects"),
                 uiOutput(ns("forest"))
             ),
             fluidRow(
               align = "center",
+                h4("Ranking results"),
                 plotOutput(ns("ranking")), # table_label = table_label)
               shinyWidgets::dropMenu(
                 shinyWidgets::dropdownButton(
                   circle = FALSE,
                   status = "default",
-                  label = "Ranking probabilities and \nSUCRA values for all treatments",
+                  label = "Ranking probabilities and SUCRA values",
                   inputId = ns("dropdown")
                 ),
                 tableOutput(ns("ranking_table"))
@@ -321,6 +335,7 @@ bayes_ranking_submodule_result <- function(id, title) {
             ),
             fluidRow(
               align = "center",
+                h4("Summary of evidence"),
                 uiOutput(ns("network"))
             )
           )
@@ -334,12 +349,10 @@ bayes_ranking_module_result <- function(id) {
   ns <- NS(id)
   tagList(
     fluidRow(
-      bayes_ranking_submodule_result(ns("all"),
-                                     title = "Ranking panel for all studies")
+      bayes_ranking_submodule_result(ns("all"), "Ranking panel for all studies", "bayes_ranking_div")
     ),
     fluidRow(
-      bayes_ranking_submodule_result(ns("sub"),
-                                     title = "Ranking panel with selected studies excluded")
+      bayes_ranking_submodule_result(ns("sub"), "Ranking panel with selected studies excluded", "bayes_ranking_div")
     )
   )
 }
@@ -347,8 +360,6 @@ bayes_ranking_module_result <- function(id) {
 
 bayes_ranking_module_rmd <- function(common){ list(
   bayes_ranking_knit = !is.null(common$meta$bayes_ranking$used),
-  bayes_ranking_forest_height_all = common$meta$bayes_ranking$forest_height_all,
-  bayes_ranking_forest_height_sub = common$meta$bayes_ranking$forest_height_sub,
   bayes_ranking_colourblind = common$meta$bayes_ranking$colourblind,
   bayes_ranking_simple = common$meta$bayes_ranking$simple,
   bayes_ranking_network_style = common$meta$bayes_ranking$network_style,

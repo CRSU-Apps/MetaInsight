@@ -16,9 +16,9 @@ core_intro_module_server <- function(id, common, parent_session) {
   steps <- data.frame(c(NA, "Welcome to MetaInsight! This tour will show you various features of the application to help get you started", NA, NA),
                       c("aside[class=\"sidebar\"]", "This panel shows all of the possible modules in the app", "bottom", NA),
                       c("a[data-value=\"How to use\"]", "Detailed instructions can be found in the How To Use tab", "bottom","$('a[data-value=\"How To Use\"]').trigger('click');"),
-                      c("a[data-value=\"setup\"]", "Click on the tabs to move between components", "bottom", "$('a[data-value=\"setup\"]').trigger('click');"),
+                      c("a[data-value=\"setup\"]", "Click on the tabs to move between sections", "bottom", "$('a[data-value=\"setup\"]').trigger('click');"),
                       c("#setupSel", "Select a module to load the options", "bottom", "$('input[value=\"setup_load\"]').trigger('click');"),
-                      c("#setup_loadHelp", "Click on the question mark to view instructions for the module", "bottom", "$('a[data-value=\"Module Guidance\"]').trigger('click');"),
+                      c("#setup_loadHelp", "Click on the question mark to view instructions for the module - Note that these are mostly not yet written", "bottom", "$('a[data-value=\"Module Guidance\"]').trigger('click');"),
                       c("#setup_input_panel", "This panel shows possible options for the module.", "bottom", NA),
                       c("#global_options", "These options affect the whole app - choose the type of model, exclude studies from the sensitivity analysis and choose the format for plot downloads.", "bottom", NA),
                       c("#setup_load-run", "Click the button or press the Enter key on your keyboard to run the module", "bottom", NA),
@@ -32,7 +32,7 @@ core_intro_module_server <- function(id, common, parent_session) {
                       c("a[data-value=\"Save\"]", "You can download a file which saves the state of the app", "left", "$('a[data-value=\"Save\"]').trigger('click');"),
                       c("a[data-value=\"setup\"]", "Next time you visit...", "bottom", "$('a[data-value=\"setup\"]').trigger('click');
                                                                                         $('input[value=\"setup_reload\"]').trigger('click');"),
-                      c("#reload_inputs", "you can upload the file in the setup component to restore the app", "bottom", NA),
+                      c("#reload_inputs", "you can upload the file in the setup section to restore the app", "bottom", NA),
                       c(NA, "You are ready to go!", NA, "$('input[value=\"setup_load\"]').trigger('click');
                                                          $('a[data-value=\"intro\"]').trigger('click');
                                                          $('a[data-value=\"About\"]').trigger('click');")
@@ -62,12 +62,12 @@ core_intro_module_server <- function(id, common, parent_session) {
 
 
   existing_steps <- data.frame(
-    c(NA, "Welcome to MetaInsight v8! This tour will explain what has changed from earlier versions. Nothing has been removed but the interface has been redesigned and analyses are now reproducible.", NA, NA),
+    c(NA, "Welcome to MetaInsight v7.0.0! This tour will explain what has changed from earlier versions. Nothing has been removed but the interface has been redesigned and analyses are now reproducible.", NA, NA),
     c("a[data-value=\"setup\"]", "The tabs at the top move between sections of the app which combines the previous 'Load data' tab and all of the sub-tabs found in the 'Data analysis' tab.", "bottom", "$('a[data-value=\"setup\"]').trigger('click');"),
     c("#setupSel", "Inside each section this panel shows the available 'modules' which correspond to the second layer of tabs in the previous 'Data analysis' tab.", "bottom", "$('input[value=\"setup_load\"]').trigger('click');"),
     c("#setup_input_panel", "All the possible options for the module are shown in this panel, including downloading any outputs.", "bottom", NA),
     c("#setup_load-run", "A major change is that each module must be explicitly run by either clicking the button or pressing the Enter key on your keyboard.", "bottom", NA),
-    c("#setup_loadHelp", "Each module has a guidance page explaining how to use it and some of the technical background", "bottom", "$('a[data-value=\"Module Guidance\"]').trigger('click');"),
+    c("#setup_loadHelp", "Each module has a guidance page explaining how to use it and some of the technical background - Note that these are mostly not yet written", "bottom", "$('a[data-value=\"Module Guidance\"]').trigger('click');"),
     c("#setupSel", "After uploading data, you now need to also configure the analysis.", "bottom", "$('input[value=\"setup_configure\"]').trigger('click');"),
     c("#global_options", "Some options that were previously in the sidebar are now in this panel. You can set the format of plot downloads for all modules in one place", "bottom", NA),
     c("#collapse_table", "As before, once you have uploaded data you can view the list of studies in the table panel", "bottom", NA),
@@ -82,7 +82,7 @@ core_intro_module_server <- function(id, common, parent_session) {
     c("a[data-value=\"Save\"]", "You can also download a file which saves the state of the app and then ...", "left", "$('a[data-value=\"Save\"]').trigger('click');"),
     c("a[data-value=\"setup\"]", "... next time you visit ...", "bottom", "$('a[data-value=\"setup\"]').trigger('click');
                                                                       $('input[value=\"setup_reload\"]').trigger('click');"),
-    c("#reload_inputs", "you can upload the file in the setup component to restore the app", "bottom", NA),
+    c("#reload_inputs", "you can upload the file in the setup section to restore the app", "bottom", NA),
     c(NA, "You are ready to go! Please send any feedback to info@crsu.org.uk", NA, "$('input[value=\"setup_load\"]').trigger('click');
                                                                                     $('a[data-value=\"intro\"]').trigger('click');
                                                                                     $('a[data-value=\"About\"]').trigger('click');")

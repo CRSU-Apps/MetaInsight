@@ -1,0 +1,38 @@
+```{asis, echo = {{baseline_mcmc_knit}}, eval = {{baseline_mcmc_knit}}, include = {{baseline_mcmc_knit}}}
+### Markov chain Monte Carlo
+```
+
+```{r, echo = {{baseline_mcmc_knit}}, include = {{baseline_mcmc_knit}}}
+baseline_mcmc <- baseline_mcmc(baseline_model)
+```
+
+```{asis, echo = {{baseline_mcmc_knit}}, eval = {{baseline_mcmc_knit}}, include = {{baseline_mcmc_knit}}}
+##### Gelman convergence assessment plots
+{r, fig.align='center', fig.width = 9, fig.height = {{baseline_mcmc_height_250}}}
+```
+```{r, echo = {{baseline_mcmc_knit}}, include = {{baseline_mcmc_knit}}}
+cowplot::plot_grid(
+  plotlist = gelman_plots(baseline_mcmc$gelman_data, baseline_mcmc$parameters),
+  ncol = 2
+)
+```
+```{asis, echo = {{baseline_mcmc_knit}}, eval = {{baseline_mcmc_knit}}, include = {{baseline_mcmc_knit}}}
+##### Trace plots
+{r, fig.align='center', fig.width = 9, fig.height = {{baseline_mcmc_height_200}}}
+```
+```{r, echo = {{baseline_mcmc_knit}}, include = {{baseline_mcmc_knit}}}
+cowplot::plot_grid(
+  plotlist = trace_plots(baseline_model$mtcResults, baseline_mcmc$parameters),
+  ncol = 2
+)
+```
+```{asis, echo = {{baseline_mcmc_knit}}, eval = {{baseline_mcmc_knit}}, include = {{baseline_mcmc_knit}}}
+##### Posterior density plots
+{r, fig.align='center', fig.width = 9, fig.height = {{baseline_mcmc_height_200}}}
+```
+```{r, echo = {{baseline_mcmc_knit}}, include = {{baseline_mcmc_knit}}}
+cowplot::plot_grid(
+  plotlist = density_plots(baseline_model$mtcResults, baseline_mcmc$parameters),
+  ncol = 2
+)
+```

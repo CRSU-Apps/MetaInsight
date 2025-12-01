@@ -101,9 +101,11 @@ test_that("FindStudiesIncludingTreatments() finds all studies containing treatme
     T = c("Paracetamol", "Exercise", "Sleep", "Alcohol", "Bacon", "Denial", "Paracetamol", "Denial", "Exercise")
   )
 
-  studies <- FindStudiesIncludingTreatments(data = data, treatments = c("Paracetamol", "Exercise"))
+  studies_any <- FindStudiesIncludingTreatments(data = data, treatments = c("Paracetamol", "Exercise"), all_or_any = "any")
+  studies_all <- FindStudiesIncludingTreatments(data = data, treatments = c("Paracetamol", "Exercise"), all_or_any = "all")
 
-  expect_equal(sort(studies), c("A", "C", "D"), label = format_vector_to_string(sort(studies)))
+  expect_equal(sort(studies_any), c("A", "C", "D"), label = format_vector_to_string(sort(studies_any)))
+  expect_equal(sort(studies_all), "A", label = format_vector_to_string(sort(studies_all)))
 })
 
 test_that("FindStudiesIncludingTreatments() finds all studies containing treatments for wide data", {
@@ -114,9 +116,11 @@ test_that("FindStudiesIncludingTreatments() finds all studies containing treatme
     T.3 = c(NA, NA, "Paracetamol", NA)
   )
 
-  studies <- FindStudiesIncludingTreatments(data = data, treatments = c("Paracetamol", "Exercise"))
+  studies_any <- FindStudiesIncludingTreatments(data = data, treatments = c("Paracetamol", "Exercise"), all_or_any = "any")
+  studies_all <- FindStudiesIncludingTreatments(data = data, treatments = c("Paracetamol", "Exercise"), all_or_any = "all")
 
-  expect_equal(sort(studies), c("A", "C", "D"), label = format_vector_to_string(sort(studies)))
+  expect_equal(sort(studies_any), c("A", "C", "D"), label = format_vector_to_string(sort(studies_any)))
+  expect_equal(sort(studies_all), "A", label = format_vector_to_string(sort(studies_all)))
 })
 
 test_that("VectorWithItemFirst() returns unchanged vector when intended first item not in vector", {
@@ -203,10 +207,10 @@ test_that("FindExpectedReferenceTreatment() returns first matching treatment whe
   expect_equal(!!result, "Placebo")
 })
 
-test_that(".FixColumnNameCases() fixes cases for continuous long data with covariate", {
-  data <- CleanData(read.csv("data/Cont_long_continuous_cov.csv"))
-  names(data) <- c("sTuDy", "t", "n", "mEaN", "sD", "CoVaR.age")
-  allowed_names = c("Study", "T", "N", "Mean", "SD", "covar.age")
+test_that(".FixColumnNameCases() fixes cases for continuous long data with covariate and QA", {
+  data <- CleanData(read.csv("data/Cont_long_quality_assessment.csv"))
+  names(data) <- c("sTuDy", "t", "n", "mEaN", "sD", "CoVaR.age", "RoB", "iNdIrEcTnEsS", "RoB.component1", "ROB.component2")
+  allowed_names = c("Study", "T", "N", "Mean", "SD", "covar.age", "rob", "indirectness", "rob.component1", "rob.component2")
 
   expect(all(!names(data) %in% allowed_names), failure_message = "Column names were not setup for the test correctly.")
 
@@ -217,14 +221,14 @@ test_that(".FixColumnNameCases() fixes cases for continuous long data with covar
                expected.label = format_vector_to_string(allowed_names))
 })
 
-test_that(".FixColumnNameCases() fixes cases for continuous wide data with covariate", {
-  data <- CleanData(read.csv("data/Cont_wide_continuous_cov.csv"))
+test_that(".FixColumnNameCases() fixes cases for continuous wide data with covariate and QA", {
+  data <- CleanData(read.csv("data/Cont_wide_quality_assessment.csv"))
 
   arm_fields = c("t", "n", "mEaN", "sD")
-  names(data) <- c("sTuDy", paste0(arm_fields, ".1"), paste0(arm_fields, ".2"), paste0(arm_fields, ".3"), "CoVaR.age")
+  names(data) <- c("sTuDy", paste0(arm_fields, ".1"), paste0(arm_fields, ".2"), paste0(arm_fields, ".3"), "CoVaR.age", "RoB", "iNdIrEcTnEsS", "RoB.component1", "ROB.component2")
 
   allowed_arm_fields = c("T", "N", "Mean", "SD")
-  allowed_names = c("Study", paste0(allowed_arm_fields, ".1"), paste0(allowed_arm_fields, ".2"), paste0(allowed_arm_fields, ".3"), "covar.age")
+  allowed_names = c("Study", paste0(allowed_arm_fields, ".1"), paste0(allowed_arm_fields, ".2"), paste0(allowed_arm_fields, ".3"), "covar.age", "rob", "indirectness", "rob.component1", "rob.component2")
 
   expect(all(!names(data) %in% allowed_names), failure_message = "Column names were not setup for the test correctly.")
 
@@ -235,10 +239,10 @@ test_that(".FixColumnNameCases() fixes cases for continuous wide data with covar
                expected.label = format_vector_to_string(allowed_names))
 })
 
-test_that(".FixColumnNameCases() fixes cases for binary long data with covariate", {
-  data <- CleanData(read.csv("data/Binary_long_continuous_cov.csv"))
-  names(data) <- c("sTuDy", "t", "r", "n", "CoVaR.age")
-  allowed_names = c("Study", "T", "R", "N", "covar.age")
+test_that(".FixColumnNameCases() fixes cases for binary long data with covariate and QA", {
+  data <- CleanData(read.csv("data/Binary_long_quality_assessment.csv"))
+  names(data) <- c("sTuDy", "t", "r", "n", "CoVaR.age", "RoB", "iNdIrEcTnEsS", "RoB.component1", "ROB.component2")
+  allowed_names = c("Study", "T", "R", "N", "covar.age", "rob", "indirectness", "rob.component1", "rob.component2")
 
   expect(all(!names(data) %in% allowed_names), failure_message = "Column names were not setup for the test correctly.")
 
@@ -249,14 +253,14 @@ test_that(".FixColumnNameCases() fixes cases for binary long data with covariate
                expected.label = format_vector_to_string(allowed_names))
 })
 
-test_that(".FixColumnNameCases() fixes cases for binary wide data with covariate", {
-  data <- CleanData(read.csv("data/Binary_wide_continuous_cov.csv"))
+test_that(".FixColumnNameCases() fixes cases for binary wide data with covariate and QA", {
+  data <- CleanData(read.csv("data/Binary_wide_quality_assessment.csv"))
 
   arm_fields = c("t", "r", "n")
-  names(data) <- c("sTuDy", paste0(arm_fields, ".1"), paste0(arm_fields, ".2"), paste0(arm_fields, ".3"), "CoVaR.age")
+  names(data) <- c("sTuDy", paste0(arm_fields, ".1"), paste0(arm_fields, ".2"), paste0(arm_fields, ".3"), "CoVaR.age", "RoB", "iNdIrEcTnEsS", "RoB.component1", "ROB.component2")
 
   allowed_arm_fields = c("T", "R", "N")
-  allowed_names = c("Study", paste0(allowed_arm_fields, ".1"), paste0(allowed_arm_fields, ".2"), paste0(allowed_arm_fields, ".3"), "covar.age")
+  allowed_names = c("Study", paste0(allowed_arm_fields, ".1"), paste0(allowed_arm_fields, ".2"), paste0(allowed_arm_fields, ".3"), "covar.age", "rob", "indirectness", "rob.component1", "rob.component2")
 
   expect(all(!names(data) %in% allowed_names), failure_message = "Column names were not setup for the test correctly.")
 
