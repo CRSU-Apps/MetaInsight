@@ -1,10 +1,3 @@
-# my PC has a pecularity where the upload of temporary files fails
-if (Sys.getenv("GITHUB_ACTIONS") == "true"){
-  save_file <- tempfile(fileext = ".rds")
-} else {
-  save_file <- "~/save_file.rds"
-}
-
 test_that("The app can be saved after an analysis and the data restored", {
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 60000)
   app$set_inputs(tabs = "setup")

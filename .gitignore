@@ -9,3 +9,4 @@ www.zip
 debug*
 _modules
 inst/shiny/rsconnect
+tests/testthat/temprds

@@ -24,7 +24,7 @@ test_that("Check bayes_model function works as expected", {
 
   # check results are reproducible
   result_2 <- bayes_model(connected, t_df, "Continuous", "MD", "random", "Placebo", 123)
-  expect_true(identical(remove_igraph(result_1), remove_igraph(result_2)))
+  expect_true(identical(remove_igraph(result), remove_igraph(result_2)))
 
 })
 

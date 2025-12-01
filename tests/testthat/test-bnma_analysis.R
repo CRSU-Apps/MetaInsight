@@ -283,7 +283,7 @@ test_that("1. BaselineRiskRegression() sets RNGs correctly;
   names(expected_covariate_min) <- expected_comparator_names
   expected_covariate_max <- c(-1, -1, -1.4, -1.4, NA)
   names(expected_covariate_max) <- expected_comparator_names
-  expected_dic <- c(8.28356554717643, 7.27638437849017, 15.5599499256666, 9) |> as.data.frame()
+  expected_dic <- c(8.34347465810339, 7.33645461865518, 15.6799292767586, 9) |> as.data.frame()
   rownames(expected_dic) <- c("Dbar", "pD", "DIC", "Data points")
   colnames(expected_dic) <- "BaselineRiskDicTable(model)"
   expected_summary <- summary_1

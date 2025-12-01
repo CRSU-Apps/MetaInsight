@@ -24,9 +24,11 @@ test_that("setup_upgrade loads data into common and can be downloaded", {
   app$click("setup_upgrade-run")
   common <- app$get_value(export = "common")
   expect_s3_class(common$upgraded_data, "data.frame")
+  app$wait_for_idle()
   upgraded <- app$get_download("setup_upgrade-download")
   df <- read.csv(upgraded)
   expect_equal(nrow(df), 7)
+  app$stop()
 })
 
 test_that("setup_upgrade returns errors", {
@@ -41,5 +43,6 @@ test_that("setup_upgrade returns errors", {
 
   logger <- app$get_value(export = "logger")
   expect_true(grepl("*Your input data contains 2 treatments*", logger))
+  app$stop()
 })
 

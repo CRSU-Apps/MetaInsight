@@ -35,10 +35,19 @@ fitted_covariate_model <- covariate_model(defined_data_con$main_connected_data,
                                           "Placebo",
                                           123)
 
-# fit a Bayesian model and save it so it can be reloaded in other tests
-bayes_model_path <- "~/temprds/bayes.rds" #tempfile(fileext = ".rds")
-baseline_model_path <- "~/temprds/baseline.rds" #tempfile(fileext = ".rds")
-covariate_model_path <- "~/temprds/covariate.rds" #tempfile(fileext = ".rds")
+# fit models and save them so they can be reloaded in other tests
+# my PC has a pecularity where the upload of temporary files fails
+if (Sys.getenv("GITHUB_ACTIONS") == "true"){
+  bayes_model_path <- tempfile(fileext = ".rds")
+  baseline_model_path <-tempfile(fileext = ".rds")
+  covariate_model_path <- tempfile(fileext = ".rds")
+  save_file <- tempfile(fileext = ".rds")
+} else {
+  bayes_model_path <- testthat::test_path("temprds", "bayes.rds")
+  baseline_model_path <- testthat::test_path("temprds", "baseline.rds")
+  covariate_model_path <- testthat::test_path("temprds", "covariate.rds")
+  save_file <- testthat::test_path("temprds", "save_file.rds")
+}
 
 app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 30000)
 app$upload_file("setup_load-file1" = file.path(test_data_dir, "Cont_long.csv"))

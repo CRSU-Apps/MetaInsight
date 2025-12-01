@@ -35,14 +35,14 @@ test_that("{shinytest2} recording: e2e_covariate_details", {
   app$click("covariate_details-run")
 
   app$wait_for_idle()
-  mcmc <- app$wait_for_value(output = "covariate_details-baseline-mcmc")
+  mcmc <- app$wait_for_value(output = "covariate_details-covariate-mcmc")
   expect_match(mcmc, "<table")
-  priors <- app$wait_for_value(output = "covariate_details-baseline-priors")
+  priors <- app$wait_for_value(output = "covariate_details-covariate-priors")
   expect_match(priors, "<table")
   mcmc_dl <- app$get_download("covariate_details-covariate-download_mcmc")
   expect_equal(nrow(read.csv(mcmc_dl)), 4)
   priors_dl <- app$get_download("covariate_details-covariate-download_priors")
-  expect_equal(nrow(read.csv(priors_dl)), 3)
+  expect_equal(nrow(read.csv(priors_dl)), 4)
 
   app$set_inputs("covariate_details-covariate-tabs" = "sims")
   for (n in 1:4){
@@ -50,23 +50,23 @@ test_that("{shinytest2} recording: e2e_covariate_details", {
     expect_gt(nrow(read.csv(sim)), 10)
   }
 
-  app$set_inputs("covariate_details-baseline-tabs" = "code")
-  code <- app$wait_for_value(output = "covariate_details-baseline-code")
+  app$set_inputs("covariate_details-covariate-tabs" = "code")
+  code <- app$wait_for_value(output = "covariate_details-covariate-code")
   expect_match(code, "model")
   code_dl <- app$get_download("covariate_details-covariate-download_code")
   expect_gt(length(readLines(code_dl)), 10)
 
-  app$set_inputs("covariate_details-baseline-tabs" = "inits")
-  inits <- app$wait_for_value(output = "covariate_details-baseline-inits")
+  app$set_inputs("covariate_details-covariate-tabs" = "inits")
+  inits <- app$wait_for_value(output = "covariate_details-covariate-inits")
   expect_match(inits, "Wichmann-Hill")
   for (n in 1:4){
     init <- app$get_download(glue::glue("covariate_details-covariate-download_inits_{n}"))
     expect_gt(length(readLines(init)), 10)
   }
 
-  app$set_inputs("covariate_details-baseline-tabs" = "dev")
-  app$wait_for_value(output = "covariate_details-baseline-dev_mtc")
-  dev_mtc <- app$wait_for_value(output = "covariate_details-baseline-dev_mtc")
+  app$set_inputs("covariate_details-covariate-tabs" = "dev")
+  app$wait_for_value(output = "covariate_details-covariate-dev_mtc")
+  dev_mtc <- app$wait_for_value(output = "covariate_details-covariate-dev_mtc")
   expect_match(dev_mtc, "dev\\.ab")
 
   app$stop()
