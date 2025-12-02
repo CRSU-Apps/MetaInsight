@@ -271,8 +271,20 @@ covariate_regression_module_server <- function(id, common, parent_session) {
 
 metaregression_regression_module_result <- function(id) {
   ns <- NS(id)
+  module_id <- strsplit(id, "-")[[1]][1]
+
   div(align = "center",
-      uiOutput(ns("plot"))
+      uiOutput(ns("plot")),
+      h5(class = glue::glue("{module_id}_div"), style = "text-align:left",
+         "This graph was adapted from",
+         tags$em("Graphs of study contributions and covariate distributions for network meta-regression"),
+         ", Sarah Donegan, Sofia Dias, Catrin Tudur-Smith, Valeria Marinho, Nicky J Welton, ",
+         tags$em("Res Syn Meth"),
+         ", 2018;",
+         tags$b(9),
+         ":243-260.",
+         tags$b(tags$a("DOI: 10.1002/jrsm.1292", href = "https://onlinelibrary.wiley.com/doi/10.1002/jrsm.1292", target = "_blank"))
+         )
   )
 }
 

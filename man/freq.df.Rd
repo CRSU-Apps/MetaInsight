@@ -4,7 +4,7 @@
 \alias{freq.df}
 \title{Frequentist NMA.}
 \usage{
-freq.df(model, outcome, dataf, lstx, ref)
+freq.df(model, outcome, dataf, ref)
 }
 \arguments{
 \item{model}{"fixed" or "random".}
@@ -12,8 +12,6 @@ freq.df(model, outcome, dataf, lstx, ref)
 \item{outcome}{"MD", "SMD", "OR", "RR", or "RD".}
 
 \item{dataf}{Data in contrast form with treatment labels, typically output from labelmatching.df().}
-
-\item{lstx}{Vector of treatment labels. (TM: this parameter is not used. Removing it has knock on effects due to parameters not being named when this function is called. To be removed in a later task).}
 
 \item{ref}{Reference treatment.}
 }

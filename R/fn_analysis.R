@@ -106,10 +106,9 @@ labelmatching.df <- function(d1, ntx, treat_list) {
 #' @param model "fixed" or "random".
 #' @param outcome "MD", "SMD", "OR", "RR", or "RD".
 #' @param dataf Data in contrast form with treatment labels, typically output from labelmatching.df().
-#' @param lstx Vector of treatment labels. (TM: this parameter is not used. Removing it has knock on effects due to parameters not being named when this function is called. To be removed in a later task).
 #' @param ref Reference treatment.
 #' @return NMA results from netmeta::netmeta().
-freq.df <- function(model, outcome, dataf, lstx, ref) {
+freq.df <- function(model, outcome, dataf, ref) {
   net1 <- netmeta::netmeta(TE = TE, seTE = seTE, treat1 = treat1, treat2 = treat2, studlab = studlab, data = dataf, subset=NULL,
                   sm = outcome, level = 0.95, level.ma = 0.95, random = (model == "random"),
                   common = (model == "fixed"), reference.group = ref, all.treatments = NULL, seq = NULL,
