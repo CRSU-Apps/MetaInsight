@@ -4,7 +4,7 @@
 \alias{LongToWide}
 \title{Convert long format to wide format (including covariate columns)}
 \usage{
-LongToWide(long_data, outcome_type)
+LongToWide(long_data, outcome)
 }
 \arguments{
 \item{long_data}{Data frame of long format}
