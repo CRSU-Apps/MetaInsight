@@ -152,56 +152,41 @@ scat_plot <- function(model, deviance, model_type, outcome_measure, seed) {
     plotly::layout(showlegend = FALSE, xaxis = list(title = "Deviance from NMA model"),
            yaxis = list(title = "Deviance from UME inconsistency model"))
 
-  if (ncol(c) > 3) {
-    p = p |>
-      plotly::add_trace(data = all,
-                x = ~X3.x, y = ~X3.y, type = 'scatter', mode = 'markers',
-                marker = list(size = 4, color = '#CAEFD1',
-                              line = list(color = 'rgb(0,128,0)',
-                                          width = 2)),
-                hoverinfo = 'text',
-                text = ~paste('</br>', all$names,
-                              '</br> Arm 3',
-                              '</br> Deviance from NMA model:', round(X3.x, digits = 2),
-                              '</br> Deviance from UME model:', round(X3.y, digits = 2)))}
-  if (ncol(c) > 4) {
-    p = p |>
-      plotly::add_trace(data = all,
-                x = ~X4.x, y = ~X4.y, type = 'scatter', mode = 'markers',
-                marker = list(size = 4, color = '#CAEFD1',
-                              line = list(color = 'rgb(0,128,0)',
-                                          width = 2)),
-                hoverinfo = 'text',
-                text = ~paste('</br>', all$names,
-                              '</br> Arm 4',
-                              '</br> Deviance from NMA model:', round(X4.x, digits = 2),
-                              '</br> Deviance from UME model:', round(X4.y, digits = 2)))}
-  if (ncol(c) > 5) {
-    p = p |>
-      plotly::add_trace(data = all,
-                x = ~X5.x, y = ~X5.y, type = 'scatter', mode = 'markers',
-                marker = list(size = 4, color = '#CAEFD1',
-                              line = list(color = 'rgb(0,128,0)',
-                                          width = 2)),
-                hoverinfo = 'text',
-                text = ~paste('</br>', all$names,
-                              '</br> Arm 5',
-                              '</br> Deviance from NMA model:', round(X5.x, digits = 2),
-                              '</br> Deviance from UME model:', round(X5.y, digits = 2)))}
-  if (ncol(c) > 6) {
-    p = p |>
-      plotly::add_trace(data = all,
-                x = ~X6.x, y = ~X6.y, type = 'scatter', mode = 'markers',
-                marker = list(size = 4, color = '#CAEFD1',
-                              line = list(color = 'rgb(0,128,0)',
-                                          width = 2)),
-                hoverinfo = 'text',
-                text = ~paste('</br>', all$names,
-                              '</br> Arm 6',
-                              '</br> Deviance from NMA model:', round(X6.x, digits = 2),
-                              '</br> Deviance from UME model:', round(X6.y, digits = 2)))}
+  if (max_arms >= 3) {
+    for (arm_number in 3:max_arms) {
+      p <- .AddTraceToUmePlot(ume_plot = p, all = all, arm_number = arm_number)
+    }
+  }
+
+  progress$inc(0.2, detail = "Exporting results")
 
   return(list(p = p, y = y))
+}
+
+#' Apply plotly::add_trace to the UME plot when there are more than two arms.
+#'
+#' @param ume_plot The current UME plot.
+#' @param all The full data frame of residual deviances.
+#' @param arm_number Current arm number.
+#' @return 'ume_plot' with additional points added, corresponding to 'arm_number'.
+.AddTraceToUmePlot <- function(ume_plot, all, arm_number) {
+  x_column <- paste0("X", arm_number, ".x")
+  y_column <- paste0("X", arm_number, ".y")
+
+  return(
+    ume_plot %>%
+      add_trace(data = all,
+                x = ~all[, x_column], y = ~all[, y_column], type = 'scatter', mode = 'markers',
+                marker = list(size = 4, color = '#CAEFD1',
+                              line = list(color = 'rgb(0,128,0)',
+                                          width = 2)),
+                hoverinfo = 'text',
+                text = ~paste('</br>', all$names,
+                              '</br> Arm', arm_number,
+                              '</br> Deviance from NMA model:', round(all[, x_column], digits = 2),
+                              '</br> Deviance from UME model:', round(all[, y_column], digits = 2))
+      )
+  )
 }
 
 #' Stem plot
