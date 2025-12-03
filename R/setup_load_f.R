@@ -639,16 +639,16 @@ WideToLong <- function(wide_data, outcome) {
 #' @param long_data Data frame of long format
 #' @param outcome_type Indicator whether outcome is 'Binary' or 'Continuous'
 #' @return Data frame in wide format
-LongToWide <- function(long_data, outcome_type) {
+LongToWide <- function(long_data, outcome) {
   # Specify columns that contain wide data
-  if (outcome_type == "Continuous") {
+  if (outcome == "Continuous") {
     change_cols <- long_data |>
       dplyr::select(c("T", "N", "Mean", "SD"))
-  } else if (outcome_type == "Binary") {
+  } else if (outcome == "Binary") {
     change_cols <- long_data |>
       dplyr::select(c("T", "R", "N"))
   } else {
-    paste0("outcome_type needs to be 'Binary' or 'Continuous'")
+    paste0("outcome needs to be 'Binary' or 'Continuous'")
   }
   # Add arms
   long_data <- long_data |> dplyr::group_by(Study) |> dplyr::mutate(arm = dplyr::row_number())
