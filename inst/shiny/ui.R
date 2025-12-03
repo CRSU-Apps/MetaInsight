@@ -143,6 +143,10 @@ tagList(
             nav_panel(
               'How to use',
               includeMarkdown("Rmd/text_how_to_use.Rmd")
+            ),
+            nav_panel(
+              'Latest updates',
+              includeMarkdown("Rmd/latest_updates.Rmd")
             )
           )
         )

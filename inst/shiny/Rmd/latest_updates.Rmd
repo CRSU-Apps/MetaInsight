@@ -1,0 +1,27 @@
+---
+title: "recent_changes"
+output: html_document
+---
+## Latest updates
+
+The full update history for MetaInsight is available on <a href="https://github.com/CRSU-Apps/MetaInsight/wiki/Full-Update-History" target="_blank">GitHub</a>
+
+### Major update (10 January 2026 v7.0.0)
+- The interface has been redesigned but all functionality has been retained
+- Analyses are now reproducible outside of the app - once you have conducted an analysis, you can download a document which reproduces the analysis.
+- Analyses can be saved and loaded at any point by downloading a file which you can upload at a later date to restore the app
+- Plot downloads have been improved - choose your preferred format in one location for all downloads, and downloads now maatch what is shown in the app more consistently 
+- All models update automatically when parameters are changed
+
+### Minor update (27 May 2025 v6.4.0)
+- Added trace and posterior density plots to Bayesian output
+- Added MCMC details such as prior distributions and number of iterations
+- Set seeds for Bayesian models so that results are reproducible
+
+### Major update (10 July 2024 v6.0.0)
+- Meta-regression has been added. One covariate is allowed, which can be a new continuous or binary variable,
+or baseline risk. Two new graphs are available for meta-regression. The first displays the covariate values grouped by
+treatment and study. The second plots the covariate against relative treatment effects, with credible regions and
+study-level contributions.
+
+
