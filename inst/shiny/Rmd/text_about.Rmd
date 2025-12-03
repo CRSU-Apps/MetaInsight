@@ -10,11 +10,13 @@ output: html_document
 
 Network meta-analysis (NMA) has been increasingly adopted in evidence-based medicine to compare multiple interventions and address the questions such as ‘which intervention is the ‘best’ overall?’. Currently, NMA is primarily conducted in statistical packages such as WinBUGs, R and STATA, and the software coding can be difficult for non-statisticians and hinders the progress of carrying out systematic reviews containing NMA.
 
-MetaInsight is a tool that conducts NMA via the web requiring no specialist software for the user to install but leveraging established analysis routines (specifically the netmeta and gemtc packages in R). The tool is interactive and uses an intuitive ‘point and click’ interface and presents results in visually intuitive and appealing ways. It is hoped that this tool will assist those in conducting NMA who do not have expert statistical programming skills, and, in turn, increase the relevance of published meta-analyses, and in the long term contribute to improved healthcare decision making as a result.
+MetaInsight is a tool that conducts NMA via the web requiring no specialist software for the user to install but leveraging established analysis routines (specifically the <a href = "https://cran.r-project.org/package=bnma" target="_blank">bnma</a>, <a href = "https://cran.r-project.org/package=gemtc" target="_blank">gemtc</a> and <a href = "https://cran.r-project.org/package=netmeta" target="_blank">netmeta</a> packages in R). The tool is interactive and uses an intuitive ‘point and click’ interface and presents results in visually intuitive and appealing ways. It is hoped that this tool will assist those in conducting NMA who do not have expert statistical programming skills, and, in turn, increase the relevance of published meta-analyses, and in the long term contribute to improved healthcare decision making as a result.
+
+Users wishing to analyse large treatment networks or fit complex network meta-analysis models should seek advice from technical experts.
 
 If you use the app please cite it as:
 
-Owen, RK, Bradbury, N, Xin, Y, Cooper, N, Sutton, A. MetaInsight: An interactive web-based tool for analyzing, interrogating, and visualizing network meta-analyses using R-shiny and netmeta. Res Syn Meth. 2019; 10: 569-581.
+Owen, RK, Bradbury, N, Xin, Y, Cooper, N, Sutton, A. <a href = "https://doi.org/10.1002/jrsm.1373" target="_blank">MetaInsight: An interactive web-based tool for analyzing, interrogating, and visualizing network meta-analyses using R-shiny and netmeta.</a> Res Syn Meth. 2019; 10: 569-581.
 
 ### **Attributes of _MetaInsight_**
 
@@ -55,4 +57,6 @@ More information about the UK NIHR Complex Reviews Synthesis Unit (CRSU) can be 
 </p>
 </div>
                   
+### Disclaimer
 
+THE SOFTWARE IS PROVIDED AS IS, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
