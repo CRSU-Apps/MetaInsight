@@ -90,7 +90,6 @@ setup_configure_module_server <- function(id, common, parent_session) {
 
     # TRIGGER
     trigger("setup_configure")
-    show_table(parent_session)
 
   })
 

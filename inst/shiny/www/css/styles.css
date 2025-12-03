@@ -205,6 +205,10 @@ hr {
   background-color: var(--bs-light-bg-subtle);
 }
 
+.accordion {
+  --bs-accordion-active-bg: #85bad4;
+}
+
 .svg_container_ranking {
   display: flex;
   justify-content: center;
