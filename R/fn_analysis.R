@@ -142,7 +142,7 @@ freq_wrap <- function(data, treat_list, model, outcome, CONBI, ref) {
   lstx <- treat_list$Label      #obtain treatment labels
   ntx <- length(lstx)     #count treatment numbers
   d1 <- labelmatching.df(d1 = d0, ntx = ntx, treat_list = treat_list) #matching treatment labels to treatment code
-  net1 <- freq.df(model = model, outcome = outcome, dataf = d1, lstx = lstx, ref = ref) # NMA of all studies
+  net1 <- freq.df(model = model, outcome = outcome, dataf = d1, ref = ref) # NMA of all studies
   return(list(net1 = net1, lstx = lstx, ntx = ntx, d0 = d0, d1 = d1))
 }
 
