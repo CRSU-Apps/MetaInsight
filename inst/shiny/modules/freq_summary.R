@@ -49,7 +49,7 @@ freq_summary_module_server <- function(id, common, parent_session) {
     watch("setup_exclude")
     req(watch("freq_summary") > 0)
     freq_summary(common$freq_sub,
-                 common$treatment_df,
+                 common$subsetted_treatment_df,
                  "Summary Forest Plot with Selected Studies Excluded",
                  common$outcome_measure,
                  common$ranking_option,
