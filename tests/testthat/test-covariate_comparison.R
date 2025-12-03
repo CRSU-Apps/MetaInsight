@@ -40,5 +40,7 @@ test_that("{shinytest2} recording: e2e_covariate_comparison", {
   expect_equal(nrow(df), 6)
   expect_equal(ncol(df), 7)
 
+  app$stop()
+
 })
 

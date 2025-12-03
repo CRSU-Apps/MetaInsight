@@ -38,5 +38,7 @@ test_that("summary_char produces a merged table that can be downloaded", {
   expect_equal(ncol(df), 3) # names are now a column
   expect_equal(nrow(df), 9)
   expect_true(all(c("All.studies", "With.selected.studies.excluded") %in% colnames(df)[2:3]))
+
+  app$stop()
 })
 

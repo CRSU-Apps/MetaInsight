@@ -264,4 +264,6 @@ test_that("sliderinput updates for binary covariate", {
   expect_equal(min_value, "0")
   expect_equal(mean_value, "0")
   expect_equal(max_value, "1")
+
+  app$stop()
 })
