@@ -6,12 +6,24 @@
 {r, fig.align='center', fig.width = {{freq_summary_width}}, fig.height = {{freq_summary_height}}}
 ```
 ```{r, echo = {{freq_summary_knit}}, include = {{freq_summary_knit}}}
-freq_summary(frequentist_all, treatment_df, "All studies", outcome_measure, ranking_option, model_type)
+freq_summary(frequentist_all, 
+             treatment_df, 
+             "All studies", 
+             outcome_measure, 
+             ranking_option, 
+             model_type,
+             seed)
 ```
 
 ```{asis, echo = {{freq_summary_knit}}, eval = {{freq_summary_knit}}, include = {{freq_summary_knit}}}
 {r, fig.align='center', fig.width = {{freq_summary_width}}, fig.height = {{freq_summary_height}}}
 ```
 ```{r, echo = {{freq_summary_knit}}, include = {{freq_summary_knit}}}
-freq_summary(frequentist_sub, treatment_df_sub, "With selected studies excluded", outcome_measure, ranking_option, model_type)
+freq_summary(frequentist_sub, 
+             treatment_df_sub, 
+             "With selected studies excluded", 
+             outcome_measure, 
+             ranking_option, 
+             model_type,
+             seed)
 ```

@@ -5,10 +5,10 @@
 #'
 #' @return Summary forest matrix plot
 #' @export
-freq_summary <- function(freq, treatment_df, plot_title, outcome_measure, ranking_option, model_type, logger = NULL) {
+freq_summary <- function(freq, treatment_df, plot_title, outcome_measure, ranking_option, model_type, seed, logger = NULL) {
 
-  check_param_classes(c("freq", "treatment_df", "plot_title", "outcome_measure", "ranking_option", "model_type"),
-                      c("list", "data.frame", "character", "character", "character", "character"), logger)
+  check_param_classes(c("freq", "treatment_df", "plot_title", "outcome_measure", "ranking_option", "model_type", "seed"),
+                      c("list", "data.frame", "character", "character", "character", "character", "integer"), logger)
 
   if (!ranking_option %in% c("good", "bad")){
     logger |> writeLog(type = "error", "ranking_option must be 'good' or 'bad'")
@@ -44,6 +44,8 @@ freq_summary <- function(freq, treatment_df, plot_title, outcome_measure, rankin
   mtc$rkgram <- matrix(0, nrow = ntx * ntx, ncol = 2)
 
   small_value_desirability <- ifelse(ranking_option == "good", "desirable", "undesirable")
+
+  set.seed(seed)
   rkgrm <- netmeta::rankogram(net1, small.values = small_value_desirability)
 
   if (model_type == "random") {

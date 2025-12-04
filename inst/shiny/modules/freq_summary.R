@@ -1,5 +1,5 @@
 freq_summary_module_ui <- function(id) {
-  ns <- shiny::NS(id)
+  ns <- NS(id)
   tagList(
     actionButton(ns("run"), "Generate plots", icon = icon("arrow-turn-down")),
     div(class = "freq_summary_div",
@@ -42,18 +42,26 @@ freq_summary_module_server <- function(id, common, parent_session) {
                  common$outcome_measure,
                  common$ranking_option,
                  common$model_type,
+                 common$seed,
                  common$logger)
   })
 
   output$plot_sub <- renderPlot({
     watch("setup_exclude")
     req(watch("freq_summary") > 0)
+
+    if (nrow(common$subsetted_treatment_df) < 3){
+      common$logger |> writeLog(type = "error", "Sorry the plot with studies excluded cannot be produced when there are fewer than 3 treatments")
+      return()
+    }
+
     freq_summary(common$freq_sub,
                  common$subsetted_treatment_df,
                  "Summary Forest Plot with Selected Studies Excluded",
                  common$outcome_measure,
                  common$ranking_option,
                  common$model_type,
+                 common$seed,
                  common$logger)
   })
 
@@ -71,7 +79,8 @@ freq_summary_module_server <- function(id, common, parent_session) {
                        "Summary Forest Plot",
                        common$outcome_measure,
                        common$ranking_option,
-                       common$model_type)
+                       common$model_type,
+                       common$seed)
         },
         height = common$meta$freq_summary$height,
         width = common$meta$freq_summary$width
@@ -93,7 +102,8 @@ freq_summary_module_server <- function(id, common, parent_session) {
                        "Summary Forest Plot",
                        common$outcome_measure,
                        common$ranking_option,
-                       common$model_type)
+                       common$model_type,
+                       common$seed)
         },
         height = common$meta$freq_summary$height,
         width = common$meta$freq_summary$width
