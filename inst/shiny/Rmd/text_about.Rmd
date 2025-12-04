@@ -33,7 +33,11 @@ This version of *MetaInsight* was built using *<a href = "https://cran.r-project
 
 ### **Contact us**
 
-Please <a href="mailto:apps@crsu.org.uk" target="_blank">email us</a> with any other questions.
+Please <a href="mailto:apps@crsu.org.uk" target="_blank">email us</a> with any other questions. If you encounter any errors with using the app, please check the <a href = "https://github.com/CRSU-Apps/MetaInsight/wiki/Troubleshooting" target="_blank">troubleshooting page</a> first before contacting us.
+
+### **Disclaimer**
+
+THE SOFTWARE IS PROVIDED AS IS, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ### **Funding and Support Acknowledgement**
 
@@ -43,20 +47,12 @@ Please <a href="mailto:apps@crsu.org.uk" target="_blank">email us</a> with any o
 <div style="display: inline;">
   <img src="CRSU_logo.png" width="40%">
 </div>
-<div>
-  <p>
-    MetaInsight is part of the Complex Reviews Synthesis Unit (CRSU) suite of evidence synthesis apps.
-The development of these apps are currently funded (majority) and overseen by the Evidence Synthesis Group @ CRSU (NIHR153934).
-Further details of other funders and support, current and past, can be found 
-<a href="https://github.com/CRSU-Apps/.github/blob/main/DetailedFundingStatement.pdf" target="_blank">on our GitHub page</a>
-. The views expressed are those of the author(s) and not necessarily those of the NIHR or the Department of Health and Social Care.
-</p>
-<p>
-More information about the UK NIHR Complex Reviews Synthesis Unit (CRSU) can be found 
-<a href="https://www.gla.ac.uk/research/az/evidencesynthesis/apps-materials-guidence/" target="_blank">on our website</a>
-</p>
-</div>
-                  
-### Disclaimer
 
-THE SOFTWARE IS PROVIDED AS IS, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+MetaInsight is part of the Complex Reviews Synthesis Unit (CRSU) suite of evidence synthesis apps.
+The development of these apps was (majority) funded and overseen by the Evidence Synthesis Group @ CRSU (NIHR153934). Further details of other funders and support, current and past, can be found 
+<a href="https://github.com/CRSU-Apps/.github/wiki/Detailed-Funding-Statement" target="_blank">on our GitHub page</a>. The views expressed are those of the author(s) and not necessarily those of the NIHR or the Department of Health and Social Care.
+
+More information about the UK NIHR Complex Reviews Synthesis Unit (CRSU) can be found 
+<a href="https://www.gla.ac.uk/research/az/crsu/" target="_blank">on our website</a>
+          
+
