@@ -21,6 +21,16 @@ bayes_ranking <- function(connected_data, treatment_df, model, ranking_option, c
     return()
   }
 
+  if (!inherits(model, "covariate_model") && !is.na(cov_value)){
+    logger |> writeLog(type = "error", "cov_value can only be provided for covariate models")
+    return()
+  }
+
+  if (inherits(model, "covariate_model") && (is.na(cov_value) || !is.numeric(cov_value))){
+    logger |> writeLog(type = "error", "please specify a numeric cov_value")
+    return()
+  }
+
   longsort <- dataform.df(connected_data, treatment_df, model$outcome)
 
   rankdata(

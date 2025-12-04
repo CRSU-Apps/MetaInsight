@@ -43,6 +43,9 @@ test_that("covariate_ranking produces errors for incorrect data types", {
   expect_error(covariate_ranking(connected, t_df, list(a = 1), "good"), "model must be an object created by baseline_model")
 
   expect_error(covariate_ranking(connected, t_df, fitted_covariate_model, "not good"), "ranking_option must be either good or bad")
+
+  expect_error(covariate_ranking(connected, t_df, fitted_covariate_model, "good"), "please specify a numeric cov_value")
+  expect_error(covariate_ranking(connected, t_df, fitted_covariate_model, "good", "123"), "please specify a numeric cov_value")
 })
 
 test_that("{shinytest2} recording: e2e_covariate_ranking", {
