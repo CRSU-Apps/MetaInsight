@@ -11,6 +11,7 @@ freq_summary(
   outcome_measure,
   ranking_option,
   model_type,
+  seed,
   logger = NULL
 )
 }
@@ -28,6 +29,8 @@ freq_summary(
 \item{ranking_option}{character. \code{good} if the treatment effect is desirable, else \code{bad}}
 
 \item{model_type}{character. Type of model to fit, either \code{random} or \code{fixed}}
+
+\item{seed}{numeric. Seed used to fit the model}
 
 \item{logger}{Stores all notification messages to be displayed in the Log
 Window. Insert the logger reactive list here for running in
