@@ -62,6 +62,7 @@ setup_load_module_server <- function(id, common, parent_session) {
 
     observe({
       watch("setup_load")
+      watch("setup_reload")
       watch("setup_reset")
       if (is.null(common$data)){
         shinyjs::hide("reset")

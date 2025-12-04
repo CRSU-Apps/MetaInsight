@@ -91,6 +91,7 @@ setup_reload_module_server <- function(id, common, modules, parent_session) {
       for (used_module in used_modules){
         trigger(used_module)
       }
+      trigger("setup_reload")
     }
 
     observeEvent(input$goLoad_session, {
