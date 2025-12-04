@@ -43,10 +43,11 @@ if (Sys.getenv("GITHUB_ACTIONS") == "true"){
   covariate_model_path <- tempfile(fileext = ".rds")
   save_file <- tempfile(fileext = ".rds")
 } else {
-  bayes_model_path <- testthat::test_path("temprds", "bayes.rds")
-  baseline_model_path <- testthat::test_path("temprds", "baseline.rds")
-  covariate_model_path <- testthat::test_path("temprds", "covariate.rds")
-  save_file <- testthat::test_path("temprds", "save_file.rds")
+  rds_path <- normalizePath(testthat::test_path("temprds"))
+  bayes_model_path <-  file.path(rds_path, "bayes.rds")
+  baseline_model_path <- file.path(rds_path, "baseline.rds")
+  covariate_model_path <- file.path(rds_path, "covariate.rds")
+  save_file <- file.path(rds_path, "save_file.rds")
 }
 
 app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 30000)
