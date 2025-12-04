@@ -216,7 +216,9 @@ test_that("1. BaselineRiskRegression() sets RNGs correctly;
            2. BaselineRiskRegression() gives reproducible output;
            3. BaselineRiskModelOutput() gives correct output;
            4. BnmaRelativeEffects() calculates relative effects;
-           5. GetReferenceOutcome() obtains imputed outcomes;", {
+           5. GetReferenceOutcome() obtains imputed outcomes;
+           6. GetBnmaMcmcCharacteristics() returns correct MCMC data;
+           7. GetBnmaPriors() returns correct prior distributions.", {
 
   data <- list(ArmLevel = data.frame(
     Study = c(rep("Constantine", 3), rep("Leo", 3), rep("Justinian", 2)),
@@ -353,6 +355,31 @@ test_that("1. BaselineRiskRegression() sets RNGs correctly;
   #Unit test 5
   expect_equal(GetReferenceOutcome(data$ArmLevel, treatment_ids, outcome_type, observed, result_1), expected_reference_outcome)
 
+  #-------------------------------------------------------------------
+
+  expected_mcmc_table <- data.frame(characteristic = c("Chains",
+                                                       "Burn-in iterations",
+                                                       "Sample iterations",
+                                                       "Thinning factor"),
+                                    value = c(4, 5000, 20000, 1))
+
+  #Unit test 6
+  expect_equal(GetBnmaMcmcCharacteristics(result_1), expected_mcmc_table)
+  #-------------------------------------------------------------------
+
+  expected_priors_table <- data.frame(parameter = c("Relative treatment effects",
+                                                    "Intercepts",
+                                                    "Heterogeneity standard deviation",
+                                                    "Covariate mean",
+                                                    "Covariate standard deviation"),
+                                      value = c(" ~ N (0, 10000)",
+                                                " ~ N (0, 10000)",
+                                                " ~ Unif (0, 100)",
+                                                " ~ N (0, 10000)",
+                                                " ~ Unif (0, 100)")
+  )
+  #Unit test 7
+  expect_equal(GetBnmaPriors(result_1), expected_priors_table)
 })
 
 

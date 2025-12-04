@@ -1348,3 +1348,8 @@ test_that("FindMaxArms() returns the correct number of arms for wide data", {
   data <- read.csv(file.path(test_data_dir, "Cont_wide.csv"))
   expect_equal(FindMaxArms(data), 3)
 })
+
+test_that("RoundForDisplay() rounds correctly", {
+  expect_equal(RoundForDisplay(1234.5678), 1234.6)
+  expect_equal(RoundForDisplay(0.000789), 0.0008)
+})
