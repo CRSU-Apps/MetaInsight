@@ -66,6 +66,9 @@ covariate_ranking_module_server <- function(id, common, parent_session) {
 covariate_ranking_module_result <- function(id) {
   ns <- NS(id)
   fluidRow(
+    p("If you export and include the Litmus Rank-O-Gram or the Radial SUCRA plot in your work, please cite it as:
+        Nevill CR, Cooper NJ, Sutton AJ, A multifaceted graphical display, including treatment ranking, was developed
+        to aid interpretation of network meta-analysis, Journal of Clinical Epidemiology (2023)", class = "covariate_ranking_div"),
     bayes_ranking_submodule_result(ns("all"), "Ranking panel for all studies", "covariate_ranking_div")
   )
 }
