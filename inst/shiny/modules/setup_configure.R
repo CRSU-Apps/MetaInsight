@@ -6,6 +6,7 @@ setup_configure_module_ui <- function(id) {
                  choices = c("Mean Difference (MD)" = "MD", "Standardised Mean Difference (SMD)" = "SMD")),
     radioButtons(ns("ranking_option"), label = "For treatment rankings, values lower than the mean are:",
                  choices = c("Desirable" = "good", "Undesirable" = "bad")),
+    numericInput(ns("seed"), add_tooltip("Seed value", "Normally suitable to leave as the default value"), value = 0, step = 1),
     actionButton(ns("run"), "Configure analysis", icon = icon("arrow-turn-down"))
   )
 }
@@ -33,6 +34,7 @@ setup_configure_module_server <- function(id, common, parent_session) {
     updateRadioButtons(session, "outcome_measure", outcome_label, outcome_choices)
     updateRadioButtons(session, "ranking_option", rank_label,
                        selected = RankingOrder(common$outcome, !common$is_data_uploaded))
+    updateNumericInput(session, "seed", value = common$seed)
     shinyjs::runjs("Shiny.setInputValue('setup_configure-ready', 'complete');")
   })
 
@@ -61,6 +63,7 @@ setup_configure_module_server <- function(id, common, parent_session) {
                           common$logger)
 
     # LOAD INTO COMMON ####
+    common$seed <- input$seed
     common$wrangled_data <- result$wrangled_data
     common$disconnected_indices <- result$disconnected_indices
     common$main_connected_data <- result$main_connected_data
@@ -99,7 +102,8 @@ setup_configure_module_server <- function(id, common, parent_session) {
       ### Manual save end
       reference_treatment = input$reference_treatment,
       ranking_option = input$ranking_option,
-      outcome = input$outcome)
+      outcome = input$outcome,
+      seed = input$seed)
     },
     load = function(state) {
       ### Manual load start
@@ -107,6 +111,7 @@ setup_configure_module_server <- function(id, common, parent_session) {
       updateSelectizeInput(session, "reference_treatment", selected = state$reference_treatment, choices = common$treatment_df$Label)
       updateRadioButtons(session, "ranking_option", selected = state$ranking_option)
       updateRadioButtons(session, "outcome", selected = state$outcome)
+      updateNumericInput(session, "seed", value = state$seed)
     }
   ))
 })
