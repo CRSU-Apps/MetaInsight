@@ -1,7 +1,18 @@
-test_that("freq_summary produces errors for incorrect data types and invalid values", {
+freq_data <- defined_data_con$freq_all
+treatment_data <- defined_data_con$treatment_df
 
-  freq_data <- defined_data_con$freq_all
-  treatment_data <- defined_data_con$treatment_df
+test_that("freq_summary produces errors for incorrect data types and invalid values", {
+  result <- freq_summary(freq_data, treatment_data, "Title", "OR", "good", "random", 999)
+
+  expect_match(result$svg, "<svg")
+  expect_gt(result$width, 100)
+  expect_lt(result$width, 1000)
+  expect_gt(result$height, 100)
+  expect_lt(result$height, 1000)
+
+})
+
+test_that("freq_summary produces errors for incorrect data types and invalid values", {
 
   expect_error(freq_summary("not_a_list", treatment_data, "Title", "OR", "good", "random", 999), "freq must be of class list")
   expect_error(freq_summary(freq_data, "not_a_dataframe", "Title", "OR", "good", "random", 999), "treatment_df must be of class data.frame")
@@ -32,8 +43,8 @@ test_that("freq_summary produces downloadable plots", {
   plot_all <- app$wait_for_value(output = "freq_summary-plot_all")
   plot_sub <- app$wait_for_value(output = "freq_summary-plot_sub")
 
-  expect_equal(substr(plot_all$src, 1, 10), "data:image")
-  expect_equal(substr(plot_sub$src, 1, 10), "data:image")
+  expect_match(plot_all$html, "<svg")
+  expect_match(plot_sub$html, "<svg")
 
   test_plot_downloads(app, "freq_summary")
 

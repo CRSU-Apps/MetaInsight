@@ -130,22 +130,33 @@ freq_summary <- function(freq, treatment_df, plot_title, outcome_measure, rankin
     }
   }
 
+  height_and_width <- 2.5 * nrow(treatment_df)
+
   #Dynamic text size for the means and confidence intervals
   ucex <- max(1, 2 - 0.12 * ntx)
 
-  prjtitle <- plot_title
-  mtcMatrixCont(
-    prjtitle,
-    ntx,
-    lstx,
-    mtc,
-    ma,
-    outcome_measure,
-    bpredd = TRUE,
-    bkey = TRUE,
-    p.only = ntx,
-    ucex = ucex
-  )
+  svg <- svglite::xmlSVG({
+    mtcMatrixCont(
+      plot_title,
+      ntx,
+      lstx,
+      mtc,
+      ma,
+      outcome_measure,
+      bpredd = TRUE,
+      bkey = TRUE,
+      p.only = ntx,
+      ucex = ucex
+    )
+  },
+  width = height_and_width,
+  height = height_and_width,
+  web_fonts = list(
+    arimo = "https://fonts.googleapis.com/css2?family=Arimo:wght@400;700&display=swap")
+  ) |> crop_svg()
+
+  return(svg)
+
 }
 
 #' MTC & MA estimates for Forest Matrix plot - used in for loop in multiplot function.

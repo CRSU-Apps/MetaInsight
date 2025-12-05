@@ -29,16 +29,13 @@ freq_summary_module_server <- function(id, common, parent_session) {
     trigger("freq_summary")
   })
 
-  output$plot_all <- renderPlot({
+  svg_all <- reactive({
     watch("model")
     req(watch("freq_summary") > 0)
-    shinyjs::show(selector = ".freq_summary_div")
     common$meta$freq_summary$used <- TRUE
-    common$meta$freq_summary$height <- 2.5 * nrow(common$treatment_df)
-    common$meta$freq_summary$width <- 2.5 * nrow(common$treatment_df)
     freq_summary(common$freq_all,
                  common$treatment_df,
-                 "Summary Forest Plot",
+                 "Summary forest plot for all studies",
                  common$outcome_measure,
                  common$ranking_option,
                  common$model_type,
@@ -46,10 +43,9 @@ freq_summary_module_server <- function(id, common, parent_session) {
                  common$logger)
   })
 
-  output$plot_sub <- renderPlot({
+  svg_sub <- reactive({
     watch("setup_exclude")
     req(watch("freq_summary") > 0)
-
     if (nrow(common$subsetted_treatment_df) < 3){
       common$logger |> writeLog(type = "error", "Sorry the plot with studies excluded cannot be produced when there are fewer than 3 treatments")
       return()
@@ -57,7 +53,7 @@ freq_summary_module_server <- function(id, common, parent_session) {
 
     freq_summary(common$freq_sub,
                  common$subsetted_treatment_df,
-                 "Summary Forest Plot with Selected Studies Excluded",
+                 "Summary forest plot with selected studies excluded",
                  common$outcome_measure,
                  common$ranking_option,
                  common$model_type,
@@ -65,26 +61,26 @@ freq_summary_module_server <- function(id, common, parent_session) {
                  common$logger)
   })
 
+  output$plot_all <- renderUI({
+    req(svg_all())
+    div(class = "svg_container",
+        HTML(svg_all()$svg)
+    )
+  })
+
+  output$plot_sub <- renderUI({
+    req(svg_sub())
+    div(class = "svg_container",
+        HTML(svg_sub()$svg)
+        )
+  })
+
   output$download_all <- downloadHandler(
     filename = function() {
       paste0("MetaInsight_summary_forest_all.", common$download_format)
     },
     content = function(file) {
-      write_plot(
-        file = file,
-        type = common$download_format,
-        renderFunction = function() {
-          freq_summary(common$freq_all,
-                       common$treatment_df,
-                       "Summary Forest Plot",
-                       common$outcome_measure,
-                       common$ranking_option,
-                       common$model_type,
-                       common$seed)
-        },
-        height = common$meta$freq_summary$height,
-        width = common$meta$freq_summary$width
-      )
+      write_svg_plot(file, common$download_format, svg_all())
     }
   )
 
@@ -93,21 +89,7 @@ freq_summary_module_server <- function(id, common, parent_session) {
       paste0("MetaInsight_summary_forest_sub.", common$download_format)
     },
     content = function(file) {
-      write_plot(
-        file = file,
-        type = common$download_format,
-        renderFunction = function() {
-          freq_summary(common$freq_sub,
-                       common$treatment_df,
-                       "Summary Forest Plot",
-                       common$outcome_measure,
-                       common$ranking_option,
-                       common$model_type,
-                       common$seed)
-        },
-        height = common$meta$freq_summary$height,
-        width = common$meta$freq_summary$width
-      )
+      write_svg_plot(file, common$download_format, svg_sub())
     }
   )
 })
@@ -116,14 +98,16 @@ freq_summary_module_server <- function(id, common, parent_session) {
 freq_summary_module_result <- function(id) {
   ns <- NS(id)
   tagList(
-    plotOutput(ns("plot_all"), height = "700px"),
-    plotOutput(ns("plot_sub"), height = "700px")
+    div(align = "center",
+      div(style = "max-width: 700px;",
+          uiOutput(ns("plot_all"))),
+      div(style = "max-width: 700px;",
+          uiOutput(ns("plot_sub")))
+    )
   )
 }
 
 freq_summary_module_rmd <- function(common) {
-  list(freq_summary_knit = !is.null(common$meta$freq_summary$used),
-       freq_summary_height = common$meta$freq_summary$height,
-       freq_summary_width = common$meta$freq_summary$width)
+  list(freq_summary_knit = !is.null(common$meta$freq_summary$used))
 }
 
