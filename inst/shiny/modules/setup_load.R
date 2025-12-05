@@ -110,7 +110,7 @@ setup_load_module_server <- function(id, common, parent_session) {
         if (result$is_data_uploaded){
           common$logger |> writeLog(type = "complete", "Data has been uploaded successfully")
         } else {
-          common$logger |> writeLog(type = "complete", glue::glue("Default {tolower(input$outcome)} data has been loaded"))
+          common$logger |> writeLog(type = "complete", glue("Default {tolower(input$outcome)} data has been loaded"))
         }
       }
 
@@ -136,11 +136,11 @@ setup_load_module_server <- function(id, common, parent_session) {
     })
 
     output$download <- downloadHandler(
-      filename = glue::glue("MetaInsight_{tolower(input$outcome)}_{input$format}.csv"),
+      filename = glue("MetaInsight_{tolower(input$outcome)}_{input$format}.csv"),
       content = function(file) {
         file.copy(
           system.file("extdata",
-                      glue::glue("{tolower(input$outcome)}_{input$format}.csv"),
+                      glue("{tolower(input$outcome)}_{input$format}.csv"),
                       package = "metainsight"),
           file)
       }

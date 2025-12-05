@@ -8,9 +8,9 @@ covariate_deviance_module_ui <- function(id) {
 metaregression_deviance_module_server <- function(id, common, run) {
   moduleServer(id, function(input, output, session) {
 
-    module_id <- glue::glue("{id}_deviance")
-    model <- glue::glue("{id}_model")
-    model_fit <- glue::glue("{id}_model_fit")
+    module_id <- glue("{id}_deviance")
+    model <- glue("{id}_model")
+    model_fit <- glue("{id}_model_fit")
 
     hide_and_show(module_id, show = FALSE)
 
@@ -22,11 +22,11 @@ metaregression_deviance_module_server <- function(id, common, run) {
       req(watch(module_id) > 0 || run() > 0)
 
       if (is.null(common[[model]])){
-        common$logger |> writeLog(type = "error", go_to = model, glue::glue("Please fit the {id} model first"))
+        common$logger |> writeLog(type = "error", go_to = model, glue("Please fit the {id} model first"))
         return()
       }
 
-      common$logger |> writeLog(type = "starting", glue::glue("Generating {id} deviance plots"))
+      common$logger |> writeLog(type = "starting", glue("Generating {id} deviance plots"))
       common$tasks[[module_id]]$invoke(common[[model]],
                                        async = TRUE)
       common$meta[[module_id]]$used <- TRUE
@@ -37,16 +37,16 @@ metaregression_deviance_module_server <- function(id, common, run) {
       result <- common$tasks[[module_id]]$result()
       result_all$suspend()
       common[[module_id]] <- result
-      common$logger |> writeLog(type = "complete", glue::glue("{stringr::str_to_sentence(id)} deviance plots have been generated"))
+      common$logger |> writeLog(type = "complete", glue("{stringr::str_to_sentence(id)} deviance plots have been generated"))
       trigger(module_id)
     })
 
     output$stem <- plotly::renderPlotly({
       watch(module_id)
       req(common[[module_id]])
-      on.exit(shinyjs::show(selector = glue::glue(".{module_id}_div")))
+      on.exit(shinyjs::show(selector = glue(".{module_id}_div")))
       # workaround for testing
-      on.exit(shinyjs::runjs(glue::glue("Shiny.setInputValue('{module_id}-complete', 'complete');")), add = TRUE)
+      on.exit(shinyjs::runjs(glue("Shiny.setInputValue('{module_id}-complete', 'complete');")), add = TRUE)
       common[[module_id]]$stem_plot
     })
 
@@ -72,7 +72,7 @@ metaregression_deviance_module_result <- function(id, package, class) {
   tagList(
     div(align = "center",
         div(class = class, style = "max-width: 800px;",
-            h4(glue::glue("The {package} package does not currently include unrelated-mean-effects meta-regression models, therefore the consistency vs UME graph that is displayed in the deviance report module of the Bayesian network meta-analysis section is not available here.")),
+            h4(glue("The {package} package does not currently include unrelated-mean-effects meta-regression models, therefore the consistency vs UME graph that is displayed in the deviance report module of the Bayesian network meta-analysis section is not available here.")),
             h5("Per-arm residual deviance for covariate model"),
             plotly::plotlyOutput(ns("stem")),
             deviance_annotations[[2]],

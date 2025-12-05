@@ -41,7 +41,7 @@ bayes_nodesplit_submodule_server <- function(id, common, nodesplit, run){
 
     output$download <- downloadHandler(
       filename = function(){
-          glue::glue("MetaInsight_nodesplit_{id}.{common$download_format}")
+          glue("MetaInsight_nodesplit_{id}.{common$download_format}")
       },
       content = function(file) {
 

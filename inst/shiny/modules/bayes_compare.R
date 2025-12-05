@@ -28,7 +28,7 @@ bayes_compare_submodule_server <- function(id, common, run){
 
     output$download <- downloadHandler(
       filename = function(){
-         glue::glue("MetaInsight_bayesian_comparison_{id}.csv")
+         glue("MetaInsight_bayesian_comparison_{id}.csv")
       },
       content = function(file) {
         write.csv(bayes_compare(common[[paste0("bayes_", id)]]), file)

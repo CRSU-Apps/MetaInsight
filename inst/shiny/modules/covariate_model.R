@@ -28,7 +28,7 @@ covariate_model_module_server <- function(id, common, parent_session) {
         mean <- mean(common$main_connected_data[[common$covariate_column]])
         max <- max(common$main_connected_data[[common$covariate_column]])
         log_val <- round(log10(max - min))
-        label <- glue::glue("Covariate value ({common$covariate_name})")
+        label <- glue("Covariate value ({common$covariate_name})")
         if (common$covariate_type == "Continuous"){
           step <- 10 ** (log_val - 2)
           updateSliderInput(session, "covariate_value", min = min, max = max, value = mean, step = step, label = label)
@@ -166,7 +166,7 @@ covariate_model_module_server <- function(id, common, parent_session) {
           covariate_min = covariate_min,
           covariate_max = covariate_max,
           covariate_step = ifelse(common$covariate_type == "Continuous", step, 1),
-          covariate_label = glue::glue("Covariate value ({common$covariate_name})"),
+          covariate_label = glue("Covariate value ({common$covariate_name})"),
           covariate_tick = ifelse(common$covariate_type == "Continuous", TRUE, FALSE),
           ### Manual save end
           covariate_value = input$covariate_value,

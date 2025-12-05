@@ -39,7 +39,7 @@ bayes_forest_submodule_server <- function(id, common, model, run, title){
 
     output$download <- downloadHandler(
       filename = function() {
-        glue::glue("MetaInsight_bayesian_forest_plot_{id}.{common$download_format}")
+        glue("MetaInsight_bayesian_forest_plot_{id}.{common$download_format}")
       },
       content = function(file) {
 

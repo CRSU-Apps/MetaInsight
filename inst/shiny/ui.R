@@ -101,7 +101,7 @@ tagList(
             'Results',
             lapply(COMPONENTS, function(component) {
               conditionalPanel(
-                glue::glue("input.tabs == '{component}'"),
+                glue("input.tabs == '{component}'"),
                 insert_modules_results(component)
               )
             }),

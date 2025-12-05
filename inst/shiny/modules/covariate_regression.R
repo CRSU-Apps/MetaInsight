@@ -78,7 +78,7 @@ metaregression_regression_module_ui <- function(id, parent_id){
       )
     ),
     input_task_button(ns("run"), "Generate plot", type = "default", icon = icon("arrow-turn-down")),
-    div(class = glue::glue("{parent_id}_div download_buttons"),
+    div(class = glue("{parent_id}_div download_buttons"),
         downloadButton(ns("download"), "Download plot")
     )
   )
@@ -94,11 +94,11 @@ covariate_regression_module_ui <- function(id) {
 metaregression_regression_module_server <- function(id, common) {
   moduleServer(id, function(input, output, session) {
 
-    module_id <- glue::glue("{id}_regression")
-    model <- glue::glue("{id}_model")
-    model_fit <- glue::glue("{id}_model_fit")
+    module_id <- glue("{id}_regression")
+    model <- glue("{id}_model")
+    model_fit <- glue("{id}_model_fit")
 
-    init(glue::glue("{module_id}_plot"))
+    init(glue("{module_id}_plot"))
 
     hide_and_show(module_id, show = FALSE)
 
@@ -132,7 +132,7 @@ metaregression_regression_module_server <- function(id, common) {
 
     observeEvent(input$run, {
       if (is.null(common[[model]])){
-        common$logger |> writeLog(type = "error", go_to = glue::glue("{id}_model"), glue::glue("Please fit the {id} model first"))
+        common$logger |> writeLog(type = "error", go_to = glue("{id}_model"), glue("Please fit the {id} model first"))
         return()
       } else {
         trigger(module_id)
@@ -144,9 +144,9 @@ metaregression_regression_module_server <- function(id, common) {
       req((watch(module_id) > 0 && any(!is.null(common[[model]]), watch(model_fit) > 0)))
 
       if (is.null(common[[module_id]])){
-        common$logger |> writeLog(type = "starting", glue::glue("Calculating {id} regression plot data"))
+        common$logger |> writeLog(type = "starting", glue("Calculating {id} regression plot data"))
       } else {
-        common$logger |> writeLog(type = "starting", glue::glue("Updating {id} regression plot data"))
+        common$logger |> writeLog(type = "starting", glue("Updating {id} regression plot data"))
       }
 
       common$tasks[[module_id]]$invoke(common[[model]],
@@ -168,20 +168,20 @@ metaregression_regression_module_server <- function(id, common) {
       regress_result$suspend()
       if (inherits(result, "list")){
         common[[module_id]] <- result
-        shinyjs::runjs(glue::glue("Shiny.setInputValue('{module_id}-complete', 'complete');"))
-        common$logger |> writeLog(type = "complete", glue::glue("{stringr::str_to_title(id)} regression plot data has been calculated"))
+        shinyjs::runjs(glue("Shiny.setInputValue('{module_id}-complete', 'complete');"))
+        common$logger |> writeLog(type = "complete", glue("{stringr::str_to_title(id)} regression plot data has been calculated"))
       } else {
         common$logger |> writeLog(type = "error", result)
       }
 
-      trigger(glue::glue("{module_id}_plot"))
+      trigger(glue("{module_id}_plot"))
     })
 
     svg <- reactive({
       watch(module_id) # enable reset
-      watch(glue::glue("{module_id}_plot"))
+      watch(glue("{module_id}_plot"))
       req(common[[module_id]])
-      on.exit(shinyjs::show(selector = glue::glue(".{module_id}_div")))
+      on.exit(shinyjs::show(selector = glue(".{module_id}_div")))
 
       # METADATA ####
       common$meta[[module_id]]$used <- TRUE
@@ -221,7 +221,7 @@ metaregression_regression_module_server <- function(id, common) {
 
     output$download <- downloadHandler(
       filename = function() {
-        return(glue::glue("MetaInsight_{id}_regression_plot.{common$download_format}"))
+        return(glue("MetaInsight_{id}_regression_plot.{common$download_format}"))
       },
       content = function(file) {
         write_svg_plot(file, common$download_format, svg())
@@ -275,7 +275,7 @@ metaregression_regression_module_result <- function(id) {
 
   div(align = "center",
       uiOutput(ns("plot")),
-      h5(class = glue::glue("{module_id}_div"), style = "text-align:left",
+      h5(class = glue("{module_id}_div"), style = "text-align:left",
          "This graph was adapted from",
          tags$em("Graphs of study contributions and covariate distributions for network meta-regression"),
          ", Sarah Donegan, Sofia Dias, Catrin Tudur-Smith, Valeria Marinho, Nicky J Welton, ",

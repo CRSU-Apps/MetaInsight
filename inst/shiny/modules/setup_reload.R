@@ -31,7 +31,7 @@ setup_reload_module_server <- function(id, common, modules, parent_session) {
       if (temp$state$main$version != as.character(packageVersion("metainsight"))){
         current_version <- as.character(packageVersion("metainsight"))
         common$logger |> writeLog(type = "warning",
-                                   glue::glue("The save file was created using MetaInsight v{temp$state$main$version},
+                                   glue("The save file was created using MetaInsight v{temp$state$main$version},
                                  but you are using MetaInsight v{current_version}"))
       }
 

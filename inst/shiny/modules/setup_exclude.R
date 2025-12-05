@@ -116,7 +116,7 @@ setup_exclude_module_server <- function(id, common, parent_session) {
 
         if (common$reference_treatment_sub != common$reference_treatment_all){
           common$logger |> writeLog(type = "info",
-                                     glue::glue("The reference treatment for the sensitivity analysis
+                                     glue("The reference treatment for the sensitivity analysis
                                               has been changed to {common$reference_treatment_sub}
                                               because the {common$reference_treatment_all} treatment
                                               has been removed from the network of sensitivity analysis."))

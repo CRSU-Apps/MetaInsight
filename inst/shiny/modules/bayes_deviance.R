@@ -61,7 +61,7 @@ bayes_deviance_submodule_server <- function(id, common, trigger){
       watch(trigger)
       req(common[[paste0("bayes_deviance_", id)]])
       # workaround for testing
-      on.exit(shinyjs::runjs(glue::glue("Shiny.setInputValue('bayes_deviance-complete', 'complete');")))
+      on.exit(shinyjs::runjs(glue("Shiny.setInputValue('bayes_deviance-complete', 'complete');")))
       common[[paste0("bayes_deviance_", id)]]$stem_plot
     })
 
@@ -156,33 +156,33 @@ bayes_deviance_module_result <- function(id) {
       # this is a bit unusual as we are using the non-namespaced ids to allow the plot | plot, annotation layout
       layout_columns(
         div(
-          h5(glue::glue("Residual deviance from NMA model and UME inconsistency model for all studies")),
+          h5(glue("Residual deviance from NMA model and UME inconsistency model for all studies")),
           plotly::plotlyOutput("bayes_deviance-all-scat")
         ),
         div(
-          h5(glue::glue("Residual deviance from NMA model and UME inconsistency model excluding selected studies")),
+          h5(glue("Residual deviance from NMA model and UME inconsistency model excluding selected studies")),
           plotly::plotlyOutput("bayes_deviance-sub-scat")
         ),
       ),
       deviance_annotations[[1]],
       layout_columns(
         div(
-          h5(glue::glue("Per-arm residual deviance for all studies")),
+          h5(glue("Per-arm residual deviance for all studies")),
           plotly::plotlyOutput("bayes_deviance-all-stem")
         ),
         div(
-          h5(glue::glue("Per-arm residual deviance excluding selected studies")),
+          h5(glue("Per-arm residual deviance excluding selected studies")),
           plotly::plotlyOutput("bayes_deviance-sub-stem")
         ),
       ),
       deviance_annotations[[2]],
       layout_columns(
         div(
-          h5(glue::glue("Leverage plot for all studies")),
+          h5(glue("Leverage plot for all studies")),
           plotly::plotlyOutput("bayes_deviance-all-lev")
         ),
         div(
-          h5(glue::glue("Leverage plot excluding selected studies")),
+          h5(glue("Leverage plot excluding selected studies")),
           plotly::plotlyOutput("bayes_deviance-sub-lev")
         ),
       ),
