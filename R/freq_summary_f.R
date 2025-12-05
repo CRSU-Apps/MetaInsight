@@ -8,7 +8,7 @@
 freq_summary <- function(freq, treatment_df, plot_title, outcome_measure, ranking_option, model_type, seed, logger = NULL) {
 
   check_param_classes(c("freq", "treatment_df", "plot_title", "outcome_measure", "ranking_option", "model_type", "seed"),
-                      c("list", "data.frame", "character", "character", "character", "character", "integer"), logger)
+                      c("list", "data.frame", "character", "character", "character", "character", "numeric"), logger)
 
   if (!ranking_option %in% c("good", "bad")){
     logger |> writeLog(type = "error", "ranking_option must be 'good' or 'bad'")

@@ -22,7 +22,7 @@ metainsight is an R package and it must be installed and loaded before running a
 if(!require("metainsight")) remotes::install_github("CRSU-Apps/MetaInsight", ref = "shinyscholar")
 library(metainsight)
 
-# set a seed
+# define a seed
 seed <- {{seed}}
 ```
 
