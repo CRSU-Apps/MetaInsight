@@ -122,6 +122,9 @@ scat_plot <- function(model, deviance, model_type, outcome_measure, seed) {
 
   dline <- data.frame(m, n)
 
+  #The maximum number of arms
+  max_arms <- ncol(deviance$dev.ab) - 1
+
   p = plotly::plot_ly() |>   # plot
     plotly::add_trace(data = dline, x = ~m, y = ~n, type = 'scatter', mode = 'lines',
               line = list(color = '#45171D'))
@@ -154,11 +157,9 @@ scat_plot <- function(model, deviance, model_type, outcome_measure, seed) {
 
   if (max_arms >= 3) {
     for (arm_number in 3:max_arms) {
-      p <- .AddTraceToUmePlot(ume_plot = p, all = all, arm_number = arm_number)
+      p <- .add_trace_to_scat_plot(ume_plot = p, all = all, arm_number = arm_number)
     }
   }
-
-  progress$inc(0.2, detail = "Exporting results")
 
   return(list(p = p, y = y))
 }
@@ -169,7 +170,7 @@ scat_plot <- function(model, deviance, model_type, outcome_measure, seed) {
 #' @param all The full data frame of residual deviances.
 #' @param arm_number Current arm number.
 #' @return 'ume_plot' with additional points added, corresponding to 'arm_number'.
-.AddTraceToUmePlot <- function(ume_plot, all, arm_number) {
+.add_trace_to_scat_plot <- function(ume_plot, all, arm_number) {
   x_column <- paste0("X", arm_number, ".x")
   y_column <- paste0("X", arm_number, ".y")
 
