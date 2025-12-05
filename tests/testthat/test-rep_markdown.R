@@ -95,6 +95,8 @@ test_that("rep_markdown produces a renderable .Rmd file after a frequentist anal
   app$wait_for_value(input = "rep_markdown-complete")
   sess_file <- app$get_download("rep_markdown-dlRMD")
 
+  app$stop()
+
   expect_false(is.null(sess_file))
   lines <- readLines(sess_file)
   chunks <- sum(grepl("```\\{r", lines))
@@ -102,7 +104,7 @@ test_that("rep_markdown produces a renderable .Rmd file after a frequentist anal
   quarto::quarto_render(sess_file)
   html_file <- gsub("qmd", "html", sess_file)
   expect_gt(file.info(html_file)$size, 100000)
-  app$stop()
+
 })
 
 test_that("rep_markdown produces a renderable .Rmd file after a bayesian analysis", {
@@ -165,6 +167,8 @@ test_that("rep_markdown produces a renderable .Rmd file after a bayesian analysi
   app$wait_for_value(input = "rep_markdown-complete")
   sess_file <- app$get_download("rep_markdown-dlRMD")
 
+  app$stop()
+
   expect_false(is.null(sess_file))
   lines <- readLines(sess_file)
   chunks <- sum(grepl("```\\{r", lines))
@@ -179,8 +183,6 @@ test_that("rep_markdown produces a renderable .Rmd file after a bayesian analysi
   forest_sub_text <- extract_svg_text_from_svg(forest_sub_app$html)
   expect_true(identical(html_text[[1]], forest_all_text))
   expect_true(identical(html_text[[2]], forest_sub_text))
-
-  app$stop()
 
 })
 
@@ -338,6 +340,8 @@ test_that("rep_markdown produces a renderable .Rmd file after a baseline analysi
   app$wait_for_value(input = "rep_markdown-complete")
   sess_file <- app$get_download("rep_markdown-dlRMD")
 
+  app$stop()
+
   expect_false(is.null(sess_file))
   lines <- readLines(sess_file)
   chunks <- sum(grepl("```\\{r", lines))
@@ -351,8 +355,6 @@ test_that("rep_markdown produces a renderable .Rmd file after a baseline analysi
   forest_text <- extract_svg_text_from_svg(forest_app$html)
   # 3rd svg plot, following module order in global.R
   expect_true(identical(html_text[[3]], forest_text))
-
-  app$stop()
 
 })
 
