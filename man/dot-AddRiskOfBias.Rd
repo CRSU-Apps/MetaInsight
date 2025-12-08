@@ -6,7 +6,6 @@
 \usage{
 .AddRiskOfBias(
   pairwise,
-  outcome_type,
   x_position,
   y_position,
   studlab,
@@ -18,8 +17,6 @@
 }
 \arguments{
 \item{pairwise}{Output from meta::pairwise().}
-
-\item{outcome_type}{"binary" or "continuous".}
 
 \item{x_position}{x co-ordinate for the first circle.}
 

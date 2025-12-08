@@ -6,7 +6,6 @@
 \usage{
 .AddOutcomeText(
   pairwise,
-  outcome_type,
   x_position,
   y_position,
   studlab,
@@ -17,9 +16,7 @@
 \arguments{
 \item{pairwise}{Output from meta::pairwise().}
 
-\item{outcome_type}{"binary" or "continuous".}
-
-\item{x_position}{x co-ordinate for the start if the text}
+\item{x_position}{x co-ordinate for the start of the text.}
 
 \item{y_position}{y co-ordinate for the effect size and confidence interval.}
 

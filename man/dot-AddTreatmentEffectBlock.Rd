@@ -6,7 +6,6 @@
 \usage{
 .AddTreatmentEffectBlock(
   pairwise,
-  outcome_type,
   label_x_position,
   outcome_x_position,
   rob_x_position,
@@ -21,7 +20,11 @@
 \arguments{
 \item{pairwise}{Output from meta::pairwise().}
 
-\item{outcome_type}{"binary" or "continuous".}
+\item{label_x_position}{x co-ordinate for the start of the labels.}
+
+\item{outcome_x_position}{x co-ordinate for the start of the text.}
+
+\item{rob_x_position}{x co-ordinate for the first circle.}
 
 \item{y_header_position}{y co-ordinate for the header.}
 

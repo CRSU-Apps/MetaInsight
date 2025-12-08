@@ -32,26 +32,23 @@ summary_study_module_server <- function(id, common, parent_session) {
     watch("setup_exclude")
     req(watch("summary_study") > 0)
     summary_study(
-      data = common$main_connected_data,
+      connected_data = common$subsetted_data,
       freq = common$freq_sub,
       outcome_measure = common$outcome_measure,
       plot_area_width = input$width,
       colourblind = input$colourblind,
-      x_min = ifelse(input$x_min == 0, NA, input$x_min),
-      x_max = ifelse(input$x_max == 0, NA, input$x_max)
+      x_min = input$x_min,
+      x_max = input$x_max
     )
   })
 
-  # listen for default values for the axis but only after the initial run
-  # or when setup_configure is rerun
   observe({
-    watch("setup_configure")
-    min_max$resume()
-  })
+    watch("setup_exclude")
+    req(common$subsetted_data)
+    min_max <- summary_study_min_max(common$subsetted_data, common$freq_sub)
 
-  min_max <- observe({
-    updateNumericInput(session, "x_min", value = svg()$x_min, step = svg()$step)
-    updateNumericInput(session, "x_max", value = svg()$x_max, step = svg()$step)
+    updateNumericInput(session, "x_min", value = min_max$x_min, step = min_max$step)
+    updateNumericInput(session, "x_max", value = min_max$x_max, step = min_max$step)
     if (is.element(common$outcome_measure, c("MD", "SMD", "RD"))) {
       updateNumericInput(session, "x_min", label = "x-axis min:")
       updateNumericInput(session, "x_max", label = "x-axis max:")
@@ -59,7 +56,6 @@ summary_study_module_server <- function(id, common, parent_session) {
       updateNumericInput(session, "x_min", label = "x-axis min (log scale):")
       updateNumericInput(session, "x_max", label = "x-axis max (log scale):")
     }
-    min_max$suspend()
   })
 
   output$plot <- renderUI({

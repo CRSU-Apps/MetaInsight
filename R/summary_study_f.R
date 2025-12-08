@@ -1,6 +1,6 @@
 #' Create a forest plot of pairwise comparisons, grouped by treatment pairs.
 #'
-#' @param data dataframe. Uploaded data created by `setup_load()`
+#' @param connected_data dataframe. Uploaded data created by `setup_load()`
 #' @param freq list. Frequentist analysis produced by `setup_configure()` or `setup_exclude()`
 #' @param outcome_measure character. One of "MD", "SMD", "OR", "RR", or "RD".
 #' @param plot_area_width numeric. The width of the plot area containing the
@@ -12,13 +12,11 @@
 #'  \item{svg}{character. SVG code to produce the plot}
 #'  \item{height}{numeric. Plot height in pixels}
 #'  \item{width}{numeric. Plot width in pixels}
-#'  \item{x_min}{numeric. Minimum value for the x-axis}
-#'  \item{x_max}{numeric. Maximum value for the x-axis}
 #'
 #' @export
-summary_study <- function(data, freq, outcome_measure, plot_area_width = 6, colourblind = FALSE, x_min = NA, x_max = NA) {
+summary_study <- function(connected_data, freq, outcome_measure, plot_area_width = 6, colourblind = FALSE, x_min = NA, x_max = NA) {
 
-  rob_data_frame <- unique(data[, c("Study", FindRobNames(data))])
+  rob_data_frame <- unique(connected_data[, c("Study", FindRobNames(connected_data))])
   if (!is.data.frame(rob_data_frame)) {
     pairwise <- freq$d1
   } else {
@@ -37,7 +35,7 @@ summary_study <- function(data, freq, outcome_measure, plot_area_width = 6, colo
   }
 
   rob_variables <- FindRobNames(pairwise)
-  rob_names <- gsub("rob.", "", FindRobNames(data))
+  rob_names <- gsub("rob.", "", FindRobNames(connected_data))
   n_rob_variables <- length(rob_variables)
 
   x_label <- switch(
@@ -48,14 +46,6 @@ summary_study <- function(data, freq, outcome_measure, plot_area_width = 6, colo
     "RR" = "Risk ratio",
     "RD" = "Risk difference"
   )
-
-  if (is.na(x_min)) {
-    x_min <- min(pairwise$TE - 1.96 * pairwise$seTE)
-  }
-
-  if (is.na(x_max)) {
-    x_max <- max(pairwise$TE + 1.96 * pairwise$seTE)
-  }
 
   x_ticks <- .FindXTicks(lower = x_min, upper = x_max)
   increment <- x_ticks[2] - x_ticks[1]
@@ -238,11 +228,6 @@ summary_study <- function(data, freq, outcome_measure, plot_area_width = 6, colo
   web_fonts = list(
     arimo = "https://fonts.googleapis.com/css2?family=Arimo:wght@400;700&display=swap")
   ) |> crop_svg()
-
-  step <- 10 ^ floor(log10(increment / 10))
-  svg$x_min <- round(x_min, max(0, -log10(step)))
-  svg$x_max <- round(x_max, max(0, -log10(step)))
-  svg$step <- step
 
   return(svg)
 }
@@ -469,5 +454,39 @@ PairwiseTreatments <- function(pairwise, treatment_order) {
     c("treat1", "treat2", "y_position_first", "y_position_last")
   ]
   return(pairwise_treatments)
+}
+
+
+#' Find the default minimum and maximum values for the x-axis and calculate
+#' a sensible step to use in the numeric input
+#'
+#' @param connected_data dataframe. Uploaded data created by `setup_load()`
+#' @param freq list. Frequentist analysis produced by `setup_configure()` or `setup_exclude()`
+#' @return List containing:
+#'  \item{x_min}{numeric. Minimum value for the x-axis}
+#'  \item{x_max}{numeric. Maximum value for the x-axis}
+#'  \item{step}{numeric. Step value to use in numericInput}
+#'
+#' @export
+summary_study_min_max <- function(connected_data, freq){
+  rob_data_frame <- unique(connected_data[, c("Study", FindRobNames(connected_data))])
+  if (!is.data.frame(rob_data_frame)) {
+    pairwise <- freq$d1
+  } else {
+    pairwise <- as.data.frame(merge(freq$d1, rob_data_frame, by = "Study"))
+  }
+
+  x_min <- min(pairwise$TE - 1.96 * pairwise$seTE)
+  x_max <- max(pairwise$TE + 1.96 * pairwise$seTE)
+  x_ticks <- .FindXTicks(x_min, x_max)
+  increment <- x_ticks[2] - x_ticks[1]
+  step <- 10 ^ floor(log10(increment / 10))
+
+  x_min <- round(x_min, max(0, -log10(step)))
+  x_max <- round(x_max, max(0, -log10(step)))
+
+  list(x_min = x_min,
+       x_max = x_max,
+       step = step)
 }
 

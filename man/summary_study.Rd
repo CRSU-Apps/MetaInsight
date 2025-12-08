@@ -5,7 +5,7 @@
 \title{Create a forest plot of pairwise comparisons, grouped by treatment pairs.}
 \usage{
 summary_study(
-  data,
+  connected_data,
   freq,
   outcome_measure,
   plot_area_width = 6,
@@ -15,7 +15,7 @@ summary_study(
 )
 }
 \arguments{
-\item{data}{dataframe. Uploaded data created by `setup_load()`}
+\item{connected_data}{dataframe. Uploaded data created by `setup_load()`}
 
 \item{freq}{list. Frequentist analysis produced by `setup_configure()` or `setup_exclude()`}
 
@@ -35,8 +35,6 @@ List containing:
  \item{svg}{character. SVG code to produce the plot}
  \item{height}{numeric. Plot height in pixels}
  \item{width}{numeric. Plot width in pixels}
- \item{x_min}{numeric. Minimum value for the x-axis}
- \item{x_max}{numeric. Maximum value for the x-axis}
 }
 \description{
 Create a forest plot of pairwise comparisons, grouped by treatment pairs.
