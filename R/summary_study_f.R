@@ -148,18 +148,24 @@ summary_study <- function(connected_data, freq, outcome_measure, plot_area_width
       font = 2
     )
 
-    n_rob <- length(rob_variables)
-    start_rob <- 2
     if (n_rob_variables > 0) {
 
       # ROB labels above markers
       rob_letters <- LETTERS[1:12][1:n_rob_variables]
       rob_label_y <- max(pairwise_treatments$y_position_last) + 1
-      rob_label_x <- start_rob:(start_rob + n_rob_variables - 1)
+      rob_x_positions <- 2:(n_rob_variables + 1)
+
+      rob_or_ind_indices <- which(is.element(rob_variables, c("rob", "indirectness")))
+      n_rob_or_ind <- length(rob_or_ind_indices)
+      # If there are individual rob variables and at least one of rob or indirectness, separate the overall circles
+      if (n_rob_or_ind > 0 && length(rob_variables) > n_rob_or_ind) {
+        rob_x_positions[rob_or_ind_indices] <- rob_x_positions[rob_or_ind_indices] + 0.75
+      }
+      
       mtext(
         rob_letters,
         side = 4,
-        line = rob_label_x,
+        line = rob_x_positions,
         at = rob_label_y,
         las = 1,
         adj = 0.5,
@@ -213,7 +219,7 @@ summary_study <- function(connected_data, freq, outcome_measure, plot_area_width
         pairwise = pairwise,
         label_x_position = label_x_position,
         outcome_x_position = outcome_x_position,
-        rob_x_position = start_rob,
+        rob_x_positions = rob_x_positions,
         y_header_position = pairwise_treatments$y_position_last[row],
         y_positions = (pairwise_treatments$y_position_first[row] + 1):(pairwise_treatments$y_position_last[row] - 1),
         treatment1 = pairwise_treatments$treat1[row],
@@ -315,23 +321,22 @@ summary_study <- function(connected_data, freq, outcome_measure, plot_area_width
 #' Add risk of bias circles for a single comparison in a single study.
 #'
 #' @param pairwise Output from meta::pairwise().
-#' @param x_position x co-ordinate for the first circle.
+#' @param x_positions x co-ordinate for the circles.
 #' @param y_position y co-ordinate for the circles.
 #' @param studlab Study.
 #' @param treatment1 First treatment in the comparison.
 #' @param treatment2 Second treatment in the comparison.
 #' @param rob_variables Vector of RoB and indirectness variable names from 'pairwise'.
 #' @param palette Vector of colours to use
-.AddRiskOfBias <- function(pairwise, x_position, y_position, studlab, treatment1, treatment2, rob_variables, palette) {
+.AddRiskOfBias <- function(pairwise, x_positions, y_position, studlab, treatment1, treatment2, rob_variables, palette) {
   row <- which(pairwise$studlab == studlab & pairwise$treat1 == treatment1 & pairwise$treat2 == treatment2)
   colours <- palette
-  start_x <- x_position
 
   mtext(
     "•",
     side = 4,
     at = y_position,
-    line = x_position:(x_position + length(rob_variables) - 1),
+    line = x_positions,
     las = 1,
     adj = 0.5,
     col = colours[sapply(pairwise[row, rob_variables], function(x){x[[1]]})],
@@ -345,14 +350,14 @@ summary_study <- function(connected_data, freq, outcome_measure, plot_area_width
 #' @param pairwise Output from meta::pairwise().
 #' @param label_x_position  x co-ordinate for the start of the labels.
 #' @param outcome_x_position x co-ordinate for the start of the text.
-#' @param rob_x_position x co-ordinate for the first circle.
+#' @param rob_x_positions x co-ordinates for the circles.
 #' @param y_header_position y co-ordinate for the header.
 #' @param y_positions Vector of y co-ordinates for the study labels and confidence intervals.
 #' @param treatment1 First treatment in the comparison.
 #' @param treatment2 Second treatment in the comparison.
 #' @param rob_variables Vector of RoB and indirectness variable names from 'pairwise'.
 #' @param palette Vector of colours to use
-.AddTreatmentEffectBlock <- function(pairwise, label_x_position, outcome_x_position, rob_x_position, y_header_position, y_positions, treatment1, treatment2, rob_variables, palette) {
+.AddTreatmentEffectBlock <- function(pairwise, label_x_position, outcome_x_position, rob_x_positions, y_header_position, y_positions, treatment1, treatment2, rob_variables, palette) {
 
   # header
   mtext(
@@ -402,7 +407,7 @@ summary_study <- function(connected_data, freq, outcome_measure, plot_area_width
     if (include_rob) {
       .AddRiskOfBias(
         pairwise = pairwise,
-        x_position = rob_x_position,
+        x_positions = rob_x_positions,
         y_position = y_positions[row],
         studlab = pairwise_subset$studlab[row],
         treatment1 = pairwise_subset$treat1[row],
