@@ -113,7 +113,7 @@ summary_study <- function(connected_data, freq, outcome_measure, plot_area_width
 
     # define the ticks and labels for the x-axis
     if (is.element(outcome_measure, c("OR", "RR"))) {
-      x_labels <- signif(exp(x_ticks), digits = 1)
+      x_labels <- signif(exp(x_ticks), digits = 2)
     } else if (is.element(outcome_measure, c("MD", "SMD", "RD"))) {
       x_labels <- x_ticks
     }
@@ -245,13 +245,8 @@ summary_study <- function(connected_data, freq, outcome_measure, plot_area_width
   #If the interval is entirely below 0 then replace the upper limit with 0
   upper <- max(0, upper)
   difference <- upper - lower
-  increment <- 10 ^ floor(log10(difference))
-  #Tweak the increment
-  if (difference / increment < 3) {
-    increment <- increment / 2
-  } else if (difference / increment > 7) {
-    increment <- increment * 2
-  }
+  # increment <- 10 ^ floor(log10(difference))
+  increment <- round(difference / 4, digits = 1)
   #Round down according to the increment
   lower <- increment * floor(lower / increment)
   #Round up according to the increment
