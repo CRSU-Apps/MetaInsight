@@ -6,21 +6,27 @@
 #' @param plot_area_width numeric. The width of the plot area containing the
 #' treatment effects in inches. Defaults to `6`.
 #' @param colourblind logical. Whether to use a colourblind-friendly palette. Defaults to `FALSE`
-#' @param x_min numeric. Minimum value for the x-axis. Defaults to `NA`
-#' @param x_max numeric. Maximum value for the x-axis. Defaults to `NA`
+#' @param x_min numeric. Minimum value for the x-axis. Defaults to `NULL`
+#' @param x_max numeric. Maximum value for the x-axis. Defaults to `NULL`
 #' @return List containing:
 #'  \item{svg}{character. SVG code to produce the plot}
 #'  \item{height}{numeric. Plot height in pixels}
 #'  \item{width}{numeric. Plot width in pixels}
 #'
 #' @export
-summary_study <- function(connected_data, freq, outcome_measure, plot_area_width = 6, colourblind = FALSE, x_min = NA, x_max = NA) {
+summary_study <- function(connected_data, freq, outcome_measure, plot_area_width = 6, colourblind = FALSE, x_min = NULL, x_max = NULL) {
 
   rob_data_frame <- unique(connected_data[, c("Study", FindRobNames(connected_data))])
   if (!is.data.frame(rob_data_frame)) {
     pairwise <- freq$d1
   } else {
     pairwise <- as.data.frame(merge(freq$d1, rob_data_frame, by = "Study"))
+  }
+
+  if (is.null(x_min) || is.nulll(x_max)){
+    min_max <- .FindMinMax(pairwise)
+    x_min <- min_max$x_min
+    x_max <- min_max$x_max
   }
 
   pairwise_treatments <- PairwiseTreatments(
@@ -161,7 +167,7 @@ summary_study <- function(connected_data, freq, outcome_measure, plot_area_width
       if (n_rob_or_ind > 0 && length(rob_variables) > n_rob_or_ind) {
         rob_x_positions[rob_or_ind_indices] <- rob_x_positions[rob_or_ind_indices] + 0.75
       }
-      
+
       mtext(
         rob_letters,
         side = 4,
@@ -456,6 +462,28 @@ PairwiseTreatments <- function(pairwise, treatment_order) {
   return(pairwise_treatments)
 }
 
+#' Find the default minimum and maximum values for the x-axis and calculate
+#' a sensible step to use in the numeric input
+#' @param pairwise Results of pairwise analysis
+#' @return List containing:
+#'  \item{x_min}{numeric. Minimum value for the x-axis}
+#'  \item{x_max}{numeric. Maximum value for the x-axis}
+#'  \item{step}{numeric. Step value to use in numericInput}
+.FindMinMax <- function(pairwise){
+  x_min <- min(pairwise$TE - 1.96 * pairwise$seTE)
+  x_max <- max(pairwise$TE + 1.96 * pairwise$seTE)
+  x_ticks <- .FindXTicks(x_min, x_max)
+  increment <- x_ticks[2] - x_ticks[1]
+  step <- 10 ^ floor(log10(increment / 10))
+
+  x_min <- round(x_min, max(0, -log10(step)))
+  x_max <- round(x_max, max(0, -log10(step)))
+
+  list(x_min = x_min,
+       x_max = x_max,
+       step = step)
+}
+
 
 #' Find the default minimum and maximum values for the x-axis and calculate
 #' a sensible step to use in the numeric input
@@ -475,18 +503,6 @@ summary_study_min_max <- function(connected_data, freq){
   } else {
     pairwise <- as.data.frame(merge(freq$d1, rob_data_frame, by = "Study"))
   }
-
-  x_min <- min(pairwise$TE - 1.96 * pairwise$seTE)
-  x_max <- max(pairwise$TE + 1.96 * pairwise$seTE)
-  x_ticks <- .FindXTicks(x_min, x_max)
-  increment <- x_ticks[2] - x_ticks[1]
-  step <- 10 ^ floor(log10(increment / 10))
-
-  x_min <- round(x_min, max(0, -log10(step)))
-  x_max <- round(x_max, max(0, -log10(step)))
-
-  list(x_min = x_min,
-       x_max = x_max,
-       step = step)
+  .FindMinMax(pairwise)
 }
 

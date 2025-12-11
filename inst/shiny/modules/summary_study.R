@@ -17,6 +17,30 @@ summary_study_module_server <- function(id, common, parent_session) {
 
   shinyjs::hide(selector = ".summary_study_div")
 
+  # setup inputs
+  observe({
+    watch("setup_exclude")
+    req(common$subsetted_data)
+
+    # only show colourblind option if ROB exist
+    if (length(metainsight:::FindRobNames(common$subsetted_data)) == 0){
+      shinyjs::hide("colourblind")
+    } else {
+      shinyjs::show("colourblind")
+    }
+
+    min_max <- summary_study_min_max(common$subsetted_data, common$freq_sub)
+    updateNumericInput(session, "x_min", value = min_max$x_min, step = min_max$step)
+    updateNumericInput(session, "x_max", value = min_max$x_max, step = min_max$step)
+    if (is.element(common$outcome_measure, c("MD", "SMD", "RD"))) {
+      updateNumericInput(session, "x_min", label = "x-axis min:")
+      updateNumericInput(session, "x_max", label = "x-axis max:")
+    } else if (is.element(common$outcome_measure, c("OR", "RR"))) {
+      updateNumericInput(session, "x_min", label = "x-axis min (log scale):")
+      updateNumericInput(session, "x_max", label = "x-axis max (log scale):")
+    }
+  })
+
   observeEvent(input$run, {
     # WARNING ####
     if (is.null(common$freq_sub)){
@@ -40,22 +64,6 @@ summary_study_module_server <- function(id, common, parent_session) {
       x_min = input$x_min,
       x_max = input$x_max
     )
-  })
-
-  observe({
-    watch("setup_exclude")
-    req(common$subsetted_data)
-    min_max <- summary_study_min_max(common$subsetted_data, common$freq_sub)
-
-    updateNumericInput(session, "x_min", value = min_max$x_min, step = min_max$step)
-    updateNumericInput(session, "x_max", value = min_max$x_max, step = min_max$step)
-    if (is.element(common$outcome_measure, c("MD", "SMD", "RD"))) {
-      updateNumericInput(session, "x_min", label = "x-axis min:")
-      updateNumericInput(session, "x_max", label = "x-axis max:")
-    } else if (is.element(common$outcome_measure, c("OR", "RR"))) {
-      updateNumericInput(session, "x_min", label = "x-axis min (log scale):")
-      updateNumericInput(session, "x_max", label = "x-axis max (log scale):")
-    }
   })
 
   output$plot <- renderUI({

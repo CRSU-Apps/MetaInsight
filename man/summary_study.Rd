@@ -10,8 +10,8 @@ summary_study(
   outcome_measure,
   plot_area_width = 6,
   colourblind = FALSE,
-  x_min = NA,
-  x_max = NA
+  x_min = NULL,
+  x_max = NULL
 )
 }
 \arguments{
@@ -26,9 +26,9 @@ treatment effects in inches. Defaults to `6`.}
 
 \item{colourblind}{logical. Whether to use a colourblind-friendly palette. Defaults to `FALSE`}
 
-\item{x_min}{numeric. Minimum value for the x-axis. Defaults to `NA`}
+\item{x_min}{numeric. Minimum value for the x-axis. Defaults to `NULL`}
 
-\item{x_max}{numeric. Maximum value for the x-axis. Defaults to `NA`}
+\item{x_max}{numeric. Maximum value for the x-axis. Defaults to `NULL`}
 }
 \value{
 List containing:

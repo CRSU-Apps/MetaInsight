@@ -6,7 +6,7 @@
 \usage{
 .AddRiskOfBias(
   pairwise,
-  x_position,
+  x_positions,
   y_position,
   studlab,
   treatment1,
@@ -18,7 +18,7 @@
 \arguments{
 \item{pairwise}{Output from meta::pairwise().}
 
-\item{x_position}{x co-ordinate for the first circle.}
+\item{x_positions}{x co-ordinate for the circles.}
 
 \item{y_position}{y co-ordinate for the circles.}
 

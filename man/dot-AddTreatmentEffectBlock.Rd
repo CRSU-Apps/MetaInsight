@@ -8,7 +8,7 @@
   pairwise,
   label_x_position,
   outcome_x_position,
-  rob_x_position,
+  rob_x_positions,
   y_header_position,
   y_positions,
   treatment1,
@@ -24,7 +24,7 @@
 
 \item{outcome_x_position}{x co-ordinate for the start of the text.}
 
-\item{rob_x_position}{x co-ordinate for the first circle.}
+\item{rob_x_positions}{x co-ordinates for the circles.}
 
 \item{y_header_position}{y co-ordinate for the header.}
 
