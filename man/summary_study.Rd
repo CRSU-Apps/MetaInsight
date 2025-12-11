@@ -2,28 +2,42 @@
 % Please edit documentation in R/summary_study_f.R
 \name{summary_study}
 \alias{summary_study}
-\title{Creates a summary forest plot of all the studies.}
+\title{Create a forest plot of pairwise comparisons, grouped by treatment pairs.}
 \usage{
-summary_study(freq, outcome_measure, header, title, logger = NULL)
+summary_study(
+  connected_data,
+  freq,
+  outcome_measure,
+  plot_area_width = 6,
+  colourblind = FALSE,
+  x_min = NULL,
+  x_max = NULL
+)
 }
 \arguments{
+\item{connected_data}{dataframe. Input data set created by \code{setup_configure()} or \code{setup_exclude}}
+
 \item{freq}{list. NMA results created by freq_wrap().}
 
 \item{outcome_measure}{character. Outcome measure of the dataset. Either
 \code{OR}, \code{RR} or \code{RD} when \code{outcome} is \code{Binary} or \code{MD} or \code{SMD} when
 \code{outcome} is \code{Continuous}}
 
-\item{header}{numeric. Multiplier for size of text in treatment contrast headers.}
+\item{plot_area_width}{numeric. The width of the plot area containing the
+treatment effects in inches. Defaults to \code{6}.}
 
-\item{title}{numeric. Multiplier for size of title.}
+\item{colourblind}{logical. Whether to use a colourblind-friendly palette. Defaults to \code{FALSE}}
 
-\item{logger}{Stores all notification messages to be displayed in the Log
-Window. Insert the logger reactive list here for running in
-shiny, otherwise leave the default \code{NULL}}
+\item{x_min}{numeric. Minimum value for the x-axis. Defaults to \code{NULL}}
+
+\item{x_max}{numeric. Maximum value for the x-axis. Defaults to \code{NULL}}
 }
 \value{
-Plot created by \code{metafor::forest()}
+List containing:
+\item{svg}{character. SVG code to produce the plot}
+\item{height}{numeric. Plot height in pixels}
+\item{width}{numeric. Plot width in pixels}
 }
 \description{
-Creates a summary forest plot of all the studies.
+Create a forest plot of pairwise comparisons, grouped by treatment pairs.
 }

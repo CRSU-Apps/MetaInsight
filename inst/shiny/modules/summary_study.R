@@ -3,8 +3,10 @@ summary_study_module_ui <- function(id) {
   tagList(
     actionButton(ns("run"), "Generate plot", icon = icon("arrow-turn-down")),
     div(class = "summary_study_div download_buttons",
-       numericInput(ns("title"), label = "Title text size:", value = 1, step = 0.1),
-       numericInput(ns("header"), label = "Group headers text size:", value = 1, step = 0.1),
+       checkboxInput(ns("colourblind"), "Use colourblind palette", FALSE),
+       numericInput(ns("width"), "Plot area width:", value = 6, step = 1, min = 6, max = 20),
+       numericInput(ns("x_min"), "x-axis min:", value = 0, step = 0.1),
+       numericInput(ns("x_max"), "x-axis max:", value = 0, step = 0.1),
        downloadButton(ns("download")),
     )
   )
@@ -14,6 +16,30 @@ summary_study_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
   hide_and_show(id)
+
+  # setup inputs
+  observe({
+    watch("setup_exclude")
+    req(common$subsetted_data)
+
+    # only show colourblind option if ROB exist
+    if (length(metainsight:::FindRobNames(common$subsetted_data)) == 0){
+      shinyjs::hide("colourblind")
+    } else {
+      shinyjs::show("colourblind")
+    }
+
+    min_max <- summary_study_min_max(common$subsetted_data, common$freq_sub)
+    updateNumericInput(session, "x_min", value = min_max$x_min, step = min_max$step)
+    updateNumericInput(session, "x_max", value = min_max$x_max, step = min_max$step)
+    if (is.element(common$outcome_measure, c("MD", "SMD", "RD"))) {
+      updateNumericInput(session, "x_min", label = "x-axis min:")
+      updateNumericInput(session, "x_max", label = "x-axis max:")
+    } else if (is.element(common$outcome_measure, c("OR", "RR"))) {
+      updateNumericInput(session, "x_min", label = "x-axis min (log scale):")
+      updateNumericInput(session, "x_max", label = "x-axis max (log scale):")
+    }
+  })
 
   observeEvent(input$run, {
     # WARNING ####
@@ -26,74 +52,85 @@ summary_study_module_server <- function(id, common, parent_session) {
     trigger("summary_study")
   })
 
-  # Determine the plot height in pixels
-  plot_height <- reactive({
+  svg <- reactive({
     watch("setup_exclude")
     req(watch("summary_study") > 0)
-    # The rows that don't correspond to NA treatment effects
-    proper_comparison_rows <- !is.na(common$freq_sub$d0$TE)
-    # The number of comparisons, with NA rows dropped
-    n_proper_comparisons <- length(common$freq_sub$d0$TE[proper_comparison_rows])
-    # The number of unique treatments, with NA rows dropped
-    n_proper_treatments <- length(unique(c(common$freq_sub$d0$treat1[proper_comparison_rows],
-                                           common$freq_sub$d0$treat2[proper_comparison_rows])))
-    return(n_proper_comparisons * 25 + n_proper_treatments * 35)
+    summary_study(
+      connected_data = common$subsetted_data,
+      freq = common$freq_sub,
+      outcome_measure = common$outcome_measure,
+      plot_area_width = input$width,
+      colourblind = input$colourblind,
+      x_min = input$x_min,
+      x_max = input$x_max
+    )
   })
 
-  output$plot <- renderPlot({
-    watch("setup_exclude")
-    req(watch("summary_study") > 0)
+  output$plot <- renderUI({
     common$meta$summary_study$used <- TRUE
-    common$meta$summary_study$title <- as.numeric(input$title)
-    common$meta$summary_study$header <- as.numeric(input$header)
-    common$meta$summary_study$height <- plot_height()/72 # pixels to inches
-    summary_study(common$freq_sub, common$outcome_measure, as.numeric(input$header), as.numeric(input$title))
-  }, height = function(){plot_height()})
+    common$meta$summary_study$width <- as.numeric(input$width)
+    common$meta$summary_study$colourblind <- input$colourblind
+    common$meta$summary_study$x_min <- as.numeric(input$x_min)
+    common$meta$summary_study$x_max <- as.numeric(input$x_max)
+    div(
+      class = "svg_container",
+      HTML(svg()$svg)
+    )
+  })
 
   output$download <- downloadHandler(
     filename = function() {
       paste0('MetaInsight_study_results.', common$download_format)
     },
     content = function(file) {
-
-      write_plot(file,
-                  common$download_format,
-                  function(){summary_study(common$freq_sub, common$outcome_measure, as.numeric(input$header), as.numeric(input$title))},
-                  width = 8,
-                  height = common$meta$summary_study$height
-                  )
-      }
+      write_svg_plot(
+        file,
+        common$download_format,
+        svg()$svg,
+        svg()$height,
+        svg()$width
+      )
+    }
   )
 
-  return(list(
-    save = function() {list(
-      ### Manual save start
-      ### Manual save end
-      title = input$title,
-      header = input$header,
-      format = input$format)
-    },
-    load = function(state) {
-      ### Manual load start
-      ### Manual load end
-      updateNumericInput(session, "title", value = state$title)
-      updateNumericInput(session, "header", value = state$header)
-      updateRadioButtons(session, "format", selected = state$format)
-    }
-  ))
-})
+  return(
+    list(
+      save = function() {
+        list(
+          ### Manual save start
+          ### Manual save end
+          colourblind = input$colourblind,
+          width = input$width,
+          x_min = input$x_min,
+          x_max = input$x_max
+          )
+        },
+      load = function(state) {
+        ### Manual load start
+        ### Manual load end
+        updateCheckboxInput(session, "colourblind", value = state$colourblind)
+        updateNumericInput(session, "width", value = state$width)
+        updateNumericInput(session, "x_min", value = state$x_min)
+        updateNumericInput(session, "x_max", value = state$x_max)
+      }
+    )
+  )
+  })
 }
 
 summary_study_module_result <- function(id) {
   ns <- NS(id)
   # set a maximum width whilst staying centered
-  div(style = "max-width: 800px; margin: 0 auto;", plotOutput(ns("plot")))
+  div(style = "max-width: 1200px; margin: 0 auto;", uiOutput(ns("plot")))
 }
 
-summary_study_module_rmd <- function(common){ list(
-  summary_study_knit = !is.null(common$meta$summary_study$used),
-  summary_study_title = common$meta$summary_study$title,
-  summary_study_header = common$meta$summary_study$header,
-  summary_study_height = common$meta$summary_study$height)
+summary_study_module_rmd <- function(common) {
+  list(
+    summary_study_knit = !is.null(common$meta$summary_study$used),
+    summary_study_width = common$meta$summary_study$width,
+    summary_study_colourblind = common$meta$summary_study$colourblind,
+    summary_study_x_min = common$meta$summary_study$x_min,
+    summary_study_x_max = common$meta$summary_study$x_max
+  )
 }
 

@@ -10,7 +10,7 @@ FindRobIndividualNames(df)
 \item{df}{Data frame in which to find covariate columns.}
 }
 \value{
-Names of all covariate columns
+Names of all individual RoB columns
 }
 \description{
 Find the names of all columns which contain an individual RoB variable.
