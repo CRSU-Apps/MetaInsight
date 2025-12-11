@@ -23,7 +23,7 @@ summary_study <- function(connected_data, freq, outcome_measure, plot_area_width
     pairwise <- as.data.frame(merge(freq$d1, rob_data_frame, by = "Study"))
   }
 
-  if (is.null(x_min) || is.nulll(x_max)){
+  if (is.null(x_min) || is.null(x_max)){
     min_max <- .FindMinMax(pairwise)
     x_min <- min_max$x_min
     x_max <- min_max$x_max
