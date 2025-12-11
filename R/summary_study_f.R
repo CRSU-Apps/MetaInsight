@@ -12,7 +12,20 @@
 #'  \item{width}{numeric. Plot width in pixels}
 #'
 #' @export
-summary_study <- function(connected_data, freq, outcome_measure, plot_area_width = 6, colourblind = FALSE, x_min = NULL, x_max = NULL) {
+summary_study <- function(connected_data, freq, outcome_measure, plot_area_width = 6, colourblind = FALSE, x_min = NULL, x_max = NULL, logger = NULL) {
+
+  check_param_classes(c("connected_data", "freq", "outcome_measure", "plot_area_width", "colourblind"),
+                      c("data.frame", "list", "character", "numeric", "logical"), logger)
+
+  if (!outcome_measure %in% c("MD", "SMD", "OR", "RR", "RD")){
+    logger |> writeLog(type = "error", "outcome_measure must be either MD, SMD, OR, RR or RD")
+    return()
+  }
+
+  if (plot_area_width < 6 || plot_area_width > 20){
+    logger |> writeLog(type = "error", "plot_area_width must be between 6 and 20")
+    return()
+  }
 
   rob_data_frame <- unique(connected_data[, c("Study", FindRobNames(connected_data))])
   if (!is.data.frame(rob_data_frame)) {
@@ -26,6 +39,10 @@ summary_study <- function(connected_data, freq, outcome_measure, plot_area_width
     x_min <- min_max$x_min
     x_max <- min_max$x_max
   }
+
+  # need to check these after checking they are not NULL
+  check_param_classes(c("x_min", "x_max"),
+                      c("numeric", "numeric"), logger)
 
   pairwise_treatments <- PairwiseTreatments(
     pairwise = pairwise,

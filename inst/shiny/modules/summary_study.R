@@ -59,10 +59,11 @@ summary_study_module_server <- function(id, common, parent_session) {
       connected_data = common$subsetted_data,
       freq = common$freq_sub,
       outcome_measure = common$outcome_measure,
-      plot_area_width = input$width,
+      plot_area_width = as.numeric(input$width),
       colourblind = input$colourblind,
-      x_min = input$x_min,
-      x_max = input$x_max
+      x_min = as.numeric(input$x_min),
+      x_max = as.numeric(input$x_max),
+      common$logger
     )
   })
 
@@ -86,9 +87,7 @@ summary_study_module_server <- function(id, common, parent_session) {
       write_svg_plot(
         file,
         common$download_format,
-        svg()$svg,
-        svg()$height,
-        svg()$width
+        svg()
       )
     }
   )
