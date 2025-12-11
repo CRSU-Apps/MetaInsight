@@ -3,8 +3,8 @@ core_intro_module_ui <- function(id) {
   tagList(
     tags$div(
       style="display: flex; flex-direction: column; align-items: center; padding: 20px;",
-      actionButton(ns("intro"), "Start a guided tour", icon = icon("person-hiking", lib = "font-awesome"), width = "300px", style = "font-size: 1.5rem; margin-bottom: 20px;"),
-      actionButton(ns("existing_intro"), "See what has changed", icon = icon("person-hiking", lib = "font-awesome"), width = "300px", style = "font-size: 1.5rem;")
+      actionButton(ns("intro"), "Start a guided tour", icon = icon("person-hiking", lib = "font-awesome"), width = "360px", style = "font-size: 1.5rem; margin-bottom: 20px;"),
+      actionButton(ns("existing_intro"), "See what has changed", icon = icon("person-hiking", lib = "font-awesome"), width = "360px", style = "font-size: 1.5rem;")
     )
   )
 }
@@ -83,7 +83,7 @@ core_intro_module_server <- function(id, common, parent_session) {
     c("a[data-value=\"setup\"]", "... next time you visit ...", "bottom", "$('a[data-value=\"setup\"]').trigger('click');
                                                                       $('input[value=\"setup_reload\"]').trigger('click');"),
     c("#reload_inputs", "you can upload the file in the setup section to restore the app", "bottom", NA),
-    c(NA, "You are ready to go! Please send any feedback to info@crsu.org.uk", NA, "$('input[value=\"setup_load\"]').trigger('click');
+    c(NA, "You are ready to go! Please send any feedback to apps@crsu.org.uk", NA, "$('input[value=\"setup_load\"]').trigger('click');
                                                                                     $('a[data-value=\"intro\"]').trigger('click');
                                                                                     $('a[data-value=\"About\"]').trigger('click');")
   )
