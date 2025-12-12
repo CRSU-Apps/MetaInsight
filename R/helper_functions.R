@@ -24,6 +24,7 @@ spurious <- function(x) {
   cookies::add_cookie_handlers(x)
   DT::renderDataTable(x)
   grid::absolute.size(x)
+  gt::adjust_luminance(x)
   knitr::all_labels(x)
   mirai::call_mirai(x)
   quarto::is_using_quarto(x)
@@ -204,6 +205,8 @@ loading_spinner <- function(class) {
 ####################### #
 # ADD TOOLTIP #
 ####################### #
+#' @param label character. The text to display initially
+#' @param message character. The text to display in the tooltip
 #' @keywords internal
 #' @export
 add_tooltip <- function(label, message){
