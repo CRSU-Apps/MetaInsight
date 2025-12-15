@@ -238,15 +238,15 @@ hr {
       height: auto;
       display: block;
     }
-    .svg_container:fullscreen {
-      overflow: auto;
-    }
-    .svg_container.limit-height:fullscreen {
-      overflow: hidden;
-    }
-    .svg_container.limit-height svg {
+    .svg_container:fullscreen svg {
       max-height: 100%;
       object-fit: contain;
+    }
+    .svg_container.allow-scroll:fullscreen {
+      overflow: auto;
+    }
+    .svg_container.allow-scroll:fullscreen svg {
+      max-height: none;
     }
     .fullscreen-btn {
       position: absolute;

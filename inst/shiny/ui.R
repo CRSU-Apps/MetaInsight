@@ -24,7 +24,7 @@ tagList(
       tags$meta(property="og:description", content="An interactive web tool for network meta-analysis (NMA) that leverages established analysis routines"),
       tags$meta(property="og:image", content="https://raw.githubusercontent.com/CRSU-Apps/MetaInsight/main/www/images/MetaInsightLogo.png"),
       tags$script(HTML("
-function toggleFullscreen(element) {
+    function toggleFullscreen(element) {
       if (!document.fullscreenElement) {
         element.requestFullscreen().catch(err => {
           console.error('Error attempting to enable fullscreen:', err);
@@ -36,12 +36,12 @@ function toggleFullscreen(element) {
 
     function toggleHeight(button) {
       const container = button.parentElement;
-      container.classList.toggle('limit-height');
+      container.classList.toggle('allow-scroll');
 
-      if (container.classList.contains('limit-height')) {
-        button.textContent = '↕ Remove Height Limit';
-      } else {
+      if (container.classList.contains('allow-scroll')) {
         button.textContent = '↕ Limit Height';
+      } else {
+        button.textContent = '↕ Allow Scrolling';
       }
     }
   ")),

@@ -67,7 +67,7 @@ freq_summary_module_server <- function(id, common, parent_session) {
         tags$button(
           class = "height-toggle-btn",
           onclick = "toggleHeight(this)",
-          "↕ Limit Height"
+          "↕ Allow Scrolling"
         ),
         tags$button(
           class = "fullscreen-btn",
