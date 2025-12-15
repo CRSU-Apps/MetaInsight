@@ -75,7 +75,8 @@ setup_exclude_module_server <- function(id, common, parent_session) {
                                               common$outcome,
                                               common$outcome_measure,
                                               input$model,
-                                              input$exclusions)
+                                              input$exclusions,
+                                              async = TRUE)
 
       if (length(common$freq_sub) == 0){
         common$logger |> writeLog(type = "starting", "Running initial frequentist analysis")
@@ -108,31 +109,38 @@ setup_exclude_module_server <- function(id, common, parent_session) {
 
         result_sub$suspend()
         result <- common$tasks$setup_exclude_sub$result()
-        common$bugsnet_sub <- result$bugsnet_sub
-        common$freq_sub <- result$freq_sub
-        common$reference_treatment_sub <- result$reference_treatment_sub
-        common$subsetted_data <- result$subsetted_data
-        common$subsetted_treatment_df <- result$subsetted_treatment_df
+        if (inherits(result, "list")){
+          common$bugsnet_sub <- result$bugsnet_sub
+          common$freq_sub <- result$freq_sub
+          common$reference_treatment_sub <- result$reference_treatment_sub
+          common$subsetted_data <- result$subsetted_data
+          common$subsetted_treatment_df <- result$subsetted_treatment_df
 
-        if (common$reference_treatment_sub != common$reference_treatment_all){
-          common$logger |> writeLog(type = "info",
-                                     glue("The reference treatment for the sensitivity analysis
+          if (common$reference_treatment_sub != common$reference_treatment_all){
+            common$logger |> writeLog(type = "info",
+                                      glue("The reference treatment for the sensitivity analysis
                                               has been changed to {common$reference_treatment_sub}
                                               because the {common$reference_treatment_all} treatment
                                               has been removed from the network of sensitivity analysis."))
-        }
+          }
 
-        # if opened in setup_configure
-        close_loading_modal()
-        if (initial){
-          common$logger |> writeLog(type = "complete", "Initial frequentist analysis is complete")
+          # if opened in setup_configure
+          close_loading_modal()
+          if (initial){
+            common$logger |> writeLog(type = "complete", "Initial frequentist analysis is complete")
+          } else {
+            common$logger |> writeLog(type = "complete", "Sensitivity analysis has been updated")
+          }
+
+          # required for testing to wait until the debounce has triggered
+          shinyjs::runjs("Shiny.setInputValue('setup_exclude-complete', 'complete');")
+          trigger("setup_exclude")
+
         } else {
-          common$logger |> writeLog(type = "complete", "Sensitivity analysis has been updated")
+          print(result)
+          common$logger |> writeLog(type = "error", result)
         }
 
-        # required for testing to wait until the debounce has triggered
-        shinyjs::runjs("Shiny.setInputValue('setup_exclude-complete', 'complete');")
-        trigger("setup_exclude")
       }
     })
 

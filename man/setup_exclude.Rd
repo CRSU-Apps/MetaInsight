@@ -13,7 +13,7 @@ setup_exclude(
   outcome_measure,
   model_type,
   exclusions,
-  logger = NULL
+  async = FALSE
 )
 }
 \arguments{
@@ -34,9 +34,7 @@ setup_exclude(
 
 \item{exclusions}{character. Vector of study names to exclude.}
 
-\item{logger}{Stores all notification messages to be displayed in the Log
-Window. Insert the logger reactive list here for running in
-shiny, otherwise leave the default \code{NULL}}
+\item{async}{Whether or not the function is being used asynchronously. Default \code{FALSE}}
 }
 \value{
 List containing:
