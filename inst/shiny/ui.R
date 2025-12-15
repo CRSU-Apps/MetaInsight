@@ -23,6 +23,17 @@ tagList(
       tags$meta(property="og:title", content="Meta Insight: v7.0.0"),
       tags$meta(property="og:description", content="An interactive web tool for network meta-analysis (NMA) that leverages established analysis routines"),
       tags$meta(property="og:image", content="https://raw.githubusercontent.com/CRSU-Apps/MetaInsight/main/www/images/MetaInsightLogo.png"),
+      tags$script(HTML("
+    function toggleFullscreen(element) {
+      if (!document.fullscreenElement) {
+        element.requestFullscreen().catch(err => {
+          console.error('Error attempting to enable fullscreen:', err);
+        });
+      } else {
+        document.exitFullscreen();
+      }
+    }
+  ")),
       core_analytics_module_ui("core_analytics")
       ),
     title = img(src = "logo.png", height = "40"),

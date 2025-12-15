@@ -240,6 +240,25 @@ hr {
 
 }
 
+.fullscreen-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  z-index: 10;
+  transition: background 0.2s;
+}
+
+.fullscreen-btn:hover {
+  background: rgba(0, 0, 0, 0.8);
+}
+
 /* Display labels and input boxes inline */
 
 .inline_labels .form-group {

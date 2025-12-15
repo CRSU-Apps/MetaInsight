@@ -64,6 +64,11 @@ freq_summary_module_server <- function(id, common, parent_session) {
   output$plot_all <- renderUI({
     req(svg_all())
     div(class = "svg_container",
+        tags$button(
+          class = "fullscreen-btn",
+          onclick = "toggleFullscreen(this.parentElement)",
+          "⤢"
+        ),
         HTML(svg_all()$svg)
     )
   })
