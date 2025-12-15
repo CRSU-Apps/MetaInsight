@@ -65,6 +65,11 @@ freq_summary_module_server <- function(id, common, parent_session) {
     req(svg_all())
     div(class = "svg_container",
         tags$button(
+          class = "height-toggle-btn",
+          onclick = "toggleHeight(this)",
+          "↕ Limit Height"
+        ),
+        tags$button(
           class = "fullscreen-btn",
           onclick = "toggleFullscreen(this.parentElement)",
           "⤢"
