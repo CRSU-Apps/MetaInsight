@@ -22,12 +22,18 @@ test_that("Check bayes_ranking function works as expected", {
   expect_equal(ncol(table_result), 6)
 
   litmus_result <- LitmusRankOGram(result)
-  expect_is(litmus_result, "ggplot")
+  expect_match(litmus_result$svg, "<svg")
+  expect_gt(litmus_result$width, 100)
+  expect_lt(litmus_result$width, 1000)
+  expect_gt(litmus_result$height, 100)
+  expect_lt(litmus_result$height, 1000)
 
   sucra_result <- RadialSUCRA(result)
-  expect_is(sucra_result, "list")
-  expect_is(sucra_result$Original, "ggplot")
-  expect_is(sucra_result$Alternative, "ggplot")
+  expect_match(sucra_result$svg, "<svg")
+  expect_gt(sucra_result$width, 100)
+  expect_lt(sucra_result$width, 1000)
+  expect_gt(sucra_result$height, 100)
+  expect_lt(sucra_result$height, 1000)
 
 })
 
@@ -74,8 +80,8 @@ test_that("{shinytest2} recording: e2e_bayes_ranking", {
 
   ranking_all <- app$get_value(output = "bayes_ranking-all-ranking")
   ranking_sub <- app$get_value(output = "bayes_ranking-sub-ranking")
-  expect_equal(substr(ranking_all$src, 1, 10), "data:image")
-  expect_equal(substr(ranking_sub$src, 1, 10), "data:image")
+  expect_match(ranking_all$html, "<svg")
+  expect_match(ranking_sub$html, "<svg")
 
   app$click("bayes_ranking-all-dropdown")
   ranking_table_all <- app$get_value(output = "bayes_ranking-all-ranking_table")
@@ -90,16 +96,8 @@ test_that("{shinytest2} recording: e2e_bayes_ranking", {
   expect_match(network_sub$html, "<svg")
 
   test_bayes_plot_downloads(app, "bayes_ranking", "_forest")
+  test_bayes_plot_downloads(app, "bayes_ranking", "_ranking_plot")
   test_bayes_plot_downloads(app, "bayes_ranking", "_network")
-
-  # only as a png at present
-  ranking_png_all <- app$get_download("bayes_ranking-all-download_ranking_plot")
-  ranking_png_sub <- app$get_download("bayes_ranking-sub-download_ranking_plot")
-  expect_gt(file.info(ranking_png_all)$size, 1000)
-  expect_gt(file.info(ranking_png_sub)$size, 1000)
-  expect_true(validate_plot(ranking_png_all, "png"))
-  expect_true(validate_plot(ranking_png_sub, "png"))
-  unlink(c(ranking_png_all, ranking_png_sub))
 
   ranking_table_dl_all <- app$get_download("bayes_ranking-all-download_ranking_table")
   ranking_table_dl_sub <- app$get_download("bayes_ranking-sub-download_ranking_table")

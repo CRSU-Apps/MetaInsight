@@ -22,12 +22,18 @@ test_that("Check baseline_ranking function works as expected", {
   expect_equal(ncol(table_result), 6)
 
   litmus_result <- LitmusRankOGram(result)
-  expect_is(litmus_result, "ggplot")
+  expect_match(litmus_result$svg, "<svg")
+  expect_gt(litmus_result$width, 100)
+  expect_lt(litmus_result$width, 1000)
+  expect_gt(litmus_result$height, 100)
+  expect_lt(litmus_result$height, 1000)
 
   sucra_result <- RadialSUCRA(result)
-  expect_is(sucra_result, "list")
-  expect_is(sucra_result$Original, "ggplot")
-  expect_is(sucra_result$Alternative, "ggplot")
+  expect_match(sucra_result$svg, "<svg")
+  expect_gt(sucra_result$width, 100)
+  expect_lt(sucra_result$width, 1000)
+  expect_gt(sucra_result$height, 100)
+  expect_lt(sucra_result$height, 1000)
 
 })
 
@@ -67,7 +73,7 @@ test_that("{shinytest2} recording: e2e_baseline_ranking", {
   expect_match(forest_all$html, "<svg")
 
   ranking_all <- app$get_value(output = "baseline_ranking-all-ranking")
-  expect_equal(substr(ranking_all$src, 1, 10), "data:image")
+  expect_match(ranking_all$html, "<svg")
 
   app$click("baseline_ranking-all-dropdown")
   ranking_table_all <- app$get_value(output = "baseline_ranking-all-ranking_table")
@@ -77,13 +83,8 @@ test_that("{shinytest2} recording: e2e_baseline_ranking", {
   expect_match(network_all$html, "<svg")
 
   test_bayes_plot_downloads(app, "baseline_ranking", "_forest", FALSE)
+  test_bayes_plot_downloads(app, "baseline_ranking", "_ranking_plot", FALSE)
   test_bayes_plot_downloads(app, "baseline_ranking", "_network", FALSE)
-
-  # only as a png at present
-  ranking_png_all <- app$get_download("baseline_ranking-all-download_ranking_plot")
-  expect_gt(file.info(ranking_png_all)$size, 1000)
-  expect_true(validate_plot(ranking_png_all, "png"))
-  unlink(ranking_png_all)
 
   ranking_table_dl_all <- app$get_download("baseline_ranking-all-download_ranking_table")
 

@@ -186,7 +186,11 @@ rankdata <- function(NMAdata, rankdirection, longdata, cov_value = NA, package =
 #' @param ranking_data list created by bayes_ranking().
 #' @param colourblind TRUE for colourblind friendly colours (default = FALSE).
 #' @param regression_text Text to show for regression (default = "").
-#' @return Litmus rank-o-gram.
+#' @return List containing:
+#'  \item{svg}{character. SVG code to produce the plot}
+#'  \item{height}{numeric. Plot height in pixels}
+#'  \item{width}{numeric. Plot width in pixels}
+#'
 #' @import patchwork
 #' @import ggplot2
 #' @export
@@ -226,61 +230,72 @@ LitmusRankOGram <- function(ranking_data, colourblind=FALSE, regression_text="")
   } else {
     Combo <- A + B    # '+' functionality from {patchwork}
   }
-  Combo + theme(plot.margin = margin(t = 0, r = 0, b = 0, l = 0))
+  Finalplot <- Combo + theme(plot.margin = margin(t = 0, r = 0, b = 0, l = 0))
+  svglite::xmlSVG(print(Finalplot)) |> crop_svg()
 }
-
-
 
 #' Radial SUCRA Plot
 #'
 #' @param ranking_data list created by bayes_ranking().
 #' @param colourblind TRUE for colourblind friendly colours (default = FALSE).
 #' @param regression_text Text to show for regression (default = "").
-#' @return Radial SUCRA plot.
+#' @return List containing:
+#'  \item{svg}{character. SVG code to produce the plot}
+#'  \item{height}{numeric. Plot height in pixels}
+#'  \item{width}{numeric. Plot width in pixels}
+#'
 #' @import ggplot2
+#' @import patchwork
 #' @export
-RadialSUCRA <- function(ranking_data, colourblind=FALSE, regression_text="") {      # SUCRAData needs Treatment & Rank; ColourData needs SUCRA & colour; colourblind friendly option; regression annotation text
-  # Tempory Directory
-  temp_dir <- tempdir()
+RadialSUCRA <- function(ranking_data, original = TRUE, colourblind = FALSE, regression_text = "") {      # SUCRAData needs Treatment & Rank; ColourData needs SUCRA & colour; colourblind friendly option; regression annotation text
   n <- nrow(ranking_data$SUCRA) # number of treatments
+
   # Add values to angle and adjust radial treatment labels
   SUCRAData <- ranking_data$SUCRA[order(-ranking_data$SUCRA$SUCRA), ]
-  SUCRAData$Angle <- rev(90 + seq(180 / n, 360 - 180 / n, len = n)) - c(rep(360, ceiling(n / 2)), rep(180,floor(n / 2)))
+  SUCRAData$Angle <- rev(90 + seq(180 / n, 360 - 180 / n, len = n)) - c(rep(360, ceiling(n / 2)), rep(180, floor(n / 2)))
   SUCRAData$Adjust <- c(rep(0, ceiling(n / 2)), rep(1, floor(n / 2)))
+
   # Background #
   Background <- ggplot(SUCRAData, aes(x = reorder(Treatment, -SUCRA), y = SUCRA, group = 1)) +
     geom_segment(data = ranking_data$Colour, aes(x = -Inf, xend = Inf, y = SUCRA, yend = SUCRA, colour = colour), show.legend = FALSE, alpha=0.05) +
     theme_classic() +
-    theme(panel.grid.major.y = element_line(colour = c(rep("black", 6), "white")), axis.title = element_blank(), axis.text.y = element_blank(), axis.ticks = element_blank(), axis.line = element_blank(),
+    theme(panel.grid.major.y = element_line(colour = c(rep("black", 6), "white")),
+          axis.title = element_blank(), axis.text.y = element_blank(),
+          axis.ticks = element_blank(), axis.line = element_blank(),
           aspect.ratio = 1, axis.text.x = element_blank()) +
     coord_polar() +
-    geom_text(aes(label=stats::reorder(stringr::str_wrap(gsub("_", " ", Treatment), width = 10), -SUCRA), y = 110, angle = Angle, hjust = Adjust),
+    geom_text(aes(label=stats::reorder(stringr::str_wrap(gsub("_", " ", Treatment), width = 10), -SUCRA),
+                  y = 110, angle = Angle, hjust = Adjust),
               size = 3, family = "sans")
-  if (colourblind == FALSE) {
-    Background <- Background + scale_colour_gradient2(low = "red", mid = "yellow", high = "green", midpoint=50, limits=c(0,100)) +
-      scale_fill_gradient2(low = "red", mid = "yellow", high = "green", midpoint = 50, limits = c(0, 100))
-  } else {
-    Background <- Background + scale_colour_gradientn(colours = c("#7b3294", "#c2a5cf", "#a6dba0", "#008837"), values = c(0, 0.33, 0.66, 1), limits = c(0, 100)) +
+
+  if (colourblind) {
+    Background <- Background +
+      scale_colour_gradientn(colours = c("#7b3294", "#c2a5cf", "#a6dba0", "#008837"), values = c(0, 0.33, 0.66, 1), limits = c(0, 100)) +
       scale_fill_gradientn(colours = c("#7b3294", "#c2a5cf", "#a6dba0", "#008837"), values = c(0, 0.33, 0.66, 1), limits = c(0, 100))
+  } else {
+    Background <- Background +
+      scale_colour_gradient2(low = "red", mid = "yellow", high = "green", midpoint=50, limits=c(0,100)) +
+      scale_fill_gradient2(low = "red", mid = "yellow", high = "green", midpoint = 50, limits = c(0, 100))
   }
 
-  Background +
-    geom_point(aes(fill = SUCRA), size = 1, shape = 21, show.legend = FALSE) +
-    scale_y_continuous(breaks = c(0, 20, 40, 60, 80, 100), limits = c(-40, 115)) +
-    annotate("text", x = rep(0.5, 7), y = c(-3, 17, 37, 57, 77, 97, 115), label = c("0", "20", "40", "60", "80", "100", "SUCRA (%)"), size = 2.5, family = "sans") # annotate has to be after geoms
-  ggsave(filename = file.path(temp_dir, 'BackgroundO.png'), device = 'png', bg = 'transparent', width = 5, height = 5)
+  if (original){
+    Background <- Background +
+      geom_point(aes(fill = SUCRA), size = 1, shape = 21, show.legend = FALSE) +
+      scale_y_continuous(breaks = c(0, 20, 40, 60, 80, 100), limits = c(-40, 115)) +
+      annotate("text", x = rep(0.5, 7), y = c(-3, 17, 37, 57, 77, 97, 115),
+               label = c("0", "20", "40", "60", "80", "100", "SUCRA (%)"), size = 2.5, family = "sans")
+  } else {
+    Background <- Background +
+      geom_segment(aes(xend = Treatment, y = -20, yend = 110), linetype = "dashed") +
+      geom_point(aes(fill = SUCRA), size = 3, shape = 21, show.legend = FALSE) +
+      scale_y_continuous(breaks = c(0, 20, 40, 60, 80, 100), limits = c(-80, 115)) +
+      annotate("text", x = rep(0.5, 7), y = c(-3, 17, 37, 57, 77, 97, 115),
+               label = c("0", "20", "40", "60", "80", "100", "SUCRA (%)"), size = 2.5, family = "sans")
+  }
 
-  Background +
-    geom_segment(aes(xend = Treatment, y = -20, yend = 110), linetype = "dashed") +
-    geom_point(aes(fill = SUCRA), size = 3, shape = 21, show.legend = FALSE) +
-    scale_y_continuous(breaks = c(0, 20, 40, 60, 80, 100), limits = c(-80, 115)) +
-    annotate("text", x = rep(0.5, 7), y = c(-3, 17, 37, 57, 77, 97, 115), label = c("0", "20", "40", "60", "80", "100", "SUCRA (%)"), size = 2.5, family = "sans") # annotate has to be after geoms
-  ggsave(filename = file.path(temp_dir, 'BackgroundA.png'), device = 'png', bg = 'transparent', width = 5, height = 5)
-
-
-  # Create my own network plot using ggplot polar coords #
+  # Create network data #
   SUCRA <- SUCRAData |> dplyr::arrange(-SUCRA)
-  edges <- network.structure(ranking_data$BUGSnetData, my_order = SUCRA$Treatment)  # from file 'network_structure.R'
+  edges <- network.structure(ranking_data$BUGSnetData, my_order = SUCRA$Treatment)
   dat.edges <- data.frame(pairwiseID = rep(NA, nrow(edges) * 2),
                           treatment = "",
                           n.stud = NA,
@@ -316,103 +331,64 @@ RadialSUCRA <- function(ranking_data, colourblind=FALSE, regression_text="") {  
     ID <- ID + 1
   }
 
-  # Creates the network part of the radical SUCRA plot, excluding the nodes.
-  #
-  # @param Type "Original" or "Alternative.
-  # @return ggplot object.
-  CreateNetwork <- function(Type) {
-    if (Type == 'Original') {
-      g <- ggplot(dat.edges, aes(x = stats::reorder(treatment, -SUCRA), y = SUCRA, group = pairwiseID)) +
-        geom_line(linewidth = dat.edges$lwdO, show.legend = FALSE) +
-        scale_y_continuous(limits = c(-40, 115))
-    } else {
-      g <- ggplot(dat.edges, aes(x = stats::reorder(treatment, -SUCRA), y = -20, group = pairwiseID)) +
-        geom_line(linewidth = dat.edges$lwdA, show.legend = FALSE) +
-        scale_y_continuous(limits = c(-80, 115))
-    }
-    g +
-      ggiraphExtra::coord_radar() +
-      theme(panel.background = element_rect(fill = "transparent"), plot.background = element_rect(fill = "transparent", color = NA),
-            axis.title = element_blank(), axis.text.y = element_blank(), axis.ticks = element_blank(),
-            axis.line = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), aspect.ratio = 1,
-            axis.text.x = element_blank()) +
-      annotate("text", x = rep(0.5, 7), y = c(-3, 17, 37, 57, 77, 97, 115), label = c("0", "20", "40", "60", "80", "100", "SUCRA (%)"), size = 2.5, family = "sans")
+  # Network overlay (using coord_radar) #
+  if (original){
+    Network <- ggplot(dat.edges, aes(x = stats::reorder(treatment, -SUCRA), y = SUCRA, group = pairwiseID)) +
+      geom_line(linewidth = dat.edges$lwdO, show.legend = FALSE) +
+      scale_y_continuous(limits = c(-40, 115))
+  } else {
+    Network <- ggplot(dat.edges, aes(x = stats::reorder(treatment, -SUCRA), y = -20, group = pairwiseID)) +
+      geom_line(linewidth = dat.edges$lwdA, show.legend = FALSE) +
+      scale_y_continuous(limits = c(-80, 115))
   }
 
-  Network <- CreateNetwork(Type = 'Original')
-  ggsave(filename = file.path(temp_dir, 'NetworkO.png'), device = 'png', bg = 'transparent', width = 5, height = 5)
+  Network <- Network +
+    ggiraphExtra::coord_radar() +
+    theme_void() +
+    theme(panel.background = element_rect(fill = "transparent", color = NA),
+          plot.background = element_rect(fill = "transparent", color = NA),
+          aspect.ratio = 1)
 
-  Network <- CreateNetwork(Type = 'Alternative')
-  ggsave(filename = file.path(temp_dir, "NetworkA.png"), device = 'png', bg = 'transparent', width = 5, height = 5)
-
-
-  # Creates the nodes for the network part of the radial SUCRA plot.
-  #
-  # @param Type "Original" or "Alternative".
-  # @param colourblind TRUE for colourblind-friendly colours (default = FALSE).
-  # @return ggplot object.
-  CreatePoints <- function(Type, colourblind = FALSE) {
-    if (Type == 'Original') {
-      g <- ggplot(SUCRAData, aes(x = stats::reorder(Treatment, -SUCRA), y = SUCRA, group = 1)) +
-        geom_point(aes(fill = SUCRA, size = SizeO), size = SUCRAData$SizeO, shape = 21, show.legend = FALSE) +
-        scale_y_continuous(limits = c(-40, 115))
-    } else {
-      g <- ggplot(SUCRAData, aes(x = stats::reorder(Treatment, -SUCRA), y = -20, group = 1)) +
-        geom_point(aes(fill = SUCRA, size = SizeA), size = SUCRAData$SizeA, shape = 21, show.legend = FALSE) +
-        scale_y_continuous(limits = c(-80, 115))
-    }
-    if (colourblind == FALSE) {
-      g <- g + scale_fill_gradient2(low = "red", mid = "yellow", high = "green", midpoint = 50, limits = c(0, 100))
-    } else {
-      g <- g + scale_fill_gradientn(colours = c("#7b3294", "#c2a5cf", "#a6dba0", "#008837"), values = c(0, 0.33, 0.66, 1), limits = c(0, 100))
-    }
-    g +
-      theme(panel.background = element_rect(fill = "transparent"), plot.background = element_rect(fill = "transparent", color = NA),
-            axis.title = element_blank(), axis.text.y = element_blank(), axis.ticks = element_blank(),
-            axis.line = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), aspect.ratio = 1,
-            axis.text.x = element_blank()) +
-      coord_polar() +
-      annotate("text", x = rep(0.5, 7), y = c(-3, 17, 37, 57, 77, 97, 115), label = c("0", "20", "40", "60", "80", "100", "SUCRA (%)"), size = 2.5, family = "sans")
+  # Points overlay (using coord_polar) #
+  if (colourblind == FALSE) {
+    fill_scale <- scale_fill_gradient2(low = "red", mid = "yellow", high = "green", midpoint = 50, limits = c(0, 100))
+  } else {
+    fill_scale <- scale_fill_gradientn(colours = c("#7b3294", "#c2a5cf", "#a6dba0", "#008837"),
+                                       values = c(0, 0.33, 0.66, 1), limits = c(0, 100))
   }
 
-  Points <- CreatePoints(Type = 'Original', colourblind = colourblind)
-  ggsave(filename = file.path(temp_dir, 'PointsO.png'), device = 'png', bg = 'transparent', width = 5, height = 5)
+  if (original){
+    Points <- ggplot(SUCRAData, aes(x = stats::reorder(Treatment, -SUCRA), y = SUCRA, group = 1)) +
+      geom_point(aes(fill = SUCRA), size = SUCRAData$SizeO, shape = 21, show.legend = FALSE) +
+      scale_y_continuous(limits = c(-40, 115))
 
-  Points <- CreatePoints(Type = 'Alternative', colourblind = colourblind)
-  ggsave(filename = file.path(temp_dir, 'PointsA.png'), device = 'png', bg = 'transparent', width = 5, height = 5)
+  } else {
+    Points <- ggplot(SUCRAData, aes(x = stats::reorder(Treatment, -SUCRA), y = -20, group = 1)) +
+      geom_point(aes(fill = SUCRA), size = SUCRAData$SizeA, shape = 21, show.legend = FALSE) +
+      scale_y_continuous(limits = c(-80, 115))
+  }
 
-  # Overlay #
-  Background <- magick::image_read(file.path(temp_dir, 'BackgroundO.png'))
-  Network <- magick::image_read(file.path(temp_dir, 'NetworkO.png'))
-  Points <- magick::image_read(file.path(temp_dir, 'PointsO.png'))
-  Final <- magick::image_composite(Background,Network)
-  Final <- magick::image_composite(Final,Points)
-  Finalplot <- cowplot::ggdraw() +
-    cowplot::draw_image(Final)
+  Points <- Points +
+    fill_scale +
+    coord_polar() +
+    theme_void() +
+    theme(panel.background = element_rect(fill = "transparent", color = NA),
+          plot.background = element_rect(fill = "transparent", color = NA),
+          aspect.ratio = 1)
+
+  # Combine using patchwork insets #
+  Finalplot <- Background +
+    inset_element(Network, left = 0, bottom = 0, right = 1, top = 1) +
+    inset_element(Points, left = 0, bottom = 0, right = 1, top = 1)
+
   if (regression_text != "") {
     Finalplot <- Finalplot +
-      cowplot::draw_label(regression_text, x = 0.95, y = 0.05, hjust = 1, size = 10)
-  }
-  Background <- magick::image_read(file.path(temp_dir, 'BackgroundA.png'))
-  Network <- magick::image_read(file.path(temp_dir, 'NetworkA.png'))
-  Points <- magick::image_read(file.path(temp_dir, 'PointsA.png'))
-  Final <- magick::image_composite(Background,Network)
-  Final <- magick::image_composite(Final,Points)
-  Finalalt <- cowplot::ggdraw() +
-    cowplot::draw_image(Final)
-  if (regression_text != "") {
-    Finalalt <- Finalalt +
-      cowplot::draw_label(regression_text, x = 0.95, y = 0.05, hjust = 1, size = 10)
+      plot_annotation(caption = regression_text,
+                      theme = theme(plot.caption = element_text(hjust = 1, size = 10)))
   }
 
-  unlink(file.path(temp_dir, 'BackgroundO.png'))
-  unlink(file.path(temp_dir, 'NetworkO.png'))
-  unlink(file.path(temp_dir, 'PointsO.png'))
-  unlink(file.path(temp_dir, 'BackgroundA.png'))
-  unlink(file.path(temp_dir, 'NetworkA.png'))
-  unlink(file.path(temp_dir, 'PointsA.png'))
+  svglite::xmlSVG(print(Finalplot)) |> crop_svg()
 
-  return(list(Original = Finalplot, Alternative = Finalalt))
 }
 
 #' Ranking probability table

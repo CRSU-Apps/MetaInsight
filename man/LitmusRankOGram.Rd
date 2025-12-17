@@ -14,7 +14,10 @@ LitmusRankOGram(ranking_data, colourblind = FALSE, regression_text = "")
 \item{regression_text}{Text to show for regression (default = "").}
 }
 \value{
-Litmus rank-o-gram.
+List containing:
+\item{svg}{character. SVG code to produce the plot}
+\item{height}{numeric. Plot height in pixels}
+\item{width}{numeric. Plot width in pixels}
 }
 \description{
 Litmus Rank-O-Gram

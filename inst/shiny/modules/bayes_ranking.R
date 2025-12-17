@@ -9,7 +9,7 @@ bayes_ranking_submodule_ui <- function(id, download_label, class) {
       div(
         class = "d-grid gap-2",
         downloadButton(ns("download_forest"), "Forest plot", class = "btn-block"),
-        downloadButton(ns("download_ranking_plot"), "Ranking plot (PNG only)", class = "btn-block"),
+        downloadButton(ns("download_ranking_plot"), "Ranking plot", class = "btn-block"),
         downloadButton(ns("download_ranking_table"), "Ranking table", class = "btn-block"),
         downloadButton(ns("download_network"), "Network graph", class = "btn-block")
       )
@@ -61,7 +61,6 @@ bayes_ranking_module_ui <- function(id) {
       condition = "input.rank_style == 'radial'",
       ns = ns,
       checkboxInput(ns("simple"), label = "Display simplified ranking plot", value = FALSE),
-      #p("Radial SUCRA plot: Higher SUCRA values indicate better treatments; size of nodes represent number of participants and thickness of lines indicate number of trials conducted")
     ),
     input_task_button(ns("run"), "Generate plots", type = "default", icon = icon("arrow-turn-down")),
     download_buttons(id)
@@ -113,15 +112,16 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
       )
     })
 
-    ranking_plots <- eventReactive(watch(trigger), {
+    ranking_svg <- reactive({
       req(watch(trigger) > 0)
-      plots <- list(
-        litmus = LitmusRankOGram(common[[ranking]], colourblind = FALSE),
-        radial = RadialSUCRA(common[[ranking]], colourblind = FALSE),
-        litmus_blind = LitmusRankOGram(common[[ranking]], colourblind = TRUE),
-        radial_blind = RadialSUCRA(common[[ranking]], colourblind = TRUE)
-      )
-      return(plots)
+
+      if (rank_style() == "litmus"){
+        return(LitmusRankOGram(common[[ranking]], colourblind = colourblind()))
+      }
+      if (rank_style() == "radial"){
+        return(RadialSUCRA(common[[ranking]], original = !simple(), colourblind = colourblind()))
+      }
+
     })
 
     output$ranking_text <- renderText({
@@ -133,27 +133,12 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
       }
     })
 
-    output$ranking <- renderPlot({
-      req(watch(trigger) > 0)
+    output$ranking <- renderUI({
+      req(ranking_svg())
       on.exit(shinyjs::show(selector = class))
-      if (rank_style() == "litmus" && colourblind() == FALSE){
-        return(ranking_plots()$litmus)
-      }
-      if (rank_style() == "radial" && colourblind() == FALSE && simple() == FALSE){
-        return(ranking_plots()$radial$Original)
-      }
-      if (rank_style() == "radial" && colourblind() == FALSE && simple() == TRUE){
-        return(ranking_plots()$radial$Alternative)
-      }
-      if (rank_style() == "litmus" && colourblind() == TRUE){
-        return(ranking_plots()$litmus_blind)
-      }
-      if (rank_style() == "radial" && colourblind() == TRUE && simple() == FALSE){
-        return(ranking_plots()$radial_blind$Original)
-      }
-      if (rank_style() == "radial" && colourblind() == TRUE && simple() == TRUE){
-        return(ranking_plots()$radial_blind$Alternative)
-      }
+
+      div(class = "svg_container_ranking",
+          HTML(ranking_svg()$svg))
     })
 
     # enable shinyjs::show to work
@@ -202,28 +187,13 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
 
     output$download_ranking_plot <- downloadHandler(
       filename = function() {
-        paste0("MetaInsight_bayesian_ranking_plot_", id, ".png")
+        paste0("MetaInsight_bayesian_ranking_plot_", id, ".", common$download_format)
       },
       content = function(file) {
-
-        if (rank_style() == "litmus" && colourblind() == FALSE){
-          ggplot2::ggsave(file, ranking_plots()$litmus, width = 6, height = 6, units = "in")
-        }
-        if (rank_style() == "radial" && colourblind() == FALSE && simple() == FALSE){
-          ggplot2::ggsave(file, ranking_plots()$radial$Original, width = 6, height = 6, units = "in")
-        }
-        if (rank_style() == "radial" && colourblind() == FALSE && simple() == TRUE){
-          ggplot2::ggsave(file, ranking_plots()$radial$Alternative, width = 6, height = 6, units = "in")
-        }
-        if (rank_style() == "litmus" && colourblind() == TRUE){
-          ggplot2::ggsave(file, ranking_plots()$litmus_blind, width = 6, height = 6, units = "in")
-        }
-        if (rank_style() == "radial" && colourblind() == TRUE && simple() == FALSE){
-          ggplot2::ggsave(file, ranking_plots()$radial_blind$Original, width = 6, height = 6, units = "in")
-        }
-        if (rank_style() == "radial" && colourblind() == TRUE && simple() == TRUE){
-          ggplot2::ggsave(file, ranking_plots()$radial_blind$Alternative, width = 6, height = 6, units = "in")
-        }
+        write_svg_plot(file,
+                       common$download_format,
+                       ranking_svg()
+        )
       }
     )
 
@@ -320,33 +290,37 @@ bayes_ranking_submodule_result <- function(id, title, class) {
         open = TRUE,
         accordion_panel(
           title = title,
-          splitLayout(
-            cellWidths = c("30%", "40%", "30%"),
-            cellArgs = list(style = "height: 500px; padding: 16px; border: 2px solid #005c8a; white-space: normal"),
-            fluidRow(
-              align = "center",
-                h4("Relative effects"),
-                uiOutput(ns("forest"))
-            ),
-            fluidRow(
-              align = "center",
-                h4("Ranking results"),
-                textOutput(ns("ranking_text")),
-                plotOutput(ns("ranking")),
-              shinyWidgets::dropMenu(
-                shinyWidgets::dropdownButton(
-                  circle = FALSE,
-                  status = "default",
-                  label = "Ranking probabilities and SUCRA values",
-                  inputId = ns("dropdown")
-                ),
-                tableOutput(ns("ranking_table"))
+          div(style = "display: flex; gap: 16px;",
+            div(style = "flex: 0 0 30%; padding: 16px; border: 2px solid #005c8a; white-space: normal;",
+              fluidRow(
+                align = "center",
+                  h4("Relative effects"),
+                  uiOutput(ns("forest"))
               )
             ),
-            fluidRow(
-              align = "center",
-                h4("Summary of evidence"),
-                uiOutput(ns("network"))
+            div(style = "flex: 0 0 40%; padding: 16px; border: 2px solid #005c8a; white-space: normal;",
+              fluidRow(
+                align = "center",
+                  h4("Ranking results"),
+                  textOutput(ns("ranking_text")),
+                  uiOutput(ns("ranking")),
+                shinyWidgets::dropMenu(
+                  shinyWidgets::dropdownButton(
+                    circle = FALSE,
+                    status = "default",
+                    label = "Ranking probabilities and SUCRA values",
+                    inputId = ns("dropdown")
+                  ),
+                  tableOutput(ns("ranking_table"))
+                )
+              )
+            ),
+            div(style = "flex: 0 0 30%; padding: 16px; border: 2px solid #005c8a; white-space: normal;",
+              fluidRow(
+                align = "center",
+                  h4("Summary of evidence"),
+                  uiOutput(ns("network"))
+              )
             )
           )
         )

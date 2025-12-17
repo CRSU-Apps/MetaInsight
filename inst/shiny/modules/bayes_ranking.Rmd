@@ -20,17 +20,17 @@ bayes_ranking_forest_all <- bayes_forest(bayes_model_all, treatment_df, referenc
 htmltools::HTML(bayes_ranking_forest_all$svg)
 ```
 
+```{asis, echo = {{bayes_ranking_knit}}, eval = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}
+{r, results = 'asis'}
+```
 ```{r, echo = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}
 if ({{bayes_ranking_rank_style}} == "radial"){
-  radial_all <- RadialSUCRA(bayes_ranking_all, {{bayes_ranking_colourblind}})
-  if (!{{bayes_ranking_simple}}){
-    radial_all$Original
-  } else {
-    radial_all$Alternative
-  }
+  bayes_ranking_rank_all <- RadialSUCRA(bayes_ranking_all, !{{bayes_ranking_simple}}, {{bayes_ranking_colourblind}})
 } else {
-  LitmusRankOGram(bayes_ranking_all, {{bayes_ranking_colourblind}})
+  bayes_ranking_rank_all <- LitmusRankOGram(bayes_ranking_all, {{bayes_ranking_colourblind}})
 }
+
+HTML(bayes_ranking_rank_all$svg)
 ```
 
 ```{r, echo = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}
@@ -58,17 +58,17 @@ bayes_ranking_forest_sub <- bayes_forest(bayes_model_sub, treatment_df_sub, refe
 HTML(bayes_ranking_forest_sub$svg)
 ```
 
+```{asis, echo = {{bayes_ranking_knit}}, eval = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}
+{r, results = 'asis'}
+```
 ```{r, echo = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}
 if ({{bayes_ranking_rank_style}} == "radial"){
-  radial_sub <- RadialSUCRA(bayes_ranking_sub, {{bayes_ranking_colourblind}})
-  if (!{{bayes_ranking_simple}}){
-    radial_sub$Original
-  } else {
-    radial_sub$Alternative
-  }
+  bayes_ranking_rank_sub- RadialSUCRA(bayes_ranking_sub, !{{bayes_ranking_simple}}, {{bayes_ranking_colourblind}})
 } else {
-  LitmusRankOGram(bayes_ranking_sub, {{bayes_ranking_colourblind}})
+  bayes_ranking_rank_sub <- LitmusRankOGram(bayes_ranking_sub, {{bayes_ranking_colourblind}})
 }
+
+HTML(bayes_ranking_rank_sub$svg)
 ```
 
 ```{r, echo = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}

@@ -12,20 +12,20 @@ covariate_ranking <- covariate_ranking(main_connected_data, treatment_df, covari
 ```{r, echo = {{covariate_ranking_knit}}, include = {{covariate_ranking_knit}}}
 covariate_ranking_forest <- covariate_forest(covariate_model, treatment_df, reference_treatment_all, "", TRUE)
 
-htmltools::HTML(covariate_ranking_forest$svg)
+HTML(covariate_ranking_forest$svg)
 ```
 
+```{asis, echo = {{covariate_ranking_knit}}, eval = {{covariate_ranking_knit}}, include = {{covariate_ranking_knit}}}
+{r, results = 'asis'}
+```
 ```{r, echo = {{covariate_ranking_knit}}, include = {{covariate_ranking_knit}}}
 if ({{covariate_ranking_rank_style}} == "radial"){
-  radial_all <- RadialSUCRA(covariate_ranking, {{covariate_ranking_colourblind}})
-  if (!{{covariate_ranking_simple}}){
-    radial_all$Original
-  } else {
-    radial_all$Alternative
-  }
+  covariate_ranking_rank <- RadialSUCRA(covariate_ranking, !{{covariate_ranking_simple}}, {{covariate_ranking_colourblind}})
 } else {
-  LitmusRankOGram(covariate_ranking, {{covariate_ranking_colourblind}})
+  covariate_ranking_rank <- LitmusRankOGram(covariate_ranking, {{covariate_ranking_colourblind}})
 }
+
+HTML(covariate_ranking_rank$svg)
 ```
 
 ```{r, echo = {{covariate_ranking_knit}}, include = {{covariate_ranking_knit}}}
@@ -37,5 +37,5 @@ knitr::kable(ranking_table(covariate_ranking), digits = 2)
 ```
 ```{r, echo = {{covariate_ranking_knit}}, include = {{covariate_ranking_knit}}}
 covariate_ranking_network <- summary_network(frequentist_all, bugsnet_all, {{covariate_ranking_network_style}})
-htmltools::HTML(covariate_ranking_network$svg)
+HTML(covariate_ranking_network$svg)
 ```

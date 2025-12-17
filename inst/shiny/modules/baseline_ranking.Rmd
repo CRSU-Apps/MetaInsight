@@ -12,20 +12,20 @@ baseline_ranking <- baseline_ranking(main_connected_data, treatment_df, baseline
 ```{r, echo = {{baseline_ranking_knit}}, include = {{baseline_ranking_knit}}}
 baseline_ranking_forest <- baseline_forest(baseline_model, treatment_df, reference_treatment_all, "")
 
-htmltools::HTML(baseline_ranking_forest$svg)
+HTML(baseline_ranking_forest$svg)
 ```
 
+```{asis, echo = {{baseline_ranking_knit}}, eval = {{baseline_ranking_knit}}, include = {{baseline_ranking_knit}}}
+{r, results = 'asis'}
+```
 ```{r, echo = {{baseline_ranking_knit}}, include = {{baseline_ranking_knit}}}
 if ({{baseline_ranking_rank_style}} == "radial"){
-  radial_all <- RadialSUCRA(baseline_ranking, {{baseline_ranking_colourblind}})
-  if (!{{baseline_ranking_simple}}){
-    radial_all$Original
-  } else {
-    radial_all$Alternative
-  }
+  baseline_ranking_rank <- RadialSUCRA(baseline_ranking, !{{baseline_ranking_simple}}, {{baseline_ranking_colourblind}})
 } else {
-  LitmusRankOGram(baseline_ranking, {{baseline_ranking_colourblind}})
+  baseline_ranking_rank <- LitmusRankOGram(baseline_ranking, {{baseline_ranking_colourblind}})
 }
+
+HTML(baseline_ranking_rank$svg)
 ```
 
 ```{r, echo = {{baseline_ranking_knit}}, include = {{baseline_ranking_knit}}}
@@ -37,5 +37,5 @@ knitr::kable(ranking_table(baseline_ranking), digits = 2)
 ```
 ```{r, echo = {{baseline_ranking_knit}}, include = {{baseline_ranking_knit}}}
 baseline_ranking_network <- summary_network(frequentist_all, bugsnet_all, {{baseline_ranking_network_style}})
-htmltools::HTML(baseline_ranking_network$svg)
+HTML(baseline_ranking_network$svg)
 ```
