@@ -160,11 +160,7 @@ test_that("Check covariate_regression function works as expected", {
                                      result$directness,
                                      result$credible_regions)
 
-  expect_match(plot_result$svg, "<svg")
-  expect_gt(plot_result$width, 100)
-  expect_lt(plot_result$width, 2000)
-  expect_gt(plot_result$height, 100)
-  expect_lt(plot_result$height, 2000)
+  expect_match(plot_result, "<svg")
 
 })
 

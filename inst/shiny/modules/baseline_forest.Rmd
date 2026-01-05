@@ -4,7 +4,5 @@
 ```
 
 ```{r, echo = {{baseline_forest_knit}}, include = {{baseline_forest_knit}}}
-baseline_forest <- baseline_forest(baseline_model, treatment_df, reference_treatment_all)
-
-htmltools::HTML(baseline_forest$svg)
+baseline_forest(baseline_model, treatment_df, reference_treatment_all)
 ```

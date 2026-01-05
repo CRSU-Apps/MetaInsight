@@ -78,6 +78,8 @@ app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metai
 app$upload_file("setup_load-file1" = file.path(test_data_dir, "Cont_long_continuous_cov.csv"))
 app$click("setup_load-run")
 app$click("setup_configure-run")
+app$set_inputs(tabs = "covariate")
+app$set_inputs(covariateSel = "covariate_model")
 app$click("covariate_model-run")
 app$wait_for_value(input = "covariate_model-complete")
 app$get_download("core_save-save_session", filename = covariate_model_path)

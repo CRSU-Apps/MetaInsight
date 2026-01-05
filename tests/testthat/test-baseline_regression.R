@@ -29,12 +29,7 @@ test_that("Check baseline_regression function works as expected", {
                                      result$directness,
                                      result$credible_regions)
 
-  expect_match(plot_result$svg, "<svg")
-  expect_gt(plot_result$width, 100)
-  expect_lt(plot_result$width, 2000)
-  expect_gt(plot_result$height, 100)
-  expect_lt(plot_result$height, 2000)
-
+  expect_match(plot_result, "<svg")
 })
 
 test_that("{shinytest2} recording: e2e_baseline_regression", {

@@ -8,17 +8,14 @@
 ```{r, echo = {{summary_network_knit}}, include = {{summary_network_knit}}}
 network_style <- {{summary_network_style}}
 
-summary_network_all <- summary_network(frequentist_all, bugsnet_all, network_style, {{summary_network_label_all}}, "Network plot of all studies")
-htmltools::HTML(summary_network_all$svg)
+summary_network(frequentist_all, bugsnet_all, network_style, {{summary_network_label_all}}, "Network plot of all studies")
 ```
 
 ```{asis, echo = {{summary_network_knit}}, eval = {{summary_network_knit}}, include = {{summary_network_knit}}}
 {r, results = 'asis'}
 ```
 ```{r, echo = {{summary_network_knit}}, include = {{summary_network_knit}}}
-summary_network_sub <- summary_network(frequentist_sub, bugsnet_sub, network_style, {{summary_network_label_sub}}, "Network plot with selected \n studies excluded")
-
-htmltools::HTML(summary_network_sub$svg)
+summary_network(frequentist_sub, bugsnet_sub, network_style, {{summary_network_label_sub}}, "Network plot with selected \n studies excluded")
 ```
 
 ```{asis, echo = {{summary_network_knit}}, eval = {{summary_network_knit}}, include = {{summary_network_knit}}}

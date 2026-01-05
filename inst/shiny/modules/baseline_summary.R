@@ -34,7 +34,7 @@ baseline_summary_module_server <- function(id, common, parent_session) {
     watch("baseline_summary")
     req(common$baseline_summary_plot)
     div(class = "svg_container", style = "max-width: 800px;",
-        HTML(common$baseline_summary_plot$svg)
+        common$baseline_summary_plot
     )
   })
 
@@ -42,7 +42,7 @@ baseline_summary_module_server <- function(id, common, parent_session) {
     filename = function(){
       paste0("MetaInsight_baseline_summary.", common$download_format)},
     content = function(file){
-      write_svg_plot(file, common$download_format, common$baseline_summary_plot)
+      write_plot(common$baseline_summary_plot, file, common$download_format)
     }
   )
 

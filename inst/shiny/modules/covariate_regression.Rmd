@@ -13,20 +13,19 @@ covariate_regression_data <- covariate_regression(covariate_model,
                                                   outcome_measure,
                                                   model_type)
 
-covariate_regression_plot <- metaregression_plot(covariate_model,
-                                                  treatment_df,
-                                                  outcome_measure,
-                                                  {{covariate_regression_comparators}},
-                                                  covariate_regression_data$directness,
-                                                  covariate_regression_data$credible_regions,
-                                                  {{covariate_regression_covariate}},
-                                                  {{covariate_regression_ghosts}},
-                                                  {{covariate_regression_extrapolate}},
-                                                  {{covariate_regression_credible}},
-                                                  {{covariate_regression_credible_opacity}},
-                                                  {{covariate_regression_symbol}},
-                                                  {{covariate_regression_symbol_size}},
-                                                  {{covariate_regression_legend_position}}
-                                                  )
-htmltools::HTML(covariate_regression_plot$svg)
+metaregression_plot(covariate_model,
+                    treatment_df,
+                    outcome_measure,
+                    {{covariate_regression_comparators}},
+                    covariate_regression_data$directness,
+                    covariate_regression_data$credible_regions,
+                    {{covariate_regression_covariate}},
+                    {{covariate_regression_ghosts}},
+                    {{covariate_regression_extrapolate}},
+                    {{covariate_regression_credible}},
+                    {{covariate_regression_credible_opacity}},
+                    {{covariate_regression_symbol}},
+                    {{covariate_regression_symbol_size}},
+                    {{covariate_regression_legend_position}}
+                    )
 ```

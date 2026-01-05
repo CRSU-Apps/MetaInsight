@@ -28,12 +28,10 @@ bayes_forest_submodule_server <- function(id, common, model, run, title){
                    title)
     }) |> bindEvent(run())
 
-    # this enables the plot to always fit in the column width
     output$plot <- renderUI({
       req(svg())
-
       div(class = "svg_container",
-          HTML(svg()$svg)
+          svg()
       )
     })
 
@@ -42,11 +40,10 @@ bayes_forest_submodule_server <- function(id, common, model, run, title){
         glue("MetaInsight_bayesian_forest_plot_{id}.{common$download_format}")
       },
       content = function(file) {
-
-        write_svg_plot(file,
-                       common$download_format,
-                       svg()
-                       )
+        write_plot(svg(),
+                   file,
+                   common$download_format
+                   )
 
       }
     )

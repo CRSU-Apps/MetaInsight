@@ -4,11 +4,7 @@ freq <- excluded_data_con$freq_sub
 test_that("summary_study produces functions correctly", {
   result_1 <- summary_study(con, freq, "OR")
 
-  expect_match(result_1$svg, "<svg")
-  expect_gt(result_1$width, 100)
-  expect_lt(result_1$width, 1000)
-  expect_gt(result_1$height, 100)
-  expect_lt(result_1$height, 1000)
+  expect_match(result_1, "<svg")
 
   result_2 <- summary_study(con, freq, "OR", 7)
   # no ROB data in example data yet

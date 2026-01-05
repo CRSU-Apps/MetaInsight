@@ -64,15 +64,15 @@ freq_summary_module_server <- function(id, common, parent_session) {
   output$plot_all <- renderUI({
     req(svg_all())
     div(class = "svg_container",
-        HTML(svg_all()$svg)
+        svg_all()
     )
   })
 
   output$plot_sub <- renderUI({
     req(svg_sub())
     div(class = "svg_container",
-        HTML(svg_sub()$svg)
-        )
+        svg_sub()
+    )
   })
 
   output$download_all <- downloadHandler(
@@ -80,7 +80,7 @@ freq_summary_module_server <- function(id, common, parent_session) {
       paste0("MetaInsight_summary_forest_all.", common$download_format)
     },
     content = function(file) {
-      write_svg_plot(file, common$download_format, svg_all())
+      write_plot(svg_all(), file, common$download_format)
     }
   )
 
@@ -89,7 +89,7 @@ freq_summary_module_server <- function(id, common, parent_session) {
       paste0("MetaInsight_summary_forest_sub.", common$download_format)
     },
     content = function(file) {
-      write_svg_plot(file, common$download_format, svg_sub())
+      write_plot(svg_sub(), file, common$download_format)
     }
   )
 })

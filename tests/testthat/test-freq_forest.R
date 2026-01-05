@@ -2,12 +2,7 @@ test_that("freq_summary produces functions correctly", {
   freq_data <- defined_data_con$freq_all
   result <- freq_forest(freq_data, "Placebo", "random", "OR", 0, 1, "title")
 
-  expect_match(result$svg, "<svg")
-  expect_gt(result$width, 100)
-  expect_lt(result$width, 1000)
-  expect_gt(result$height, 100)
-  expect_lt(result$height, 1000)
-
+  expect_match(result, "<svg")
 })
 
 test_that("freq_summary produces errors for incorrect data types and invalid values", {

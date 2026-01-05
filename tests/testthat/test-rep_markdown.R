@@ -186,8 +186,6 @@ test_that("rep_markdown produces a renderable .Rmd file after a bayesian analysi
 
 })
 
-
-
 test_that("rep_markdown produces a renderable .Rmd file after a covariate analysis", {
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 60000)
 
@@ -197,7 +195,10 @@ test_that("rep_markdown produces a renderable .Rmd file after a covariate analys
   app$click("setup_reload-goLoad_session")
   app$set_inputs(tabs = "covariate")
 
-  #intro + setup_load + setup_configure + setup_exclude + covariate_model
+  # ensure inputs update
+  app$set_inputs(covariateSel = "covariate_model")
+
+  # intro + setup_load + setup_configure + setup_exclude + covariate_model
   expected_chunks <- 5
 
   app$set_inputs(covariateSel = "covariate_summary")

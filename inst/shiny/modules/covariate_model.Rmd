@@ -3,11 +3,13 @@
 ```
 
 ```{r, echo = {{covariate_model_knit}}, include = {{covariate_model_knit}}}
+covariate_value <- {{covariate_model_covariate_value}}
+
 covariate_model <- covariate_model(main_connected_data, 
                                    treatment_df, 
                                    outcome, 
                                    outcome_measure, 
-                                   {{covariate_model_covariate_value}}, 
+                                   covariate_value, 
                                    model_type, 
                                    {{covariate_model_regressor}},
                                    covariate_type,

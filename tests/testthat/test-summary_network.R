@@ -3,19 +3,11 @@ test_that("summary_network produces svg plot", {
   bugsnet <- defined_data_con$bugsnet_all
   result <- summary_network(freq, bugsnet, "netgraph", 1, "title")
 
-  expect_match(result$svg, "<svg")
-  expect_gt(result$width, 100)
-  expect_lt(result$width, 1000)
-  expect_gt(result$height, 100)
-  expect_lt(result$height, 1000)
+  expect_match(result, "<svg")
 
   result <- summary_network(freq, bugsnet, "netplot", 1, "title")
 
-  expect_match(result$svg, "<svg")
-  expect_gt(result$width, 100)
-  expect_lt(result$width, 1000)
-  expect_gt(result$height, 100)
-  expect_lt(result$height, 1000)
+  expect_match(result, "<svg")
 
 })
 

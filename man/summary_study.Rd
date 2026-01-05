@@ -11,7 +11,8 @@ summary_study(
   plot_area_width = 6,
   colourblind = FALSE,
   x_min = NULL,
-  x_max = NULL
+  x_max = NULL,
+  logger = NULL
 )
 }
 \arguments{
@@ -31,6 +32,10 @@ treatment effects in inches. Defaults to \code{6}.}
 \item{x_min}{numeric. Minimum value for the x-axis. Defaults to \code{NULL}}
 
 \item{x_max}{numeric. Maximum value for the x-axis. Defaults to \code{NULL}}
+
+\item{logger}{Stores all notification messages to be displayed in the Log
+Window. Insert the logger reactive list here for running in
+shiny, otherwise leave the default \code{NULL}}
 }
 \value{
 List containing:

@@ -215,7 +215,7 @@ metaregression_regression_module_server <- function(id, common) {
     output$plot <- renderUI({
       req(svg())
       div(class = "svg_container", style = "max-width: 1200px;",
-        HTML(svg()$svg)
+        svg()
       )
     })
 
@@ -224,7 +224,7 @@ metaregression_regression_module_server <- function(id, common) {
         return(glue("MetaInsight_{id}_regression_plot.{common$download_format}"))
       },
       content = function(file) {
-        write_svg_plot(file, common$download_format, svg())
+        write_plot(svg(), file, common$download_format)
       }
     )
 

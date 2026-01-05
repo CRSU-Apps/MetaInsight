@@ -4,12 +4,7 @@ treatment_data <- defined_data_con$treatment_df
 test_that("freq_summary produces errors for incorrect data types and invalid values", {
   result <- freq_summary(freq_data, treatment_data, "Title", "OR", "good", "random", 999)
 
-  expect_match(result$svg, "<svg")
-  expect_gt(result$width, 100)
-  expect_lt(result$width, 1000)
-  expect_gt(result$height, 100)
-  expect_lt(result$height, 1000)
-
+  expect_match(result, "<svg")
 })
 
 test_that("freq_summary produces errors for incorrect data types and invalid values", {

@@ -1,11 +1,7 @@
 test_that("Check covariate_forest function works as expected", {
   result <- covariate_forest(fitted_covariate_model, loaded_data_con$treatment_df, "Placebo")
 
-  expect_match(result$svg, "<svg")
-  expect_gt(result$width, 100)
-  expect_lt(result$width, 1000)
-  expect_gt(result$height, 100)
-  expect_lt(result$height, 1000)
+  expect_match(result, "<svg")
 
 })
 

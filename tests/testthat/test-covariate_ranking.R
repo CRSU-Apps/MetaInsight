@@ -23,18 +23,10 @@ test_that("Check covariate_ranking function works as expected", {
   expect_equal(ncol(table_result), 6)
 
   litmus_result <- LitmusRankOGram(result)
-  expect_match(litmus_result$svg, "<svg")
-  expect_gt(litmus_result$width, 100)
-  expect_lt(litmus_result$width, 1000)
-  expect_gt(litmus_result$height, 100)
-  expect_lt(litmus_result$height, 1000)
+  expect_match(litmus_result, "<svg")
 
   sucra_result <- RadialSUCRA(result)
-  expect_match(sucra_result$svg, "<svg")
-  expect_gt(sucra_result$width, 100)
-  expect_lt(sucra_result$width, 1000)
-  expect_gt(sucra_result$height, 100)
-  expect_lt(sucra_result$height, 1000)
+  expect_match(sucra_result, "<svg")
 })
 
 test_that("covariate_ranking produces errors for incorrect data types", {

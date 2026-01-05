@@ -205,6 +205,8 @@ loading_spinner <- function(class) {
 ####################### #
 # ADD TOOLTIP #
 ####################### #
+#' Add a tooltip to the label of an input
+#'
 #' @param label character. The text to display initially
 #' @param message character. The text to display in the tooltip
 #' @keywords internal
@@ -257,43 +259,29 @@ suppress_jags_output <- function(expr) {
 # PLOTTING #
 ####################### #
 
-#' Write a plot to a .pdf, .png or .svg file.
-#'
-#' @param file The file to which to write.
-#' @param type String containing the type of file to which to write.
-#' @param renderFunction A function to render the plot.
-#' @param height The height of the plot in inches for pdf, or user specified units for png.
-#' @param width The width of the plot in inches for pdf, or user specified units for png.
-#' @export
-write_plot <- function(file, type, renderFunction, height = NULL, width = NULL) {
-  if (type == "pdf") {
-    grDevices::pdf(file = file, height = height, width = width)
-  }
-  if (type == "png") {
-    grDevices::png(file = file, height = height, width = width, units = "in", res = 300)
-  }
-  if (type == "svg") {
-    grDevices::svg(file = file, height = height, width = width)
-  }
-  renderFunction()
-  grDevices::dev.off()
-}
-
 #' Write an svg plot to either a png, pdf or svg file
 #'
+#' @param svg html. containing the svg string, returned from `crop_svg()`
 #' @param file character. The file to which to write.
 #' @param type character. Type of file to which to write.
-#' @param svg list. Containing the svg string, width and height returned from `crop_svg()`
 #' @export
-write_svg_plot <- function(file, type, svg) {
+write_plot <- function(svg, file, type) {
+
+  xml <- xml2::read_html(svg)
+  svg_node <- xml2::xml_find_first(xml, "//svg")
+  viewbox <- xml2::xml_attr(svg_node, "viewbox")
+  values <- strsplit(viewbox, " ")[[1]] |> as.numeric()
+  width <- values[3] - values[1]
+  height <- values[4] - values[2]
+
   if (type == "pdf") {
-    rsvg::rsvg_pdf(charToRaw(svg$svg), file, svg$width, svg$height)
+    rsvg::rsvg_pdf(charToRaw(svg), file, width, height)
   }
   if (type == "png") {
-    rsvg::rsvg_png(charToRaw(svg$svg), file, svg$width * 3, svg$height * 3)
+    rsvg::rsvg_png(charToRaw(svg), file, width * 3, height * 3)
   }
   if (type == "svg") {
-    writeLines(svg$svg, file)
+    writeLines(svg, file)
   }
 }
 
@@ -331,8 +319,6 @@ forest_height <- function(notrt, title=FALSE, annotation = FALSE) {
 forest_width <- function(n_chars) {
   5 + (n_chars / 10)
 }
-
-
 
 #' Create a pair of download buttons
 #'
@@ -391,10 +377,7 @@ CreateTauSentence <- function(model) {
 #' @param svg xml_document. Output from `svglite::xmlSVG()`
 #' @param margin numeric. The margin in pixels to leave around the edge
 #' of the plot content. Defaults to 10.
-#' @return List containing:
-#'  \item{svg}{character. The cropped svg}
-#'  \item{width}{numeric. The width of the viewBox in pixels}
-#'  \item{height}{numeric. The height of the viewBox in pixels}
+#' @return html. The cropped svg
 #' @export
 
 crop_svg <- function(svg, margin = 10){
@@ -453,10 +436,7 @@ crop_svg <- function(svg, margin = 10){
   xml2::xml_set_attr(root, "xmlns", "http://www.w3.org/2000/svg")
   xml2::xml_set_attr(root, "xmlns:xlink", "http://www.w3.org/1999/xlink")
 
-  list(
-    svg = paste(svg, collapse = "\n"),
-    width = bbox$width,
-    height = bbox$height)
+  shiny::HTML(paste(svg, collapse = "\n"))
 }
 
 ####################### #

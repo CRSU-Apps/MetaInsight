@@ -1,12 +1,6 @@
 test_that("Check baseline_forest function works as expected", {
   result <- baseline_forest(fitted_baseline_model, loaded_data_con$treatment_df, "Placebo")
-
-  expect_match(result$svg, "<svg")
-  expect_gt(result$width, 100)
-  expect_lt(result$width, 1000)
-  expect_gt(result$height, 100)
-  expect_lt(result$height, 1000)
-
+  expect_match(result, "<svg")
 })
 
 test_that("Check baseline_forest function produces errors as expected", {

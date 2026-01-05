@@ -6,7 +6,5 @@
 {r, results = 'asis'}
 ```
 ```{r, echo = {{baseline_summary_knit}}, include = {{baseline_summary_knit}}}
-baseline_summary_plot <- baseline_summary(main_connected_data, outcome, treatment_df)
-
-htmltools::HTML(baseline_summary_plot$svg)
+baseline_summary(main_connected_data, outcome, treatment_df)
 ```

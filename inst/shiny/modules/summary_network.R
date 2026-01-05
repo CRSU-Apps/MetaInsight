@@ -70,7 +70,7 @@ summary_network_module_server <- function(id, common, parent_session) {
     output$plot_all <- renderUI({
       req(plot_all())
       div(class = "svg_container",
-        HTML(plot_all()$svg)
+        plot_all()
       )
     })
 
@@ -79,7 +79,7 @@ summary_network_module_server <- function(id, common, parent_session) {
     output$plot_sub <- renderUI({
       req(plot_sub())
       div(class = "svg_container",
-          HTML(plot_sub()$svg)
+          plot_sub()
       )
     })
 
@@ -106,10 +106,10 @@ summary_network_module_server <- function(id, common, parent_session) {
         paste0("MetaInsight_network_plot_all.", common$download_format)
       },
       content = function(file) {
-        write_svg_plot(
+        write_plot(
+          plot_all(),
           file,
-          common$download_format,
-          plot_all()
+          common$download_format
         )
       }
     )
@@ -119,10 +119,10 @@ summary_network_module_server <- function(id, common, parent_session) {
         paste0("MetaInsight_network_plot_sub.", common$download_format)
       },
       content = function(file) {
-        write_svg_plot(
+        write_plot(
+          plot_sub(),
           file,
-          common$download_format,
-          plot_sub()
+          common$download_format
         )
       }
     )

@@ -86,6 +86,7 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
 
     forest_svg <- reactive({
       req(watch(trigger) > 0)
+      req(common[[model]], run())
       tdf <- ifelse(id == "all", "treatment_df", "subsetted_treatment_df")
 
       if (ranking == "baseline_ranking"){
@@ -104,11 +105,9 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
     })
 
     output$forest <- renderUI({
-      req(watch(trigger) > 0)
-      req(common[[model]], run())
-
+      req(forest_svg())
       div(class = "svg_container_ranking",
-        HTML(forest_svg()$svg)
+        forest_svg()
       )
     })
 
@@ -138,7 +137,8 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
       on.exit(shinyjs::show(selector = class))
 
       div(class = "svg_container_ranking",
-          HTML(ranking_svg()$svg))
+          ranking_svg()
+      )
     })
 
     # enable shinyjs::show to work
@@ -167,7 +167,7 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
     output$network <- renderUI({
       req(network_svg())
       div(class = "svg_container_ranking",
-          HTML(network_svg()$svg)
+          network_svg()
       )
 
     })
@@ -177,11 +177,10 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
         paste0("MetaInsight_bayesian_forest_plot_", id, ".", common$download_format)
       },
       content = function(file) {
-
-        write_svg_plot(file,
-                       common$download_format,
-                       forest_svg()
-                       )
+        write_plot(forest_svg(),
+                   file,
+                   common$download_format
+                   )
       }
     )
 
@@ -190,9 +189,9 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
         paste0("MetaInsight_bayesian_ranking_plot_", id, ".", common$download_format)
       },
       content = function(file) {
-        write_svg_plot(file,
-                       common$download_format,
-                       ranking_svg()
+        write_plot(ranking_svg(),
+                   file,
+                   common$download_format
         )
       }
     )
@@ -202,9 +201,9 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
         paste0("MetaInsight_network_plot_", id, ".", common$download_format)
       },
       content = function(file) {
-        write_svg_plot(file,
-                       common$download_format,
-                       network_svg()
+        write_plot(network_svg(),
+                   file,
+                   common$download_format
         )
       }
     )

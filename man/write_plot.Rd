@@ -2,21 +2,17 @@
 % Please edit documentation in R/helper_functions.R
 \name{write_plot}
 \alias{write_plot}
-\title{Write a plot to a .pdf, .png or .svg file.}
+\title{Write an svg plot to either a png, pdf or svg file}
 \usage{
-write_plot(file, type, renderFunction, height = NULL, width = NULL)
+write_plot(svg, file, type)
 }
 \arguments{
-\item{file}{The file to which to write.}
+\item{svg}{html. containing the svg string, returned from \code{crop_svg()}}
 
-\item{type}{String containing the type of file to which to write.}
+\item{file}{character. The file to which to write.}
 
-\item{renderFunction}{A function to render the plot.}
-
-\item{height}{The height of the plot in inches for pdf, or user specified units for png.}
-
-\item{width}{The width of the plot in inches for pdf, or user specified units for png.}
+\item{type}{character. Type of file to which to write.}
 }
 \description{
-Write a plot to a .pdf, .png or .svg file.
+Write an svg plot to either a png, pdf or svg file
 }

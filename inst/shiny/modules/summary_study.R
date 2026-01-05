@@ -68,6 +68,7 @@ summary_study_module_server <- function(id, common, parent_session) {
   })
 
   output$plot <- renderUI({
+    req(svg())
     common$meta$summary_study$used <- TRUE
     common$meta$summary_study$width <- as.numeric(input$width)
     common$meta$summary_study$colourblind <- input$colourblind
@@ -75,7 +76,7 @@ summary_study_module_server <- function(id, common, parent_session) {
     common$meta$summary_study$x_max <- as.numeric(input$x_max)
     div(
       class = "svg_container",
-      HTML(svg()$svg)
+      svg()
     )
   })
 
@@ -84,10 +85,10 @@ summary_study_module_server <- function(id, common, parent_session) {
       paste0('MetaInsight_study_results.', common$download_format)
     },
     content = function(file) {
-      write_svg_plot(
+      write_plot(
+        svg(),
         file,
-        common$download_format,
-        svg()
+        common$download_format
       )
     }
   )

@@ -6,9 +6,7 @@
 {r, results = 'asis'}
 ```
 ```{r, echo = {{summary_study_knit}}, include = {{summary_study_knit}}}
-summary_study_plot <- summary_study(uploaded_data, frequentist_sub, outcome_measure, {{summary_study_width}}, {{summary_study_colourblind}}, {{summary_study_x_min}}, {{summary_study_x_max}})
-
-htmltools::HTML(summary_study_plot$svg)
+summary_study(uploaded_data, frequentist_sub, outcome_measure, {{summary_study_width}}, {{summary_study_colourblind}}, {{summary_study_x_min}}, {{summary_study_x_max}})
 ```
 
 

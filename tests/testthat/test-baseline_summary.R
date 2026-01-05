@@ -4,11 +4,7 @@ t_df <- defined_data_con$treatment_df
 test_that("Check baseline_summary function works as expected", {
   result <- baseline_summary(connected, "Continuous", t_df)
 
-  expect_match(result$svg, "<svg")
-  expect_gt(result$width, 100)
-  expect_lt(result$width, 2000)
-  expect_gt(result$height, 100)
-  expect_lt(result$height, 2000)
+  expect_match(result, "<svg")
 })
 
 test_that("Check baseline_summary function produces errors as expected", {

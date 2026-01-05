@@ -15,9 +15,7 @@ bayes_ranking_sub <- bayes_ranking(connected_data_sub, treatment_df_sub, bayes_m
 {r, results = 'asis'}
 ```
 ```{r, echo = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}
-bayes_ranking_forest_all <- bayes_forest(bayes_model_all, treatment_df, reference_treatment_all, "", TRUE)
-
-htmltools::HTML(bayes_ranking_forest_all$svg)
+bayes_forest(bayes_model_all, treatment_df, reference_treatment_all, "", TRUE)
 ```
 
 ```{asis, echo = {{bayes_ranking_knit}}, eval = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}
@@ -25,12 +23,10 @@ htmltools::HTML(bayes_ranking_forest_all$svg)
 ```
 ```{r, echo = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}
 if ({{bayes_ranking_rank_style}} == "radial"){
-  bayes_ranking_rank_all <- RadialSUCRA(bayes_ranking_all, !{{bayes_ranking_simple}}, {{bayes_ranking_colourblind}})
+  RadialSUCRA(bayes_ranking_all, !{{bayes_ranking_simple}}, {{bayes_ranking_colourblind}})
 } else {
-  bayes_ranking_rank_all <- LitmusRankOGram(bayes_ranking_all, {{bayes_ranking_colourblind}})
+  LitmusRankOGram(bayes_ranking_all, {{bayes_ranking_colourblind}})
 }
-
-HTML(bayes_ranking_rank_all$svg)
 ```
 
 ```{r, echo = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}
@@ -41,9 +37,7 @@ knitr::kable(ranking_table(bayes_ranking_all), digits = 2)
 {r, results = 'asis'}
 ```
 ```{r, echo = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}
-bayes_ranking_network_all <- summary_network(frequentist_all, bugsnet_all, {{bayes_ranking_network_style}})
-
-HTML(bayes_ranking_network_all$svg)
+summary_network(frequentist_all, bugsnet_all, {{bayes_ranking_network_style}})
 ```
 
 ```{asis, echo = {{bayes_ranking_knit}}, eval = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}
@@ -54,8 +48,7 @@ HTML(bayes_ranking_network_all$svg)
 {r, results = 'asis'}
 ```
 ```{r, echo = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}
-bayes_ranking_forest_sub <- bayes_forest(bayes_model_sub, treatment_df_sub, reference_treatment_sub, "", TRUE)
-HTML(bayes_ranking_forest_sub$svg)
+bayes_forest(bayes_model_sub, treatment_df_sub, reference_treatment_sub, "", TRUE)
 ```
 
 ```{asis, echo = {{bayes_ranking_knit}}, eval = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}
@@ -63,12 +56,10 @@ HTML(bayes_ranking_forest_sub$svg)
 ```
 ```{r, echo = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}
 if ({{bayes_ranking_rank_style}} == "radial"){
-  bayes_ranking_rank_sub- RadialSUCRA(bayes_ranking_sub, !{{bayes_ranking_simple}}, {{bayes_ranking_colourblind}})
+  RadialSUCRA(bayes_ranking_sub, !{{bayes_ranking_simple}}, {{bayes_ranking_colourblind}})
 } else {
-  bayes_ranking_rank_sub <- LitmusRankOGram(bayes_ranking_sub, {{bayes_ranking_colourblind}})
+  LitmusRankOGram(bayes_ranking_sub, {{bayes_ranking_colourblind}})
 }
-
-HTML(bayes_ranking_rank_sub$svg)
 ```
 
 ```{r, echo = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}
@@ -79,8 +70,5 @@ knitr::kable(ranking_table(bayes_ranking_sub), digits = 2)
 {r, results = 'asis'}
 ```
 ```{r, echo = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}
-bayes_ranking_network_sub <- summary_network(frequentist_sub, bugsnet_sub, {{bayes_ranking_network_style}})
-
-HTML(bayes_ranking_network_sub$svg)
-
+summary_network(frequentist_sub, bugsnet_sub, {{bayes_ranking_network_style}})
 ```

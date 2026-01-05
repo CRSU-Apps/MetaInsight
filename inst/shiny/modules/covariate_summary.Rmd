@@ -6,7 +6,5 @@
 {r, results = 'asis'}
 ```
 ```{r, echo = {{covariate_summary_knit}}, include = {{covariate_summary_knit}}}
-covariate_summary_plot <- covariate_summary(main_connected_data, outcome, treatment_df)
-
-htmltools::HTML(covariate_summary_plot$svg)
+covariate_summary(main_connected_data, outcome, treatment_df)
 ```

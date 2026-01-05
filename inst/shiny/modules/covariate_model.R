@@ -31,7 +31,8 @@ covariate_model_module_server <- function(id, common, parent_session) {
         label <- glue("Covariate value ({common$covariate_name})")
         if (common$covariate_type == "Continuous"){
           step <- 10 ** (log_val - 2)
-          updateSliderInput(session, "covariate_value", min = min, max = max, value = mean, step = step, label = label)
+          rounding <- 2 - log_val
+          updateSliderInput(session, "covariate_value", min = min, max = max, value = round(mean, rounding), step = step, label = label)
         }
         if (common$covariate_type == "Binary"){
           step <- 1
@@ -169,7 +170,7 @@ covariate_model_module_server <- function(id, common, parent_session) {
           covariate_label = glue("Covariate value ({common$covariate_name})"),
           covariate_tick = ifelse(common$covariate_type == "Continuous", TRUE, FALSE),
           ### Manual save end
-          covariate_value = input$covariate_value,
+          covariate_value = as.numeric(input$covariate_value),
           regressor = input$regressor)
       }
     },
