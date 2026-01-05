@@ -184,25 +184,6 @@ close_loading_modal <- function (session = getDefaultReactiveDomain())
 }
 
 ####################### #
-# LOADING SPINNER #
-####################### #
-#' @title loading_spinner
-#' @description For internal use. Show a loading spinner when an output is recalculating.
-#' Visibility is toggled using shinyjs::show(selector = ".class"). Note that you can use
-#' multiple classes and they can be shown / hidden with independent triggers i.e. use one
-#' to hide and a different one to show
-#' @param class character
-#' @keywords internal
-#' @export
-loading_spinner <- function(class) {
-  div(class = class, style = "display: none;", # initially hidden
-    div(class = "shiny-spinner-output-container",
-      div(class = "load-container",
-        div(class = "loader"))
-))}
-
-
-####################### #
 # ADD TOOLTIP #
 ####################### #
 #' Add a tooltip to the label of an input
