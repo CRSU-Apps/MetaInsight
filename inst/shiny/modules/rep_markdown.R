@@ -132,7 +132,7 @@ rep_markdown_module_server <- function(id, common, parent_session, COMPONENT_MOD
 
           # add a section header to create tabs
           full_component_name <- names(COMPONENTS[COMPONENTS == component])
-          module_rmd <- c(glue("## {full_component_name}"), module_rmd)
+          module_rmd <- c(glue::glue("## {full_component_name}"), module_rmd)
 
           module_rmd_file <- tempfile(pattern = paste0(module$id, "_"),
                                       fileext = ".Rmd")
@@ -175,7 +175,7 @@ rep_markdown_module_server <- function(id, common, parent_session, COMPONENT_MOD
 
       # add quarto header
       quarto_header <- readLines("Rmd/quarto_header.txt")
-      quarto_header <- append(quarto_header, glue("title: MetaInsight Session {Sys.Date()}"), 1)
+      quarto_header <- append(quarto_header, glue::glue("title: MetaInsight Session {Sys.Date()}"), 1)
       combined_rmd <- c(quarto_header, combined_rmd)
 
       # convert chunk control lines
