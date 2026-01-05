@@ -19,43 +19,29 @@ bayes_nodesplit_module_ui <- function(id) {
 bayes_nodesplit_submodule_server <- function(id, common, nodesplit, run){
   moduleServer(id, function(input, output, session) {
 
-    plot_height <- reactive({
-      watch(run)
-      # removed a -1 here to make room for the title
-      n_comp <- length(common[[nodesplit]])
-      max(400, n_comp * 80)
-    })
-
-    plot_title = paste0("Inconsistency test with nodesplitting \nmodel",
-                        ifelse(id == "all", " for all studies", " with selected studies excluded"))
-
-    output$plot <- renderPlot({
+    svg <- reactive({
       watch(run)
       req(common[[nodesplit]])
       shinyjs::show(selector = ".bayes_nodesplit_div")
       on.exit(shinyjs::runjs(paste0("Shiny.setInputValue('bayes_nodesplit-",id ,"-complete', 'complete');")))
-      common$meta$bayes_nodesplit[[paste0("plot_height_", id)]] <- plot_height() / 72
-      plot(summary(common[[nodesplit]]), digits = 3)
-      title(main = plot_title)
-    }, height = function(){plot_height()})
+      bayes_nodesplit_plot(common[[nodesplit]], id == "all")
+    })
+
+    output$plot <- renderUI({
+      req(svg())
+      div(class = "svg_container",
+        svg()
+      )
+    })
 
     output$download <- downloadHandler(
       filename = function(){
           glue("MetaInsight_nodesplit_{id}.{common$download_format}")
       },
       content = function(file) {
-
-        plot_function <- function(){
-          plot(summary(common[[nodesplit]]))
-          title(main = plot_title)
-        }
-
-        write_plot(file,
-                   common$download_format,
-                   plot_function,
-                   # convert to inches
-                   height =  plot_height() / 72,
-                   width = 8)
+        write_plot(svg(),
+                   file,
+                   common$download_format)
       }
     )
 
@@ -156,7 +142,7 @@ bayes_nodesplit_module_server <- function(id, common, parent_session) {
 
 bayes_nodesplit_submodule_result <- function(id) {
   ns <- NS(id)
-  plotOutput(ns("plot"))
+  uiOutput(ns("plot"))
 }
 
 bayes_nodesplit_module_result <- function(id) {

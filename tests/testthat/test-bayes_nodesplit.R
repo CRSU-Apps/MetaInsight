@@ -9,6 +9,10 @@ test_that("Check bayes_nodesplit function works as expected", {
   expect_is(result, "mtc.nodesplit")
   expect_length(result, 9)
   expect_true(all(unlist(lapply(result, class)) == "mtc.result"))
+
+  plot <- bayes_nodesplit_plot(result)
+  expect_match(plot, "<svg")
+
 })
 
 test_that("bayes_nodesplit produces errors for incorrect data types", {
@@ -44,8 +48,9 @@ test_that("bayes_nodesplit functions with valid data", {
 
   plot_all <- app$get_value(output = "bayes_nodesplit-all-plot")
   plot_sub <- app$get_value(output = "bayes_nodesplit-sub-plot")
-  expect_equal(substr(plot_all$src, 1, 10), "data:image")
-  expect_equal(substr(plot_sub$src, 1, 10), "data:image")
+
+  expect_match(plot_all$html, "<svg")
+  expect_match(plot_sub$html, "<svg")
 
   test_bayes_plot_downloads(app, "bayes_nodesplit", "")
 

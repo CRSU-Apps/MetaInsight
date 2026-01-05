@@ -90,3 +90,35 @@ bayes_nodesplit <- function(connected_data, treatment_df, outcome, outcome_measu
     )
   }
 }
+
+#' Produce a forest plot from nodesplitting results
+#'
+#' @param nodesplit `mtc.nodesplit` object produced by `bayes_nodesplit()`
+#' @param main_analysis logical. Whether the analysis is the main or sensitivity analysis. Default `TRUE`.
+#' @inheritParams common_params
+#' @return html. svg document containing the plot
+#' @export
+bayes_nodesplit_plot <- function(nodesplit, main_analysis = TRUE, logger = NULL){
+
+  if (!inherits(nodesplit, "mtc.nodesplit")){
+    logger |> writeLog(type = "error", "nodesplit must be a 'mtc.nodesplit' object")
+  }
+
+  if (!inherits(main_analysis, "logical")){
+    logger |> writeLog(type = "error", "main_analysis must be either 'TRUE' or 'FALSE'")
+  }
+
+  plot_height <- max(400, length(nodesplit) * 80) / 72
+  plot_title = paste0("Inconsistency test with nodesplitting \nmodel",
+                      ifelse(main_analysis, " for all studies", " with selected studies excluded"))
+
+  svglite::xmlSVG({
+    plot(summary(nodesplit), digits = 3)
+    title(main = plot_title)
+  },
+  width = 8,
+  height = plot_height
+  ) |> crop_svg()
+
+}
+
