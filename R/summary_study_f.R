@@ -211,7 +211,8 @@ summary_study <- function(connected_data, freq, outcome_measure, plot_area_width
       # legend for colours
       rob_levels <- c("Low risk of bias", "Some concerns", "High risk of bias")
       mtext(
-        rep("•", 3),
+        # bullet point unicode
+        rep("\u2022", 3),
         side = 2,
         line = legend_x_position - legend_width - 1,
         las = 1,
@@ -354,7 +355,8 @@ summary_study <- function(connected_data, freq, outcome_measure, plot_area_width
   colours <- palette
 
   mtext(
-    "•",
+    # bullet point unicode
+    "\u2022",
     side = 4,
     at = y_position,
     line = x_positions,
