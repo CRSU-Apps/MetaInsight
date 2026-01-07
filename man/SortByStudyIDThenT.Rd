@@ -8,6 +8,8 @@ SortByStudyIDThenT(data, outcome)
 }
 \arguments{
 \item{data}{Data frame to sort}
+
+\item{outcome}{Type of outcome for which to reorder, either 'Continuous' or 'Binary'}
 }
 \value{
 Data frame ordered by StudyID, then T if applicable

@@ -105,7 +105,7 @@ GelmanPlot <- function(gelman_data, parameter) {
                   levels = c("median", "97.5%"))
   )
 
-  ggplot(plot_data, aes(x = x, y = y, color = type, linetype = type)) +
+  ggplot(plot_data, aes(x = .data$x, y = .data$y, color = .data$type, linetype = .data$type)) +
     geom_line() +
     geom_hline(yintercept = 1, color = "black", linetype = 1) +
     scale_color_manual(values = c("median" = "black", "97.5%" = "red")) +

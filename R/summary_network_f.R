@@ -1,5 +1,6 @@
 #' Produce either a netgraph or netplot
 #'
+#' @param freq list. Results of frequentist analysis created by `frequentist()`
 #' @param bugsnet dataframe. Created by `bugsnetdata()`
 #' @param style character. The plot to produce, either `netgraph` or `netplot`
 #' @param label_size numeric. The size of labels in the plots. Default of 1.

@@ -14,7 +14,9 @@ RadialSUCRA(
 \arguments{
 \item{ranking_data}{list created by bayes_ranking().}
 
-\item{colourblind}{TRUE for colourblind friendly colours (default = FALSE).}
+\item{original}{logical. Whether to display the original or simplified version (default = \code{TRUE})}
+
+\item{colourblind}{logical. \code{TRUE} for colourblind friendly colours (default = \code{FALSE}).}
 
 \item{regression_text}{Text to show for regression (default = "").}
 }

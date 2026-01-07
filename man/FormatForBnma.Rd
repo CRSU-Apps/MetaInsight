@@ -2,7 +2,7 @@
 % Please edit documentation in R/baseline_model_f.R
 \name{FormatForBnma}
 \alias{FormatForBnma}
-\title{Takes MetaInsight data and converts it into BNMA format}
+\title{Takes MetaInsight data and converts it into \CRANpkg{bnma} format}
 \usage{
 FormatForBnma(connected_data, treatment_df, outcome, reference_treatment)
 }
@@ -23,5 +23,5 @@ List:
 }
 }
 \description{
-Takes MetaInsight data and converts it into BNMA format
+Takes MetaInsight data and converts it into \CRANpkg{bnma} format
 }

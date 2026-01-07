@@ -14,7 +14,7 @@
 )
 }
 \arguments{
-\item{pairwise}{Output from meta::pairwise().}
+\item{pairwise}{Output from \code{meta::pairwise()}.}
 
 \item{y_position}{y co-ordinate for the study label and confidence interval.}
 

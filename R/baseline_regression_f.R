@@ -135,7 +135,6 @@ CalculateCredibleRegionsBnma <- function(model_output) {
 #' Find the credible interval at a given covariate value.
 #'
 #' @param mtc_results Meta-analysis object from which to find credible interval.
-#' @param reference_name Name of reference treatment.
 #' @param cov_value Covariate value at which to find the credible interval.
 #' @param parameter_name Name of the parameter for which to get the credible interval.
 #'
@@ -148,81 +147,6 @@ CalculateCredibleRegionsBnma <- function(model_output) {
   return(
     rel_eff[parameter_name, c("2.5%", "97.5%")]
   )
-}
-
-
-
-#' Get the outcome in the reference arm.
-#'
-#' @param data Data in long format.
-#' @param treatment_ids Data frame containing treatment IDs and names in columns named 'Number' and 'Label' respectively.
-#' @param outcome_type "Binary" or "Continuous".
-#' @param observed "Observed" or "Imputed". See @return.
-#' @param model Model created by bnma::network.run(). Only required when @param observed == "Imputed". Defaults to NULL.
-#'
-#' @return Vector of reference arm outcomes, named by study.
-#'   If a study contains the reference treatment then the value returned is the observed outcome in the reference arm.
-#'   If a study does not contain the reference treatment then the value returned is:
-#'     - NA if @param observed == "Observed";
-#'     - The median of the study-specific intercept parameter if @param observed == "Imputed".
-GetReferenceOutcome <- function(data, treatment_ids, outcome_type, observed, model = NULL){
-
-  if (!(observed %in% c("Observed", "Imputed"))) {
-    stop("'observed' must be 'Observed' or 'Imputed'")
-  }
-
-  if (observed == "Imputed" && is.null(model)) {
-    stop("A model must be provided when 'observed' == 'Imputed'")
-  }
-
-  treatments <- treatment_ids$Label
-  data$Treatment <- treatments[match(data$T, treatment_ids$Number)]
-
-  #Data with only control treatment rows kept
-  data_control <- KeepOrDeleteControlTreatment(
-    data = data,
-    treatments = treatments,
-    keep_delete = "keep"
-  )
-  if (outcome_type == "Binary") {
-    #Add NAs as required by metafor::escalc()
-    data_control$R[data_control$Treatment != treatments[1]] <- NA
-    effect_sizes <- metafor::escalc(
-      measure = "PLO",
-      xi = data_control$R,
-      ni = data_control$N
-    )
-  } else if (outcome_type == "Continuous") {
-    #Add NAs as required by metafor::escalc()
-    data_control$Mean[data_control$Treatment != treatments[1]] <- NA
-    effect_sizes <- metafor::escalc(
-      measure = "MN",
-      mi = data_control$Mean,
-      sdi = data_control$SD,
-      ni = data_control$N
-    )
-  } else {
-    stop("'outcome_type' must be 'Continuous' or 'Binary'")
-  }
-  outcomes <- as.numeric(effect_sizes$yi)
-  names(outcomes) <- unique(data_control$Study)
-
-  #If imputed values are requested and there are any missing outcomes then use the imputed outcomes
-  if (observed == "Imputed" && any(is.na(outcomes))) {
-    #Eta is the study-specific intercept parameter, which is often called mu in the literature. When a study does not contain the reference arm, {bnma} adds the reference arm to the data with missing values. Eta is then imputed for that study.
-    imputed_outcomes <- MCMCvis::MCMCsummary(
-      object = model$samples,
-      params = "Eta"
-    )["50%"][[1]]
-    names(imputed_outcomes) <- model$network$Study.order
-
-    #The studies with missing outcomes
-    na_studies <- names(outcomes[is.na(outcomes)])
-
-    outcomes[na_studies] <- imputed_outcomes[na_studies]
-  }
-
-  return(outcomes)
 }
 
 #' Puts a relative effects table from bnma into gemtc format

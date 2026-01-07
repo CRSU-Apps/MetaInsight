@@ -11,6 +11,7 @@
 #'  \item{height}{numeric. Plot height in pixels}
 #'  \item{width}{numeric. Plot width in pixels}
 #'
+#' @import graphics
 #' @export
 summary_study <- function(connected_data, freq, outcome_measure, plot_area_width = 6, colourblind = FALSE, x_min = NULL, x_max = NULL, logger = NULL) {
 
@@ -286,12 +287,13 @@ summary_study <- function(connected_data, freq, outcome_measure, plot_area_width
 
 #' Add the treatment effect line and confidence interval for a single comparison in a single study.
 #'
-#' @param pairwise Output from meta::pairwise().
+#' @param pairwise Output from `meta::pairwise()`.
 #' @param y_position y co-ordinate for the study label and confidence interval.
 #' @param studlab Study.
 #' @param treatment1 First treatment in the comparison.
 #' @param treatment2 Second treatment in the comparison.
 #' @param ci_limit_height Height of the vertical lines at the end of the confidence intervals. Defaults to 0.3.
+#' @importFrom graphics points lines
 .AddTreatmentEffect <- function(pairwise, y_position, studlab, treatment1, treatment2, ci_limit_height = 0.3) {
   row <- which(pairwise$studlab == studlab & pairwise$treat1 == treatment1 & pairwise$treat2 == treatment2)
   # point estimate
@@ -328,7 +330,7 @@ summary_study <- function(connected_data, freq, outcome_measure, plot_area_width
 #' @param treatment2 Second treatment in the comparison.
 .AddOutcomeText <- function(pairwise, x_position, y_position, studlab, treatment1, treatment2) {
   row <- which(pairwise$studlab == studlab & pairwise$treat1 == treatment1 & pairwise$treat2 == treatment2)
-  mtext(
+  graphics::mtext(
     text = paste0(pairwise$point_estimate[row], " (", pairwise$ci_lower[row], ", ", pairwise$ci_upper[row],  ")"),
     side = 2,
     line = x_position,
@@ -354,7 +356,7 @@ summary_study <- function(connected_data, freq, outcome_measure, plot_area_width
   row <- which(pairwise$studlab == studlab & pairwise$treat1 == treatment1 & pairwise$treat2 == treatment2)
   colours <- palette
 
-  mtext(
+  graphics::mtext(
     # bullet point unicode
     "\u2022",
     side = 4,
@@ -383,7 +385,7 @@ summary_study <- function(connected_data, freq, outcome_measure, plot_area_width
 .AddTreatmentEffectBlock <- function(pairwise, label_x_position, outcome_x_position, rob_x_positions, y_header_position, y_positions, treatment1, treatment2, rob_variables, palette) {
 
   # header
-  mtext(
+  graphics::mtext(
     text = paste0(treatment1, " vs. ", treatment2),
     side = 2,
     line = label_x_position,
@@ -400,7 +402,7 @@ summary_study <- function(connected_data, freq, outcome_measure, plot_area_width
   ]
 
   # study labels
-  mtext(
+  graphics::mtext(
     text = pairwise_subset$studlab,
     side = 2,
     line = label_x_position - 1,

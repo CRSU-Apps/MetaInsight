@@ -170,7 +170,7 @@ bayes_model_module_server <- function(id, common, parent_session) {
     bayes_model_submodule_server("sub", common)
 
     observeEvent(input$run_all, {
-      run_all("bayes", common$logger)
+      run_all(COMPONENTS, COMPONENT_MODULES, "bayes", common$logger)
     })
 
 })

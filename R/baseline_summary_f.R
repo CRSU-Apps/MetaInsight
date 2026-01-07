@@ -36,12 +36,12 @@ baseline_summary <- function(connected_data, outcome, treatment_df, logger = NUL
     # of the reference arm for the study, or NA if there is no reference arm
     # Reference arm is always numbered 1 internally
     mutated_data <- long_data |>
-      dplyr::group_by(Study) |>
+      dplyr::group_by(.data$Study) |>
       dplyr::mutate(
-        baseline = ifelse(is.null(Mean[T == 1]), NA, Mean[T == 1])
+        baseline = ifelse(is.null(.data$Mean[.data$T == 1]), NA, .data$Mean[.data$T == 1])
       ) |>
       dplyr::mutate(
-        baseline_error = ifelse(is.null(Mean[T == 1]), NA, (1.96 * SD[T == 1]) / sqrt(N[T == 1]))
+        baseline_error = ifelse(is.null(.data$Mean[.data$T == 1]), NA, (1.96 * .data$SD[.data$T == 1]) / sqrt(.data$N[.data$T == 1]))
       )
 
     # Error bar text for continuous outcomes
@@ -60,12 +60,12 @@ baseline_summary <- function(connected_data, outcome, treatment_df, logger = NUL
     # of the reference arm for the study, or NA if there is no reference arm
     # Reference arm is always numbered 1 internally
     mutated_data <- mutated_data |>
-      dplyr::group_by(Study) |>
+      dplyr::group_by(.data$Study) |>
       dplyr::mutate(
-        baseline = ifelse(is.null(R[T == 1]), NA, yi[T == 1])
+        baseline = ifelse(is.null(.data$R[.data$T == 1]), NA, .data$yi[.data$T == 1])
       ) |>
       dplyr::mutate(
-        baseline_error = ifelse(is.null(R[T == 1]), NA, 1.96 * sqrt(vi[T == 1]))
+        baseline_error = ifelse(is.null(.data$R[.data$T == 1]), NA, 1.96 * sqrt(.data$vi[.data$T == 1]))
       )
 
     # Error bar text for binary outcomes
@@ -75,8 +75,9 @@ baseline_summary <- function(connected_data, outcome, treatment_df, logger = NUL
 
   # these three calls could be converted to a function to use in covariate_summary too
   # Add column with treatment labels
+  # x$ and y$ syntax is used instead of .data$ as they are in different df
   mutated_data <- mutated_data |>
-    dplyr::inner_join(treatment_df, by = dplyr::join_by(T == Number))
+    dplyr::inner_join(treatment_df, by = dplyr::join_by(x$T == y$Number))
 
   # Convert tibble created by dplyr to df
   BUGSnet_df <- as.data.frame(mutated_data)
@@ -101,7 +102,7 @@ baseline_summary <- function(connected_data, outcome, treatment_df, logger = NUL
 
     # Plot in logit scale, label on probability scale
     plot <- plot +
-      scale_y_continuous(labels = function(x) signif(plogis(x), digits = 2))
+      scale_y_continuous(labels = function(x) signif(stats::plogis(x), digits = 2))
   }
 
   plot <- plot +
@@ -128,7 +129,7 @@ baseline_summary <- function(connected_data, outcome, treatment_df, logger = NUL
 
 #' Paste the caption text together
 #'
-#' @param plot_type Text string to describe type of plot. Can be "baseline risk" or "covariate"
+#' @param caption_setting Text string to describe type of plot. Can be "baseline risk" or "covariate"
 #' @param error_bar_text Text string to explain the error bar (optional)
 #' @return Text string to be used for caption
 

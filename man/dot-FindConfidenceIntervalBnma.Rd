@@ -12,8 +12,6 @@
 \item{cov_value}{Covariate value at which to find the confidence interval.}
 
 \item{parameter_name}{Name of the parameter for which to get the confidence interval.}
-
-\item{reference_name}{Name of reference treatment.}
 }
 \value{
 Named vector of "2.5\%" and "97.5" quantiles.

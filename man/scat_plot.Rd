@@ -14,6 +14,8 @@ scat_plot(model, deviance, model_type, outcome_measure, seed)
 \item{model_type}{Model effects type. "random" or "fixed".}
 
 \item{outcome_measure}{Outcome measure being analysed: one of "OR". "RR", "MD".}
+
+\item{seed}{numeric. Seed value to use for calculating UME model.}
 }
 \description{
 UME scatter plot

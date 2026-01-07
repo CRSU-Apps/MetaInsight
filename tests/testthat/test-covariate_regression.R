@@ -95,9 +95,9 @@ test_that("CalculateContributions() gathers relative treatment effects for treat
     Number = 1:4,
     Label = c("A", "B", "C", "D")
   )
-  data <- ReplaceTreatmentIds(data, treatment_ids)
+  data <- metainsight:::ReplaceTreatmentIds(data, treatment_ids)
 
-  contributions <- CalculateDirectness(
+  contributions <- metainsight:::CalculateDirectness(
     data = data,
     covariate_title = "covar.age",
     treatment_ids = treatment_ids,

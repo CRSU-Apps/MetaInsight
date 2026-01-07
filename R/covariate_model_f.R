@@ -1,5 +1,5 @@
 #' @title covariate_model
-#' @description Fits a covariate regression model using `{gemtc}`
+#' @description Fits a covariate regression model using \CRANpkg{gemtc}
 #' @param covariate_value numeric. The value at which to fit the model. Must be greater
 #' than or equal to the minimum value and less than or equal to the maximum
 #' value in `connected_data`
@@ -9,7 +9,7 @@
 #' When supplied, only the output is recalculated for a given covariate value,
 #' rather than refitting the model.
 #' @inheritParams common_params
-#' @return List of gemtc related output:
+#' @return List of \CRANpkg{gemtc} related output:
 #'  \item{mtcResults}{model object from `gemtc::mtc.run()` carried through (needed to match existing code)}
 #'  \item{mtcRelEffects}{data relating to presenting relative effects}
 #'  \item{rel_eff_tbl}{table of relative effects for each comparison}
@@ -129,7 +129,7 @@ covariate_model <- function(connected_data,
   return(model_info)
 }
 
-#' Function for formatting standard app user data ready for start of {gemtc} chain of commands
+#' Function for formatting standard app user data ready for start of \CRANpkg{gemtc} chain of commands
 #'
 #' @param data Uploaded data post-processing
 #' @param treatment_df Data frame containing treatment IDs and names in columns named 'Number' and 'Label' respectively
@@ -137,27 +137,27 @@ covariate_model <- function(connected_data,
 #' @param covariate Chosen covariate name as per uploaded data
 #' @param cov_friendly Friendly name of chosen covariate
 #' @return list containing two dataframes: armData containing the core data; studyData containing covariate data
-PrepDataGemtc <- function(data, treatment_df, outcome_type, covariate, cov_friendly){
+PrepDataGemtc <- function(data, treatment_df, outcome, covariate, cov_friendly){
   # ensure data is in long format
   if (FindDataShape(data) == "wide") {
-    long_data <- WideToLong(data, outcome_type)
+    long_data <- WideToLong(data, outcome)
   } else {
     long_data <- data
   }
   # specify arm level data
-  if (outcome_type == "Continuous") {
+  if (outcome == "Continuous") {
     armData <- data.frame(study = long_data$Study,
                           treatment = treatment_df$Label[match(long_data$T, treatment_df$Number)],
                           mean = long_data$Mean,
                           std.dev = long_data$SD,
                           sampleSize = long_data$N)
-  } else if (outcome_type == "Binary") {
+  } else if (outcome == "Binary") {
     armData <- data.frame(study = long_data$Study,
                           treatment = treatment_df$Label[match(long_data$T, treatment_df$Number)],
                           responders = long_data$R,
                           sampleSize = long_data$N)
   } else {
-    paste0("Outcome_type has to be 'Continuous' or 'Binary'")
+    paste0("Outcome has to be 'Continuous' or 'Binary'")
   }
   # specify study level data
   studyData <- unique(data.frame(study = long_data$Study,
@@ -168,7 +168,7 @@ PrepDataGemtc <- function(data, treatment_df, outcome_type, covariate, cov_frien
   return(list(armData = armData, studyData = studyData))
 }
 
-#' Function for setting up covariate {gemtc} model object
+#' Function for setting up covariate \CRANpkg{gemtc} model object
 #'
 #' @param data list containing armData and studyData (as created by PrepDataGemtc)
 #' @param model_type Whether the model is 'fixed' or 'random'

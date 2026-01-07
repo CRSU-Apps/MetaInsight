@@ -2,14 +2,12 @@
 % Please edit documentation in R/baseline_model_f.R
 \name{BnmaRelativeEffects}
 \alias{BnmaRelativeEffects}
-\title{An equivalent to {gemtc}'s relative.effect() function, for baseline risk in {bnma}.}
+\title{An equivalent to the \code{relative.effect()} function in \CRANpkg{gemtc}, for baseline risk in \CRANpkg{bnma}.}
 \usage{
-BnmaRelativeEffects(model, covariate_value)
-
 BnmaRelativeEffects(model, covariate_value)
 }
 \arguments{
-\item{model}{bnma model object created by BaselineRiskRegression().}
+\item{model}{\CRANpkg{bnma} model object created by \code{BaselineRiskRegression()}.}
 
 \item{covariate_value}{The covariate value at which to calculate relative effects.}
 }
@@ -19,15 +17,7 @@ Matrix with the median and 95\\% credible interval relative effect
 \item columns: '50\%', '2.5\%' and '97.5\%'
 \item rows: one row per non-reference treatment, named by the corresponding treatment parameter (e.g. the first one is \code{d[2]}).
 }
-
-Matrix with the median and 95\% credible interval relative effect
-\itemize{
-\item columns: '50\%', '2.5\%' and '97.5\%'
-\item rows: one row per non-reference treatment, named by the corresponding treatment parameter (e.g. the first one is \code{d[2]}).
-}
 }
 \description{
-An equivalent to {gemtc}'s relative.effect() function, for baseline risk in {bnma}.
-
-An equivalent to {gemtc}'s relative.effect() function, for baseline risk in {bnma}.
+An equivalent to the \code{relative.effect()} function in \CRANpkg{gemtc}, for baseline risk in \CRANpkg{bnma}.
 }

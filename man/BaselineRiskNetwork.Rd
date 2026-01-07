@@ -2,12 +2,12 @@
 % Please edit documentation in R/baseline_model_f.R
 \name{BaselineRiskNetwork}
 \alias{BaselineRiskNetwork}
-\title{Creates the baseline risk meta-regression network in BNMA}
+\title{Creates the baseline risk meta-regression network in \CRANpkg{bnma}}
 \usage{
 BaselineRiskNetwork(br_data, outcome, model_type, cov_parameters)
 }
 \arguments{
-\item{br_data}{A list of data in the format produced by FormatForBnma().}
+\item{br_data}{A list of data in the format produced by \code{FormatForBnma()}.}
 
 \item{outcome}{"Continuous" or "Binary".}
 
@@ -19,5 +19,5 @@ BaselineRiskNetwork(br_data, outcome, model_type, cov_parameters)
 Output from bnma::network.data().
 }
 \description{
-Creates the baseline risk meta-regression network in BNMA
+Creates the baseline risk meta-regression network in \CRANpkg{bnma}
 }

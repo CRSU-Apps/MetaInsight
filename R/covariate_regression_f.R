@@ -43,7 +43,7 @@ covariate_regression <- function(model,
 #' @param data Input data in long format.
 #' @param covariate_title Title of covariate column in data. Enter NULL if there is no covariate.
 #' @param treatment_ids Data frame containing treatment IDs and names in columns named 'Number' and 'Label' respectively.
-#' @param outcome_type "Continuous" or "Binary".
+#' @param outcome "Continuous" or "Binary".
 #' @param outcome_measure "MD", "OR", "RR" or "RD".
 #' @param effects_type "fixed" or "random".
 #' @return List of contributions:
@@ -62,11 +62,11 @@ CalculateDirectness <- function(
     effects_type) {
 
   if (outcome == "Binary") {
-    d0 <- meta::pairwise(treat = T, event = R, studlab = Study, n = N, data = data, sm = outcome_measure)
+    d0 <- meta::pairwise(treat = data$T, event = data$R, studlab = data$Study, n = data$N, sm = outcome_measure, data = data)
   } else if (outcome == "Continuous") {
-    d0 <- meta::pairwise(treat = T, mean = Mean, sd = SD, studlab = Study, n = N, data = data, sm = outcome_measure)
+    d0 <- meta::pairwise(treat = data$T, mean = data$Mean, sd = data$SD, studlab = data$Study, n = data$N, sm = outcome_measure, data = data)
   } else {
-    stop(glue::glue("Outcome type '{outcome_type}' is not supported. Please use 'Binary' or 'Continuous'"))
+    stop(glue::glue("Outcome type '{outcome}' is not supported. Please use 'Binary' or 'Continuous'"))
   }
 
   #Switch the treatment effects to match the rest of the app.

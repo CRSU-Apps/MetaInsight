@@ -38,8 +38,9 @@ covariate_summary <- function(connected_data, outcome, treatment_df, logger = NU
   y_axis_label <- GetFriendlyCovariateName(covariate)
 
   # Add column with treatment labels
+  # x$ and y$ syntax is used instead of .data$ as they are in different df
   mutated_data <- long_data |>
-    dplyr::inner_join(treatment_df, by = dplyr::join_by(T == Number))
+    dplyr::inner_join(treatment_df, by = dplyr::join_by(x$T == y$Number))
 
   # Convert tibble created by dplyr to df
   BUGSnet_df <- as.data.frame(mutated_data)

@@ -9,7 +9,7 @@ forest_width(n_chars)
 \arguments{
 \item{n_chars}{The number of characters in the widest label.
 For frequentist plots this should be the longest treatment name.
-For Bayesian plots this should be 'Compared to {reference treatment}'}
+For Bayesian plots this should be 'Compared to \{reference treatment\}'}
 }
 \value{
 The width of the plot in inches

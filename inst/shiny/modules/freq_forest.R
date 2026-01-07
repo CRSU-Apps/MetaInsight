@@ -143,7 +143,7 @@ freq_forest_module_server <- function(id, common, parent_session) {
                                 "Please configure the analysis first in the Setup section")
       return()
     }
-    run_all("freq", common$logger)
+    run_all(COMPONENTS, COMPONENT_MODULES, "freq", common$logger)
   })
 
   return(list(

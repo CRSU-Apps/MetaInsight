@@ -22,6 +22,7 @@ printVecAsis <- function(x) {
 #' @export
 spurious <- function(x) {
   cookies::add_cookie_handlers(x)
+  cowplot::add_sub(x)
   DT::renderDataTable(x)
   grid::absolute.size(x)
   gt::adjust_luminance(x)
@@ -294,7 +295,7 @@ forest_height <- function(notrt, title=FALSE, annotation = FALSE) {
 #'
 #' @param n_chars The number of characters in the widest label.
 #' For frequentist plots this should be the longest treatment name.
-#' For Bayesian plots this should be 'Compared to {reference treatment}'
+#' For Bayesian plots this should be 'Compared to \{reference treatment\}'
 #' @return The width of the plot in inches
 #' @export
 forest_width <- function(n_chars) {
@@ -435,7 +436,7 @@ reset_data <- function(common, session){
   common$reset()
   # blank outputs
   for (module in modules){
-    trigger(module)
+    gargoyle::trigger(module)
     # reset triggers
     session$userData[[module]](0)
   }
@@ -444,10 +445,12 @@ reset_data <- function(common, session){
 #' @title run_all
 #' @description For internal use. Runs all modules for a given component, excluding the model and nodesplit modules.
 #' @keywords internal
+#' @param COMPONENTS character. named vector of all components
+#' @param COMPONENT_MODULES list. Containing details of all modules
 #' @param component character. The component to run all the modules of.
 #' @param logger common$logger
 #' @export
-run_all <- function(component, logger){
+run_all <- function(COMPONENTS, COMPONENT_MODULES, component, logger){
 
   all_modules <- names(COMPONENT_MODULES[[component]])
 
@@ -505,8 +508,8 @@ run_all <- function(component, logger){
 #' @export
 hide_and_show <- function(module_id, show = TRUE){
   observe({
-    watch(module_id)
-    if (watch(module_id) == 0){
+    gargoyle::watch(module_id)
+    if (gargoyle::watch(module_id) == 0){
       shinyjs::hide(selector = glue::glue(".{module_id}_div"))
     } else {
       if (show){

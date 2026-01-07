@@ -61,7 +61,7 @@ baseline_model <- function(connected_data, treatment_df, outcome, outcome_measur
   return(output)
 }
 
-#' Takes MetaInsight data and converts it into BNMA format
+#' Takes MetaInsight data and converts it into \CRANpkg{bnma} format
 #'
 #' @param connected_data A data frame of data in MetaInsight format
 #' @param treatment_df Data frame containing treatment IDs and names in columns named 'Number' and 'Label' respectively
@@ -101,9 +101,9 @@ FormatForBnma <- function(connected_data, treatment_df, outcome, reference_treat
 
 
 
-#' Creates the baseline risk meta-regression network in BNMA
+#' Creates the baseline risk meta-regression network in \CRANpkg{bnma}
 #'
-#' @param br_data A list of data in the format produced by FormatForBnma().
+#' @param br_data A list of data in the format produced by `FormatForBnma()`.
 #' @param outcome "Continuous" or "Binary".
 #' @param model_type "fixed" or "random".
 #' @param cov_parameters "shared", "exchangable", or "unrelated".
@@ -145,7 +145,7 @@ BaselineRiskNetwork <- function(br_data, outcome, model_type, cov_parameters) {
 
 
 
-#' Fits the baseline risk meta-regression model in BNMA
+#' Fits the baseline risk meta-regression model in \CRANpkg{bnma}
 #'
 #' @param connected_data A data frame of data in MetaInsight format.
 #' @param treatment_df Data frame containing treatment IDs and names in columns named 'Number' and 'Label' respectively.
@@ -154,7 +154,7 @@ BaselineRiskNetwork <- function(br_data, outcome, model_type, cov_parameters) {
 #' @param model_type "fixed" or "random".
 #' @param cov_parameters "shared", "exchangable", or "unrelated".
 #' @param seed Seed. Defaults to 123.
-#' @return Output from bnma::network.run().
+#' @return Output from `bnma::network.run()`.
 BaselineRiskRegression <- function(connected_data, treatment_df, outcome, reference_treatment, model_type, cov_parameters, seed = 123) {
   formatted_data <- FormatForBnma(connected_data = connected_data, treatment_df = treatment_df,
                                   outcome = outcome, reference_treatment = reference_treatment)
@@ -280,39 +280,6 @@ BaselineRiskModelOutput <- function(connected_data, treatment_df, model, outcome
 }
 
 
-
-#' An equivalent to {gemtc}'s relative.effect() function, for baseline risk in {bnma}.
-#'
-#' @param model bnma model object created by BaselineRiskRegression().
-#' @param covariate_value The covariate value at which to calculate relative effects.
-#' @return Matrix with the median and 95\% credible interval relative effect
-#'  - columns: '50%', '2.5%' and '97.5%'
-#'  - rows: one row per non-reference treatment, named by the corresponding treatment parameter (e.g. the first one is `d[2]`).
-BnmaRelativeEffects <- function(model, covariate_value) {
-  model_summary <- summary(model)
-  parameters <- rownames(model_summary$summary.samples$quantiles)
-  #Extract parameters that begin with "d[", except d[1]
-  treatment_parameters <- grep("d\\[([0-9][0-9]+|[2-9])\\]",
-                               parameters,
-                               value = TRUE)
-  #Extract parameters that begin with "b_bl[", except b_bl[1]
-  covariate_parameters <- grep("b_bl\\[([0-9][0-9]+|[2-9])\\]",
-                               parameters,
-                               value = TRUE)
-  centred_covariate_value <- covariate_value - model$network$mx_bl
-
-  samples <- list()
-  #The number of chains is always left at the default 3
-  for (chain in 1:3) {
-    samples[[chain]] <- model$samples[[chain]][, treatment_parameters] + centred_covariate_value * model$samples[[chain]][, covariate_parameters]
-  }
-
-  relative_effects <- MCMCvis::MCMCsummary(samples)
-  return(as.matrix(relative_effects[, c("50%", "2.5%", "97.5%")]))
-}
-
-
-
 #' Calculate the confidence regions within direct evidence for the baseline risk model.
 #'
 #' @param model_output Return from `BaselineRiskModelOutput()`.
@@ -385,7 +352,6 @@ CalculateConfidenceRegionsBnma <- function(model_output) {
 #' Find the confidence interval at a given covariate value.
 #'
 #' @param mtc_results Meta-analysis object from which to find confidence interval.
-#' @param reference_name Name of reference treatment.
 #' @param cov_value Covariate value at which to find the confidence interval.
 #' @param parameter_name Name of the parameter for which to get the confidence interval.
 #'
@@ -489,12 +455,11 @@ GetBnmaParameters <- function(all_parameters, effects_type, cov_parameters) {
 
 
 
-
-#' An equivalent to {gemtc}'s relative.effect() function, for baseline risk in {bnma}.
+#' An equivalent to the `relative.effect()` function in \CRANpkg{gemtc}, for baseline risk in \CRANpkg{bnma}.
 #'
-#' @param model bnma model object created by BaselineRiskRegression().
+#' @param model \CRANpkg{bnma} model object created by `BaselineRiskRegression()`.
 #' @param covariate_value The covariate value at which to calculate relative effects.
-#' @return Matrix with the median and 95% credible interval relative effect
+#' @return Matrix with the median and 95\% credible interval relative effect
 #'  - columns: '50%', '2.5%' and '97.5%'
 #'  - rows: one row per non-reference treatment, named by the corresponding treatment parameter (e.g. the first one is `d[2]`).
 BnmaRelativeEffects <- function(model, covariate_value) {

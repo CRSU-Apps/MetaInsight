@@ -57,7 +57,7 @@ setup_load <- function(data_path = NULL, outcome, logger = NULL){
     }
   )
 
-  is_valid <- ValidateUploadedData(data, outcome, logger)
+  is_valid <- ValidateUploadedData(data, outcome)
 
   # If the uploaded data is invalid, return that
   if (!is_valid$valid){
@@ -93,7 +93,7 @@ setup_load <- function(data_path = NULL, outcome, logger = NULL){
 #' @return Validation result in the form of a list:
 #' - "valid" = TRUE or FALSE defining whether data is valid
 #' - "message" = String describing any issues causing the data to be invalid
-ValidateUploadedData <- function(data, outcome, logger = NULL) {
+ValidateUploadedData <- function(data, outcome) {
   if (is.null(data) || nrow(data) == 0) {
     return(
       list(
@@ -112,7 +112,7 @@ ValidateUploadedData <- function(data, outcome, logger = NULL) {
   }
 
   required_columns <- outcome_columns |>
-    dplyr::filter(required)
+    dplyr::filter(.data$required)
 
   result <- .ValidateMissingColumns(data, required_columns, outcome)
   if (!result$valid) {
@@ -209,7 +209,7 @@ ValidateUploadedData <- function(data, outcome, logger = NULL) {
 #' - "message" = String describing any issues causing the data to be invalid
 .ValidateNumberedColumns <- function(data, required_columns) {
   numbered_columns <- required_columns |>
-    dplyr::filter(!is.na(number_group))
+    dplyr::filter(!is.na(.data$number_group))
 
   if (!.ValidateMatchingWideColumns(data, numbered_columns)) {
     return(
@@ -593,7 +593,7 @@ binary_column_names <- data.frame() |>
 #' @param data Data frame to clean
 #' @return Cleaned data frame
 CleanData <- function(data) {
-  return(dplyr::mutate(data, across(where(is.character), .TidyStringItem)))
+  return(dplyr::mutate(data, dplyr::across(dplyr::where(is.character), .TidyStringItem)))
 }
 
 #' Tidy a character column.
@@ -630,14 +630,14 @@ WideToLong <- function(wide_data, outcome) {
                         names_pattern = "^(.*)\\.[0-9]+$",
                         values_drop_na = TRUE
     )
-  long_data <- long_data |> dplyr::relocate(FindCovariateNames(long_data), .after = last_col())
+  long_data <- long_data |> dplyr::relocate(FindCovariateNames(long_data), .after = dplyr::last_col())
   return(as.data.frame(long_data))
 }
 
 #' Convert long format to wide format (including covariate columns)
 #'
 #' @param long_data Data frame of long format
-#' @param outcome_type Indicator whether outcome is 'Binary' or 'Continuous'
+#' @param outcome Indicator whether outcome is 'Binary' or 'Continuous'
 #' @return Data frame in wide format
 LongToWide <- function(long_data, outcome) {
   # Specify columns that contain wide data
@@ -651,7 +651,7 @@ LongToWide <- function(long_data, outcome) {
     paste0("outcome needs to be 'Binary' or 'Continuous'")
   }
   # Add arms
-  long_data <- long_data |> dplyr::group_by(Study) |> dplyr::mutate(arm = dplyr::row_number())
+  long_data <- long_data |> dplyr::group_by(.data$Study) |> dplyr::mutate(arm = dplyr::row_number())
   # Transform to long
   wide_data <- long_data |>
     tidyr::pivot_wider(id_cols = c("StudyID", "Study", FindCovariateNames(long_data)),
@@ -836,7 +836,7 @@ CreateTreatmentIds <- function(all_treatments, reference_treatment = all_treatme
 #' Find all of the treatment names in the data, both for long and wide formats.
 #'
 #' @param data Data frame in which to search for treatment names
-#' @param treatent_ids Data frame containing treatment names (Label) and IDs (Number)
+#' @param treatment_ids Data frame containing treatment names (Label) and IDs (Number)
 #' @return Data frame where the treatments are given as IDs, not names
 ReplaceTreatmentIds <- function(data, treatment_ids) {
   if (FindDataShape(data) == "long") {
@@ -933,6 +933,7 @@ SortLong <- function(long_data) {
 #' Sort the data by StudyID then T
 #'
 #' @param data Data frame to sort
+#' @param outcome Type of outcome for which to reorder, either 'Continuous' or 'Binary'
 #' @return Data frame ordered by StudyID, then T if applicable
 SortByStudyIDThenT <- function(data, outcome) {
   if (FindDataShape(data) == "long") {

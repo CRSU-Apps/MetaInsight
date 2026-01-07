@@ -2,7 +2,7 @@
 % Please edit documentation in R/baseline_model_f.R
 \name{BaselineRiskRegression}
 \alias{BaselineRiskRegression}
-\title{Fits the baseline risk meta-regression model in BNMA}
+\title{Fits the baseline risk meta-regression model in \CRANpkg{bnma}}
 \usage{
 BaselineRiskRegression(
   connected_data,
@@ -30,8 +30,8 @@ BaselineRiskRegression(
 \item{seed}{Seed. Defaults to 123.}
 }
 \value{
-Output from bnma::network.run().
+Output from \code{bnma::network.run()}.
 }
 \description{
-Fits the baseline risk meta-regression model in BNMA
+Fits the baseline risk meta-regression model in \CRANpkg{bnma}
 }

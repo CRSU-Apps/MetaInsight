@@ -107,7 +107,7 @@ baseline_model_module_server <- function(id, common, parent_session) {
     outputOptions(output, "table", suspendWhenHidden = FALSE)
 
     observeEvent(input$run_all, {
-      run_all("baseline", common$logger)
+      run_all(COMPONENTS, COMPONENT_MODULES, "baseline", common$logger)
     })
 
     return(list(

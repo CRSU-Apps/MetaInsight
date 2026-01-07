@@ -20,11 +20,11 @@ CalculateDirectness(
 
 \item{treatment_ids}{Data frame containing treatment IDs and names in columns named 'Number' and 'Label' respectively.}
 
+\item{outcome}{"Continuous" or "Binary".}
+
 \item{outcome_measure}{"MD", "OR", "RR" or "RD".}
 
 \item{effects_type}{"fixed" or "random".}
-
-\item{outcome_type}{"Continuous" or "Binary".}
 }
 \value{
 List of contributions:

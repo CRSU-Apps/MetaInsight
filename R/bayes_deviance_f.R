@@ -7,19 +7,17 @@
 #' @return A list containing different elements depending on the input model:
 #'
 #' When model was created by `bayes_model()` containing:
-#' \itemize{
 #' \item{deviance_mtc}{results from `gemtc::mtc.deviance()` for model$mtcResults}
 #' \item{deviance_ume}{results from `gemtc::mtc.deviance()` for UME model}
 #' \item{scat_plot}{plotly object}
 #' \item{stem_plot}{plotly object}
 #' \item{lev_plot}{plotly object}
-#' }
+#'
 #' When model was created by `covariate_model()` containing:
-#' \itemize{
 #' \item{deviance_mtc}{results from `gemtc::mtc.deviance()` for model$mtcResults}
 #' \item{stem_plot}{plotly object}
 #' \item{lev_plot}{plotly object}
-#' }
+#'
 #' @export
 bayes_deviance <- function(model, seed = NULL, async = FALSE){
 
@@ -68,6 +66,7 @@ covariate_deviance <- function(...){
 #' @param deviance Output produced by `gemtc::mtc.deviance()`
 #' @param model_type Model effects type. "random" or "fixed".
 #' @param outcome_measure Outcome measure being analysed: one of "OR". "RR", "MD".
+#' @param seed numeric. Seed value to use for calculating UME model.
 scat_plot <- function(model, deviance, model_type, outcome_measure, seed) {
   if (outcome_measure == "MD") {
     like <- "normal"
@@ -175,8 +174,8 @@ scat_plot <- function(model, deviance, model_type, outcome_measure, seed) {
   y_column <- paste0("X", arm_number, ".y")
 
   return(
-    ume_plot %>%
-      add_trace(data = all,
+    ume_plot |>
+      plotly::add_trace(data = all,
                 x = ~all[, x_column], y = ~all[, y_column], type = 'scatter', mode = 'markers',
                 marker = list(size = 4, color = '#CAEFD1',
                               line = list(color = 'rgb(0,128,0)',

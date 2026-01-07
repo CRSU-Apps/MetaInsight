@@ -6,5 +6,5 @@
 #' @description Run the application via the
 #'   function \code{\link{run_metainsight}}
 #'
-#' @import shiny gargoyle bslib
+#' @import shiny bslib
 NULL

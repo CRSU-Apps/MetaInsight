@@ -498,7 +498,7 @@ sortres.matrix <- function(ntx, po) {
 
   #create new 'ranked' tx combinations
   # require install.packages("combinat")
-  cm <- t(combn(st.txcode, 2))  #combination matrix of ntx choose 2
+  cm <- t(utils::combn(st.txcode, 2))  #combination matrix of ntx choose 2
 
   #New 'ranked' tx combinations matrix made up of c("ordering", "t1", "t2", "inversion number")
   mtnew <- cbind(1:(choose(ntx, 2)), cm, (ifelse(cm[, 1] < cm[, 2], 1, -1)) )
@@ -674,10 +674,11 @@ ma.redu <- function(ma, rmt) {
 #' @param mtc Meta-analysis data for direct and indirect evidence
 #' @param rmt Matrix reduction vector
 #' @param p.only Number of treatments to plot
-#' @param po Matrix containing ranking order of treatments
+#' @param po Matrix containing ranking order of treatments#
+#' @param ntx Number of treatments
 #'
 #' @return Reduced meta-analysis data
-mtc.redu <- function(mtc, rmt, p.only, po) {
+mtc.redu <- function(mtc, rmt, p.only, po, ntx) {
   #~VECTORS~ inputed mtc === st.mtc # already sorted, just truncate directly
   new.rank <- mtc$rank[1:p.only, ]
   if (exists("sucra", where = mtc)) {
@@ -754,7 +755,7 @@ mtcMatrixCont <- function(stytitle, ntx, lstx, mtc, ma, outcome_measure, bpredd 
     #reduce the results matrices & vectors
     mtred <- redu.matrix(ntx, po, p.only, mtso)
     r.ma <- ma.redu(st.ma, mtred)
-    r.mtc <- mtc.redu(st.mtc, mtred, p.only, po)
+    r.mtc <- mtc.redu(st.mtc, mtred, p.only, po, ntx)
     r.lstx <- st.lstx[1:p.only]
     multiplot(stytitle, p.only, r.lstx, r.mtc, r.ma, bpredd, plt.adj, ucex, key_text)
   }

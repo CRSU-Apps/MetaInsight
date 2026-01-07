@@ -52,7 +52,7 @@ rather than refitting the model.}
 \item{async}{Whether or not the function is being used asynchronously. Default \code{FALSE}}
 }
 \value{
-List of gemtc related output:
+List of \CRANpkg{gemtc} related output:
 \item{mtcResults}{model object from \code{gemtc::mtc.run()} carried through (needed to match existing code)}
 \item{mtcRelEffects}{data relating to presenting relative effects}
 \item{rel_eff_tbl}{table of relative effects for each comparison}
@@ -72,5 +72,5 @@ List of gemtc related output:
 \item{covariate_max}{Vector of maximum covariate values directly contributing to the regression}
 }
 \description{
-Fits a covariate regression model using \code{{gemtc}}
+Fits a covariate regression model using \CRANpkg{gemtc}
 }

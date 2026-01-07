@@ -26,6 +26,7 @@ test_that("freq_compare produces downloadable tables", {
   app$wait_for_value(input = "setup_configure-ready")
   app$set_inputs(setupSel = "setup_configure")
   app$click("setup_configure-run")
+  app$wait_for_idle()
   app$set_inputs(tabs = "summary")
   app$set_inputs("setup_exclude-exclusions" = c("Study01", "Study02", "Study03", "Study04"))
   app$wait_for_value(input = "setup_exclude-complete")

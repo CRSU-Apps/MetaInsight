@@ -2,24 +2,24 @@
 % Please edit documentation in R/covariate_model_f.R
 \name{PrepDataGemtc}
 \alias{PrepDataGemtc}
-\title{Function for formatting standard app user data ready for start of {gemtc} chain of commands}
+\title{Function for formatting standard app user data ready for start of \CRANpkg{gemtc} chain of commands}
 \usage{
-PrepDataGemtc(data, treatment_df, outcome_type, covariate, cov_friendly)
+PrepDataGemtc(data, treatment_df, outcome, covariate, cov_friendly)
 }
 \arguments{
 \item{data}{Uploaded data post-processing}
 
 \item{treatment_df}{Data frame containing treatment IDs and names in columns named 'Number' and 'Label' respectively}
 
+\item{outcome}{Indicator of whether data is 'Binary' or 'Continuous'}
+
 \item{covariate}{Chosen covariate name as per uploaded data}
 
 \item{cov_friendly}{Friendly name of chosen covariate}
-
-\item{outcome}{Indicator of whether data is 'Binary' or 'Continuous'}
 }
 \value{
 list containing two dataframes: armData containing the core data; studyData containing covariate data
 }
 \description{
-Function for formatting standard app user data ready for start of {gemtc} chain of commands
+Function for formatting standard app user data ready for start of \CRANpkg{gemtc} chain of commands
 }

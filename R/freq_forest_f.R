@@ -58,7 +58,7 @@ freq_forest <- function(freq, reference_treatment, model_type, outcome_measure, 
 extract_ci <- function(freq, outcome){
 
   # store the result of print(freq$net1) produced by netmeta
-  net1_summary <- capture.output(freq$net1)
+  net1_summary <- utils::capture.output(freq$net1)
 
   # extract the treatment estimate lines
   first_line <- grep("Treatment estimate", net1_summary ) + 2

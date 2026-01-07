@@ -4,7 +4,7 @@
 \alias{mtc.redu}
 \title{Function to reduce the matrix size based on user defined plotting range reduction.}
 \usage{
-mtc.redu(mtc, rmt, p.only, po)
+mtc.redu(mtc, rmt, p.only, po, ntx)
 }
 \arguments{
 \item{mtc}{Meta-analysis data for direct and indirect evidence}
@@ -13,7 +13,9 @@ mtc.redu(mtc, rmt, p.only, po)
 
 \item{p.only}{Number of treatments to plot}
 
-\item{po}{Matrix containing ranking order of treatments}
+\item{po}{Matrix containing ranking order of treatments#}
+
+\item{ntx}{Number of treatments}
 }
 \value{
 Reduced meta-analysis data

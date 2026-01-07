@@ -7,9 +7,9 @@
 PasteCaptionText(caption_setting, error_bar_text = NULL)
 }
 \arguments{
-\item{error_bar_text}{Text string to explain the error bar (optional)}
+\item{caption_setting}{Text string to describe type of plot. Can be "baseline risk" or "covariate"}
 
-\item{plot_type}{Text string to describe type of plot. Can be "baseline risk" or "covariate"}
+\item{error_bar_text}{Text string to explain the error bar (optional)}
 }
 \value{
 Text string to be used for caption

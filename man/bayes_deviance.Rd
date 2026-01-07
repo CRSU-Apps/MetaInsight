@@ -23,19 +23,16 @@ when \code{model} was produced by \code{bayes_model()}}
 A list containing different elements depending on the input model:
 
 When model was created by \code{bayes_model()} containing:
-\itemize{
 \item{deviance_mtc}{results from \code{gemtc::mtc.deviance()} for model$mtcResults}
 \item{deviance_ume}{results from \code{gemtc::mtc.deviance()} for UME model}
 \item{scat_plot}{plotly object}
 \item{stem_plot}{plotly object}
 \item{lev_plot}{plotly object}
-}
+
 When model was created by \code{covariate_model()} containing:
-\itemize{
 \item{deviance_mtc}{results from \code{gemtc::mtc.deviance()} for model$mtcResults}
 \item{stem_plot}{plotly object}
 \item{lev_plot}{plotly object}
-}
 }
 \description{
 Produce deviance plots

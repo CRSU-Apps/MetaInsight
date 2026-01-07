@@ -274,23 +274,23 @@ CreateMainRegressionPlot <- function(
   intervals <- .FormatRegressionCredibleRegion(credible_regions$intervals, comparators)
 
   plot <- plot +
-    geom_ribbon(
+    ggplot2::geom_ribbon(
       data = regions,
       mapping = aes(
-        x = covariate_value,
-        ymin = y_min,
-        ymax = y_max,
-        fill = Treatment
+        x = .data$covariate_value,
+        ymin = .data$y_min,
+        ymax = .data$y_max,
+        fill = .data$Treatment
       ),
       show.legend = FALSE
     ) +
-    geom_linerange(
+    ggplot2::geom_linerange(
       data = intervals,
       mapping = aes(
-        x = covariate_value,
-        ymin = y_min,
-        ymax = y_max,
-        color = Treatment
+        x = .data$covariate_value,
+        ymin = .data$y_min,
+        ymax = .data$y_max,
+        color = .data$Treatment
       ),
       linewidth = 2,
       alpha = credible_opacity,
@@ -331,9 +331,9 @@ CreateMainRegressionPlot <- function(
     geom_point(
       data = contributions,
       mapping = aes(
-        x = covariate_value,
-        y = relative_effect,
-        color = Treatment,
+        x = .data$covariate_value,
+        y = .data$relative_effect,
+        color = .data$Treatment,
         stroke = 1.5
       ),
       shape = covariate_symbol,
@@ -377,9 +377,9 @@ CreateMainRegressionPlot <- function(
       geom_abline(
         data = lines,
         mapping = aes(
-          intercept = intercept,
-          slope = slope,
-          color = Treatment
+          intercept = .data$intercept,
+          slope = .data$slope,
+          color = .data$Treatment
         ),
         linewidth = 1,
         linetype = "dashed",
@@ -392,11 +392,11 @@ CreateMainRegressionPlot <- function(
     geom_segment(
       data = lines,
       mapping = aes(
-        x = start_x,
-        y = intercept + slope * start_x,
-        xend = end_x,
-        yend = intercept + slope * end_x,
-        color = Treatment
+        x = .data$start_x,
+        y = .data$intercept + .data$slope * .data$start_x,
+        xend = .data$end_x,
+        yend = .data$intercept + .data$slope * .data$end_x,
+        color = .data$Treatment
       ),
       linewidth = 1.2,
       show.legend = !ghosted
@@ -494,7 +494,7 @@ CreateMainRegressionPlot <- function(
 
 #' Setup the main components of the plot panel.
 #'
-#' @param reference Name of the reference treatment.
+#' @param plot The ggplot2 object
 #' @param comparators Vector of names of comparison treatments to plot.
 #' @param include_ghosts TRUE if all other comparator studies should be plotted in grey in the background of the plot.
 #' @param include_credible TRUE if all other comparator studies should be plotted in grey in the background of the plot.
@@ -651,9 +651,9 @@ CreateIndirectCovariatePlot <- function(
     geom_point(
       data = contributions,
       mapping = aes(
-        x = covariate_value,
-        y = y_val,
-        color = Treatment,
+        x = .data$covariate_value,
+        y = .data$y_val,
+        color = .data$Treatment,
         stroke = 1.5,
       ),
       shape = covariate_symbol,

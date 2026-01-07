@@ -14,6 +14,8 @@ summary_network(
 )
 }
 \arguments{
+\item{freq}{list. Results of frequentist analysis created by \code{frequentist()}}
+
 \item{bugsnet}{dataframe. Created by \code{bugsnetdata()}}
 
 \item{style}{character. The plot to produce, either \code{netgraph} or \code{netplot}}

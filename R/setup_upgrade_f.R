@@ -23,7 +23,7 @@ setup_upgrade <- function(data_path, treatments, logger = NULL){
     return()
   }
 
-  data <- read.table(
+  data <- utils::read.table(
     file = data_path,
     sep = ",",
     header = TRUE,
