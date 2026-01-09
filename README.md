@@ -12,7 +12,41 @@ Owen, RK, Bradbury, N, Xin, Y, Cooper, N, Sutton, A. MetaInsight: An interactive
 Please consult our [Wiki](https://github.com/CRSU-Apps/MetaInsight/wiki) for further information on using MetaInsight.
 
 
-## Application structure
+## Installation and use
+
+You can install MetaInsight in R using:
+
+```r
+remotes::install_github("CRSU-Apps/MetaInsight", ref = "shinyscholar")
+```
+
+Once that is complete, you can run the application with:
+
+```r
+metainsight::run_metainsight()
+```
+
+The package is mainly intended to be used through the app, but you can also use the underlying functions yourself. For example, to fit a Bayesian model and produce a forest plot you would run:
+
+
+```r
+library(metainsight)
+
+loaded_data <- setup_load(data_path = "<path to file>", outcome = "Continuous")
+configured_data <- setup_configure(data = loaded_data#$data, treatment_df = loaded_data$treatment_df, outcome = "Continuous", outcome_measure = "MD", reference_treatment = "Placebo")
+fitted_model <- bayes_model(connected_data = configured_data$main_connected_data, treatment_df = configured_data$treatment_df, outcome = "Continuous", outcome_measure = "MD", model_type = "random", reference_treatment = "Placebo", seed = 123)
+bayes_forest(model = fitted_model, treatment_df = configured_data$treatment_df, reference_treatment = "Placebo")
+```
+
+## For developers
+
+### Running locally
+
+
+
+
+
+### Application structure
 
 v7 was built using *shinyscholar* and the app is structured as an R package and divided into components (Setup, Summary, Frequentist, Bayesian, Baseline risk, Covariate and Reproduce) each containing multiple modules. Each module has an identifier made up of the component identifier and the module name, for example `freq_forest` refers to the module that produces a forest plot in the Frequentist component. Each module is made up four files present in `inst/shiny/modules` named using the module identifier: `<identifier>.R` contains the shiny module, `<identifier>.yml` contains configuration information, `<identifier>.md` contains guidance on how to use the module, `<identifier>.Rmd` contains an rmarkdown chunk that replicates the steps in the module. 
 
@@ -21,7 +55,7 @@ Bayesian modules contain sub-modules that produce the outputs for the main and s
 Each module calls a synonymous function which is found in `R/` and in a file named `<identifier>_f.R`. In the Baseline risk and Covariate components however, the function is an alias for that used in the equivalent Bayesian module and these are defined in the relevant Bayesian module's function file.
 
 
-## Plots
+### Plots
 
 Functions that produce plots available to download (i.e. excluding the MCMC and deviance plots) generate them as a scalable vector graphics (SVG) which ensures consistency and scalability. These are generated in the function by placing code to generate the plot inside `svglite::xmlSVG()` and piping this to `crop_svg()`. As in previous versions, the plot height and width may need to be calculated according to the data (how many treatments etc.) and these should be supplied as `width` and `height` parameters to `svglite::xmlSVG()`:
 
@@ -36,7 +70,7 @@ plotting_function <- function(){
 }
 ```
 
-They are displayed in the app by calling the function inside a `reactive()` and wrapping the output inside a `div()` with the class `svg_container` placed in a `renderUI()`. The output can be passed to `write_plot()` to download the plot as either an `.png`, `.pdf` or `.svg`.  This also enables saving outside of the application for example using e.g. `plotting_function() |> write_plot("plot.png", ".png")
+They are displayed in the app by calling the function inside a `reactive()` and wrapping the output inside a `div()` with the class `svg_container` placed in a `renderUI()`. The output can be passed to `write_plot()` to download the plot as either an `.png`, `.pdf` or `.svg`.  This also enables saving outside of the application for example using e.g. `plotting_function() |> write_plot("plot.png", ".png")`
 
 ```r
 
@@ -72,10 +106,10 @@ uiOutput(ns("plot"))
 
 ```
 
-## Development and debugging
+### Updating modules or creating new modules
 
-Development of new modules or modification of existing modules should generally begin by creating or editing the module function. This should occur outside of the application, but you may find it helpful to save the app state at the relevant point prior to where the change is to be made so that the same data can be used in development. For example, if developing a new module for the Frequentist component, run the `setup_load` and `setup_configure` modules, save the app and then read the data in using `common <- readRDS(<save_file>.rds)` you can then access the data using e.g. `common$freq_all`. 
+Development of new modules or modification of existing modules should generally begin by creating or editing the module function. This should occur outside of the application, but you may find it helpful to save the app state at the relevant point prior to where the change is to be made so that the same data can be used in development. For example, if developing a new module for the Frequentist component, run the `setup_load` and `setup_configure` modules, save the app and then read the data in using `common <- readRDS(<save_file>.rds)` you can then access the data using e.g. `common$freq_all`. To be able to use the function once you have developed it or modified it, you need to document and reinstall the package with Ctrl+Shift+D and Ctrl+Shift+B.
 
-You can create a new module from scratch using `shinyscholar::create_module()` but it is probably easier to adapt an existing module that is similar to the one you are developing. Once the function is developed, you can also use the saved file to restore the app state by setting a variable called `load_file_path` to the path of the saved file. This enables making rapid changes to the module under development without having to rerun the preceding modules.
+You can create a new module from scratch using `shinyscholar::create_module()` but it is probably easier to adapt an existing module that is similar to the one you are developing. Once the function is developed, you can also use the saved file to restore the app state by setting a variable called `load_file_path` to the path of the saved file. This enables making rapid changes to the module under development without having to rerun the preceding modules. Unlike developing the function, modules are loaded whenever the app is run, so you do not need to reinstall the package in order to see your changes.
 
 Each module should have unit tests that check that the function works correctly written with `{testthat}` and end-to-end tests that check that the function works correctly inside the app written with `{shinytest2}`. These are located in `tests/testthat` in a file called `test-<identifier>.R`. It is probably easiest to use tests for an existing module as the basis for the new module.
