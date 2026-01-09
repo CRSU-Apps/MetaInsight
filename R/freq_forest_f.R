@@ -26,7 +26,7 @@ freq_forest <- function(freq, reference_treatment, model_type, outcome_measure, 
     return()
   }
 
-  n_treatments <- length(levels(freq$net1$data$treat1))
+  n_treatments <- length(freq$lstx)
   annotation <- forest_annotation(freq, model_type, outcome_measure)
   height = forest_height(n_treatments, title = TRUE, annotation = TRUE)
   width = forest_width(max(nchar(freq$lstx)))
@@ -69,18 +69,13 @@ extract_ci <- function(freq, outcome){
   square_brackets <- unlist(regmatches(treatment_estimates, gregexpr("\\[([-0-9.; ]+)\\]", treatment_estimates)))
   ci_values <- as.numeric(unlist(strsplit(gsub("\\[|\\]", "", square_brackets), ";")))
 
-  if (outcome == "Continuous"){
-    # add a 20% buffer to the CIs and round to 0.1
-    xmin <- round(min(ci_values) * 1.2, 1)
-    xmax <- round(max(ci_values) * 1.2, 1)
-  }
-  if (outcome == "Binary"){
-    xmin <- round(min(ci_values) * 1.2, 1)
-    # prevent errors
-    if (xmin == 0){
+  # add a 20% buffer to the CIs and round to 0.1
+  xmin <- round(min(ci_values) - (min(ci_values) * 0.2), 1)
+  xmax <- round(max(ci_values) + (max(ci_values) * 0.2), 1)
+
+  # prevent errors
+  if (outcome == "Binary" && xmin == 0){
       xmin = 0.01
-    }
-    xmax <- round(max(ci_values) * 1.2, 1)
   }
 
   return(list(xmin = xmin,

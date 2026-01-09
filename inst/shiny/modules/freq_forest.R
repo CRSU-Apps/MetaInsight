@@ -60,7 +60,7 @@ freq_forest_module_server <- function(id, common, parent_session) {
 
     # prevent errors when set to 0
     if (common$outcome == "Binary"){
-      updateNumericInput(session, "xmin_sub", min = 0.01, step = 0.01)
+      updateNumericInput(session, "xmin_all", min = 0.01, step = 0.01)
     }
   })
 

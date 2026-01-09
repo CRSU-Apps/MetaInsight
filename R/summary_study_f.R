@@ -489,8 +489,8 @@ PairwiseTreatments <- function(pairwise, treatment_order) {
 #'  \item{x_max}{numeric. Maximum value for the x-axis}
 #'  \item{step}{numeric. Step value to use in numericInput}
 .FindMinMax <- function(pairwise){
-  x_min <- min(pairwise$TE - 1.96 * pairwise$seTE)
-  x_max <- max(pairwise$TE + 1.96 * pairwise$seTE)
+  x_min <- min(pairwise$TE - 1.96 * pairwise$seTE, na.rm = T)
+  x_max <- max(pairwise$TE + 1.96 * pairwise$seTE, na.rm = T)
   x_ticks <- .FindXTicks(x_min, x_max)
   increment <- x_ticks[2] - x_ticks[1]
   step <- 10 ^ floor(log10(increment / 10))

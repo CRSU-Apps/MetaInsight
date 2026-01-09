@@ -92,7 +92,7 @@ labelmatching.df <- function(d1, ntx, treatment_df) {
 #' @inheritParams common_params
 #' @return NMA results from netmeta::netmeta().
 freq.df <- function(model_type, outcome_measure, dataf, reference_treatment) {
-  net1 <- netmeta::netmeta(TE = dataf$TE, seTE = dataf$seTE, treat1 = dataf$treat1, treat2 = dataf$treat2, studlab = dataf$studlab, subset=NULL,
+  net1 <- netmeta::netmeta(TE = dataf$TE, seTE = dataf$seTE, treat1 = dataf$treat1, treat2 = dataf$treat2, studlab = dataf$studlab, data = dataf, subset=NULL,
                   sm = outcome_measure, level = 0.95, level.ma = 0.95, random = (model_type == "random"),
                   common = (model_type == "fixed"), reference.group = reference_treatment, all.treatments = NULL, seq = NULL,
                   tau.preset = NULL, tol.multiarm = 0.05, tol.multiarm.se = 0.2, warn = TRUE)
