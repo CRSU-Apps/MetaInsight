@@ -54,6 +54,7 @@ app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metai
 app$upload_file("setup_load-file1" = file.path(test_data_dir, "Cont_long.csv"))
 app$set_inputs(tabs = "setup")
 app$click("setup_load-run")
+app$set_inputs("setupSel" = "setup_configure")
 app$wait_for_value(input = "setup_configure-ready")
 app$click("setup_configure-run")
 app$wait_for_value(output = "setup_exclude-exclusions_out")

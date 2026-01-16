@@ -3,12 +3,14 @@
 \name{bayes_forest}
 \alias{bayes_forest}
 \alias{covariate_forest}
-\title{Make a Bayesian forest plot}
+\title{Make a Bayesian forest plot with \code{gemtc::forest()}}
 \usage{
 bayes_forest(
   model,
   treatment_df,
   reference_treatment,
+  xmin = NULL,
+  xmax = NULL,
   title = "",
   ranking = FALSE,
   logger = NULL
@@ -22,6 +24,10 @@ covariate_forest(...)
 \item{treatment_df}{dataframe. Treatments}
 
 \item{reference_treatment}{character. The reference treatment of the dataset}
+
+\item{xmin}{numeric. Minimum x-axis value. Default \code{NULL} in which case it is calculated internally}
+
+\item{xmax}{numeric. Maximum x-axis value. Default \code{NULL} in which case it is calculated internally}
 
 \item{title}{character. Title for the plot. Default is no title}
 
@@ -40,5 +46,5 @@ List containing:
 \item{width}{numeric. Plot width in pixels}
 }
 \description{
-Make a Bayesian forest plot
+Make a Bayesian forest plot with \code{gemtc::forest()}
 }

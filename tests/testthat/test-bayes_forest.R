@@ -1,18 +1,30 @@
 test_that("Check bayes_forest function works as expected", {
-  result <- bayes_forest(fitted_bayes_model, loaded_data_con$treatment_df, "Placebo", "title")
+  result <- bayes_forest(fitted_bayes_model, loaded_data_con$treatment_df, "Placebo", NULL, NULL, "title")
   expect_match(result, "<svg")
+
+  x_min_result <- bayes_forest(fitted_bayes_model, loaded_data_con$treatment_df, "Placebo", 1, NULL, "title")
+  expect_match(result, "<svg")
+
+  x_max_result <- bayes_forest(fitted_bayes_model, loaded_data_con$treatment_df, "Placebo", NULL, 1000, "title")
+  expect_match(result, "<svg")
+
+  expect_false(identical(result, x_min_result))
+  expect_false(identical(result, x_max_result))
+  expect_false(identical(x_min_result, x_max_result))
 })
 
 test_that("Check bayes_forest function produces errors as expected", {
   faulty_model <- list(mtcRelEffects = 1:4)
 
-  expect_error(bayes_forest(fitted_bayes_model, "not_a_dataframe", "Placebo", "title"), "treatment_df must be of class data.frame")
-  expect_error(bayes_forest(fitted_bayes_model, loaded_data_con$treatment_df, 123, "title"), "reference_treatment must be of class character")
-  expect_error(bayes_forest(fitted_bayes_model, loaded_data_con$treatment_df, "Placebo", 123), "title must be of class character")
+  expect_error(bayes_forest(fitted_bayes_model, "not_a_dataframe", "Placebo", 1, 2, "title"), "treatment_df must be of class data.frame")
+  expect_error(bayes_forest(fitted_bayes_model, loaded_data_con$treatment_df, 123, 1, 2, "title"), "reference_treatment must be of class character")
+  expect_error(bayes_forest(fitted_bayes_model, loaded_data_con$treatment_df, "Placebo", "1", 2, "title"), "xmin must be of class numeric")
+  expect_error(bayes_forest(fitted_bayes_model, loaded_data_con$treatment_df, "Placebo", 1, "2", "title"), "xmax must be of class numeric")
+  expect_error(bayes_forest(fitted_bayes_model, loaded_data_con$treatment_df, "Placebo", 1, 2, 123), "title must be of class character")
 
-  expect_error(bayes_forest("faulty_model", loaded_data_con$treatment_df, "Placebo", "title"), "model must be an object created by bayes_model")
-  expect_error(bayes_forest(list(a = 1), loaded_data_con$treatment_df, "Placebo", "title"), "model must be an object created by bayes_model")
-  expect_error(bayes_forest(faulty_model, loaded_data_con$treatment_df, "Placebo", "title"), "model must be an object created by bayes_model")
+  expect_error(bayes_forest("faulty_model", loaded_data_con$treatment_df, "Placebo", 1, 2, "title"), "model must be an object created by bayes_model")
+  expect_error(bayes_forest(list(a = 1), loaded_data_con$treatment_df, "Placebo", 1, 2, "title"), "model must be an object created by bayes_model")
+  expect_error(bayes_forest(faulty_model, loaded_data_con$treatment_df, "Placebo", 1, 2, "title"), "model must be an object created by bayes_model")
 })
 
 test_that("{shinytest2} recording: e2e_bayes_forest", {
@@ -36,6 +48,11 @@ test_that("{shinytest2} recording: e2e_bayes_forest", {
   expect_match(plot_sub$html, "<svg")
 
   test_bayes_plot_downloads(app, "bayes_forest", "")
+
+  app$set_inputs("bayes_forest-xmin_all" = 1)
+  plot_all_updated <- app$get_value(output = "bayes_forest-all-plot")
+
+  expect_false(identical(plot_all, plot_all_updated))
 
   app$stop()
 })

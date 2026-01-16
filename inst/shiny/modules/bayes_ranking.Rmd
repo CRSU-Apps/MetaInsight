@@ -15,7 +15,7 @@ bayes_ranking_sub <- bayes_ranking(connected_data_sub, treatment_df_sub, bayes_m
 {r, results = 'asis'}
 ```
 ```{r, echo = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}
-bayes_forest(bayes_model_all, treatment_df, reference_treatment_all, "", TRUE)
+bayes_forest(bayes_model_all, treatment_df, reference_treatment_all, ranking = TRUE)
 ```
 
 ```{asis, echo = {{bayes_ranking_knit}}, eval = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}
@@ -48,7 +48,7 @@ summary_network(frequentist_all, bugsnet_all, {{bayes_ranking_network_style}})
 {r, results = 'asis'}
 ```
 ```{r, echo = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}
-bayes_forest(bayes_model_sub, treatment_df_sub, reference_treatment_sub, "", TRUE)
+bayes_forest(bayes_model_sub, treatment_df_sub, reference_treatment_sub, ranking = TRUE)
 ```
 
 ```{asis, echo = {{bayes_ranking_knit}}, eval = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}

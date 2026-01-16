@@ -44,7 +44,7 @@ metaregression_forest_module_server <- function(id, common, run) {
       do.call(module_id, list(common[[model]],
                            common$treatment_df,
                            common$reference_treatment_all,
-                           plot_title
+                           title = plot_title
                            ))
     })
 

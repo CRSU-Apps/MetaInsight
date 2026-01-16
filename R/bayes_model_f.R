@@ -63,7 +63,7 @@ bayes_model <- function(connected_data, treatment_df, outcome, outcome_measure, 
     link <- "identity"
   } else if (outcome_measure == "OR" || outcome_measure == "RR") {
     like <- "binom"
-    link <- ifelse (outcome_measure == "OR", "logit", "log")
+    link <- ifelse(outcome_measure == "OR", "logit", "log")
   }
 
   mtcModel <- gemtc::mtc.model(

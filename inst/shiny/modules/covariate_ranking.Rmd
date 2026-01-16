@@ -10,7 +10,7 @@ covariate_ranking <- covariate_ranking(main_connected_data, treatment_df, covari
 {r, results = 'asis'}
 ```
 ```{r, echo = {{covariate_ranking_knit}}, include = {{covariate_ranking_knit}}}
-covariate_forest(covariate_model, treatment_df, reference_treatment_all, "", TRUE)
+covariate_forest(covariate_model, treatment_df, reference_treatment_all, ranking = TRUE)
 ```
 
 ```{asis, echo = {{covariate_ranking_knit}}, eval = {{covariate_ranking_knit}}, include = {{covariate_ranking_knit}}}

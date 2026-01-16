@@ -4,31 +4,15 @@ freq_forest_module_ui <- function(id) {
     actionButton(ns("run"), "Generate plots", icon = icon("arrow-turn-down")),
     actionButton(ns("run_all"), "Run all modules", icon = icon("forward-fast")),
     div(class = "freq_forest_div",
-      fixedRow(
+      layout_columns(
+        col_widths = rep(6, 6),  # six items: 2 per row
+        row_heights = c("auto", "auto", "auto"),  # three rows
         p("Limits of the x-axis for all studies:"),
-        column(
-          width = 6,
-          align = "center",
-          numericInput(ns("xmin_all"), label = "Minimum", value = 0, step = 0.1),
-        ),
-        column(
-          width = 6,
-          align = "center",
-          numericInput(ns("xmax_all"), label = "Maximum", value = 5, step = 0.1),
-        )
-      ),
-      fixedRow(
-        p("Limits of the x-axis without excluded studies:"),
-        column(
-          width = 6,
-          align = "center",
-          numericInput(ns("xmin_sub"), label = "Minimum", value = 0, step = 0.1)
-        ),
-        column(
-          width = 6,
-          align = "center",
-          numericInput(ns("xmax_sub"), label = "Maximum", value = 5, step = 0.1)
-        )
+        p("Limits of the x-axis with selected studies excluded:"),
+        numericInput(ns("xmin_all"), "Minimum", 0),
+        numericInput(ns("xmin_sub"), "Minimum", 0),
+        numericInput(ns("xmax_all"), "Maximum", 0),
+        numericInput(ns("xmax_sub"), "Maximum", 0),
       ),
       download_button_pair(id)
     )
