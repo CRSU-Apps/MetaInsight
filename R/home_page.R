@@ -24,7 +24,9 @@ home_page_ui <- function(id) {
     fluidRow(
       div(
         h4("A Beta version of MetaInsight v7 featuring improved plots, automatically updating models and other new features is available at: ",
-           a("https://crsu.shinyapps.io/MetaInsight_Scholar/", href= "https://crsu.shinyapps.io/MetaInsight_Scholar/", target = "_blank", style="color: white"),
+           a("https://crsu.shinyapps.io/MetaInsight_Scholar/",
+             href= "https://crsu.shinyapps.io/MetaInsight_Scholar/",
+             target = "_blank", style="color: white; text-decoration: underline"),
            ". Please send any feedback to apps@crsu.org.uk.",
         style="color: white; margin: 0; padding: 0;"),
         style="background-color: #e4042c; padding: 20px; width: 100%; text-align: center;"
