@@ -217,8 +217,13 @@ BaselineRiskModelOutput <- function(connected_data, treatment_df, model, outcome
 
   mean_covariate_value <- model$network$mx_bl
 
+  value_unit <- switch(outcome_measure,
+                       "OR" = "(log-odds scale)",
+                       "RR" = "(log scale)",
+                       "MD" = "")
+
   #Summary sentence of where covariate value has been set for results
-  cov_value_sentence <- paste0("Value for baseline risk set at ", mean_covariate_value)
+  cov_value_sentence <- paste("Value for baseline risk set at", round(mean_covariate_value, 2), value_unit)
 
   #Obtain slope(s), which are named b_bl[number]
   slope_indices <- grep("^b_bl\\[[0-9]+\\]$", rownames(model_summary$summary.samples$quantiles))

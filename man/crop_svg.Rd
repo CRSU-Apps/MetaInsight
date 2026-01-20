@@ -3,8 +3,7 @@
 \name{crop_svg}
 \alias{crop_svg}
 \title{Crops an svg object, by rendering it, locating the non-white pixels and
-editing the svg viewBox property. The width and height are also returned
-to facilitate rendering to other formats.}
+editing the svg viewBox property.}
 \usage{
 crop_svg(svg, margin = 10)
 }
@@ -19,6 +18,5 @@ html. The cropped svg
 }
 \description{
 Crops an svg object, by rendering it, locating the non-white pixels and
-editing the svg viewBox property. The width and height are also returned
-to facilitate rendering to other formats.
+editing the svg viewBox property.
 }

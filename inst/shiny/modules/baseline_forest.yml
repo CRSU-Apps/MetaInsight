@@ -2,4 +2,4 @@ component: "baseline"
 short_name: "Forest plot"
 long_name: "Forest plot"
 authors: "Ryan Field, Tom Morris, Clareece Nevill, Janion Nevill, Simon Smart"
-package: [bnma]
+package: [bnma, gemtc]

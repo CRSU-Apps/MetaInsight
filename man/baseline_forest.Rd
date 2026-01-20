@@ -8,7 +8,10 @@ baseline_forest(
   model,
   treatment_df,
   reference_treatment,
+  xmin = NULL,
+  xmax = NULL,
   title = "Baseline risk regression analysis",
+  ranking = FALSE,
   logger = NULL
 )
 }

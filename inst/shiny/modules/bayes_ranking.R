@@ -93,7 +93,7 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
         baseline_forest(common[[model]],
                         common[[tdf]],
                         common[[paste0("reference_treatment_", id)]],
-                        title = "")
+                        ranking = TRUE)
       } else {
         bayes_forest(common[[model]],
                      common[[tdf]],

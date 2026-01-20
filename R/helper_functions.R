@@ -352,9 +352,35 @@ CreateTauSentence <- function(model) {
   }
 }
 
+#' Format xlimits to pretty values. Adapted from `gemtc::blobbogram()`
+#'
+#' @param x numeric. The value to format.
+#' @param limit character. Either `min` or `max`
+#' @param log.scale logical. Whether the values are on a log scale.
+format_xlim <- function(x, limit, log.scale) {
+
+  # Adapted from https://github.com/gertvv/gemtc/blob/b94d86a304eae57c8d16bb4aa8fc3f32155696e4/gemtc/R/blobbogram.R#L192
+
+  # Scale transform and its inverse
+  scale.trf <- if (log.scale) exp else identity
+  scale.inv <- if (log.scale) log else identity
+
+  # Round to a single significant digit, according to round.fun
+  y <- scale.trf(x)
+  p <- 10^floor(log10(abs(y)))
+  if (limit == "min"){
+    l <- scale.inv(floor(y / p) * p)
+  }
+  if (limit == "max"){
+    l <- scale.inv(ceiling(y / p) * p)
+  }
+
+  if (is.na(l) || !is.finite(l)) x else l
+}
+
+
 #' Crops an svg object, by rendering it, locating the non-white pixels and
-#' editing the svg viewBox property. The width and height are also returned
-#' to facilitate rendering to other formats.
+#' editing the svg viewBox property.
 #'
 #' @param svg xml_document. Output from `svglite::xmlSVG()`
 #' @param margin numeric. The margin in pixels to leave around the edge

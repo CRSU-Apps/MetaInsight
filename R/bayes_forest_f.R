@@ -18,6 +18,11 @@ bayes_forest <- function(model, treatment_df, reference_treatment, xmin = NULL, 
   check_param_classes(c("treatment_df", "reference_treatment", "title", "ranking"),
                       c("data.frame", "character", "character", "logical"), logger)
 
+  if (!inherits(model, "bayes_model")){
+    logger |> writeLog(type = "error", "model must be an object created by bayes_model() or covariate_model()")
+    return()
+  }
+
   # set default x-axis limits if not supplied and check if they are provided
   if (any(is.null(xmin), is.null(xmax))){
     xlim <- bayes_forest_limits(model, reference_treatment)
@@ -27,8 +32,8 @@ bayes_forest <- function(model, treatment_df, reference_treatment, xmin = NULL, 
     check_param_classes(c("xmin", "xmax"), c("numeric", "numeric"), logger)
   }
 
-  if (!inherits(model, "bayes_model")){
-    logger |> writeLog(type = "error", "model must be an object created by bayes_model() or covariate_model()")
+  if (xmin >= xmax){
+    logger |> writeLog(type = "error", "xmin must be less than xmax")
     return()
   }
 
@@ -81,20 +86,9 @@ bayes_forest_limits <- function(model, reference_treatment) {
   ci.l_raw <- rel_eff_tbl[ref_index,,1]  # 2.5% quantile
   ci.u_raw <- rel_eff_tbl[ref_index,,3]  # 97.5% quantile
 
-  # Apply the same nice.value rounding as blobbogram()
-  nice.value <- function(x, round.fun, log.scale) {
-    scale.trf <- if (log.scale) exp else identity
-    scale.inv <- if (log.scale) log else identity
-
-    y <- scale.trf(x)
-    p <- 10^floor(log10(abs(y)))
-    l <- scale.inv(round.fun(y / p) * p)
-    if (is.na(l) || !is.finite(l)) x else l
-  }
-
   # Calculate rounded limits
-  xmin <- nice.value(min(ci.l_raw, na.rm=TRUE), floor, log.scale)
-  xmax <- nice.value(max(ci.u_raw, na.rm=TRUE), ceiling, log.scale)
+  xmin <- format_xlim(min(ci.l_raw, na.rm=TRUE), "min", log.scale)
+  xmax <- format_xlim(max(ci.u_raw, na.rm=TRUE), "max", log.scale)
 
   # Ensure 0 is included if appropriate (as done in blobbogram)
   xmin <- min(xmin, 0)
