@@ -183,6 +183,7 @@ study_exclusions_panel_server <- function(id, data, treatment_df, reference_trea
       return(data[!data$Study %in% ui_exclusions(), ])
     })
     
+
     debounced_sensitivity_data <- debounce(
       millis = 1200,
       r = reactive({
