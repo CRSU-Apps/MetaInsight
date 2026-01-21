@@ -186,11 +186,7 @@ rankdata <- function(NMAdata, rankdirection, longdata, cov_value = NA, package =
 #' @param ranking_data list created by bayes_ranking().
 #' @param colourblind TRUE for colourblind friendly colours (default = FALSE).
 #' @param regression_text Text to show for regression (default = "").
-#' @return List containing:
-#'  \item{svg}{character. SVG code to produce the plot}
-#'  \item{height}{numeric. Plot height in pixels}
-#'  \item{width}{numeric. Plot width in pixels}
-#'
+#' @inherit return-svg return
 #' @import patchwork
 #' @import ggplot2
 #' @export
@@ -240,11 +236,7 @@ LitmusRankOGram <- function(ranking_data, colourblind=FALSE, regression_text="")
 #' @param original logical. Whether to display the original or simplified version (default = `TRUE`)
 #' @param colourblind logical. `TRUE` for colourblind friendly colours (default = `FALSE`).
 #' @param regression_text Text to show for regression (default = "").
-#' @return List containing:
-#'  \item{svg}{character. SVG code to produce the plot}
-#'  \item{height}{numeric. Plot height in pixels}
-#'  \item{width}{numeric. Plot width in pixels}
-#'
+#' @inherit return-svg return
 #' @import ggplot2
 #' @import patchwork
 #' @export

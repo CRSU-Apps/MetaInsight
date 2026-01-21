@@ -3,11 +3,7 @@
 #' @param model model output produced by `baseline_model()`
 #' @param title character. Title for the plot. Defaults to `Baseline risk regression analysis`
 #' @inheritParams common_params
-#' @return List containing:
-#'  \item{svg}{character. SVG code to produce the plot}
-#'  \item{height}{numeric. Plot height in pixels}
-#'  \item{width}{numeric. Plot width in pixels}
-#'
+#' @inherit return-svg return
 #' @export
 baseline_forest <- function(model, treatment_df, reference_treatment, xmin = NULL, xmax = NULL, title = "Baseline risk regression analysis", ranking = FALSE, logger = NULL){
 

@@ -4,12 +4,7 @@
 #' @param xmax numeric. Maximum x-axis limit.
 #' @param title character. Title for the plot.
 #' @inheritParams common_params
-#'
-#' @return List containing:
-#'  \item{svg}{character. SVG code to produce the plot}
-#'  \item{height}{numeric. Plot height in pixels}
-#'  \item{width}{numeric. Plot width in pixels}
-#'
+#' @inherit return-svg return
 #' @export
 freq_forest <- function(freq, reference_treatment, model_type, outcome_measure, xmin, xmax, title, logger = NULL) {
 

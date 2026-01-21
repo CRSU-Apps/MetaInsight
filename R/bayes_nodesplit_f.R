@@ -96,7 +96,7 @@ bayes_nodesplit <- function(connected_data, treatment_df, outcome, outcome_measu
 #' @param nodesplit `mtc.nodesplit` object produced by `bayes_nodesplit()`
 #' @param main_analysis logical. Whether the analysis is the main or sensitivity analysis. Default `TRUE`.
 #' @inheritParams common_params
-#' @return html. svg document containing the plot
+#' @inherit return-svg return
 #' @export
 bayes_nodesplit_plot <- function(nodesplit, main_analysis = TRUE, logger = NULL){
 

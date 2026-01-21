@@ -18,10 +18,8 @@ Window. Insert the logger reactive list here for running in
 shiny, otherwise leave the default NULL}
 }
 \value{
-List containing:
-\item{svg}{character. SVG code to produce the plot}
-\item{height}{numeric. Plot height in pixels}
-\item{width}{numeric. Plot width in pixels}
+html. Contains the svg string to generate the plot. This can be saved
+using \code{write_plot()}.
 }
 \description{
 Creates a plot of baselink risk for each study arm

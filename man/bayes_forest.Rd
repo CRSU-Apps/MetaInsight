@@ -40,10 +40,8 @@ shiny, otherwise leave the default \code{NULL}}
 \item{...}{Parameters passed to \code{bayes_forest()}}
 }
 \value{
-List containing:
-\item{svg}{character. SVG code to produce the plot}
-\item{height}{numeric. Plot height in pixels}
-\item{width}{numeric. Plot width in pixels}
+html. Contains the svg string to generate the plot. This can be saved
+using \code{write_plot()}.
 }
 \description{
 Make a Bayesian forest plot with \code{gemtc::forest()}

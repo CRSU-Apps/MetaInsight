@@ -1,11 +1,7 @@
 #' @title baseline_summary
 #' @description Creates a plot of the covariate value for each study arm
 #' @inheritParams common_params
-#' @return List containing:
-#'  \item{svg}{character. SVG code to produce the plot}
-#'  \item{height}{numeric. Plot height in pixels}
-#'  \item{width}{numeric. Plot width in pixels}
-#'
+#' @inherit return-svg return
 #' @import ggplot2
 #' @export
 covariate_summary <- function(connected_data, outcome, treatment_df, logger = NULL){

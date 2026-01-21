@@ -6,11 +6,7 @@
 #' @param colourblind logical. Whether to use a colourblind-friendly palette. Defaults to `FALSE`
 #' @param x_min numeric. Minimum value for the x-axis. Defaults to `NULL`
 #' @param x_max numeric. Maximum value for the x-axis. Defaults to `NULL`
-#' @return List containing:
-#'  \item{svg}{character. SVG code to produce the plot}
-#'  \item{height}{numeric. Plot height in pixels}
-#'  \item{width}{numeric. Plot width in pixels}
-#'
+#' @inherit return-svg return
 #' @import graphics
 #' @export
 summary_study <- function(connected_data, freq, outcome_measure, plot_area_width = 6, colourblind = FALSE, x_min = NULL, x_max = NULL, logger = NULL) {

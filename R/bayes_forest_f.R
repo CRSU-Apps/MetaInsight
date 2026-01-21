@@ -6,12 +6,7 @@
 #' @param title character. Title for the plot. Default is no title
 #' @param ranking logical. Whether the function is being used in `bayes_ranking`
 #' @inheritParams common_params
-#'
-#' @return List containing:
-#'  \item{svg}{character. SVG code to produce the plot}
-#'  \item{height}{numeric. Plot height in pixels}
-#'  \item{width}{numeric. Plot width in pixels}
-#'
+#' @inherit return-svg return
 #' @export
 bayes_forest <- function(model, treatment_df, reference_treatment, xmin = NULL, xmax = NULL, title = "", ranking = FALSE, logger = NULL){
 

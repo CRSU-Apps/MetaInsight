@@ -2,8 +2,7 @@
 #'
 #' @param plot_title character. Title of the plot
 #' @inheritParams common_params
-#'
-#' @return Summary forest matrix plot
+#' @inherit return-svg return
 #' @export
 freq_summary <- function(freq, treatment_df, plot_title, outcome_measure, ranking_option, model_type, seed, logger = NULL) {
 

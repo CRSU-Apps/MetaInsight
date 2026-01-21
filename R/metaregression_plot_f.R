@@ -21,11 +21,7 @@
 #' - "TR" - Top-right of the plot area
 #' - "TL" - Top-left of the plot area
 #'
-#' @return List containing:
-#'  \item{svg}{character. SVG code to produce the plot}
-#'  \item{height}{numeric. Plot height in pixels}
-#'  \item{width}{numeric. Plot width in pixels}
-#'
+#' @inherit return-svg return
 #' @export
 metaregression_plot <- function(
     model_output,

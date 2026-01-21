@@ -18,3 +18,10 @@
 #' @param async Whether or not the function is being used asynchronously. Default `FALSE`
 #' @keywords internal
 NULL
+
+#' @title Return svg
+#' @name return-svg
+#' @keywords internal
+#' @return html. Contains the svg string to generate the plot. This can be saved
+#' using `write_plot()`.
+NULL

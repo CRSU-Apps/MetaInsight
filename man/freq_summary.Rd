@@ -37,7 +37,8 @@ Window. Insert the logger reactive list here for running in
 shiny, otherwise leave the default \code{NULL}}
 }
 \value{
-Summary forest matrix plot
+html. Contains the svg string to generate the plot. This can be saved
+using \code{write_plot()}.
 }
 \description{
 Create a summary forest plot matrix.
