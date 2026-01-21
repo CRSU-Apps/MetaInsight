@@ -87,8 +87,8 @@ covariate_ranking <- function(...){
 #' - 'BUGSnetData' = Output from BUGSnet::data.prep with arguments from @param longdata.
 rankdata <- function(NMAdata, rankdirection, longdata, cov_value = NA, package = "gemtc") {
   # data frame of colours
-  colour_dat = data.frame(SUCRA = seq(0, 100, by = 0.1))
-  colour_dat = dplyr::mutate(colour_dat, colour = seq(0, 100, length.out = 1001))
+  colour_dat <- data.frame(SUCRA = seq(0, 100, by = 0.1))
+  colour_dat <- dplyr::mutate(colour_dat, colour = seq(0, 100, length.out = 1001))
 
   direction <- ifelse(rankdirection == "good", -1, 1)
   # probability rankings
@@ -389,7 +389,7 @@ RadialSUCRA <- function(ranking_data, original = TRUE, colourblind = FALSE, regr
 #' @param ranking_data list created by bayes_ranking().
 #' @return dataframe
 #' @export
-ranking_table = function(ranking_data) {
+ranking_table <- function(ranking_data) {
   df <- ranking_data$Probabilities |> dplyr::right_join(ranking_data$SUCRA[,1:2], by="Treatment")
   df <- df[order(-df$SUCRA),]
   return(df)

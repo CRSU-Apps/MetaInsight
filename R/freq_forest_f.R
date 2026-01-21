@@ -23,8 +23,8 @@ freq_forest <- function(freq, reference_treatment, model_type, outcome_measure, 
 
   n_treatments <- length(freq$lstx)
   annotation <- forest_annotation(freq, model_type, outcome_measure)
-  height = forest_height(n_treatments, title = TRUE, annotation = TRUE)
-  width = forest_width(max(nchar(freq$lstx)))
+  height <- forest_height(n_treatments, title = TRUE, annotation = TRUE)
+  width <- forest_width(max(nchar(freq$lstx)))
 
   svg <- svglite::xmlSVG({
    meta::forest(freq$net1, reference.group = reference_treatment, pooled = model_type, xlim = c(xmin, xmax))
@@ -70,7 +70,7 @@ extract_ci <- function(freq, outcome){
 
   # prevent errors
   if (outcome == "Binary" && xmin == 0){
-      xmin = 0.01
+      xmin <- 0.01
   }
 
   return(list(xmin = xmin,

@@ -210,7 +210,7 @@ test_that("FindExpectedReferenceTreatment() returns first matching treatment whe
 test_that(".FixColumnNameCases() fixes cases for continuous long data with covariate and QA", {
   data <- CleanData(read.csv("data/Cont_long_quality_assessment.csv"))
   names(data) <- c("sTuDy", "t", "n", "mEaN", "sD", "CoVaR.age", "RoB", "iNdIrEcTnEsS", "RoB.component1", "ROB.component2")
-  allowed_names = c("Study", "T", "N", "Mean", "SD", "covar.age", "rob", "indirectness", "rob.component1", "rob.component2")
+  allowed_names <- c("Study", "T", "N", "Mean", "SD", "covar.age", "rob", "indirectness", "rob.component1", "rob.component2")
 
   expect(all(!names(data) %in% allowed_names), failure_message = "Column names were not setup for the test correctly.")
 
@@ -224,11 +224,11 @@ test_that(".FixColumnNameCases() fixes cases for continuous long data with covar
 test_that(".FixColumnNameCases() fixes cases for continuous wide data with covariate and QA", {
   data <- CleanData(read.csv("data/Cont_wide_quality_assessment.csv"))
 
-  arm_fields = c("t", "n", "mEaN", "sD")
+  arm_fields <- c("t", "n", "mEaN", "sD")
   names(data) <- c("sTuDy", paste0(arm_fields, ".1"), paste0(arm_fields, ".2"), paste0(arm_fields, ".3"), "CoVaR.age", "RoB", "iNdIrEcTnEsS", "RoB.component1", "ROB.component2")
 
-  allowed_arm_fields = c("T", "N", "Mean", "SD")
-  allowed_names = c("Study", paste0(allowed_arm_fields, ".1"), paste0(allowed_arm_fields, ".2"), paste0(allowed_arm_fields, ".3"), "covar.age", "rob", "indirectness", "rob.component1", "rob.component2")
+  allowed_arm_fields <- c("T", "N", "Mean", "SD")
+  allowed_names <- c("Study", paste0(allowed_arm_fields, ".1"), paste0(allowed_arm_fields, ".2"), paste0(allowed_arm_fields, ".3"), "covar.age", "rob", "indirectness", "rob.component1", "rob.component2")
 
   expect(all(!names(data) %in% allowed_names), failure_message = "Column names were not setup for the test correctly.")
 
@@ -242,7 +242,7 @@ test_that(".FixColumnNameCases() fixes cases for continuous wide data with covar
 test_that(".FixColumnNameCases() fixes cases for binary long data with covariate and QA", {
   data <- CleanData(read.csv("data/Binary_long_quality_assessment.csv"))
   names(data) <- c("sTuDy", "t", "r", "n", "CoVaR.age", "RoB", "iNdIrEcTnEsS", "RoB.component1", "ROB.component2")
-  allowed_names = c("Study", "T", "R", "N", "covar.age", "rob", "indirectness", "rob.component1", "rob.component2")
+  allowed_names <- c("Study", "T", "R", "N", "covar.age", "rob", "indirectness", "rob.component1", "rob.component2")
 
   expect(all(!names(data) %in% allowed_names), failure_message = "Column names were not setup for the test correctly.")
 
@@ -256,11 +256,11 @@ test_that(".FixColumnNameCases() fixes cases for binary long data with covariate
 test_that(".FixColumnNameCases() fixes cases for binary wide data with covariate and QA", {
   data <- CleanData(read.csv("data/Binary_wide_quality_assessment.csv"))
 
-  arm_fields = c("t", "r", "n")
+  arm_fields <- c("t", "r", "n")
   names(data) <- c("sTuDy", paste0(arm_fields, ".1"), paste0(arm_fields, ".2"), paste0(arm_fields, ".3"), "CoVaR.age", "RoB", "iNdIrEcTnEsS", "RoB.component1", "ROB.component2")
 
-  allowed_arm_fields = c("T", "R", "N")
-  allowed_names = c("Study", paste0(allowed_arm_fields, ".1"), paste0(allowed_arm_fields, ".2"), paste0(allowed_arm_fields, ".3"), "covar.age", "rob", "indirectness", "rob.component1", "rob.component2")
+  allowed_arm_fields <- c("T", "R", "N")
+  allowed_names <- c("Study", paste0(allowed_arm_fields, ".1"), paste0(allowed_arm_fields, ".2"), paste0(allowed_arm_fields, ".3"), "covar.age", "rob", "indirectness", "rob.component1", "rob.component2")
 
   expect(all(!names(data) %in% allowed_names), failure_message = "Column names were not setup for the test correctly.")
 
@@ -360,7 +360,7 @@ test_that("ReinstateTreatmentIds() reinstates treatment IDs for long data", {
     Study = c("A", "A", "B", "B", "C", "C", "C", "D", "D"),
     T = c(1, 2, 3, 4, 5, 6, 1, 6, 2)
   )
-  treatment_ids = data.frame(
+  treatment_ids <- data.frame(
     Label = c("Paracetamol", "Exercise", "Sleep", "Alcohol", "Bacon", "Denial"),
     Number = 1:6
   )
@@ -381,7 +381,7 @@ test_that("ReinstateTreatmentIds() reinstates treatment IDs for wide data", {
     T.2 = c(2, 4, 6, 2),
     T.3 = c(NA, NA, 1, NA)
   )
-  treatment_ids = data.frame(
+  treatment_ids <- data.frame(
     Label = c("Paracetamol", "Exercise", "Sleep", "Alcohol", "Bacon", "Denial"),
     Number = 1:6
   )

@@ -253,7 +253,7 @@ CreateGemtcModel <- function(data, model_type, outcome_measure, regressor_type, 
 #'  covariate_max = Vector of maximum covariate values directly contributing to the regression.
 CovariateModelOutput <- function(connected_data, treatment_df, model, covariate_title, covariate_value, outcome_measure, covariate_type) {
 
-  model_levels = levels(model$model$data$reg.control)
+  model_levels <- levels(model$model$data$reg.control)
   reference_name <- model_levels[model_levels %in% model$model$data$reg.control]
   comparator_names <- model_levels[!model_levels %in% model$model$data$reg.control]
 

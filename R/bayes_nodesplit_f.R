@@ -109,7 +109,7 @@ bayes_nodesplit_plot <- function(nodesplit, main_analysis = TRUE, logger = NULL)
   }
 
   plot_height <- max(400, length(nodesplit) * 80) / 72
-  plot_title = paste0("Inconsistency test with nodesplitting \nmodel",
+  plot_title <- paste0("Inconsistency test with nodesplitting \nmodel",
                       ifelse(main_analysis, " for all studies", " with selected studies excluded"))
 
   svglite::xmlSVG({

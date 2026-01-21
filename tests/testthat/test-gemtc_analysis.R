@@ -8,12 +8,12 @@ test_that("PrepDataGemtc() gives correct data for wide binary", {
 
   gemtc_data <- PrepDataGemtc(data, wrangled_treatment_list, "Binary", "covar.age", "age")
 
-  expected_armData = data.frame(
+  expected_armData <- data.frame(
     study = c(rep("Constantine", 3), rep("Leo", 3), rep("Justinian", 2)),
     treatment = c("the_Great", "the_Younger", "the_Dung_named", "the_Great", "the_Little", "the_Butcher", "the_Great", "the_Slit_nosed"),
     responders = c(30, 31, 32, 34, 33, 35, 36, 37),
     sampleSize = c(100, 101, 102, 104, 103, 105, 106, 107))
-  expected_studyData = data.frame(
+  expected_studyData <- data.frame(
       study = c("Constantine", "Leo", "Justinian"),
       age = c(99, 98, 97))
 
@@ -35,7 +35,7 @@ test_that("PrepDataGemtc() gives correct data for long binary", {
     treatment = c("the_Great", "the_Younger", "the_Dung_named", "the_Great", "the_Little", "the_Butcher", "the_Great", "the_Slit_nosed"),
     responders = c(30, 31, 32, 34, 33, 35, 36, 37),
     sampleSize = c(100, 101, 102, 104, 103, 105, 106, 107))
-  expected_studyData = data.frame(
+  expected_studyData <- data.frame(
       study = c("Constantine", "Leo", "Justinian"),
       age = c(99, 98, 97))
 
@@ -58,7 +58,7 @@ test_that("PrepDataGemtc() gives correct data for wide continuous", {
     mean = c(-1, -1.1, -1.2, -1.4, -1.3, -1.5, -1.6, -1.7),
     std.dev = c(11.1, 12.2, 13.3, 15.5, 14.4, 16.6, 17.7, 18.8),
     sampleSize = c(30, 31, 32, 34, 33, 35, 36, 37))
-  expected_studyData = data.frame(
+  expected_studyData <- data.frame(
       study = c("Constantine", "Leo", "Justinian"),
       age = c(99, 98, 97))
 
@@ -81,7 +81,7 @@ test_that("PrepDataGemtc() gives correct data for long continuous", {
     mean = c(-1, -1.1, -1.2, -1.4, -1.3, -1.5, -1.6, -1.7),
     std.dev = c(11.1, 12.2, 13.3, 15.5, 14.4, 16.6, 17.7, 18.8),
     sampleSize = c(30, 31, 32, 34, 33, 35, 36, 37))
-  expected_studyData = data.frame(
+  expected_studyData <- data.frame(
       study = c("Constantine", "Leo", "Justinian"),
       age = c(99, 98, 97))
 

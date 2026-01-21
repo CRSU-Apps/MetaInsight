@@ -240,7 +240,7 @@ PrICrI <- function(offs, lower_confidence_limit, point_estimate, upper_confidenc
 singleSFP <- function(mtc, pw, bpredd = TRUE, baxis = TRUE, scaletype) {
 
   ##define axis offset
-  offs = 0
+  offs <- 0
 
   #Add reference line. This plots at 0 for continuous scales, and 1 for log scales
   lines(c(offs, offs), c(-3, 3), lty = 1, col = "grey80")

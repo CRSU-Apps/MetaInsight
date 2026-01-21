@@ -92,14 +92,14 @@ test_that("FindCovariateRanges() finds ranges for continuous long data", {
     covariate_title = "covar.age"
   )
 
-  expected_min = c(
+  expected_min <- c(
     "Ibuprofen" = 98,
     "A_stiff_drink" = 95,
     "Sleep" = 97,
     "Exercise" = NA
   )
 
-  expected_max = c(
+  expected_max <- c(
     "Ibuprofen" = 99,
     "A_stiff_drink" = 99,
     "Sleep" = 98,
@@ -122,14 +122,14 @@ test_that("FindCovariateRanges() finds ranges for continuous wide data", {
     covariate_title = "covar.age"
   )
 
-  expected_min = c(
+  expected_min <- c(
     "Ibuprofen" = 98,
     "A_stiff_drink" = 95,
     "Sleep" = 97,
     "Exercise" = NA
   )
 
-  expected_max = c(
+  expected_max <- c(
     "Ibuprofen" = 99,
     "A_stiff_drink" = 99,
     "Sleep" = 98,

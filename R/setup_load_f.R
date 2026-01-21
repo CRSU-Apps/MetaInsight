@@ -309,12 +309,12 @@ ValidateUploadedData <- function(data, outcome) {
 #'
 #' @return A vector of column titles which contain data of the wrong type.
 .FindMistypedColumns <- function(data, outcome_columns) {
-  mistyped_columns = c()
+  mistyped_columns <- c()
   sapply(
     1:nrow(outcome_columns),
     function (index) {
       column_definition <- outcome_columns[index, ]
-      matching_column_names = grep(column_definition$pattern, names(data), value = TRUE)
+      matching_column_names <- grep(column_definition$pattern, names(data), value = TRUE)
 
       new_mistyped_columns <- unlist(
         sapply(
@@ -543,7 +543,7 @@ binary_column_names <- data.frame() |>
 
 # Treatments are in priority order, such that for any study with multiple matching treatments,
 # the first in this vector will be used as the reference, until the user selects another.
-.potential_reference_treatments = c(
+.potential_reference_treatments <- c(
   'control',
   'usual_care',
   'standard_care',
@@ -552,8 +552,8 @@ binary_column_names <- data.frame() |>
 )
 
 # Column ordering
-.common_order = c("StudyID", "Study")
-.rob_order = c("rob", "indirectness")
+.common_order <- c("StudyID", "Study")
+.rob_order <- c("rob", "indirectness")
 
 #' The column order for a continuous outcome, for wide and long data.
 #'
@@ -694,7 +694,7 @@ FindAllTreatments <- function(data, treatment_ids = NULL, study = NULL) {
   treatment_column_matches <- stringr::str_match(names(data), "^(?i)T(\\.[0-9]+)?$")
   treatment_column_names <- treatment_column_matches[!is.na(treatment_column_matches)]
 
-  treatment_names = unlist(
+  treatment_names <- unlist(
     sapply(
       treatment_column_names,
       function (nom) {

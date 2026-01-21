@@ -86,7 +86,7 @@ CreateTreatmentsDataFrame <- function(treatment_names_string) {
     return(data.frame())
   }
 
-  treatment_df = data.frame(
+  treatment_df <- data.frame(
     Number = seq(length(treatments)),
     Label = treatments
   )

@@ -329,9 +329,9 @@ CreateTauSentence <- function(model) {
     sd_lowCI <- round(sumresults$summaries$quantiles["sd.d", "2.5%"], digits = 2)
     sd_highCI <- round(sumresults$summaries$quantiles["sd.d", "97.5%"], digits = 2)
   }   else {
-    sd_mean = 0
-    sd_lowCI = 0
-    sd_highCI = 0
+    sd_mean <- 0
+    sd_lowCI <- 0
+    sd_highCI <- 0
   }
   if (model$model_type=="random") {
     if (model$outcome=="OR") {

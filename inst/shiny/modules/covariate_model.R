@@ -158,8 +158,8 @@ covariate_model_module_server <- function(id, common, parent_session) {
       if (is.null(common$covariate_column)){
         list()
       } else {
-        covariate_min = min(common$main_connected_data[[common$covariate_column]])
-        covariate_max = max(common$main_connected_data[[common$covariate_column]])
+        covariate_min <- min(common$main_connected_data[[common$covariate_column]])
+        covariate_max <- max(common$main_connected_data[[common$covariate_column]])
         log_val <- round(log10(covariate_max - covariate_min))
         step <- 10 ** (log_val - 2)
         list(

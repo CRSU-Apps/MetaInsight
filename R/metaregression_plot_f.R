@@ -83,8 +83,8 @@ metaregression_plot <- function(
   x_range_2 <- ggplot_build(indirect_plot)$layout$panel_params[[1]]$x.range
 
   # Find the largest range covered by either plot
-  x_min = min(x_range_1[1], x_range_2[1])
-  x_max = max(x_range_1[2], x_range_2[2])
+  x_min <- min(x_range_1[1], x_range_2[1])
+  x_max <- max(x_range_1[2], x_range_2[2])
 
   # Scale both plots to cover the full x-axis range
   direct_plot <- direct_plot + coord_cartesian(xlim = c(x_min, x_max))
@@ -106,7 +106,7 @@ metaregression_plot <- function(
   ) |> crop_svg()
 }
 
-regression_ghost_name = "\"Other\""
+regression_ghost_name <- "\"Other\""
 
 #' Create a covariate regression plot where multiple comparisons can be plotted, and the contributions from each study are shown as circles.
 #'
@@ -149,7 +149,7 @@ CreateMainRegressionPlot <- function(
     covariate_symbol_size = 10,
     legend_position = "BR") {
 
-  reference = model_output$reference_name
+  reference <- model_output$reference_name
   comparators <- sort(comparators)
   all_comparators <- model_output$comparator_names
 
@@ -311,7 +311,7 @@ CreateMainRegressionPlot <- function(
 #' @return The modified ggplot2 object.
 .PlotDirectCovariateCircles <- function(plot, model_output, treatment_df, reference, comparators, directness, covariate_symbol = "circle open", covariate_symbol_size = 10, ghosted = FALSE) {
 
-  contributions = .FindDirectRegressionContributions(model_output, reference, comparators, directness)
+  contributions <- .FindDirectRegressionContributions(model_output, reference, comparators, directness)
 
   if (nrow(contributions) == 0) {
     return(plot)
@@ -355,7 +355,7 @@ CreateMainRegressionPlot <- function(
 .PlotRegressionLines <- function(plot, model_output, treatment_df, reference, comparators, extrapolate, ghosted = FALSE) {
 
   # Create data frame
-  lines = data.frame(
+  lines <- data.frame(
     Treatment = sapply(comparators, function(comparator) { treatment_df$RawLabel[treatment_df$Label == comparator] }),
     intercept = model_output$intercepts[comparators],
     slope = model_output$slopes[comparators],
@@ -513,7 +513,7 @@ SetupRegressionPlotColours <- function(plot, comparators, include_ghosts, includ
 
   # Only include fills if credible regions included
   if (include_credible) {
-    opacity_hex = format(
+    opacity_hex <- format(
       as.hexmode(as.integer(credible_opacity * 255)),
       width = 2
     )
@@ -549,7 +549,7 @@ CreateIndirectCovariatePlot <- function(
     covariate_symbol = "circle open",
     covariate_symbol_size = 10) {
 
-  reference = model_output$reference_name
+  reference <- model_output$reference_name
   comparators <- sort(comparators)
   all_comparators <- model_output$comparator_names
 
@@ -628,7 +628,7 @@ CreateIndirectCovariatePlot <- function(
 #'
 #' @return The modified ggplot2 object.
 .PlotIndirectCovariateCircles <- function(plot, model_output, treatment_df, reference, comparators, directness, covariate_symbol = "circle open", covariate_symbol_size = 10, ghosted = FALSE) {
-  contributions = .FindIndirectRegressionCovariates(model_output, reference, comparators, directness)
+  contributions <- .FindIndirectRegressionCovariates(model_output, reference, comparators, directness)
 
   if (nrow(contributions) == 0) {
     return(plot)

@@ -19,11 +19,11 @@ summary_char <- function(bugsnet_data, outcome, logger = NULL) {
 
   data.rh <- BUGSnet::data.prep(arm.data = bugsnet_data, varname.t = "T", varname.s = "Study")
   if (outcome == "Continuous") {
-    outcome = "Mean"
-    typeO = "continuous"
+    outcome <- "Mean"
+    typeO <- "continuous"
   } else if (outcome == "Binary") {
-    outcome = "R"
-    typeO = "binomial"
+    outcome <- "R"
+    typeO <- "binomial"
   } else {
     logger |> writeLog(type = "error", "outcome must be either Binary or Continuous")
     return()

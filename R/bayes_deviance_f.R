@@ -124,10 +124,10 @@ scat_plot <- function(model, deviance, model_type, outcome_measure, seed) {
   #The maximum number of arms
   max_arms <- ncol(deviance$dev.ab) - 1
 
-  p = plotly::plot_ly() |>   # plot
+  p <- plotly::plot_ly() |>   # plot
     plotly::add_trace(data = dline, x = ~m, y = ~n, type = 'scatter', mode = 'lines',
               line = list(color = '#45171D'))
-  p = p |>
+  p <- p |>
     plotly::add_trace(data = all, x = ~NMAmodel_arm1, y = ~UMEmodel_arm1, type = 'scatter', mode = 'markers',
               marker = list(size = 4, color = '#CAEFD1',
                             line = list(color = 'rgb(0,128,0)',
@@ -138,7 +138,7 @@ scat_plot <- function(model, deviance, model_type, outcome_measure, seed) {
                           '</br> Deviance from NMA model:',round(NMAmodel_arm1, digits = 2),
                           '</br> Deviance from UME model:',round(UMEmodel_arm1, digits = 2)
               ))
-  p = p |>
+  p <- p |>
     plotly::add_trace(
       x = ~NMAmodel_arm2, y = ~UMEmodel_arm2, type = 'scatter', mode = 'markers',
       marker = list(size = 4, color = '#CAEFD1',
@@ -224,7 +224,7 @@ stem_plot <- function(deviance) {
   )
   p <- plotly::plot_ly(data = d, x = ~v, y = ~devbar)
   for (i in 1:length(devbar)) {
-    p = p |>
+    p <- p |>
       plotly::add_segments(x = i,
                    xend = i,
                    y = 0,
@@ -236,7 +236,7 @@ stem_plot <- function(deviance) {
                                width = 1)
       )
   }
-  p = p|>
+  p <- p|>
     plotly::add_trace(data = d, x = ~v, y = ~devbar, type = 'scatter', mode = 'markers',
               marker = list(size = 4,
                             color = '#CAEFD1',
@@ -279,9 +279,9 @@ lev_plot <- function(deviance) {
   b4 <- 4 - a^2
   parabola <- data.frame(a, b1, b2, b3, b4)
 
-  xlab = "Square root of average residual deviance across the arms for each study"
+  xlab <- "Square root of average residual deviance across the arms for each study"
   'sqrt(average(residual deviance for arm 1, residual deviance for arm 2...))'
-  ylab = "Average leverage across the arms for each study"
+  ylab <- "Average leverage across the arms for each study"
 
   xl <- list(
     title = xlab,

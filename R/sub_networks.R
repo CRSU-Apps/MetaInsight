@@ -6,7 +6,7 @@
 #' @return Created igraph object.
 CreateGraph <- function(data) {
   # Find links
-  links = c()
+  links <- c()
   for (study in unique(data$Study)) {
     study_treatments <- FindAllTreatments(data[data$Study == study, ])
     for (i in 1:(length(study_treatments) - 1)) {
