@@ -207,6 +207,7 @@ hr {
 
 .accordion {
   --bs-accordion-active-bg: #85bad4;
+  --bs-accordion-btn-focus-box-shadow: #005c8a;
 }
 
 .svg_container_ranking {
