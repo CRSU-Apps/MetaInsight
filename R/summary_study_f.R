@@ -191,8 +191,9 @@ summary_study <- function(connected_data, freq, outcome_measure, plot_area_width
       )
 
       # ROB legend
-      rob_legend <- paste(rob_letters, rob_names, sep = ": ")
-      rob_legend_y <- -(2:(n_rob_variables + 1))
+      formatted_rob_names <- gsub("_", " ", rob_names) |> stringr::str_to_sentence()
+      rob_legend <- paste(rob_letters, formatted_rob_names, sep = ": ")
+      rob_legend_y <- -(3:(n_rob_variables + 2))
       legend_width <- max(strwidth(rob_legend, units = "inches")) / inches_to_lines
 
       # legend for domains
@@ -213,7 +214,7 @@ summary_study <- function(connected_data, freq, outcome_measure, plot_area_width
         side = 2,
         line = legend_x_position - legend_width - 1,
         las = 1,
-        at = -2:-4,
+        at = -3:-5,
         adj = 0,
         padj = 0.5,
         cex = 3,
@@ -225,7 +226,7 @@ summary_study <- function(connected_data, freq, outcome_measure, plot_area_width
         side = 2,
         line = legend_x_position - legend_width - 2,
         las = 1,
-        at = -2:-4,
+        at = -3:-5,
         adj = 0,
         padj = 0.5
       )

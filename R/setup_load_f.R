@@ -1125,7 +1125,9 @@ FindRobIndividualNames <- function(df) {
 #' @param df Data frame in which to find covariate columns.
 #' @return Names of all RoB or indirectness columns
 FindRobNames <- function(df) {
-  return(names(dplyr::select(df, dplyr::matches(c(FindRobIndividualNames(df), "rob", "indirectness")))))
+  all_rob <- c(FindRobIndividualNames(df), "rob", "indirectness")
+  return(c(grep("^rob\\.", names(df), value = TRUE),
+    dplyr::intersect(c("rob", "indirectness"), names(df))))
 }
 
 #' Shorten RoB and indirectness variable names.
