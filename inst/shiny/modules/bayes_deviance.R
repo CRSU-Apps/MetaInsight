@@ -50,25 +50,39 @@ bayes_deviance_submodule_server <- function(id, common, trigger){
 
     output$scat <- plotly::renderPlotly({
       watch(trigger)
-      req(common[[paste0("bayes_deviance_", id)]])
-      on.exit(shinyjs::show(selector = ".bayes_deviance_div"))
-      common[[paste0("bayes_deviance_", id)]]$scat_plot
+      # req(common[[paste0("bayes_deviance_", id)]])
+      # this is a workaround for plotly creating problems in testing
+      if (is.null(common[[paste0("bayes_deviance_", id)]])){
+        plotly::plot_ly(cars, x = ~speed, type = "histogram")
+      } else {
+        on.exit(shinyjs::show(selector = ".bayes_deviance_div"))
+        common[[paste0("bayes_deviance_", id)]]$scat_plot
+      }
+
     })
 
     outputOptions(output, "scat", suspendWhenHidden = FALSE)
 
     output$stem <- plotly::renderPlotly({
       watch(trigger)
-      req(common[[paste0("bayes_deviance_", id)]])
-      # workaround for testing
-      on.exit(shinyjs::runjs(glue("Shiny.setInputValue('bayes_deviance-complete', 'complete');")))
-      common[[paste0("bayes_deviance_", id)]]$stem_plot
+      # req(common[[paste0("bayes_deviance_", id)]])
+      if (is.null(common[[paste0("bayes_deviance_", id)]])){
+        plotly::plot_ly(cars, x = ~speed, type = "histogram")
+      } else {
+        # workaround for testing
+        on.exit(shinyjs::runjs(glue("Shiny.setInputValue('bayes_deviance-complete', 'complete');")))
+        common[[paste0("bayes_deviance_", id)]]$stem_plot
+      }
     })
 
     output$lev <- plotly::renderPlotly({
       watch(trigger)
-      req(common[[paste0("bayes_deviance_", id)]])
-      common[[paste0("bayes_deviance_", id)]]$lev_plot
+      # req(common[[paste0("bayes_deviance_", id)]])
+      if (is.null(common[[paste0("bayes_deviance_", id)]])){
+        plotly::plot_ly(cars, x = ~speed, type = "histogram")
+      } else {
+        common[[paste0("bayes_deviance_", id)]]$lev_plot
+      }
     })
 
   })

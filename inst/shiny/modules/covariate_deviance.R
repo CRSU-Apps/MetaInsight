@@ -43,19 +43,27 @@ metaregression_deviance_module_server <- function(id, common, run) {
 
     output$stem <- plotly::renderPlotly({
       watch(module_id)
-      req(common[[module_id]])
-      on.exit(shinyjs::show(selector = glue(".{module_id}_div")))
-      # workaround for testing
-      on.exit(shinyjs::runjs(glue("Shiny.setInputValue('{module_id}-complete', 'complete');")), add = TRUE)
-      common[[module_id]]$stem_plot
+      # req(common[[module_id]])
+      if (is.null(common[[module_id]])){
+        plotly::plot_ly(cars, x = ~speed, type = "histogram")
+      } else {
+        on.exit(shinyjs::show(selector = glue(".{module_id}_div")))
+        # workaround for testing
+        on.exit(shinyjs::runjs(glue("Shiny.setInputValue('{module_id}-complete', 'complete');")), add = TRUE)
+        common[[module_id]]$stem_plot
+      }
     })
 
     outputOptions(output, "stem", suspendWhenHidden = FALSE)
 
     output$lev <- plotly::renderPlotly({
       watch(module_id)
-      req(common[[module_id]])
-      common[[module_id]]$lev_plot
+      # req(common[[module_id]])
+      if (is.null(common[[module_id]])){
+        plotly::plot_ly(cars, x = ~speed, type = "histogram")
+      } else {
+        common[[module_id]]$lev_plot
+      }
     })
 
   })
