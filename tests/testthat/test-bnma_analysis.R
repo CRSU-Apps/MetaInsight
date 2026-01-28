@@ -237,7 +237,7 @@ test_that("1. BaselineRiskRegression() sets RNGs correctly;
                                      reference_treatment = "the_Great",
                                      model_type = "random",
                                      cov_parameters = "exchangeable",
-                                     seed = 97531)
+                                     seed = 97531) |> suppress_jags_output()
 
   result_2 <- BaselineRiskRegression(connected_data = data$ArmLevel,
                                      treatment_df = treatment_ids,
@@ -245,7 +245,7 @@ test_that("1. BaselineRiskRegression() sets RNGs correctly;
                                      reference_treatment = "the_Great",
                                      model_type = "random",
                                      cov_parameters = "exchangeable",
-                                     seed = 97531)
+                                     seed = 97531) |> suppress_jags_output()
 
   #Unit test 1
   expect_equal(result_1$inits[[1]]$.RNG.name, "base::Wichmann-Hill")
@@ -273,7 +273,7 @@ test_that("1. BaselineRiskRegression() sets RNGs correctly;
   expected_reference_name <- treatment_ids$Label[1]
   expected_comparator_names <- treatment_ids$Label[-1]
   expected_effects_type_text <- "random effect"
-  expected_cov_value_sentence <- paste0("Value for baseline risk set at ", expected_covariate_value)
+  expected_cov_value_sentence <- paste("Value for baseline risk set at", round(expected_covariate_value, 2), "")
   expected_slopes <- summary_1$summary.samples$quantiles[c("b_bl[2]", "b_bl[3]", "b_bl[4]", "b_bl[5]", "b_bl[6]"), "50%"]
   names(expected_slopes) <- expected_comparator_names
   expected_centred_intercepts <- summary_1$summary.samples$quantiles[c("d[2]", "d[3]", "d[4]", "d[5]", "d[6]"), "50%"]

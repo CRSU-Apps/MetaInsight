@@ -93,7 +93,10 @@ test_that("Check setup_load loads data into common correctly for default data", 
   expect_true(common$is_data_valid)
   expect_false(common$is_data_uploaded)
 
-  expect_equal(colnames(common$data), c('Study', 'T', 'Mean', 'SD', 'N', 'covar.age'),
+  expect_equal(colnames(common$data), c("Study", "T", "Mean", "SD", "N", "covar.age", "rob", "indirectness",
+                                        "rob.randomisation", "rob.allocation_concealment", "rob.blinding_(participants_and_personnel)",
+                                        "rob.blinding_(outcomes)", "rob.attrition", "rob.reporting",
+                                        "rob.other_bias"),
                label = format_vector_to_string(colnames(common$data)))
   expect_equal(nrow(common$data), 90,
                label = nrow(common$data))

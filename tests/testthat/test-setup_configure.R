@@ -125,7 +125,7 @@ test_that("Data wrangled from default continuous long file", {
   load <- setup_load(outcome = "Continuous")
   config <- setup_configure(load$data, load$treatment_df, "Continuous", "MD", "Placebo")
 
-  expect_equal(colnames(config$wrangled_data), c("StudyID", colnames(load$data)[c(1, 2, 5, 3, 4, 6)]),
+  expect_equal(colnames(config$wrangled_data), c("StudyID", colnames(load$data)[c(1, 2, 5, 3, 4, 7:15, 6)]),
                label = format_vector_to_string(colnames(config$wrangled_data)))
 
   expect_equal(config$wrangled_data$StudyID, rep(1:45, each = 2),
