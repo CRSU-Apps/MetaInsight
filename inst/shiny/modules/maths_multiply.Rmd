@@ -1,0 +1,8 @@
+```{asis, echo = {{maths_multiply_knit}}, eval = {{maths_multiply_knit}}, include = {{maths_multiply_knit}}}
+Description of what the code will do {{var1}}
+```
+
+```{r, echo = {{maths_multiply_knit}}, include = {{maths_multiply_knit}}}
+# R code to run {{var2}}
+# Populate using metadata()
+```
