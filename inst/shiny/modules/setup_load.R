@@ -98,7 +98,7 @@ setup_load_module_server <- function(id, common, parent_session) {
 
     observeEvent(input$run, {
       # WARNING ####
-     if (!is.null(common$data)){
+     if (!is.null(common$main_connected_data)){
        common$logger |> writeLog(type = "error", "Data has already been loaded - please delete it first")
        return()
      }
