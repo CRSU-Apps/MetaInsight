@@ -42,7 +42,7 @@ baseline_model(
 List of bnma related output:
 \item{mtcResults}{model object itself carried through (needed to match existing code)}
 \item{covariate_value}{The mean covariate value, used for centring}
-\item{reference_name}{The name of the reference treatment}
+\item{reference_treatment}{The name of the reference treatment}
 \item{comparator_names}{Vector containing the names of the comparators}
 \item{a}{text output stating whether fixed or random effects}
 \item{cov_value_sentence}{text output stating the value for which the covariate has been set to for producing output}

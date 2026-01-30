@@ -57,7 +57,7 @@ List of \CRANpkg{gemtc} related output:
 \item{mtcRelEffects}{data relating to presenting relative effects}
 \item{rel_eff_tbl}{table of relative effects for each comparison}
 \item{covariate_value}{The covariate value originally passed into this function}
-\item{reference_name}{The name of the reference treatment}
+\item{reference_treatment}{The name of the reference treatment}
 \item{comparator_names}{Vector containing the names of the comparators}
 \item{a}{text output stating whether fixed or random effects}
 \item{sumresults}{summary output of relative effects}

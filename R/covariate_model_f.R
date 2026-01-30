@@ -14,7 +14,7 @@
 #'  \item{mtcRelEffects}{data relating to presenting relative effects}
 #'  \item{rel_eff_tbl}{table of relative effects for each comparison}
 #'  \item{covariate_value}{The covariate value originally passed into this function}
-#'  \item{reference_name}{The name of the reference treatment}
+#'  \item{reference_treatment}{The name of the reference treatment}
 #'  \item{comparator_names}{Vector containing the names of the comparators}
 #'  \item{a}{text output stating whether fixed or random effects}
 #'  \item{sumresults}{summary output of relative effects}
@@ -238,7 +238,7 @@ CreateGemtcModel <- function(data, model_type, outcome_measure, regressor_type, 
 #'  mtcRelEffects = data relating to presenting relative effects;
 #'  rel_eff_tbl = table of relative effects for each comparison;
 #'  covariate_value = The covariate value originally passed into this function
-#'  reference_name = The name of the reference treatment
+#'  reference_treatment = The name of the reference treatment
 #'  comparator_names = Vector containing the names of the comparators.
 #'  a = text output stating whether fixed or random effects;
 #'  sumresults = summary output of relative effects
@@ -254,7 +254,7 @@ CreateGemtcModel <- function(data, model_type, outcome_measure, regressor_type, 
 CovariateModelOutput <- function(connected_data, treatment_df, model, covariate_title, covariate_value, outcome_measure, covariate_type) {
 
   model_levels <- levels(model$model$data$reg.control)
-  reference_name <- model_levels[model_levels %in% model$model$data$reg.control]
+  reference_treatment <- model_levels[model_levels %in% model$model$data$reg.control]
   comparator_names <- model_levels[!model_levels %in% model$model$data$reg.control]
 
   # If the covariate type has been selected as continuous and gemtc has inferred it as binary, overwrite it
@@ -331,7 +331,7 @@ CovariateModelOutput <- function(connected_data, treatment_df, model, covariate_
       mtcRelEffects = rel_eff,
       rel_eff_tbl = rel_eff_tbl,
       covariate_value = covariate_value,
-      reference_name = reference_name,
+      reference_treatment = reference_treatment,
       comparator_names = comparator_names,
       a = model_text,
       sumresults = rel_eff_summary,

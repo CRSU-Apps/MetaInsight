@@ -7,7 +7,7 @@ test_that("Check baseline_model function works as expected", {
   expect_is(result, "baseline_model")
   expect_true(all(c("mtcResults",
                     "covariate_value",
-                    "reference_name",
+                    "reference_treatment",
                     "comparator_names",
                     "a",
                     "cov_value_sentence",
@@ -22,7 +22,7 @@ test_that("Check baseline_model function works as expected", {
                     "regressor") %in% names(result)))
   expect_is(result$mtcResults, "network.result")
   expect_is(result$covariate_value, "numeric")
-  expect_is(result$reference_name, "character")
+  expect_is(result$reference_treatment, "character")
   expect_is(result$comparator_names, "character")
   expect_is(result$a, "character")
   expect_is(result$cov_value_sentence, "character")
@@ -83,7 +83,7 @@ test_that("{shinytest2} recording: e2e_baseline_model", {
   expect_is(result, "baseline_model")
   expect_true(all(c("mtcResults",
                     "covariate_value",
-                    "reference_name",
+                    "reference_treatment",
                     "comparator_names",
                     "a",
                     "cov_value_sentence",
@@ -98,7 +98,7 @@ test_that("{shinytest2} recording: e2e_baseline_model", {
                     "regressor") %in% names(result)))
   expect_is(result$mtcResults, "network.result")
   expect_is(result$covariate_value, "numeric")
-  expect_is(result$reference_name, "character")
+  expect_is(result$reference_treatment, "character")
   expect_is(result$comparator_names, "character")
   expect_is(result$a, "character")
   expect_is(result$cov_value_sentence, "character")

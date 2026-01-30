@@ -178,13 +178,13 @@ CalculateDirectness <- function(
 #' Each data frame in "intervals" contains a single row at the covariate value of that single contribution.
 CalculateCredibleRegions <- function(model_output) {
   mtc_results <- model_output$mtcResults
-  reference_name <- model_output$reference_name
+  reference_treatment <- model_output$reference_treatment
 
   credible_regions <- list()
   credible_intervals <- list()
 
   for (treatment_name in model_output$comparator_names) {
-    parameter_name <- glue::glue("d.{reference_name}.{treatment_name}")
+    parameter_name <- glue::glue("d.{reference_treatment}.{treatment_name}")
     cov_min <- model_output$covariate_min[treatment_name]
     cov_max <- model_output$covariate_max[treatment_name]
 
@@ -195,7 +195,7 @@ CalculateCredibleRegions <- function(model_output) {
 
     } else if (cov_min == cov_max) {
 
-      interval <- .FindCredibleInterval(mtc_results, reference_name, cov_min, parameter_name)
+      interval <- .FindCredibleInterval(mtc_results, reference_treatment, cov_min, parameter_name)
       df <- data.frame(cov_value = cov_min, lower = interval["2.5%"], upper = interval["97.5%"])
 
       # Strip out the row names
@@ -217,7 +217,7 @@ CalculateCredibleRegions <- function(model_output) {
       }
 
       for (cov_value in cov_value_sequence) {
-        interval <- .FindCredibleInterval(mtc_results, reference_name, cov_value, parameter_name)
+        interval <- .FindCredibleInterval(mtc_results, reference_treatment, cov_value, parameter_name)
         df <- rbind(
           df,
           data.frame(cov_value = cov_value, lower = interval["2.5%"], upper = interval["97.5%"])
@@ -251,13 +251,13 @@ CalculateCredibleRegions <- function(model_output) {
 #' Find the credible interval at a given covariate value.
 #'
 #' @param mtc_results Meta-analysis object from which to find credible interval.
-#' @param reference_name Name of reference treatment.
+#' @param reference_treatment Name of reference treatment.
 #' @param cov_value Covariate value at which to find the credible interval.
 #' @param parameter_name Name of the parameter for which to get the credible interval.
 #'
 #' @return Named vector of "2.5%" and "97.5" quantiles.
-.FindCredibleInterval <- function(mtc_results, reference_name, cov_value, parameter_name) {
-  rel_eff <- gemtc::relative.effect(mtc_results, reference_name, covariate = cov_value)
+.FindCredibleInterval <- function(mtc_results, reference_treatment, cov_value, parameter_name) {
+  rel_eff <- gemtc::relative.effect(mtc_results, reference_treatment, covariate = cov_value)
   rel_eff_summary <- summary(rel_eff)
   return(rel_eff_summary$summaries$quantiles[parameter_name, c("2.5%", "97.5%")])
 }

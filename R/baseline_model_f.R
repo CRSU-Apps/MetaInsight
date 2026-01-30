@@ -5,7 +5,7 @@
 #' @return List of bnma related output:
 #'  \item{mtcResults}{model object itself carried through (needed to match existing code)}
 #'  \item{covariate_value}{The mean covariate value, used for centring}
-#'  \item{reference_name}{The name of the reference treatment}
+#'  \item{reference_treatment}{The name of the reference treatment}
 #'  \item{comparator_names}{Vector containing the names of the comparators}
 #'  \item{a}{text output stating whether fixed or random effects}
 #'  \item{cov_value_sentence}{text output stating the value for which the covariate has been set to for producing output}
@@ -192,7 +192,7 @@ BaselineRiskRegression <- function(connected_data, treatment_df, outcome, refere
 #' @return List of bnma related output:
 #'  mtcResults = model object itself carried through (needed to match existing code).
 #'  covariate_value = The mean covariate value, used for centring.
-#'  reference_name = The name of the reference treatment.
+#'  reference_treatment = The name of the reference treatment.
 #'  comparator_names = Vector containing the names of the comparators.
 #'  a = text output stating whether fixed or random effects.
 #'  cov_value_sentence = text output stating the value for which the covariate has been set to for producing output.
@@ -268,7 +268,7 @@ BaselineRiskModelOutput <- function(connected_data, treatment_df, model, outcome
 
   return(list(mtcResults = model,
               covariate_value = mean_covariate_value,
-              reference_name = reference_treatment,
+              reference_treatment = reference_treatment,
               comparator_names = comparator_names,
               a = model_text,
               cov_value_sentence = cov_value_sentence,

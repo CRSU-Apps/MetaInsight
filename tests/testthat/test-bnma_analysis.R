@@ -270,7 +270,7 @@ test_that("1. BaselineRiskRegression() sets RNGs correctly;
 
   expected_mtcResults <- result_1
   expected_covariate_value <- mean(c(-1, -1.4))
-  expected_reference_name <- treatment_ids$Label[1]
+  expected_reference_treatment <- treatment_ids$Label[1]
   expected_comparator_names <- treatment_ids$Label[-1]
   expected_effects_type_text <- "random effect"
   expected_cov_value_sentence <- paste("Value for baseline risk set at", round(expected_covariate_value, 2), "")
@@ -295,7 +295,7 @@ test_that("1. BaselineRiskRegression() sets RNGs correctly;
   expected_model_output <- list(
     mtcResults = expected_mtcResults,
     covariate_value = expected_covariate_value,
-    reference_name = expected_reference_name,
+    reference_treatment = expected_reference_treatment,
     comparator_names = expected_comparator_names,
     a = expected_effects_type_text,
     cov_value_sentence = expected_cov_value_sentence,

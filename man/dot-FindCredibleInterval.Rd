@@ -4,12 +4,17 @@
 \alias{.FindCredibleInterval}
 \title{Find the credible interval at a given covariate value.}
 \usage{
-.FindCredibleInterval(mtc_results, reference_name, cov_value, parameter_name)
+.FindCredibleInterval(
+  mtc_results,
+  reference_treatment,
+  cov_value,
+  parameter_name
+)
 }
 \arguments{
 \item{mtc_results}{Meta-analysis object from which to find credible interval.}
 
-\item{reference_name}{Name of reference treatment.}
+\item{reference_treatment}{Name of reference treatment.}
 
 \item{cov_value}{Covariate value at which to find the credible interval.}
 

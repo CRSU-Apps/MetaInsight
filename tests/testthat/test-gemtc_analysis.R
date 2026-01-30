@@ -172,7 +172,7 @@ test_that("CalculateCredibleRegions() gives nothing for NA evidence range", {
 
   model_output <- list(
     mtcResults = mtc_results,
-    reference_name = "Placebo",
+    reference_treatment = "Placebo",
     comparator_names = c("Ibuprofen"),
     covariate_min = c(Ibuprofen = NA),
     covariate_max = c(Ibuprofen = NA)
@@ -202,7 +202,7 @@ test_that("CalculateCredibleRegions() gives interval for zero-width evidence ran
 
   model_output <- list(
     mtcResults = mtc_results,
-    reference_name = "Placebo",
+    reference_treatment = "Placebo",
     comparator_names = c("Ibuprofen"),
     covariate_min = c(Ibuprofen = 7),
     covariate_max = c(Ibuprofen = 7)
@@ -244,7 +244,7 @@ test_that("CalculateCredibleRegions() gives region for non-zero-width evidence r
 
   model_output <- list(
     mtcResults = mtc_results,
-    reference_name = "Placebo",
+    reference_treatment = "Placebo",
     comparator_names = c("Ibuprofen"),
     covariate_min = c(Ibuprofen = 7),
     covariate_max = c(Ibuprofen = 17)

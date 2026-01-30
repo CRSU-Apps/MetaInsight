@@ -149,7 +149,7 @@ CreateMainRegressionPlot <- function(
     covariate_symbol_size = 10,
     legend_position = "BR") {
 
-  reference <- model_output$reference_name
+  reference <- model_output$reference_treatment
   comparators <- sort(comparators)
   all_comparators <- model_output$comparator_names
 
@@ -549,7 +549,7 @@ CreateIndirectCovariatePlot <- function(
     covariate_symbol = "circle open",
     covariate_symbol_size = 10) {
 
-  reference <- model_output$reference_name
+  reference <- model_output$reference_treatment
   comparators <- sort(comparators)
   all_comparators <- model_output$comparator_names
 

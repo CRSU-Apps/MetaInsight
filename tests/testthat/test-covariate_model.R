@@ -14,7 +14,7 @@ test_that("Check covariate_model function works as expected", {
                     "mtcRelEffects",
                     "rel_eff_tbl",
                     "covariate_value",
-                    "reference_name",
+                    "reference_treatment",
                     "comparator_names",
                     "a",
                     "sumresults",
@@ -33,7 +33,7 @@ test_that("Check covariate_model function works as expected", {
   expect_is(result_1$mtcRelEffects, "mtc.result")
   expect_is(result_1$rel_eff_tbl, "mtc.relative.effect.table")
   expect_is(result_1$covariate_value, "numeric")
-  expect_is(result_1$reference_name, "character")
+  expect_is(result_1$reference_treatment, "character")
   expect_is(result_1$comparator_names, "character")
   expect_is(result_1$a, "character")
   expect_is(result_1$sumresults, "summary.mtc.result")
@@ -53,7 +53,7 @@ test_that("Check covariate_model function works as expected", {
   expect_equal(result_1$outcome_measure, "MD")
   expect_equal(result_1$model, "random")
   expect_equal(result_1$covariate_value, 50)
-  expect_equal(result_1$reference_name, "Placebo")
+  expect_equal(result_1$reference_treatment, "Placebo")
   expect_equal(result_1$comparator_names, c("Gabapentinoids", "Glucocorticoids", "Ketamine"))
 
   expected_mcmc_table <- data.frame(characteristic = c("Chains",
@@ -206,7 +206,7 @@ test_that("{shinytest2} recording: e2e_covariate_model", {
                     "mtcRelEffects",
                     "rel_eff_tbl",
                     "covariate_value",
-                    "reference_name",
+                    "reference_treatment",
                     "comparator_names",
                     "a",
                     "sumresults",
@@ -225,7 +225,7 @@ test_that("{shinytest2} recording: e2e_covariate_model", {
   expect_is(result$mtcRelEffects, "mtc.result")
   expect_is(result$rel_eff_tbl, "mtc.relative.effect.table")
   expect_is(result$covariate_value, "integer")
-  expect_is(result$reference_name, "character")
+  expect_is(result$reference_treatment, "character")
   expect_is(result$comparator_names, "character")
   expect_is(result$a, "character")
   expect_is(result$sumresults, "summary.mtc.result")
