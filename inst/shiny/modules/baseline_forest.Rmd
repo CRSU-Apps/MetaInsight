@@ -6,7 +6,6 @@
 ```{r, echo = {{baseline_forest_knit}}, include = {{baseline_forest_knit}}}
 baseline_forest(baseline_model, 
                 treatment_df, 
-                reference_treatment_all,
                 xmin = {{baseline_forest_xmin}},
                 xmax = {{baseline_forest_xmax}},
                 title = "Baseline risk regression analysis")

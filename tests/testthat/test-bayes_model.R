@@ -11,7 +11,9 @@ test_that("Check bayes_model function works as expected", {
                     "sumresults",
                     "mtcNetwork",
                     "dic",
+                    "outcome",
                     "outcome_measure",
+                    "reference_treatment",
                     "model_type") %in% names(result)))
   expect_is(result$dic, "data.frame")
   expect_is(result$mtcResults, "mtc.result")
@@ -21,6 +23,7 @@ test_that("Check bayes_model function works as expected", {
   expect_is(result$sumresults, "summary.mtc.result")
   expect_is(result$outcome, "character")
   expect_is(result$outcome_measure, "character")
+  expect_is(result$reference_treatment, "character")
   expect_is(result$model_type, "character")
 
   # check results are reproducible

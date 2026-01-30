@@ -1,11 +1,11 @@
 test_that("Check baseline_forest function works as expected", {
-  result <- baseline_forest(fitted_baseline_model, loaded_data_con$treatment_df, "Placebo", title = "title")
+  result <- baseline_forest(fitted_baseline_model, loaded_data_con$treatment_df, title = "title")
   expect_match(result, "<svg")
 
-  x_min_result <- baseline_forest(fitted_baseline_model, loaded_data_con$treatment_df, "Placebo", -1, NULL, "title")
+  x_min_result <- baseline_forest(fitted_baseline_model, loaded_data_con$treatment_df,  -1, NULL, "title")
   expect_match(x_min_result, "<svg")
 
-  x_max_result <- baseline_forest(fitted_baseline_model, loaded_data_con$treatment_df, "Placebo", NULL, 1000, "title")
+  x_max_result <- baseline_forest(fitted_baseline_model, loaded_data_con$treatment_df,  NULL, 1000, "title")
   expect_match(x_max_result, "<svg")
 
   expect_false(identical(result, x_min_result))
@@ -17,18 +17,17 @@ test_that("Check baseline_forest function works as expected", {
 test_that("Check baseline_forest function produces errors as expected", {
   faulty_model <- list(mtcRelEffects = 1:4)
 
-  expect_error(baseline_forest(fitted_baseline_model, "not_a_dataframe", "Placebo", 1, 2, "title"), "treatment_df must be of class data.frame")
-  expect_error(baseline_forest(fitted_baseline_model, loaded_data_con$treatment_df, 123, 1, 2, "title"), "reference_treatment must be of class character")
-  expect_error(baseline_forest(fitted_baseline_model, loaded_data_con$treatment_df, "Placebo", "1", 2, "title"), "xmin must be of class numeric")
-  expect_error(baseline_forest(fitted_baseline_model, loaded_data_con$treatment_df, "Placebo", 1, "2", "title"), "xmax must be of class numeric")
-  expect_error(baseline_forest(fitted_baseline_model, loaded_data_con$treatment_df, "Placebo", 1, 2, 123), "title must be of class character")
+  expect_error(baseline_forest(fitted_baseline_model, "not_a_dataframe",  1, 2, "title"), "treatment_df must be of class data.frame")
+  expect_error(baseline_forest(fitted_baseline_model, loaded_data_con$treatment_df,  "1", 2, "title"), "xmin must be of class numeric")
+  expect_error(baseline_forest(fitted_baseline_model, loaded_data_con$treatment_df,  1, "2", "title"), "xmax must be of class numeric")
+  expect_error(baseline_forest(fitted_baseline_model, loaded_data_con$treatment_df,  1, 2, 123), "title must be of class character")
 
-  expect_error(baseline_forest("faulty_model", loaded_data_con$treatment_df, "Placebo", "title"), "model must be an object created by baseline_model")
-  expect_error(baseline_forest(list(a = 1), loaded_data_con$treatment_df, "Placebo", "title"), "model must be an object created by baseline_model")
-  expect_error(baseline_forest(faulty_model, loaded_data_con$treatment_df, "Placebo", "title"), "model must be an object created by baseline_model")
+  expect_error(baseline_forest("faulty_model", loaded_data_con$treatment_df,  "title"), "model must be an object created by baseline_model")
+  expect_error(baseline_forest(list(a = 1), loaded_data_con$treatment_df,  "title"), "model must be an object created by baseline_model")
+  expect_error(baseline_forest(faulty_model, loaded_data_con$treatment_df,  "title"), "model must be an object created by baseline_model")
 
-  expect_error(baseline_forest(fitted_baseline_model, loaded_data_con$treatment_df, "Placebo", 3, 2, "title"), "xmin must be less than xmax")
-  expect_error(baseline_forest(fitted_baseline_model, loaded_data_con$treatment_df, "Placebo", 3, 3, "title"), "xmin must be less than xmax")
+  expect_error(baseline_forest(fitted_baseline_model, loaded_data_con$treatment_df,  3, 2, "title"), "xmin must be less than xmax")
+  expect_error(baseline_forest(fitted_baseline_model, loaded_data_con$treatment_df,  3, 3, "title"), "xmin must be less than xmax")
 })
 
 

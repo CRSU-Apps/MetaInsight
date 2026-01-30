@@ -104,6 +104,7 @@ bayes_model <- function(connected_data, treatment_df, outcome, outcome_measure, 
                 # these are stored so that only the model object can be passed to other functions
                 outcome = outcome,
                 outcome_measure = outcome_measure,
+                reference_treatment = reference_treatment,
                 model_type = model_type
              )
 

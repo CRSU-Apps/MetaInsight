@@ -22,6 +22,7 @@ test_that("Check covariate_model function works as expected", {
                     "cov_value_sentence",
                     "slopes",
                     "intercepts",
+                    "outcome",
                     "outcome_measure",
                     "mtcNetwork",
                     "model_type",

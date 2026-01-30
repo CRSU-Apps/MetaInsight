@@ -40,7 +40,6 @@ bayes_forest_submodule_server <- function(id, common, model, run, xmin, xmax, ti
 
       bayes_forest(common[[paste0("bayes_", id)]],
                    common[[tdf]],
-                   common[[paste0("reference_treatment_", id)]],
                    xmin(),
                    xmax(),
                    title)
@@ -81,8 +80,8 @@ bayes_forest_module_server <- function(id, common, parent_session) {
 
       req(common$bayes_all, common$bayes_sub)
 
-      all_limits <- bayes_forest_limits(common$bayes_all, common$reference_treatment_all)
-      sub_limits <- bayes_forest_limits(common$bayes_sub, common$reference_treatment_sub)
+      all_limits <- bayes_forest_limits(common$bayes_all)
+      sub_limits <- bayes_forest_limits(common$bayes_sub)
 
       if (common$outcome == "Binary"){
         all_limits <- exp(all_limits)

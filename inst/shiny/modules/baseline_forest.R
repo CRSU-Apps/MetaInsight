@@ -20,7 +20,7 @@ baseline_forest_module_server <- function(id, common, parent_session) {
       req(common$baseline_model)
 
       median_ci_table <- bnma::relative.effects.table(common$baseline_model$mtcResults, summary_stat = "ci")
-      forest_data <- format_baseline_forest(median_ci_table, common$reference_treatment_all)
+      forest_data <- format_baseline_forest(median_ci_table, common$baseline_model$reference_treatment)
 
       limits <- baseline_forest_limits(forest_data)
 

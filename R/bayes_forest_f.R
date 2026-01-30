@@ -8,10 +8,10 @@
 #' @inheritParams common_params
 #' @inherit return-svg return
 #' @export
-bayes_forest <- function(model, treatment_df, reference_treatment, xmin = NULL, xmax = NULL, title = "", ranking = FALSE, logger = NULL){
+bayes_forest <- function(model, treatment_df, xmin = NULL, xmax = NULL, title = "", ranking = FALSE, logger = NULL){
 
-  check_param_classes(c("treatment_df", "reference_treatment", "title", "ranking"),
-                      c("data.frame", "character", "character", "logical"), logger)
+  check_param_classes(c("treatment_df", "title", "ranking"),
+                      c("data.frame", "character", "logical"), logger)
 
   if (!inherits(model, "bayes_model")){
     logger |> writeLog(type = "error", "model must be an object created by bayes_model() or covariate_model()")
@@ -20,7 +20,7 @@ bayes_forest <- function(model, treatment_df, reference_treatment, xmin = NULL, 
 
   # set default x-axis limits if not supplied and check if they are provided
   if (any(is.null(xmin), is.null(xmax))){
-    xlim <- bayes_forest_limits(model, reference_treatment)
+    xlim <- bayes_forest_limits(model)
     xmin <- ifelse(is.null(xmin), xlim[1], xmin)
     xmax <- ifelse(is.null(xmax), xlim[2], xmax)
   } else {
@@ -33,7 +33,7 @@ bayes_forest <- function(model, treatment_df, reference_treatment, xmin = NULL, 
   }
 
   height <- forest_height(nrow(treatment_df), title = TRUE, annotation = TRUE)
-  width <- forest_width(14 + nchar(reference_treatment))
+  width <- forest_width(14 + nchar(model$reference_treatment))
 
   svg <- svglite::xmlSVG({
     gemtc::forest(model$mtcRelEffects, digits = 3, xlim = c(xmin, xmax))
@@ -68,14 +68,14 @@ covariate_forest <- function(...){
 #' @param model list. Object created by `bayes_model()` or `covariate_model()`
 #' @inheritParams common_params
 #' @export
-bayes_forest_limits <- function(model, reference_treatment) {
+bayes_forest_limits <- function(model) {
 
   # whether model is binary
   log.scale <- ifelse(model$outcome_measure == "MD", FALSE, TRUE)
 
   # Extract reference treatment index
   rel_eff_tbl <- model$rel_eff_tbl
-  ref_index <- which(dimnames(rel_eff_tbl)[[1]] == reference_treatment)
+  ref_index <- which(dimnames(rel_eff_tbl)[[1]] == model$reference_treatment)
 
   # Extract raw confidence interval bounds
   ci.l_raw <- rel_eff_tbl[ref_index,,1]  # 2.5% quantile

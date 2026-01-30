@@ -13,6 +13,7 @@ test_that("Check baseline_model function works as expected", {
                     "cov_value_sentence",
                     "slopes",
                     "intercepts",
+                    "outcome",
                     "outcome_measure",
                     "model",
                     "covariate_min",

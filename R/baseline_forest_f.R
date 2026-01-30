@@ -5,10 +5,10 @@
 #' @inheritParams common_params
 #' @inherit return-svg return
 #' @export
-baseline_forest <- function(model, treatment_df, reference_treatment, xmin = NULL, xmax = NULL, title = "Baseline risk regression analysis", ranking = FALSE, logger = NULL){
+baseline_forest <- function(model, treatment_df, xmin = NULL, xmax = NULL, title = "Baseline risk regression analysis", ranking = FALSE, logger = NULL){
 
-  check_param_classes(c("treatment_df", "reference_treatment", "title", "ranking"),
-                      c("data.frame", "character", "character", "logical"), logger)
+  check_param_classes(c("treatment_df", "title", "ranking"),
+                      c("data.frame", "character", "logical"), logger)
 
   if (!inherits(model, "baseline_model")){
     logger |> writeLog(type = "error", "model must be an object created by baseline_model()")
@@ -19,7 +19,7 @@ baseline_forest <- function(model, treatment_df, reference_treatment, xmin = NUL
   width <- forest_width(14)
 
   median_ci_table <- bnma::relative.effects.table(model$mtcResults, summary_stat = "ci")
-  forest_data <- format_baseline_forest(median_ci_table, reference_treatment)
+  forest_data <- format_baseline_forest(median_ci_table, model$reference_treatment)
 
   # set default x-axis limits if not supplied and check if they are provided
   if (any(is.null(xmin), is.null(xmax))){
@@ -35,8 +35,8 @@ baseline_forest <- function(model, treatment_df, reference_treatment, xmin = NUL
     return()
   }
 
-  label <- paste0("Compared with ", reference_treatment)
-  names(label) <- reference_treatment
+  label <- paste0("Compared with ", model$reference_treatment)
+  names(label) <- model$reference_treatment
 
   ci_label <- switch(model$outcome_measure,
                      "OR" = "Odds Ratio",

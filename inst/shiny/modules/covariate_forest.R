@@ -51,7 +51,6 @@ metaregression_forest_module_server <- function(id, common, run, xmin, xmax) {
 
       do.call(module_id, list(common[[model]],
                            common$treatment_df,
-                           common$reference_treatment_all,
                            xmin = xmin(),
                            xmax = xmax(),
                            title = plot_title
