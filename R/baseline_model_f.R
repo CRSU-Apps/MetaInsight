@@ -274,6 +274,7 @@ BaselineRiskModelOutput <- function(connected_data, treatment_df, model, outcome
               cov_value_sentence = cov_value_sentence,
               slopes = slopes,
               intercepts = intercepts,
+              outcome = outcome,
               outcome_measure = outcome_measure,
               model = model$network$type,
               covariate_min = min_max$min,

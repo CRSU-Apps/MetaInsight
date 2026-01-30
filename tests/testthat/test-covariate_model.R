@@ -41,6 +41,7 @@ test_that("Check covariate_model function works as expected", {
   expect_is(result_1$cov_value_sentence, "character")
   expect_is(result_1$slopes, "numeric")
   expect_is(result_1$intercepts, "numeric")
+  expect_is(result_1$outcome, "character")
   expect_is(result_1$outcome_measure, "character")
   expect_is(result_1$mtcNetwork, "mtc.network")
   expect_is(result_1$model_type, "character")

@@ -28,6 +28,7 @@ test_that("Check baseline_model function works as expected", {
   expect_is(result$cov_value_sentence, "character")
   expect_is(result$slopes, "numeric")
   expect_is(result$intercepts, "numeric")
+  expect_is(result$outcome, "character")
   expect_is(result$outcome_measure, "character")
   expect_is(result$model, "character")
   expect_is(result$covariate_min, "numeric")

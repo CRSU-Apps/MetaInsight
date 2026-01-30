@@ -339,6 +339,7 @@ CovariateModelOutput <- function(connected_data, treatment_df, model, covariate_
       cov_value_sentence = cov_value_sentence,
       slopes = slopes,
       intercepts = intercepts,
+      outcome = outcome,
       outcome_measure = outcome_measure,
       mtcNetwork = model$model$network, # why duplicate mtcResults?
       model_type = model$model$linearModel,

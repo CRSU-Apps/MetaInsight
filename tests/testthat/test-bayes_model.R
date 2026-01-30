@@ -19,6 +19,7 @@ test_that("Check bayes_model function works as expected", {
   expect_is(result$rel_eff_tbl, "mtc.relative.effect.table")
   expect_is(result$mtcNetwork, "mtc.network")
   expect_is(result$sumresults, "summary.mtc.result")
+  expect_is(result$outcome, "character")
   expect_is(result$outcome_measure, "character")
   expect_is(result$model_type, "character")
 
