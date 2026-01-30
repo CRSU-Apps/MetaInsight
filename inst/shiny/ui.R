@@ -86,15 +86,7 @@ tagList(
       br(),
       conditionalPanel(
         "input.tabs != 'intro' & input.tabs != 'rep'",
-        accordion(
-          id = "collapse_table",
-          open = FALSE,
-          accordion_panel(
-            title = "Data table (Click to open / hide this panel)",
-            "Use the filter box under each column of heading to select studies to exclude in the sensitivity analysis.",
-            DT::dataTableOutput("table")
-          )
-        ),
+        core_table_module_ui("core_table"),
         navset_tab(
           id = 'main',
           nav_panel(

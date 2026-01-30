@@ -90,50 +90,7 @@ function(input, output, session) {
   ### TABLE TAB ####
   ############################################# #
 
-  # TABLE
-  output$table <- DT::renderDataTable({
-    watch("setup_configure")
-    req(common$non_covariate_data_all)
-
-    if (common$outcome == "Continuous") {
-      colnames <- c('StudyID', 'Author', 'Treatment', 'Number of participants in each arm',
-                    'Mean value of the outcome in each arm', 'Standard deviation of the outcome in each arm')
-
-    } else {
-      colnames <- c('StudyID', 'Author', 'Treatment', 'Number of participants with the outcome of interest in each arm',
-                    'Number of participants in each arm')
-    }
-
-    label <- common$treatment_df
-    dt <- common$non_covariate_data_all
-
-    # reformat wide data
-    if ("T.1" %in% colnames(dt)){
-      dt <- WideToLong(dt, common$outcome)
-    }
-
-    ntx <- nrow(label)
-    dt$T <- factor(dt$T,
-                   levels = c(1:ntx),
-                   labels = as.character(label$Label))
-
-    DT::datatable(
-      dt,
-      rownames = FALSE,
-      colnames = colnames,
-      filter = list(position = 'top', clear = FALSE, stateSave = TRUE)
-    )
-  })
-
-  # DOWNLOAD
-  output$dl_table <- downloadHandler(
-    filename = function() {
-      "metainsight_data_table.csv"
-    },
-    content = function(file) {
-      write.csv(common$data, file, row.names = FALSE)
-    }
-  )
+  core_table_module_server("core_table", common, session)
 
   ####################
   ### INITIALISATION ####
