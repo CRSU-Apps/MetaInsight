@@ -150,7 +150,14 @@ setup_load_module_server <- function(id, common, parent_session) {
     output$table <- DT::renderDataTable({
       watch("setup_load")
       req(common$data)
-      common$data
+      DT::datatable(
+        common$data,
+        # enable scrolling if e.g. many ROB columns
+        options = list(
+          scrollX = TRUE,
+          autoWidth = FALSE
+          ))
+
     })
 
     return(list(
