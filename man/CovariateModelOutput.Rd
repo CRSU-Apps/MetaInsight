@@ -10,14 +10,15 @@ CovariateModelOutput(
   model,
   covariate_title,
   covariate_value,
+  outcome,
   outcome_measure,
   covariate_type
 )
 }
 \arguments{
-\item{connected_data}{Data frame from which model was calculated}
+\item{connected_data}{dataframe. Input data set created by \code{setup_configure()} or \code{setup_exclude}}
 
-\item{treatment_df}{Data frame containing treatment IDs (Number) and names (Label)}
+\item{treatment_df}{dataframe. Treatments}
 
 \item{model}{Completed model object after running RunCovariateRegression()}
 
@@ -25,7 +26,12 @@ CovariateModelOutput(
 
 \item{covariate_value}{Value of covariate for which to give output (default value the mean of study covariates)}
 
-\item{outcome_measure}{The outcome measure for the analysis: One of: "OR", "RR", "MD"}
+\item{outcome}{character. Outcome type for the dataset. Either \code{Binary} or
+\code{Continuous}.}
+
+\item{outcome_measure}{character. Outcome measure of the dataset. Either
+\code{OR}, \code{RR} or \code{RD} when \code{outcome} is \code{Binary} or \code{MD} or \code{SMD} when
+\code{outcome} is \code{Continuous}}
 
 \item{covariate_type}{character. Whether the covariate values are \code{Continuous} or \code{Binary}}
 }
@@ -43,9 +49,10 @@ dic = data frame of model fit statistics
 cov_value_sentence = text output stating the value for which the covariate has been set to for producing output
 slopes = named list of slopes for the regression equations (unstandardised - equal to one 'increment')
 intercepts = named list of intercepts for the regression equations at covariate_value
-outcome = The outcome type for the analysis eg. "MD" or "OR"
+outcome = \code{Binary} or \code{Continuous}
+outcome_measure = The outcome measure for the analysis eg. "MD" or "OR"
 mtcNetwork = The network object from GEMTC
-model = The type of linear model, either "fixed" or "random"
+model_type = The type of linear model, either "fixed" or "random"
 covariate_min = Vector of minimum covariate values directly contributing to the regression.
 covariate_max = Vector of maximum covariate values directly contributing to the regression.
 }

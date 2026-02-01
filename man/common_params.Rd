@@ -25,6 +25,10 @@
 
 \item{seed}{numeric. Seed used to fit the model}
 
+\item{xmin}{numeric. Minimum x-axis value. Default \code{NULL} in which case it is calculated internally}
+
+\item{xmax}{numeric. Maximum x-axis value. Default \code{NULL} in which case it is calculated internally}
+
 \item{logger}{Stores all notification messages to be displayed in the Log
 Window. Insert the logger reactive list here for running in
 shiny, otherwise leave the default \code{NULL}}

@@ -112,6 +112,7 @@ covariate_model <- function(connected_data,
                                        model_output,
                                        covariate,
                                        covariate_value,
+                                       outcome,
                                        outcome_measure,
                                        covariate_type)
   } else {
@@ -120,6 +121,7 @@ covariate_model <- function(connected_data,
                                        covariate_model_output$mtcResults,
                                        covariate,
                                        covariate_value,
+                                       outcome,
                                        outcome_measure,
                                        covariate_type)
   }
@@ -226,13 +228,11 @@ CreateGemtcModel <- function(data, model_type, outcome_measure, regressor_type, 
 
 #' Function to collate all the model output to be used in other existing functions
 #'
-#' @param connected_data Data frame from which model was calculated
-#' @param treatment_df Data frame containing treatment IDs (Number) and names (Label)
 #' @param model Completed model object after running RunCovariateRegression()
 #' @param covariate_title Covariate name as per uploaded data
 #' @param covariate_value Value of covariate for which to give output (default value the mean of study covariates)
-#' @param outcome_measure The outcome measure for the analysis: One of: "OR", "RR", "MD"
 #' @param covariate_type character. Whether the covariate values are `Continuous` or `Binary`
+#' @inheritParams common_params
 #' @return List of gemtc related output:
 #'  mtcResults = model object itself carried through (needed to match existing code)
 #'  mtcRelEffects = data relating to presenting relative effects;
@@ -246,12 +246,13 @@ CreateGemtcModel <- function(data, model_type, outcome_measure, regressor_type, 
 #'  cov_value_sentence = text output stating the value for which the covariate has been set to for producing output
 #'  slopes = named list of slopes for the regression equations (unstandardised - equal to one 'increment')
 #'  intercepts = named list of intercepts for the regression equations at covariate_value
-#'  outcome = The outcome type for the analysis eg. "MD" or "OR"
+#'  outcome = `Binary` or `Continuous`
+#'  outcome_measure = The outcome measure for the analysis eg. "MD" or "OR"
 #'  mtcNetwork = The network object from GEMTC
-#'  model = The type of linear model, either "fixed" or "random"
+#'  model_type = The type of linear model, either "fixed" or "random"
 #'  covariate_min = Vector of minimum covariate values directly contributing to the regression.
 #'  covariate_max = Vector of maximum covariate values directly contributing to the regression.
-CovariateModelOutput <- function(connected_data, treatment_df, model, covariate_title, covariate_value, outcome_measure, covariate_type) {
+CovariateModelOutput <- function(connected_data, treatment_df, model, covariate_title, covariate_value, outcome, outcome_measure, covariate_type) {
 
   model_levels <- levels(model$model$data$reg.control)
   reference_treatment <- model_levels[model_levels %in% model$model$data$reg.control]

@@ -1,8 +1,6 @@
 #' Make a Bayesian forest plot with `gemtc::forest()`
 #'
 #' @param model list. Object created by `bayes_model()` or `covariate_model()`
-#' @param xmin numeric. Minimum x-axis value. Default `NULL` in which case it is calculated internally
-#' @param xmax numeric. Maximum x-axis value. Default `NULL` in which case it is calculated internally
 #' @param title character. Title for the plot. Default is no title
 #' @param ranking logical. Whether the function is being used in `bayes_ranking`
 #' @inheritParams common_params
@@ -66,7 +64,6 @@ covariate_forest <- function(...){
 #' `gemtc::forest()`
 #'
 #' @param model list. Object created by `bayes_model()` or `covariate_model()`
-#' @inheritParams common_params
 #' @export
 bayes_forest_limits <- function(model) {
 

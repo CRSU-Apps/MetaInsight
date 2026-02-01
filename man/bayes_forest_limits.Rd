@@ -5,12 +5,10 @@
 \title{Extract the default x-axis limits using the same method internal to
 \code{gemtc::forest()}}
 \usage{
-bayes_forest_limits(model, reference_treatment)
+bayes_forest_limits(model)
 }
 \arguments{
 \item{model}{list. Object created by \code{bayes_model()} or \code{covariate_model()}}
-
-\item{reference_treatment}{character. The reference treatment of the dataset}
 }
 \description{
 Extract the default x-axis limits using the same method internal to

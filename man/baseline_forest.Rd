@@ -7,7 +7,6 @@
 baseline_forest(
   model,
   treatment_df,
-  reference_treatment,
   xmin = NULL,
   xmax = NULL,
   title = "Baseline risk regression analysis",
@@ -20,7 +19,9 @@ baseline_forest(
 
 \item{treatment_df}{dataframe. Treatments}
 
-\item{reference_treatment}{character. The reference treatment of the dataset}
+\item{xmin}{numeric. Minimum x-axis value. Default \code{NULL} in which case it is calculated internally}
+
+\item{xmax}{numeric. Maximum x-axis value. Default \code{NULL} in which case it is calculated internally}
 
 \item{title}{character. Title for the plot. Defaults to \verb{Baseline risk regression analysis}}
 

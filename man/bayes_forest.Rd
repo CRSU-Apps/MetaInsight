@@ -8,7 +8,6 @@
 bayes_forest(
   model,
   treatment_df,
-  reference_treatment,
   xmin = NULL,
   xmax = NULL,
   title = "",
@@ -22,8 +21,6 @@ covariate_forest(...)
 \item{model}{list. Object created by \code{bayes_model()} or \code{covariate_model()}}
 
 \item{treatment_df}{dataframe. Treatments}
-
-\item{reference_treatment}{character. The reference treatment of the dataset}
 
 \item{xmin}{numeric. Minimum x-axis value. Default \code{NULL} in which case it is calculated internally}
 
