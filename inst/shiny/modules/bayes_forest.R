@@ -86,17 +86,12 @@ bayes_forest_module_server <- function(id, common, parent_session) {
       if (common$outcome == "Binary"){
         all_limits <- exp(all_limits)
         sub_limits <- exp(sub_limits)
-        min_step <- 0.01
-        max_step <- 1
-      } else {
-        min_step <- 0.1
-        max_step <- 0.1
       }
 
-      updateNumericInput(session, "xmin_all", value = all_limits[1], step = min_step)
-      updateNumericInput(session, "xmax_all", value = all_limits[2], step = max_step)
-      updateNumericInput(session, "xmin_sub", value = sub_limits[1], step = min_step)
-      updateNumericInput(session, "xmax_sub", value = sub_limits[2], step = max_step)
+      updateNumericInput(session, "xmin_all", value = all_limits[1], step = format_step(all_limits[1]))
+      updateNumericInput(session, "xmax_all", value = all_limits[2], step = format_step(all_limits[2]))
+      updateNumericInput(session, "xmin_sub", value = sub_limits[1], step = format_step(sub_limits[1]))
+      updateNumericInput(session, "xmax_sub", value = sub_limits[2], step = format_step(sub_limits[2]))
 
     })
 

@@ -5,18 +5,13 @@
 \title{Find the default minimum and maximum values for the x-axis and calculate
 a sensible step to use in the numeric input}
 \usage{
-summary_study_min_max(connected_data, freq)
+summary_study_min_max(pairwise, outcome)
 }
 \arguments{
-\item{connected_data}{dataframe. Uploaded data created by \code{setup_load()}}
-
-\item{freq}{list. Frequentist analysis produced by \code{setup_configure()} or \code{setup_exclude()}}
+\item{pairwise}{Results of pairwise analysis}
 }
 \value{
-List containing:
-\item{x_min}{numeric. Minimum value for the x-axis}
-\item{x_max}{numeric. Maximum value for the x-axis}
-\item{step}{numeric. Step value to use in numericInput}
+Vector of xmin and xmax
 }
 \description{
 Find the default minimum and maximum values for the x-axis and calculate

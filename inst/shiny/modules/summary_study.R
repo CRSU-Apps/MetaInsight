@@ -5,8 +5,9 @@ summary_study_module_ui <- function(id) {
     div(class = "summary_study_div download_buttons",
        checkboxInput(ns("colourblind"), "Use colourblind palette", FALSE),
        numericInput(ns("width"), "Plot area width:", value = 6, step = 1, min = 6, max = 20),
-       numericInput(ns("x_min"), "x-axis min:", value = 0, step = 0.1),
-       numericInput(ns("x_max"), "x-axis max:", value = 0, step = 0.1),
+       p("Limits of the x-axis:"),
+       numericInput(ns("x_min"), "Minimum:", value = 0),
+       numericInput(ns("x_max"), "Maximum:", value = 0),
        downloadButton(ns("download")),
     )
   )
@@ -29,16 +30,13 @@ summary_study_module_server <- function(id, common, parent_session) {
       shinyjs::show("colourblind")
     }
 
-    min_max <- summary_study_min_max(common$subsetted_data, common$freq_sub)
-    updateNumericInput(session, "x_min", value = min_max$x_min, step = min_max$step)
-    updateNumericInput(session, "x_max", value = min_max$x_max, step = min_max$step)
-    if (is.element(common$outcome_measure, c("MD", "SMD", "RD"))) {
-      updateNumericInput(session, "x_min", label = "x-axis min:")
-      updateNumericInput(session, "x_max", label = "x-axis max:")
-    } else if (is.element(common$outcome_measure, c("OR", "RR"))) {
-      updateNumericInput(session, "x_min", label = "x-axis min (log scale):")
-      updateNumericInput(session, "x_max", label = "x-axis max (log scale):")
+    min_max <- summary_study_min_max(common$freq_sub$d1, common$outcome)
+    if (common$outcome == "Binary"){
+      min_max <- exp(min_max)
     }
+    updateNumericInput(session, "x_min", value = min_max[1], step = format_step(min_max[1]))
+    updateNumericInput(session, "x_max", value = min_max[2], step = format_step(min_max[2]))
+
   })
 
   observeEvent(input$run, {
@@ -55,25 +53,35 @@ summary_study_module_server <- function(id, common, parent_session) {
   svg <- reactive({
     watch("setup_exclude")
     req(watch("summary_study") > 0)
+
+    if (common$outcome == "Binary"){
+      x_min = log(as.numeric(input$x_min))
+      x_max = log(as.numeric(input$x_max))
+    } else {
+      x_min = as.numeric(input$x_min)
+      x_max = as.numeric(input$x_max)
+    }
+
+    common$meta$summary_study$used <- TRUE
+    common$meta$summary_study$width <- as.numeric(input$width)
+    common$meta$summary_study$colourblind <- input$colourblind
+    common$meta$summary_study$x_min <- x_min
+    common$meta$summary_study$x_max <- x_max
+
     summary_study(
       connected_data = common$subsetted_data,
       freq = common$freq_sub,
       outcome_measure = common$outcome_measure,
       plot_area_width = as.numeric(input$width),
       colourblind = input$colourblind,
-      x_min = as.numeric(input$x_min),
-      x_max = as.numeric(input$x_max),
+      x_min = x_min,
+      x_max = x_max,
       common$logger
     )
   })
 
   output$plot <- renderUI({
     req(svg())
-    common$meta$summary_study$used <- TRUE
-    common$meta$summary_study$width <- as.numeric(input$width)
-    common$meta$summary_study$colourblind <- input$colourblind
-    common$meta$summary_study$x_min <- as.numeric(input$x_min)
-    common$meta$summary_study$x_max <- as.numeric(input$x_max)
     div(
       class = "svg_container",
       svg()

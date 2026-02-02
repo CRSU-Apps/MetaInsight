@@ -24,16 +24,8 @@ baseline_forest_module_server <- function(id, common, parent_session) {
 
       limits <- baseline_forest_limits(forest_data)
 
-      if (common$outcome == "Binary"){
-        min_step <- 0.01
-        max_step <- 1
-      } else {
-        min_step <- 0.1
-        max_step <- 0.1
-      }
-
-      updateNumericInput(session, "xmin", value = limits[1], step = min_step)
-      updateNumericInput(session, "xmax", value = limits[2], step = max_step)
+      updateNumericInput(session, "xmin", value = limits[1], step = format_step(limits[1]))
+      updateNumericInput(session, "xmax", value = limits[2], step = format_step(limits[2]))
 
     })
 

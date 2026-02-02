@@ -378,6 +378,18 @@ format_xlim <- function(x, limit, log.scale) {
   if (is.na(l) || !is.finite(l)) x else l
 }
 
+#' Calculate a sensible step value to use in numericInput
+#'
+#' @param x numeric. The value to create a step for
+#' @keywords internal
+#' @export
+format_step <- function(x){
+  y <- 10 ^ floor(log10(abs(x) / 10))
+  if (y == 0){
+    y <- 0.1
+  }
+  y
+}
 
 #' Crops an svg object, by rendering it, locating the non-white pixels and
 #' editing the svg viewBox property.

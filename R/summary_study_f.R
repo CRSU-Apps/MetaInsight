@@ -32,7 +32,8 @@ summary_study <- function(connected_data, freq, outcome_measure, plot_area_width
   }
 
   if (is.null(x_min) || is.null(x_max)){
-    min_max <- .FindMinMax(pairwise)
+    outcome <- ifelse(outcome_measure %in% c("OR", "RR", "RD"), "Binary", "Continuous")
+    min_max <- summary_study_min_max(pairwise, outcome)
     x_min <- min_max$x_min
     x_max <- min_max$x_max
   }
@@ -481,44 +482,18 @@ PairwiseTreatments <- function(pairwise, treatment_order) {
 #' Find the default minimum and maximum values for the x-axis and calculate
 #' a sensible step to use in the numeric input
 #' @param pairwise Results of pairwise analysis
-#' @return List containing:
-#'  \item{x_min}{numeric. Minimum value for the x-axis}
-#'  \item{x_max}{numeric. Maximum value for the x-axis}
-#'  \item{step}{numeric. Step value to use in numericInput}
-.FindMinMax <- function(pairwise){
-  x_min <- min(pairwise$TE - 1.96 * pairwise$seTE, na.rm = T)
-  x_max <- max(pairwise$TE + 1.96 * pairwise$seTE, na.rm = T)
-  x_ticks <- .FindXTicks(x_min, x_max)
-  increment <- x_ticks[2] - x_ticks[1]
-  step <- 10 ^ floor(log10(increment / 10))
-
-  x_min <- round(x_min, max(0, -log10(step)))
-  x_max <- round(x_max, max(0, -log10(step)))
-
-  list(x_min = x_min,
-       x_max = x_max,
-       step = step)
-}
-
-
-#' Find the default minimum and maximum values for the x-axis and calculate
-#' a sensible step to use in the numeric input
-#'
-#' @param connected_data dataframe. Uploaded data created by `setup_load()`
-#' @param freq list. Frequentist analysis produced by `setup_configure()` or `setup_exclude()`
-#' @return List containing:
-#'  \item{x_min}{numeric. Minimum value for the x-axis}
-#'  \item{x_max}{numeric. Maximum value for the x-axis}
-#'  \item{step}{numeric. Step value to use in numericInput}
-#'
+#' @return Vector of xmin and xmax
 #' @export
-summary_study_min_max <- function(connected_data, freq){
-  rob_data_frame <- unique(connected_data[, c("Study", FindRobNames(connected_data))])
-  if (!is.data.frame(rob_data_frame)) {
-    pairwise <- freq$d1
-  } else {
-    pairwise <- as.data.frame(merge(freq$d1, rob_data_frame, by = "Study"))
-  }
-  .FindMinMax(pairwise)
+summary_study_min_max <- function(pairwise, outcome){
+
+  log.scale <- ifelse(outcome == "Binary", TRUE, FALSE)
+
+  all_min <- (pairwise$TE - 1.96 * pairwise$seTE)
+  all_max <- (pairwise$TE + 1.96 * pairwise$seTE)
+
+  x_min <- format_xlim(min(all_min, na.rm = TRUE), "min", log.scale)
+  x_max <- format_xlim(max(all_max, na.rm = TRUE), "max", log.scale)
+
+  c(x_min, x_max)
 }
 
