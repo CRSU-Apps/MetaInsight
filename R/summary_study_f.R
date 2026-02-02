@@ -4,8 +4,10 @@
 #' @param plot_area_width numeric. The width of the plot area containing the
 #' treatment effects in inches. Defaults to `6`.
 #' @param colourblind logical. Whether to use a colourblind-friendly palette. Defaults to `FALSE`
-#' @param x_min numeric. Minimum value for the x-axis. Defaults to `NULL`
-#' @param x_max numeric. Maximum value for the x-axis. Defaults to `NULL`
+#' @param x_min numeric. Minimum value for the x-axis. Defaults to `NULL`. For binary outcomes
+#' values should be wrapped in `log()`
+#' @param x_max numeric. Maximum value for the x-axis. Defaults to `NULL`. For binary outcomes
+#' values should be wrapped in `log()`
 #' @inherit return-svg return
 #' @import graphics
 #' @export
@@ -34,8 +36,8 @@ summary_study <- function(connected_data, freq, outcome_measure, plot_area_width
   if (is.null(x_min) || is.null(x_max)){
     outcome <- ifelse(outcome_measure %in% c("OR", "RR", "RD"), "Binary", "Continuous")
     min_max <- summary_study_min_max(pairwise, outcome)
-    x_min <- min_max$x_min
-    x_max <- min_max$x_max
+    x_min <- min_max[1]
+    x_max <- min_max[2]
   }
 
   # need to check these after checking they are not NULL

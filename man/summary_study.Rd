@@ -29,9 +29,11 @@ treatment effects in inches. Defaults to \code{6}.}
 
 \item{colourblind}{logical. Whether to use a colourblind-friendly palette. Defaults to \code{FALSE}}
 
-\item{x_min}{numeric. Minimum value for the x-axis. Defaults to \code{NULL}}
+\item{x_min}{numeric. Minimum value for the x-axis. Defaults to \code{NULL}. For binary outcomes
+values should be wrapped in \code{log()}}
 
-\item{x_max}{numeric. Maximum value for the x-axis. Defaults to \code{NULL}}
+\item{x_max}{numeric. Maximum value for the x-axis. Defaults to \code{NULL}. For binary outcomes
+values should be wrapped in \code{log()}}
 
 \item{logger}{Stores all notification messages to be displayed in the Log
 Window. Insert the logger reactive list here for running in
