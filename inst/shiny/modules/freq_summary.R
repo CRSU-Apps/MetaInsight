@@ -63,26 +63,12 @@ freq_summary_module_server <- function(id, common, parent_session) {
 
   output$plot_all <- renderUI({
     req(svg_all())
-    div(class = "svg_container",
-        tags$button(
-          class = "height-toggle-btn",
-          onclick = "shinyjs.scrollingPlot(this)",
-          "↕ Allow Scrolling"
-        ),
-        tags$button(
-          class = "fullscreen-btn",
-          onclick = "shinyjs.fullscreenPlot(this.parentElement)",
-          "⤢"
-        ),
-        HTML(svg_all()$svg)
-    )
+    svg_container(HTML(svg_all()$svg), style = "max-width: 800px;")
   })
 
   output$plot_sub <- renderUI({
     req(svg_sub())
-    div(class = "svg_container",
-        HTML(svg_sub()$svg)
-        )
+    svg_container(HTML(svg_sub()$svg), style = "max-width: 800px;")
   })
 
   output$download_all <- downloadHandler(
@@ -109,10 +95,8 @@ freq_summary_module_result <- function(id) {
   ns <- NS(id)
   tagList(
     div(align = "center",
-      div(style = "max-width: 700px;",
-          uiOutput(ns("plot_all"))),
-      div(style = "max-width: 700px;",
-          uiOutput(ns("plot_sub")))
+      uiOutput(ns("plot_all")),
+      uiOutput(ns("plot_sub"))
     )
   )
 }

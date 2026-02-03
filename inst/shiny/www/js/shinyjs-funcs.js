@@ -78,8 +78,8 @@ shinyjs.scrollingPlot = function(button) {
   container.classList.toggle('allow-scroll');
 
   if (container.classList.contains('allow-scroll')) {
-    button.textContent = '↕ Limit Height';
+    button.textContent = '↕ Fit height';
   } else {
-    button.textContent = '↕ Allow Scrolling';
+    button.textContent = '↔ Full width';
   }
 }

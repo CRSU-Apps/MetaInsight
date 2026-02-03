@@ -209,10 +209,26 @@ hr {
   --bs-accordion-active-bg: #85bad4;
 }
 
+
+/* SVG plotting containers and fullscreen buttons */
+
+.svg_container {
+  width: 100%;
+  height: auto;
+  display: block;
+  overflow: hidden;
+  position: relative;
+}
+.svg_container svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
 .svg_container_ranking {
   display: flex;
   justify-content: center;
-  align-items: center;
+  position: relative;
   height: 100%;
   width: 100%;
   overflow: hidden; /* Prevents any potential overflow */
@@ -226,73 +242,62 @@ hr {
   object-fit: contain; /* This is key for maintaining aspect ratio */
 }
 
-    .svg_container {
-      width: 100%;
-      height: auto;
-      display: block;
-      overflow: hidden;
-      position: relative;
-    }
-    .svg_container svg {
-      width: 100%;
-      height: auto;
-      display: block;
-    }
-    .svg_container:fullscreen svg {
-      max-height: 100%;
-      object-fit: contain;
-    }
-    .svg_container.allow-scroll:fullscreen {
-      overflow: auto;
-    }
-    .svg_container.allow-scroll:fullscreen svg {
-      max-height: none;
-    }
-    .fullscreen-btn {
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      padding: 8px 12px;
-      background: rgba(0, 0, 0, 0.6);
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 14px;
-      z-index: 10;
-      transition: opacity 0.2s, background 0.2s;
-      opacity: 0;
-      pointer-events: none;
-    }
-    .svg_container:hover .fullscreen-btn,
-    .svg_container:fullscreen .fullscreen-btn {
-      opacity: 1;
-      pointer-events: auto;
-    }
-    .fullscreen-btn:hover {
-      background: rgba(0, 0, 0, 0.8);
-    }
-    .height-toggle-btn {
-      position: absolute;
-      top: 8px;
-      right: 120px;
-      padding: 8px 12px;
-      background: rgba(0, 0, 0, 0.6);
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 14px;
-      z-index: 10;
-      transition: background 0.2s;
-      display: none;
-    }
-    .height-toggle-btn:hover {
-      background: rgba(0, 0, 0, 0.8);
-    }
-    .svg_container:fullscreen .height-toggle-btn {
-      display: block;
-    }
+/* catch ranking containers too */
+[class^="svg_container"]:fullscreen svg {
+  max-height: 100%;
+  object-fit: contain;
+}
+[class^="svg_container"].allow-scroll:fullscreen {
+  overflow: auto;
+}
+[class^="svg_container"].allow-scroll:fullscreen svg {
+  max-height: none;
+}
+.fullscreen-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 8px 12px;
+  background: #005c8a;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  z-index: 10;
+  transition: opacity 0.2s, background 0.2s;
+  opacity: 0;
+  pointer-events: none;
+}
+[class^="svg_container"]:hover .fullscreen-btn,
+[class^="svg_container"]:fullscreen .fullscreen-btn {
+  opacity: 1;
+  pointer-events: auto;
+}
+.fullscreen-btn:hover {
+  background: #005c8a;
+}
+.height-toggle-btn {
+  position: absolute;
+  top: 8px;
+  right: 120px;
+  padding: 8px 12px;
+  background: #005c8a;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  z-index: 10;
+  transition: background 0.2s;
+  display: none;
+}
+.height-toggle-btn:hover {
+  background: #005c8a;
+}
+[class^="svg_container"]:fullscreen .height-toggle-btn {
+  display: block;
+}
 /* Display labels and input boxes inline */
 
 .inline_labels .form-group {

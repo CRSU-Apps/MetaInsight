@@ -459,6 +459,28 @@ crop_svg <- function(svg, margin = 10){
     height = bbox$height)
 }
 
+#' Put an svg in a container with buttons for fullscreen
+#'
+#' @param svg character. Output from `crop_svg()`
+#' @param class character. Class of the container default `svg_container`
+#' @param style character. Styles to add to the container
+#' @keywords internal
+#' @export
+svg_container <- function(svg, class = "svg_container", style = ""){
+  div(class = class, style = style,
+      tags$button(
+        class = "height-toggle-btn",
+        onclick = "shinyjs.scrollingPlot(this)",
+        "↔ Full width"
+      ),
+      tags$button(
+        class = "fullscreen-btn",
+        onclick = "shinyjs.fullscreenPlot(this.parentElement)",
+        "⤢"
+      ),
+      svg)
+}
+
 ####################### #
 # RESET DATA #
 ####################### #
