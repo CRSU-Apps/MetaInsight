@@ -7,7 +7,7 @@
 FormatForCreateTauSentence(model)
 }
 \arguments{
-\item{br_model}{Output from bnma::network.run.}
+\item{model}{Output from bnma::network.run.}
 }
 \value{
 List:

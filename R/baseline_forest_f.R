@@ -2,6 +2,7 @@
 #' @description Produce a forest plot for a baseline risk model using `bnma::network.forest.plot()`
 #' @param model model output produced by `baseline_model()`
 #' @param title character. Title for the plot. Defaults to `Baseline risk regression analysis`
+#' @param ranking logical. Whether the function is being used in `baseline_ranking`
 #' @inheritParams common_params
 #' @inherit return-svg return
 #' @export
@@ -101,7 +102,7 @@ format_baseline_forest <- function(median_ci_table, reference_treatment) {
 
 #' Put the output from a bnma model into the format of a gemtc model, in order to apply CreateTauSentence().
 #'
-#' @param br_model Output from bnma::network.run.
+#' @param model Output from bnma::network.run.
 #' @return List:
 #'  - 'sumresults' = List:
 #'    - 'summaries' = equivalent of summary(gemtc model)$summaries.

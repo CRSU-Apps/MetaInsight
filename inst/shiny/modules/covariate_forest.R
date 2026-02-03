@@ -84,7 +84,7 @@ covariate_forest_module_server <- function(id, common, parent_session) {
       watch("covariate_model_fit")
       req(common$covariate_model)
 
-      limits <- bayes_forest_limits(common$covariate_model, common$reference_treatment_all)
+      limits <- bayes_forest_limits(common$covariate_model)
 
       if (common$outcome == "Binary"){
         limits <- exp(limits)

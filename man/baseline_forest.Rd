@@ -25,6 +25,8 @@ baseline_forest(
 
 \item{title}{character. Title for the plot. Defaults to \verb{Baseline risk regression analysis}}
 
+\item{ranking}{logical. Whether the function is being used in \code{baseline_ranking}}
+
 \item{logger}{Stores all notification messages to be displayed in the Log
 Window. Insert the logger reactive list here for running in
 shiny, otherwise leave the default \code{NULL}}
