@@ -29,7 +29,7 @@ bayes_nodesplit_submodule_server <- function(id, common, nodesplit, run){
 
     output$plot <- renderUI({
       req(svg())
-      div(class = "svg_container",
+      svg_container(
         svg()
       )
     })

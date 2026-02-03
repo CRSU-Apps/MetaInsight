@@ -59,7 +59,7 @@ metaregression_forest_module_server <- function(id, common, run, xmin, xmax) {
 
     output$plot <- renderUI({
       req(svg())
-      div(class = "svg_container", style = "max-width: 800px;",
+      svg_container( style = "max-width: 800px;",
           svg()
       )
     })

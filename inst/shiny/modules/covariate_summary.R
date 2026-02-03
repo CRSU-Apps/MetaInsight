@@ -34,7 +34,7 @@ covariate_summary_module_server <- function(id, common, parent_session) {
     output$plot <- renderUI({
       watch("covariate_summary")
       req(common$covariate_summary_plot)
-      div(class = "svg_container", style = "max-width: 800px;",
+      svg_container( style = "max-width: 800px;",
           common$covariate_summary_plot
       )
     })

@@ -103,7 +103,8 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
 
     output$forest <- renderUI({
       req(forest_svg())
-      svg_container(class = "svg_container_ranking",
+      svg_container(
+        class = "svg_container_ranking",
         forest_svg()
       )
     })
@@ -132,9 +133,9 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
     output$ranking <- renderUI({
       req(ranking_svg())
       on.exit(shinyjs::show(selector = class))
-
-      div(class = "svg_container_ranking",
-          ranking_svg()
+      svg_container(
+        class = "svg_container_ranking",
+        ranking_svg()
       )
     })
 
@@ -163,8 +164,9 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
 
     output$network <- renderUI({
       req(network_svg())
-      svg_container(class = "svg_container_ranking",
-                    network_svg()
+      svg_container(
+        class = "svg_container_ranking",
+        network_svg()
       )
 
     })

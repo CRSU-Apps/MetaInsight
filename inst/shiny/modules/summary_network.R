@@ -69,7 +69,7 @@ summary_network_module_server <- function(id, common, parent_session) {
 
     output$plot_all <- renderUI({
       req(plot_all())
-      div(class = "svg_container",
+      svg_container(
         plot_all()
       )
     })
@@ -78,7 +78,7 @@ summary_network_module_server <- function(id, common, parent_session) {
 
     output$plot_sub <- renderUI({
       req(plot_sub())
-      div(class = "svg_container",
+      svg_container(
           plot_sub()
       )
     })

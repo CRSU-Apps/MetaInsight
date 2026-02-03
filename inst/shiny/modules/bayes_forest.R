@@ -47,7 +47,7 @@ bayes_forest_submodule_server <- function(id, common, model, run, xmin, xmax, ti
 
     output$plot <- renderUI({
       req(svg())
-      div(class = "svg_container",
+      svg_container(
           svg()
       )
     })

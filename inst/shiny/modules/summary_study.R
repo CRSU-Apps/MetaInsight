@@ -82,10 +82,7 @@ summary_study_module_server <- function(id, common, parent_session) {
 
   output$plot <- renderUI({
     req(svg())
-    div(
-      class = "svg_container",
-      svg()
-    )
+    svg_container(svg())
   })
 
   output$download <- downloadHandler(

@@ -33,7 +33,7 @@ baseline_summary_module_server <- function(id, common, parent_session) {
   output$plot <- renderUI({
     watch("baseline_summary")
     req(common$baseline_summary_plot)
-    div(class = "svg_container", style = "max-width: 800px;",
+    svg_container( style = "max-width: 800px;",
         common$baseline_summary_plot
     )
   })

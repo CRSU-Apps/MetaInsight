@@ -451,6 +451,10 @@ crop_svg <- function(svg, margin = 10){
   xml2::xml_attr(rect_node, "width") <- total_width
   xml2::xml_attr(rect_node, "height") <- total_height
 
+  # remove width and height
+  xml2::xml_set_attr(svg_node, "width", NULL)
+  xml2::xml_set_attr(svg_node, "height", NULL)
+
   # set namespace
   root <- xml2::xml_root(svg)
   xml2::xml_set_attr(root, "xmlns", "http://www.w3.org/2000/svg")

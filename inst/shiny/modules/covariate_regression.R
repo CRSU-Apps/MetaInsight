@@ -214,7 +214,7 @@ metaregression_regression_module_server <- function(id, common) {
 
     output$plot <- renderUI({
       req(svg())
-      div(class = "svg_container", style = "max-width: 1200px;",
+      svg_container( style = "max-width: 1200px;",
         svg()
       )
     })
