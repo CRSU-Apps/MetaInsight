@@ -63,16 +63,12 @@ freq_summary_module_server <- function(id, common, parent_session) {
 
   output$plot_all <- renderUI({
     req(svg_all())
-    div(class = "svg_container",
-        svg_all()
-    )
+    svg_container(svg_all(), style = "max-width: 800px;")
   })
 
   output$plot_sub <- renderUI({
     req(svg_sub())
-    div(class = "svg_container",
-        svg_sub()
-    )
+    svg_container(svg_sub(), style = "max-width: 800px;")
   })
 
   output$download_all <- downloadHandler(
@@ -99,10 +95,8 @@ freq_summary_module_result <- function(id) {
   ns <- NS(id)
   tagList(
     div(align = "center",
-      div(style = "max-width: 700px;",
-          uiOutput(ns("plot_all"))),
-      div(style = "max-width: 700px;",
-          uiOutput(ns("plot_sub")))
+      uiOutput(ns("plot_all")),
+      uiOutput(ns("plot_sub"))
     )
   )
 }

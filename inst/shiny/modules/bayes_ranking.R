@@ -103,7 +103,7 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
 
     output$forest <- renderUI({
       req(forest_svg())
-      div(class = "svg_container_ranking",
+      svg_container(class = "svg_container_ranking",
         forest_svg()
       )
     })
@@ -163,8 +163,8 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
 
     output$network <- renderUI({
       req(network_svg())
-      div(class = "svg_container_ranking",
-          network_svg()
+      svg_container(class = "svg_container_ranking",
+                    network_svg()
       )
 
     })

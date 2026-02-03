@@ -14,7 +14,8 @@ tagList(
       shinyjs::useShinyjs(),
       shinyjs::extendShinyjs(
         script = file.path("resources", "js", "shinyjs-funcs.js"),
-        functions = c("scrollLogger", "disableModule", "enableModule", "runOnEnter")
+        functions = c("scrollLogger", "disableModule", "enableModule", "runOnEnter",
+                      "fullscreenPlot", "fullscreenLabel", "scrollingPlot")
       ),
       tags$link(href = "css/styles.css", rel = "stylesheet"),
       includeHTML(file.path(resourcePath, "favicon", "favicon.html")),
