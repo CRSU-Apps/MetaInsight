@@ -279,13 +279,14 @@ test_that("1. BaselineRiskRegression() sets RNGs correctly;
   expected_centred_intercepts <- summary_1$summary.samples$quantiles[c("d[2]", "d[3]", "d[4]", "d[5]", "d[6]"), "50%"]
   expected_intercepts <- expected_centred_intercepts - expected_slopes * expected_covariate_value
   names(expected_intercepts) <- expected_comparator_names
+  expected_outcome <- "Continuous"
   expected_outcome_measure <- "MD"
   expected_effects_type <- "random"
   expected_covariate_min <- c(-1, -1, -1.4, -1.4, NA)
   names(expected_covariate_min) <- expected_comparator_names
   expected_covariate_max <- c(-1, -1, -1.4, -1.4, NA)
   names(expected_covariate_max) <- expected_comparator_names
-  expected_dic <- c(8.34347465810339, 7.33645461865518, 15.6799292767586, 9) |> as.data.frame()
+  expected_dic <- c(8.33979715193098, 7.3344123200321, 15.6742094719631, 9) |> as.data.frame()
   rownames(expected_dic) <- c("Dbar", "pD", "DIC", "Data points")
   colnames(expected_dic) <- "BaselineRiskDicTable(model)"
   expected_summary <- summary_1
@@ -301,6 +302,7 @@ test_that("1. BaselineRiskRegression() sets RNGs correctly;
     cov_value_sentence = expected_cov_value_sentence,
     slopes = expected_slopes,
     intercepts = expected_intercepts,
+    outcome = expected_outcome,
     outcome_measure = expected_outcome_measure,
     model = expected_effects_type,
     covariate_min = expected_covariate_min,

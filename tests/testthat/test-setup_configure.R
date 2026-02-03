@@ -44,7 +44,7 @@ test_that("setup_configure loads data into common correctly for continuous long 
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"))
   app$set_inputs(tabs = "setup")
   app$set_inputs(setupSel = "setup_load")
-  app$upload_file("setup_load-file1" = "data/Cont_long_continuous_cov.csv")
+  app$upload_file("setup_load-file1" = file.path(test_data_dir, "Cont_long_continuous_cov.csv"))
   app$click("setup_load-run")
   app$set_inputs(setupSel = "setup_configure")
   app$click("setup_configure-run")
