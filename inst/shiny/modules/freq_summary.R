@@ -66,12 +66,12 @@ freq_summary_module_server <- function(id, common, parent_session) {
     div(class = "svg_container",
         tags$button(
           class = "height-toggle-btn",
-          onclick = "toggleHeight(this)",
+          onclick = "shinyjs.scrollingPlot(this)",
           "↕ Allow Scrolling"
         ),
         tags$button(
           class = "fullscreen-btn",
-          onclick = "toggleFullscreen(this.parentElement)",
+          onclick = "shinyjs.fullscreenPlot(this.parentElement)",
           "⤢"
         ),
         HTML(svg_all()$svg)

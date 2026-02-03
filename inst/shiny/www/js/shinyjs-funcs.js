@@ -62,3 +62,24 @@ shinyjs.runOnEnter = function(params) {
     }
   });
 }
+
+shinyjs.fullscreenPlot = function(element) {
+  if (!document.fullscreenElement) {
+    element.requestFullscreen().catch(err => {
+      console.error('Error attempting to enable fullscreen:', err);
+    });
+  } else {
+    document.exitFullscreen();
+  }
+}
+
+shinyjs.scrollingPlot = function(button) {
+  const container = button.parentElement;
+  container.classList.toggle('allow-scroll');
+
+  if (container.classList.contains('allow-scroll')) {
+    button.textContent = '↕ Limit Height';
+  } else {
+    button.textContent = '↕ Allow Scrolling';
+  }
+}

@@ -14,7 +14,7 @@ tagList(
       shinyjs::useShinyjs(),
       shinyjs::extendShinyjs(
         script = file.path("resources", "js", "shinyjs-funcs.js"),
-        functions = c("scrollLogger", "disableModule", "enableModule", "runOnEnter")
+        functions = c("scrollLogger", "disableModule", "enableModule", "runOnEnter", "fullscreenPlot", "scrollingPlot")
       ),
       tags$link(href = "css/styles.css", rel = "stylesheet"),
       includeHTML(file.path(resourcePath, "favicon", "favicon.html")),
@@ -23,28 +23,6 @@ tagList(
       tags$meta(property="og:title", content="Meta Insight: v7.0.0"),
       tags$meta(property="og:description", content="An interactive web tool for network meta-analysis (NMA) that leverages established analysis routines"),
       tags$meta(property="og:image", content="https://raw.githubusercontent.com/CRSU-Apps/MetaInsight/main/www/images/MetaInsightLogo.png"),
-      tags$script(HTML("
-    function toggleFullscreen(element) {
-      if (!document.fullscreenElement) {
-        element.requestFullscreen().catch(err => {
-          console.error('Error attempting to enable fullscreen:', err);
-        });
-      } else {
-        document.exitFullscreen();
-      }
-    }
-
-    function toggleHeight(button) {
-      const container = button.parentElement;
-      container.classList.toggle('allow-scroll');
-
-      if (container.classList.contains('allow-scroll')) {
-        button.textContent = '↕ Limit Height';
-      } else {
-        button.textContent = '↕ Allow Scrolling';
-      }
-    }
-  ")),
       core_analytics_module_ui("core_analytics")
       ),
     title = img(src = "logo.png", height = "40"),
