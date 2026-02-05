@@ -2,30 +2,26 @@
 #' @description Creates a plot of baselink risk for each study arm
 #' @param connected_data dataframe. Input data set created by `setup_configure()` or `setup_exclude`
 #' @param treatment_df dataframe containing the treatment ID ('Number') and the treatment name ('Label').
-#' @param outcome character. The type of outcome being measured either `Continuous` or `Binary`
+#' @param outcome character. The type of outcome being measured either `continuous` or `binary`
 #' @param logger Stores all notification messages to be displayed in the Log
 #'   Window. Insert the logger reactive list here for running in
 #'   shiny, otherwise leave the default NULL
 #' @inherit return-svg return
 #' @import ggplot2
 #' @export
-baseline_summary <- function(connected_data, outcome, treatment_df, logger = NULL){
+baseline_summary <- function(configured_data, logger = NULL){
 
-  check_param_classes(c("connected_data", "outcome", "treatment_df"),
-                      c("data.frame", "character", "data.frame"), logger)
+  check_param_classes(c("configured_data"),
+                      c("configured_data"), logger)
 
-  if (!outcome %in% c("Binary", "Continuous")){
-    logger |> writeLog(type = "error", "outcome must be 'Binary' or 'Continuous'")
-    return()
+  # connected_data, outcome, treatment_df
+  if (FindDataShape(configured_data$connected_data) == "wide") {
+    long_data <- as.data.frame(WideToLong(configured_data$connected_data, outcome = configured_data$outcome))
+  } else if (FindDataShape(configured_data$connected_data) == "long") {
+    long_data <- configured_data$connected_data
   }
 
-  if (FindDataShape(connected_data) == "wide") {
-    long_data <- as.data.frame(WideToLong(connected_data, outcome = outcome))
-  } else if (FindDataShape(connected_data) == "long") {
-    long_data <- connected_data
-  }
-
-  if (outcome == "Continuous") {
+  if (configured_data$outcome == "continuous") {
 
     # Add baseline column that is the mean value and
     # baseline_error column that is 1.96 * SD / sqrt(N)
@@ -43,7 +39,7 @@ baseline_summary <- function(connected_data, outcome, treatment_df, logger = NUL
     # Error bar text for continuous outcomes
     error_bar_text <- "Error bars: mean +/- 1.96 * SD / sqrt(N)"
 
-  } else if (outcome == "Binary") {
+  } else if (configured_data$outcome == "binary") {
 
     # Use escalc function with the logit transformed proportion (PLO) measure
     effects <- metafor::escalc(measure = "PLO", xi = long_data$R, ni = long_data$N)
@@ -73,7 +69,7 @@ baseline_summary <- function(connected_data, outcome, treatment_df, logger = NUL
   # Add column with treatment labels
   # x$ and y$ syntax is used instead of .data$ as they are in different df
   mutated_data <- mutated_data |>
-    dplyr::inner_join(treatment_df, by = dplyr::join_by(x$T == y$Number))
+    dplyr::inner_join(configured_data$treatments, by = dplyr::join_by(x$T == y$Number))
 
   # Convert tibble created by dplyr to df
   BUGSnet_df <- as.data.frame(mutated_data)
@@ -94,7 +90,7 @@ baseline_summary <- function(connected_data, outcome, treatment_df, logger = NUL
   plot <- plot +
     labs(caption = PasteCaptionText("baseline risk", error_bar_text))
 
-  if (outcome == "Binary") {
+  if (configured_data$outcome == "binary") {
 
     # Plot in logit scale, label on probability scale
     plot <- plot +

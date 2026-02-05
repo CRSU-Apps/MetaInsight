@@ -6,17 +6,18 @@
 #' @inheritParams common_params
 #' @inherit return-svg return
 #' @export
-baseline_forest <- function(model, treatment_df, xmin = NULL, xmax = NULL, title = "Baseline risk regression analysis", ranking = FALSE, logger = NULL){
+baseline_forest <- function(model, xmin = NULL, xmax = NULL, title = "Baseline risk regression analysis", ranking = FALSE, logger = NULL){
 
-  check_param_classes(c("treatment_df", "title", "ranking"),
-                      c("data.frame", "character", "logical"), logger)
+  check_param_classes(c("title", "ranking"),
+                      c("character", "logical"), logger)
 
   if (!inherits(model, "baseline_model")){
     logger |> writeLog(type = "error", "model must be an object created by baseline_model()")
     return()
   }
 
-  height <- forest_height(nrow(treatment_df), annotation = TRUE, title = TRUE)
+  n_treatments <- max(bas$mtcResults$network$Treat)
+  height <- forest_height(n_treatments, annotation = TRUE, title = TRUE)
   width <- forest_width(14)
 
   median_ci_table <- bnma::relative.effects.table(model$mtcResults, summary_stat = "ci")
@@ -118,7 +119,7 @@ FormatForCreateTauSentence <- function(model){
       sumresults = list(
         summaries = br_summary$summaries
       ),
-      model_type = model$mtcResults$network$type,
+      effects = model$mtcResults$network$type,
       outcome = model$outcome_measure
     )
   )

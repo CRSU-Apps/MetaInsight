@@ -6,10 +6,10 @@
 #' @inheritParams common_params
 #' @inherit return-svg return
 #' @export
-bayes_forest <- function(model, treatment_df, xmin = NULL, xmax = NULL, title = "", ranking = FALSE, logger = NULL){
+bayes_forest <- function(model, xmin = NULL, xmax = NULL, title = "", ranking = FALSE, logger = NULL){
 
-  check_param_classes(c("treatment_df", "title", "ranking"),
-                      c("data.frame", "character", "logical"), logger)
+  check_param_classes(c("title", "ranking"),
+                      c("character", "logical"), logger)
 
   if (!inherits(model, "bayes_model")){
     logger |> writeLog(type = "error", "model must be an object created by bayes_model() or covariate_model()")
@@ -30,7 +30,8 @@ bayes_forest <- function(model, treatment_df, xmin = NULL, xmax = NULL, title = 
     return()
   }
 
-  height <- forest_height(nrow(treatment_df), title = TRUE, annotation = TRUE)
+  n_treatments <- length(unique(model$mtcResults$model$network$treatments$id))
+  height <- forest_height(n_treatments, title = TRUE, annotation = TRUE)
   width <- forest_width(14 + nchar(model$reference_treatment))
 
   svg <- svglite::xmlSVG({

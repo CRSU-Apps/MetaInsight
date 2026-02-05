@@ -3,29 +3,20 @@
 #' @inheritParams common_params
 #' @return Ranking table created by `netmeta::netleague()`
 #' @export
-freq_compare <- function(freq, model_type, ranking_option, logger = NULL) {
+freq_compare <- function(configured_data, logger = NULL) {
 
-  check_param_classes(c("freq", "model_type", "ranking_option"),
-                      c("list", "character", "character"), logger)
+  check_param_classes(c("configured_data"),
+                      c("configured_data"), logger)
 
-  if (!model_type %in% c("fixed", "random")){
-    logger |> writeLog(type = "error", "model_type must be 'fixed' or 'random'")
-    return()
-  }
+  league <- netmeta::netleague(configured_data$freq$net1, random = (configured_data$effects == "random"),
+                               common = (configured_data$effects == "fixed"), digits = 2,
+                               seq = netmeta::netrank(configured_data$freq$net1,
+                                                      small = configured_data$ranking_option))
 
-  if (!ranking_option %in% c("good", "bad")){
-    logger |> writeLog(type = "error", "ranking_option must be 'good' or 'bad'")
-    return()
-  }
-
-  league <- netmeta::netleague(freq$net1, random = (model_type == "random"),
-                               common = (model_type == "fixed"), digits = 2,
-                               seq = netmeta::netrank(freq$net1, small = ranking_option))
-
-  if (model_type == "random") {
+  if (configured_data$effects == "random") {
     league_df <- as.data.frame(league$random)
   }
-  if (model_type == "fixed") {
+  if (configured_data$effects == "fixed") {
     league_df <- as.data.frame(league$fixed)
   }
 

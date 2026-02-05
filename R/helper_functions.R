@@ -324,7 +324,7 @@ download_button_pair <- function(id){
 #' @export
 CreateTauSentence <- function(model) {
   sumresults <- model$sumresults
-  if (model$model_type == "random") {   #SD and its 2.5% and 97.5%
+  if (model$effects == "random") {   #SD and its 2.5% and 97.5%
     sd_mean <- round(sumresults$summaries$statistics["sd.d", "Mean"], digits = 2)
     sd_lowCI <- round(sumresults$summaries$quantiles["sd.d", "2.5%"], digits = 2)
     sd_highCI <- round(sumresults$summaries$quantiles["sd.d", "97.5%"], digits = 2)
@@ -333,7 +333,7 @@ CreateTauSentence <- function(model) {
     sd_lowCI <- 0
     sd_highCI <- 0
   }
-  if (model$model_type=="random") {
+  if (model$effects=="random") {
     if (model$outcome=="OR") {
       paste("Between-study standard deviation (log-odds scale):", sd_mean, "\n 95% credible interval:", sd_lowCI, ",", sd_highCI)
     } else if (model$outcome=="RR") {

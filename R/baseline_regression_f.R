@@ -9,22 +9,26 @@
 #'  \item{directness}{list. Output from `CalculateDirectness()`}
 #'  \item{credible_regions}{list. Output from `CalculateCredibleRegions()`}
 #' @export
-baseline_regression <- function(model,
-                                 connected_data,
-                                 covariate_title = "covar.baseline_risk",
-                                 treatment_df,
-                                 outcome,
-                                 outcome_measure,
-                                 model_type,
-                                 async = FALSE){
+baseline_regression <- function(model, configured_data, async = FALSE){
 
-  if (FindDataShape(connected_data) == "wide") {
-    connected_data <- WideToLong(connected_data, outcome = outcome)
+  if (!async){ # only an issue if run outside the app
+    if (check_param_classes(c("model", "configured_data"),
+                            c("baseline_model", "configured_data"), NULL)){
+      return()
+    }
   }
 
-  reference_outcome <- GetReferenceOutcome(connected_data, treatment_df, outcome, "Imputed", model)
+  if (FindDataShape(configured_data$connected_data) == "wide") {
+    connected_data <- WideToLong(configured_data$connected_data, outcome = outcome)
+  }
 
-  data_with_covariates_removed <- dplyr::select(connected_data, !dplyr::starts_with("covar."))
+  reference_outcome <- GetReferenceOutcome(configured_data$connected_data,
+                                           configured_data$treatments,
+                                           configured_data$outcome,
+                                           "Imputed",
+                                           model)
+
+  data_with_covariates_removed <- dplyr::select(configured_data$connected_data, !dplyr::starts_with("covar."))
   data_with_covariate <- merge(data_with_covariates_removed,
                                data.frame(Study = names(reference_outcome),
                                           covar.baseline_risk = reference_outcome,
@@ -34,17 +38,20 @@ baseline_regression <- function(model,
 
   directness <- CalculateDirectness(
     data = data_with_covariate,
-    covariate_title = covariate_title,
-    treatment_ids = treatment_df,
-    outcome = outcome,
-    outcome_measure = outcome_measure,
-    effects_type = model_type)
+    covariate_title = "covar.baseline_risk",
+    treatment_ids = configured_data$treatments,
+    outcome = configured_data$outcome,
+    outcome_measure = configured_data$outcome_measure,
+    effects_type = configured_data$effects)
 
   credible_regions <- CalculateCredibleRegionsBnma(model)
 
-  list(directness = directness,
-       credible_regions = credible_regions)
+  output <- list(
+    directness = directness,
+    credible_regions = credible_regions)
 
+  class(output) <- "regression_data"
+  output
 }
 
 

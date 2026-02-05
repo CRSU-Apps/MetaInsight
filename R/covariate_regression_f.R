@@ -9,32 +9,37 @@
 #'  \item{credible_regions}{list. Output from `CalculateCredibleRegions()`}
 #' @export
 covariate_regression <- function(model,
-                                 connected_data,
-                                 covariate_column,
-                                 treatment_df,
-                                 outcome,
-                                 outcome_measure,
-                                 model_type,
+                                 configured_data,
                                  async = FALSE){
 
+  if (!async){ # only an issue if run outside the app
+    if (check_param_classes(c("model", "configured_data"),
+                            c("covariate_model", "configured_data"), NULL)){
+      return()
+    }
+  }
   # need to look this up
   # cov_parameters <- model_output$mtcResults$model$regressor$coefficient
 
-  if (FindDataShape(connected_data) == "wide") {
-    connected_data <- WideToLong(connected_data, outcome = outcome)
+  if (FindDataShape(configured_data$connected_data) == "wide") {
+    connected_data <- WideToLong(configured_data$connected_data, outcome = configured_data$outcome)
   }
   directness <- CalculateDirectness(
-    data = connected_data,
-    covariate_title = covariate_column,
-    treatment_ids = treatment_df,
-    outcome = outcome,
-    outcome_measure = outcome_measure,
-    effects_type = model_type)
+    data = configured_data$connected_data,
+    covariate_title = configured_data$covariate$column,
+    treatment_ids = configured_data$treatments,
+    outcome = configured_data$outcome,
+    outcome_measure = configured_data$outcome_measure,
+    effects_type = configured_data$effects)
 
   credible_regions <- CalculateCredibleRegions(model)
 
-  list(directness = directness,
-       credible_regions = credible_regions)
+  output <- list(
+    directness = directness,
+    credible_regions = credible_regions)
+
+  class(output) <- "regression_data"
+  output
 }
 
 
@@ -43,7 +48,7 @@ covariate_regression <- function(model,
 #' @param data Input data in long format.
 #' @param covariate_title Title of covariate column in data. Enter NULL if there is no covariate.
 #' @param treatment_ids Data frame containing treatment IDs and names in columns named 'Number' and 'Label' respectively.
-#' @param outcome "Continuous" or "Binary".
+#' @param outcome "continuous" or "binary".
 #' @param outcome_measure "MD", "OR", "RR" or "RD".
 #' @param effects_type "fixed" or "random".
 #' @return List of contributions:
@@ -61,12 +66,12 @@ CalculateDirectness <- function(
     outcome_measure,
     effects_type) {
 
-  if (outcome == "Binary") {
+  if (outcome == "binary") {
     d0 <- meta::pairwise(treat = data$T, event = data$R, studlab = data$Study, n = data$N, sm = outcome_measure, data = data)
-  } else if (outcome == "Continuous") {
+  } else if (outcome == "continuous") {
     d0 <- meta::pairwise(treat = data$T, mean = data$Mean, sd = data$SD, studlab = data$Study, n = data$N, sm = outcome_measure, data = data)
   } else {
-    stop(glue::glue("Outcome type '{outcome}' is not supported. Please use 'Binary' or 'Continuous'"))
+    stop(glue::glue("Outcome type '{outcome}' is not supported. Please use 'binary' or 'continuous'"))
   }
 
   #Switch the treatment effects to match the rest of the app.

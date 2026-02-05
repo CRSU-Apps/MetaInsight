@@ -19,24 +19,18 @@
 #'  \item{sumresults}{Output of summary(model)}
 #'  \item{regressor}{regressor_type}
 #' @export
-baseline_model <- function(connected_data, treatment_df, outcome, outcome_measure, reference_treatment, model_type, regressor_type, seed, async = FALSE){
+baseline_model <- function(configured_data, regressor_type, async = FALSE){
+
+  # connected_data, treatment_df, outcome, outcome_measure, reference_treatment, model_type, regressor_type, seed,
 
   if (!async){ # only an issue if run outside the app
-    if (check_param_classes(c("connected_data", "treatment_df", "outcome", "outcome_measure", "model_type",  "reference_treatment", "regressor_type", "seed"),
-                            c("data.frame", "data.frame", "character", "character", "character", "character", "character", "numeric"), NULL)){
+    if (check_param_classes(c("configured_data", "regressor_type"),
+                            c("configured_data", "character"), NULL)){
       return()
     }
   }
 
-  if (!outcome %in% c("Binary", "Continuous")){
-    return(async |> asyncLog(type = "error", "outcome must be 'Binary' or 'Continuous'"))
-  }
-
-  if (!model_type %in% c("fixed", "random")){
-    return(async |> asyncLog(type = "error", "model_type must be 'fixed' or 'random'"))
-  }
-
-  if (!outcome_measure %in% c("OR", "RR", "MD")){
+  if (!configured_data$outcome_measure %in% c("OR", "RR", "MD")){
     return(async |> asyncLog(type = "error", "outcome_measure must be 'OR', 'RR' or 'MD'"))
   }
 
@@ -44,15 +38,18 @@ baseline_model <- function(connected_data, treatment_df, outcome, outcome_measur
     return(async |> asyncLog(type = "error", "regressor_type must be 'shared', 'unrelated', or 'exchangeable'"))
   }
 
-  if (!reference_treatment %in% treatment_df$Label){
-    return(async |> asyncLog(type = "error", "reference_treatment must be one of the treatments in treatment_df"))
-  }
 
   model <- suppress_jags_output(
-    BaselineRiskRegression(connected_data, treatment_df, outcome, reference_treatment, model_type, regressor_type, seed)
+    BaselineRiskRegression(configured_data$connected_data,
+                           configured_data$treatments,
+                           configured_data$outcome,
+                           configured_data$reference_treatment,
+                           configured_data$effects,
+                           regressor_type,
+                           configured_data$seed)
   )
 
-  output <- BaselineRiskModelOutput(connected_data, treatment_df, model, outcome_measure)
+  output <- BaselineRiskModelOutput(configured_data$connected_data, configured_data$treatments, model, configured_data$outcome_measure)
 
   # store this to avoid conversion later
   output$regressor <- regressor_type
@@ -65,10 +62,10 @@ baseline_model <- function(connected_data, treatment_df, outcome, outcome_measur
 #'
 #' @param connected_data A data frame of data in MetaInsight format
 #' @param treatment_df Data frame containing treatment IDs and names in columns named 'Number' and 'Label' respectively
-#' @param outcome "Continuous" or "Binary"
+#' @param outcome "continuous" or "binary"
 #' @param reference_treatment An element of treatment_df$Label, the reference treatment.
 #' @return List:
-#'  - 'ArmLevel' = Data frame containing 'Study', 'Treat', 'N', 'Outcomes', and (for outcome_type="Continuous") 'SD'
+#'  - 'ArmLevel' = Data frame containing 'Study', 'Treat', 'N', 'Outcomes', and (for outcome_type="continuous") 'SD'
 #'  - 'Treat.order' = Vector of (unique) treatments, with the reference treatment first
 FormatForBnma <- function(connected_data, treatment_df, outcome, reference_treatment) {
   if (FindDataShape(connected_data) == "wide") {
@@ -86,14 +83,14 @@ FormatForBnma <- function(connected_data, treatment_df, outcome, reference_treat
   Treat.order <- VectorWithItemFirst(vector = unique(br_data$Treat), first_item = reference_treatment)
 
   #Arm-level data
-  if (outcome == "Binary") {
+  if (outcome == "binary") {
     ArmLevel <- dplyr::rename(br_data, "Outcomes" = "R")
     ArmLevel <- dplyr::select(ArmLevel, c("Study", "Treat", "Outcomes", "N"))
-  } else if (outcome == "Continuous") {
+  } else if (outcome == "continuous") {
     ArmLevel <- dplyr::rename(br_data, "Outcomes" = "Mean")
     ArmLevel <- dplyr::select(ArmLevel, c("Study", "Treat", "Outcomes", "SD", "N"))
   } else {
-    stop("outcome_type has to be 'Continuous' or 'Binary'")
+    stop("outcome_type has to be 'continuous' or 'binary'")
   }
 
   return(list(ArmLevel = ArmLevel, Treat.order = Treat.order))
@@ -104,7 +101,7 @@ FormatForBnma <- function(connected_data, treatment_df, outcome, reference_treat
 #' Creates the baseline risk meta-regression network in \CRANpkg{bnma}
 #'
 #' @param br_data A list of data in the format produced by `FormatForBnma()`.
-#' @param outcome "Continuous" or "Binary".
+#' @param outcome "continuous" or "binary".
 #' @param model_type "fixed" or "random".
 #' @param cov_parameters "shared", "exchangable", or "unrelated".
 #' @return Output from bnma::network.data().
@@ -118,7 +115,7 @@ BaselineRiskNetwork <- function(br_data, outcome, model_type, cov_parameters) {
     stop("cov_parameters must be 'shared', 'exchangeable', or 'unrelated'")
   }
 
-  if(outcome == "Binary") {
+  if(outcome == "binary") {
     network <- with(br_data, bnma::network.data(Outcomes = ArmLevel$Outcomes,
                                                 Study = ArmLevel$Study,
                                                 Treat = ArmLevel$Treat,
@@ -129,7 +126,7 @@ BaselineRiskNetwork <- function(br_data, outcome, model_type, cov_parameters) {
                                                 baseline = cov_parameters,
                                                 baseline.risk = "independent"))
   }
-  if(outcome == "Continuous") {
+  if(outcome == "continuous") {
     network <- with(br_data, bnma::network.data(Outcomes = ArmLevel$Outcomes,
                                                 Study = ArmLevel$Study,
                                                 Treat = ArmLevel$Treat,
@@ -149,7 +146,7 @@ BaselineRiskNetwork <- function(br_data, outcome, model_type, cov_parameters) {
 #'
 #' @param connected_data A data frame of data in MetaInsight format.
 #' @param treatment_df Data frame containing treatment IDs and names in columns named 'Number' and 'Label' respectively.
-#' @param outcome "Continuous" or "Binary".
+#' @param outcome "continuous" or "binary".
 #' @param reference_treatment treatment An element of treatment_df$Label, the .
 #' @param model_type "fixed" or "random".
 #' @param cov_parameters "shared", "exchangable", or "unrelated".
@@ -242,9 +239,9 @@ BaselineRiskModelOutput <- function(connected_data, treatment_df, model, outcome
 
   #Convert bnma outcome type into MetaInsight language
   if (model$network$response == "binomial") {
-    outcome <- "Binary"
+    outcome <- "binary"
   } else if (model$network$response == "normal") {
-    outcome <- "Continuous"
+    outcome <- "continuous"
   }
 
   min_max <- FindCovariateRanges(
@@ -276,7 +273,7 @@ BaselineRiskModelOutput <- function(connected_data, treatment_df, model, outcome
               intercepts = intercepts,
               outcome = outcome,
               outcome_measure = outcome_measure,
-              model = model$network$type,
+              effects = model$network$type,
               covariate_min = min_max$min,
               covariate_max = min_max$max,
               dic = dic,

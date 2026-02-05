@@ -19,7 +19,7 @@
 #' \item{lev_plot}{plotly object}
 #'
 #' @export
-bayes_deviance <- function(model, seed = NULL, async = FALSE){
+bayes_deviance <- function(model, async = FALSE){
 
   if (!inherits(model, "bayes_model")){
     return(async |> asyncLog(type = "error", "model must be an object created by bayes_model() or covariate_model()"))
@@ -38,12 +38,7 @@ bayes_deviance <- function(model, seed = NULL, async = FALSE){
     )
   }
 
-  # check a seed exists and produce the scatter plot for non-covariate models
-  if (is.null(seed) || !is.numeric(seed)){
-    return(async |> asyncLog(type = "error", "Please provide a numeric seed value"))
-  }
-
-  scat <- scat_plot(model, deviance, model$model_type, model$outcome_measure, seed)
+  scat <- scat_plot(model, deviance, model$effects, model$outcome_measure, model$seed)
 
   list(
     deviance_mtc = deviance,

@@ -1,4 +1,4 @@
-#' Produce inconsistency tables
+#' Produce inconsistency tables using `netmeta::netsplit()`
 #'
 #' @inheritParams common_params
 #'
@@ -13,22 +13,17 @@
 #'  - 'Diff_95CI_upper': 97.5% limit of difference in treatment effects.
 #'  - 'pValue': p-value for test of "difference in treatment effects == 0".
 #' @export
-freq_inconsistent <- function(freq, model_type, logger = NULL) {
+freq_inconsistent <- function(configured_data, logger = NULL) {
 
-  check_param_classes(c("freq", "model_type"),
-                      c("list", "character"), logger)
+  check_param_classes(c("configured_data"),
+                      c("configured_data"), logger)
 
-  if (!model_type %in% c("fixed", "random")){
-    logger |> writeLog(type = "error", "model_type must be 'fixed' or 'random'")
-    return()
-  }
-
-  incona <- netmeta::netsplit(freq$net1)
+  incona <- netmeta::netsplit(configured_data$freq$net1)
 
   Comparison <- incona$comparison
   No.Studies <- as.integer(incona$k)
 
-  if (model_type == "random") {
+  if (configured_data$effects == "random") {
     Direct <- incona$direct.random$TE
     Indirect <- incona$indirect.random$TE
     Difference <- incona$compare.random$TE
@@ -37,7 +32,7 @@ freq_inconsistent <- function(freq, model_type, logger = NULL) {
     NMA <- incona$random$TE
     pValue <- incona$compare.random$p
   }
-  if (model_type == "fixed") {
+  if (configured_data$effects == "fixed") {
     Direct <- incona$direct.fixed$TE
     Indirect <- incona$indirect.fixed$TE
     Difference <- incona$compare.fixed$TE

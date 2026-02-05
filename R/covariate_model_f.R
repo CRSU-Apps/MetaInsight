@@ -4,7 +4,7 @@
 #' than or equal to the minimum value and less than or equal to the maximum
 #' value in `connected_data`
 #' @param regressor_type character. Type of regression coefficient, either `shared`, `unrelated`, or `exchangeable`
-#' @param covariate_type character. Whether the covariate values are `Continuous` or `Binary`
+#' @param covariate_type character. Whether the covariate values are `continuous` or `binary`
 #' @param covariate_model_output list. The output of the function. Default `NULL`.
 #' When supplied, only the output is recalculated for a given covariate value,
 #' rather than refitting the model.
@@ -28,55 +28,34 @@
 #'  \item{covariate_min}{Vector of minimum covariate values directly contributing to the regression}
 #'  \item{covariate_max}{Vector of maximum covariate values directly contributing to the regression}
 #' @export
-covariate_model <- function(connected_data,
-                            treatment_df,
-                            outcome,
-                            outcome_measure,
+covariate_model <- function(configured_data,
                             covariate_value,
-                            model_type,
                             regressor_type,
-                            covariate_type,
-                            reference_treatment,
-                            seed,
                             covariate_model_output = NULL,
                             async = FALSE){
 
   if (!async){ # only an issue if run outside the app
-    if (check_param_classes(c("connected_data", "treatment_df", "outcome", "outcome_measure", "covariate_value",
-                              "model_type",  "reference_treatment", "regressor_type", "covariate_type", "seed"),
-                            c("data.frame", "data.frame", "character", "character", "numeric",
-                              "character", "character", "character", "character", "numeric"), NULL)){
+    if (check_param_classes(c("configured_data", "covariate_value", "regressor_type"),
+                            c("configured_data", "numeric", "character"), NULL)){
       return()
     }
   }
 
-  if (!any(grepl("covar\\.", names(connected_data)))){
-    return(async |> asyncLog(type = "error", "connected_data does not contain a covariate column"))
+  if (!any(grepl("covar\\.", names(configured_data$connected_data)))){
+    return(async |> asyncLog(type = "error", "The data does not contain a covariate column"))
   }
 
-  if (!outcome %in% c("Binary", "Continuous")){
-    return(async |> asyncLog(type = "error", "outcome must be 'Binary' or 'Continuous'"))
-  }
-
-  if (!covariate_type %in% c("Binary", "Continuous")){
-    return(async |> asyncLog(type = "error", "covariate_type must be 'Binary' or 'Continuous'"))
-  }
-
-  if (!model_type %in% c("fixed", "random")){
-    return(async |> asyncLog(type = "error", "model_type must be 'fixed' or 'random'"))
-  }
-
-  if (!outcome_measure %in% c("OR", "RR", "MD")){
+  if (!configured_data$outcome_measure %in% c("OR", "RR", "MD")){
     return(async |> asyncLog(type = "error", "outcome_measure must be 'OR', 'RR' or 'MD'"))
   }
 
-  covariate <- FindCovariateNames(connected_data)
+  covariate <- configured_data$covariate$column
 
-  if (covariate_value < min(connected_data[[covariate]], na.rm = TRUE)){
+  if (covariate_value < min(configured_data$connected_data[[covariate]], na.rm = TRUE)){
     return(async |> asyncLog(type = "error", "covariate_value must not be lower than the minimum covariate value in connected_data"))
   }
 
-  if (covariate_value > max(connected_data[[covariate]], na.rm = TRUE)){
+  if (covariate_value > max(configured_data$connected_data[[covariate]], na.rm = TRUE)){
     return(async |> asyncLog(type = "error", "covariate_value must not be higher than the maximum covariate value in connected_data"))
   }
 
@@ -84,46 +63,42 @@ covariate_model <- function(connected_data,
     return(async |> asyncLog(type = "error", "regressor_type must be 'shared', 'unrelated', or 'exchangeable'"))
   }
 
-  if (!reference_treatment %in% treatment_df$Label){
-    return(async |> asyncLog(type = "error", "reference_treatment must be one of the treatments in treatment_df"))
-  }
-
   cov_friendly <- GetFriendlyCovariateName(covariate)
 
   # only run these parts if it hasn't run before, or if the regressor_type has changed
   if (is.null(covariate_model_output) || covariate_model_output$mtcResults$model$regressor$coefficient != regressor_type){
-    prepped_data <- PrepDataGemtc(connected_data,
-                                  treatment_df,
-                                  outcome,
+    prepped_data <- PrepDataGemtc(configured_data$connected_data,
+                                  configured_data$treatments,
+                                  configured_data$outcome,
                                   covariate,
                                   cov_friendly)
 
     gemtc_model <- CreateGemtcModel(prepped_data,
-                                    model_type,
-                                    outcome_measure,
+                                    configured_data$effects,
+                                    configured_data$outcome_measure,
                                     regressor_type,
-                                    reference_treatment,
-                                    seed)
+                                    configured_data$reference_treatment,
+                                    configured_data$seed)
 
     model_output <- suppress_jags_output(gemtc::mtc.run(gemtc_model))
 
-    model_info <- CovariateModelOutput(connected_data,
-                                       treatment_df,
+    model_info <- CovariateModelOutput(configured_data$connected_data,
+                                       configured_data$treatments,
                                        model_output,
                                        covariate,
                                        covariate_value,
-                                       outcome,
-                                       outcome_measure,
-                                       covariate_type)
+                                       configured_data$outcome,
+                                       configured_data$outcome_measure,
+                                       configured_data$covariate$type)
   } else {
-    model_info <- CovariateModelOutput(connected_data,
-                                       treatment_df,
+    model_info <- CovariateModelOutput(configured_data$connected_data,
+                                       configured_data$treatments,
                                        covariate_model_output$mtcResults,
                                        covariate,
                                        covariate_value,
-                                       outcome,
-                                       outcome_measure,
-                                       covariate_type)
+                                       configured_data$outcome,
+                                       configured_data$outcome_measure,
+                                       configured_data$covariate$type)
   }
 
   class(model_info) <- c("bayes_model", "covariate_model")
@@ -135,7 +110,7 @@ covariate_model <- function(connected_data,
 #'
 #' @param data Uploaded data post-processing
 #' @param treatment_df Data frame containing treatment IDs and names in columns named 'Number' and 'Label' respectively
-#' @param outcome Indicator of whether data is 'Binary' or 'Continuous'
+#' @param outcome Indicator of whether data is 'binary' or 'continuous'
 #' @param covariate Chosen covariate name as per uploaded data
 #' @param cov_friendly Friendly name of chosen covariate
 #' @return list containing two dataframes: armData containing the core data; studyData containing covariate data
@@ -147,19 +122,19 @@ PrepDataGemtc <- function(data, treatment_df, outcome, covariate, cov_friendly){
     long_data <- data
   }
   # specify arm level data
-  if (outcome == "Continuous") {
+  if (outcome == "continuous") {
     armData <- data.frame(study = long_data$Study,
                           treatment = treatment_df$Label[match(long_data$T, treatment_df$Number)],
                           mean = long_data$Mean,
                           std.dev = long_data$SD,
                           sampleSize = long_data$N)
-  } else if (outcome == "Binary") {
+  } else if (outcome == "binary") {
     armData <- data.frame(study = long_data$Study,
                           treatment = treatment_df$Label[match(long_data$T, treatment_df$Number)],
                           responders = long_data$R,
                           sampleSize = long_data$N)
   } else {
-    paste0("Outcome has to be 'Continuous' or 'Binary'")
+    paste0("Outcome has to be 'continuous' or 'binary'")
   }
   # specify study level data
   studyData <- unique(data.frame(study = long_data$Study,
@@ -231,7 +206,7 @@ CreateGemtcModel <- function(data, model_type, outcome_measure, regressor_type, 
 #' @param model Completed model object after running RunCovariateRegression()
 #' @param covariate_title Covariate name as per uploaded data
 #' @param covariate_value Value of covariate for which to give output (default value the mean of study covariates)
-#' @param covariate_type character. Whether the covariate values are `Continuous` or `Binary`
+#' @param covariate_type character. Whether the covariate values are `continuous` or `binary`
 #' @inheritParams common_params
 #' @return List of gemtc related output:
 #'  mtcResults = model object itself carried through (needed to match existing code)
@@ -246,7 +221,7 @@ CreateGemtcModel <- function(data, model_type, outcome_measure, regressor_type, 
 #'  cov_value_sentence = text output stating the value for which the covariate has been set to for producing output
 #'  slopes = named list of slopes for the regression equations (unstandardised - equal to one 'increment')
 #'  intercepts = named list of intercepts for the regression equations at covariate_value
-#'  outcome = `Binary` or `Continuous`
+#'  outcome = `binary` or `continuous`
 #'  outcome_measure = The outcome measure for the analysis eg. "MD" or "OR"
 #'  mtcNetwork = The network object from GEMTC
 #'  model_type = The type of linear model, either "fixed" or "random"
@@ -259,7 +234,7 @@ CovariateModelOutput <- function(connected_data, treatment_df, model, covariate_
   comparator_names <- model_levels[!model_levels %in% model$model$data$reg.control]
 
   # If the covariate type has been selected as continuous and gemtc has inferred it as binary, overwrite it
-  if (covariate_type == "Continuous" & model$model$regressor$type == "binary") {
+  if (covariate_type == "continuous" & model$model$regressor$type == "binary") {
     model$model$regressor$type <- "continuous"
   }
 
@@ -343,7 +318,7 @@ CovariateModelOutput <- function(connected_data, treatment_df, model, covariate_
       outcome = outcome,
       outcome_measure = outcome_measure,
       mtcNetwork = model$model$network, # why duplicate mtcResults?
-      model_type = model$model$linearModel,
+      effects = model$model$linearModel,
       covariate_min = min_max$min,
       covariate_max = min_max$max
     )
@@ -358,7 +333,7 @@ CovariateModelOutput <- function(connected_data, treatment_df, model, covariate_
 #' @param reference_treatment Name of reference treatment.
 #' @param covariate_title Title of covariate column in data. Only required when @param baseline_risk == FALSE.
 #' @param baseline_risk TRUE if the covariate is baseline risk. Defaults to FALSE.
-#' @param outcome "Binary" or "Continuous". Only required when @param baseline_risk == TRUE. Defaults to NULL.
+#' @param outcome "binary" or "continuous". Only required when @param baseline_risk == TRUE. Defaults to NULL.
 #' @param model Model created by bnma::network.run(). Only required when @param baseline_risk == TRUE. Defaults to NULL.
 #'
 #' @return The lowest and highest covariate values of relevant studies. This is structured as a list containing 2 items:
@@ -449,7 +424,7 @@ FindCovariateRanges <- function(connected_data, treatment_df, reference_treatmen
 #'
 #' @param connected_data Data in long format.
 #' @param treatment_df Data frame containing treatment IDs and names in columns named 'Number' and 'Label' respectively.
-#' @param outcome "Binary" or "Continuous".
+#' @param outcome "binary" or "continuous".
 #' @param observed "Observed" or "Imputed". See @return.
 #' @param model Model created by bnma::network.run(). Only required when @param observed == "Imputed". Defaults to NULL.
 #'
@@ -473,13 +448,13 @@ GetReferenceOutcome <- function(connected_data, treatment_df, outcome, observed,
 
   #Data with only control treatment rows kept
   data_control <- KeepOrDeleteControlTreatment(data = connected_data, treatments = treatments, keep_delete = "keep")
-  if (outcome == "Binary"){
+  if (outcome == "binary"){
     #Add NAs as required by metafor::escalc()
     data_control$R[data_control$Treatment != treatments[1]] <- NA
     effect_sizes <- metafor::escalc(measure = "PLO",
                                     xi = data_control$R,
                                     ni = data_control$N)
-  } else if (outcome == "Continuous"){
+  } else if (outcome == "continuous"){
     #Add NAs as required by metafor::escalc()
     data_control$Mean[data_control$Treatment != treatments[1]] <- NA
     effect_sizes <- metafor::escalc(measure = "MN",
@@ -487,7 +462,7 @@ GetReferenceOutcome <- function(connected_data, treatment_df, outcome, observed,
                                     sdi = data_control$SD,
                                     ni = data_control$N)
   } else{
-    stop("'outcome' must be 'Continuous' or 'Binary'")
+    stop("'outcome' must be 'continuous' or 'binary'")
   }
   outcomes <- as.numeric(effect_sizes$yi)
   names(outcomes) <- unique(data_control$Study)

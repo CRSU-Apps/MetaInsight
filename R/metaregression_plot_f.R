@@ -1,6 +1,6 @@
 #' Create a composite meta-regression plot which comprises plots showing direct and indirect evidence.
 #'
-#' @param model_output GEMTC model results found by calling `CovariateModelOutput()`.
+#' @param model Created by `baseline_model()` or `covariate_model()`
 #' @param treatment_df Data frame containing treatment IDs (Number), sanitised names (Label), and original names (RawLabel).
 #' @param outcome_measure Outcome measure of analysis (OR, RR, RD or MD)
 #' @param comparators Vector of names of comparison treatments to plot in colour.
@@ -24,12 +24,10 @@
 #' @inherit return-svg return
 #' @export
 metaregression_plot <- function(
-    model_output,
-    treatment_df,
-    outcome_measure,
+    model,
+    configured_data,
+    regression_data,
     comparators,
-    directness,
-    credible_regions,
     include_covariate = FALSE,
     include_ghosts = FALSE,
     include_extrapolation = FALSE,
@@ -37,15 +35,41 @@ metaregression_plot <- function(
     credible_opacity = 0.2,
     covariate_symbol = "circle open",
     covariate_symbol_size = 10,
-    legend_position = "BR") {
+    legend_position = "BR",
+    logger = NULL) {
+
+  if (check_param_classes(c("configured_data"),
+                          c("configured_data"), logger)){
+    return()
+  }
+
+  if (!inherits(model, c("baseline_model", "covariate_model"))){
+    logger |> writeLog(type = "error", "model must be an object created by baseline_model() or covariate_model()")
+    return()
+  }
+
+  if (!inherits(regression_data, "regression_data")){
+    logger |> writeLog(type = "error", "regression_data must be an object created by baseline_regression() or covariate_regression()")
+    return()
+  }
+
+  if (configured_data$reference_treatment %in% comparators){
+    logger |> writeLog(type = "error", "comparators cannot contain the reference treatment")
+    return()
+  }
+
+  if (any(!comparators %in% configured_data$treatments$Label)){
+    logger |> writeLog(type = "error", "comparators must be present in the configured data")
+    return()
+  }
 
   direct_plot <- CreateMainRegressionPlot(
-    model_output = model_output,
-    treatment_df = treatment_df,
-    outcome_measure = outcome_measure,
+    model_output = model,
+    treatment_df = configured_data$treatments,
+    outcome_measure = model$outcome_measure,
     comparators = comparators,
-    directness = directness,
-    credible_regions = credible_regions,
+    directness = regression_data$directness,
+    credible_regions = regression_data$credible_regions,
     include_covariate = include_covariate,
     include_ghosts = include_ghosts,
     include_extrapolation = include_extrapolation,
@@ -68,10 +92,10 @@ metaregression_plot <- function(
   }
 
   indirect_plot <- CreateIndirectCovariatePlot(
-    model_output = model_output,
-    treatment_df = treatment_df,
+    model_output = model,
+    treatment_df = configured_data$treatments,
     comparators = comparators,
-    directness = directness,
+    directness = regression_data$directness,
     include_covariate = include_covariate,
     include_ghosts = include_ghosts,
     covariate_symbol = covariate_symbol,

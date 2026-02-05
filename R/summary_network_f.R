@@ -11,17 +11,17 @@
 #' @inherit return-svg return
 #' @export
 
-summary_network <- function(freq, bugsnet, style, label_size = 1, title = "", logger = NULL){
+summary_network <- function(configured_data, style, label_size = 1, title = "", logger = NULL){
 
-  check_param_classes(c("freq", "bugsnet", "style", "label_size", "title"),
-                      c("list", "data.frame", "character", "numeric", "character"), logger)
+  check_param_classes(c("configured_data", "style", "label_size", "title"),
+                      c("configured_data", "character", "numeric", "character"), logger)
 
   if (!(style %in% c("netgraph", "netplot"))){
     logger |> writeLog(type = "error", "style must be either netgraph or netplot")
     return()
   }
 
-  n_trt <- freq$ntx
+  n_trt <- configured_data$freq$ntx
   if (n_trt < 8){
     height <- 5
     width <- 5
@@ -32,15 +32,14 @@ summary_network <- function(freq, bugsnet, style, label_size = 1, title = "", lo
 
   svg <- svglite::xmlSVG({
     if (style == "netgraph"){
-      netmeta::netgraph(freq$net1, lwd = 2, number.of.studies = TRUE, plastic = FALSE, points = TRUE,
+      netmeta::netgraph(configured_data$freq$net1, lwd = 2, number.of.studies = TRUE, plastic = FALSE, points = TRUE,
                                cex = label_size, cex.points = 2, col.points = 1, col = 8, pos.number.of.studies = 0.43,
                                col.number.of.studies = "forestgreen", col.multiarm = "white",
                                bg.number.of.studies = "white")
       title(title)
 
     } else if (style == "netplot"){
-      # I have removed an order = NULL parameter here (SS)
-      data.rh <- BUGSnet::data.prep(arm.data = bugsnet, varname.t = "T", varname.s = "Study")
+      data.rh <- BUGSnet::data.prep(arm.data = configured_data$bugsnet, varname.t = "T", varname.s = "Study")
       BUGSnet::net.plot(data.rh, node.scale = 3, edge.scale = 1.5, node.lab.cex = label_size,
                                layout.params = NULL)
       title(title)

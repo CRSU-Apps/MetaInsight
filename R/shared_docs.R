@@ -1,11 +1,11 @@
 #' @title Common parameters
 #' @name common_params
 #' @param treatment_df dataframe. Treatments
-#' @param outcome character. Outcome type for the dataset. Either `Binary` or
-#' `Continuous`.
+#' @param outcome character. Outcome type for the dataset. Either `binary` or
+#' `continuous`.
 #' @param outcome_measure character. Outcome measure of the dataset. Either
-#' `OR`, `RR` or `RD` when `outcome` is `Binary` or `MD` or `SMD` when
-#' `outcome` is `Continuous`
+#' `OR`, `RR` or `RD` when `outcome` is `binary` or `MD` or `SMD` when
+#' `outcome` is `continuous`
 #' @param ranking_option character. `good` if the treatment effect is desirable, else `bad`
 #' @param freq list. NMA results created by freq_wrap().
 #' @param reference_treatment character. The reference treatment of the dataset

@@ -41,7 +41,7 @@ contrastform.df <- function(wide_data, outcome_measure, outcome) {
   treat_list <- CreateListOfWideColumns(wide_data = wide_data, column_prefix = "T")
   n_list <-  CreateListOfWideColumns(wide_data = wide_data, column_prefix = "N")
 
-  if (outcome == 'Continuous') {
+  if (outcome == 'continuous') {
 
     mean_list <-  CreateListOfWideColumns(wide_data = wide_data, column_prefix = "Mean")
     sd_list <-  CreateListOfWideColumns(wide_data = wide_data, column_prefix = "SD")
@@ -53,7 +53,7 @@ contrastform.df <- function(wide_data, outcome_measure, outcome) {
                          data = wide_data,
                          sm = outcome_measure,
                          studlab = wide_data$Study)
-  } else if (outcome == 'Binary') {
+  } else if (outcome == 'binary') {
 
     event_list <-  CreateListOfWideColumns(wide_data = wide_data, column_prefix = "R")
 
@@ -64,7 +64,7 @@ contrastform.df <- function(wide_data, outcome_measure, outcome) {
                          sm = outcome_measure,
                          studlab = wide_data$Study)
   } else {
-    stop("outcome must be 'Continuous' or 'Binary'")
+    stop("outcome must be 'continuous' or 'binary'")
   }
   return(d1)
 }

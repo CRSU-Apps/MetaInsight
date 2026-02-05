@@ -11,31 +11,25 @@
 #' @inherit return-svg return
 #' @import graphics
 #' @export
-summary_study <- function(connected_data, freq, outcome_measure, plot_area_width = 6, colourblind = FALSE, x_min = NULL, x_max = NULL, logger = NULL) {
+summary_study <- function(configured_data, plot_area_width = 6, colourblind = FALSE, x_min = NULL, x_max = NULL, logger = NULL) {
 
-  check_param_classes(c("connected_data", "freq", "outcome_measure", "plot_area_width", "colourblind"),
-                      c("data.frame", "list", "character", "numeric", "logical"), logger)
-
-  if (!outcome_measure %in% c("MD", "SMD", "OR", "RR", "RD")){
-    logger |> writeLog(type = "error", "outcome_measure must be either MD, SMD, OR, RR or RD")
-    return()
-  }
+  check_param_classes(c("configured_data","plot_area_width", "colourblind"),
+                      c("configured_data", "numeric", "logical"), logger)
 
   if (plot_area_width < 6 || plot_area_width > 20){
     logger |> writeLog(type = "error", "plot_area_width must be between 6 and 20")
     return()
   }
 
-  rob_data_frame <- unique(connected_data[, c("Study", FindRobNames(connected_data))])
+  rob_data_frame <- unique(configured_data$connected_data[, c("Study", FindRobNames(configured_data$connected_data))])
   if (!is.data.frame(rob_data_frame)) {
-    pairwise <- freq$d1
+    pairwise <- configured_data$freq$d1
   } else {
-    pairwise <- as.data.frame(merge(freq$d1, rob_data_frame, by = "Study"))
+    pairwise <- as.data.frame(merge(configured_data$freq$d1, rob_data_frame, by = "Study"))
   }
 
   if (is.null(x_min) || is.null(x_max)){
-    outcome <- ifelse(outcome_measure %in% c("OR", "RR", "RD"), "Binary", "Continuous")
-    min_max <- summary_study_min_max(pairwise, outcome)
+    min_max <- summary_study_min_max(pairwise, configured_data$outcome)
     x_min <- min_max[1]
     x_max <- min_max[2]
   }
@@ -46,7 +40,7 @@ summary_study <- function(connected_data, freq, outcome_measure, plot_area_width
 
   pairwise_treatments <- PairwiseTreatments(
     pairwise = pairwise,
-    treatment_order = freq$lstx
+    treatment_order = configured_data$freq$lstx
   )
 
   if (colourblind) {
@@ -56,11 +50,11 @@ summary_study <- function(connected_data, freq, outcome_measure, plot_area_width
   }
 
   rob_variables <- FindRobNames(pairwise)
-  rob_names <- gsub("rob.", "", FindRobNames(connected_data))
+  rob_names <- gsub("rob.", "", FindRobNames(configured_data$connected_data))
   n_rob_variables <- length(rob_variables)
 
   x_label <- switch(
-    outcome_measure,
+    configured_data$outcome_measure,
     "MD" = "Mean difference",
     "SMD" = "Standardised MD",
     "OR" = "Odds ratio",
@@ -77,7 +71,7 @@ summary_study <- function(connected_data, freq, outcome_measure, plot_area_width
   pairwise$point_estimate <- pairwise$TE
   pairwise$ci_lower <- pairwise$TE - 1.96 * pairwise$seTE
   pairwise$ci_upper <- pairwise$TE + 1.96 * pairwise$seTE
-  if (is.element(outcome_measure, c("OR", "RR"))) {
+  if (is.element(configured_data$outcome_measure, c("OR", "RR"))) {
     pairwise$point_estimate <- exp(pairwise$point_estimate)
     pairwise$ci_lower <- exp(pairwise$ci_lower)
     pairwise$ci_upper <- exp(pairwise$ci_upper)
@@ -133,9 +127,9 @@ summary_study <- function(connected_data, freq, outcome_measure, plot_area_width
     title("Individual study results (with selected studies excluded)\n grouped by treatment comparison", line = 2)
 
     # define the ticks and labels for the x-axis
-    if (is.element(outcome_measure, c("OR", "RR"))) {
+    if (is.element(configured_data$outcome_measure, c("OR", "RR"))) {
       x_labels <- signif(exp(x_ticks), digits = 2)
-    } else if (is.element(outcome_measure, c("MD", "SMD", "RD"))) {
+    } else if (is.element(configured_data$outcome_measure, c("MD", "SMD", "RD"))) {
       x_labels <- x_ticks
     }
 
@@ -488,7 +482,7 @@ PairwiseTreatments <- function(pairwise, treatment_order) {
 #' @export
 summary_study_min_max <- function(pairwise, outcome){
 
-  log.scale <- ifelse(outcome == "Binary", TRUE, FALSE)
+  log.scale <- ifelse(outcome == "binary", TRUE, FALSE)
 
   all_min <- (pairwise$TE - 1.96 * pairwise$seTE)
   all_max <- (pairwise$TE + 1.96 * pairwise$seTE)

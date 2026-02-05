@@ -4,30 +4,16 @@
 #' @inheritParams common_params
 #' @inherit return-svg return
 #' @export
-freq_summary <- function(freq, treatment_df, plot_title, outcome_measure, ranking_option, model_type, seed, logger = NULL) {
+freq_summary <- function(configured_data, plot_title = "", logger = NULL) {
 
-  check_param_classes(c("freq", "treatment_df", "plot_title", "outcome_measure", "ranking_option", "model_type", "seed"),
-                      c("list", "data.frame", "character", "character", "character", "character", "numeric"), logger)
+  check_param_classes(c("configured_data"),
+                      c("configured_data"), logger)
 
-  if (!ranking_option %in% c("good", "bad")){
-    logger |> writeLog(type = "error", "ranking_option must be 'good' or 'bad'")
-    return()
-  }
-
-  if (!outcome_measure %in% c("OR", "RR", "RD", "MD", "SMD")){
-    logger |> writeLog(type = "error", "outcome_measure must be 'OR', 'RR', 'RD', 'MD' or 'SMD'")
-    return()
-  }
-
-  if (!model_type %in% c("fixed", "random")){
-    logger |> writeLog(type = "error", "model_type must be 'fixed' or 'random'")
-    return()
-  }
-
-  lstx <- treatment_df$Label
+  lstx <- configured_data$treatments$Label
   ntx <- length(lstx)
 
-  net1 <- freq$net1
+  net1 <- configured_data$freq$net1
+  treatment_df <- configured_data$treatments
 
   ma <- list()
   mtc <- list()
@@ -42,12 +28,12 @@ freq_summary <- function(freq, treatment_df, plot_title, outcome_measure, rankin
   mtc$predint <- matrix(0, nrow = sum(1:(ntx - 1)), ncol = 4, dimnames = list(rep(NA, times = sum(1:(ntx - 1)))))
   mtc$rkgram <- matrix(0, nrow = ntx * ntx, ncol = 2)
 
-  small_value_desirability <- ifelse(ranking_option == "good", "desirable", "undesirable")
+  small_value_desirability <- ifelse(configured_data$ranking_option == "good", "desirable", "undesirable")
 
-  set.seed(seed)
+  set.seed(configured_data$seed)
   rkgrm <- netmeta::rankogram(net1, small.values = small_value_desirability)
 
-  if (model_type == "random") {
+  if (configured_data$effects == "random") {
     ranking <- rkgrm$ranking.random
     ranking_matrix <- rkgrm$ranking.matrix.random
   } else {
@@ -57,16 +43,16 @@ freq_summary <- function(freq, treatment_df, plot_title, outcome_measure, rankin
 
   ordered_treatment_names <- names(ranking[order(-ranking)])
   # The rankogram command seems to sort the treatments alphabetically first, so this line converts back to the original treatment IDs
-  mtc$rank[, 3] <- match(treatment_df$Label, ordered_treatment_names)
+  mtc$rank[, 3] <- match(configured_data$treatments$Label, ordered_treatment_names)
 
   for (index in 1:ntx) {
     mtc$rkgram[((index - 1) * ntx) + (1:ntx), 1] <- ranking_matrix[ordered_treatment_names[index], ]
   }
 
-  mtc$type <- outcome_measure
+  mtc$type <- configured_data$outcome_measure
 
   #Sort the rows and columns of the netmeta matrix output by the original treatment order
-  if (model_type == "random") {
+  if (configured_data$effects == "random") {
     net1$lower.direct.random <- net1$lower.direct.random[treatment_df$Label, treatment_df$Label]
     net1$TE.direct.random <- net1$TE.direct.random[treatment_df$Label, treatment_df$Label]
     net1$upper.direct.random <- net1$upper.direct.random[treatment_df$Label, treatment_df$Label]
@@ -89,7 +75,7 @@ freq_summary <- function(freq, treatment_df, plot_title, outcome_measure, rankin
     for (j in (i + 1):ntx) {
 
       #Include rownames for debugging
-      if (model_type == "random") {
+      if (configured_data$effects == "random") {
         rownames(ma$lor)[count] <- paste0(rownames(net1$TE.direct.random)[i], "-", colnames(net1$TE.direct.random)[j])
         ma$lor[count, 5] <- net1$lower.direct.random[i, j]
         ma$lor[count, 6] <- net1$TE.direct.random[i, j]
@@ -117,7 +103,7 @@ freq_summary <- function(freq, treatment_df, plot_title, outcome_measure, rankin
 
       rownames(ma$or) <- rownames(ma$lor)
       rownames(mtc$or) <- rownames(mtc$lor)
-      if (outcome_measure == "RR" | outcome_measure == "OR") {
+      if (configured_data$outcome_measure == "RR" | configured_data$outcome_measure == "OR") {
         ma$or[count, 5:7] <- exp(ma$lor[count, 5:7])
         mtc$or[count, 2:4] <- exp(mtc$lor[count, 2:4])
       } else {
@@ -129,7 +115,7 @@ freq_summary <- function(freq, treatment_df, plot_title, outcome_measure, rankin
     }
   }
 
-  height_and_width <- 2.5 * nrow(treatment_df)
+  height_and_width <- 2.5 * nrow(configured_data$treatments)
 
   #Dynamic text size for the means and confidence intervals
   ucex <- max(1, 2 - 0.12 * ntx)
@@ -141,7 +127,7 @@ freq_summary <- function(freq, treatment_df, plot_title, outcome_measure, rankin
       lstx,
       mtc,
       ma,
-      outcome_measure,
+      configured_data$outcome_measure,
       bpredd = TRUE,
       bkey = TRUE,
       p.only = ntx,

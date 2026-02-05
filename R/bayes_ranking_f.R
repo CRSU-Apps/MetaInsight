@@ -6,15 +6,10 @@
 #'
 #' @return List of output created by `rankdata()`.
 #' @export
-bayes_ranking <- function(connected_data, treatment_df, model, ranking_option, cov_value = NA, logger = NULL) {
+bayes_ranking <- function(model, configured_data, cov_value = NA, logger = NULL) {
 
-  check_param_classes(c("connected_data", "treatment_df", "ranking_option"),
-                      c("data.frame", "data.frame", "character"), logger)
-
-  if (!ranking_option %in% c("good", "bad")){
-    logger |> writeLog(type = "error", "ranking_option must be either good or bad")
-    return()
-  }
+  check_param_classes(c("configured_data"),
+                      c("configured_data"), logger)
 
   if (!inherits(model, "bayes_model") && !inherits(model, "baseline_model")){
     logger |> writeLog(type = "error", "model must be an object created by baseline_model(), bayes_model() or covariate_model()")
@@ -31,11 +26,11 @@ bayes_ranking <- function(connected_data, treatment_df, model, ranking_option, c
     return()
   }
 
-  longsort <- dataform.df(connected_data, treatment_df, model$outcome)
+  longsort <- dataform.df(configured_data$connected_data, configured_data$treatments, model$outcome)
 
   rankdata(
     NMAdata = model$mtcResults,
-    rankdirection = ranking_option,
+    rankdirection = configured_data$ranking_option,
     longdata = longsort,
     cov_value = cov_value,
     package = ifelse(inherits(model, "baseline_model"), "bnma", "gemtc")

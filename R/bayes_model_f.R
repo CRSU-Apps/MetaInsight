@@ -12,44 +12,27 @@
 #'  \item{model_type}{dataframe. The input `model_type`}
 #' @export
 
-bayes_model <- function(connected_data, treatment_df, outcome, outcome_measure, model_type, reference_treatment, seed, async = FALSE){
+bayes_model <- function(configured_data, async = FALSE){
 
   if (!async){ # only an issue if run outside the app
-    if (check_param_classes(c("connected_data", "treatment_df", "outcome", "outcome_measure", "model_type",  "reference_treatment", "seed"),
-                            c("data.frame", "data.frame", "character", "character", "character", "character", "numeric"), NULL)){
+    if (check_param_classes(c("configured_data"), c("configured_data"), NULL)){
       return()
     }
   }
 
-  if (!outcome %in% c("Binary", "Continuous")){
-    return(async |> asyncLog(type = "error", "outcome must be either Binary or Continuous"))
-  }
-
-  if (!model_type %in% c("fixed", "random")){
-    return(async |> asyncLog(type = "error", "model_type must be 'fixed' or 'random'"))
-  }
-
-  if (!outcome_measure %in% c("OR", "RR", "MD")){
-    return(async |> asyncLog(type = "error", "outcome_measure must be 'OR', 'RR' or 'MD'"))
-  }
-
-  if (!reference_treatment %in% treatment_df$Label){
-    return(async |> asyncLog(type = "error", "reference_treatment must be one of the treatments in treatment_df"))
-  }
-
   # use same RNG inside and outside of mirai
   RNGkind("L'Ecuyer-CMRG")
-  set.seed(seed)
+  set.seed(configured_data$seed)
 
-  longsort <- dataform.df(connected_data, treatment_df, outcome)
+  longsort <- dataform.df(configured_data$connected_data, configured_data$treatments, configured_data$outcome)
 
   # Create arm level data set for gemtc
-  if (outcome == "Continuous") {
+  if (configured_data$outcome == "continuous") {
     armData <- data.frame(study = longsort$Study,
                           treatment = longsort$T,
                           mean = longsort$Mean,
                           std.err = longsort$se)
-  } else if (outcome == "Binary") {
+  } else if (configured_data$outcome == "binary") {
     armData <- data.frame(study = longsort$Study,
                           treatment = longsort$T,
                           responders = longsort$R,
@@ -58,18 +41,18 @@ bayes_model <- function(connected_data, treatment_df, outcome, outcome_measure, 
   # Gemtc network object
   mtcNetwork <- gemtc::mtc.network(data.ab = armData, description = "Network")
 
-  if (outcome_measure == "MD") {
+  if (configured_data$outcome_measure == "MD") {
     like <- "normal"
     link <- "identity"
-  } else if (outcome_measure == "OR" || outcome_measure == "RR") {
+  } else if (configured_data$outcome_measure == "OR" || configured_data$outcome_measure == "RR") {
     like <- "binom"
-    link <- ifelse(outcome_measure == "OR", "logit", "log")
+    link <- ifelse(configured_data$outcome_measure == "OR", "logit", "log")
   }
 
   mtcModel <- gemtc::mtc.model(
     network = mtcNetwork,
     type = "consistency",
-    linearModel = model_type,
+    linearModel = configured_data$effects,
     likelihood = like,
     link = link,
     dic = TRUE
@@ -87,7 +70,7 @@ bayes_model <- function(connected_data, treatment_df, outcome, outcome_measure, 
   # Run gemtc model object for analysis
   mtcResults <- suppress_jags_output(gemtc::mtc.run(mtcModel))
 
-  mtcRelEffects <- gemtc::relative.effect(mtcResults, t1 = reference_treatment)  #Set reference treatment
+  mtcRelEffects <- gemtc::relative.effect(mtcResults, t1 = configured_data$reference_treatment)  #Set reference treatment
   rel_eff_tbl <- gemtc::relative.effect.table(mtcResults)
   sumresults <- summary(mtcRelEffects)
   # a <- paste(model, "effect", sep = " ")   #Create text for random/fixed effect
@@ -102,10 +85,12 @@ bayes_model <- function(connected_data, treatment_df, outcome, outcome_measure, 
                 mtcNetwork = mtcNetwork,
                 dic = dic,
                 # these are stored so that only the model object can be passed to other functions
-                outcome = outcome,
-                outcome_measure = outcome_measure,
-                reference_treatment = reference_treatment,
-                model_type = model_type
+                outcome = configured_data$outcome,
+                outcome_measure = configured_data$outcome_measure,
+                reference_treatment = configured_data$reference_treatment,
+                effects = configured_data$effects,
+                ranking_option = configured_data$ranking_option,
+                seed = configured_data$seed
              )
 
   class(results) <- "bayes_model"
