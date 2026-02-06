@@ -1,8 +1,6 @@
-connected <- defined_data_con$main_connected_data
-t_df <- defined_data_con$treatment_df
 
 test_that("Check bayes_model function works as expected", {
-  result <- bayes_model(connected, t_df, "Continuous", "MD", "random", "Placebo", 123)
+  result <- bayes_model(configured_data_con)
 
   expect_is(result, "bayes_model")
   expect_true(all(c("mtcResults",
@@ -14,7 +12,8 @@ test_that("Check bayes_model function works as expected", {
                     "outcome",
                     "outcome_measure",
                     "reference_treatment",
-                    "model_type") %in% names(result)))
+                    "effects",
+                    "seed") %in% names(result)))
   expect_is(result$dic, "data.frame")
   expect_is(result$mtcResults, "mtc.result")
   expect_is(result$mtcRelEffects, "mtc.result")
@@ -24,26 +23,17 @@ test_that("Check bayes_model function works as expected", {
   expect_is(result$outcome, "character")
   expect_is(result$outcome_measure, "character")
   expect_is(result$reference_treatment, "character")
-  expect_is(result$model_type, "character")
+  expect_is(result$effects, "character")
+  expect_is(result$seed, "numeric")
 
   # check results are reproducible
-  result_2 <- bayes_model(connected, t_df, "Continuous", "MD", "random", "Placebo", 123)
+  result_2 <- bayes_model(configured_data_con)
   expect_true(identical(remove_igraph(result), remove_igraph(result_2)))
 
 })
 
 test_that("bayes_model produces errors for incorrect data types", {
-  expect_error(bayes_model("not_a_dataframe", t_df, "Continuous", "MD", "random", "Placebo", 123), "connected_data must be of class data.frame")
-  expect_error(bayes_model(connected, "not_a_dataframe", "Continuous", "MD", "random", "Placebo", 123), "treatment_df must be of class data.frame")
-  expect_error(bayes_model(connected, t_df, 123, "MD", "random", "Placebo", 123), "outcome must be of class character")
-  expect_error(bayes_model(connected, t_df, "Continuous", 123, "random", "Placebo", 123), "outcome_measure must be of class character")
-  expect_error(bayes_model(connected, t_df, "Continuous", "MD", 123, "Placebo", 123), "model_type must be of class character")
-  expect_error(bayes_model(connected, t_df, "Continuous", "MD", "random", 123, 123), "reference_treatment must be of class character")
-  expect_error(bayes_model(connected, t_df, "Continuous", "MD", "random", "Placebo", "not seed"), "seed must be of class numeric")
-  expect_error(bayes_model(connected, t_df, "invalid_outcome", "MD", "random", "Placebo", 123), "outcome must be either Binary or Continuous")
-  expect_error(bayes_model(connected, t_df, "Continuous", "invalid_measure", "random", "Placebo", 123), "outcome_measure must be 'OR', 'RR' or 'MD'")
-  expect_error(bayes_model(connected, t_df, "Continuous", "MD", "not_random", "Placebo", 123), "model_type must be 'fixed' or 'random'")
-  expect_error(bayes_model(connected, t_df, "Continuous", "MD", "random", "not_a_placebo", 123), "reference_treatment must be one of the treatments in treatment_df")
+  expect_error(bayes_model("not_data"), "configured_data must be of class configured_data")
 })
 
 test_that("bayes_model works e2e - that models are initally identical, update after exclusions and are then different", {

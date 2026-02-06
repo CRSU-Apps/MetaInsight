@@ -1,20 +1,23 @@
-test_that("freq_inconsistent produces errors for incorrect data types and invalid values", {
-  expect_error(freq_inconsistent("not_a_list", "fixed"), "freq must be of class list")
-  expect_error(freq_inconsistent(excluded_data_con$freq_sub, 123), "model_type must be of class character")
-  expect_error(freq_inconsistent(excluded_data_con$freq_sub, "invalid_model_type"), "model_type must be 'fixed' or 'random'")
-})
-
 test_that("freq_compare functions correctly", {
-  result <- freq_inconsistent(defined_data_con$freq_all, "fixed")
+  result <- freq_inconsistent(configured_data_con)
   expect_s3_class(result, "data.frame")
   expect_equal(ncol(result), 9)
   expect_equal(nrow(result), 6)
 
-  result <- freq_inconsistent(excluded_data_con$freq_sub, "fixed")
+  result <- freq_inconsistent(excluded_data_con)
   expect_s3_class(result, "data.frame")
   expect_equal(ncol(result), 9)
   expect_equal(nrow(result), 3)
 
+  result <- freq_inconsistent(configured_data_bin)
+  expect_s3_class(result, "data.frame")
+  expect_equal(ncol(result), 9)
+  expect_equal(nrow(result), 21)
+
+})
+
+test_that("freq_inconsistent produces errors for incorrect data types and invalid values", {
+  expect_error(freq_inconsistent("not_data"), "configured_data must be of class configured_data")
 })
 
 test_that("freq_inconsistent produces downloadable tables", {

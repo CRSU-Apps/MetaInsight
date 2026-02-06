@@ -1,11 +1,5 @@
-connected <- defined_data_con$main_connected_data
-t_df <- defined_data_con$treatment_df
-
 test_that("Check bayes_ranking function works as expected", {
-  result <- bayes_ranking(connected,
-                          t_df,
-                          fitted_bayes_model,
-                          "good")
+  result <- bayes_ranking(fitted_bayes_model, configured_data_con)
 
   expect_is(result, "list")
   expect_true(all(c("SUCRA", "Colour", "Cumulative", "Probabilities", "BUGSnetData") %in% names(result)))
@@ -33,17 +27,12 @@ test_that("bayes_ranking produces errors for incorrect data types", {
 
   faulty_model <- list(mtcRelEffects = 1:4)
 
-  expect_error(bayes_ranking("not_a_dataframe", t_df, fitted_bayes_model, "good"), "connected_data must be of class data.frame")
-  expect_error(bayes_ranking(connected, "not_a_dataframe", fitted_bayes_model, "good"), "treatment_df must be of class data.frame")
-  expect_error(bayes_ranking(connected, t_df, fitted_bayes_model, 123), "ranking_option must be of class character")
+  expect_error(bayes_ranking(faulty_model, configured_data_con), "model must be an object created by baseline_model")
+  expect_error(bayes_ranking("faulty_model", configured_data_con), "model must be an object created by baseline_model")
+  expect_error(bayes_ranking(list(a = 1), configured_data_con), "model must be an object created by baseline_model")
+  expect_error(bayes_ranking("not_data", fitted_bayes_model), "configured_data must be of class configured_data")
 
-  expect_error(bayes_ranking(connected, t_df, faulty_model, "good"), "model must be an object created by baseline_model")
-  expect_error(bayes_ranking(connected, t_df, "faulty_model", "good"), "model must be an object created by baseline_model")
-  expect_error(bayes_ranking(connected, t_df, list(a = 1), "good"), "model must be an object created by baseline_model")
-
-  expect_error(bayes_ranking(connected, t_df, fitted_bayes_model, "not good"), "ranking_option must be either good or bad")
-  expect_error(bayes_ranking(connected, t_df, fitted_bayes_model, "good", 123), "cov_value can only be provided for covariate models")
-
+  expect_error(bayes_ranking(fitted_bayes_model, configured_data_con, 123), "cov_value can only be provided for covariate models")
 })
 
 test_that("{shinytest2} recording: e2e_bayes_ranking", {

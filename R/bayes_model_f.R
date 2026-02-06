@@ -89,7 +89,6 @@ bayes_model <- function(configured_data, async = FALSE){
                 outcome_measure = configured_data$outcome_measure,
                 reference_treatment = configured_data$reference_treatment,
                 effects = configured_data$effects,
-                ranking_option = configured_data$ranking_option,
                 seed = configured_data$seed
              )
 

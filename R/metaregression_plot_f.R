@@ -38,8 +38,8 @@ metaregression_plot <- function(
     legend_position = "BR",
     logger = NULL) {
 
-  if (check_param_classes(c("configured_data"),
-                          c("configured_data"), logger)){
+  if (check_param_classes(c("configured_data", "comparators"),
+                          c("configured_data", "character"), logger)){
     return()
   }
 

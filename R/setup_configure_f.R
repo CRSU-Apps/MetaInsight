@@ -5,22 +5,38 @@
 #' @inheritParams common_params
 #' @return List containing:
 #'  \item{wrangled_data}{dataframe. To be presented in the data table}
-#'  \item{treatments}{dataframe. Updated version of the input parameter}
+#'  \item{treatments}{dataframe. Treatment names and IDs}
+#'  \item{reference_treatment}{character. The selected reference treatment}
 #'  \item{disconnected_indices}{vector. Indices of studies that are not connected to the main network}
 #'  \item{connected_data}{dataframe. A subset of the data containing only connected studies}
-#'  \item{non_covariate_data_all}{dataframe. The uploaded data with covariates removed}
+#'  \item{non_covariate_data}{dataframe. The uploaded data with covariates removed}
 #'  \item{covariate_column}{character. Name of the column containing covariate data}
 #'  \item{covariate_name}{character. Name of the covariate}
 #'  \item{covariate_type}{character. Whether the covariate is `binary` or `continuous`}
 #'  \item{bugsnet}{dataframe. Processed data for bugsnet analyses created by `bugsnetdata`}
 #'  \item{freq}{list. Processed data for frequentist analyses created by `frequentist()`}
+#'  \item{outcome}{character. Whether the data is `binary` or `continuous`}
+#'  \item{outcome_measure}{character. Outcome measure of the dataset.}
+#'  \item{effects}{character. Whether the models are `fixed` or `random` effects}
+#'  \item{ranking_option}{character. Whether higher values in the data are `good` or `bad`}
+#'  \item{seed}{numeric. A seed value to be passed to models}
 #' @export
 #'
 
 setup_configure <- function(loaded_data, reference_treatment, effects, outcome_measure, ranking_option, seed, logger = NULL){
 
-  check_param_classes(c("loaded_data", "effects", "outcome_measure", "reference_treatment"),
-                      c("loaded_data", "character", "character", "character"), logger)
+  check_param_classes(c("loaded_data", "reference_treatment", "effects", "outcome_measure", "ranking_option", "seed"),
+                      c("loaded_data", "character", "character", "character", "character", "numeric"), logger)
+
+  if (!reference_treatment %in% loaded_data$treatments$Label){
+    logger |> writeLog(type = "error", "reference_treatment must be present in the loaded data")
+    return()
+  }
+
+  if (!effects %in% c("random", "fixed")){
+    logger |> writeLog(type = "error", "effects must be either random or fixed")
+    return()
+  }
 
   if (loaded_data$outcome == "binary" && !outcome_measure %in% c("OR", "RR", "RD")){
     logger |> writeLog(type = "error", "When outcome is binary, outcome_measure must be either OR, RR or RD")
@@ -29,6 +45,11 @@ setup_configure <- function(loaded_data, reference_treatment, effects, outcome_m
 
   if (loaded_data$outcome == "continuous" && !outcome_measure %in% c("MD", "SMD")){
     logger |> writeLog(type = "error", "When outcome is continuous, outcome_measure must be either MD or SMD")
+    return()
+  }
+
+  if (!ranking_option %in% c("good", "bad")){
+    logger |> writeLog(type = "error", "ranking_option must be either good or bad")
     return()
   }
 

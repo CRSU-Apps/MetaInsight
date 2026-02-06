@@ -1,33 +1,31 @@
 test_that("Check covariate_forest function works as expected", {
-  result <- covariate_forest(fitted_covariate_model, loaded_data_con$treatment_df, title = "title")
+  result <- covariate_forest(fitted_covariate_model, title = "title")
   expect_match(result, "<svg")
 
-  x_min_result <- covariate_forest(fitted_covariate_model, loaded_data_con$treatment_df, -1, NULL, "title")
+  x_min_result <- covariate_forest(fitted_covariate_model, -1, NULL, "title")
   expect_match(x_min_result, "<svg")
 
-  x_max_result <- covariate_forest(fitted_covariate_model, loaded_data_con$treatment_df, NULL, 1000, "title")
+  x_max_result <- covariate_forest(fitted_covariate_model, NULL, 1000, "title")
   expect_match(x_max_result, "<svg")
 
   expect_false(identical(result, x_min_result))
   expect_false(identical(result, x_max_result))
   expect_false(identical(x_min_result, x_max_result))
-
 })
 
 test_that("Check covariate_forest function produces errors as expected", {
   faulty_model <- list(mtcRelEffects = 1:4)
 
-  expect_error(covariate_forest(fitted_covariate_model, "not_a_dataframe", 1, 2, "title"), "treatment_df must be of class data.frame")
-  expect_error(covariate_forest(fitted_covariate_model, loaded_data_con$treatment_df, "1", 2, "title"), "xmin must be of class numeric")
-  expect_error(covariate_forest(fitted_covariate_model, loaded_data_con$treatment_df, 1, "2", "title"), "xmax must be of class numeric")
-  expect_error(covariate_forest(fitted_covariate_model, loaded_data_con$treatment_df, 1, 2, 123), "title must be of class character")
+  expect_error(covariate_forest(fitted_covariate_model, "1", 2, "title"), "xmin must be of class numeric")
+  expect_error(covariate_forest(fitted_covariate_model, 1, "2", "title"), "xmax must be of class numeric")
+  expect_error(covariate_forest(fitted_covariate_model, 1, 2, 123), "title must be of class character")
 
-  expect_error(covariate_forest("faulty_model", loaded_data_con$treatment_df, "title"), "model must be an object created by bayes_model")
-  expect_error(covariate_forest(list(a = 1), loaded_data_con$treatment_df, "title"), "model must be an object created by bayes_model")
-  expect_error(covariate_forest(faulty_model, loaded_data_con$treatment_df, "title"), "model must be an object created by bayes_model")
+  expect_error(covariate_forest("faulty_model", "title"), "model must be an object created by bayes_model")
+  expect_error(covariate_forest(list(a = 1), "title"), "model must be an object created by bayes_model")
+  expect_error(covariate_forest(faulty_model, "title"), "model must be an object created by bayes_model")
 
-  expect_error(covariate_forest(fitted_covariate_model, loaded_data_con$treatment_df, 3, 2, "title"), "xmin must be less than xmax")
-  expect_error(covariate_forest(fitted_covariate_model, loaded_data_con$treatment_df, 3, 3, "title"), "xmin must be less than xmax")
+  expect_error(covariate_forest(fitted_covariate_model, 3, 2, "title"), "xmin must be less than xmax")
+  expect_error(covariate_forest(fitted_covariate_model, 3, 3, "title"), "xmin must be less than xmax")
 })
 
 test_that("{shinytest2} recording: e2e_covariate_forest", {

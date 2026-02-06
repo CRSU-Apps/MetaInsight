@@ -1,12 +1,6 @@
-connected <- defined_data_con$main_connected_data
-t_df <- defined_data_con$treatment_df
 
 test_that("Check covariate_ranking function works as expected", {
-  result <- covariate_ranking(connected,
-                             t_df,
-                             fitted_covariate_model,
-                             "good",
-                             50)
+  result <- covariate_ranking(fitted_covariate_model, configured_data_con, 50)
 
   expect_is(result, "list")
   expect_true(all(c("SUCRA", "Colour", "Cumulative", "Probabilities", "BUGSnetData") %in% names(result)))
@@ -33,18 +27,14 @@ test_that("covariate_ranking produces errors for incorrect data types", {
 
   faulty_model <- list(mtcRelEffects = 1:4)
 
-  expect_error(covariate_ranking("not_a_dataframe", t_df, fitted_covariate_model, "good", 50), "connected_data must be of class data.frame")
-  expect_error(covariate_ranking(connected, "not_a_dataframe", fitted_covariate_model, "good", 50), "treatment_df must be of class data.frame")
-  expect_error(covariate_ranking(connected, t_df, fitted_covariate_model, 123, 50), "ranking_option must be of class character")
+  expect_error(covariate_ranking(fitted_covariate_model, "not_data", 50), "configured_data must be of class configured_data")
 
-  expect_error(covariate_ranking(connected, t_df, faulty_model, "good", 50), "model must be an object created by baseline_model")
-  expect_error(covariate_ranking(connected, t_df, "faulty_model", "good", 50), "model must be an object created by baseline_model")
-  expect_error(covariate_ranking(connected, t_df, list(a = 1), "good", 50), "model must be an object created by baseline_model")
+  expect_error(covariate_ranking(faulty_model, configured_data_con, 50), "model must be an object created by baseline_model")
+  expect_error(covariate_ranking("faulty_model", configured_data_con, 50), "model must be an object created by baseline_model")
+  expect_error(covariate_ranking(list(a = 1), configured_data_con, 50), "model must be an object created by baseline_model")
 
-  expect_error(covariate_ranking(connected, t_df, fitted_covariate_model, "not good", 50), "ranking_option must be either good or bad")
-
-  expect_error(covariate_ranking(connected, t_df, fitted_covariate_model, "good"), "please specify a numeric cov_value")
-  expect_error(covariate_ranking(connected, t_df, fitted_covariate_model, "good", "123"), "please specify a numeric cov_value")
+  expect_error(covariate_ranking(fitted_covariate_model, configured_data_con), "please specify a numeric cov_value")
+  expect_error(covariate_ranking(fitted_covariate_model, configured_data_con, "123"), "please specify a numeric cov_value")
 })
 
 test_that("{shinytest2} recording: e2e_covariate_ranking", {

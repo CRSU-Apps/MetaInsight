@@ -16,7 +16,7 @@ baseline_forest <- function(model, xmin = NULL, xmax = NULL, title = "Baseline r
     return()
   }
 
-  n_treatments <- max(bas$mtcResults$network$Treat)
+  n_treatments <- max(model$mtcResults$network$Treat)
   height <- forest_height(n_treatments, annotation = TRUE, title = TRUE)
   width <- forest_width(14)
 

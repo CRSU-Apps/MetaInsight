@@ -4,63 +4,63 @@ invalid_data_path <- "data/invalid_data/binary-missing-long.csv"
 # TODO add tests of upload, reset, rerun
 
 test_that("Check setup_load function returns errors for faulty inputs", {
-  expect_error(setup_load(data_path = 123, outcome = "Binary"), "data_path must be of class character")
-  expect_error(setup_load(data_path = "word_doc.docx", outcome = "Binary"), "data_path must link to either a .csv or .xlsx file")
-  expect_error(setup_load(data_path = "non_existent.csv", outcome = "Binary"), "The specified file does not exist")
+  expect_error(setup_load(data_path = 123, outcome = "binary"), "data_path must be of class character")
+  expect_error(setup_load(data_path = "word_doc.docx", outcome = "binary"), "data_path must link to either a .csv or .xlsx file")
+  expect_error(setup_load(data_path = "non_existent.csv", outcome = "binary"), "The specified file does not exist")
   expect_error(setup_load(outcome = 123), "outcome must be of class character")
-  expect_error(setup_load(outcome = "not_binary"), "outcome must be either Binary or Continuous")
+  expect_error(setup_load(outcome = "not_binary"), "outcome must be either binary or continuous")
 })
 
 test_that("Check setup_load function loads default data when no path is specified", {
-  expected_components <- c("is_data_valid", "is_data_uploaded", "data", "treatment_df")
-  result <- setup_load(outcome = "Binary")
+  expected_components <- c("is_data_valid", "is_data_uploaded", "data", "treatments", "outcome")
+  result <- setup_load(outcome = "binary")
   expect_true(all(expected_components %in% names(result)))
-  result <- setup_load(outcome = "Continuous")
+  result <- setup_load(outcome = "continuous")
   expect_true(all(expected_components %in% names(result)))
 })
 
 test_that("Check setup_load returns the correct data classes", {
-  result <- setup_load(outcome = "Continuous")
+  result <- setup_load(outcome = "continuous")
   expect_type(result$is_data_valid, "logical")
   expect_type(result$is_data_uploaded, "logical")
   expect_s3_class(result$data, "data.frame")
-  expect_s3_class(result$treatment_df, "data.frame")
+  expect_s3_class(result$treatments, "data.frame")
 })
 
 # only using one example here as all the others are tested in test-data_validation.R
 test_that("Check setup_load handles invalid data correctly", {
-  expect_error(setup_load(data_path = invalid_data_path, outcome = "Binary"), "*Missing columns for Binary data: N*")
+  expect_error(setup_load(data_path = invalid_data_path, outcome = "binary"), "*Missing columns for binary data: N*")
 })
 
 # from here, tests have been refactored from test-data_input_panel.R
-test_that("Continuous wide data matches between .csv and .xlsx files", {
-  result_csv <- setup_load(data_path = "data/Non_opioids_wide.csv", outcome = "Continuous")
-  result_xlsx <- setup_load(data_path = "data/Non_opioids_wide.xlsx", outcome = "Continuous")
+test_that("continuous wide data matches between .csv and .xlsx files", {
+  result_csv <- setup_load(data_path = "data/Non_opioids_wide.csv", outcome = "continuous")
+  result_xlsx <- setup_load(data_path = "data/Non_opioids_wide.xlsx", outcome = "continuous")
   expect_equal(result_csv, result_xlsx)
 })
 
-test_that("Continuous long data matches between .csv and .xlsx files", {
-  result_csv <- setup_load(data_path = "data/Non_opioids_long.csv", outcome = "Continuous")
-  result_xlsx <- setup_load(data_path = "data/Non_opioids_long.xlsx", outcome = "Continuous")
+test_that("continuous long data matches between .csv and .xlsx files", {
+  result_csv <- setup_load(data_path = "data/Non_opioids_long.csv", outcome = "continuous")
+  result_xlsx <- setup_load(data_path = "data/Non_opioids_long.xlsx", outcome = "continuous")
   expect_equal(result_csv, result_xlsx)
 })
 
-test_that("Continuous long data matches between .csv and .xlsx files", {
-  result_csv <- setup_load(data_path = "data/Certolizumab_long.csv", outcome = "Binary")
-  result_xlsx <- setup_load(data_path = "data/Certolizumab_long.xlsx", outcome = "Binary")
+test_that("continuous long data matches between .csv and .xlsx files", {
+  result_csv <- setup_load(data_path = "data/Certolizumab_long.csv", outcome = "binary")
+  result_xlsx <- setup_load(data_path = "data/Certolizumab_long.xlsx", outcome = "binary")
   expect_equal(result_csv, result_xlsx)
 })
 
-test_that("Continuous long data matches between .csv and .xlsx files", {
-  result_csv <- setup_load(data_path = "data/Certolizumab_wide.csv", outcome = "Binary")
-  result_xlsx <- setup_load(data_path = "data/Certolizumab_wide.xlsx", outcome = "Binary")
+test_that("continuous long data matches between .csv and .xlsx files", {
+  result_csv <- setup_load(data_path = "data/Certolizumab_wide.csv", outcome = "binary")
+  result_xlsx <- setup_load(data_path = "data/Certolizumab_wide.xlsx", outcome = "binary")
   expect_equal(result_csv, result_xlsx)
 })
 
 test_that("Treatments and data extracted from default binary file", {
-  result <- setup_load(outcome = "Binary")
-  treatment_df <- data.frame(Number = seq(7), Label = c('Placebo','Infliximab','Adalimumab','Tocilizumab','CZP','Rituximab', 'Etanercept'))
-  expect_equal(result$treatment_df, treatment_df)
+  result <- setup_load(outcome = "binary")
+  treatments <- data.frame(Number = seq(7), Label = c('Placebo','Infliximab','Adalimumab','Tocilizumab','CZP','Rituximab', 'Etanercept'))
+  expect_equal(result$treatments, treatments)
 
   expect_equal(colnames(result$data), c('Study', 'T', 'N', 'R', 'covar.duration'),
                label = format_vector_to_string(colnames(result$data)))
@@ -76,6 +76,8 @@ test_that("Treatments and data extracted from default binary file", {
   expect_equal(result$data$N, c(47, 49, 62, 67, 110, 165, 49, 50, 200, 207, 63, 65, 204, 205, 199, 393, 127, 246, 363, 360, 40, 40, 30, 59),
                label = format_vector_to_string(result$data$N))
 
+  expect_equal(result$outcome, "binary")
+
 })
 
 test_that("Check setup_load loads data into common correctly for default data", {
@@ -88,7 +90,7 @@ test_that("Check setup_load loads data into common correctly for default data", 
   expect_type(common$is_data_valid, "logical")
   expect_type(common$is_data_uploaded, "logical")
   expect_s3_class(common$data, "data.frame")
-  expect_s3_class(common$treatment_df, "data.frame")
+  expect_s3_class(common$treatments, "data.frame")
 
   expect_true(common$is_data_valid)
   expect_false(common$is_data_uploaded)
@@ -115,7 +117,7 @@ test_that("Check setup_load loads data into common correctly for default data", 
   expect_equal(common$data$SD, c(2.5, 2.4, 3.7, 2.8, 1.6, 1.7, 2.5, 2.4, 3.6, 3.5, 1.5, 1.5, 0.2, 0.7, 0.1, 0.3, 3.3, 2.2, 0.7, 2.1, 3.7, 1.7, 1.5, 1.4, 1.9, 0.7, 4.4, 3, 1.7, 1.4, 2.1, 2.5, 1.5, 1.5, 2.2, 1.5, 3, 1.1, 1.8, 1.7, 0.7, 0.7, 1.1, 0.9, 1.6, 1.7, 0.7, 0.7, 0.9, 0.4, 0.1,0.9, 1.4, 1.7, 1, 0.8, 1.5, 0.9, 0.9, 1.2, 0.1, 0.1, 1.5, 0.6, 1.5, 1.2, 1.9, 1.5, 2.5, 2, 1.4, 1.2, 2, 1.9, 0.7, 2.1, 0.8, 0.5, 2, 1.6, 1.5, 1.5, 0.7, 0.7, 2.8, 2.2, 0.2, 0.9, 1.7, 1.7),
                label = format_vector_to_string(common$data$SD))
 
-  expect_equal(common$treatment_df, data.frame(Number = seq(4), Label = c('Placebo','Glucocorticoids','Ketamine','Gabapentinoids')))
+  expect_equal(common$treatments, data.frame(Number = seq(4), Label = c('Placebo','Glucocorticoids','Ketamine','Gabapentinoids')))
 
 })
 
@@ -130,7 +132,7 @@ test_that("Check setup_load loads data into common correctly for an uploaded fil
   expect_type(common$is_data_valid, "logical")
   expect_type(common$is_data_uploaded, "logical")
   expect_s3_class(common$data, "data.frame")
-  expect_s3_class(common$treatment_df, "data.frame")
+  expect_s3_class(common$treatments, "data.frame")
 
   expect_true(common$is_data_valid)
   expect_true(common$is_data_uploaded)
@@ -140,7 +142,7 @@ test_that("Invalid data is loaded into common correctly and errors are passed to
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_setup_load")
   app$set_inputs(tabs = "setup")
   app$set_inputs(setupSel = "setup_load")
-  app$set_inputs("setup_load-outcome" = "Binary")
+  app$set_inputs("setup_load-outcome" = "binary")
   app$upload_file("setup_load-file1" = invalid_data_path)
   app$click("setup_load-run")
   common <- app$get_value(export = "common")
@@ -148,12 +150,12 @@ test_that("Invalid data is loaded into common correctly and errors are passed to
   expect_type(common$is_data_valid, "logical")
   expect_type(common$is_data_uploaded, "logical")
   expect_s3_class(common$data, "data.frame")
-  expect_null(common$treatment_df, "data.frame")
+  expect_null(common$treatments, "data.frame")
   expect_false(common$is_data_valid)
   expect_true(common$is_data_uploaded)
 
   logger <- app$get_value(export = "logger")
-  expect_true(grepl("*Missing columns for Binary data*", logger))
+  expect_true(grepl("*Missing columns for binary data*", logger))
 })
 
 

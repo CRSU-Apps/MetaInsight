@@ -1,24 +1,14 @@
-freq_data <- defined_data_con$freq_all
-treatment_data <- defined_data_con$treatment_df
-
 test_that("freq_summary produces errors for incorrect data types and invalid values", {
-  result <- freq_summary(freq_data, treatment_data, "Title", "OR", "good", "random", 999)
+  result <- freq_summary(configured_data_con, "Title")
+  expect_match(result, "<svg")
 
+  result <- freq_summary(configured_data_bin, "Title")
   expect_match(result, "<svg")
 })
 
 test_that("freq_summary produces errors for incorrect data types and invalid values", {
-
-  expect_error(freq_summary("not_a_list", treatment_data, "Title", "OR", "good", "random", 999), "freq must be of class list")
-  expect_error(freq_summary(freq_data, "not_a_dataframe", "Title", "OR", "good", "random", 999), "treatment_df must be of class data.frame")
-  expect_error(freq_summary(freq_data, treatment_data, 123, "OR", "good", "random", 999), "plot_title must be of class character")
-  expect_error(freq_summary(freq_data, treatment_data, "Title", 123, "good", "random", 999), "outcome_measure must be of class character")
-  expect_error(freq_summary(freq_data, treatment_data, "Title", "OR", 123, "random", 999), "ranking_option must be of class character")
-  expect_error(freq_summary(freq_data, treatment_data, "Title", "OR", "good", 123, 999), "model_type must be of class character")
-  expect_error(freq_summary(freq_data, treatment_data, "Title", "OR", "good", "random", "999"), "seed must be of class numeric")
-  expect_error(freq_summary(freq_data, treatment_data, "Title", "OR", "invalid_ranking_option", "random", 999), "ranking_option must be 'good' or 'bad'")
-  expect_error(freq_summary(freq_data, treatment_data, "Title", "invalid_outcome_measure", "good", "random", 999), "outcome_measure must be 'OR', 'RR', 'RD', 'MD' or 'SMD'")
-  expect_error(freq_summary(freq_data, treatment_data, "Title", "OR", "good", "invalid_model_type", 999), "model_type must be 'fixed' or 'random'")
+  expect_error(freq_summary("not_data", "Title"), "configured_data must be of class configured_data")
+  expect_error(freq_summary(configured_data_con, 123), "plot_title must be of class character")
 })
 
 test_that("freq_summary produces downloadable plots", {

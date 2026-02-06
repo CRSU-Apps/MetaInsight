@@ -1,39 +1,15 @@
 # The aim here is to process the data once at the start so it can be used downstream
 test_data_dir <- normalizePath(testthat::test_path("data"))
 
-loaded_data_con <- setup_load(outcome = "Continuous")
-defined_data_con <- setup_configure(loaded_data_con$data, loaded_data_con$treatment_df, "Continuous", "MD", "Placebo")
-excluded_data_con <- setup_exclude(defined_data_con$non_covariate_data_all, defined_data_con$treatment_df, "Placebo", "Continuous", "MD", "random", c("Study01", "Study02", "Study03", "Study04"))
-loaded_data_bin <- setup_load(outcome = "Binary")
-defined_data_bin <- setup_configure(loaded_data_bin$data, loaded_data_bin$treatment_df, "Binary", "OR", "Placebo")
+loaded_data_con <- setup_load(outcome = "continuous")
+configured_data_con <- setup_configure(loaded_data_con, "Placebo", "random", "MD", "good", 123)
+excluded_data_con <- setup_exclude(configured_data_con, c("Study01", "Study02", "Study03", "Study04"))
+loaded_data_bin <- setup_load(outcome = "binary")
+configured_data_bin <- setup_configure(loaded_data_bin, "Placebo", "random", "OR", "good", 123)
 
-fitted_bayes_model <- bayes_model(defined_data_con$main_connected_data,
-                                  loaded_data_con$treatment_df,
-                                  "Continuous",
-                                  "MD",
-                                  "random",
-                                  "Placebo",
-                                  123)
-
-fitted_baseline_model <- baseline_model(defined_data_con$main_connected_data,
-                                        loaded_data_con$treatment_df,
-                                        "Continuous",
-                                        "MD",
-                                        "Placebo",
-                                        "random",
-                                        "shared",
-                                        123)
-
-fitted_covariate_model <- covariate_model(defined_data_con$main_connected_data,
-                                          defined_data_con$treatment_df,
-                                          "Continuous",
-                                          "MD",
-                                          50,
-                                          "random",
-                                          "shared",
-                                          "Continuous",
-                                          "Placebo",
-                                          123)
+fitted_bayes_model <- bayes_model(configured_data_con)
+fitted_baseline_model <- baseline_model(configured_data_con, "shared")
+fitted_covariate_model <- covariate_model(configured_data_con, 50, "shared")
 
 # fit models and save them so they can be reloaded in other tests
 # my PC has a pecularity where the upload of temporary files fails

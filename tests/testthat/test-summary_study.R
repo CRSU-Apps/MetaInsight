@@ -1,38 +1,33 @@
-con <- excluded_data_con$subsetted_data
-freq <- excluded_data_con$freq_sub
-
 test_that("summary_study produces functions correctly", {
-  result_1 <- summary_study(con, freq, "OR")
+  result_1 <- summary_study(configured_data_con)
 
   expect_match(result_1, "<svg")
 
-  result_2 <- summary_study(con, freq, "OR", 7)
-  # no ROB data in example data yet
-  # result_3 <- summary_study(con, freq, "OR", 6, TRUE)
-  result_4 <- summary_study(con, freq, "OR", 6, FALSE, 0, 1)
+  result_2 <- summary_study(configured_data_con, 7)
+  result_3 <- summary_study(configured_data_con, 6, TRUE)
+  result_4 <- summary_study(configured_data_con, 6, FALSE, 0, 1)
+  result_5 <- summary_study(configured_data_bin)
+  expect_match(result_5, "<svg")
 
   # should all be different
   expect_false(identical(result_1, result_2))
-  # expect_false(identical(result_1, result_3))
-  # expect_false(identical(result_2, result_3))
+  expect_false(identical(result_1, result_3))
+  expect_false(identical(result_2, result_3))
   expect_false(identical(result_1, result_4))
   expect_false(identical(result_2, result_4))
-  # expect_false(identical(result_3, result_4))
+  expect_false(identical(result_3, result_4))
 })
 
 
 test_that("summary_study produces errors for incorrect data types", {
-  expect_error(summary_study("not_a_dataframe", freq, "OR", 6, TRUE, 0, 1), "connected_data must be of class data.frame")
-  expect_error(summary_study(con, "not_a_list", "OR", 6, TRUE, 0, 1), "freq must be of class list")
-  expect_error(summary_study(con, freq, 123, 6, TRUE, 0, 1), "outcome_measure must be of class character")
-  expect_error(summary_study(con, freq, "OR", "123", TRUE, 0, 1), "plot_area_width must be of class numeric")
-  expect_error(summary_study(con, freq, "OR", 6, "TRUE", 0, 1), "colourblind must be of class logical")
-  expect_error(summary_study(con, freq, "OR", 6, TRUE, "123", 1), "x_min must be of class numeric")
-  expect_error(summary_study(con, freq, "OR", 6, TRUE, 1, "123"), "x_max must be of class numeric")
+  expect_error(summary_study("not_data", 6, TRUE, 0, 1), "configured_data must be of class configured_data")
+  expect_error(summary_study(configured_data_con, "123", TRUE, 0, 1), "plot_area_width must be of class numeric")
+  expect_error(summary_study(configured_data_con, 6, "TRUE", 0, 1), "colourblind must be of class logical")
+  expect_error(summary_study(configured_data_con, 6, TRUE, "123", 1), "x_min must be of class numeric")
+  expect_error(summary_study(configured_data_con, 6, TRUE, 1, "123"), "x_max must be of class numeric")
 
-  expect_error(summary_study(con, freq, "AA", 6, TRUE, 0, 1), "outcome_measure must be either MD, SMD, OR, RR or RD")
-  expect_error(summary_study(con, freq, "OR", 5, TRUE, 0, 1), "plot_area_width must be between 6 and 20")
-  expect_error(summary_study(con, freq, "OR", 21, TRUE, 0, 1), "plot_area_width must be between 6 and 20")
+  expect_error(summary_study(configured_data_con, 5, TRUE, 0, 1), "plot_area_width must be between 6 and 20")
+  expect_error(summary_study(configured_data_con, 21, TRUE, 0, 1), "plot_area_width must be between 6 and 20")
 })
 
 test_that("summary_study produces downloadable plots", {

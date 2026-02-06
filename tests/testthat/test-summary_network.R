@@ -1,23 +1,17 @@
 test_that("summary_network produces svg plot", {
-  freq <- defined_data_con$freq_all
-  bugsnet <- defined_data_con$bugsnet_all
-  result <- summary_network(freq, bugsnet, "netgraph", 1, "title")
-
+  result <- summary_network(configured_data_con, "netgraph", 1, "title")
   expect_match(result, "<svg")
 
-  result <- summary_network(freq, bugsnet, "netplot", 1, "title")
-
+  result <- summary_network(configured_data_con, "netplot", 1, "title")
   expect_match(result, "<svg")
-
 })
 
 test_that("summary_network produces errors for incorrect data types", {
-  expect_error(summary_network("not_a_list", defined_data$bugsnet_all, "netgraph", 1, "title"), "freq must be of class list")
-  expect_error(summary_network(defined_data_con$freq_all, "not_a_dataframe", "netgraph", 1, "title"), "bugsnet must be of class data.frame")
-  expect_error(summary_network(defined_data_con$freq_all, defined_data_con$bugsnet_all, 123, 1, "title"), "style must be of class character")
-  expect_error(summary_network(defined_data_con$freq_all, defined_data_con$bugsnet_all, "netgraph", "not_a_number", "title"), "label_size must be of class numeric")
-  expect_error(summary_network(defined_data_con$freq_all, defined_data_con$bugsnet_all, "invalid_style", 1, "title"), "style must be either netgraph or netplot")
-  expect_error(summary_network(defined_data_con$freq_all, defined_data_con$bugsnet_all, "netgraph", 1, 123), "title must be of class character")
+  expect_error(summary_network("not_data", "netgraph", 1, "title"), "configured_data must be of class configured_data")
+  expect_error(summary_network(configured_data_con, 123, 1, "title"), "style must be of class character")
+  expect_error(summary_network(configured_data_con, "netgraph", "not_a_number", "title"), "label_size must be of class numeric")
+  expect_error(summary_network(configured_data_con, "invalid_style", 1, "title"), "style must be either netgraph or netplot")
+  expect_error(summary_network(configured_data_con, "netgraph", 1, 123), "title must be of class character")
 })
 
 test_that("summary_network produces downloadable plots", {

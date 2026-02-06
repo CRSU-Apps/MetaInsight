@@ -1,17 +1,10 @@
-connected <- defined_data_con$main_connected_data
-t_df <- defined_data_con$treatment_df
-
 test_that("Check baseline_summary function works as expected", {
-  result <- baseline_summary(connected, "Continuous", t_df)
-
+  result <- baseline_summary(configured_data_con)
   expect_match(result, "<svg")
 })
 
 test_that("Check baseline_summary function produces errors as expected", {
-  expect_error(baseline_summary("not_a_dataframe", "Continuous", t_df), "connected_data must be of class data.frame")
-  expect_error(baseline_summary(connected, 123, t_df), "outcome must be of class character")
-  expect_error(baseline_summary(connected, "Continuous", "not_a_dataframe"), "treatment_df must be of class data.frame")
-  expect_error(baseline_summary(connected, "invalid_outcome", t_df), "outcome must be 'Binary' or 'Continuous'")
+  expect_error(baseline_summary("not_data"), "configured_data must be of class configured_data")
 })
 
 test_that("{shinytest2} recording: e2e_baseline_summary", {

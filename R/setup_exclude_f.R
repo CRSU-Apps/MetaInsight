@@ -26,6 +26,10 @@ setup_exclude <- function(configured_data, exclusions, async = FALSE){
     return(async |> asyncLog(type = "error", "error", "exclusions must be of class character"))
   }
 
+  if (!is.null(exclusions) && all(!exclusions %in% configured_data$connected_data$Study)){
+    return(async |> asyncLog(type = "error", "error", "exclusions must in the present in the loaded data"))
+  }
+
   subsetted_data <- configured_data$non_covariate_data[!configured_data$non_covariate_data$Study %in% exclusions,]
 
   if (nrow(subsetted_data) == 0){
@@ -55,6 +59,7 @@ setup_exclude <- function(configured_data, exclusions, async = FALSE){
   # delete unneeded and overwrite with new data
   output$non_covariate_data <- NULL
   output$wrangled_data <- NULL
+  output$disconnected_indices <- NULL
   output$bugsnet <- bugsnet
   output$freq <- freq
   output$reference_treatment <- reference_treatment

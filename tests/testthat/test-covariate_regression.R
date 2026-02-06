@@ -131,15 +131,9 @@ test_that("CalculateContributions() gathers relative treatment effects for treat
 })
 
 test_that("Check covariate_regression function works as expected", {
-  result <- covariate_regression(fitted_covariate_model,
-                                defined_data_con$main_connected_data,
-                                "covar.age",
-                                defined_data_con$treatment_df,
-                                "Continuous",
-                                "MD",
-                                "random")
+  result <- covariate_regression(fitted_covariate_model, configured_data_con)
 
-  expect_is(result, "list")
+  expect_is(result, "regression_data")
   expect_true(all(c("directness",
                     "credible_regions") %in% names(result)))
   expect_is(result$directness, "list")
@@ -154,14 +148,17 @@ test_that("Check covariate_regression function works as expected", {
                     "intervals") %in% names(result$credible_regions)))
 
   plot_result <- metaregression_plot(fitted_covariate_model,
-                                     defined_data_con$treatment_df,
-                                     "MD",
-                                     c("Gabapentinoids", "Ketamine"),
-                                     result$directness,
-                                     result$credible_regions)
+                                     configured_data_con,
+                                     result,
+                                     c("Gabapentinoids", "Ketamine"))
 
   expect_match(plot_result, "<svg")
 
+})
+
+test_that("baseline_regression produce errors for incorrect data types", {
+  expect_error(covariate_regression("faulty_model", configured_data_con), "model must be of class covariate_model")
+  expect_error(covariate_regression(fitted_covariate_model, "not_data"), "configured_data must be of class configured_data")
 })
 
 test_that("{shinytest2} recording: e2e_covariate_regression", {

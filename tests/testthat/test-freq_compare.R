@@ -1,17 +1,14 @@
 test_that("freq_compare produces errors for incorrect data types and invalid values", {
-  expect_error(freq_compare("not_a_list", "fixed", "good"), "freq must be of class list")
-  expect_error(freq_compare(excluded_data_con$freq_sub, 123, "good"), "model_type must be of class character")
-  expect_error(freq_compare(excluded_data_con$freq_sub, "fixed", 123), "ranking_option must be of class character")
-  expect_error(freq_compare(excluded_data_con$freq_sub, "invalid_model_type", "good"), "model_type must be 'fixed' or 'random'")
+  expect_error(freq_compare("not_data"), "configured_data must be of class configured_data")
 })
 
 test_that("freq_compare functions correctly", {
-  result <- freq_compare(defined_data_con$freq_all, "fixed", "good")
+  result <- freq_compare(configured_data_con)
   expect_s3_class(result, "data.frame")
   expect_equal(ncol(result), 4)
   expect_equal(nrow(result), 4)
 
-  result <- freq_compare(excluded_data_con$freq_sub, "fixed", "good")
+  result <- freq_compare(excluded_data_con)
   expect_s3_class(result, "data.frame")
   expect_equal(ncol(result), 3)
   expect_equal(nrow(result), 3)

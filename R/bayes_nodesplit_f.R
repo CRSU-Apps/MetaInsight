@@ -57,7 +57,7 @@ bayes_nodesplit <- function(configured_data, async = FALSE) {
 
   check_nodesplit <- IsNodesplittable(
     data = data,
-    treatments = treatment_df$Label
+    treatments = configured_data$treatments$Label
   )
 
   if (!check_nodesplit$is_nodesplittable) {
