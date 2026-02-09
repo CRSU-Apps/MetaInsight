@@ -52,6 +52,11 @@ test_that("baseline_model produces errors for incorrect data types", {
   expect_error(baseline_model("not_data", "shared"), "configured_data must be of class configured_data")
   expect_error(baseline_model(configured_data_con, 123), "regressor_type must be of class character")
   expect_error(baseline_model(configured_data_con, "not_shared"), "regressor_type must be")
+
+  invalid_outcome_measure <- configured_data_con
+  invalid_outcome_measure$outcome_measure <- "SMD"
+  expect_error(baseline_model(invalid_outcome_measure, "shared"), "configured data must have an outcome_measure")
+
 })
 
 

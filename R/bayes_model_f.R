@@ -20,6 +20,10 @@ bayes_model <- function(configured_data, async = FALSE){
     }
   }
 
+  if (!configured_data$outcome_measure %in% c("OR", "RR", "MD")){
+    return(async |> asyncLog(type = "error", "configured data must have an outcome_measure of 'OR', 'RR' or 'MD'"))
+  }
+
   # use same RNG inside and outside of mirai
   RNGkind("L'Ecuyer-CMRG")
   set.seed(configured_data$seed)

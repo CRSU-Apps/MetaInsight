@@ -24,7 +24,7 @@
 #'  \item{intercepts}{named list of intercepts for the regression equations at covariate_value}
 #'  \item{outcome}{The outcome type for the analysis eg. "MD" or "OR"}
 #'  \item{mtcNetwork}{The network object from GEMTC}
-#'  \item{model}{The type of linear model, either "fixed" or "random"}
+#'  \item{effects}{The type of linear model, either "fixed" or "random"}
 #'  \item{covariate_min}{Vector of minimum covariate values directly contributing to the regression}
 #'  \item{covariate_max}{Vector of maximum covariate values directly contributing to the regression}
 #' @export
@@ -46,7 +46,7 @@ covariate_model <- function(configured_data,
   }
 
   if (!configured_data$outcome_measure %in% c("OR", "RR", "MD")){
-    return(async |> asyncLog(type = "error", "outcome_measure must be 'OR', 'RR' or 'MD'"))
+    return(async |> asyncLog(type = "error", "configured data must have an outcome_measure of 'OR', 'RR' or 'MD'"))
   }
 
   covariate <- configured_data$covariate$column

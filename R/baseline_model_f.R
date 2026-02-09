@@ -21,8 +21,6 @@
 #' @export
 baseline_model <- function(configured_data, regressor_type, async = FALSE){
 
-  # connected_data, treatment_df, outcome, outcome_measure, reference_treatment, model_type, regressor_type, seed,
-
   if (!async){ # only an issue if run outside the app
     if (check_param_classes(c("configured_data", "regressor_type"),
                             c("configured_data", "character"), NULL)){
@@ -31,7 +29,7 @@ baseline_model <- function(configured_data, regressor_type, async = FALSE){
   }
 
   if (!configured_data$outcome_measure %in% c("OR", "RR", "MD")){
-    return(async |> asyncLog(type = "error", "outcome_measure must be 'OR', 'RR' or 'MD'"))
+    return(async |> asyncLog(type = "error", "configured data must have an outcome_measure of 'OR', 'RR' or 'MD'"))
   }
 
   if (!regressor_type %in% c("shared", "unrelated", "exchangeable")){

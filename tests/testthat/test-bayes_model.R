@@ -34,6 +34,11 @@ test_that("Check bayes_model function works as expected", {
 
 test_that("bayes_model produces errors for incorrect data types", {
   expect_error(bayes_model("not_data"), "configured_data must be of class configured_data")
+
+  invalid_outcome_measure <- configured_data_con
+  invalid_outcome_measure$outcome_measure <- "SMD"
+  expect_error(bayes_model(invalid_outcome_measure), "configured data must have an outcome_measure")
+
 })
 
 test_that("bayes_model works e2e - that models are initally identical, update after exclusions and are then different", {
