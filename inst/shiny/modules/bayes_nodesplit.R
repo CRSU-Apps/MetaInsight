@@ -149,9 +149,6 @@ bayes_nodesplit_module_result <- function(id) {
 
 
 bayes_nodesplit_module_rmd <- function(common) {
-  list(bayes_nodesplit_knit = !is.null(common$nodesplit_all),
-       bayes_nodesplit_plot_height_all = common$meta$bayes_nodesplit$plot_height_all,
-       bayes_nodesplit_plot_height_sub = common$meta$bayes_nodesplit$plot_height_sub
-       )
+  list(bayes_nodesplit_knit = !is.null(common$nodesplit_all))
 }
 

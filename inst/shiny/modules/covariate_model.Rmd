@@ -4,17 +4,10 @@
 
 ```{r, echo = {{covariate_model_knit}}, include = {{covariate_model_knit}}}
 covariate_value <- {{covariate_model_covariate_value}}
-
-covariate_model <- covariate_model(main_connected_data, 
-                                   treatment_df, 
-                                   outcome, 
-                                   outcome_measure, 
+covariate_regressor <- {{covariate_model_regressor}}
+covariate_model <- covariate_model(configured_data, 
                                    covariate_value, 
-                                   model_type, 
-                                   {{covariate_model_regressor}},
-                                   covariate_type,
-                                   reference_treatment_all, 
-                                   seed)
+                                   covariate_regressor)
 
 covariate_model$dic |> 
   gt::gt(rownames_to_stub = TRUE) |>

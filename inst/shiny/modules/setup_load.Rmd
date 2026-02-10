@@ -1,11 +1,21 @@
 ```{asis, echo = {{setup_load_knit}}, eval = {{setup_load_knit}}, include = {{setup_load_knit}}}
-### Read the data in and display a table
+### Read the data, assemble into loaded data in and display a table
 ```
 
 ```{r, echo = {{setup_load_knit}}, include = {{setup_load_knit}}}
-uploaded_data <- {{setup_load_data}}
-treatments <- {{setup_load_treatment_df}}
+raw_data <- {{setup_load_data}}
+treatments <- {{setup_load_treatments}}
 outcome <- {{setup_load_outcome}}
 
-DT::datatable(uploaded_data)
+loaded_data <- list(data = raw_data,
+                    treatments = treatments,
+                    outcome = outcome,
+                    is_data_valid = TRUE)
+class(loaded_data) <- "loaded_data"
+
+DT::datatable(raw_data, 
+              options = list(
+                scrollX = TRUE,
+                autoWidth = FALSE)
+              )
 ```

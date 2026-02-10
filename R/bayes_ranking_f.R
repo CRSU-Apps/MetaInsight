@@ -1,12 +1,11 @@
 #' Generate ranking data required to produce SUCRA plots from Bayesian models
 #'
 #' @param model list. Output produced by `baseline_model()`, `bayes_model()` or `covariate_model()`.
-#' @param cov_value numeric. Covariate value if a meta-regression. Default `NA`
 #' @inheritParams common_params
 #'
 #' @return List of output created by `rankdata()`.
 #' @export
-bayes_ranking <- function(model, configured_data, cov_value = NA, logger = NULL) {
+bayes_ranking <- function(model, configured_data, logger = NULL) {
 
   check_param_classes(c("configured_data"),
                       c("configured_data"), logger)
@@ -21,9 +20,10 @@ bayes_ranking <- function(model, configured_data, cov_value = NA, logger = NULL)
     return()
   }
 
-  if (inherits(model, "covariate_model") && (is.na(cov_value) || !is.numeric(cov_value))){
-    logger |> writeLog(type = "error", "please specify a numeric cov_value")
-    return()
+  if (inherits(model, "covariate_model")){
+    cov_value <- model$covariate_value
+  } else {
+    cov_value <- NA
   }
 
   longsort <- dataform.df(configured_data$connected_data, configured_data$treatments, model$outcome)

@@ -6,10 +6,7 @@
 {r, results = 'asis'}
 ```
 ```{r, echo = {{freq_forest_knit}}, include = {{freq_forest_knit}}}
-freq_forest(frequentist_all, 
-            reference_treatment_all, 
-            model_type,
-            outcome_measure,
+freq_forest(configured_data,
             {{freq_forest_xmin_all}},
             {{freq_forest_xmax_all}},
             "Results for all studies") 
@@ -19,10 +16,7 @@ freq_forest(frequentist_all,
 {r, results = 'asis'}
 ```
 ```{r, echo = {{freq_forest_knit}}, include = {{freq_forest_knit}}}
-freq_forest(frequentist_sub, 
-            reference_treatment_sub,
-            model_type,
-            outcome_measure,
+freq_forest(subsetted_data,
             {{freq_forest_xmin_sub}},
             {{freq_forest_xmax_sub}},
             "Results with selected studies excluded") 

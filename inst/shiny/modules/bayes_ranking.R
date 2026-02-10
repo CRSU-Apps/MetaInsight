@@ -74,13 +74,7 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
 
     observeEvent(run(),{
       req(common[[model]])
-
-      if (ranking == "covariate_ranking"){
-        cov_value <- common$covariate_model$covariate_value
-      } else {
-        cov_value <- NA
-      }
-      common[[ranking]] <- bayes_ranking(common[[model]], common[[configured_data]], cov_value)
+      common[[ranking]] <- bayes_ranking(common[[model]], common[[configured_data]])
       trigger(trigger)
     })
 

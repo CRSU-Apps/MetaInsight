@@ -3,19 +3,25 @@
 ```
 
 ```{asis, echo = {{summary_network_knit}}, eval = {{summary_network_knit}}, include = {{summary_network_knit}}}
-{r,  results = 'asis'}
+{r,  results = 'asis', out.extra='style="height: 400px;"'}
 ```
 ```{r, echo = {{summary_network_knit}}, include = {{summary_network_knit}}}
 network_style <- {{summary_network_style}}
 
-summary_network(frequentist_all, bugsnet_all, network_style, {{summary_network_label_all}}, "Network plot of all studies")
+summary_network(configured_data, 
+                network_style, 
+                {{summary_network_label_all}}, 
+                "Network plot of all studies") 
 ```
 
 ```{asis, echo = {{summary_network_knit}}, eval = {{summary_network_knit}}, include = {{summary_network_knit}}}
 {r, results = 'asis'}
 ```
 ```{r, echo = {{summary_network_knit}}, include = {{summary_network_knit}}}
-summary_network(frequentist_sub, bugsnet_sub, network_style, {{summary_network_label_sub}}, "Network plot with selected \n studies excluded")
+summary_network(subsetted_data, 
+                network_style, 
+                {{summary_network_label_sub}}, 
+                "Network plot with selected \n studies excluded") 
 ```
 
 ```{asis, echo = {{summary_network_knit}}, eval = {{summary_network_knit}}, include = {{summary_network_knit}}}
@@ -23,8 +29,8 @@ summary_network(frequentist_sub, bugsnet_sub, network_style, {{summary_network_l
 ```
 
 ```{r, echo = {{summary_network_knit}}, include = {{summary_network_knit}}}
-network_df_all <- make_netconnect(frequentist_all)
-network_df_sub <- make_netconnect(frequentist_sub)
+network_df_all <- make_netconnect(configured_data$freq)
+network_df_sub <- make_netconnect(subsetted_data$freq)
 network_df_compare <- data.frame(network_df_all, network_df_sub)
 colnames(network_df_compare) <- c("All studies", "With selected studies excluded")
 rownames(network_df_compare) <- c("Studies", "Pairwise comparisons", "Treatments", "Designs", "Subnetworks")

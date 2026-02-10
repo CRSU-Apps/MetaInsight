@@ -3,14 +3,14 @@
 ```
 
 ```{r, echo = {{baseline_ranking_knit}}, include = {{baseline_ranking_knit}}}
-baseline_ranking <- baseline_ranking(main_connected_data, treatment_df, baseline_model, ranking_option)
+baseline_ranking <- baseline_ranking(baseline_model, configured_data)
 ```
 
 ```{asis, echo = {{baseline_ranking_knit}}, eval = {{baseline_ranking_knit}}, include = {{baseline_ranking_knit}}}
 {r, results = 'asis'}
 ```
 ```{r, echo = {{baseline_ranking_knit}}, include = {{baseline_ranking_knit}}}
-baseline_forest(baseline_model, treatment_df, ranking = TRUE)
+baseline_forest(baseline_model, ranking = TRUE)
 ```
 
 ```{asis, echo = {{baseline_ranking_knit}}, eval = {{baseline_ranking_knit}}, include = {{baseline_ranking_knit}}}
@@ -32,5 +32,5 @@ knitr::kable(ranking_table(baseline_ranking), digits = 2)
 {r, results = 'asis'}
 ```
 ```{r, echo = {{baseline_ranking_knit}}, include = {{baseline_ranking_knit}}}
-summary_network(frequentist_all, bugsnet_all, {{baseline_ranking_network_style}})
+summary_network(configured_data, {{baseline_ranking_network_style}})
 ```

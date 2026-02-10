@@ -3,14 +3,14 @@
 ```
 
 ```{r, echo = {{covariate_ranking_knit}}, include = {{covariate_ranking_knit}}}
-covariate_ranking <- covariate_ranking(main_connected_data, treatment_df, covariate_model, ranking_option, covariate_value)
+covariate_ranking <- covariate_ranking(covariate_model, configured_data)
 ```
 
 ```{asis, echo = {{covariate_ranking_knit}}, eval = {{covariate_ranking_knit}}, include = {{covariate_ranking_knit}}}
 {r, results = 'asis'}
 ```
 ```{r, echo = {{covariate_ranking_knit}}, include = {{covariate_ranking_knit}}}
-covariate_forest(covariate_model, treatment_df, ranking = TRUE)
+covariate_forest(covariate_model, ranking = TRUE)
 ```
 
 ```{asis, echo = {{covariate_ranking_knit}}, eval = {{covariate_ranking_knit}}, include = {{covariate_ranking_knit}}}
@@ -32,5 +32,5 @@ knitr::kable(ranking_table(covariate_ranking), digits = 2)
 {r, results = 'asis'}
 ```
 ```{r, echo = {{covariate_ranking_knit}}, include = {{covariate_ranking_knit}}}
-summary_network(frequentist_all, bugsnet_all, {{covariate_ranking_network_style}})
+summary_network(configured_data, {{covariate_ranking_network_style}})
 ```

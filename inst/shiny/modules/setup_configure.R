@@ -77,7 +77,7 @@ setup_configure_module_server <- function(id, common, parent_session) {
     common$meta$setup_configure$reference_treatment <- input$reference_treatment
     common$meta$setup_configure$ranking_option <- input$ranking_option
     common$meta$setup_configure$outcome_measure <- input$outcome_measure
-    common$meta$setup_configure$outcome_seed <- input$seed
+    common$meta$setup_configure$seed <- as.numeric(input$seed)
 
     # TRIGGER
     trigger("setup_configure")

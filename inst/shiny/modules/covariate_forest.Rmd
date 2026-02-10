@@ -7,7 +7,6 @@
 ```
 ```{r, echo = {{covariate_forest_knit}}, include = {{covariate_forest_knit}}}
 covariate_forest(covariate_model, 
-                 treatment_df, 
                  xmin = {{covariate_forest_xmin}},
                  xmax = {{covariate_forest_xmax}},
                  title = "Covariate regression analysis")

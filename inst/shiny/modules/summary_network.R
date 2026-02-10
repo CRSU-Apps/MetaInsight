@@ -66,7 +66,8 @@ summary_network_module_server <- function(id, common, parent_session) {
 
     output$plot_all <- renderUI({
       req(plot_all())
-      svg_container(
+      # this constrains the plot to a sensible size
+      svg_container(class = "svg_container_ranking", style = "height: 400px",
         plot_all()
       )
     })
@@ -75,7 +76,7 @@ summary_network_module_server <- function(id, common, parent_session) {
 
     output$plot_sub <- renderUI({
       req(plot_sub())
-      svg_container(
+      svg_container(class = "svg_container_ranking", style = "height: 400px",
           plot_sub()
       )
     })

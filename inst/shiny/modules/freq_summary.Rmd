@@ -6,24 +6,14 @@
 {r, results = 'asis'}
 ```
 ```{r, echo = {{freq_summary_knit}}, include = {{freq_summary_knit}}}
-freq_summary(frequentist_all, 
-             treatment_df, 
-             "Summary forest plot for all studies", 
-             outcome_measure, 
-             ranking_option, 
-             model_type,
-             seed)
+freq_summary(configured_data, 
+             "Summary forest plot for all studies")
 ```
 
 ```{asis, echo = {{freq_summary_knit}}, eval = {{freq_summary_knit}}, include = {{freq_summary_knit}}}
 {r, results = 'asis'}
 ```
 ```{r, echo = {{freq_summary_knit}}, include = {{freq_summary_knit}}}
-freq_summary(frequentist_sub, 
-             treatment_df_sub, 
-             "Summary forest plot with selected studies excluded", 
-             outcome_measure, 
-             ranking_option, 
-             model_type,
-             seed)
+freq_summary(subsetted_data, 
+             "Summary forest plot with selected studies excluded")
 ```

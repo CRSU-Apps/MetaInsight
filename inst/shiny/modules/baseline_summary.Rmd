@@ -6,5 +6,5 @@
 {r, results = 'asis'}
 ```
 ```{r, echo = {{baseline_summary_knit}}, include = {{baseline_summary_knit}}}
-baseline_summary(main_connected_data, outcome, treatment_df)
+baseline_summary(configured_data)
 ```

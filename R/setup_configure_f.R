@@ -28,6 +28,11 @@ setup_configure <- function(loaded_data, reference_treatment, effects, outcome_m
   check_param_classes(c("loaded_data", "reference_treatment", "effects", "outcome_measure", "ranking_option", "seed"),
                       c("loaded_data", "character", "character", "character", "character", "numeric"), logger)
 
+  if (!loaded_data$is_data_valid){
+    logger |> writeLog(type = "error", "loaded_data does not contain valid data")
+    return()
+  }
+
   if (!reference_treatment %in% loaded_data$treatments$Label){
     logger |> writeLog(type = "error", "reference_treatment must be present in the loaded data")
     return()

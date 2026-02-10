@@ -7,7 +7,6 @@
 ```
 ```{r, echo = {{bayes_forest_knit}}, include = {{bayes_forest_knit}}}
 bayes_forest(bayes_model_all, 
-             treatment_df, 
              "All studies",
              xmin = {{bayes_forest_xmin_all}},
              xmax = {{bayes_forest_xmax_all}})
@@ -18,7 +17,6 @@ bayes_forest(bayes_model_all,
 ```
 ```{r, echo = {{bayes_forest_knit}}, include = {{bayes_forest_knit}}}
 bayes_forest(bayes_model_sub, 
-             treatment_df_sub, 
              "With selected studies excluded",
              xmin = {{bayes_forest_xmin_sub}},
              xmax = {{bayes_forest_xmax_sub}})

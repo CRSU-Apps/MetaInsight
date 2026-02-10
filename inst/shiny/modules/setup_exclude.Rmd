@@ -4,13 +4,5 @@
 
 ```{r, echo = {{setup_exclude_knit}}, include = {{setup_exclude_knit}}}
 excluded_studies <- {{setup_exclude_exclusions}}
-reference_treatment_sub <- {{setup_exclude_reference_treatment}}
-model_type <- {{setup_exclude_model}}
-
-excluded_data <- setup_exclude(wrangled_data, treatment_df, reference_treatment_sub, outcome, outcome_measure, model_type, excluded_studies)
-
-connected_data_sub <- excluded_data$subsetted_data 
-treatment_df_sub <- excluded_data$subsetted_treatment_df 
-frequentist_sub <- excluded_data$freq_sub
-bugsnet_sub <- excluded_data$bugsnet_sub
+subsetted_data <- setup_exclude(configured_data, excluded_studies)
 ```

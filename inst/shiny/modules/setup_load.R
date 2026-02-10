@@ -111,23 +111,21 @@ setup_load_module_server <- function(id, common, parent_session) {
         } else {
           common$logger |> writeLog(type = "complete", glue("Default {tolower(input$outcome)} data has been loaded"))
         }
+        # prevent running rmd if data is invalid
+        common$meta$setup_load$used <- TRUE
       }
 
       # LOAD INTO COMMON ####
       common$loaded_data <- result
 
       # METADATA ####
-      common$meta$setup_load$used <- TRUE
       common$meta$setup_load$outcome <- input$outcome
       common$meta$setup_load$format <- input$format
-      common$meta$setup_load$treatment_df <- result$treatment_df
+      common$meta$setup_load$treatments <- result$treatments
 
       # TRIGGER
       trigger("setup_load")
-
       show_results(parent_session)
-
-
     })
 
     output$download <- downloadHandler(
@@ -180,7 +178,7 @@ setup_load_module_result <- function(id) {
 setup_load_module_rmd <- function(common){ list(
   setup_load_knit = !is.null(common$meta$setup_load$used),
   setup_load_data = common$loaded_data$data,
-  setup_load_treatment_df = common$meta$setup_load$treatment_df,
+  setup_load_treatments = common$meta$setup_load$treatments,
   setup_load_outcome = common$meta$setup_load$outcome
 )
 }
