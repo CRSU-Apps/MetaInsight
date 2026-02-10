@@ -15,13 +15,13 @@ baseline_summary_module_server <- function(id, common, parent_session) {
 
   observeEvent(input$run, {
     # WARNING ####
-    if (is.null(common$freq_sub)){
+    if (is.null(common$configured_data)){
       common$logger |> writeLog(type= "error", go_to = "setup_configure",
                                 "Please configure the analysis first in the Setup section")
       return()
     }
     # FUNCTION CALL ####
-    common$baseline_summary_plot <- baseline_summary(common$main_connected_data, common$outcome, common$treatment_df, common$logger)
+    common$baseline_summary_plot <- baseline_summary(common$configured_data, common$logger)
 
     # METADATA ####
     common$meta$baseline_summary$used <- TRUE

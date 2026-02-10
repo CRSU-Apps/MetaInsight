@@ -106,7 +106,7 @@ setup_configure <- function(loaded_data, reference_treatment, effects, outcome_m
                       loaded_data$outcome,
                       treatments,
                       outcome_measure,
-                      "random",
+                      effects,
                       treatments$Label[treatments$Number == 1])
 
   output <- list(wrangled_data = data,

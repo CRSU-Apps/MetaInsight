@@ -44,8 +44,8 @@ baseline_forest_module_server <- function(id, common, parent_session) {
       load = function(state) {
         ### Manual load start
         ### Manual load end
-        updateNumericInput(session, "xmin", value = state$xmin)
-        updateNumericInput(session, "xmax", value = state$xmax)
+        updateNumericInput(session, "xmin", value = state$xmin, step = format_step(state$xmin))
+        updateNumericInput(session, "xmax", value = state$xmax, step = format_step(state$xmax))
       }
     ))
   })

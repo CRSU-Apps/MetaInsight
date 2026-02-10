@@ -50,7 +50,6 @@ metaregression_forest_module_server <- function(id, common, run, xmin, xmax) {
       }
 
       do.call(module_id, list(common[[model]],
-                           common$treatment_df,
                            xmin = xmin(),
                            xmax = xmax(),
                            title = plot_title
@@ -86,7 +85,7 @@ covariate_forest_module_server <- function(id, common, parent_session) {
 
       limits <- bayes_forest_limits(common$covariate_model)
 
-      if (common$outcome == "Binary"){
+      if (common$configured_data$outcome == "binary"){
         limits <- exp(limits)
       }
 
@@ -96,8 +95,8 @@ covariate_forest_module_server <- function(id, common, parent_session) {
     })
 
     # convert values back to log when outcome is Binary
-    xmin <- reactive(ifelse(common$outcome == "Binary", log(as.numeric(input$xmin)), as.numeric(input$xmin)))
-    xmax <- reactive(ifelse(common$outcome == "Binary", log(as.numeric(input$xmax)), as.numeric(input$xmax)))
+    xmin <- reactive(ifelse(common$configured_data$outcome == "binary", log(as.numeric(input$xmin)), as.numeric(input$xmin)))
+    xmax <- reactive(ifelse(common$configured_data$outcome == "binary", log(as.numeric(input$xmax)), as.numeric(input$xmax)))
 
     metaregression_forest_module_server("covariate", common, reactive(input$run), xmin, xmax)
 
@@ -111,8 +110,8 @@ covariate_forest_module_server <- function(id, common, parent_session) {
       load = function(state) {
         ### Manual load start
         ### Manual load end
-        updateNumericInput(session, "xmin", value = state$xmin)
-        updateNumericInput(session, "xmax", value = state$xmax)
+        updateNumericInput(session, "xmin", value = state$xmin, step = format_step(state$xmin))
+        updateNumericInput(session, "xmax", value = state$xmax, step = format_step(state$xmax))
       }
     ))
 

@@ -104,16 +104,16 @@ metaregression_regression_module_server <- function(id, common) {
 
     observe({
       watch("setup_configure")
-      req(common$reference_treatment_all)
-      all_treatments <- unique(common$treatment_df$Label)
-      treatments <- all_treatments[all_treatments != common$reference_treatment_all]
+      req(common$configured_data)
+      all_treatments <- unique(common$configured_data$treatments$Label)
+      treatments <- all_treatments[all_treatments != common$configured_data$reference_treatment]
       shinyWidgets::updatePickerInput(session, "comparators", choices = treatments, selected = character(0))
     })
 
     observeEvent(input$add_all_comparators, {
-      req(common$reference_treatment_all)
-      all_treatments <- unique(common$treatment_df$Label)
-      treatments <- all_treatments[all_treatments != common$reference_treatment_all]
+      req(common$configured_data)
+      all_treatments <- unique(common$configured_data$treatments$Label)
+      treatments <- all_treatments[all_treatments != common$configured_data$reference_treatment]
       shinyWidgets::updatePickerInput(session, "comparators", selected = treatments)
     })
 
@@ -150,13 +150,8 @@ metaregression_regression_module_server <- function(id, common) {
       }
 
       common$tasks[[module_id]]$invoke(common[[model]],
-                                     common$main_connected_data,
-                                     ifelse(id == "covariate", common$covariate_column, "covar.baseline_risk"),
-                                     common$treatment_df,
-                                     common$outcome,
-                                     common$outcome_measure,
-                                     common$model_type,
-                                     async = TRUE)
+                                      common$configured_data,
+                                      async = TRUE)
 
       regress_result$resume()
     })
@@ -166,7 +161,7 @@ metaregression_regression_module_server <- function(id, common) {
 
       result <- common$tasks[[module_id]]$result()
       regress_result$suspend()
-      if (inherits(result, "list")){
+      if (inherits(result, "regression_data")){
         common[[module_id]] <- result
         shinyjs::runjs(glue("Shiny.setInputValue('{module_id}-complete', 'complete');"))
         common$logger |> writeLog(type = "complete", glue("{stringr::str_to_title(id)} regression plot data has been calculated"))
@@ -195,12 +190,10 @@ metaregression_regression_module_server <- function(id, common) {
       common$meta[[module_id]]$symbol_size <- as.numeric(input$symbol_size)
       common$meta[[module_id]]$legend_position <- input$legend_position
 
-      metaregression_plot(model_output = common[[model]],
-                          treatment_df = common$treatment_df,
-                          outcome_measure = common$outcome_measure,
+      metaregression_plot(model = common[[model]],
+                          configured_data = common$configured_data,
+                          regression_data = common[[module_id]],
                           comparators = input$comparators,
-                          directness = common[[module_id]]$directness,
-                          credible_regions = common[[module_id]]$credible_regions,
                           include_covariate = input$covariate,
                           include_ghosts = input$ghosts,
                           include_extrapolation = input$extrapolate,
@@ -230,8 +223,8 @@ metaregression_regression_module_server <- function(id, common) {
 
     return(list(
       save = function() {
-        all_treatments <- unique(common$treatment_df$Label)
-        treatments <- all_treatments[all_treatments != common$reference_treatment_all]
+        all_treatments <- unique(common$configured_data$treatments$Label)
+        treatments <- all_treatments[all_treatments != common$configured_data$reference_treatment]
         list(
           ### Manual save start
           treatments = treatments,

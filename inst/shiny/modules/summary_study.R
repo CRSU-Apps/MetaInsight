@@ -24,14 +24,14 @@ summary_study_module_server <- function(id, common, parent_session) {
     req(common$subsetted_data)
 
     # only show colourblind option if ROB exist
-    if (length(metainsight:::FindRobNames(common$subsetted_data)) == 0){
+    if (length(metainsight:::FindRobNames(common$subsetted_data$connected_data)) == 0){
       shinyjs::hide("colourblind")
     } else {
       shinyjs::show("colourblind")
     }
 
-    min_max <- summary_study_min_max(common$freq_sub$d1, common$outcome)
-    if (common$outcome == "Binary"){
+    min_max <- summary_study_min_max(common$subsetted_data$freq$d1, common$subsetted_data$outcome)
+    if (common$subsetted_data$outcome == "binary"){
       min_max <- exp(min_max)
     }
     updateNumericInput(session, "x_min", value = min_max[1], step = format_step(min_max[1]))
@@ -41,7 +41,7 @@ summary_study_module_server <- function(id, common, parent_session) {
 
   observeEvent(input$run, {
     # WARNING ####
-    if (is.null(common$freq_sub)){
+    if (is.null(common$configured_data)){
       common$logger |> writeLog(type= "error", go_to = "setup_configure",
                                 "Please configure the analysis first in the Setup section")
       return()
@@ -54,7 +54,7 @@ summary_study_module_server <- function(id, common, parent_session) {
     watch("setup_exclude")
     req(watch("summary_study") > 0)
 
-    if (common$outcome == "Binary"){
+    if (common$subsetted_data$outcome == "binary"){
       x_min = log(as.numeric(input$x_min))
       x_max = log(as.numeric(input$x_max))
     } else {
@@ -68,10 +68,7 @@ summary_study_module_server <- function(id, common, parent_session) {
     common$meta$summary_study$x_min <- x_min
     common$meta$summary_study$x_max <- x_max
 
-    summary_study(
-      connected_data = common$subsetted_data,
-      freq = common$freq_sub,
-      outcome_measure = common$outcome_measure,
+    summary_study(common$subsetted_data,
       plot_area_width = as.numeric(input$width),
       colourblind = input$colourblind,
       x_min = x_min,
@@ -115,8 +112,8 @@ summary_study_module_server <- function(id, common, parent_session) {
         ### Manual load end
         updateCheckboxInput(session, "colourblind", value = state$colourblind)
         updateNumericInput(session, "width", value = state$width)
-        updateNumericInput(session, "x_min", value = state$x_min)
-        updateNumericInput(session, "x_max", value = state$x_max)
+        updateNumericInput(session, "x_min", value = state$x_min, step = format_step(state$x_min))
+        updateNumericInput(session, "x_max", value = state$x_max, step = format_step(state$x_max))
       }
     )
   )

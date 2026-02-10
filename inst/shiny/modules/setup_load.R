@@ -2,8 +2,8 @@ setup_load_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
     radioButtons(ns("outcome"), "Select outcome type", choices = c(
-      "Continuous (e.g. mean difference) " = "Continuous",
-      "Binary (e.g. Odds Ratio)" = "Binary")
+      "Continuous (e.g. mean difference) " = "continuous",
+      "Binary (e.g. Odds Ratio)" = "binary")
     ),
     radioButtons(ns("format"), "Select data format", choices = c(
       "Long" = "long",
@@ -98,14 +98,13 @@ setup_load_module_server <- function(id, common, parent_session) {
 
     observeEvent(input$run, {
       # WARNING ####
-     if (!is.null(common$main_connected_data)){
+     if (!is.null(common$configured_data)){
        common$logger |> writeLog(type = "error", "Data has already been loaded - please delete it first")
        return()
      }
 
       # FUNCTION CALL ####
       result <- setup_load(input[[file_id$id]]$datapath, input$outcome, common$logger)
-
       if (result$is_data_valid){
         if (result$is_data_uploaded){
           common$logger |> writeLog(type = "complete", "Data has been uploaded successfully")
@@ -115,11 +114,7 @@ setup_load_module_server <- function(id, common, parent_session) {
       }
 
       # LOAD INTO COMMON ####
-      common$data <- result$data
-      common$is_data_valid <- result$is_data_valid
-      common$is_data_uploaded <- result$is_data_uploaded
-      common$treatment_df <- result$treatment_df
-      common$outcome <- input$outcome
+      common$loaded_data <- result
 
       # METADATA ####
       common$meta$setup_load$used <- TRUE
@@ -149,9 +144,9 @@ setup_load_module_server <- function(id, common, parent_session) {
     # show the loaded data in the results tab
     output$table <- DT::renderDataTable({
       watch("setup_load")
-      req(common$data)
+      req(common$loaded_data)
       DT::datatable(
-        common$data,
+        common$loaded_data$data,
         # enable scrolling if e.g. many ROB columns
         options = list(
           scrollX = TRUE,
@@ -184,7 +179,7 @@ setup_load_module_result <- function(id) {
 
 setup_load_module_rmd <- function(common){ list(
   setup_load_knit = !is.null(common$meta$setup_load$used),
-  setup_load_data = common$data,
+  setup_load_data = common$loaded_data$data,
   setup_load_treatment_df = common$meta$setup_load$treatment_df,
   setup_load_outcome = common$meta$setup_load$outcome
 )

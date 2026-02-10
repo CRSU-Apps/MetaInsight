@@ -27,11 +27,11 @@ summary_network_module_ui <- function(id) {
 summary_network_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
-    hide_and_show("summary_network")
+    hide_and_show(id)
 
     observeEvent(input$run, {
       # WARNING ####
-      if (is.null(common$freq_sub)){
+      if (is.null(common$configured_data)){
         common$logger |> writeLog(type = "error", go_to = "setup_configure",
                                   "Please configure the analysis first in the Setup section")
         return()
@@ -47,9 +47,7 @@ summary_network_module_server <- function(id, common, parent_session) {
 
     plot_all <- reactive({
       req(watch("summary_network") > 0)
-      shinyjs::show(selector = ".summary_network_div")
-      summary_network(common$freq_all,
-                      common$bugsnet_all,
+      summary_network(common$configured_data,
                       input$style,
                       as.numeric(input$label_all),
                       "Network plot of all studies",
@@ -59,8 +57,7 @@ summary_network_module_server <- function(id, common, parent_session) {
     plot_sub <- reactive({
       watch("setup_exclude")
       req(watch("summary_network") > 0)
-      summary_network(common$freq_sub,
-                      common$bugsnet_sub,
+      summary_network(common$subsetted_data,
                       input$style,
                       as.numeric(input$label_sub),
                       "Network plot with selected \n studies excluded",
@@ -85,13 +82,13 @@ summary_network_module_server <- function(id, common, parent_session) {
 
     netconnect_all <- reactive({
       req(watch("summary_network") > 0)
-      make_netconnect(common$freq_all)
+      make_netconnect(common$configured_data$freq)
     })
 
     netconnect_sub <- reactive({
       watch("setup_exclude")
       req(watch("summary_network") > 0)
-      make_netconnect(common$freq_sub)
+      make_netconnect(common$subsetted_data$freq)
     })
 
     output$table <- renderTable({

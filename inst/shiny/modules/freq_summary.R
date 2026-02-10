@@ -15,13 +15,13 @@ freq_summary_module_server <- function(id, common, parent_session) {
 
   observeEvent(input$run, {
     # WARNING ####
-    if (is.null(common$freq_sub)){
+    if (is.null(common$configured_data)){
       common$logger |> writeLog(type = "error", go_to = "setup_configure",
                                 "Please configure the analysis first in the Setup section")
       return()
     }
 
-    if (nrow(common$treatment_df) < 3 || nrow(common$treatment_df) > 10){
+    if (nrow(common$configured_data$treatments) < 3 || nrow(common$configured_data$treatments) > 10){
       common$logger |> writeLog(type = "error", "Sorry this module is only available when there are between 3 and 10 treatments")
       return()
     }
@@ -30,34 +30,24 @@ freq_summary_module_server <- function(id, common, parent_session) {
   })
 
   svg_all <- reactive({
-    watch("model")
+    watch("effects")
     req(watch("freq_summary") > 0)
     common$meta$freq_summary$used <- TRUE
-    freq_summary(common$freq_all,
-                 common$treatment_df,
+    freq_summary(common$configured_data,
                  "Summary forest plot for all studies",
-                 common$outcome_measure,
-                 common$ranking_option,
-                 common$model_type,
-                 common$seed,
                  common$logger)
   })
 
   svg_sub <- reactive({
     watch("setup_exclude")
     req(watch("freq_summary") > 0)
-    if (nrow(common$subsetted_treatment_df) < 3){
+    if (nrow(common$subsetted_data$treatments) < 3){
       common$logger |> writeLog(type = "error", "Sorry the plot with studies excluded cannot be produced when there are fewer than 3 treatments")
       return()
     }
 
-    freq_summary(common$freq_sub,
-                 common$subsetted_treatment_df,
+    freq_summary(common$subsetted_data,
                  "Summary forest plot with selected studies excluded",
-                 common$outcome_measure,
-                 common$ranking_option,
-                 common$model_type,
-                 common$seed,
                  common$logger)
   })
 

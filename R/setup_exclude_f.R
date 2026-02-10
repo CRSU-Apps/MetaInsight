@@ -66,5 +66,6 @@ setup_exclude <- function(configured_data, exclusions, async = FALSE){
   output$connected_data <- connected_data
   output$treatments <- treatments
 
+  class(output) <- "configured_data"
   output
 }

@@ -13,7 +13,7 @@ freq_compare_module_server <- function(id, common, parent_session) {
 
   observeEvent(input$run, {
     # WARNING ####
-    if (is.null(common$freq_all)){
+    if (is.null(common$configured_data)){
       common$logger |> writeLog(type = "error", go_to = "setup_configure",
                                 "Please configure the analysis first in the Setup section")
       return()
@@ -23,17 +23,16 @@ freq_compare_module_server <- function(id, common, parent_session) {
   })
 
   table_all <- reactive({
-    watch("model")
+    watch("effects")
     req(watch("freq_compare") > 0)
-    shinyjs::show(selector = ".freq_compare_div")
     common$meta$freq_compare$used <- TRUE
-    freq_compare(common$freq_all, common$model_type, common$ranking_option)
+    freq_compare(common$configured_data)
   })
 
   table_sub <- reactive({
     watch("setup_exclude")
     req(watch("freq_compare") > 0)
-    freq_compare(common$freq_sub, common$model_type, common$ranking_option)
+    freq_compare(common$subsetted_data)
   })
 
   output$table_all <- renderTable(colnames = FALSE, {

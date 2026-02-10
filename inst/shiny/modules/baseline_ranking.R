@@ -40,7 +40,7 @@ baseline_ranking_module_server <- function(id, common, parent_session) {
     })
 
     bayes_ranking_submodule_server("all", common, reactive(input$network_style), reactive(input$rank_style), reactive(input$colourblind), reactive(input$simple),
-                                   ".baseline_ranking_div", "baseline_model", "baseline_ranking", "main_connected_data", "treatment_df", all_trigger, "baseline_ranking_plot")
+                                   ".baseline_ranking_div", "baseline_model", "baseline_ranking", "configured_data", all_trigger, "baseline_ranking_plot")
 
     return(list(
       save = function() {list(

@@ -67,7 +67,7 @@ bayes_ranking_module_ui <- function(id) {
   )
 }
 
-bayes_ranking_submodule_server <- function(id, common, network_style, rank_style, colourblind, simple, class, model, ranking, connected_data, treatments, run, trigger){
+bayes_ranking_submodule_server <- function(id, common, network_style, rank_style, colourblind, simple, class, model, ranking, configured_data, run, trigger){
   moduleServer(id, function(input, output, session) {
 
     init(trigger)
@@ -76,26 +76,23 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
       req(common[[model]])
 
       if (ranking == "covariate_ranking"){
-        cov_value <- common$covariate_value
+        cov_value <- common$covariate_model$covariate_value
       } else {
         cov_value <- NA
       }
-      common[[ranking]] <- bayes_ranking(common[[connected_data]], common[[treatments]], common[[model]], common$ranking_option, cov_value)
+      common[[ranking]] <- bayes_ranking(common[[model]], common[[configured_data]], cov_value)
       trigger(trigger)
     })
 
     forest_svg <- reactive({
       req(watch(trigger) > 0)
       req(common[[model]], run())
-      tdf <- ifelse(id == "all", "treatment_df", "subsetted_treatment_df")
 
       if (ranking == "baseline_ranking"){
         baseline_forest(common[[model]],
-                        common[[tdf]],
                         ranking = TRUE)
       } else {
         bayes_forest(common[[model]],
-                     common[[tdf]],
                      ranking = TRUE)
       }
 
@@ -159,7 +156,7 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
 
     network_svg <- reactive({
       req(watch(trigger) > 0)
-      summary_network(common[[paste0("freq_", id)]], common[[paste0("bugsnet_", id)]], network_style(), 1, "")
+      summary_network(common[[configured_data]], network_style(), 1, "")
     })
 
     output$network <- renderUI({
@@ -253,9 +250,9 @@ bayes_ranking_module_server <- function(id, common, parent_session) {
     })
 
     bayes_ranking_submodule_server("all", common, reactive(input$network_style), reactive(input$rank_style), reactive(input$colourblind), reactive(input$simple),
-                                   ".bayes_ranking_div", "bayes_all", "bayes_rank_all", "main_connected_data", "treatment_df", all_trigger, "bayes_ranking_all")
+                                   ".bayes_ranking_div", "bayes_all", "bayes_rank_all", "configured_data", all_trigger, "bayes_ranking_all")
     bayes_ranking_submodule_server("sub", common, reactive(input$network_style), reactive(input$rank_style), reactive(input$colourblind), reactive(input$simple),
-                                   ".bayes_ranking_div", "bayes_sub", "bayes_rank_sub", "subsetted_data", "subsetted_treatment_df", sub_trigger, "bayes_ranking_sub")
+                                   ".bayes_ranking_div", "bayes_sub", "bayes_rank_sub", "subsetted_data", sub_trigger, "bayes_ranking_sub")
 
     return(list(
     save = function() {list(

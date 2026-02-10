@@ -15,13 +15,13 @@ covariate_summary_module_server <- function(id, common, parent_session) {
 
     observeEvent(input$run, {
       # WARNING ####
-      if (is.null(common$main_connected_data)){
+      if (is.null(common$configured_data)){
         common$logger |> writeLog(type= "error", go_to = "setup_configure",
                                   "Please configure the analysis first in the Setup section")
         return()
       }
       # FUNCTION CALL ####
-      common$covariate_summary_plot <- covariate_summary(common$main_connected_data, common$outcome, common$treatment_df, common$logger)
+      common$covariate_summary_plot <- covariate_summary(common$configured_data, common$logger)
 
       # METADATA ####
       common$meta$covariate_summary$used <- TRUE

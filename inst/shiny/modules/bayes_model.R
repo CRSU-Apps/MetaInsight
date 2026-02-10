@@ -38,16 +38,16 @@ bayes_model_module_server <- function(id, common, parent_session) {
     hide_and_show(id, show = FALSE)
 
     observeEvent(input$run, {
-      if (is.null(common$main_connected_data)){
+      if (is.null(common$configured_data)){
         common$logger |> writeLog(type = "error", go_to = "setup_configure",
                                   "Please configure the analysis in the Setup component first.")
         return()
       }
-      if (common$outcome_measure == "SMD") {
+      if (common$configured_data$outcome_measure == "SMD") {
         common$logger |> writeLog(type = "error", "Standardised mean difference currently cannot be analysed within Bayesian analysis in MetaInsight")
         return()
       }
-      else if (common$outcome_measure == "RD") {
+      else if (common$configured_data$outcome_measure == "RD") {
         common$logger |> writeLog(type = "error", "Risk difference currently cannot be analysed within Bayesian analysis in MetaInsight")
         return()
       }
@@ -66,12 +66,12 @@ bayes_model_module_server <- function(id, common, parent_session) {
       function(...) sub_model <<- mirai::mirai(run(...), run = bayes_model, .args = environment())
     ) |> bind_task_button("run")
 
-    observeEvent(list(watch("bayes_model"), watch("model")), {
+    observeEvent(list(watch("bayes_model"), watch("effects")), {
       # trigger if run is pressed or if model is changed, but only if a model exists
-      req((watch("bayes_model") > 0 || all(!is.null(common$bayes_all), watch("model") > 0)))
+      req((watch("bayes_model") > 0 || all(!is.null(common$bayes_all), watch("effects") > 0)))
 
       # prevent both models fitting at once if the data is large
-      if (nrow(common$treatment_df) > 20){
+      if (nrow(common$configured_data$treatments) > 20){
         mirai::daemons(0)
         mirai::daemons(1)
       }
@@ -81,15 +81,7 @@ bayes_model_module_server <- function(id, common, parent_session) {
       } else {
         common$logger |> writeLog(type = "starting", "Updating Bayesian model for main analysis")
       }
-      common$tasks$bayes_model_all$invoke(common$main_connected_data,
-                                          common$treatment_df,
-                                          common$outcome,
-                                          common$outcome_measure,
-                                          common$model_type,
-                                          common$reference_treatment_all,
-                                          common$seed,
-                                          async = TRUE)
-
+      common$tasks$bayes_model_all$invoke(common$configured_data, async = TRUE)
 
       result_all$resume()
     })
@@ -111,14 +103,7 @@ bayes_model_module_server <- function(id, common, parent_session) {
         common$logger |> writeLog(type = "starting", "Updating Bayesian model for sensitivity analysis")
       }
 
-      common$tasks$bayes_model_sub$invoke(common$subsetted_data,
-                                          common$subsetted_treatment_df,
-                                          common$outcome,
-                                          common$outcome_measure,
-                                          common$model_type,
-                                          common$reference_treatment_sub,
-                                          common$seed,
-                                          async = TRUE)
+      common$tasks$bayes_model_sub$invoke(common$subsetted_data, async = TRUE)
       result_sub$resume()
     })
 
@@ -156,7 +141,7 @@ bayes_model_module_server <- function(id, common, parent_session) {
           common$logger |> writeLog(type = "error", result)
         }
         # reset daemons
-        if (nrow(common$treatment_df) > 20){
+        if (nrow(common$configured_data$treatments) > 20){
           mirai::daemons(0)
           mirai::daemons(4)
         }

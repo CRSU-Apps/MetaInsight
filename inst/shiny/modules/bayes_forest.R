@@ -33,13 +33,9 @@ bayes_forest_submodule_server <- function(id, common, model, run, xmin, xmax, ti
   moduleServer(id, function(input, output, session) {
 
     svg <- reactive({
-      tdf <- ifelse(id == "all", "treatment_df", "subsetted_treatment_df")
-
       common$meta$bayes_forest[[paste0("xmin_", id)]] <- xmin()
       common$meta$bayes_forest[[paste0("xmax_", id)]] <- xmax()
-
       bayes_forest(common[[paste0("bayes_", id)]],
-                   common[[tdf]],
                    xmin(),
                    xmax(),
                    title)
@@ -83,7 +79,7 @@ bayes_forest_module_server <- function(id, common, parent_session) {
       all_limits <- bayes_forest_limits(common$bayes_all)
       sub_limits <- bayes_forest_limits(common$bayes_sub)
 
-      if (common$outcome == "Binary"){
+      if (common$configured_data$outcome == "binary"){
         all_limits <- exp(all_limits)
         sub_limits <- exp(sub_limits)
       }
@@ -107,10 +103,10 @@ bayes_forest_module_server <- function(id, common, parent_session) {
     })
 
     # convert values back to log when outcome is Binary
-    xmin_all <- reactive(ifelse(common$outcome == "Binary", log(as.numeric(input$xmin_all)), as.numeric(input$xmin_all)))
-    xmax_all <- reactive(ifelse(common$outcome == "Binary", log(as.numeric(input$xmax_all)), as.numeric(input$xmax_all)))
-    xmin_sub <- reactive(ifelse(common$outcome == "Binary", log(as.numeric(input$xmin_sub)), as.numeric(input$xmin_sub)))
-    xmax_sub <- reactive(ifelse(common$outcome == "Binary", log(as.numeric(input$xmax_sub)), as.numeric(input$xmax_sub)))
+    xmin_all <- reactive(ifelse(common$configured_data$outcome == "binary", log(as.numeric(input$xmin_all)), as.numeric(input$xmin_all)))
+    xmax_all <- reactive(ifelse(common$configured_data$outcome == "binary", log(as.numeric(input$xmax_all)), as.numeric(input$xmax_all)))
+    xmin_sub <- reactive(ifelse(common$configured_data$outcome == "binary", log(as.numeric(input$xmin_sub)), as.numeric(input$xmin_sub)))
+    xmax_sub <- reactive(ifelse(common$configured_data$outcome == "binary", log(as.numeric(input$xmax_sub)), as.numeric(input$xmax_sub)))
 
     # trigger for the main analysis - when run is clicked or x limits change, but only if there is a valid model
     all_trigger <- reactive({
@@ -141,10 +137,10 @@ bayes_forest_module_server <- function(id, common, parent_session) {
       load = function(state) {
         ### Manual load start
         ### Manual load end
-        updateNumericInput(session, "xmin_all", value = state$xmin_all)
-        updateNumericInput(session, "xmax_all", value = state$xmax_all)
-        updateNumericInput(session, "xmin_sub", value = state$xmin_sub)
-        updateNumericInput(session, "xmax_sub", value = state$xmax_sub)
+        updateNumericInput(session, "xmin_all", value = state$xmin_all, step = format_step(state$xmin_all))
+        updateNumericInput(session, "xmax_all", value = state$xmax_all, step = format_step(state$xmax_all))
+        updateNumericInput(session, "xmin_sub", value = state$xmin_sub, step = format_step(state$xmin_sub))
+        updateNumericInput(session, "xmax_sub", value = state$xmax_sub, step = format_step(state$xmax_sub))
       }
     ))
   })

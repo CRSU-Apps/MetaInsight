@@ -24,17 +24,17 @@ baseline_model_module_server <- function(id, common, parent_session) {
     init("baseline_model_fit")
 
     observeEvent(input$run, {
-      if (is.null(common$main_connected_data)){
+      if (is.null(common$configured_data)){
         common$logger |> writeLog(type = "error", go_to = "setup_configure",
                                   "Please configure the analysis in the Setup section first")
         return()
       }
 
-      if (common$outcome_measure == "SMD") {
+      if (common$configured_data$outcome_measure == "SMD") {
         common$logger |> writeLog(type = "error", "Standardised mean difference currently cannot be analysed within Bayesian analysis in MetaInsight")
         return()
       }
-      else if (common$outcome_measure == "RD") {
+      else if (common$configured_data$outcome_measure == "RD") {
         common$logger |> writeLog(type = "error", "Risk difference currently cannot be analysed within Bayesian analysis in MetaInsight")
         return()
       }
@@ -50,9 +50,9 @@ baseline_model_module_server <- function(id, common, parent_session) {
       function(...) mirai::mirai(run(...), run = baseline_model, .args = environment())
     ) |> bind_task_button("run")
 
-    observeEvent(list(watch("baseline_model"), watch("model"), input$regressor), {
+    observeEvent(list(watch("baseline_model"), watch("effects"), input$regressor), {
       # trigger if run is pressed or if model is changed, but only if a model exists
-      req((watch("baseline_model") > 0 || all(!is.null(common$baseline_model), watch("model") > 0)))
+      req((watch("baseline_model") > 0 || all(!is.null(common$baseline_model), watch("effects") > 0)))
 
       if (is.null(common$baseline_model)){
         common$logger |> writeLog(type = "starting", "Fitting baseline model")
@@ -60,14 +60,8 @@ baseline_model_module_server <- function(id, common, parent_session) {
         common$logger |> writeLog(type = "starting", "Updating baseline model")
       }
 
-      common$tasks$baseline_model$invoke(common$main_connected_data,
-                                         common$treatment_df,
-                                         common$outcome,
-                                         common$outcome_measure,
-                                         common$reference_treatment_all,
-                                         common$model_type,
+      common$tasks$baseline_model$invoke(common$configured_data,
                                          input$regressor,
-                                         common$seed,
                                          async = TRUE)
       model_result$resume()
     })

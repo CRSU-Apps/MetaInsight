@@ -57,7 +57,7 @@ bayes_nodesplit_module_server <- function(id, common, parent_session) {
     hide_and_show(id, show = FALSE)
 
     observeEvent(input$run, {
-      if (is.null(common$main_connected_data)){
+      if (is.null(common$configured_data)){
         common$logger |> writeLog(type = "error", go_to = "setup_configure",
                                   "Please configure the analysis in the Setup component first.")
       }
@@ -76,11 +76,7 @@ bayes_nodesplit_module_server <- function(id, common, parent_session) {
 
     observeEvent(watch("bayes_nodesplit"), {
       req(watch("bayes_nodesplit") > 0)
-      common$tasks$bayes_nodesplit_all$invoke(common$main_connected_data,
-                                              common$treatment_df,
-                                              common$outcome,
-                                              common$outcome_measure,
-                                              common$model_type,
+      common$tasks$bayes_nodesplit_all$invoke(common$configured_data,
                                               async = TRUE)
 
       result_all$resume()
@@ -95,10 +91,6 @@ bayes_nodesplit_module_server <- function(id, common, parent_session) {
       }
 
       common$tasks$bayes_nodesplit_sub$invoke(common$subsetted_data,
-                                              common$subsetted_treatment_df,
-                                              common$outcome,
-                                              common$outcome_measure,
-                                              common$model_type,
                                               async = TRUE)
       result_sub$resume()
     })

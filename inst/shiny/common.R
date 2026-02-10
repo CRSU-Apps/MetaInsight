@@ -1,28 +1,12 @@
 common_class <- R6::R6Class(
   classname = "common",
   public = list(
-   data = NULL,
+   loaded_data = NULL,
    upgraded_data = NULL,
-   wrangled_data = NULL,
-   is_data_valid = NULL,
-   is_data_uploaded = NULL,
-   outcome = NULL,
-   ranking_option = NULL,
-   treatment_df = NULL,
-   outcome_measure = NULL,
-   reference_treatment_all = NULL,
-   reference_treatment_sub = NULL,
-   disconnected_indices = NULL,
-   main_connected_data = NULL,
-   non_covariate_data_all = NULL,
-   model_type = NULL,
+   effects = NULL,
+   configured_data = NULL,
    excluded_studies = NULL,
    subsetted_data = NULL,
-   subsetted_treatment_df = NULL,
-   bugsnet_all = NULL,
-   bugsnet_sub = NULL,
-   freq_all = NULL,
-   freq_sub = NULL,
    bayes_all = NULL,
    bayes_sub = NULL,
    bayes_rank_all = NULL,
@@ -41,10 +25,6 @@ common_class <- R6::R6Class(
    baseline_mcmc = NULL,
    covariate_summary_plot = NULL,
    covariate_model = NULL,
-   covariate_value = NULL,
-   covariate_column = NULL,
-   covariate_name = NULL,
-   covariate_type = NULL,
    covariate_regression = NULL,
    covariate_ranking = NULL,
    covariate_mcmc = NULL,
@@ -56,28 +36,12 @@ common_class <- R6::R6Class(
    logger = NULL,
    state = NULL,
    reset = function(){
-     self$data <- NULL
+     self$loaded_data <- NULL
      self$upgraded_data <- NULL
-     self$wrangled_data <- NULL
-     self$is_data_valid <- NULL
-     self$is_data_uploaded <- NULL
-     self$outcome <- NULL
-     self$ranking_option <- NULL
-     self$treatment_df <- NULL
-     self$outcome_measure <- NULL
-     self$reference_treatment_all <- NULL
-     self$reference_treatment_sub <- NULL
-     self$disconnected_indices <- NULL
-     self$main_connected_data <- NULL
-     self$non_covariate_data_all <- NULL
-     self$model_type <- NULL
+     self$effects <- NULL
+     self$configured_data <- NULL
      self$excluded_studies <- NULL
      self$subsetted_data <- NULL
-     self$subsetted_treatment_df <- NULL
-     self$bugsnet_all <- NULL
-     self$bugsnet_sub <- NULL
-     self$freq_all <- NULL
-     self$freq_sub <- NULL
      self$bayes_all <- NULL
      self$bayes_sub <- NULL
      self$bayes_rank_all <- NULL
@@ -96,10 +60,6 @@ common_class <- R6::R6Class(
      self$baseline_ranking <- NULL
      self$covariate_summary_plot <- NULL
      self$covariate_model <- NULL
-     self$covariate_value <- NULL
-     self$covariate_column <- NULL
-     self$covariate_name <- NULL
-     self$covariate_type <- NULL
      self$covariate_regression <- NULL
      self$covariate_mcmc <- NULL
      self$covariate_ranking <- NULL

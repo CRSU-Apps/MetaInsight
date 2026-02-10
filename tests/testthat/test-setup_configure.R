@@ -54,18 +54,28 @@ test_that("setup_configure loads data into common correctly for continuous long 
   app$click("setup_configure-run")
   common <- app$get_value(export = "common")
 
-  expect_s3_class(common$wrangled_data, "data.frame")
-  expect_s3_class(common$treatment_df, "data.frame")
-  expect_length(common$disconnected_indices, 0)
-  expect_s3_class(common$main_connected_data, "data.frame")
-  expect_s3_class(common$non_covariate_data_all, "data.frame")
-  expect_type(common$covariate_column, "character")
-  expect_type(common$covariate_name, "character")
-  expect_type(common$covariate_type, "character")
-  expect_s3_class(common$bugsnet_all, "data.frame")
-  expect_type(common$freq_all, "list")
-  expect_equal(common$reference_treatment_all, "the_Great")
-  expect_equal(common$outcome_measure, "MD")
+  result <- common$configured_data
+  expect_s3_class(result$wrangled_data, "data.frame")
+  expect_s3_class(result$treatments, "data.frame")
+  expect_type(result$reference_treatment, "character")
+  expect_length(result$disconnected_indices, 0)
+  expect_s3_class(result$connected_data, "data.frame")
+  expect_s3_class(result$non_covariate_data, "data.frame")
+  expect_type(result$covariate, "list")
+  expect_type(result$covariate$column, "character")
+  expect_type(result$covariate$name, "character")
+  expect_type(result$covariate$type, "character")
+  expect_s3_class(result$bugsnet, "data.frame")
+  expect_type(result$freq, "list")
+  expect_type(result$outcome, "character")
+  expect_type(result$outcome_measure, "character")
+  expect_type(result$effects, "character")
+  expect_type(result$ranking_option, "character")
+  expect_type(result$seed, "double")
+
+  expect_equal(result$reference_treatment, "the_Great")
+  expect_equal(result$outcome, "continuous")
+  expect_equal(result$outcome_measure, "MD")
 
   app$stop()
 })
@@ -75,24 +85,34 @@ test_that("setup_configure loads data into common correctly for wide binary data
   app$set_inputs(tabs = "setup")
   app$set_inputs(setupSel = "setup_load")
   app$upload_file("setup_load-file1" = system.file("extdata", "binary_wide.csv", package = "metainsight"))
-  app$set_inputs("setup_load-outcome" = "Binary")
+  app$set_inputs("setup_load-outcome" = "binary")
   app$click("setup_load-run")
   app$set_inputs(setupSel = "setup_configure")
   app$click("setup_configure-run")
   common <- app$get_value(export = "common")
 
-  expect_s3_class(common$wrangled_data, "data.frame")
-  expect_s3_class(common$treatment_df, "data.frame")
-  expect_length(common$disconnected_indices, 0)
-  expect_s3_class(common$main_connected_data, "data.frame")
-  expect_s3_class(common$non_covariate_data_all, "data.frame")
-  expect_type(common$covariate_column, "character")
-  expect_type(common$covariate_name, "character")
-  expect_type(common$covariate_type, "character")
-  expect_s3_class(common$bugsnet_all, "data.frame")
-  expect_type(common$freq_all, "list")
-  expect_equal(common$reference_treatment_all, "Placebo")
-  expect_equal(common$outcome_measure, "OR")
+  result <- common$configured_data
+  expect_s3_class(result$wrangled_data, "data.frame")
+  expect_s3_class(result$treatments, "data.frame")
+  expect_type(result$reference_treatment, "character")
+  expect_length(result$disconnected_indices, 0)
+  expect_s3_class(result$connected_data, "data.frame")
+  expect_s3_class(result$non_covariate_data, "data.frame")
+  expect_type(result$covariate, "list")
+  expect_type(result$covariate$column, "character")
+  expect_type(result$covariate$name, "character")
+  expect_type(result$covariate$type, "character")
+  expect_s3_class(result$bugsnet, "data.frame")
+  expect_type(result$freq, "list")
+  expect_type(result$outcome, "character")
+  expect_type(result$outcome_measure, "character")
+  expect_type(result$effects, "character")
+  expect_type(result$ranking_option, "character")
+  expect_type(result$seed, "double")
+
+  expect_equal(result$reference_treatment, "Placebo")
+  expect_equal(result$outcome, "binary")
+  expect_equal(result$outcome_measure, "OR")
 
   app$stop()
 })
@@ -107,16 +127,22 @@ test_that("setup_configure logs errors when disconnected data is uploaded", {
   app$click("setup_configure-run")
   common <- app$get_value(export = "common")
 
-  expect_s3_class(common$wrangled_data, "data.frame")
-  expect_s3_class(common$treatment_df, "data.frame")
-  expect_type(common$disconnected_indices, "integer")
-  expect_gt(length(common$disconnected_indices), 0)
-  expect_s3_class(common$main_connected_data, "data.frame")
-  expect_s3_class(common$non_covariate_data_all, "data.frame")
-  expect_s3_class(common$bugsnet_all, "data.frame")
-  expect_type(common$freq_all, "list")
-  expect_equal(common$reference_treatment_all, "A")
-  expect_equal(common$outcome_measure, "MD")
+  result <- common$configured_data
+  expect_s3_class(result$wrangled_data, "data.frame")
+  expect_s3_class(result$treatments, "data.frame")
+  expect_type(result$reference_treatment, "character")
+  expect_length(result$disconnected_indices, 0)
+  expect_s3_class(result$connected_data, "data.frame")
+  expect_s3_class(result$non_covariate_data, "data.frame")
+  expect_type(result$covariate, "list")
+  expect_type(result$covariate$column, "character")
+  expect_type(result$covariate$name, "character")
+  expect_type(result$covariate$type, "character")
+  expect_s3_class(result$bugsnet, "data.frame")
+  expect_type(result$freq, "list")
+  expect_equal(result$reference_treatment, "A")
+  expect_equal(result$outcome_measure, "MD")
+  expect_equal(result$outcome, "continuous")
 
   logger <- app$get_value(export = "logger")
   expect_true(grepl("*The uploaded data comprises a disconnected network*", logger))
@@ -126,8 +152,8 @@ test_that("setup_configure logs errors when disconnected data is uploaded", {
 
 test_that("Data wrangled from default continuous long file", {
 
-  load <- setup_load(outcome = "Continuous")
-  config <- setup_configure(load$data, load$treatment_df, "Continuous", "MD", "Placebo")
+  load <- setup_load(outcome = "continuous")
+  config <- setup_configure(load, "Placebo", "random", "MD", "good", 999)
 
   expect_equal(colnames(config$wrangled_data), c("StudyID", colnames(load$data)[c(1, 2, 5, 3, 4, 7:15, 6)]),
                label = format_vector_to_string(colnames(config$wrangled_data)))
@@ -156,8 +182,8 @@ test_that("Data wrangled from default continuous long file", {
 
 test_that("Continuous wide data wrangled with treatment IDs", {
 
-  load <- setup_load(file.path(test_data_dir, "Non_opioids_wide.csv"), outcome = "Continuous")
-  config <- setup_configure(load$data, load$treatment_df, "Continuous", "MD", "Placebo")
+  load <- setup_load(file.path(test_data_dir, "Non_opioids_wide.csv"), outcome = "continuous")
+  config <- setup_configure(load, "Placebo", "random", "MD", "good", 999)
 
   expect_equal(config$wrangled_data$StudyID, 1:45,
                label = format_vector_to_string(config$wrangled_data$StudyID))
@@ -194,8 +220,8 @@ test_that("Continuous wide data wrangled with treatment IDs", {
 
 test_that("Data wrangled from default binary long file", {
 
-  load <- setup_load(outcome = "Binary")
-  config <- setup_configure(load$data, load$treatment_df, "Binary", "OR", "Placebo")
+  load <- setup_load(outcome = "binary")
+  config <- setup_configure(load, "Placebo", "random", "OR", "good", 999)
 
   expect_equal(colnames(config$wrangled_data), c("StudyID", colnames(load$data)[c(1, 2, 4, 3, 5)]),
                label = format_vector_to_string(colnames(config$wrangled_data)))
@@ -221,8 +247,8 @@ test_that("Data wrangled from default binary long file", {
 
 test_that("Binary wide data wrangled with treatment IDs", {
 
-  load <- setup_load(file.path(test_data_dir, "Certolizumab_wide.csv"), outcome = "Binary")
-  config <- setup_configure(load$data, load$treatment_df, "Binary", "OR", "Placebo")
+  load <- setup_load(file.path(test_data_dir, "Certolizumab_wide.csv"), outcome = "binary")
+  config <- setup_configure(load, "Placebo", "random", "OR", "good", 999)
 
   expect_equal(config$wrangled_data$StudyID, 1:12,
                label = format_vector_to_string(config$wrangled_data$StudyID))
@@ -254,22 +280,20 @@ test_that("Binary wide data wrangled with treatment IDs", {
 
 test_that("Covariate info is NULL when not available", {
 
-  load <- setup_load(file.path(test_data_dir, "Cont_long.csv"), outcome = "Continuous")
-  config <- setup_configure(load$data, load$treatment_df, "Continuous", "MD", "the Great")
+  load <- setup_load(file.path(test_data_dir, "Cont_long.csv"), outcome = "continuous")
+  config <-setup_configure(load, "the Great", "random", "MD", "good", 999)
 
-  expect_null(config$covariate_column)
-  expect_null(config$covariate_name)
-  expect_null(config$covariate_type)
+  expect_length(config$covariate, 0)
 
 })
 
 test_that("Covariate info is extracted when available", {
 
-  load <- setup_load(file.path(test_data_dir, "Cont_long_continuous_cov.csv"), outcome = "Continuous")
-  config <- setup_configure(load$data, load$treatment_df, "Continuous", "MD", "the Great")
+  load <- setup_load(file.path(test_data_dir, "Cont_long_continuous_cov.csv"), outcome = "continuous")
+  config <-setup_configure(load, "the Great", "random", "MD", "good", 999)
 
-  expect_equal(config$covariate_column, "covar.age")
-  expect_equal(config$covariate_name, "age")
-  expect_equal(config$covariate_type, "Continuous")
+  expect_equal(config$covariate$column, "covar.age")
+  expect_equal(config$covariate$name, "age")
+  expect_equal(config$covariate$type, "continuous")
 
 })
