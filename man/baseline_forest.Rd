@@ -2,11 +2,10 @@
 % Please edit documentation in R/baseline_forest_f.R
 \name{baseline_forest}
 \alias{baseline_forest}
-\title{baseline_forest}
+\title{Produce a forest plot for a baseline risk model using \code{gemtc::blobbogram()}}
 \usage{
 baseline_forest(
   model,
-  treatment_df,
   xmin = NULL,
   xmax = NULL,
   title = "Baseline risk regression analysis",
@@ -15,9 +14,7 @@ baseline_forest(
 )
 }
 \arguments{
-\item{model}{model output produced by \code{baseline_model()}}
-
-\item{treatment_df}{dataframe. Treatments}
+\item{model}{Output produced by \code{baseline_model()}}
 
 \item{xmin}{numeric. Minimum x-axis value. Default \code{NULL} in which case it is calculated internally}
 
@@ -36,5 +33,5 @@ html. Contains the svg string to generate the plot. This can be saved
 using \code{write_plot()}.
 }
 \description{
-Produce a forest plot for a baseline risk model using \code{bnma::network.forest.plot()}
+Produce a forest plot for a baseline risk model using \code{gemtc::blobbogram()}
 }

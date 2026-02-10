@@ -20,7 +20,7 @@ CalculateDirectness(
 
 \item{treatment_ids}{Data frame containing treatment IDs and names in columns named 'Number' and 'Label' respectively.}
 
-\item{outcome}{"Continuous" or "Binary".}
+\item{outcome}{"continuous" or "binary".}
 
 \item{outcome_measure}{"MD", "OR", "RR" or "RD".}
 

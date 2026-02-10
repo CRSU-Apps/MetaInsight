@@ -177,7 +177,7 @@ test_that("{shinytest2} recording: e2e_covariate_regression", {
   common <- app$get_value(export = "common")
   result <- common$covariate_regression
 
-  expect_is(result, "list")
+  expect_is(result, "regression_data")
   expect_true(all(c("directness",
                     "credible_regions") %in% names(result)))
   expect_is(result$directness, "list")

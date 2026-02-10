@@ -4,7 +4,7 @@
 \alias{bayes_details}
 \alias{covariate_details}
 \alias{baseline_details}
-\title{Produces a summary of a Bayesian model}
+\title{Produce a summary of a Bayesian model}
 \usage{
 bayes_details(model, logger = NULL)
 
@@ -13,7 +13,7 @@ covariate_details(...)
 baseline_details(...)
 }
 \arguments{
-\item{model}{list. Output produced by \code{baseline_model()}, \code{bayes_model()} or \code{covariate_model()}.}
+\item{model}{Output produced by \code{baseline_model()}, \code{bayes_model()} or \code{covariate_model()}.}
 
 \item{logger}{Stores all notification messages to be displayed in the Log
 Window. Insert the logger reactive list here for running in
@@ -25,5 +25,5 @@ shiny, otherwise leave the default \code{NULL}}
 HTML summary of the model
 }
 \description{
-Produces a summary of a Bayesian model
+Produce a summary of a Bayesian model
 }

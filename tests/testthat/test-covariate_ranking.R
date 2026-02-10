@@ -1,6 +1,6 @@
 
 test_that("Check covariate_ranking function works as expected", {
-  result <- covariate_ranking(fitted_covariate_model, configured_data_con, 50)
+  result <- covariate_ranking(fitted_covariate_model, configured_data_con)
 
   expect_is(result, "list")
   expect_true(all(c("SUCRA", "Colour", "Cumulative", "Probabilities", "BUGSnetData") %in% names(result)))
@@ -27,14 +27,12 @@ test_that("covariate_ranking produces errors for incorrect data types", {
 
   faulty_model <- list(mtcRelEffects = 1:4)
 
-  expect_error(covariate_ranking(fitted_covariate_model, "not_data", 50), "configured_data must be of class configured_data")
+  expect_error(covariate_ranking(fitted_covariate_model, "not_data"), "configured_data must be of class configured_data")
 
-  expect_error(covariate_ranking(faulty_model, configured_data_con, 50), "model must be an object created by baseline_model")
-  expect_error(covariate_ranking("faulty_model", configured_data_con, 50), "model must be an object created by baseline_model")
-  expect_error(covariate_ranking(list(a = 1), configured_data_con, 50), "model must be an object created by baseline_model")
+  expect_error(covariate_ranking(faulty_model, configured_data_con), "model must be an object created by baseline_model")
+  expect_error(covariate_ranking("faulty_model", configured_data_con), "model must be an object created by baseline_model")
+  expect_error(covariate_ranking(list(a = 1), configured_data_con), "model must be an object created by baseline_model")
 
-  expect_error(covariate_ranking(fitted_covariate_model, configured_data_con), "please specify a numeric cov_value")
-  expect_error(covariate_ranking(fitted_covariate_model, configured_data_con, "123"), "please specify a numeric cov_value")
 })
 
 test_that("{shinytest2} recording: e2e_covariate_ranking", {

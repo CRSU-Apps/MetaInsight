@@ -3,17 +3,14 @@
 \name{bayes_deviance}
 \alias{bayes_deviance}
 \alias{covariate_deviance}
-\title{Produce deviance plots}
+\title{Produce deviance plots using the output of \code{gemtc::mtc.deviance()}}
 \usage{
-bayes_deviance(model, seed = NULL, async = FALSE)
+bayes_deviance(model, async = FALSE)
 
 covariate_deviance(...)
 }
 \arguments{
 \item{model}{Bayesian model produced by \code{bayes_model()} or \code{covariate_model()}}
-
-\item{seed}{numeric. Seed value to use for calculating UME model. Only required
-when \code{model} was produced by \code{bayes_model()}}
 
 \item{async}{Whether or not the function is being used asynchronously. Default \code{FALSE}}
 
@@ -22,18 +19,18 @@ when \code{model} was produced by \code{bayes_model()}}
 \value{
 A list containing different elements depending on the input model:
 
-When model was created by \code{bayes_model()} containing:
+When \code{model} was created by \code{bayes_model()} containing:
 \item{deviance_mtc}{results from \code{gemtc::mtc.deviance()} for model$mtcResults}
 \item{deviance_ume}{results from \code{gemtc::mtc.deviance()} for UME model}
 \item{scat_plot}{plotly object}
 \item{stem_plot}{plotly object}
 \item{lev_plot}{plotly object}
 
-When model was created by \code{covariate_model()} containing:
+When \code{model} was created by \code{covariate_model()} containing:
 \item{deviance_mtc}{results from \code{gemtc::mtc.deviance()} for model$mtcResults}
 \item{stem_plot}{plotly object}
 \item{lev_plot}{plotly object}
 }
 \description{
-Produce deviance plots
+Produce deviance plots using the output of \code{gemtc::mtc.deviance()}
 }

@@ -1,5 +1,5 @@
-#' @title baseline_summary
-#' @description Creates a plot of the covariate value for each study arm
+#' Produce a plot summarising the covariate value for each study arm
+#'
 #' @inheritParams common_params
 #' @inherit return-svg return
 #' @import ggplot2

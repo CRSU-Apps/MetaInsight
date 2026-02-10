@@ -3,15 +3,15 @@
 #' @inheritParams common_params
 #'
 #' @return Dataframe of inconsistency data:
-#'  - 'Comparison': Treatment comparison.
-#'  - 'No.Studies': Number of studies.
-#'  - 'NMA': NMA treatment effect estimate.
-#'  - 'Direct': Direct treatment effect estimate.
-#'  - 'Indirect': Indirect treatment effect estimate.
-#'  - 'Difference': Difference between treatment effects.
-#'  - 'Diff_95CI_lower': 2.5% limit of difference in treatment effects.
-#'  - 'Diff_95CI_upper': 97.5% limit of difference in treatment effects.
-#'  - 'pValue': p-value for test of "difference in treatment effects == 0".
+#' \item{Comparison}{Treatment comparison}
+#' \item{No.Studies}{Number of studies}
+#' \item{NMA}{NMA treatment effect estimate}
+#' \item{Direct}{Direct treatment effect estimate}
+#' \item{Indirect}{Indirect treatment effect estimate}
+#' \item{Difference}{Difference between treatment effects}
+#' \item{Diff_95CI_lower}{2.5% limit of difference in treatment effects}
+#' \item{Diff_95CI_upper}{97.5% limit of difference in treatment effects}
+#' \item{pValue}{p-value for test of "difference in treatment effects == 0"}
 #' @export
 freq_inconsistent <- function(configured_data, logger = NULL) {
 

@@ -7,7 +7,7 @@
 RankingOrder(outcome, data)
 }
 \arguments{
-\item{outcome}{"Binary" or "Continuous".}
+\item{outcome}{"binary" or "continuous".}
 
 \item{data}{Input dataset.}
 }

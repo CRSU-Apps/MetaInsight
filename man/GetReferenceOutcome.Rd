@@ -17,7 +17,7 @@ GetReferenceOutcome(
 
 \item{treatment_df}{Data frame containing treatment IDs and names in columns named 'Number' and 'Label' respectively.}
 
-\item{outcome}{"Binary" or "Continuous".}
+\item{outcome}{"binary" or "continuous".}
 
 \item{observed}{"Observed" or "Imputed". See @return.}
 

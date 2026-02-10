@@ -11,7 +11,7 @@
 
 \item{required_columns}{Data frame containing data definitions.}
 
-\item{outcome}{Outcome type selected for the data. Either "Binary" or "Continuous".}
+\item{outcome}{Outcome type selected for the data. Either "binary" or "continuous".}
 }
 \value{
 Validation result in the form of a list:

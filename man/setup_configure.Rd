@@ -2,50 +2,67 @@
 % Please edit documentation in R/setup_configure_f.R
 \name{setup_configure}
 \alias{setup_configure}
-\title{Checks the connectivity of the uploaded data and converts it into formats for
-bugsnet and frequentist analyses}
+\title{Checks the connectivity of the loaded data and converts it into formats for
+later analyses. Conducts a frequentist analysis using \code{netmeta::netmeta()}.
+The output can be passed to many other functions - all \code{summary_} and \code{freq_}
+functions and \code{bayes_model()}, \code{baseline_model()} and \code{covariate_model()}.}
 \usage{
 setup_configure(
-  data,
-  treatment_df,
-  outcome,
-  outcome_measure,
+  loaded_data,
   reference_treatment,
+  effects,
+  outcome_measure,
+  ranking_option,
+  seed,
   logger = NULL
 )
 }
 \arguments{
-\item{data}{dataframe. Uploaded data}
-
-\item{treatment_df}{dataframe. Treatments}
-
-\item{outcome}{character. Outcome type for the dataset. Either \code{Binary} or
-\code{Continuous}.}
-
-\item{outcome_measure}{character. Outcome measure of the dataset. Either
-\code{OR}, \code{RR} or \code{RD} when \code{outcome} is \code{Binary} or \code{MD} or \code{SMD} when
-\code{outcome} is \code{Continuous}}
+\item{loaded_data}{list. Output from \code{setup_load()}}
 
 \item{reference_treatment}{character. The reference treatment of the dataset}
+
+\item{effects}{character. Type of model to fit, either \code{random} or \code{fixed}}
+
+\item{outcome_measure}{character. Outcome measure of the dataset. Either
+\code{OR}, \code{RR} or \code{RD} when \code{outcome} is \code{binary} or \code{MD} or \code{SMD} when
+\code{outcome} is \code{continuous}}
+
+\item{ranking_option}{character. \code{good} if the treatment effect is desirable, else \code{bad}}
+
+\item{seed}{numeric. Seed used to fit the models.}
 
 \item{logger}{Stores all notification messages to be displayed in the Log
 Window. Insert the logger reactive list here for running in
 shiny, otherwise leave the default \code{NULL}}
 }
 \value{
-List containing:
+\code{configured_data} containing:
 \item{wrangled_data}{dataframe. To be presented in the data table}
-\item{treatment_df}{dataframe. Updated version of the input parameter}
+\item{treatments}{dataframe. Treatment names and IDs}
+\item{reference_treatment}{character. The selected reference treatment}
 \item{disconnected_indices}{vector. Indices of studies that are not connected to the main network}
-\item{main_connected_data}{dataframe. A subset of the data containing only connected studies}
-\item{non_covariate_data_all}{dataframe. The uploaded data with covariates removed}
-\item{covariate_column}{character. Name of the column containing covariate data}
-\item{covariate_name}{character. Name of the covariate}
-\item{covariate_type}{character. Whether the covariate is \code{Binary} or \code{Continuous}}
-\item{bugsnet_all}{dataframe. Processed data for bugsnet analyses created by \code{bugsnetdata}}
-\item{freq_all}{list. Processed data for frequentist analyses created by \code{frequentist()}}
+\item{connected_data}{dataframe. A subset of the data containing only connected studies}
+\item{non_covariate_data}{dataframe. The uploaded data with covariates removed}
+\item{covariate}{A list containing these items if covariate data exists or
+else empty:
+\itemize{
+\item{column}{character. Name of the column containing covariate data}
+\item{name}{character. Name of the covariate}
+\item{type}{character. Whether the covariate is \code{binary} or \code{continuous}}
+}
+}
+\item{bugsnet}{dataframe. Processed data for bugsnet analyses created by \code{bugsnetdata}}
+\item{freq}{list. Processed data for frequentist analyses created by \code{frequentist()}}
+\item{outcome}{character. Whether the data is \code{binary} or \code{continuous}}
+\item{outcome_measure}{character. Outcome measure of the dataset.}
+\item{effects}{character. Whether the models are \code{fixed} or \code{random} effects}
+\item{ranking_option}{character. Whether higher values in the data are \code{good} or \code{bad}}
+\item{seed}{numeric. A seed value to be passed to models}
 }
 \description{
-Checks the connectivity of the uploaded data and converts it into formats for
-bugsnet and frequentist analyses
+Checks the connectivity of the loaded data and converts it into formats for
+later analyses. Conducts a frequentist analysis using \code{netmeta::netmeta()}.
+The output can be passed to many other functions - all \code{summary_} and \code{freq_}
+functions and \code{bayes_model()}, \code{baseline_model()} and \code{covariate_model()}.
 }

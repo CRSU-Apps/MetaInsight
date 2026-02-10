@@ -1,4 +1,4 @@
-#' Produce a forest plot and annotation
+#' Produce a frequentist forest plot and annotation using `meta::forest()`
 #'
 #' @param xmin numeric. Minimum x-axis limit.
 #' @param xmax numeric. Maximum x-axis limit.

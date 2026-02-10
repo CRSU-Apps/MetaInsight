@@ -16,24 +16,20 @@ CovariateModelOutput(
 )
 }
 \arguments{
-\item{connected_data}{dataframe. Input data set created by \code{setup_configure()} or \code{setup_exclude}}
-
-\item{treatment_df}{dataframe. Treatments}
-
 \item{model}{Completed model object after running RunCovariateRegression()}
 
 \item{covariate_title}{Covariate name as per uploaded data}
 
 \item{covariate_value}{Value of covariate for which to give output (default value the mean of study covariates)}
 
-\item{outcome}{character. Outcome type for the dataset. Either \code{Binary} or
-\code{Continuous}.}
+\item{outcome}{character. Outcome type for the dataset. Either \code{binary} or
+\code{continuous}.}
 
 \item{outcome_measure}{character. Outcome measure of the dataset. Either
-\code{OR}, \code{RR} or \code{RD} when \code{outcome} is \code{Binary} or \code{MD} or \code{SMD} when
-\code{outcome} is \code{Continuous}}
+\code{OR}, \code{RR} or \code{RD} when \code{outcome} is \code{binary} or \code{MD} or \code{SMD} when
+\code{outcome} is \code{continuous}}
 
-\item{covariate_type}{character. Whether the covariate values are \code{Continuous} or \code{Binary}}
+\item{covariate_type}{character. Whether the covariate values are \code{continuous} or \code{binary}}
 }
 \value{
 List of gemtc related output:
@@ -49,7 +45,7 @@ dic = data frame of model fit statistics
 cov_value_sentence = text output stating the value for which the covariate has been set to for producing output
 slopes = named list of slopes for the regression equations (unstandardised - equal to one 'increment')
 intercepts = named list of intercepts for the regression equations at covariate_value
-outcome = \code{Binary} or \code{Continuous}
+outcome = \code{binary} or \code{continuous}
 outcome_measure = The outcome measure for the analysis eg. "MD" or "OR"
 mtcNetwork = The network object from GEMTC
 model_type = The type of linear model, either "fixed" or "random"

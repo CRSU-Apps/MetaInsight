@@ -16,16 +16,12 @@ frequentist(
 \arguments{
 \item{non_covariate_data}{Input dataset with any covariates removed.}
 
-\item{outcome}{character. Outcome type for the dataset. Either \code{Binary} or
-\code{Continuous}.}
-
-\item{treatment_df}{dataframe. Treatments}
+\item{outcome}{character. Outcome type for the dataset. Either \code{binary} or
+\code{continuous}.}
 
 \item{outcome_measure}{character. Outcome measure of the dataset. Either
-\code{OR}, \code{RR} or \code{RD} when \code{outcome} is \code{Binary} or \code{MD} or \code{SMD} when
-\code{outcome} is \code{Continuous}}
-
-\item{model_type}{character. Type of model to fit, either \code{random} or \code{fixed}}
+\code{OR}, \code{RR} or \code{RD} when \code{outcome} is \code{binary} or \code{MD} or \code{SMD} when
+\code{outcome} is \code{continuous}}
 
 \item{reference_treatment}{character. The reference treatment of the dataset}
 }

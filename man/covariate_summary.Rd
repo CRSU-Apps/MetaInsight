@@ -2,17 +2,12 @@
 % Please edit documentation in R/covariate_summary_f.R
 \name{covariate_summary}
 \alias{covariate_summary}
-\title{baseline_summary}
+\title{Produce a plot summarising the covariate value for each study arm}
 \usage{
-covariate_summary(connected_data, outcome, treatment_df, logger = NULL)
+covariate_summary(configured_data, logger = NULL)
 }
 \arguments{
-\item{connected_data}{dataframe. Input data set created by \code{setup_configure()} or \code{setup_exclude}}
-
-\item{outcome}{character. Outcome type for the dataset. Either \code{Binary} or
-\code{Continuous}.}
-
-\item{treatment_df}{dataframe. Treatments}
+\item{configured_data}{list. Input dataset created by \code{setup_configure()} or \code{setup_exclude()}}
 
 \item{logger}{Stores all notification messages to be displayed in the Log
 Window. Insert the logger reactive list here for running in
@@ -23,5 +18,5 @@ html. Contains the svg string to generate the plot. This can be saved
 using \code{write_plot()}.
 }
 \description{
-Creates a plot of the covariate value for each study arm
+Produce a plot summarising the covariate value for each study arm
 }

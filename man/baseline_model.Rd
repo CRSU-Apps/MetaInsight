@@ -2,39 +2,14 @@
 % Please edit documentation in R/baseline_model_f.R
 \name{baseline_model}
 \alias{baseline_model}
-\title{baseline_model}
+\title{Fit a baseline risk regression model using \code{bnma::network.run()}}
 \usage{
-baseline_model(
-  connected_data,
-  treatment_df,
-  outcome,
-  outcome_measure,
-  reference_treatment,
-  model_type,
-  regressor_type,
-  seed,
-  async = FALSE
-)
+baseline_model(configured_data, regressor_type, async = FALSE)
 }
 \arguments{
-\item{connected_data}{dataframe. Input data set created by \code{setup_configure()} or \code{setup_exclude}}
-
-\item{treatment_df}{dataframe. Treatments}
-
-\item{outcome}{character. Outcome type for the dataset. Either \code{Binary} or
-\code{Continuous}.}
-
-\item{outcome_measure}{character. Outcome measure of the dataset. Either
-\code{OR}, \code{RR} or \code{RD} when \code{outcome} is \code{Binary} or \code{MD} or \code{SMD} when
-\code{outcome} is \code{Continuous}}
-
-\item{reference_treatment}{character. The reference treatment of the dataset}
-
-\item{model_type}{character. Type of model to fit, either \code{random} or \code{fixed}}
+\item{configured_data}{list. Input dataset created by \code{setup_configure()} or \code{setup_exclude()}}
 
 \item{regressor_type}{character. Type of regression coefficient, either \code{shared}, \code{unrelated}, or \code{exchangeable}}
-
-\item{seed}{numeric. Seed used to fit the model}
 
 \item{async}{Whether or not the function is being used asynchronously. Default \code{FALSE}}
 }
@@ -42,20 +17,21 @@ baseline_model(
 List of bnma related output:
 \item{mtcResults}{model object itself carried through (needed to match existing code)}
 \item{covariate_value}{The mean covariate value, used for centring}
-\item{reference_treatment}{The name of the reference treatment}
+\item{reference_treatment}{character. The \code{reference_treatment}from \code{configured_data}}
 \item{comparator_names}{Vector containing the names of the comparators}
 \item{a}{text output stating whether fixed or random effects}
 \item{cov_value_sentence}{text output stating the value for which the covariate has been set to for producing output}
 \item{slopes}{named list of slopes for the regression equations (unstandardised - equal to one 'increment')}
 \item{intercepts}{named list of intercepts for the regression equations at cov_value}
-\item{outcome_measure}{The outcome measures for the analysis}
-\item{model}{effects type, "fixed" or "random"}
+\item{outcome}{character. The \code{outcome} from \code{configured_data}}
+\item{outcome_measure}{character. The \code{outcome_measure}from \code{configured_data}}
+\item{effects}{character. The \code{effects} from \code{configured_data}}
 \item{covariate_min}{Vector of minimum covariate values directly contributing to the regression}
 \item{covariate_max}{Vector of maximum covariate values directly contributing to the regression}
 \item{dic}{Summary of model fit}
 \item{sumresults}{Output of summary(model)}
-\item{regressor}{regressor_type}
+\item{regressor}{Type of regression coefficient}
 }
 \description{
-Fit a baseline risk regression model with \code{bnma::network.run()}
+Fit a baseline risk regression model using \code{bnma::network.run()}
 }

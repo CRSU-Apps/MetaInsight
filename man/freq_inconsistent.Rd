@@ -2,14 +2,12 @@
 % Please edit documentation in R/freq_inconsistent_f.R
 \name{freq_inconsistent}
 \alias{freq_inconsistent}
-\title{Produce inconsistency tables}
+\title{Produce inconsistency tables using \code{netmeta::netsplit()}}
 \usage{
-freq_inconsistent(freq, model_type, logger = NULL)
+freq_inconsistent(configured_data, logger = NULL)
 }
 \arguments{
-\item{freq}{list. NMA results created by freq_wrap().}
-
-\item{model_type}{character. Type of model to fit, either \code{random} or \code{fixed}}
+\item{configured_data}{list. Input dataset created by \code{setup_configure()} or \code{setup_exclude()}}
 
 \item{logger}{Stores all notification messages to be displayed in the Log
 Window. Insert the logger reactive list here for running in
@@ -17,18 +15,16 @@ shiny, otherwise leave the default \code{NULL}}
 }
 \value{
 Dataframe of inconsistency data:
-\itemize{
-\item 'Comparison': Treatment comparison.
-\item 'No.Studies': Number of studies.
-\item 'NMA': NMA treatment effect estimate.
-\item 'Direct': Direct treatment effect estimate.
-\item 'Indirect': Indirect treatment effect estimate.
-\item 'Difference': Difference between treatment effects.
-\item 'Diff_95CI_lower': 2.5\% limit of difference in treatment effects.
-\item 'Diff_95CI_upper': 97.5\% limit of difference in treatment effects.
-\item 'pValue': p-value for test of "difference in treatment effects == 0".
-}
+\item{Comparison}{Treatment comparison}
+\item{No.Studies}{Number of studies}
+\item{NMA}{NMA treatment effect estimate}
+\item{Direct}{Direct treatment effect estimate}
+\item{Indirect}{Indirect treatment effect estimate}
+\item{Difference}{Difference between treatment effects}
+\item{Diff_95CI_lower}{2.5\% limit of difference in treatment effects}
+\item{Diff_95CI_upper}{97.5\% limit of difference in treatment effects}
+\item{pValue}{p-value for test of "difference in treatment effects == 0"}
 }
 \description{
-Produce inconsistency tables
+Produce inconsistency tables using \code{netmeta::netsplit()}
 }

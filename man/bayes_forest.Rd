@@ -3,11 +3,10 @@
 \name{bayes_forest}
 \alias{bayes_forest}
 \alias{covariate_forest}
-\title{Make a Bayesian forest plot with \code{gemtc::forest()}}
+\title{Produce a Bayesian forest plot with \code{gemtc::forest()}}
 \usage{
 bayes_forest(
   model,
-  treatment_df,
   xmin = NULL,
   xmax = NULL,
   title = "",
@@ -19,8 +18,6 @@ covariate_forest(...)
 }
 \arguments{
 \item{model}{list. Object created by \code{bayes_model()} or \code{covariate_model()}}
-
-\item{treatment_df}{dataframe. Treatments}
 
 \item{xmin}{numeric. Minimum x-axis value. Default \code{NULL} in which case it is calculated internally}
 
@@ -41,5 +38,5 @@ html. Contains the svg string to generate the plot. This can be saved
 using \code{write_plot()}.
 }
 \description{
-Make a Bayesian forest plot with \code{gemtc::forest()}
+Produce a Bayesian forest plot with \code{gemtc::forest()}
 }

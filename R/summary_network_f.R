@@ -1,13 +1,9 @@
-#' Produce either a netgraph or netplot
+#' Produce a plot of the network using `netmeta::netgraph()`
 #'
-#' @param freq list. Results of frequentist analysis created by `frequentist()`
-#' @param bugsnet dataframe. Created by `bugsnetdata()`
 #' @param style character. The plot to produce, either `netgraph` or `netplot`
-#' @param label_size numeric. The size of labels in the plots. Default of 1.
+#' @param label_size numeric. The size of labels in the plots. Default of `1`.
 #' @param title character. Title of plot. Default of no title.
-#' @param logger Stores all notification messages to be displayed in the Log
-#'   Window. Insert the logger reactive list here for running in
-#'   shiny, otherwise leave the default `NULL`
+#' @inheritParams common_params
 #' @inherit return-svg return
 #' @export
 

@@ -1,18 +1,25 @@
-#' Checks the connectivity of the uploaded data and converts it into formats for
-#' bugsnet and frequentist analyses
+#' Checks the connectivity of the loaded data and converts it into formats for
+#' later analyses. Conducts a frequentist analysis using `netmeta::netmeta()`.
+#' The output can be passed to many other functions - all `summary_` and `freq_`
+#' functions and `bayes_model()`, `baseline_model()` and `covariate_model()`.
 #'
-#' @param data dataframe. Uploaded data
+#' @param loaded_data list. Output from `setup_load()`
 #' @inheritParams common_params
-#' @return List containing:
+#' @return `configured_data` containing:
 #'  \item{wrangled_data}{dataframe. To be presented in the data table}
 #'  \item{treatments}{dataframe. Treatment names and IDs}
 #'  \item{reference_treatment}{character. The selected reference treatment}
 #'  \item{disconnected_indices}{vector. Indices of studies that are not connected to the main network}
 #'  \item{connected_data}{dataframe. A subset of the data containing only connected studies}
 #'  \item{non_covariate_data}{dataframe. The uploaded data with covariates removed}
-#'  \item{covariate_column}{character. Name of the column containing covariate data}
-#'  \item{covariate_name}{character. Name of the covariate}
-#'  \item{covariate_type}{character. Whether the covariate is `binary` or `continuous`}
+#'  \item{covariate}{A list containing these items if covariate data exists or
+#'  else empty:
+#'    \itemize{
+#'      \item{column}{character. Name of the column containing covariate data}
+#'      \item{name}{character. Name of the covariate}
+#'      \item{type}{character. Whether the covariate is `binary` or `continuous`}
+#'    }
+#'  }
 #'  \item{bugsnet}{dataframe. Processed data for bugsnet analyses created by `bugsnetdata`}
 #'  \item{freq}{list. Processed data for frequentist analyses created by `frequentist()`}
 #'  \item{outcome}{character. Whether the data is `binary` or `continuous`}
@@ -21,7 +28,6 @@
 #'  \item{ranking_option}{character. Whether higher values in the data are `good` or `bad`}
 #'  \item{seed}{numeric. A seed value to be passed to models}
 #' @export
-#'
 
 setup_configure <- function(loaded_data, reference_treatment, effects, outcome_measure, ranking_option, seed, logger = NULL){
 

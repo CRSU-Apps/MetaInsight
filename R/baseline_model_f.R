@@ -1,23 +1,24 @@
-#' @title baseline_model
-#' @description Fit a baseline risk regression model with `bnma::network.run()`
+#' Fit a baseline risk regression model using `bnma::network.run()`
+#'
 #' @param regressor_type character. Type of regression coefficient, either `shared`, `unrelated`, or `exchangeable`
 #' @inheritParams common_params
 #' @return List of bnma related output:
 #'  \item{mtcResults}{model object itself carried through (needed to match existing code)}
 #'  \item{covariate_value}{The mean covariate value, used for centring}
-#'  \item{reference_treatment}{The name of the reference treatment}
+#'  \item{reference_treatment}{character. The `reference_treatment`from `configured_data`}
 #'  \item{comparator_names}{Vector containing the names of the comparators}
 #'  \item{a}{text output stating whether fixed or random effects}
 #'  \item{cov_value_sentence}{text output stating the value for which the covariate has been set to for producing output}
 #'  \item{slopes}{named list of slopes for the regression equations (unstandardised - equal to one 'increment')}
 #'  \item{intercepts}{named list of intercepts for the regression equations at cov_value}
-#'  \item{outcome_measure}{The outcome measures for the analysis}
-#'  \item{model}{effects type, "fixed" or "random"}
+#'  \item{outcome}{character. The `outcome` from `configured_data`}
+#'  \item{outcome_measure}{character. The `outcome_measure`from `configured_data`}
+#'  \item{effects}{character. The `effects` from `configured_data`}
 #'  \item{covariate_min}{Vector of minimum covariate values directly contributing to the regression}
 #'  \item{covariate_max}{Vector of maximum covariate values directly contributing to the regression}
 #'  \item{dic}{Summary of model fit}
 #'  \item{sumresults}{Output of summary(model)}
-#'  \item{regressor}{regressor_type}
+#'  \item{regressor}{Type of regression coefficient}
 #' @export
 baseline_model <- function(configured_data, regressor_type, async = FALSE){
 

@@ -1,9 +1,9 @@
-#' @title baseline_comparison
-#' Creates a table of comparisons of all treatment pairs for baseline risk models
+#' Produce a table of comparisons of all treatment pairs for baseline risk
+#' models using `bnma::relative.effects.table()`
 #'
-#' @param model list. Object created by `baseline_model()`
+#' @param model list. Object produced by `baseline_model()`
 #' @inheritParams common_params
-#' @return Relative effects table created by `gemtc::relative.effect.table()`
+#' @return Relative effects table
 #' @export
 baseline_comparison <- function(model, logger = NULL){
 

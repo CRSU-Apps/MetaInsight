@@ -9,7 +9,7 @@ BaselineRiskNetwork(br_data, outcome, model_type, cov_parameters)
 \arguments{
 \item{br_data}{A list of data in the format produced by \code{FormatForBnma()}.}
 
-\item{outcome}{"Continuous" or "Binary".}
+\item{outcome}{"continuous" or "binary".}
 
 \item{model_type}{"fixed" or "random".}
 

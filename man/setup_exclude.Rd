@@ -2,49 +2,40 @@
 % Please edit documentation in R/setup_exclude_f.R
 \name{setup_exclude}
 \alias{setup_exclude}
-\title{Takes the uploaded data, removes any excluded studies and returns
-subsets of the data in formats for bugsnet and frequentist analyses}
+\title{Takes the configured data, removes any excluded studies and returns
+subsets of the data to be passed to other functions.}
 \usage{
-setup_exclude(
-  non_covariate_data,
-  treatment_df,
-  reference_treatment,
-  outcome,
-  outcome_measure,
-  model_type,
-  exclusions,
-  async = FALSE
-)
+setup_exclude(configured_data, exclusions, async = FALSE)
 }
 \arguments{
-\item{non_covariate_data}{dataframe. Data processed by setup_configure()}
-
-\item{treatment_df}{dataframe. Treatments}
-
-\item{reference_treatment}{character. The reference treatment of the dataset}
-
-\item{outcome}{character. Outcome type for the dataset. Either \code{Binary} or
-\code{Continuous}.}
-
-\item{outcome_measure}{character. Outcome measure of the dataset. Either
-\code{OR}, \code{RR} or \code{RD} when \code{outcome} is \code{Binary} or \code{MD} or \code{SMD} when
-\code{outcome} is \code{Continuous}}
-
-\item{model_type}{character. Type of model to fit, either \code{random} or \code{fixed}}
+\item{configured_data}{list. Input dataset created by \code{setup_configure()} or \code{setup_exclude()}}
 
 \item{exclusions}{character. Vector of study names to exclude.}
 
 \item{async}{Whether or not the function is being used asynchronously. Default \code{FALSE}}
 }
 \value{
-List containing:
-\item{bugsnet_sub}{dataframe. Processed data for bugsnet analyses created by \code{bugsnetdata()}}
-\item{freq_sub}{list. Processed data for frequentist analyses created by \code{frequentist()}}
-\item{reference_treatment_sub}{character. Reference treatment for sensitivity analyses}
-\item{subsetted_data}{dataframe. Processed data}
-\item{subsetted_treatment_df}{dataframe. Treatments in processed data}
+\code{configured_data} containing:
+\item{treatments}{dataframe. Treatment names and IDs}
+\item{reference_treatment}{character. The selected reference treatment}
+\item{connected_data}{dataframe. A subset of the data containing only connected studies}
+\item{covariate}{A list containing these items if covariate data exists or
+else empty:
+\itemize{
+\item{column}{character. Name of the column containing covariate data}
+\item{name}{character. Name of the covariate}
+\item{type}{character. Whether the covariate is \code{binary} or \code{continuous}}
+}
+}
+\item{bugsnet}{dataframe. Processed data for bugsnet analyses created by \code{bugsnetdata}}
+\item{freq}{list. Processed data for frequentist analyses created by \code{frequentist()}}
+\item{outcome}{character. Whether the data is \code{binary} or \code{continuous}}
+\item{outcome_measure}{character. Outcome measure of the dataset.}
+\item{effects}{character. Whether the models are \code{fixed} or \code{random} effects}
+\item{ranking_option}{character. Whether higher values in the data are \code{good} or \code{bad}}
+\item{seed}{numeric. A seed value to be passed to models}
 }
 \description{
-Takes the uploaded data, removes any excluded studies and returns
-subsets of the data in formats for bugsnet and frequentist analyses
+Takes the configured data, removes any excluded studies and returns
+subsets of the data to be passed to other functions.
 }

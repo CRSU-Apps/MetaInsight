@@ -1,6 +1,6 @@
-#' @title baseline_forest
-#' @description Produce a forest plot for a baseline risk model using `bnma::network.forest.plot()`
-#' @param model model output produced by `baseline_model()`
+#' Produce a forest plot for a baseline risk model using `gemtc::blobbogram()`
+#'
+#' @param model Output produced by `baseline_model()`
 #' @param title character. Title for the plot. Defaults to `Baseline risk regression analysis`
 #' @param ranking logical. Whether the function is being used in `baseline_ranking`
 #' @inheritParams common_params

@@ -9,7 +9,7 @@ WideToLong(wide_data, outcome)
 \arguments{
 \item{wide_data}{Data frame of wide format}
 
-\item{outcome}{Indicator whether outcome is 'Binary' or 'Continuous'}
+\item{outcome}{Indicator whether outcome is 'binary' or 'continuous'}
 }
 \value{
 Data frame in long format

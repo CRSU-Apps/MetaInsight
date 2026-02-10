@@ -4,12 +4,12 @@
 \alias{forest_annotation}
 \title{Creates the text to be displayed underneath the forest plots, with between-study SD, number of studies and number of treatments.}
 \usage{
-forest_annotation(freq, model_type, outcome_measure)
+forest_annotation(freq, effects, outcome_measure)
 }
 \arguments{
 \item{freq}{list. NMA results created by freq_wrap().}
 
-\item{model_type}{"fixed" or "random".}
+\item{effects}{"fixed" or "random".}
 
 \item{outcome_measure}{"MD", "SMD", "OR", "RR", or "RD".}
 }

@@ -7,11 +7,9 @@
 freq.df(model_type, outcome_measure, dataf, reference_treatment)
 }
 \arguments{
-\item{model_type}{character. Type of model to fit, either \code{random} or \code{fixed}}
-
 \item{outcome_measure}{character. Outcome measure of the dataset. Either
-\code{OR}, \code{RR} or \code{RD} when \code{outcome} is \code{Binary} or \code{MD} or \code{SMD} when
-\code{outcome} is \code{Continuous}}
+\code{OR}, \code{RR} or \code{RD} when \code{outcome} is \code{binary} or \code{MD} or \code{SMD} when
+\code{outcome} is \code{continuous}}
 
 \item{dataf}{Data in contrast form with treatment labels, typically output from labelmatching.df().}
 

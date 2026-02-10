@@ -11,7 +11,7 @@ PrepDataGemtc(data, treatment_df, outcome, covariate, cov_friendly)
 
 \item{treatment_df}{Data frame containing treatment IDs and names in columns named 'Number' and 'Label' respectively}
 
-\item{outcome}{Indicator of whether data is 'Binary' or 'Continuous'}
+\item{outcome}{Indicator of whether data is 'binary' or 'continuous'}
 
 \item{covariate}{Chosen covariate name as per uploaded data}
 

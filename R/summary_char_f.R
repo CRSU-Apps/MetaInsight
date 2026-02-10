@@ -1,9 +1,6 @@
-#' Takes bugsnet data and produces a summary dataframe of the studies
+#' Produce a summary dataframe of the studies using `BUGSnet::net.tab()`
 #'
-#' @param bugsnet_data dataframe. Dataframe produced by `bugsnetdata()`
-#' @param logger Stores all notification messages to be displayed in the Log
-#'   Window. Insert the logger reactive list here for running in
-#'   shiny, otherwise leave the default `NULL`
+#' @inheritParams common_params
 #' @return dataframe of characteristics
 #' @export
 summary_char <- function(configured_data, logger = NULL) {

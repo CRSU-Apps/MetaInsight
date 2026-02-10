@@ -10,11 +10,11 @@ contrastform.df(wide_data, outcome_measure, outcome)
 \item{wide_data}{non-covariate data in a wide format}
 
 \item{outcome_measure}{character. Outcome measure of the dataset. Either
-\code{OR}, \code{RR} or \code{RD} when \code{outcome} is \code{Binary} or \code{MD} or \code{SMD} when
-\code{outcome} is \code{Continuous}}
+\code{OR}, \code{RR} or \code{RD} when \code{outcome} is \code{binary} or \code{MD} or \code{SMD} when
+\code{outcome} is \code{continuous}}
 
-\item{outcome}{character. Outcome type for the dataset. Either \code{Binary} or
-\code{Continuous}.}
+\item{outcome}{character. Outcome type for the dataset. Either \code{binary} or
+\code{continuous}.}
 }
 \value{
 Input data in contrast form.

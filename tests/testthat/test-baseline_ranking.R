@@ -33,7 +33,6 @@ test_that("baseline_ranking produces errors for incorrect data types", {
   expect_error(baseline_ranking(list(a = 1), configured_data_con), "model must be an object created by baseline_model")
   expect_error(baseline_ranking("not_data", fitted_baseline_model), "configured_data must be of class configured_data")
 
-  expect_error(baseline_ranking(fitted_baseline_model, configured_data_con, 123), "cov_value can only be provided for covariate models")
 })
 
 test_that("{shinytest2} recording: e2e_baseline_ranking", {

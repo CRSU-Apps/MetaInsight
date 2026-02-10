@@ -1,26 +1,37 @@
-#' Create a composite meta-regression plot which comprises plots showing direct and indirect evidence.
+#' Produce a composite meta-regression plot which comprises plots showing direct
+#' and indirect evidence.
 #'
-#' @param model Created by `baseline_model()` or `covariate_model()`
-#' @param treatment_df Data frame containing treatment IDs (Number), sanitised names (Label), and original names (RawLabel).
-#' @param outcome_measure Outcome measure of analysis (OR, RR, RD or MD)
-#' @param comparators Vector of names of comparison treatments to plot in colour.
-#' @param directness Contributions from function `CalculateDirectness()`.
-#' @param credible_regions List of credible region data frames from function `CalculateCredibleRegions()`.
-#' @param include_covariate TRUE if the value of the covariate is to be plotted as a vertical line. Defaults to FALSE.
-#' @param include_ghosts TRUE if all other comparator studies should be plotted in grey in the background of the plot. Defaults to FALSE.
-#' @param include_extrapolation TRUE if regression lines should be extrapolated beyond the range of the given data. These will appear as dashed lines.
-#' Defaults to FALSE.
-#' @param include_credible TRUE if the credible regions should be plotted for the specified comparators. These will be partially transparent regions.
-#' Defaults to FALSE.
-#' @param credible_opacity The opacity of the credible regions. Can be any value between 0 and 1, inclusive. Defaults to 0.2.
-#' @param covariate_symbol The selected symbol for displaying covariates. Defaults to "circle open".
-#' @param covariate_symbol_size Size of the covariate symbols. Defaults to 10.
-#' @param legend_position String informing the position of the legend. Acceptable values are:
-#' - "BR" - Bottom-right of the plot area
-#' - "BL" - Bottom-left of the plot area
-#' - "TR" - Top-right of the plot area
-#' - "TL" - Top-left of the plot area
-#'
+#' @param model Output from `baseline_model()` or `covariate_model()`
+#' @param regression_data Output from `baseline_regression()` or `covariate_regression()`
+#' @param comparators Vector of treatments to plot in colour. Cannot include the
+#' `reference_treatment` used in the model.
+#' @param include_covariate logical. Whether the value of the covariate should
+#' be plotted as a vertical line. Defaults to `FALSE`.
+#' @param include_ghosts logical. Whether the other comparator studies should
+#' be plotted in grey in the background of the plot. Defaults to `FALSE`.
+#' @param include_extrapolation logical. Whether the regression lines should be
+#' extrapolated beyond the range of the given data as dashed lines.
+#' Defaults to `FALSE`.
+#' @param include_credible logical. Whether the credible regions should be
+#' plotted for the specified comparators. These will be partially transparent
+#' regions. Defaults to `FALSE`.
+#' @param credible_opacity numeric. The opacity of the credible regions.
+#' Can be any value between `0` and `1`, inclusive. Defaults to `0.2`.
+#' @param covariate_symbol character. The selected symbol for displaying
+#' covariates. Defaults to `circle open`. Possible values are:
+#' \item {cross}{Crosses}
+#' \item {circle_open}{Open circles}
+#' \item {none}{No symbols in which case only the plot of direct evidence is
+#' produced}
+#' @param covariate_symbol_size numeric. Size of the covariate symbols.
+#' Defaults to `10`.
+#' @param legend_position character. The position of the legend. Defaults to
+#' `BR`. Possible values are:
+#' \item {BR}{Bottom-right of the plot area}
+#' \item {BL}{Bottom-left of the plot area}
+#' \item {TR}{Top-right of the plot area}
+#' \item {TL}{Top-left of the plot area}
+#' @inheritParams common_params
 #' @inherit return-svg return
 #' @export
 metaregression_plot <- function(
@@ -38,8 +49,10 @@ metaregression_plot <- function(
     legend_position = "BR",
     logger = NULL) {
 
-  if (check_param_classes(c("configured_data"),
-                          c("configured_data"), logger)){
+  if (check_param_classes(c("configured_data", "include_covariate", "include_ghosts", "include_extrapolation", "include_credible",
+                            "credible_opacity", "covariate_symbol", "covariate_symbol_size", "legend_position"),
+                          c("configured_data", "logical", "logical", "logical", "logical",
+                            "numeric", "character", "numeric", "character"), logger)){
     return()
   }
 
@@ -60,6 +73,21 @@ metaregression_plot <- function(
 
   if (any(!comparators %in% configured_data$treatments$Label)){
     logger |> writeLog(type = "error", "comparators must be present in the configured data")
+    return()
+  }
+
+  if (credible_opacity < 0 || credible_opacity > 1){
+    logger |> writeLog(type = "error", "credible_opacity must be between 0 and 1")
+    return()
+  }
+
+  if (!(covariate_symbol %in% c("circle open", "cross", "none"))){
+    logger |> writeLog(type = "error", "covariate_symbol must be either 'circle open', 'cross' or 'none'")
+    return()
+  }
+
+  if (!(legend_position %in% c("BR", "BL", "TR", "TL"))){
+    logger |> writeLog(type = "error", "legend_position must be either 'BR', 'BL', 'TR', 'TL'")
     return()
   }
 

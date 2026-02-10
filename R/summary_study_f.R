@@ -1,4 +1,5 @@
-#' Create a forest plot of pairwise comparisons, grouped by treatment pairs.
+#' Produce a forest plot of pairwise comparisons, grouped by treatment pairs.
+#' If risk of bias data was loaded these are also included.
 #'
 #' @inheritParams common_params
 #' @param plot_area_width numeric. The width of the plot area containing the

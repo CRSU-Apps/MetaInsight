@@ -11,14 +11,14 @@ FormatForBnma(connected_data, treatment_df, outcome, reference_treatment)
 
 \item{treatment_df}{Data frame containing treatment IDs and names in columns named 'Number' and 'Label' respectively}
 
-\item{outcome}{"Continuous" or "Binary"}
+\item{outcome}{"continuous" or "binary"}
 
 \item{reference_treatment}{An element of treatment_df$Label, the reference treatment.}
 }
 \value{
 List:
 \itemize{
-\item 'ArmLevel' = Data frame containing 'Study', 'Treat', 'N', 'Outcomes', and (for outcome_type="Continuous") 'SD'
+\item 'ArmLevel' = Data frame containing 'Study', 'Treat', 'N', 'Outcomes', and (for outcome_type="continuous") 'SD'
 \item 'Treat.order' = Vector of (unique) treatments, with the reference treatment first
 }
 }

@@ -1,13 +1,17 @@
-#' Assess the data for validity. this checks the column names for required columns, and balanced wide format numbered columns.
+#' Assess the data for validity. This checks the column names for required columns
+#' and balanced wide format numbered columns.
 #'
-#' @param data_path character. Path to the file to be loaded or if `NULL` load the default data
+#' @param data_path character. Path to the file to be loaded or if `NULL` load
+#' the default data
 #' @inheritParams common_params
 #' @return List containing:
 #'  \item{is_data_valid}{logical. Whether the data is valid}
 #'  \item{is_data_uploaded}{logical. Whether the data is uploaded}
-#'  \item{data}{dataframe. The data that was uploaded or the default data if no data_path was provided}
-#'  \item{treatments}{Dataframe of the treatments in the data. `NULL` if `is_data_valid` is `FALSE`}
-#'  \item{outcome}{character. Whether the data is binary or continuous}
+#'  \item{data}{dataframe. The data that was uploaded or the default data if
+#'  no data_path was provided}
+#'  \item{treatments}{Dataframe of the treatments in the data. `NULL` if
+#'  `is_data_valid` is `FALSE`}
+#'  \item{outcome}{character. Whether the data is `binary` or `continuous`}
 #' @export
 setup_load <- function(data_path = NULL, outcome, logger = NULL){
 
@@ -65,11 +69,15 @@ setup_load <- function(data_path = NULL, outcome, logger = NULL){
     logger |> writeLog(type = "error",
                               glue::glue("Uploaded data was invalid because: {is_valid$message}.
                                 Please check you data file and ensure that you have the correct outcome type selected."))
-    return(list(is_data_valid = is_valid$valid,
-                is_data_uploaded = is_uploaded,
-                data = data,
-                treatments = NULL,
-                outcome = outcome))
+    output <- list(is_data_valid = is_valid$valid,
+                   is_data_uploaded = is_uploaded,
+                   data = data,
+                   treatments = NULL,
+                   outcome = outcome)
+
+    class(output) <- "loaded_data"
+    return(output)
+
   } else {
 
     # Process the data further if valid

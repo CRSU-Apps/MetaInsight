@@ -3,7 +3,12 @@
 #' @param model list. Output produced by `baseline_model()`, `bayes_model()` or `covariate_model()`.
 #' @inheritParams common_params
 #'
-#' @return List of output created by `rankdata()`.
+#' @return List of output created by `rankdata()`
+#' \item{SUCRA}{Dataframe of SUCRA data}
+#' \item{Colour}{Dataframe of colours}
+#' \item{Cumulative}{Dataframe of cumulative ranking probabilities}
+#' \item{Probabilities}{Dataframe of ranking probabilities}
+#' \item{BUGSnetData}{ output from `BUGSnet::data.prep()`}
 #' @export
 bayes_ranking <- function(model, configured_data, logger = NULL) {
 
@@ -12,11 +17,6 @@ bayes_ranking <- function(model, configured_data, logger = NULL) {
 
   if (!inherits(model, "bayes_model") && !inherits(model, "baseline_model")){
     logger |> writeLog(type = "error", "model must be an object created by baseline_model(), bayes_model() or covariate_model()")
-    return()
-  }
-
-  if (!inherits(model, "covariate_model") && !is.na(cov_value)){
-    logger |> writeLog(type = "error", "cov_value can only be provided for covariate models")
     return()
   }
 

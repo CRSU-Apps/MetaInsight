@@ -2,12 +2,11 @@
 % Please edit documentation in R/summary_study_f.R
 \name{summary_study}
 \alias{summary_study}
-\title{Create a forest plot of pairwise comparisons, grouped by treatment pairs.}
+\title{Produce a forest plot of pairwise comparisons, grouped by treatment pairs.
+If risk of bias data was loaded these are also included.}
 \usage{
 summary_study(
-  connected_data,
-  freq,
-  outcome_measure,
+  configured_data,
   plot_area_width = 6,
   colourblind = FALSE,
   x_min = NULL,
@@ -16,13 +15,7 @@ summary_study(
 )
 }
 \arguments{
-\item{connected_data}{dataframe. Input data set created by \code{setup_configure()} or \code{setup_exclude}}
-
-\item{freq}{list. NMA results created by freq_wrap().}
-
-\item{outcome_measure}{character. Outcome measure of the dataset. Either
-\code{OR}, \code{RR} or \code{RD} when \code{outcome} is \code{Binary} or \code{MD} or \code{SMD} when
-\code{outcome} is \code{Continuous}}
+\item{configured_data}{list. Input dataset created by \code{setup_configure()} or \code{setup_exclude()}}
 
 \item{plot_area_width}{numeric. The width of the plot area containing the
 treatment effects in inches. Defaults to \code{6}.}
@@ -44,5 +37,6 @@ html. Contains the svg string to generate the plot. This can be saved
 using \code{write_plot()}.
 }
 \description{
-Create a forest plot of pairwise comparisons, grouped by treatment pairs.
+Produce a forest plot of pairwise comparisons, grouped by treatment pairs.
+If risk of bias data was loaded these are also included.
 }

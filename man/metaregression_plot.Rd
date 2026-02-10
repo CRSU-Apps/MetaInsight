@@ -2,15 +2,14 @@
 % Please edit documentation in R/metaregression_plot_f.R
 \name{metaregression_plot}
 \alias{metaregression_plot}
-\title{Create a composite meta-regression plot which comprises plots showing direct and indirect evidence.}
+\title{Produce a composite meta-regression plot which comprises plots showing direct
+and indirect evidence.}
 \usage{
 metaregression_plot(
-  model_output,
-  treatment_df,
-  outcome_measure,
+  model,
+  configured_data,
+  regression_data,
   comparators,
-  directness,
-  credible_regions,
   include_covariate = FALSE,
   include_ghosts = FALSE,
   include_extrapolation = FALSE,
@@ -18,50 +17,63 @@ metaregression_plot(
   credible_opacity = 0.2,
   covariate_symbol = "circle open",
   covariate_symbol_size = 10,
-  legend_position = "BR"
+  legend_position = "BR",
+  logger = NULL
 )
 }
 \arguments{
-\item{model_output}{GEMTC model results found by calling \code{CovariateModelOutput()}.}
+\item{model}{Output from \code{baseline_model()} or \code{covariate_model()}}
 
-\item{treatment_df}{Data frame containing treatment IDs (Number), sanitised names (Label), and original names (RawLabel).}
+\item{configured_data}{list. Input dataset created by \code{setup_configure()} or \code{setup_exclude()}}
 
-\item{outcome_measure}{Outcome measure of analysis (OR, RR, RD or MD)}
+\item{regression_data}{Output from \code{baseline_regression()} or \code{covariate_regression()}}
 
-\item{comparators}{Vector of names of comparison treatments to plot in colour.}
+\item{comparators}{Vector of treatments to plot in colour. Cannot include the
+\code{reference_treatment} used in the model.}
 
-\item{directness}{Contributions from function \code{CalculateDirectness()}.}
+\item{include_covariate}{logical. Whether the value of the covariate should
+be plotted as a vertical line. Defaults to \code{FALSE}.}
 
-\item{credible_regions}{List of credible region data frames from function \code{CalculateCredibleRegions()}.}
+\item{include_ghosts}{logical. Whether the other comparator studies should
+be plotted in grey in the background of the plot. Defaults to \code{FALSE}.}
 
-\item{include_covariate}{TRUE if the value of the covariate is to be plotted as a vertical line. Defaults to FALSE.}
+\item{include_extrapolation}{logical. Whether the regression lines should be
+extrapolated beyond the range of the given data as dashed lines.
+Defaults to \code{FALSE}.}
 
-\item{include_ghosts}{TRUE if all other comparator studies should be plotted in grey in the background of the plot. Defaults to FALSE.}
+\item{include_credible}{logical. Whether the credible regions should be
+plotted for the specified comparators. These will be partially transparent
+regions. Defaults to \code{FALSE}.}
 
-\item{include_extrapolation}{TRUE if regression lines should be extrapolated beyond the range of the given data. These will appear as dashed lines.
-Defaults to FALSE.}
+\item{credible_opacity}{numeric. The opacity of the credible regions.
+Can be any value between \code{0} and \code{1}, inclusive. Defaults to \code{0.2}.}
 
-\item{include_credible}{TRUE if the credible regions should be plotted for the specified comparators. These will be partially transparent regions.
-Defaults to FALSE.}
+\item{covariate_symbol}{character. The selected symbol for displaying
+covariates. Defaults to \verb{circle open}. Possible values are:
+\item {cross}{Crosses}
+\item {circle_open}{Open circles}
+\item {none}{No symbols in which case only the plot of direct evidence is
+produced}}
 
-\item{credible_opacity}{The opacity of the credible regions. Can be any value between 0 and 1, inclusive. Defaults to 0.2.}
+\item{covariate_symbol_size}{numeric. Size of the covariate symbols.
+Defaults to \code{10}.}
 
-\item{covariate_symbol}{The selected symbol for displaying covariates. Defaults to "circle open".}
+\item{legend_position}{character. The position of the legend. Defaults to
+\code{BR}. Possible values are:
+\item {BR}{Bottom-right of the plot area}
+\item {BL}{Bottom-left of the plot area}
+\item {TR}{Top-right of the plot area}
+\item {TL}{Top-left of the plot area}}
 
-\item{covariate_symbol_size}{Size of the covariate symbols. Defaults to 10.}
-
-\item{legend_position}{String informing the position of the legend. Acceptable values are:
-\itemize{
-\item "BR" - Bottom-right of the plot area
-\item "BL" - Bottom-left of the plot area
-\item "TR" - Top-right of the plot area
-\item "TL" - Top-left of the plot area
-}}
+\item{logger}{Stores all notification messages to be displayed in the Log
+Window. Insert the logger reactive list here for running in
+shiny, otherwise leave the default \code{NULL}}
 }
 \value{
 html. Contains the svg string to generate the plot. This can be saved
 using \code{write_plot()}.
 }
 \description{
-Create a composite meta-regression plot which comprises plots showing direct and indirect evidence.
+Produce a composite meta-regression plot which comprises plots showing direct
+and indirect evidence.
 }

@@ -1,8 +1,7 @@
-#' @title covariate_regression
-#' @description Calculate data from a covariate model required to produce a
+#' Generate data from a covariate model required to produce a
 #' metaregression plot
+#'
 #' @param model list. Output created by `covariate_model()`
-#' @param covariate_column character. Name of the column containing the covariate data
 #' @inheritParams common_params
 #' @return List containing:
 #'  \item{directness}{list. Output from `CalculateDirectness()`}

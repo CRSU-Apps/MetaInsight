@@ -9,7 +9,7 @@ bugsnetdata(data, metaoutcome, treatment_list)
 \arguments{
 \item{data}{Input dataset.}
 
-\item{metaoutcome}{"Continuous" or "Binary".}
+\item{metaoutcome}{"continuous" or "binary".}
 
 \item{treatment_list}{Data frame containing the treatment ID ('Number') and the treatment name ('Label').}
 }

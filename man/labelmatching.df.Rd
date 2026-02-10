@@ -10,8 +10,6 @@ labelmatching.df(d1, ntx, treatment_df)
 \item{d1}{Data in contrast form, typically created by contrastform.df().}
 
 \item{ntx}{= Number of treatments.}
-
-\item{treatment_df}{dataframe. Treatments}
 }
 \value{
 Input data with the columns treat1 and treat2 now labelled.

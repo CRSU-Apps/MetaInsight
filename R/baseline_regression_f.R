@@ -1,9 +1,7 @@
-#' @title baseline_regression
-#' @description Generate data required to produce a metaregression plot
+#' Generate data required to produce a metaregression plot
 #' for a baseline risk model.
-#' @param model list. model output produced by `baseline_model()`
-#' @param covariate_title character. Required for consistency with `covariate_regression()`.
-#' Do not change from the default `covar.baseline_risk`
+#'
+#' @param model Output produced by `baseline_model()`
 #' @inheritParams common_params
 #' @return List containing:
 #'  \item{directness}{list. Output from `CalculateDirectness()`}

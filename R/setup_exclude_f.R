@@ -1,16 +1,27 @@
-#' Takes the uploaded data, removes any excluded studies and returns
-#' subsets of the data in formats for bugsnet and frequentist analyses
+#' Takes the configured data, removes any excluded studies and returns
+#' subsets of the data to be passed to other functions.
 #'
-#' @param non_covariate_data dataframe. Data processed by setup_configure()
 #' @param exclusions character. Vector of study names to exclude.
 #' @inheritParams common_params
-#' @return List containing:
-#'  \item{bugsnet_sub}{dataframe. Processed data for bugsnet analyses created by `bugsnetdata()`}
-#'  \item{freq_sub}{list. Processed data for frequentist analyses created by `frequentist()`}
-#'  \item{reference_treatment_sub}{character. Reference treatment for sensitivity analyses}
-#'  \item{subsetted_data}{dataframe. Processed data}
-#'  \item{subsetted_treatment_df}{dataframe. Treatments in processed data}
-#'
+#' @return `configured_data` containing:
+#'  \item{treatments}{dataframe. Treatment names and IDs}
+#'  \item{reference_treatment}{character. The selected reference treatment}
+#'  \item{connected_data}{dataframe. A subset of the data containing only connected studies}
+#'  \item{covariate}{A list containing these items if covariate data exists or
+#'  else empty:
+#'    \itemize{
+#'      \item{column}{character. Name of the column containing covariate data}
+#'      \item{name}{character. Name of the covariate}
+#'      \item{type}{character. Whether the covariate is `binary` or `continuous`}
+#'    }
+#'  }
+#'  \item{bugsnet}{dataframe. Processed data for bugsnet analyses created by `bugsnetdata`}
+#'  \item{freq}{list. Processed data for frequentist analyses created by `frequentist()`}
+#'  \item{outcome}{character. Whether the data is `binary` or `continuous`}
+#'  \item{outcome_measure}{character. Outcome measure of the dataset.}
+#'  \item{effects}{character. Whether the models are `fixed` or `random` effects}
+#'  \item{ranking_option}{character. Whether higher values in the data are `good` or `bad`}
+#'  \item{seed}{numeric. A seed value to be passed to models}
 #' @export
 #'
 setup_exclude <- function(configured_data, exclusions, async = FALSE){

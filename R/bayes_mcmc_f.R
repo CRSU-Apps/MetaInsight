@@ -1,11 +1,11 @@
-#' @title bayes_mcmc
-#' @description Produces Markov chain Monte Carlo plots
+#' Produce Markov chain Monte Carlo plots for Bayesian models
+#'
 #' @param model Output from `baseline_model()`, `bayes_model()` or `covariate_model()`
 #' @inheritParams common_params
 #' @return list containing:
 #' \item{gelman_plots}{Gelman plots}
-#' \item{trace_plots}{Gelman plots}
-#' \item{density_plots}{Gelman plots}
+#' \item{trace_plots}{Trace plots}
+#' \item{density_plots}{Density plots}
 #' \item{n_rows}{The number of rows for each plot}
 #' @export
 bayes_mcmc <- function(model, async = FALSE){

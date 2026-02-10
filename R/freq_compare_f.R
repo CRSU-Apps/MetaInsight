@@ -1,7 +1,9 @@
-#' Produce comparison tables
+#' Produce a comparison table of treatments using
+#' `netmeta::netleague()`.
 #'
 #' @inheritParams common_params
-#' @return Ranking table created by `netmeta::netleague()`
+#' @return Dataframe of comparisons with one row and one column
+#' per treatment
 #' @export
 freq_compare <- function(configured_data, logger = NULL) {
 

@@ -1,19 +1,18 @@
-#' Produce deviance plots
+#' Produce deviance plots using the output of `gemtc::mtc.deviance()`
+#'
 #' @param model Bayesian model produced by `bayes_model()` or `covariate_model()`
-#' @param seed numeric. Seed value to use for calculating UME model. Only required
-#' when `model` was produced by `bayes_model()`
 #' @inheritParams common_params
 #'
 #' @return A list containing different elements depending on the input model:
 #'
-#' When model was created by `bayes_model()` containing:
+#' When `model` was created by `bayes_model()` containing:
 #' \item{deviance_mtc}{results from `gemtc::mtc.deviance()` for model$mtcResults}
 #' \item{deviance_ume}{results from `gemtc::mtc.deviance()` for UME model}
 #' \item{scat_plot}{plotly object}
 #' \item{stem_plot}{plotly object}
 #' \item{lev_plot}{plotly object}
 #'
-#' When model was created by `covariate_model()` containing:
+#' When `model` was created by `covariate_model()` containing:
 #' \item{deviance_mtc}{results from `gemtc::mtc.deviance()` for model$mtcResults}
 #' \item{stem_plot}{plotly object}
 #' \item{lev_plot}{plotly object}

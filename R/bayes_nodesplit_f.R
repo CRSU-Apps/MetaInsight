@@ -1,8 +1,10 @@
-#' Run the nodesplit model
+#' Fit a nodesplitting model with `gemtc::mtc.nodesplit()`. This is not possible
+#' for all networks and the function will return an error if the nodes cannot
+#' be split.
 #'
 #' @inheritParams common_params
 #'
-#' @return `mtc.nodesplit` object containing an mtc.result object for each node
+#' @return `mtc.nodesplit` object containing an `mtc.result` object for each node
 #' @export
 bayes_nodesplit <- function(configured_data, async = FALSE) {
 

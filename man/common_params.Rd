@@ -4,26 +4,24 @@
 \alias{common_params}
 \title{Common parameters}
 \arguments{
-\item{treatment_df}{dataframe. Treatments}
+\item{treatments}{dataframe. Treatments}
 
-\item{outcome}{character. Outcome type for the dataset. Either \code{Binary} or
-\code{Continuous}.}
+\item{outcome}{character. Outcome type for the dataset. Either \code{binary} or
+\code{continuous}.}
 
 \item{outcome_measure}{character. Outcome measure of the dataset. Either
-\code{OR}, \code{RR} or \code{RD} when \code{outcome} is \code{Binary} or \code{MD} or \code{SMD} when
-\code{outcome} is \code{Continuous}}
+\code{OR}, \code{RR} or \code{RD} when \code{outcome} is \code{binary} or \code{MD} or \code{SMD} when
+\code{outcome} is \code{continuous}}
 
 \item{ranking_option}{character. \code{good} if the treatment effect is desirable, else \code{bad}}
 
-\item{freq}{list. NMA results created by freq_wrap().}
-
 \item{reference_treatment}{character. The reference treatment of the dataset}
 
-\item{model_type}{character. Type of model to fit, either \code{random} or \code{fixed}}
+\item{effects}{character. Type of model to fit, either \code{random} or \code{fixed}}
 
-\item{connected_data}{dataframe. Input data set created by \code{setup_configure()} or \code{setup_exclude}}
+\item{configured_data}{list. Input dataset created by \code{setup_configure()} or \code{setup_exclude()}}
 
-\item{seed}{numeric. Seed used to fit the model}
+\item{seed}{numeric. Seed used to fit the models.}
 
 \item{xmin}{numeric. Minimum x-axis value. Default \code{NULL} in which case it is calculated internally}
 

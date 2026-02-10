@@ -31,8 +31,6 @@ test_that("bayes_ranking produces errors for incorrect data types", {
   expect_error(bayes_ranking("faulty_model", configured_data_con), "model must be an object created by baseline_model")
   expect_error(bayes_ranking(list(a = 1), configured_data_con), "model must be an object created by baseline_model")
   expect_error(bayes_ranking("not_data", fitted_bayes_model), "configured_data must be of class configured_data")
-
-  expect_error(bayes_ranking(fitted_bayes_model, configured_data_con, 123), "cov_value can only be provided for covariate models")
 })
 
 test_that("{shinytest2} recording: e2e_bayes_ranking", {

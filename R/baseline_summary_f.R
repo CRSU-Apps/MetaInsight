@@ -1,12 +1,6 @@
-#' @title baseline_summary
-#' @description Creates a plot of baselink risk for each study arm
-#' @param connected_data dataframe. Input data set created by `setup_configure()` or `setup_exclude`
-#' @param treatment_df dataframe containing the treatment ID ('Number') and the treatment name ('Label').
-#' @param outcome character. The type of outcome being measured either `continuous` or `binary`
-#' @param logger Stores all notification messages to be displayed in the Log
-#'   Window. Insert the logger reactive list here for running in
-#'   shiny, otherwise leave the default NULL
-#' @inherit return-svg return
+#' Produce a plot summarising baselink risk for each study arm
+#'
+#' @inheritParams common_params
 #' @import ggplot2
 #' @export
 baseline_summary <- function(configured_data, logger = NULL){

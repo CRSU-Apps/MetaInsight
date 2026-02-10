@@ -2,37 +2,15 @@
 % Please edit documentation in R/baseline_regression_f.R
 \name{baseline_regression}
 \alias{baseline_regression}
-\title{baseline_regression}
+\title{Generate data required to produce a metaregression plot
+for a baseline risk model.}
 \usage{
-baseline_regression(
-  model,
-  connected_data,
-  covariate_title = "covar.baseline_risk",
-  treatment_df,
-  outcome,
-  outcome_measure,
-  model_type,
-  async = FALSE
-)
+baseline_regression(model, configured_data, async = FALSE)
 }
 \arguments{
-\item{model}{list. model output produced by \code{baseline_model()}}
+\item{model}{Output produced by \code{baseline_model()}}
 
-\item{connected_data}{dataframe. Input data set created by \code{setup_configure()} or \code{setup_exclude}}
-
-\item{covariate_title}{character. Required for consistency with \code{covariate_regression()}.
-Do not change from the default \code{covar.baseline_risk}}
-
-\item{treatment_df}{dataframe. Treatments}
-
-\item{outcome}{character. Outcome type for the dataset. Either \code{Binary} or
-\code{Continuous}.}
-
-\item{outcome_measure}{character. Outcome measure of the dataset. Either
-\code{OR}, \code{RR} or \code{RD} when \code{outcome} is \code{Binary} or \code{MD} or \code{SMD} when
-\code{outcome} is \code{Continuous}}
-
-\item{model_type}{character. Type of model to fit, either \code{random} or \code{fixed}}
+\item{configured_data}{list. Input dataset created by \code{setup_configure()} or \code{setup_exclude()}}
 
 \item{async}{Whether or not the function is being used asynchronously. Default \code{FALSE}}
 }

@@ -1,6 +1,8 @@
-#' Create a summary forest plot matrix.
+#' Produce a summary forest plot matrix with treatments ranked by SUCRA score,
+#' determined by `netmeta::rankogram()`. This function can only be used when
+#' `configured_data` contains between 3 and 10 treatments.
 #'
-#' @param plot_title character. Title of the plot
+#' @param plot_title character. Title of the plot. Default is no title.
 #' @inheritParams common_params
 #' @inherit return-svg return
 #' @export
@@ -11,6 +13,11 @@ freq_summary <- function(configured_data, plot_title = "", logger = NULL) {
 
   lstx <- configured_data$treatments$Label
   ntx <- length(lstx)
+
+  if (ntx < 3 || ntx > 10){
+    logger |> writeLog(type = "error", "configured_data must contain between 3 and 10 treatments")
+    return()
+  }
 
   net1 <- configured_data$freq$net1
   treatment_df <- configured_data$treatments

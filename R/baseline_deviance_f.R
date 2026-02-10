@@ -1,5 +1,5 @@
 #' Produce deviance plots for baseline models
-#' @param model Baseline model produced by `baseline_model()`
+#' @param model Output model produced by `baseline_model()`
 #' @inheritParams common_params
 #' @return list containing:
 #'  \item{deviance_mtc}{equivalent summary to that produced by `gemtc::mtc.deviance()`}

@@ -2,11 +2,10 @@
 % Please edit documentation in R/summary_network_f.R
 \name{summary_network}
 \alias{summary_network}
-\title{Produce either a netgraph or netplot}
+\title{Produce a plot of the network using \code{netmeta::netgraph()}}
 \usage{
 summary_network(
-  freq,
-  bugsnet,
+  configured_data,
   style,
   label_size = 1,
   title = "",
@@ -14,13 +13,11 @@ summary_network(
 )
 }
 \arguments{
-\item{freq}{list. Results of frequentist analysis created by \code{frequentist()}}
-
-\item{bugsnet}{dataframe. Created by \code{bugsnetdata()}}
+\item{configured_data}{list. Input dataset created by \code{setup_configure()} or \code{setup_exclude()}}
 
 \item{style}{character. The plot to produce, either \code{netgraph} or \code{netplot}}
 
-\item{label_size}{numeric. The size of labels in the plots. Default of 1.}
+\item{label_size}{numeric. The size of labels in the plots. Default of \code{1}.}
 
 \item{title}{character. Title of plot. Default of no title.}
 
@@ -33,5 +30,5 @@ html. Contains the svg string to generate the plot. This can be saved
 using \code{write_plot()}.
 }
 \description{
-Produce either a netgraph or netplot
+Produce a plot of the network using \code{netmeta::netgraph()}
 }

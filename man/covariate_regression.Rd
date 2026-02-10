@@ -2,36 +2,15 @@
 % Please edit documentation in R/covariate_regression_f.R
 \name{covariate_regression}
 \alias{covariate_regression}
-\title{covariate_regression}
+\title{Generate data from a covariate model required to produce a
+metaregression plot}
 \usage{
-covariate_regression(
-  model,
-  connected_data,
-  covariate_column,
-  treatment_df,
-  outcome,
-  outcome_measure,
-  model_type,
-  async = FALSE
-)
+covariate_regression(model, configured_data, async = FALSE)
 }
 \arguments{
 \item{model}{list. Output created by \code{covariate_model()}}
 
-\item{connected_data}{dataframe. Input data set created by \code{setup_configure()} or \code{setup_exclude}}
-
-\item{covariate_column}{character. Name of the column containing the covariate data}
-
-\item{treatment_df}{dataframe. Treatments}
-
-\item{outcome}{character. Outcome type for the dataset. Either \code{Binary} or
-\code{Continuous}.}
-
-\item{outcome_measure}{character. Outcome measure of the dataset. Either
-\code{OR}, \code{RR} or \code{RD} when \code{outcome} is \code{Binary} or \code{MD} or \code{SMD} when
-\code{outcome} is \code{Continuous}}
-
-\item{model_type}{character. Type of model to fit, either \code{random} or \code{fixed}}
+\item{configured_data}{list. Input dataset created by \code{setup_configure()} or \code{setup_exclude()}}
 
 \item{async}{Whether or not the function is being used asynchronously. Default \code{FALSE}}
 }
@@ -41,6 +20,6 @@ List containing:
 \item{credible_regions}{list. Output from \code{CalculateCredibleRegions()}}
 }
 \description{
-Calculate data from a covariate model required to produce a
+Generate data from a covariate model required to produce a
 metaregression plot
 }

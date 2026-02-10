@@ -1,4 +1,4 @@
-#' Run Bayesian models
+#' Fit a Bayesian model using \CRANpkg{gemtc}
 #'
 #' @inheritParams common_params
 #' @return List containing:
@@ -8,8 +8,11 @@
 #'  \item{sumresults}{summary.mtc.result. Output from `summary(mtcRelEffects)`}
 #'  \item{mtcNetwork}{mtc.network. Output from `gemtc::mtc.network()`}
 #'  \item{dic}{dataframe. Containing the statistics 'Dbar', 'pD', 'DIC', and 'data points'}
-#'  \item{outcome_measure}{character. The input `outcome_measure`}
-#'  \item{model_type}{dataframe. The input `model_type`}
+#'  \item{outcome}{character. The `outcome` from `configured_data`}
+#'  \item{outcome_measure}{character. The `outcome_measure`from `configured_data`}
+#'  \item{reference_treatment}{character. The `reference_treatment`from `configured_data`}
+#'  \item{effects}{character. The `effects` from `configured_data`}
+#'  \item{seed}{numeric. The `seed` from `configured_data`}
 #' @export
 
 bayes_model <- function(configured_data, async = FALSE){

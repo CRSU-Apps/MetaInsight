@@ -1,10 +1,9 @@
-#' @title covariate_model
-#' @description Fits a covariate regression model using \CRANpkg{gemtc}
+#' Fit a covariate regression model using \CRANpkg{gemtc}.
+#'
 #' @param covariate_value numeric. The value at which to fit the model. Must be greater
 #' than or equal to the minimum value and less than or equal to the maximum
-#' value in `connected_data`
+#' value in `configured_data`
 #' @param regressor_type character. Type of regression coefficient, either `shared`, `unrelated`, or `exchangeable`
-#' @param covariate_type character. Whether the covariate values are `continuous` or `binary`
 #' @param covariate_model_output list. The output of the function. Default `NULL`.
 #' When supplied, only the output is recalculated for a given covariate value,
 #' rather than refitting the model.
@@ -14,7 +13,7 @@
 #'  \item{mtcRelEffects}{data relating to presenting relative effects}
 #'  \item{rel_eff_tbl}{table of relative effects for each comparison}
 #'  \item{covariate_value}{The covariate value originally passed into this function}
-#'  \item{reference_treatment}{The name of the reference treatment}
+#'  \item{reference_treatment}{character. The `reference_treatment`from `configured_data`}
 #'  \item{comparator_names}{Vector containing the names of the comparators}
 #'  \item{a}{text output stating whether fixed or random effects}
 #'  \item{sumresults}{summary output of relative effects}
@@ -22,9 +21,10 @@
 #'  \item{cov_value_sentence}{text output stating the value for which the covariate has been set to for producing output}
 #'  \item{slopes}{named list of slopes for the regression equations (unstandardised - equal to one 'increment')}
 #'  \item{intercepts}{named list of intercepts for the regression equations at covariate_value}
-#'  \item{outcome}{The outcome type for the analysis eg. "MD" or "OR"}
+#'  \item{outcome}{character. The `outcome` from `configured_data`}
+#'  \item{outcome_measure}{character. The `outcome_measure`from `configured_data`}
+#'  \item{effects}{character. The `effects` from `configured_data`}
 #'  \item{mtcNetwork}{The network object from GEMTC}
-#'  \item{effects}{The type of linear model, either "fixed" or "random"}
 #'  \item{covariate_min}{Vector of minimum covariate values directly contributing to the regression}
 #'  \item{covariate_max}{Vector of maximum covariate values directly contributing to the regression}
 #' @export

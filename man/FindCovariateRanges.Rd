@@ -26,7 +26,7 @@ FindCovariateRanges(
 
 \item{baseline_risk}{TRUE if the covariate is baseline risk. Defaults to FALSE.}
 
-\item{outcome}{"Binary" or "Continuous". Only required when @param baseline_risk == TRUE. Defaults to NULL.}
+\item{outcome}{"binary" or "continuous". Only required when @param baseline_risk == TRUE. Defaults to NULL.}
 
 \item{model}{Model created by bnma::network.run(). Only required when @param baseline_risk == TRUE. Defaults to NULL.}
 }

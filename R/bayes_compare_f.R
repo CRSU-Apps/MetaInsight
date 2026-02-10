@@ -1,8 +1,9 @@
-#' Creates a table of comparisons of all treatment pairs for Bayesian models
+#' Produce a table of comparisons of all treatment pairs for Bayesian models
+#' using `gemtc::relative.effect.table()`
 #'
 #' @param model list. Object created by `bayes_model()` or `covariate_model()`
 #' @inheritParams common_params
-#' @return Relative effects table created by `gemtc::relative.effect.table()`
+#' @return Relative effects table
 #' @export
 bayes_compare <- function(model, logger = NULL){
 

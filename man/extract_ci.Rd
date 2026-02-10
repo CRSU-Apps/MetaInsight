@@ -9,7 +9,7 @@ extract_ci(freq, outcome)
 \arguments{
 \item{freq}{list. NMA results created by freq_wrap().}
 
-\item{outcome}{character. \code{Binary} or \code{Continuous}}
+\item{outcome}{character. \code{binary} or \code{continuous}}
 }
 \value{
 List containing:

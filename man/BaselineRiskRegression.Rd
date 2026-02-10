@@ -19,7 +19,7 @@ BaselineRiskRegression(
 
 \item{treatment_df}{Data frame containing treatment IDs and names in columns named 'Number' and 'Label' respectively.}
 
-\item{outcome}{"Continuous" or "Binary".}
+\item{outcome}{"continuous" or "binary".}
 
 \item{reference_treatment}{treatment An element of treatment_df$Label, the .}
 

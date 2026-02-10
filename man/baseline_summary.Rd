@@ -2,25 +2,17 @@
 % Please edit documentation in R/baseline_summary_f.R
 \name{baseline_summary}
 \alias{baseline_summary}
-\title{baseline_summary}
+\title{Produce a plot summarising baselink risk for each study arm}
 \usage{
-baseline_summary(connected_data, outcome, treatment_df, logger = NULL)
+baseline_summary(configured_data, logger = NULL)
 }
 \arguments{
-\item{connected_data}{dataframe. Input data set created by \code{setup_configure()} or \code{setup_exclude}}
-
-\item{outcome}{character. The type of outcome being measured either \code{Continuous} or \code{Binary}}
-
-\item{treatment_df}{dataframe containing the treatment ID ('Number') and the treatment name ('Label').}
+\item{configured_data}{list. Input dataset created by \code{setup_configure()} or \code{setup_exclude()}}
 
 \item{logger}{Stores all notification messages to be displayed in the Log
 Window. Insert the logger reactive list here for running in
-shiny, otherwise leave the default NULL}
-}
-\value{
-html. Contains the svg string to generate the plot. This can be saved
-using \code{write_plot()}.
+shiny, otherwise leave the default \code{NULL}}
 }
 \description{
-Creates a plot of baselink risk for each study arm
+Produce a plot summarising baselink risk for each study arm
 }

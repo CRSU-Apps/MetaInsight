@@ -1,4 +1,4 @@
-#' Make a Bayesian forest plot with `gemtc::forest()`
+#' Produce a Bayesian forest plot with `gemtc::forest()`
 #'
 #' @param model list. Object created by `bayes_model()` or `covariate_model()`
 #' @param title character. Title for the plot. Default is no title

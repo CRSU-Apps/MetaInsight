@@ -2,29 +2,12 @@
 % Please edit documentation in R/freq_forest_f.R
 \name{freq_forest}
 \alias{freq_forest}
-\title{Produce a forest plot and annotation}
+\title{Produce a frequentist forest plot and annotation using \code{meta::forest()}}
 \usage{
-freq_forest(
-  freq,
-  reference_treatment,
-  model_type,
-  outcome_measure,
-  xmin,
-  xmax,
-  title,
-  logger = NULL
-)
+freq_forest(configured_data, xmin, xmax, title, logger = NULL)
 }
 \arguments{
-\item{freq}{list. NMA results created by freq_wrap().}
-
-\item{reference_treatment}{character. The reference treatment of the dataset}
-
-\item{model_type}{character. Type of model to fit, either \code{random} or \code{fixed}}
-
-\item{outcome_measure}{character. Outcome measure of the dataset. Either
-\code{OR}, \code{RR} or \code{RD} when \code{outcome} is \code{Binary} or \code{MD} or \code{SMD} when
-\code{outcome} is \code{Continuous}}
+\item{configured_data}{list. Input dataset created by \code{setup_configure()} or \code{setup_exclude()}}
 
 \item{xmin}{numeric. Minimum x-axis limit.}
 
@@ -41,5 +24,5 @@ html. Contains the svg string to generate the plot. This can be saved
 using \code{write_plot()}.
 }
 \description{
-Produce a forest plot and annotation
+Produce a frequentist forest plot and annotation using \code{meta::forest()}
 }

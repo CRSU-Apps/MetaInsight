@@ -11,7 +11,7 @@ dataform.df(newData1, treat_list, CONBI)
 
 \item{treat_list}{Data frame containing the treatment ID ('Number') and the treatment name ('Label').}
 
-\item{CONBI}{"Continuous" or "Binary".}
+\item{CONBI}{"continuous" or "binary".}
 }
 \value{
 Input data set in long format with the variable 'se' for a continuous outcome.
