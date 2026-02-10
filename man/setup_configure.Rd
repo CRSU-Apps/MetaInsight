@@ -46,7 +46,7 @@ shiny, otherwise leave the default \code{NULL}}
 \item{non_covariate_data}{dataframe. The uploaded data with covariates removed}
 \item{covariate}{A list containing these items if covariate data exists or
 else empty:
-\itemize{
+\describe{
 \item{column}{character. Name of the column containing covariate data}
 \item{name}{character. Name of the covariate}
 \item{type}{character. Whether the covariate is \code{binary} or \code{continuous}}

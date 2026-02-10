@@ -475,12 +475,14 @@ svg_container <- function(svg, class = "svg_container", style = ""){
       tags$button(
         class = "height-toggle-btn",
         onclick = "shinyjs.scrollingPlot(this)",
-        "↔ Full width"
+        # left-right arrow unicode
+        "\u2194 Full width"
       ),
       tags$button(
         class = "fullscreen-btn",
         onclick = "shinyjs.fullscreenPlot(this.parentElement)",
-        "⤢"
+        # diagonal arrow unicode
+        "\u2922"
       ),
       svg)
 }

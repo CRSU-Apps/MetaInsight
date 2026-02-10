@@ -8,12 +8,11 @@
 #'  \item{reference_treatment}{character. The selected reference treatment}
 #'  \item{connected_data}{dataframe. A subset of the data containing only connected studies}
 #'  \item{covariate}{A list containing these items if covariate data exists or
-#'  else empty:
-#'    \itemize{
-#'      \item{column}{character. Name of the column containing covariate data}
-#'      \item{name}{character. Name of the covariate}
-#'      \item{type}{character. Whether the covariate is `binary` or `continuous`}
-#'    }
+#'  else empty:}
+#'  \itemize{
+#'   \item \code{cross}: Crosses
+#'   \item \code{circle_open}: Open circles
+#'   \item \code{none}: No symbols in which case only the plot of direct evidence is
 #'  }
 #'  \item{bugsnet}{dataframe. Processed data for bugsnet analyses created by `bugsnetdata`}
 #'  \item{freq}{list. Processed data for frequentist analyses created by `frequentist()`}

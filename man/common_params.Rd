@@ -13,6 +13,8 @@
 \code{OR}, \code{RR} or \code{RD} when \code{outcome} is \code{binary} or \code{MD} or \code{SMD} when
 \code{outcome} is \code{continuous}}
 
+\item{connected_data}{dataframe. Input data set created by \code{setup_configure()} or \code{setup_exclude}}
+
 \item{ranking_option}{character. \code{good} if the treatment effect is desirable, else \code{bad}}
 
 \item{reference_treatment}{character. The reference treatment of the dataset}

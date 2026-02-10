@@ -50,10 +50,10 @@ Can be any value between \code{0} and \code{1}, inclusive. Defaults to \code{0.2
 
 \item{covariate_symbol}{character. The selected symbol for displaying
 covariates. Defaults to \verb{circle open}. Possible values are:
-\itemize{
-\item {cross}{Crosses}
-\item {circle_open}{Open circles}
-\item {none}{No symbols in which case only the plot of direct evidence is
+\describe{
+\item{cross}{Crosses}
+\item{circle_open}{Open circles}
+\item{none}{No symbols in which case only the plot of direct evidence is
 produced}
 }}
 
@@ -62,11 +62,11 @@ Defaults to \code{10}.}
 
 \item{legend_position}{character. The position of the legend. Defaults to
 \code{BR}. Possible values are:
-\itemize{
-\item {BR}{Bottom-right of the plot area}
-\item {BL}{Bottom-left of the plot area}
-\item {TR}{Top-right of the plot area}
-\item {TL}{Top-left of the plot area}
+\describe{
+\item{BR}{Bottom-right of the plot area}
+\item{BL}{Bottom-left of the plot area}
+\item{TR}{Top-right of the plot area}
+\item{TL}{Top-left of the plot area}
 }}
 
 \item{logger}{Stores all notification messages to be displayed in the Log

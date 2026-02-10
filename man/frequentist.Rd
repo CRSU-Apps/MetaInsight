@@ -7,9 +7,9 @@
 frequentist(
   non_covariate_data,
   outcome,
-  treatment_df,
+  treatments,
   outcome_measure,
-  model_type,
+  effects,
   reference_treatment
 )
 }
@@ -19,9 +19,13 @@ frequentist(
 \item{outcome}{character. Outcome type for the dataset. Either \code{binary} or
 \code{continuous}.}
 
+\item{treatments}{dataframe. Treatments}
+
 \item{outcome_measure}{character. Outcome measure of the dataset. Either
 \code{OR}, \code{RR} or \code{RD} when \code{outcome} is \code{binary} or \code{MD} or \code{SMD} when
 \code{outcome} is \code{continuous}}
+
+\item{effects}{character. Type of model to fit, either \code{random} or \code{fixed}}
 
 \item{reference_treatment}{character. The reference treatment of the dataset}
 }

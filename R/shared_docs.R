@@ -6,6 +6,7 @@
 #' @param outcome_measure character. Outcome measure of the dataset. Either
 #' `OR`, `RR` or `RD` when `outcome` is `binary` or `MD` or `SMD` when
 #' `outcome` is `continuous`
+#' @param connected_data dataframe. Input data set created by `setup_configure()` or `setup_exclude`
 #' @param ranking_option character. `good` if the treatment effect is desirable, else `bad`
 #' @param reference_treatment character. The reference treatment of the dataset
 #' @param effects character. Type of model to fit, either `random` or `fixed`

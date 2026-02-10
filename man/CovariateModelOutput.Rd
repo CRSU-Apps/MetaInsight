@@ -6,7 +6,7 @@
 \usage{
 CovariateModelOutput(
   connected_data,
-  treatment_df,
+  treatments,
   model,
   covariate_title,
   covariate_value,
@@ -16,6 +16,10 @@ CovariateModelOutput(
 )
 }
 \arguments{
+\item{connected_data}{dataframe. Input data set created by \code{setup_configure()} or \code{setup_exclude}}
+
+\item{treatments}{dataframe. Treatments}
+
 \item{model}{Completed model object after running RunCovariateRegression()}
 
 \item{covariate_title}{Covariate name as per uploaded data}

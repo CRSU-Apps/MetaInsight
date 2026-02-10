@@ -4,12 +4,14 @@
 \alias{labelmatching.df}
 \title{Adds treatment labels to contrast data.}
 \usage{
-labelmatching.df(d1, ntx, treatment_df)
+labelmatching.df(d1, ntx, treatments)
 }
 \arguments{
 \item{d1}{Data in contrast form, typically created by contrastform.df().}
 
 \item{ntx}{= Number of treatments.}
+
+\item{treatments}{dataframe. Treatments}
 }
 \value{
 Input data with the columns treat1 and treat2 now labelled.

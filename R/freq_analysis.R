@@ -9,21 +9,21 @@
 #'  \item{d0}{dataframe.Data in contrast form}
 #'  \item{d1}{dataframe.Same as 'd0' but with treatment labels}
 #' @export
-frequentist <- function(non_covariate_data, outcome, treatment_df, outcome_measure, model_type, reference_treatment) {
+frequentist <- function(non_covariate_data, outcome, treatments, outcome_measure, effects, reference_treatment) {
   if (FindDataShape(non_covariate_data) == "long") {
     wide_data <- LongToWide(long_data = non_covariate_data, outcome = outcome)
   } else {
     wide_data <- non_covariate_data
   }
 
-  ntx <- nrow(treatment_df)
+  ntx <- nrow(treatments)
   d0 <- contrastform.df(wide_data, outcome_measure, outcome)    # transform data to contrast form
-  d1 <- labelmatching.df(d1 = d0, ntx = ntx, treatment_df = treatment_df) #matching treatment labels to treatment code
-  net1 <- freq.df(model_type = model_type, outcome_measure = outcome_measure, dataf = d1, reference_treatment = reference_treatment) # NMA of all studies
+  d1 <- labelmatching.df(d1 = d0, ntx = ntx, treatments = treatments) #matching treatment labels to treatment code
+  net1 <- freq.df(effects = effects, outcome_measure = outcome_measure, dataf = d1, reference_treatment = reference_treatment) # NMA of all studies
 
   return(list(
     net1 = net1,
-    lstx = treatment_df$Label,
+    lstx = treatments$Label,
     ntx = ntx,
     d0 = d0,
     d1 = d1))
@@ -75,14 +75,14 @@ contrastform.df <- function(wide_data, outcome_measure, outcome) {
 #' @param ntx = Number of treatments.
 #' @inheritParams common_params
 #' @return Input data with the columns treat1 and treat2 now labelled.
-labelmatching.df <- function(d1, ntx, treatment_df) {
+labelmatching.df <- function(d1, ntx, treatments) {
 
   d1$treat1 <- factor(d1$treat1,
                       levels = 1:ntx,
-                      labels = as.character(treatment_df$Label))
+                      labels = as.character(treatments$Label))
   d1$treat2 <- factor(d1$treat2,
                       levels = 1:ntx,
-                      labels = as.character(treatment_df$Label))
+                      labels = as.character(treatments$Label))
   return(d1)
 }
 
@@ -91,10 +91,10 @@ labelmatching.df <- function(d1, ntx, treatment_df) {
 #' @param dataf Data in contrast form with treatment labels, typically output from labelmatching.df().
 #' @inheritParams common_params
 #' @return NMA results from netmeta::netmeta().
-freq.df <- function(model_type, outcome_measure, dataf, reference_treatment) {
+freq.df <- function(effects, outcome_measure, dataf, reference_treatment) {
   net1 <- netmeta::netmeta(TE = dataf$TE, seTE = dataf$seTE, treat1 = dataf$treat1, treat2 = dataf$treat2, studlab = dataf$studlab, data = dataf, subset=NULL,
-                  sm = outcome_measure, level = 0.95, level.ma = 0.95, random = (model_type == "random"),
-                  common = (model_type == "fixed"), reference.group = reference_treatment, all.treatments = NULL, seq = NULL,
+                  sm = outcome_measure, level = 0.95, level.ma = 0.95, random = (effects == "random"),
+                  common = (effects == "fixed"), reference.group = reference_treatment, all.treatments = NULL, seq = NULL,
                   tau.preset = NULL, tol.multiarm = 0.05, tol.multiarm.se = 0.2, warn = TRUE)
   return(net1)
 }

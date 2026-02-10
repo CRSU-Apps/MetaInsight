@@ -479,6 +479,7 @@ PairwiseTreatments <- function(pairwise, treatment_order) {
 #' Find the default minimum and maximum values for the x-axis and calculate
 #' a sensible step to use in the numeric input
 #' @param pairwise Results of pairwise analysis
+#' @inheritParams common_params
 #' @return Vector of xmin and xmax
 #' @export
 summary_study_min_max <- function(pairwise, outcome){

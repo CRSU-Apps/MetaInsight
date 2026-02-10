@@ -9,6 +9,9 @@ summary_study_min_max(pairwise, outcome)
 }
 \arguments{
 \item{pairwise}{Results of pairwise analysis}
+
+\item{outcome}{character. Outcome type for the dataset. Either \code{binary} or
+\code{continuous}.}
 }
 \value{
 Vector of xmin and xmax

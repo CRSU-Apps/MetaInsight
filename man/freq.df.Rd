@@ -4,9 +4,11 @@
 \alias{freq.df}
 \title{Frequentist NMA.}
 \usage{
-freq.df(model_type, outcome_measure, dataf, reference_treatment)
+freq.df(effects, outcome_measure, dataf, reference_treatment)
 }
 \arguments{
+\item{effects}{character. Type of model to fit, either \code{random} or \code{fixed}}
+
 \item{outcome_measure}{character. Outcome measure of the dataset. Either
 \code{OR}, \code{RR} or \code{RD} when \code{outcome} is \code{binary} or \code{MD} or \code{SMD} when
 \code{outcome} is \code{continuous}}

@@ -227,7 +227,7 @@ CreateGemtcModel <- function(data, model_type, outcome_measure, regressor_type, 
 #'  model_type = The type of linear model, either "fixed" or "random"
 #'  covariate_min = Vector of minimum covariate values directly contributing to the regression.
 #'  covariate_max = Vector of maximum covariate values directly contributing to the regression.
-CovariateModelOutput <- function(connected_data, treatment_df, model, covariate_title, covariate_value, outcome, outcome_measure, covariate_type) {
+CovariateModelOutput <- function(connected_data, treatments, model, covariate_title, covariate_value, outcome, outcome_measure, covariate_type) {
 
   model_levels <- levels(model$model$data$reg.control)
   reference_treatment <- model_levels[model_levels %in% model$model$data$reg.control]
@@ -274,7 +274,7 @@ CovariateModelOutput <- function(connected_data, treatment_df, model, covariate_
 
   min_max <- FindCovariateRanges(
     connected_data = connected_data,
-    treatment_df = treatment_df,
+    treatment_df = treatments,
     reference_treatment = as.character(model$model$regressor$control),
     covariate_title = covariate_title
   )
