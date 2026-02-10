@@ -19,18 +19,22 @@
 #' Can be any value between `0` and `1`, inclusive. Defaults to `0.2`.
 #' @param covariate_symbol character. The selected symbol for displaying
 #' covariates. Defaults to `circle open`. Possible values are:
-#' \item {cross}{Crosses}
-#' \item {circle_open}{Open circles}
-#' \item {none}{No symbols in which case only the plot of direct evidence is
+#' \itemize{
+#'   \item {cross}{Crosses}
+#'   \item {circle_open}{Open circles}
+#'   \item {none}{No symbols in which case only the plot of direct evidence is
 #' produced}
+#' }
 #' @param covariate_symbol_size numeric. Size of the covariate symbols.
 #' Defaults to `10`.
 #' @param legend_position character. The position of the legend. Defaults to
 #' `BR`. Possible values are:
-#' \item {BR}{Bottom-right of the plot area}
-#' \item {BL}{Bottom-left of the plot area}
-#' \item {TR}{Top-right of the plot area}
-#' \item {TL}{Top-left of the plot area}
+#' \itemize{
+#'   \item {BR}{Bottom-right of the plot area}
+#'   \item {BL}{Bottom-left of the plot area}
+#'   \item {TR}{Top-right of the plot area}
+#'   \item {TL}{Top-left of the plot area}
+#'  }
 #' @inheritParams common_params
 #' @inherit return-svg return
 #' @export

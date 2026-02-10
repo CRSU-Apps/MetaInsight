@@ -80,21 +80,25 @@ test_that("{shinytest2} recording: e2e_baseline_model", {
   result <- common$baseline_model
 
   expect_is(result, "baseline_model")
-  expect_true(all(c("mtcResults",
-                    "covariate_value",
-                    "reference_treatment",
-                    "comparator_names",
-                    "a",
-                    "cov_value_sentence",
-                    "slopes",
-                    "intercepts",
-                    "outcome_measure",
-                    "model",
-                    "covariate_min",
-                    "covariate_max",
-                    "dic",
-                    "sumresults",
-                    "regressor") %in% names(result)))
+
+  expected_items <- c("mtcResults",
+                      "covariate_value",
+                      "reference_treatment",
+                      "comparator_names",
+                      "a",
+                      "cov_value_sentence",
+                      "slopes",
+                      "intercepts",
+                      "outcome",
+                      "outcome_measure",
+                      "effects",
+                      "covariate_min",
+                      "covariate_max",
+                      "dic",
+                      "sumresults",
+                      "regressor")
+
+  expect_true(all(expected_items %in% names(result)))
   expect_is(result$mtcResults, "network.result")
   expect_is(result$covariate_value, "numeric")
   expect_is(result$reference_treatment, "character")
@@ -103,8 +107,9 @@ test_that("{shinytest2} recording: e2e_baseline_model", {
   expect_is(result$cov_value_sentence, "character")
   expect_is(result$slopes, "numeric")
   expect_is(result$intercepts, "numeric")
+  expect_is(result$outcome, "character")
   expect_is(result$outcome_measure, "character")
-  expect_is(result$model, "character")
+  expect_is(result$effects, "character")
   expect_is(result$covariate_min, "numeric")
   expect_is(result$covariate_max, "numeric")
   expect_is(result$dic, "data.frame")

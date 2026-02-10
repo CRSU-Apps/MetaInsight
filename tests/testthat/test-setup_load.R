@@ -87,37 +87,37 @@ test_that("Check setup_load loads data into common correctly for default data", 
   app$click("setup_load-run")
   common <- app$get_value(export = "common")
 
-  expect_type(common$is_data_valid, "logical")
-  expect_type(common$is_data_uploaded, "logical")
-  expect_s3_class(common$data, "data.frame")
-  expect_s3_class(common$treatments, "data.frame")
+  expect_type(common$loaded_data$is_data_valid, "logical")
+  expect_type(common$loaded_data$is_data_uploaded, "logical")
+  expect_s3_class(common$loaded_data$data, "data.frame")
+  expect_s3_class(common$loaded_data$treatments, "data.frame")
 
-  expect_true(common$is_data_valid)
-  expect_false(common$is_data_uploaded)
+  expect_true(common$loaded_data$is_data_valid)
+  expect_false(common$loaded_data$is_data_uploaded)
 
-  expect_equal(colnames(common$data), c("Study", "T", "Mean", "SD", "N", "covar.age", "rob", "indirectness",
+  expect_equal(colnames(common$loaded_data$data), c("Study", "T", "Mean", "SD", "N", "covar.age", "rob", "indirectness",
                                         "rob.randomisation", "rob.allocation_concealment", "rob.blinding_(participants_and_personnel)",
                                         "rob.blinding_(outcomes)", "rob.attrition", "rob.reporting",
                                         "rob.other_bias"),
-               label = format_vector_to_string(colnames(common$data)))
-  expect_equal(nrow(common$data), 90,
-               label = nrow(common$data))
-  expect_equal(common$data$Study, paste0("Study", stringr::str_pad(string = rep(1:45, each = 2), width = 2, pad = "0")),
-               label = format_vector_to_string(common$data$Study))
-  expect_equal(common$data$T, c(rep(c("Placebo", "Glucocorticoids"), times = 4),
+               label = format_vector_to_string(colnames(common$loaded_data$data)))
+  expect_equal(nrow(common$loaded_data$data), 90,
+               label = nrow(common$loaded_data$data))
+  expect_equal(common$loaded_data$data$Study, paste0("Study", stringr::str_pad(string = rep(1:45, each = 2), width = 2, pad = "0")),
+               label = format_vector_to_string(common$loaded_data$data$Study))
+  expect_equal(common$loaded_data$data$T, c(rep(c("Placebo", "Glucocorticoids"), times = 4),
                            rep(c("Placebo", "Ketamine"), times = 18),
                            rep(c("Placebo", "Gabapentinoids"), times = 23)
   ),
-  label = format_vector_to_string(common$data$T))
-  expect_equal(common$data$N, c(50, 62, 45, 92, 88, 78, 47, 46, 52, 43, 84, 84, 34, 33, 35, 34, 66, 73, 19, 18, 6, 8, 47, 31, 24, 25, 17, 15, 35, 33, 42, 49, 62, 118, 22, 22, 7, 8, 25, 55, 38, 39, 30, 31, 10, 21, 53, 65, 20, 20, 35, 27, 22, 23, 4, 2, 30, 60, 50, 50, 20, 20, 29, 30,
+  label = format_vector_to_string(common$loaded_data$data$T))
+  expect_equal(common$loaded_data$data$N, c(50, 62, 45, 92, 88, 78, 47, 46, 52, 43, 84, 84, 34, 33, 35, 34, 66, 73, 19, 18, 6, 8, 47, 31, 24, 25, 17, 15, 35, 33, 42, 49, 62, 118, 22, 22, 7, 8, 25, 55, 38, 39, 30, 31, 10, 21, 53, 65, 20, 20, 35, 27, 22, 23, 4, 2, 30, 60, 50, 50, 20, 20, 29, 30,
                            24, 17, 49, 50, 28, 83, 100, 100, 24, 22, 48, 52, 31, 62, 20, 18, 18, 16, 46, 46, 27, 27, 35, 70, 76, 75),
-               label = format_vector_to_string(common$data$N))
-  expect_equal(common$data$Mean, c(2.2, 1.9, 2, 2, 1.4, 1.4, 2.9, 2.6, 5.4, 3, 1, 1, 0, 0, 0, 0, 4, 4, 0.3, 1.1, 0.5, 2, 1.3, 1.4, 0, 0, 1.5, .3, 1, 0.7, 4, 4.3, 2, 2, 1.5, 0, 3.4, 2.4, 1, 0.5, 0.1, 0.2, 0.8, 0.8, 3.4, 3.1, 0, 0, 0.6, 0.2, 0.6, 0.5, 2.2, 2.6, 2.5, 3, 1.2, 0.5, 2.2,2.1, 0.2, 0.1, 2, 1, 1.1, 0.9, 3, 2, 2, 1.8, 3.4, 2.5, 1.9, 1.5, 0, 0, 3, 2, 1.5, 1.1, 0.5, 1, 0, 0, 1.5, 1.3, 0.03, 0.4, 1.2, 1.4),
-               label = format_vector_to_string(common$data$Mean))
-  expect_equal(common$data$SD, c(2.5, 2.4, 3.7, 2.8, 1.6, 1.7, 2.5, 2.4, 3.6, 3.5, 1.5, 1.5, 0.2, 0.7, 0.1, 0.3, 3.3, 2.2, 0.7, 2.1, 3.7, 1.7, 1.5, 1.4, 1.9, 0.7, 4.4, 3, 1.7, 1.4, 2.1, 2.5, 1.5, 1.5, 2.2, 1.5, 3, 1.1, 1.8, 1.7, 0.7, 0.7, 1.1, 0.9, 1.6, 1.7, 0.7, 0.7, 0.9, 0.4, 0.1,0.9, 1.4, 1.7, 1, 0.8, 1.5, 0.9, 0.9, 1.2, 0.1, 0.1, 1.5, 0.6, 1.5, 1.2, 1.9, 1.5, 2.5, 2, 1.4, 1.2, 2, 1.9, 0.7, 2.1, 0.8, 0.5, 2, 1.6, 1.5, 1.5, 0.7, 0.7, 2.8, 2.2, 0.2, 0.9, 1.7, 1.7),
-               label = format_vector_to_string(common$data$SD))
+               label = format_vector_to_string(common$loaded_data$data$N))
+  expect_equal(common$loaded_data$data$Mean, c(2.2, 1.9, 2, 2, 1.4, 1.4, 2.9, 2.6, 5.4, 3, 1, 1, 0, 0, 0, 0, 4, 4, 0.3, 1.1, 0.5, 2, 1.3, 1.4, 0, 0, 1.5, .3, 1, 0.7, 4, 4.3, 2, 2, 1.5, 0, 3.4, 2.4, 1, 0.5, 0.1, 0.2, 0.8, 0.8, 3.4, 3.1, 0, 0, 0.6, 0.2, 0.6, 0.5, 2.2, 2.6, 2.5, 3, 1.2, 0.5, 2.2,2.1, 0.2, 0.1, 2, 1, 1.1, 0.9, 3, 2, 2, 1.8, 3.4, 2.5, 1.9, 1.5, 0, 0, 3, 2, 1.5, 1.1, 0.5, 1, 0, 0, 1.5, 1.3, 0.03, 0.4, 1.2, 1.4),
+               label = format_vector_to_string(common$loaded_data$data$Mean))
+  expect_equal(common$loaded_data$data$SD, c(2.5, 2.4, 3.7, 2.8, 1.6, 1.7, 2.5, 2.4, 3.6, 3.5, 1.5, 1.5, 0.2, 0.7, 0.1, 0.3, 3.3, 2.2, 0.7, 2.1, 3.7, 1.7, 1.5, 1.4, 1.9, 0.7, 4.4, 3, 1.7, 1.4, 2.1, 2.5, 1.5, 1.5, 2.2, 1.5, 3, 1.1, 1.8, 1.7, 0.7, 0.7, 1.1, 0.9, 1.6, 1.7, 0.7, 0.7, 0.9, 0.4, 0.1,0.9, 1.4, 1.7, 1, 0.8, 1.5, 0.9, 0.9, 1.2, 0.1, 0.1, 1.5, 0.6, 1.5, 1.2, 1.9, 1.5, 2.5, 2, 1.4, 1.2, 2, 1.9, 0.7, 2.1, 0.8, 0.5, 2, 1.6, 1.5, 1.5, 0.7, 0.7, 2.8, 2.2, 0.2, 0.9, 1.7, 1.7),
+               label = format_vector_to_string(common$loaded_data$data$SD))
 
-  expect_equal(common$treatments, data.frame(Number = seq(4), Label = c('Placebo','Glucocorticoids','Ketamine','Gabapentinoids')))
+  expect_equal(common$loaded_data$treatments, data.frame(Number = seq(4), Label = c('Placebo','Glucocorticoids','Ketamine','Gabapentinoids')))
 
 })
 
@@ -129,13 +129,13 @@ test_that("Check setup_load loads data into common correctly for an uploaded fil
   app$click("setup_load-run")
   common <- app$get_value(export = "common")
 
-  expect_type(common$is_data_valid, "logical")
-  expect_type(common$is_data_uploaded, "logical")
-  expect_s3_class(common$data, "data.frame")
-  expect_s3_class(common$treatments, "data.frame")
+  expect_type(common$loaded_data$is_data_valid, "logical")
+  expect_type(common$loaded_data$is_data_uploaded, "logical")
+  expect_s3_class(common$loaded_data$data, "data.frame")
+  expect_s3_class(common$loaded_data$treatments, "data.frame")
 
-  expect_true(common$is_data_valid)
-  expect_true(common$is_data_uploaded)
+  expect_true(common$loaded_data$is_data_valid)
+  expect_true(common$loaded_data$is_data_uploaded)
 })
 
 test_that("Invalid data is loaded into common correctly and errors are passed to the logger", {
@@ -147,12 +147,12 @@ test_that("Invalid data is loaded into common correctly and errors are passed to
   app$click("setup_load-run")
   common <- app$get_value(export = "common")
 
-  expect_type(common$is_data_valid, "logical")
-  expect_type(common$is_data_uploaded, "logical")
-  expect_s3_class(common$data, "data.frame")
-  expect_null(common$treatments, "data.frame")
-  expect_false(common$is_data_valid)
-  expect_true(common$is_data_uploaded)
+  expect_type(common$loaded_data$is_data_valid, "logical")
+  expect_type(common$loaded_data$is_data_uploaded, "logical")
+  expect_s3_class(common$loaded_data$data, "data.frame")
+  expect_null(common$loaded_data$treatments, "data.frame")
+  expect_false(common$loaded_data$is_data_valid)
+  expect_true(common$loaded_data$is_data_uploaded)
 
   logger <- app$get_value(export = "logger")
   expect_true(grepl("*Missing columns for binary data*", logger))

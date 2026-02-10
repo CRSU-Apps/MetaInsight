@@ -3,10 +3,10 @@ test_that("PrepDataGemtc() gives correct data for wide binary", {
   # process data as would be in app
   data <- read.csv("data/Binary_wide_continuous_cov.csv")
   treatment_ids <- CreateTreatmentIds(FindAllTreatments(data))
-  data <- WrangleUploadData(data, treatment_ids, "Binary")
+  data <- WrangleUploadData(data, treatment_ids, "binary")
   wrangled_treatment_list <- CleanTreatmentIds(treatment_ids)
 
-  gemtc_data <- PrepDataGemtc(data, wrangled_treatment_list, "Binary", "covar.age", "age")
+  gemtc_data <- PrepDataGemtc(data, wrangled_treatment_list, "binary", "covar.age", "age")
 
   expected_armData <- data.frame(
     study = c(rep("Constantine", 3), rep("Leo", 3), rep("Justinian", 2)),
@@ -25,10 +25,10 @@ test_that("PrepDataGemtc() gives correct data for long binary", {
 
   data <- read.csv("data/Binary_long_continuous_cov.csv")
   treatment_ids <- CreateTreatmentIds(FindAllTreatments(data))
-  data <- WrangleUploadData(data, treatment_ids, "Binary")
+  data <- WrangleUploadData(data, treatment_ids, "binary")
   wrangled_treatment_list <- CleanTreatmentIds(treatment_ids)
 
-  gemtc_data <- PrepDataGemtc(data, wrangled_treatment_list, "Binary", "covar.age", "age")
+  gemtc_data <- PrepDataGemtc(data, wrangled_treatment_list, "binary", "covar.age", "age")
 
   expected_armData <- data.frame(
     study = c(rep("Constantine", 3), rep("Leo", 3), rep("Justinian", 2)),
@@ -47,10 +47,10 @@ test_that("PrepDataGemtc() gives correct data for wide continuous", {
 
   data <- read.csv("data/Cont_wide_continuous_cov.csv")
   treatment_ids <- CreateTreatmentIds(FindAllTreatments(data))
-  data <- WrangleUploadData(data, treatment_ids, "Continuous")
+  data <- WrangleUploadData(data, treatment_ids, "continuous")
   wrangled_treatment_list <- CleanTreatmentIds(treatment_ids)
 
-  gemtc_data <- PrepDataGemtc(data, wrangled_treatment_list, "Continuous", "covar.age", "age")
+  gemtc_data <- PrepDataGemtc(data, wrangled_treatment_list, "continuous", "covar.age", "age")
 
   expected_armData <- data.frame(
     study = c(rep("Constantine", 3), rep("Leo", 3), rep("Justinian", 2)),
@@ -70,10 +70,10 @@ test_that("PrepDataGemtc() gives correct data for long continuous", {
 
   data <- read.csv("data/Cont_long_continuous_cov.csv")
   treatment_ids <- CreateTreatmentIds(FindAllTreatments(data))
-  data <- WrangleUploadData(data, treatment_ids, "Continuous")
+  data <- WrangleUploadData(data, treatment_ids, "continuous")
   wrangled_treatment_list <- CleanTreatmentIds(treatment_ids)
 
-  gemtc_data <- PrepDataGemtc(data, wrangled_treatment_list, "Continuous", "covar.age", "age")
+  gemtc_data <- PrepDataGemtc(data, wrangled_treatment_list, "continuous", "covar.age", "age")
 
   expected_armData <- data.frame(
     study = c(rep("Constantine", 3), rep("Leo", 3), rep("Justinian", 2)),

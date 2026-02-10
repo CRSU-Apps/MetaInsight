@@ -10,7 +10,7 @@ test_that("CalculateDirectness() gathers covariate values for studies", {
     data = data,
     covariate_title = "covar.age",
     treatment_ids = treatment_ids,
-    outcome = "Binary",
+    outcome = "binary",
     outcome_measure = "OR",
     effects_type = "random"
   )
@@ -40,7 +40,7 @@ test_that("CalculateDirectness() correctly calculates directness", {
     data = data,
     covariate_title = "covar.age",
     treatment_ids = treatment_ids,
-    outcome = "Binary",
+    outcome = "binary",
     outcome_measure = "OR",
     effects_type = "random"
   )
@@ -95,13 +95,13 @@ test_that("CalculateContributions() gathers relative treatment effects for treat
     Number = 1:4,
     Label = c("A", "B", "C", "D")
   )
-  data <- metainsight:::ReplaceTreatmentIds(data, treatment_ids)
+  data <- ReplaceTreatmentIds(data, treatment_ids)
 
-  contributions <- metainsight:::CalculateDirectness(
+  contributions <- CalculateDirectness(
     data = data,
     covariate_title = "covar.age",
     treatment_ids = treatment_ids,
-    outcome = "Binary",
+    outcome = "binary",
     outcome_measure = "OR",
     effects_type = "random"
   )

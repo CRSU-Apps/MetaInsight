@@ -57,27 +57,28 @@ test_that("setup_exclude loads data into common correctly", {
   app$wait_for_value(input = "setup_configure-ready")
   app$click("setup_configure-run")
   app$set_inputs(tabs = "summary")
-  app$set_inputs("setup_exclude-exclusions" = c("Study01", "Study25"))
   app$wait_for_value(input = "setup_exclude-complete")
+  app$set_inputs("setup_exclude-exclusions" = c("Study01", "Study25"))
+  app$wait_for_value(input = "setup_exclude-complete", ignore = list(NULL, "", "initial"))
 
   common <- app$get_value(export = "common")
 
-  expect_s3_class(common$bugsnet_sub, "data.frame")
-  expect_type(common$freq_sub, "list")
-  expect_type(common$reference_treatment_sub, "character")
+  expect_s3_class(common$subsetted_data$bugsnet, "data.frame")
+  expect_type(common$subsetted_data$freq, "list")
+  expect_type(common$subsetted_data$reference_treatment, "character")
 
-  n_studies_all <- length(unique(no_cv$Study))
-  n_studies_sub_bugs <- length(unique(common$bugsnet_sub$Study))
-  n_studies_sub_freq <- length(unique(common$freq_sub$d0$Study))
+  n_studies_all <- length(unique(common$configured_data$freq$d0$Study))
+  n_studies_sub_bugs <- length(unique(common$subsetted_data$bugsnet$Study))
+  n_studies_sub_freq <- length(unique(common$subsetted_data$freq$d0$Study))
 
-  expect_false("Study01" %in% common$bugsnet_sub$Study)
-  expect_false("Study25" %in% common$bugsnet_sub$Study)
-  expect_true("Study02" %in% common$bugsnet_sub$Study)
+  expect_false("Study01" %in% common$subsetted_data$bugsnet$Study)
+  expect_false("Study25" %in% common$subsetted_data$bugsnet$Study)
+  expect_true("Study02" %in% common$subsetted_data$bugsnet$Study)
   expect_equal(n_studies_all - 2, n_studies_sub_bugs)
 
-  expect_false("Study01" %in% common$freq_sub$d0$Study)
-  expect_false("Study25" %in% common$freq_sub$d0$Study)
-  expect_true("Study02" %in% common$freq_sub$d0$Study)
+  expect_false("Study01" %in% common$subsetted_data$freq$d0$Study)
+  expect_false("Study25" %in% common$subsetted_data$freq$d0$Study)
+  expect_true("Study02" %in% common$subsetted_data$freq$d0$Study)
   expect_equal(n_studies_all - 2, n_studies_sub_freq)
 
   app$stop()
@@ -97,8 +98,8 @@ test_that("setup_exclude launches a note when reference_treatment_sub changes", 
 
   common <- app$get_value(export = "common")
 
-  expect_equal(common$reference_treatment_sub, "Placebo")
-  expect_false(common$reference_treatment_sub == common$reference_treatment_all)
+  expect_equal(common$subsetted_data$reference_treatment, "Placebo")
+  expect_false(common$subsetted_data$reference_treatment == common$configured_data$reference_treatment)
 
   logger <- app$get_value(export = "logger")
   expect_true(grepl("*has been changed to Placebo*", logger))

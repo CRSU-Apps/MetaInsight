@@ -8,8 +8,8 @@
 #' @export
 freq_summary <- function(configured_data, plot_title = "", logger = NULL) {
 
-  check_param_classes(c("configured_data"),
-                      c("configured_data"), logger)
+  check_param_classes(c("configured_data", "plot_title"),
+                      c("configured_data", "character"), logger)
 
   lstx <- configured_data$treatments$Label
   ntx <- length(lstx)

@@ -226,7 +226,7 @@ test_that("rep_markdown produces a renderable .Rmd file after a covariate analys
   app$set_inputs(covariateSel = "covariate_deviance")
   app$click("covariate_deviance-run")
   app$wait_for_value(input = "covariate_deviance-complete")
-  expected_chunks <- expected_chunks + 4
+  expected_chunks <- expected_chunks + 3
 
   app$set_inputs(covariateSel = "covariate_ranking")
   app$click("covariate_ranking-run")
@@ -311,7 +311,7 @@ test_that("rep_markdown produces a renderable .Rmd file after a baseline analysi
   app$set_inputs(baselineSel = "baseline_deviance")
   app$click("baseline_deviance-run")
   app$wait_for_value(input = "baseline_deviance-complete")
-  expected_chunks <- expected_chunks + 4
+  expected_chunks <- expected_chunks + 3
 
   app$set_inputs(baselineSel = "baseline_ranking")
   app$click("baseline_ranking-run")

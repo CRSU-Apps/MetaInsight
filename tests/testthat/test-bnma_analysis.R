@@ -3,12 +3,12 @@ test_that("FormatForBnma() gives correct data for wide binary", {
   # process data as would be in app
   data <- read.csv(file.path(test_data_dir, "Binary_wide_continuous_cov.csv"))
   treatment_ids <- CreateTreatmentIds(FindAllTreatments(data))
-  data <- WrangleUploadData(data, treatment_ids, "Binary")
+  data <- WrangleUploadData(data, treatment_ids, "binary")
   wrangled_treatment_list <- CleanTreatmentIds(treatment_ids)
 
   bnma_data <- FormatForBnma(connected_data=data,
                              treatment_df=wrangled_treatment_list,
-                             outcome="Binary",
+                             outcome="binary",
                              reference_treatment="the_Little")
 
   expected_ArmLevel <- data.frame(
@@ -18,7 +18,7 @@ test_that("FormatForBnma() gives correct data for wide binary", {
     N = c(100, 101, 102, 104, 103, 105, 106, 107))
 
   #The expected order is the reference first, followed by the rest in the order they appear in the long version of the data
-  expected_Treat.order <-  VectorWithItemFirst(vector = wrangled_treatment_list$Label[unique(WideToLong(data, outcome="Binary")$T)], first_item = "the_Little")
+  expected_Treat.order <-  VectorWithItemFirst(vector = wrangled_treatment_list$Label[unique(WideToLong(data, outcome="binary")$T)], first_item = "the_Little")
 
   expect_equal(bnma_data$ArmLevel, expected_ArmLevel)
   expect_equal(bnma_data$Treat.order, expected_Treat.order)
@@ -30,12 +30,12 @@ test_that("FormatForBnma() gives correct data for long binary", {
 
   data <- read.csv(file.path(test_data_dir, "Binary_long_continuous_cov.csv"))
   treatment_ids <- CreateTreatmentIds(FindAllTreatments(data))
-  data <- WrangleUploadData(data, treatment_ids, "Binary")
+  data <- WrangleUploadData(data, treatment_ids, "binary")
   wrangled_treatment_list <- CleanTreatmentIds(treatment_ids)
 
   bnma_data <- FormatForBnma(connected_data=data,
                              treatment_df=wrangled_treatment_list,
-                             outcome="Binary",
+                             outcome="binary",
                              reference_treatment="the_Little")
 
   expected_ArmLevel <- data.frame(
@@ -58,12 +58,12 @@ test_that("FormatForBnma() gives correct data for wide continuous", {
 
   data <- read.csv(file.path(test_data_dir, "Cont_wide_continuous_cov.csv"))
   treatment_ids <- CreateTreatmentIds(FindAllTreatments(data))
-  data <- WrangleUploadData(data, treatment_ids, "Continuous")
+  data <- WrangleUploadData(data, treatment_ids, "continuous")
   wrangled_treatment_list <- CleanTreatmentIds(treatment_ids)
 
   bnma_data <- FormatForBnma(connected_data=data,
                              treatment_df=wrangled_treatment_list,
-                             outcome="Continuous",
+                             outcome="continuous",
                              reference_treatment="the_Little")
 
   expected_ArmLevel <- data.frame(
@@ -74,7 +74,7 @@ test_that("FormatForBnma() gives correct data for wide continuous", {
     N = c(30, 31, 32, 34, 33, 35, 36, 37))
 
   #The expected order is the reference first, followed by the rest in the order they appear in the long version of the data
-  expected_Treat.order <-  VectorWithItemFirst(vector = wrangled_treatment_list$Label[unique(WideToLong(data, outcome="Binary")$T)], first_item = "the_Little")
+  expected_Treat.order <-  VectorWithItemFirst(vector = wrangled_treatment_list$Label[unique(WideToLong(data, outcome="binary")$T)], first_item = "the_Little")
 
   expect_equal(bnma_data$ArmLevel, expected_ArmLevel)
   expect_equal(bnma_data$Treat.order, expected_Treat.order)
@@ -86,12 +86,12 @@ test_that("FormatForBnma() gives correct data for long continuous", {
 
   data <- read.csv("data/Cont_long_continuous_cov.csv")
   treatment_ids <- CreateTreatmentIds(FindAllTreatments(data))
-  data <- WrangleUploadData(data, treatment_ids, "Continuous")
+  data <- WrangleUploadData(data, treatment_ids, "continuous")
   wrangled_treatment_list <- CleanTreatmentIds(treatment_ids)
 
   bnma_data <- FormatForBnma(connected_data=data,
                              treatment_df=wrangled_treatment_list,
-                             outcome="Continuous",
+                             outcome="continuous",
                              reference_treatment="the_Little")
 
   expected_ArmLevel <- data.frame(
@@ -122,7 +122,7 @@ test_that("BaselineRiskNetwork() assigns model type, covariate type and referenc
   data$Treat.order <- VectorWithItemFirst(vector = unique(data$ArmLevel$Treat), first_item = "the_Great")
 
   bnma_network <- BaselineRiskNetwork(br_data = data,
-                                      outcome = "Binary",
+                                      outcome = "binary",
                                       model_type = "random",
                                       cov_parameters = "unrelated")
 
@@ -144,7 +144,7 @@ test_that("BaselineRiskNetwork() has correct model settings for Binary outcome",
   data$Treat.order <- VectorWithItemFirst(vector = unique(data$ArmLevel$Treat), first_item = "the_Great")
 
   bnma_network <- BaselineRiskNetwork(br_data = data,
-                                      outcome = "Binary",
+                                      outcome = "binary",
                                       model_type = "random",
                                       cov_parameters = "unrelated")
 
@@ -164,7 +164,7 @@ test_that("BaselineRiskNetwork() has correct model settings for Continuous outco
   data$Treat.order <- VectorWithItemFirst(vector = unique(data$ArmLevel$Treat), first_item = "the_Great")
 
   bnma_network <- BaselineRiskNetwork(br_data = data,
-                                      outcome = "Continuous",
+                                      outcome = "continuous",
                                       model_type = "fixed",
                                       cov_parameters = "exchangeable")
 
@@ -181,7 +181,7 @@ test_that("GetReferenceOutcome() returns the reference outcome when the outcome 
                      N = 30:38)
 
   treatment_ids <- list(Number = 1:4, Label = c("Hydrogen", "Oxygen", "Sulphur", "Zinc"))
-  outcome_type <- "Binary"
+  outcome_type <- "binary"
   observed <- "Observed"
 
   expected_reference_outcome <- c(log(5 / (30 - 5)), NA, log(2 / (34 - 2)), NA)
@@ -201,7 +201,7 @@ test_that("GetReferenceOutcome() returns the reference outcome when the outcome 
                      SD = c(2, 3, 4, 2, 3, 4, 2, 3, 4))
 
   treatment_ids <- list(Number = 1:4, Label = c("Hydrogen", "Oxygen", "Sulphur", "Zinc"))
-  outcome_type <- "Continuous"
+  outcome_type <- "continuous"
   observed <- "Observed"
 
   expected_reference_outcome <- c(5, NA, 2, NA)
@@ -209,8 +209,6 @@ test_that("GetReferenceOutcome() returns the reference outcome when the outcome 
 
   expect_equal(GetReferenceOutcome(data, treatment_ids, outcome_type, observed), expected_reference_outcome)
 })
-
-
 
 test_that("1. BaselineRiskRegression() sets RNGs correctly;
            2. BaselineRiskRegression() gives reproducible output;
@@ -233,7 +231,7 @@ test_that("1. BaselineRiskRegression() sets RNGs correctly;
 
   result_1 <- BaselineRiskRegression(connected_data = data$ArmLevel,
                                      treatment_df = treatment_ids,
-                                     outcome = "Continuous",
+                                     outcome = "continuous",
                                      reference_treatment = "the_Great",
                                      model_type = "random",
                                      cov_parameters = "exchangeable",
@@ -241,7 +239,7 @@ test_that("1. BaselineRiskRegression() sets RNGs correctly;
 
   result_2 <- BaselineRiskRegression(connected_data = data$ArmLevel,
                                      treatment_df = treatment_ids,
-                                     outcome = "Continuous",
+                                     outcome = "continuous",
                                      reference_treatment = "the_Great",
                                      model_type = "random",
                                      cov_parameters = "exchangeable",
@@ -279,14 +277,16 @@ test_that("1. BaselineRiskRegression() sets RNGs correctly;
   expected_centred_intercepts <- summary_1$summary.samples$quantiles[c("d[2]", "d[3]", "d[4]", "d[5]", "d[6]"), "50%"]
   expected_intercepts <- expected_centred_intercepts - expected_slopes * expected_covariate_value
   names(expected_intercepts) <- expected_comparator_names
-  expected_outcome <- "Continuous"
+  expected_outcome <- "continuous"
   expected_outcome_measure <- "MD"
   expected_effects_type <- "random"
   expected_covariate_min <- c(-1, -1, -1.4, -1.4, NA)
   names(expected_covariate_min) <- expected_comparator_names
   expected_covariate_max <- c(-1, -1, -1.4, -1.4, NA)
   names(expected_covariate_max) <- expected_comparator_names
-  expected_dic <- c(8.33979715193098, 7.3344123200321, 15.6742094719631, 9) |> as.data.frame()
+  expected_dic <- c(8.34347465810339, 7.33645461865518, 15.6799292767586, 9) |> as.data.frame()
+  # getting different results on mac (below) and ubuntu
+  # expected_dic <- c(8.33979715193098, 7.3344123200321, 15.6742094719631, 9) |> as.data.frame()
   rownames(expected_dic) <- c("Dbar", "pD", "DIC", "Data points")
   colnames(expected_dic) <- "BaselineRiskDicTable(model)"
   expected_summary <- summary_1
@@ -304,7 +304,7 @@ test_that("1. BaselineRiskRegression() sets RNGs correctly;
     intercepts = expected_intercepts,
     outcome = expected_outcome,
     outcome_measure = expected_outcome_measure,
-    model = expected_effects_type,
+    effects = expected_effects_type,
     covariate_min = expected_covariate_min,
     covariate_max = expected_covariate_max,
     dic = expected_dic,
@@ -348,7 +348,7 @@ test_that("1. BaselineRiskRegression() sets RNGs correctly;
   expect_equal(relative_effects, expected_relative_effects)
   #-------------------------------------------------------------------
 
-  outcome_type <- "Continuous"
+  outcome_type <- "continuous"
   observed <- "Imputed"
   imputed_outcome_study_3 <- MCMCvis::MCMCsummary(object = result_1$samples, params = "Eta")["50%"]["Eta[3]", 1]
   expected_reference_outcome <- c(-1, -1.4, imputed_outcome_study_3)

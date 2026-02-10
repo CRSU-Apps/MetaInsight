@@ -198,9 +198,9 @@ metaregression_regression_module_server <- function(id, common) {
                           include_ghosts = input$ghosts,
                           include_extrapolation = input$extrapolate,
                           include_credible = input$credible,
-                          credible_opacity = input$credible_opacity,
+                          credible_opacity = as.numeric(input$credible_opacity),
                           covariate_symbol = input$symbol,
-                          covariate_symbol_size = input$symbol_size,
+                          covariate_symbol_size = as.numeric(input$symbol_size),
                           legend_position = input$legend_position
       )
     })

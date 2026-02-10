@@ -121,12 +121,14 @@ setup_exclude_module_server <- function(id, common, parent_session) {
           close_loading_modal()
           if (initial){
             common$logger |> writeLog(type = "complete", "Initial frequentist analysis is complete")
+            # required for testing to wait until the debounce has triggered
+            shinyjs::runjs("Shiny.setInputValue('setup_exclude-complete', 'initial');")
           } else {
             common$logger |> writeLog(type = "complete", "Sensitivity analysis has been updated")
+            shinyjs::runjs("Shiny.setInputValue('setup_exclude-complete', 'complete');")
           }
 
-          # required for testing to wait until the debounce has triggered
-          shinyjs::runjs("Shiny.setInputValue('setup_exclude-complete', 'complete');")
+
           trigger("setup_exclude")
 
         } else {
