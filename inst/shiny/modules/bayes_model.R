@@ -66,7 +66,7 @@ bayes_model_module_server <- function(id, common, parent_session) {
       function(...) sub_model <<- mirai::mirai(run(...), run = bayes_model, .args = environment())
     ) |> bind_task_button("run")
 
-    observeEvent(list(watch("bayes_model"), watch("effects")), {
+    observeEvent(list(watch("bayes_model"), watch("setup_configure"), watch("effects")), {
       # trigger if run is pressed or if model is changed, but only if a model exists
       req((watch("bayes_model") > 0 || all(!is.null(common$bayes_all), watch("effects") > 0)))
 

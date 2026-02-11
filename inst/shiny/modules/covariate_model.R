@@ -89,7 +89,7 @@ covariate_model_module_server <- function(id, common, parent_session) {
       function(...) cov_model <<- mirai::mirai(run(...), run = covariate_model, .args = environment())
     ) |> bind_task_button("run")
 
-    observeEvent(list(watch("covariate_model"), watch("effects"), debounce(input$covariate_value, 1000), input$regressor), {
+    observeEvent(list(watch("covariate_model"), watch("setup_configure"), watch("effects"), debounce(input$covariate_value, 1000), input$regressor), {
       # trigger if run is pressed or if model is changed, but only if a model exists
       req((watch("covariate_model") > 0 || all(!is.null(common$covariate_model), watch("effects") > 0)))
 

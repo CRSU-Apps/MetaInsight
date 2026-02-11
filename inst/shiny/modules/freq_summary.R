@@ -30,7 +30,7 @@ freq_summary_module_server <- function(id, common, parent_session) {
   })
 
   svg_all <- reactive({
-    watch("effects")
+    watch("freq_all")
     req(watch("freq_summary") > 0)
     common$meta$freq_summary$used <- TRUE
     freq_summary(common$configured_data,

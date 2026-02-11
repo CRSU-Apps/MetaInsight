@@ -50,7 +50,7 @@ baseline_model_module_server <- function(id, common, parent_session) {
       function(...) mirai::mirai(run(...), run = baseline_model, .args = environment())
     ) |> bind_task_button("run")
 
-    observeEvent(list(watch("baseline_model"), watch("effects"), input$regressor), {
+    observeEvent(list(watch("baseline_model"), watch("setup_configure"), watch("effects"), input$regressor), {
       # trigger if run is pressed or if model is changed, but only if a model exists
       req((watch("baseline_model") > 0 || all(!is.null(common$baseline_model), watch("effects") > 0)))
 

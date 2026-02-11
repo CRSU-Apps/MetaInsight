@@ -23,7 +23,7 @@ freq_inconsistent_module_server <- function(id, common, parent_session) {
     })
 
     table_all <- reactive({
-      watch("effects")
+      watch("freq_all")
       req(watch("freq_inconsistent") > 0)
       common$meta$freq_inconsistent$used <- TRUE
       freq_inconsistent(common$configured_data)
