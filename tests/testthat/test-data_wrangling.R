@@ -393,6 +393,50 @@ test_that("ReinstateTreatmentIds() reinstates treatment IDs for wide data", {
   expect_equal(!!new_data, !!expected)
 })
 
+test_that("ReinstateTreatmentIds() reinstates treatment IDs for long data", {
+  data <- data.frame(
+    Study = c("A", "A", "B", "B", "C", "C", "C", "D", "D"),
+    T = c(1, 2, 3, 4, 5, 6, 1, 6, 2)
+  )
+  treatment_ids = data.frame(
+    Label = c("Paracetamol_", "Exercise_", "Sleep_zzz", "Alcohol_S", "Bacon_", "Denial_"),
+    RawLabel = c("Paracetamol...", "Exercise :(", "Sleep zzz", "Alcohol :S", "Bacon!", "Denial?"),
+    Number = 1:6
+  )
+  
+  new_data <- ReinstateTreatmentIds(data = data, treatment_ids = treatment_ids, raw_label = TRUE)
+  expected <- data.frame(
+    Study = c("A", "A", "B", "B", "C", "C", "C", "D", "D"),
+    T = c("Paracetamol...", "Exercise :(", "Sleep zzz", "Alcohol :S", "Bacon!", "Denial?", "Paracetamol...", "Denial?", "Exercise :(")
+  )
+  
+  expect_equal(!!new_data, !!expected)
+})
+
+test_that("ReinstateTreatmentIds() reinstates raw treatment IDs for wide data", {
+  data <- data.frame(
+    Study = c("A", "B", "C", "D"),
+    T.1 = c(1, 3, 5, 6),
+    T.2 = c(2, 4, 6, 2),
+    T.3 = c(NA, NA, 1, NA)
+  )
+  treatment_ids = data.frame(
+    Label = c("Paracetamol_", "Exercise_", "Sleep_zzz", "Alcohol_S", "Bacon_", "Denial_"),
+    RawLabel = c("Paracetamol...", "Exercise :(", "Sleep zzz", "Alcohol :S", "Bacon!", "Denial?"),
+    Number = 1:6
+  )
+  
+  new_data <- ReinstateTreatmentIds(data = data, treatment_ids = treatment_ids, raw_label = TRUE)
+  expected <- data.frame(
+    Study = c("A", "B", "C", "D"),
+    T.1 = c("Paracetamol...", "Sleep zzz", "Bacon!", "Denial?"),
+    T.2 = c("Exercise :(", "Alcohol :S", "Denial?", "Exercise :("),
+    T.3 = c(NA, NA, "Paracetamol...", NA)
+  )
+  
+  expect_equal(!!new_data, !!expected)
+})
+
 test_that("AddStudyIds() adds study IDs for continuous long data", {
   data <- CleanData(read.csv("data/Cont_long.csv"))
   
@@ -462,14 +506,14 @@ test_that("AddStudyIds() adds study IDs for binary wide data", {
 })
 
 test_that(".ContinuousOrder() creates the correct ordering", {
-  expected_order <- c("StudyID", "Study", "T", "N", "Mean", "SD", "T.1", "N.1", "Mean.1", "SD.1",
-                      "T.2", "N.2", "Mean.2", "SD.2", "T.3", "N.3", "Mean.3", "SD.3")
+  expected_order <- c("StudyID", "Study", "RawStudy", "T", "N", "Mean", "SD", "T.1", "N.1", "Mean.1", "SD.1",
+                      "T.2", "N.2", "Mean.2", "SD.2", "T.3", "N.3", "Mean.3", "SD.3", "RoB", "Indirectness")
   expect_equal(expected_order, .ContinuousOrder(3))
 })
 
 test_that(".BinaryOrder() creates the correct ordering", {
-  expected_order <- c("StudyID", "Study", "T", "R", "N", "T.1", "R.1", "N.1",
-                      "T.2", "R.2", "N.2", "T.3", "R.3", "N.3")
+  expected_order <- c("StudyID", "Study", "RawStudy", "T", "R", "N", "T.1", "R.1", "N.1",
+                      "T.2", "R.2", "N.2", "T.3", "R.3", "N.3", "RoB", "Indirectness")
   expect_equal(expected_order, .BinaryOrder(3))
 })
 
@@ -745,7 +789,7 @@ test_that("WrangleUploadData() wrangles continuous long data to be usable in the
   
   wrangled_data <- WrangleUploadData(data, treatment_ids, "Continuous")
   
-  expect_equal(colnames(wrangled_data), c("StudyID", "Study", "T", "N", "Mean", "SD"),
+  expect_equal(colnames(wrangled_data), c("StudyID", "Study", "RawStudy", "T", "N", "Mean", "SD"),
                label = format_vector_to_string(colnames(wrangled_data)))
   
   expect_equal(wrangled_data$StudyID, c(1, 1, 1, 2, 2, 2, 3, 3),
@@ -822,7 +866,7 @@ test_that("WrangleUploadData() wrangles binary long data to be usable in the res
   
   wrangled_data <- WrangleUploadData(data, treatment_ids, "Binary")
   
-  expect_equal(colnames(wrangled_data), c("StudyID", "Study", "T", "R", "N"),
+  expect_equal(colnames(wrangled_data), c("StudyID", "Study", "RawStudy", "T", "R", "N"),
                label = format_vector_to_string(colnames(wrangled_data)))
   
   expect_equal(wrangled_data$StudyID, c(1, 1, 1, 2, 2, 2, 3, 3),

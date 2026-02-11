@@ -5,3 +5,6 @@
 *.Rproj
 codes.txt
 www.zip
+inst/
+tests/testthat/temprds
+.Renviron

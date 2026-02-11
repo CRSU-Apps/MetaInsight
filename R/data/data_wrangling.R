@@ -9,8 +9,11 @@
   'no_contact'
 )
 
-# Column ordering
-.common_order = c("StudyID", "Study")
+# Column ordering at start of data frame
+.common_order_head = c("StudyID", "Study", "RawStudy")
+
+# Column ordering at end of data frame
+.common_order_tail = c("RoB", "Indirectness")
 
 #' The column order for a continuous outcome, for wide and long data.
 #' 
@@ -23,7 +26,7 @@
       function(x) paste0(c("T", "N", "Mean", "SD"), x)
     )
   )
-  return(c(.common_order, continuous_specific_order))
+  return(c(.common_order_head, continuous_specific_order, .common_order_tail))
 }
 
 #' The column order for a binary outcome, for wide and long data.
@@ -37,7 +40,7 @@
       function(x) paste0(c("T", "R", "N"), x)
     )
   )
-  return(c(.common_order, binary_specific_order))
+  return(c(.common_order_head, binary_specific_order, .common_order_tail))
 }
 
 .covariate_prefix <- "covar."
@@ -49,7 +52,6 @@
 #' @param data Data frame to clean
 #' @return Cleaned data frame
 CleanData <- function(data) {
-  # return(dplyr::mutate(data, across(where(is.character), stringr::str_squish)))
   return(dplyr::mutate(data, across(where(is.character), .TidyStringItem)))
 }
 
@@ -77,7 +79,7 @@ WideToLong <- function(wide_data, outcome_type) {
     change_cols <- wide_data %>%
       dplyr::select(tidyselect::starts_with(c("T", "R", "N")))
   } else {
-    paste0("outcome_type needs to be 'Binary' or 'Continuous'")
+    paste0(glue::glue("Outcome type '{outcome_type}' is not valid. Please use 'Binary' or 'Continuous'"))
   }
   # Transform to long
   long_data <- wide_data %>%
@@ -104,7 +106,7 @@ LongToWide <- function(long_data, outcome_type) {
     change_cols <- long_data %>%
       dplyr::select(c("T", "R", "N"))
   } else {
-    paste0("outcome_type needs to be 'Binary' or 'Continuous'")
+    paste0(glue::glue("Outcome type '{outcome_type}' is not valid. Please use 'Binary' or 'Continuous'"))
   }
   # Add arms
   long_data <- long_data %>% dplyr::group_by(Study) %>% dplyr::mutate(arm = dplyr::row_number())
@@ -334,16 +336,21 @@ ReplaceTreatmentIds <- function(data, treatment_ids) {
 #' @param data Data frame in which to search for treatment IDs.
 #' @param treatment_ids Data frame containing treatment names (Label) and IDs (Number).
 #' @return Data frame where the treatments are given as names, not IDs.
-ReinstateTreatmentIds <- function(data, treatment_ids) {
+ReinstateTreatmentIds <- function(data, treatment_ids, raw_label=FALSE) {
+  if (raw_label) {
+    treatment_id_vector <- treatment_ids$RawLabel
+  } else {
+    treatment_id_vector <- treatment_ids$Label
+  }
   if ("T" %in% colnames(data)) {
     # Long format
-    data$T <- treatment_ids$Label[match(data$T, treatment_ids$Number)]
+    data$T <- treatment_id_vector[match(data$T, treatment_ids$Number)]
   } else {
     # Wide format
     index <- 1
     col <- paste0("T.", index)
     while (col %in% colnames(data)) {
-      data[[col]] <- treatment_ids$Label[match(data[[col]], treatment_ids$Number)]
+      data[[col]] <- treatment_id_vector[match(data[[col]], treatment_ids$Number)]
       index <- index + 1
       col <- paste0("T.", index)
     }

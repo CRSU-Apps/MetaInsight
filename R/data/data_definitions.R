@@ -76,17 +76,41 @@
   number_group = "\\2"
 )
 
+.rob_definition <- data.frame(
+  name = "RoB",
+  required = FALSE,
+  type_check = "is.numeric",
+  type_name = "numeric",
+  pattern = "^(?i)RoB$",
+  replacement ="RoB",
+  number_group = NA
+)
+
+.indirectness_definition <- data.frame(
+  name = "Indirectness",
+  required = FALSE,
+  type_check = "is.numeric",
+  type_name = "numeric",
+  pattern = "^(?i)Indirectness$",
+  replacement ="Indirectness",
+  number_group = NA
+)
+
 continuous_column_names <- data.frame() %>%
   rbind(.study_definition) %>%
   rbind(.t_definition) %>%
   rbind(.n_definition) %>%
   rbind(.mean_definition) %>%
   rbind(.sd_definition) %>%
-  rbind(.covariate_definition)
+  rbind(.covariate_definition) %>%
+  rbind(.rob_definition) %>%
+  rbind(.indirectness_definition)
 
 binary_column_names <- data.frame() %>%
   rbind(.study_definition) %>%
   rbind(.t_definition) %>%
   rbind(.r_definition) %>%
   rbind(.n_definition) %>%
-  rbind(.covariate_definition)
+  rbind(.covariate_definition) %>%
+  rbind(.rob_definition) %>%
+  rbind(.indirectness_definition)
