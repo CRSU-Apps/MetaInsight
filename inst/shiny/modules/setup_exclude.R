@@ -25,7 +25,7 @@ setup_exclude_module_server <- function(id, common, parent_session) {
         wrangled <- unique(common$configured_data$wrangled_data$Study)
         connected <- unique(common$configured_data$connected_data$Study)
         shinyWidgets::pickerInput(session$ns("exclusions"), label = "Studies to exclude:", multiple = TRUE,
-                                  selected = input$exclusions,
+                                  selected = isolate(input$exclusions),
                                   choices = wrangled,
                                   choicesOpt = list(disabled = !c(wrangled %in% connected)),
                                   options = shinyWidgets::pickerOptions(liveSearch = TRUE))
@@ -67,6 +67,24 @@ setup_exclude_module_server <- function(id, common, parent_session) {
     observeEvent(exclusion_triggers(), {
       req(common$configured_data)
 
+      # log removals / additions of studies
+      new_exclusions <- input$exclusions[!(input$exclusions %in% common$excluded_studies)]
+      if (length(new_exclusions) > 0){
+        single_plural <- ifelse(length(new_exclusions) == 1, "has", "have")
+        new_exclusions <- paste(new_exclusions, collapse = ", ")
+        common$logger |> writeLog(type = "complete", glue("{new_exclusions} {single_plural} been excluded from the sensitivity analysis"))
+      }
+
+      new_additions <- common$excluded_studies[!(common$excluded_studies %in% input$exclusions)]
+      if (length(new_additions) > 0){
+        single_plural <- ifelse(length(new_additions) == 1, "has", "have")
+        new_additions <- paste(new_additions, collapse = ", ")
+        common$logger |> writeLog(type = "complete", glue("{new_additions} {single_plural} been added to the sensitivity analysis"))
+      }
+
+      # storing this here so they are always in sync
+      common$excluded_studies <- input$exclusions
+
       # cancel if already updating
       if (common$tasks$setup_exclude_sub$status() == "running"){
         mirai::stop_mirai(excluding)
@@ -81,9 +99,6 @@ setup_exclude_module_server <- function(id, common, parent_session) {
       } else {
         common$logger |> writeLog(type = "starting", "Updating sensitivity analysis")
       }
-
-      # storing this here so they are always in sync
-      common$excluded_studies <- input$exclusions
 
       # METADATA ####
       common$meta$setup_exclude$used <- TRUE
