@@ -1,6 +1,6 @@
 
 test_that("ValidateUploadedData() identifies valid continuous long data", {
-  data <- CleanData(read.csv("data/Cont_long.csv"))
+  data <- CleanData(read.csv(file.path(test_data_dir, "Cont_long.csv")))
 
   validation_result <- ValidateUploadedData(data, "continuous")
 
@@ -9,7 +9,7 @@ test_that("ValidateUploadedData() identifies valid continuous long data", {
 })
 
 test_that("ValidateUploadedData() identifies valid continuous wide data", {
-  data <- CleanData(read.csv("data/Cont_wide.csv"))
+  data <- CleanData(read.csv(file.path(test_data_dir, "Cont_wide.csv")))
 
   validation_result <- ValidateUploadedData(data, "continuous")
 
@@ -18,7 +18,7 @@ test_that("ValidateUploadedData() identifies valid continuous wide data", {
 })
 
 test_that("ValidateUploadedData() identifies valid binary long data", {
-  data <- CleanData(read.csv("data/Binary_long.csv"))
+  data <- CleanData(read.csv(file.path(test_data_dir, "Binary_long.csv")))
 
   validation_result <- ValidateUploadedData(data, "binary")
 
@@ -27,7 +27,7 @@ test_that("ValidateUploadedData() identifies valid binary long data", {
 })
 
 test_that("ValidateUploadedData() identifies valid binary wide data", {
-  data <- CleanData(read.csv("data/Binary_wide.csv"))
+  data <- CleanData(read.csv(file.path(test_data_dir, "Binary_wide.csv")))
 
   validation_result <- ValidateUploadedData(data, "binary")
 
@@ -50,7 +50,7 @@ test_that("ValidateUploadedData() identifies invalid binary empty file", {
 })
 
 test_that("ValidateUploadedData() identifies invalid continuous long empty file", {
-  data <- CleanData(read.csv("data/invalid_data/continuous-empty-long.csv"))
+  data <- CleanData(read.csv(file.path(test_data_dir, "invalid_data", "continuous-empty-long.csv")))
 
   validation_result <- ValidateUploadedData(data, "continuous")
 
@@ -59,7 +59,7 @@ test_that("ValidateUploadedData() identifies invalid continuous long empty file"
 })
 
 test_that("ValidateUploadedData() identifies invalid continuous wide empty file", {
-  data <- CleanData(read.csv("data/invalid_data/continuous-empty-wide.csv"))
+  data <- CleanData(read.csv(file.path(test_data_dir, "invalid_data", "continuous-empty-wide.csv")))
 
   validation_result <- ValidateUploadedData(data, "continuous")
 
@@ -68,7 +68,7 @@ test_that("ValidateUploadedData() identifies invalid continuous wide empty file"
 })
 
 test_that("ValidateUploadedData() identifies invalid binary long empty file", {
-  data <- CleanData(read.csv("data/invalid_data/binary-empty-long.csv"))
+  data <- CleanData(read.csv(file.path(test_data_dir, "invalid_data", "binary-empty-long.csv")))
 
   validation_result <- ValidateUploadedData(data, "binary")
 
@@ -77,7 +77,7 @@ test_that("ValidateUploadedData() identifies invalid binary long empty file", {
 })
 
 test_that("ValidateUploadedData() identifies invalid binary wide empty file", {
-  data <- CleanData(read.csv("data/invalid_data/binary-empty-wide.csv"))
+  data <- CleanData(read.csv(file.path(test_data_dir, "invalid_data", "binary-empty-wide.csv")))
 
   validation_result <- ValidateUploadedData(data, "binary")
 
@@ -86,7 +86,7 @@ test_that("ValidateUploadedData() identifies invalid binary wide empty file", {
 })
 
 test_that("ValidateUploadedData() identifies invalid continuous long data, missing colunm 'N'", {
-  data <- CleanData(read.csv("data/invalid_data/continuous-missing-long.csv"))
+  data <- CleanData(read.csv(file.path(test_data_dir, "invalid_data", "continuous-missing-long.csv")))
 
   validation_result <- ValidateUploadedData(data, "continuous")
 
@@ -95,7 +95,7 @@ test_that("ValidateUploadedData() identifies invalid continuous long data, missi
 })
 
 test_that("ValidateUploadedData() identifies invalid continuous long data, with mistyped 'Study' and 'Mean' columns", {
-  data <- CleanData(read.csv("data/invalid_data/continuous-mistyped-columns-long.csv"))
+  data <- CleanData(read.csv(file.path(test_data_dir, "invalid_data", "continuous-mistyped-columns-long.csv")))
 
   validation_result <- ValidateUploadedData(data, "continuous")
 
@@ -107,7 +107,7 @@ test_that("ValidateUploadedData() identifies invalid continuous long data, with 
 })
 
 test_that("ValidateUploadedData() identifies invalid continuous wide data, with mistyped 'Study' and 'Mean.1' columns", {
-  data <- CleanData(read.csv("data/invalid_data/continuous-mistyped-columns-wide.csv"))
+  data <- CleanData(read.csv(file.path(test_data_dir, "invalid_data", "continuous-mistyped-columns-wide.csv")))
 
   validation_result <- ValidateUploadedData(data, "continuous")
 
@@ -119,7 +119,7 @@ test_that("ValidateUploadedData() identifies invalid continuous wide data, with 
 })
 
 test_that("ValidateUploadedData() identifies invalid continuous wide data, missing all colunms 'N.*'", {
-  data <- CleanData(read.csv("data/invalid_data/continuous-missing-entirely-wide.csv"))
+  data <- CleanData(read.csv(file.path(test_data_dir, "invalid_data", "continuous-missing-entirely-wide.csv")))
 
   validation_result <- ValidateUploadedData(data, "continuous")
 
@@ -128,7 +128,7 @@ test_that("ValidateUploadedData() identifies invalid continuous wide data, missi
 })
 
 test_that("ValidateUploadedData() identifies invalid continuous wide data, missing some colunms 'N.*'", {
-  data <- CleanData(read.csv("data/invalid_data/continuous-missing-partially-wide.csv"))
+  data <- CleanData(read.csv(file.path(test_data_dir, "invalid_data", "continuous-missing-partially-wide.csv")))
 
   validation_result <- ValidateUploadedData(data, "continuous")
 
@@ -137,7 +137,7 @@ test_that("ValidateUploadedData() identifies invalid continuous wide data, missi
 })
 
 test_that("ValidateUploadedData() identifies invalid continuous wide data, with inconsistently numbered colunms 'N.*'", {
-  data <- CleanData(read.csv("data/invalid_data/continuous-misnumbered-wide.csv"))
+  data <- CleanData(read.csv(file.path(test_data_dir, "invalid_data", "continuous-misnumbered-wide.csv")))
 
   validation_result <- ValidateUploadedData(data, "continuous")
 
@@ -146,7 +146,7 @@ test_that("ValidateUploadedData() identifies invalid continuous wide data, with 
 })
 
 test_that("ValidateUploadedData() identifies invalid binary long data, missing colunm 'N'", {
-  data <- CleanData(read.csv("data/invalid_data/binary-missing-long.csv"))
+  data <- CleanData(read.csv(file.path(test_data_dir, "invalid_data", "binary-missing-long.csv")))
 
   validation_result <- ValidateUploadedData(data, "binary")
 
@@ -155,7 +155,7 @@ test_that("ValidateUploadedData() identifies invalid binary long data, missing c
 })
 
 test_that("ValidateUploadedData() identifies invalid binary long data, with mistyped 'Study' and 'R' columns", {
-  data <- CleanData(read.csv("data/invalid_data/binary-mistyped-columns-long.csv"))
+  data <- CleanData(read.csv(file.path(test_data_dir, "invalid_data", "binary-mistyped-columns-long.csv")))
 
   validation_result <- ValidateUploadedData(data, "binary")
 
@@ -167,7 +167,7 @@ test_that("ValidateUploadedData() identifies invalid binary long data, with mist
 })
 
 test_that("ValidateUploadedData() identifies invalid binary wide data, with mistyped 'Study' and 'R.3' columns", {
-  data <- CleanData(read.csv("data/invalid_data/binary-mistyped-columns-wide.csv"))
+  data <- CleanData(read.csv(file.path(test_data_dir, "invalid_data", "binary-mistyped-columns-wide.csv")))
 
   validation_result <- ValidateUploadedData(data, "binary")
 
@@ -179,7 +179,7 @@ test_that("ValidateUploadedData() identifies invalid binary wide data, with mist
 })
 
 test_that("ValidateUploadedData() identifies invalid binary wide data, missing all colunms 'N.*'", {
-  data <- CleanData(read.csv("data/invalid_data/binary-missing-entirely-wide.csv"))
+  data <- CleanData(read.csv(file.path(test_data_dir, "invalid_data", "binary-missing-entirely-wide.csv")))
 
   validation_result <- ValidateUploadedData(data, "binary")
 
@@ -188,7 +188,7 @@ test_that("ValidateUploadedData() identifies invalid binary wide data, missing a
 })
 
 test_that("ValidateUploadedData() identifies invalid binary wide data, missing some colunms 'N.*'", {
-  data <- CleanData(read.csv("data/invalid_data/binary-missing-partially-wide.csv"))
+  data <- CleanData(read.csv(file.path(test_data_dir, "invalid_data", "binary-missing-partially-wide.csv")))
 
   validation_result <- ValidateUploadedData(data, "binary")
 
@@ -197,7 +197,7 @@ test_that("ValidateUploadedData() identifies invalid binary wide data, missing s
 })
 
 test_that("ValidateUploadedData() identifies invalid binary wide data, with inconsistently numbered colunms 'N.*'", {
-  data <- CleanData(read.csv("data/invalid_data/binary-misnumbered-wide.csv"))
+  data <- CleanData(read.csv(file.path(test_data_dir, "invalid_data", "binary-misnumbered-wide.csv")))
 
   validation_result <- ValidateUploadedData(data, "binary")
 
@@ -206,7 +206,7 @@ test_that("ValidateUploadedData() identifies invalid binary wide data, with inco
 })
 
 test_that("ValidateUploadedData() identifies invalid binary wide data, with single-arm studies", {
-  data <- CleanData(read.csv("data/invalid_data/continuous-single-arm-wide.csv"))
+  data <- CleanData(read.csv(file.path(test_data_dir, "invalid_data", "continuous-single-arm-wide.csv")))
 
   validation_result <- ValidateUploadedData(data, "continuous")
 
@@ -215,7 +215,7 @@ test_that("ValidateUploadedData() identifies invalid binary wide data, with sing
 })
 
 test_that("ValidateUploadedData() identifies invalid binary long data, with single-arm studies", {
-  data <- CleanData(read.csv("data/invalid_data/continuous-single-arm-long.csv"))
+  data <- CleanData(read.csv(file.path(test_data_dir, "invalid_data", "continuous-single-arm-long.csv")))
 
   validation_result <- ValidateUploadedData(data, "continuous")
 
@@ -224,7 +224,7 @@ test_that("ValidateUploadedData() identifies invalid binary long data, with sing
 })
 
 test_that("ValidateUploadedData() identifies invalid binary wide data, with single-arm studies", {
-  data <- CleanData(read.csv("data/invalid_data/binary-single-arm-wide.csv"))
+  data <- CleanData(read.csv(file.path(test_data_dir, "invalid_data", "binary-single-arm-wide.csv")))
 
   validation_result <- ValidateUploadedData(data, "binary")
 
@@ -233,7 +233,7 @@ test_that("ValidateUploadedData() identifies invalid binary wide data, with sing
 })
 
 test_that("ValidateUploadedData() identifies invalid binary long data, with single-arm studies", {
-  data <- CleanData(read.csv("data/invalid_data/binary-single-arm-long.csv"))
+  data <- CleanData(read.csv(file.path(test_data_dir, "invalid_data", "binary-single-arm-long.csv")))
 
   validation_result <- ValidateUploadedData(data, "binary")
 
@@ -242,7 +242,7 @@ test_that("ValidateUploadedData() identifies invalid binary long data, with sing
 })
 
 test_that("ValidateUploadedData() allows correct quality assessment columns", {
-  data <- read.csv("data/Cont_long.csv")
+  data <- read.csv(file.path(test_data_dir, "Cont_long.csv"))
   data$rob <- c(1, 1, 1, 2, 2, 2, 3, 3)
   data$indirectness <- c(2, 2, 2, 3, 3, 3, 1, 1)
   data$rob.test <- c(3, 3, 3, 1, 1, 1, 2, 2)
@@ -254,7 +254,7 @@ test_that("ValidateUploadedData() allows correct quality assessment columns", {
 })
 
 test_that("ValidateUploadedData() identifies unallowed quality assessment values", {
-  data <- read.csv("data/Cont_long.csv")
+  data <- read.csv(file.path(test_data_dir, "Cont_long.csv"))
   data2 <- data
   data3 <- data
 
@@ -281,7 +281,7 @@ test_that("ValidateUploadedData() identifies unallowed quality assessment values
 })
 
 test_that("ValidateUploadedData() identifies studies with partially empty quality assessment values", {
-  data <- read.csv("data/Cont_long.csv")
+  data <- read.csv(file.path(test_data_dir, "Cont_long.csv"))
   data2 <- data
   data3 <- data
 
@@ -308,7 +308,7 @@ test_that("ValidateUploadedData() identifies studies with partially empty qualit
 })
 
 test_that("ValidateUploadedData() identifies studies without unique quality values", {
-  data <- read.csv("data/Cont_long.csv")
+  data <- read.csv(file.path(test_data_dir, "Cont_long.csv"))
   data2 <- data
   data3 <- data
 
@@ -335,7 +335,7 @@ test_that("ValidateUploadedData() identifies studies without unique quality valu
 })
 
 test_that("ValidateUploadedData() identifies when more than 10 individual rob components are present", {
-  data <- read.csv("data/Cont_long.csv")
+  data <- read.csv(file.path(test_data_dir, "Cont_long.csv"))
 
   data$rob.test1  <- 1
   data$rob.test2  <- 1

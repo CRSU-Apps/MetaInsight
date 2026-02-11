@@ -1,5 +1,5 @@
 data_path <- system.file("extdata", "continuous_long.csv", package = "metainsight")
-invalid_data_path <- "data/invalid_data/binary-missing-long.csv"
+invalid_data_path <- file.path(test_data_dir, "invalid_data", "binary-missing-long.csv")
 
 # TODO add tests of upload, reset, rerun
 
@@ -34,26 +34,26 @@ test_that("Check setup_load handles invalid data correctly", {
 
 # from here, tests have been refactored from test-data_input_panel.R
 test_that("continuous wide data matches between .csv and .xlsx files", {
-  result_csv <- setup_load(data_path = "data/Non_opioids_wide.csv", outcome = "continuous")
-  result_xlsx <- setup_load(data_path = "data/Non_opioids_wide.xlsx", outcome = "continuous")
+  result_csv <- setup_load(data_path = file.path("data", "Non_opioids_wide.csv"), outcome = "continuous")
+  result_xlsx <- setup_load(data_path = file.path("data", "Non_opioids_wide.xlsx"), outcome = "continuous")
   expect_equal(result_csv, result_xlsx)
 })
 
 test_that("continuous long data matches between .csv and .xlsx files", {
-  result_csv <- setup_load(data_path = "data/Non_opioids_long.csv", outcome = "continuous")
-  result_xlsx <- setup_load(data_path = "data/Non_opioids_long.xlsx", outcome = "continuous")
+  result_csv <- setup_load(data_path = file.path("data", "Non_opioids_long.csv"), outcome = "continuous")
+  result_xlsx <- setup_load(data_path = file.path("data", "Non_opioids_long.xlsx"), outcome = "continuous")
   expect_equal(result_csv, result_xlsx)
 })
 
 test_that("continuous long data matches between .csv and .xlsx files", {
-  result_csv <- setup_load(data_path = "data/Certolizumab_long.csv", outcome = "binary")
-  result_xlsx <- setup_load(data_path = "data/Certolizumab_long.xlsx", outcome = "binary")
+  result_csv <- setup_load(data_path = file.path("data", "Certolizumab_long.csv"), outcome = "binary")
+  result_xlsx <- setup_load(data_path = file.path("data", "Certolizumab_long.xlsx"), outcome = "binary")
   expect_equal(result_csv, result_xlsx)
 })
 
 test_that("continuous long data matches between .csv and .xlsx files", {
-  result_csv <- setup_load(data_path = "data/Certolizumab_wide.csv", outcome = "binary")
-  result_xlsx <- setup_load(data_path = "data/Certolizumab_wide.xlsx", outcome = "binary")
+  result_csv <- setup_load(data_path = file.path("data", "Certolizumab_wide.csv"), outcome = "binary")
+  result_xlsx <- setup_load(data_path = file.path("data", "Certolizumab_wide.xlsx"), outcome = "binary")
   expect_equal(result_csv, result_xlsx)
 })
 

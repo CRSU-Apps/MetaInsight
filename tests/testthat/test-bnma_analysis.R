@@ -84,7 +84,7 @@ test_that("FormatForBnma() gives correct data for wide continuous", {
 
 test_that("FormatForBnma() gives correct data for long continuous", {
 
-  data <- read.csv("data/Cont_long_continuous_cov.csv")
+  data <- read.csv(file.path(test_data_dir, "Cont_long_continuous_cov.csv"))
   treatment_ids <- CreateTreatmentIds(FindAllTreatments(data))
   data <- WrangleUploadData(data, treatment_ids, "continuous")
   wrangled_treatment_list <- CleanTreatmentIds(treatment_ids)

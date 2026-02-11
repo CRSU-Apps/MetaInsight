@@ -121,7 +121,7 @@ test_that("setup_configure logs errors when disconnected data is uploaded", {
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"))
   app$set_inputs(tabs = "setup")
   app$set_inputs(setupSel = "setup_load")
-  app$upload_file("setup_load-file1" = "data/continuous_long_disconnected.csv")
+  app$upload_file("setup_load-file1" = file.path(test_data_dir, "continuous_long_disconnected.csv"))
   app$click("setup_load-run")
   app$set_inputs(setupSel = "setup_configure")
   app$click("setup_configure-run")

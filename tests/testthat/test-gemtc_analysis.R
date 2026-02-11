@@ -1,7 +1,7 @@
 test_that("PrepDataGemtc() gives correct data for wide binary", {
 
   # process data as would be in app
-  data <- read.csv("data/Binary_wide_continuous_cov.csv")
+  data <- read.csv(file.path(test_data_dir, "Binary_wide_continuous_cov.csv"))
   treatment_ids <- CreateTreatmentIds(FindAllTreatments(data))
   data <- WrangleUploadData(data, treatment_ids, "binary")
   wrangled_treatment_list <- CleanTreatmentIds(treatment_ids)
@@ -23,7 +23,7 @@ test_that("PrepDataGemtc() gives correct data for wide binary", {
 
 test_that("PrepDataGemtc() gives correct data for long binary", {
 
-  data <- read.csv("data/Binary_long_continuous_cov.csv")
+  data <- read.csv(file.path(test_data_dir, "Binary_long_continuous_cov.csv"))
   treatment_ids <- CreateTreatmentIds(FindAllTreatments(data))
   data <- WrangleUploadData(data, treatment_ids, "binary")
   wrangled_treatment_list <- CleanTreatmentIds(treatment_ids)
@@ -45,7 +45,7 @@ test_that("PrepDataGemtc() gives correct data for long binary", {
 
 test_that("PrepDataGemtc() gives correct data for wide continuous", {
 
-  data <- read.csv("data/Cont_wide_continuous_cov.csv")
+  data <- read.csv(file.path(test_data_dir, "Cont_wide_continuous_cov.csv"))
   treatment_ids <- CreateTreatmentIds(FindAllTreatments(data))
   data <- WrangleUploadData(data, treatment_ids, "continuous")
   wrangled_treatment_list <- CleanTreatmentIds(treatment_ids)
@@ -68,7 +68,7 @@ test_that("PrepDataGemtc() gives correct data for wide continuous", {
 
 test_that("PrepDataGemtc() gives correct data for long continuous", {
 
-  data <- read.csv("data/Cont_long_continuous_cov.csv")
+  data <- read.csv(file.path(test_data_dir, "Cont_long_continuous_cov.csv"))
   treatment_ids <- CreateTreatmentIds(FindAllTreatments(data))
   data <- WrangleUploadData(data, treatment_ids, "continuous")
   wrangled_treatment_list <- CleanTreatmentIds(treatment_ids)
