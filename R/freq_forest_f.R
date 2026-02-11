@@ -1,18 +1,25 @@
 #' Produce a frequentist forest plot and annotation using `meta::forest()`
 #'
-#' @param xmin numeric. Minimum x-axis limit.
-#' @param xmax numeric. Maximum x-axis limit.
 #' @param title character. Title for the plot.
 #' @inheritParams common_params
 #' @inherit return-svg return
 #' @export
-freq_forest <- function(configured_data, xmin, xmax, title, logger = NULL) {
+freq_forest <- function(configured_data, xmin = NULL, xmax = NULL, title = "", logger = NULL) {
 
-  check_param_classes(c("configured_data", "xmin", "xmax", "title"),
-                      c("configured_data", "numeric", "numeric", "character"), logger)
+  check_param_classes(c("configured_data", "title"),
+                      c("configured_data", "character"), logger)
+
+  # set default x-axis limits if not supplied and check if they are provided
+  if (any(is.null(xmin), is.null(xmax))){
+    xlim <- freq_forest_limits(configured_data$freq, configured_data$outcome)
+    xmin <- ifelse(is.null(xmin), xlim[1], xmin)
+    xmax <- ifelse(is.null(xmax), xlim[2], xmax)
+  } else {
+    check_param_classes(c("xmin", "xmax"), c("numeric", "numeric"), logger)
+  }
 
   n_treatments <- length(configured_data$freq$lstx)
-  annotation <- forest_annotation(configured_data$freq, configured_data$effects, configured_data$outcome_measure)
+  annotation <- freq_forest_annotation(configured_data$freq, configured_data$effects, configured_data$outcome_measure)
   height <- forest_height(n_treatments, title = TRUE, annotation = TRUE)
   width <- forest_width(max(nchar(configured_data$freq$lstx)))
 
@@ -30,6 +37,11 @@ freq_forest <- function(configured_data, xmin, xmax, title, logger = NULL) {
     Arimo = "https://fonts.googleapis.com/css2?family=Arimo:wght@400;700&display=swap")
   ) |> crop_svg()
 
+  # consistent naming
+  if (configured_data$effects == "fixed"){
+    svg <- gsub("Common Effects", "Fixed Effect", svg)
+  }
+
   return(svg)
 }
 
@@ -43,7 +55,7 @@ freq_forest <- function(configured_data, xmin, xmax, title, logger = NULL) {
 #'  \item{xmin}{numeric. Minimum confidence interval}
 #'  \item{xmax}{numeric. Maximum confidence interval}
 #' @export
-extract_ci <- function(freq, outcome){
+freq_forest_limits <- function(freq, outcome){
 
   # store the result of print(freq$net1) produced by netmeta
   net1_summary <- utils::capture.output(freq$net1)
@@ -58,16 +70,15 @@ extract_ci <- function(freq, outcome){
   ci_values <- as.numeric(unlist(strsplit(gsub("\\[|\\]", "", square_brackets), ";")))
 
   # add a 20% buffer to the CIs and round to 0.1
-  xmin <- round(min(ci_values) - (min(ci_values) * 0.2), 1)
-  xmax <- round(max(ci_values) + (max(ci_values) * 0.2), 1)
+  xmin <- format_xlim(min(ci_values), "min", FALSE)
+  xmax <- format_xlim(max(ci_values), "max", FALSE)
 
   # prevent errors
   if (outcome == "binary" && xmin == 0){
       xmin <- 0.01
   }
 
-  return(list(xmin = xmin,
-              xmax = xmax))
+  return(c(xmin, xmax))
 }
 
 #' Creates the text to be displayed underneath the forest plots, with between-study SD, number of studies and number of treatments.
@@ -76,7 +87,7 @@ extract_ci <- function(freq, outcome){
 #' @param effects "fixed" or "random".
 #' @param outcome_measure "MD", "SMD", "OR", "RR", or "RD".
 #' @return Text as described above.
-forest_annotation <- function(freq, effects, outcome_measure) {
+freq_forest_annotation <- function(freq, effects, outcome_measure) {
 
   tau <- round(freq$net1$tau, 2)
   k <- freq$net1$k
