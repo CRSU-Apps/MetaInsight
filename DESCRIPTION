@@ -66,7 +66,6 @@ Imports:
     shinyWidgets (>= 0.6.0),
     svglite,
     tidyr,
-    tidyselect,
     tools,
     xml2
 Suggests:

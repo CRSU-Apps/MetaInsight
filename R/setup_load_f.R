@@ -630,10 +630,10 @@ WideToLong <- function(wide_data, outcome) {
   # Specify columns that contain wide data
   if (outcome == "continuous") {
     change_cols <- wide_data |>
-      dplyr::select(tidyselect::starts_with(c("T", "N", "Mean", "SD")))
+      dplyr::select(dplyr::starts_with(c("T", "N", "Mean", "SD")))
   } else if (outcome == "binary") {
     change_cols <- wide_data |>
-      dplyr::select(tidyselect::starts_with(c("T", "R", "N")))
+      dplyr::select(dplyr::starts_with(c("T", "R", "N")))
   } else {
     paste0("outcome needs to be 'binary' or 'continuous'")
   }
