@@ -112,8 +112,9 @@
 #' @param contributions Contributions from {netmeta}.
 #' @param model_type Type of model: "fixed" or "random".
 #' @param outcome_measure Outcome measure, one of: ["OR", "RR", "RD", "MD", "SMD"].
+#' @param gemtc_results Output from gemtc::mtc.run, as returned in the 'mtcResults' list element from baye(). If this parameter is NULL then the frequentist analysis results found in 'contributions' are used exclusively. If it is not NULL then the Bayesian analysis results contained in this parameter are used as well. Defaults to NULL.
 #' @return A List with the described structure.
-.PrepareAnalysisForCinema <- function(contributions, model_type, outcome_measure) {
+.PrepareAnalysisForCinema <- function(contributions, model_type, outcome_measure, gemtc_results = NULL) {
   hat_matrix = netmeta::hatmatrix(x = contributions$x, method = "Davies", type = "long")
   if (model_type == "fixed") {
     h <- hat_matrix$common
@@ -153,7 +154,7 @@
     colNamesNMAresults = nma_col_names,
     H = h,
     model = jsonlite::unbox(model_type),
-    NMAresults = .PrepareComparisonsForCinema(contributions, model_type, outcome_measure),
+    NMAresults = .PrepareComparisonsForCinema(contributions, model_type, outcome_measure, gemtc_results),
     rowNames = rownames(h),
     rowNamesNMAresults = rownames(h),
     sm = jsonlite::unbox(outcome_measure)
@@ -187,10 +188,11 @@
 #' @param contributions Contributions from {netmeta}.
 #' @param model_type Type of model: "fixed" or "random".
 #' @param outcome_measure Outcome measure, one of: ["OR", "RR", "RD", "MD", "SMD"].
+#' @param gemtc_results Output from gemtc::mtc.run, as returned in the 'mtcResults' list element from baye(). If this parameter is NULL then the frequentist analysis results found in 'contributions' are used exclusively. If it is not NULL then the Bayesian analysis results contained in this parameter are used as well. Defaults to NULL.
 #' @return A List with the described structure.
-.PrepareProjectForCinema <- function(data, treatment_ids, outcome_type, contributions, model_type, outcome_measure) {
+.PrepareProjectForCinema <- function(data, treatment_ids, outcome_type, contributions, model_type, outcome_measure, gemtc_results = NULL) {
   prepared_data <- .PrepareDataForCinema(data, treatment_ids, outcome_type)
-  prepared_analysis <- .PrepareAnalysisForCinema(contributions, model_type, outcome_measure)
+  prepared_analysis <- .PrepareAnalysisForCinema(contributions, model_type, outcome_measure, gemtc_results)
   
   prepared_project = list(
     project = list(
@@ -222,54 +224,31 @@
 #' @param contributions Contributions from {netmeta}.
 #' @param model_type Type of model: "fixed" or "random".
 #' @param outcome_measure Outcome measure, one of: ["OR", "RR", "RD", "MD", "SMD"].
+#' @param gemtc_results Output from gemtc::mtc.run, as returned in the 'mtcResults' list element from baye(). If this parameter is NULL then the frequentist analysis results found in 'contributions' are used exclusively. If it is not NULL then the Bayesian analysis results contained in this parameter are used as well. Defaults to NULL.
 #' @return JSON string with the described structure.
-GenerateCinemaJson <- function(data, treatment_ids, outcome_type, contributions, model_type, outcome_measure) {
+GenerateCinemaJson <- function(data, treatment_ids, outcome_type, contributions, model_type, outcome_measure, gemtc_results = NULL) {
   prepared_project <- .PrepareProjectForCinema(
     data,
     treatment_ids,
     outcome_type,
     contributions,
     model_type,
-    outcome_measure
+    outcome_measure,
+    gemtc_results
   )
   return(jsonlite::toJSON(prepared_project, pretty = TRUE, na = "null"))
 }
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-.PrepareComparisonsForCinema <- function(contributions, model_type, outcome_measure) {
+#' Creates a list, each element of which is a named list containing the results of a comparison. In the outer list there is one element per comparison. Each inner list contains results including treatment effects, standard errors, confidence intervals, predictions intervals, and p-values, for NMA effects, direct and indirect effects, and SIDE inconsistency factors. If there is no such data (e.g. if there is no indirect evidence) then the list element does not appear.
+#'
+#' @param contributions Contributions from {netmeta}.
+#' @param model_type Type of model: "fixed" or "random".
+#' @param outcome_measure Outcome measure, one of: ["OR", "RR", "RD", "MD", "SMD"].
+#' @param gemtc_results Output from gemtc::mtc.run, as returned in the 'mtcResults' list element from baye(). If this parameter is NULL then the frequentist analysis results found in 'contributions' are used exclusively. If it is not NULL then the Bayesian analysis results contained in this parameter are used as well. Defaults to NULL.
+#' @return List of results with the described structure.
+.PrepareComparisonsForCinema <- function(contributions, model_type, outcome_measure, gemtc_results = NULL) {
   if (model_type == "random") {
     comparisons <- names(contributions$x$prop.direct.random)
   } else if (model_type == "fixed") {
@@ -282,14 +261,22 @@ GenerateCinemaJson <- function(data, treatment_ids, outcome_type, contributions,
   prepared_analysis <- lapply(
     comparisons,
     function(comparison) {
-      return(.PrepareComparisonForCinema(contributions$x, model_type, comparison))
+      return(.PrepareComparisonForCinema(contributions$x, model_type, comparison, gemtc_results))
     }
   )
   
   return(prepared_analysis)
 }
 
-.PrepareComparisonForCinema <- function(contributions, model_type, comparison) {
+
+#' Creates a list containing the results of a comparison. The elements are analysis  results including treatment effects, standard errors, confidence intervals, predictions intervals, and p-values, for NMA effects, direct and indirect effects, and SIDE inconsistency factors. If there is no such data (e.g. if there is no indirect evidence) then the list element does not appear.
+#'
+#' @param freq_results Results from a frequentist model as contained in contribution output from {netmeta}.
+#' @param model_type Type of model: "fixed" or "random".
+#' @param comparison A comparison of the form <treatment1>:<treatment2>.
+#' @param gemtc_results Output from gemtc::mtc.run, as returned in the 'mtcResults' list element from baye(). If this parameter is NULL then the frequentist analysis results found in 'contributions' are used exclusively. If it is not NULL then the Bayesian analysis results contained in this parameter are used as well. Defaults to NULL.
+#' @return List of analysis results with the described structure.
+.PrepareComparisonForCinema <- function(freq_results, model_type, comparison, gemtc_results = NULL) {
   if (model_type != "random" && model_type != "fixed") {
     stop(glue::glue("Model type '{model_type}' is not supported. Please use 'random' or 'fixed'"))
   }
@@ -297,17 +284,41 @@ GenerateCinemaJson <- function(data, treatment_ids, outcome_type, contributions,
   row <- treatments[1]
   col <- treatments[2]
   
+  if (!is.null(gemtc_results)) {
+    gemtc_stats <- ExtractGemtcStats(gemtc_results = gemtc_results, treatments = treatments)
+    nma_treatment_effect <- gemtc_stats["median"]
+    se_treat_effect <- gemtc_stats["se"]
+    lower_ci <- gemtc_stats["ci_lower"]
+    upper_ci <- gemtc_stats["ci_upper"]
+    lower_pi <- gemtc_stats["pi_lower"]
+    upper_pi <- gemtc_stats["pi_upper"]
+  } else {
+    lower_pi <- freq_results$lower.predict[row, col]
+    upper_pi <- freq_results$upper.predict[row, col]
+    if (model_type == "random") {
+      nma_treatment_effect <- freq_results$TE.random[row, col]
+      se_treat_effect <- freq_results$seTE.random[row, col]
+      lower_ci <- freq_results$lower.random[row, col]
+      upper_ci <- freq_results$upper.random[row, col]
+    } else if (model_type == "fixed") {
+      nma_treatment_effect <- freq_results$TE.common[row, col]
+      se_treat_effect <- freq_results$seTE.common[row, col]
+      lower_ci <- freq_results$lower.common[row, col]
+      upper_ci <- freq_results$upper.common[row, col]
+    }
+  }
+  
   if (model_type == "random") {
-    direct <- contributions$TE.direct.random[row, col]
-    indirect <- contributions$TE.indirect.random[row, col]
+    direct <- freq_results$TE.direct.random[row, col]
+    indirect <- freq_results$TE.indirect.random[row, col]
     
-    direct_lower <- contributions$lower.direct.random[row, col]
-    direct_upper <- contributions$upper.direct.random[row, col]
-    indirect_lower <- contributions$lower.indirect.random[row, col]
-    indirect_upper <- contributions$upper.indirect.random[row, col]
+    direct_lower <- freq_results$lower.direct.random[row, col]
+    direct_upper <- freq_results$upper.direct.random[row, col]
+    indirect_lower <- freq_results$lower.indirect.random[row, col]
+    indirect_upper <- freq_results$upper.indirect.random[row, col]
     
     sideif <- .CalculateSideif(direct, indirect, direct_lower, direct_upper, indirect_lower, indirect_upper)
-    
+
     prepared_comparison <- list(
       "Direct" = jsonlite::unbox(direct),
       "DirectL" = jsonlite::unbox(direct_lower),
@@ -320,24 +331,24 @@ GenerateCinemaJson <- function(data, treatment_ids, outcome_type, contributions,
       "SideIFupper" = jsonlite::unbox(sideif$sideif_upper),
       "SideZ" = jsonlite::unbox(sideif$sideif_z),
       "SidePvalue" = jsonlite::unbox(sideif$sideif_pval),
-      "PropDir" = jsonlite::unbox(contributions$prop.direct.random[comparison]),
-      "NMA treatment effect" = jsonlite::unbox(contributions$TE.random[row, col]),
-      "se treat effect" = jsonlite::unbox(contributions$seTE.random[row, col]),
-      "lower CI" = jsonlite::unbox(contributions$lower.random[row, col]),
-      "upper CI" = jsonlite::unbox(contributions$upper.random[row, col]),
-      "lower PrI" = jsonlite::unbox(contributions$lower.predict[row, col]),
-      "upper PrI" = jsonlite::unbox(contributions$upper.predict[row, col]),
-      "PropDirNetmeta" = jsonlite::unbox(contributions$prop.direct.random[comparison]),
+      "PropDir" = jsonlite::unbox(freq_results$prop.direct.random[comparison]),
+      "NMA treatment effect" = jsonlite::unbox(nma_treatment_effect),
+      "se treat effect" = jsonlite::unbox(se_treat_effect),
+      "lower CI" = jsonlite::unbox(lower_ci),
+      "upper CI" = jsonlite::unbox(upper_ci),
+      "lower PrI" = jsonlite::unbox(lower_pi),
+      "upper PrI" = jsonlite::unbox(upper_pi),
+      "PropDirNetmeta" = jsonlite::unbox(freq_results$prop.direct.random[comparison]),
       "_row" = jsonlite::unbox(comparison)
     )
   } else if (model_type == "fixed") {
-    direct <- contributions$TE.direct.common[row, col]
-    indirect <- contributions$TE.indirect.common[row, col]
+    direct <- freq_results$TE.direct.common[row, col]
+    indirect <- freq_results$TE.indirect.common[row, col]
     
-    direct_lower <- contributions$lower.direct.common[row, col]
-    direct_upper <- contributions$upper.direct.common[row, col]
-    indirect_lower <- contributions$lower.indirect.common[row, col]
-    indirect_upper <- contributions$upper.indirect.common[row, col]
+    direct_lower <- freq_results$lower.direct.common[row, col]
+    direct_upper <- freq_results$upper.direct.common[row, col]
+    indirect_lower <- freq_results$lower.indirect.common[row, col]
+    indirect_upper <- freq_results$upper.indirect.common[row, col]
     
     sideif <- .CalculateSideif(direct, indirect, direct_lower, direct_upper, indirect_lower, indirect_upper)
     
@@ -353,14 +364,14 @@ GenerateCinemaJson <- function(data, treatment_ids, outcome_type, contributions,
       "SideIFupper" = jsonlite::unbox(sideif$sideif_upper),
       "SideZ" = jsonlite::unbox(sideif$sideif_z),
       "SidePvalue" = jsonlite::unbox(sideif$sideif_pval),
-      "PropDir" = jsonlite::unbox(contributions$prop.direct.common[comparison]),
-      "NMA treatment effect" = jsonlite::unbox(contributions$TE.common[row, col]),
-      "se treat effect" = jsonlite::unbox(contributions$seTE.common[row, col]),
-      "lower CI" = jsonlite::unbox(contributions$lower.common[row, col]),
-      "upper CI" = jsonlite::unbox(contributions$upper.common[row, col]),
-      "lower PrI" = jsonlite::unbox(contributions$lower.predict[row, col]),
-      "upper PrI" = jsonlite::unbox(contributions$upper.predict[row, col]),
-      "PropDirNetmeta" = jsonlite::unbox(contributions$prop.direct.common[comparison]),
+      "PropDir" = jsonlite::unbox(freq_results$prop.direct.common[comparison]),
+      "NMA treatment effect" = jsonlite::unbox(nma_treatment_effect),
+      "se treat effect" = jsonlite::unbox(se_treat_effect),
+      "lower CI" = jsonlite::unbox(lower_ci),
+      "upper CI" = jsonlite::unbox(upper_ci),
+      "lower PrI" = jsonlite::unbox(lower_pi),
+      "upper PrI" = jsonlite::unbox(upper_pi),
+      "PropDirNetmeta" = jsonlite::unbox(freq_results$prop.direct.common[comparison]),
       "_row" = jsonlite::unbox(comparison)
     )
   }
@@ -368,6 +379,16 @@ GenerateCinemaJson <- function(data, treatment_ids, outcome_type, contributions,
   return(prepared_comparison[!is.na(prepared_comparison)])
 }
 
+
+#' Creates a named list containing SIDE inconsistency factor results for a comparison. The results are point estimate, confidence interval limits, Z-value and p-value.
+#'
+#' @param direct Direct treatment effect estimate.
+#' @param indirect Indirect treatment effect estimate.
+#' @param direct_lower Lower 95% CI limit of direct treatment effect.
+#' @param direct_upper Upper 95% CI limit of direct treatment effect.
+#' @param indirect_lower Lower 95% CI limit of indirect treatment effect.
+#' @param indirect_upper Upper 95% CI limit of indirect treatment effect.
+#' @return List of SIDE IF results with the described structure.
 .CalculateSideif <- function(direct, indirect, direct_lower, direct_upper, indirect_lower, indirect_upper) {
   direct_se <- (direct_upper - direct_lower) / (2 * 1.96)
   indirect_se <- (indirect_upper - indirect_lower) / (2 * 1.96)
@@ -389,4 +410,66 @@ GenerateCinemaJson <- function(data, treatment_ids, outcome_type, contributions,
       sideif_pval = sideif_pval
     )
   )
+}
+
+
+#' Extract the analysis statistics required for CINeMA from GEMTC output. This includes simulating a predictive distribution in order to get a prediction interval, which is not done in GEMTC.
+#' 
+#' @param gemtc_results
+#' @param treatments Vector of two treatments
+#' @return Named vector with names 'median', 'se', 'ci_lower', 'ci_upper', 'pi_lower', and 'pi_upper'.
+ExtractGemtcStats <- function(gemtc_results, treatments) {
+  #Put the treatment names in gemtc format
+  gemtc_treatments <- glue::glue("d.{treatments[1]}.{treatments[2]}")
+  mcmc_rel_eff <- gemtc::relative.effect(
+    gemtc_results,
+    t1 = treatments[1],
+    t2 = treatments[2]
+  )
+  mcmc_summary <- summary(mcmc_rel_eff)
+  quantiles <- mcmc_summary$summaries$quantiles
+  
+  if (is.element("sd.d", colnames(gemtc_results[[1]][[1]]))) {
+    effects <- "random"
+  } else {
+    effects <- "fixed"
+  }
+  
+  if (effects == "fixed") {
+    median <- unname(quantiles["50%"])
+    se <- unname(mcmc_summary$summaries$statistics["SD"])
+    ci_lower <- unname(quantiles["2.5%"])
+    ci_upper <- unname(quantiles["97.5%"])
+  } else if (effects == "random") {
+    median <- quantiles[gemtc_treatments, "50%"]
+    se <- mcmc_summary$summaries$statistics[gemtc_treatments, "SD"]
+    ci_lower <- quantiles[gemtc_treatments, "2.5%"]
+    ci_upper <- quantiles[gemtc_treatments, "97.5%"]
+  }
+  
+  if (effects == "fixed") {
+    pi_lower <- ci_lower
+    pi_upper <- ci_upper
+  } else if (effects == "random") {
+    #Simulate a predictive distribution manually, using the treatment effect and heterogeneity standard deviation at each iteration. Do this once for each chain (of which there are always 4).
+    n_iterations <- length(mcmc_rel_eff$samples[[1]][, 1])
+    prediction_samples <- lapply(
+      X = 1:4,
+      FUN = function(chain) {
+        matrix(
+          rnorm(
+            n = n_iterations,
+            mean = mcmc_rel_eff$samples[[chain]][, gemtc_treatments],
+            sd = mcmc_rel_eff$samples[[chain]][, "sd.d"]
+          ),
+          dimnames = list(NULL, "prediction")
+        )
+      }
+    )
+  
+    pi_lower <- MCMCvis::MCMCsummary(prediction_samples)[, "2.5%"]
+    pi_upper <- MCMCvis::MCMCsummary(prediction_samples)[, "97.5%"]
+  }
+
+  return(c(median = median, se = se, ci_lower =  ci_lower, ci_upper = ci_upper, pi_lower = pi_lower, pi_upper = pi_upper))
 }
