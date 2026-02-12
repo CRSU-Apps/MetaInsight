@@ -11,6 +11,7 @@ summary_study(
   colourblind = FALSE,
   x_min = NULL,
   x_max = NULL,
+  interactive = FALSE,
   logger = NULL
 )
 }
@@ -27,6 +28,9 @@ values should be wrapped in \code{log()}}
 
 \item{x_max}{numeric. Maximum value for the x-axis. Defaults to \code{NULL}. For binary outcomes
 values should be wrapped in \code{log()}}
+
+\item{interactive}{logical. Whether the plot should be altered for preparation
+into an interactive interface. Defaults to \code{FALSE}}
 
 \item{logger}{Stores all notification messages to be displayed in the Log
 Window. Insert the logger reactive list here for running in

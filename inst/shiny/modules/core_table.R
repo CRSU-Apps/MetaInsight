@@ -5,9 +5,10 @@ core_table_module_ui <- function(id) {
       id = "collapse_table",
       open = FALSE,
       accordion_panel(
-        title = "Data table (Click to open / hide this panel)",
-        "Use the filter box under each column of heading to select studies to exclude in the sensitivity analysis.",
-        DT::dataTableOutput(ns("table"))
+        title = "Exclude studies (Click to open / hide this panel)",
+        "Click on a study arm in the plot to select studies to exclude in the sensitivity analysis.",
+        verbatimTextOutput(ns("selected")),
+        uiOutput(ns("plot"))
       )
     )
   )
@@ -16,50 +17,54 @@ core_table_module_ui <- function(id) {
 core_table_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
-    # TABLE
-    output$table <- DT::renderDataTable({
+    ns <- session$ns
+
+    output$plot <- renderUI({
       watch("setup_configure")
-      req(common$non_covariate_data_all)
+      req(common$configured_data)
+      tagList(
+        svg_container(
+          summary_study_interactive(common$configured_data),
+          style = "max-width: 1200px; margin: 0 auto;"
+        ),
+        tags$script(HTML(sprintf('
+          $(document).ready(function() {
+            var selectedClasses = [];
 
-      if (common$outcome == "Continuous") {
-        colnames <- c('StudyID', 'Author', 'Treatment', 'Number of participants in each arm',
-                      'Mean value of the outcome in each arm', 'Standard deviation of the outcome in each arm')
+            $("#summary_exclude_interface g[id^=\'line\']").css("cursor", "pointer");
 
-      } else {
-        colnames <- c('StudyID', 'Author', 'Treatment', 'Number of participants with the outcome of interest in each arm',
-                      'Number of participants in each arm')
-      }
+            $("#summary_exclude_interface g[id^=\'line\']").on("click", function() {
+              var clickedClass = $(this).attr("class");
 
-      label <- common$treatment_df
-      dt <- common$non_covariate_data_all[, 1:length(colnames)]
+              // Toggle class selection
+              var index = selectedClasses.indexOf(clickedClass);
+              if (index > -1) {
+                selectedClasses.splice(index, 1);
+              } else {
+                selectedClasses.push(clickedClass);
+              }
 
-      # reformat wide data
-      if ("T.1" %in% colnames(dt)){
-        dt <- WideToLong(dt, common$outcome)
-      }
+              // Update rect opacity for all groups with the same class
+              $("#summary_exclude_interface g." + clickedClass.replace(/\\s/g, ".")).each(function() {
+                var rect = $(this).find("rect");
+                if (selectedClasses.includes(clickedClass)) {
+                  rect.css("opacity", "0.5");
+                } else {
+                  rect.css("opacity", "0.0");
+                }
+              });
 
-      ntx <- nrow(label)
-      dt$T <- factor(dt$T,
-                     levels = c(1:ntx),
-                     labels = as.character(label$Label))
-
-      DT::datatable(
-        dt,
-        rownames = FALSE,
-        colnames = colnames,
-        filter = list(position = 'top', clear = FALSE, stateSave = TRUE)
+              // Send selected classes to Shiny with namespaced id
+              Shiny.setInputValue("%s", selectedClasses);
+            });
+          });
+        ', ns("excluded_studies"))))
       )
     })
 
-    # DOWNLOAD
-    output$dl_table <- downloadHandler(
-      filename = function() {
-        "metainsight_data_table.csv"
-      },
-      content = function(file) {
-        write.csv(common$data, file, row.names = FALSE)
-      }
-    )
+    output$selected <- renderPrint({
+      input$excluded_studies
+    })
 
   })
 }

@@ -14,7 +14,8 @@
   treatment1,
   treatment2,
   rob_variables,
-  palette
+  palette,
+  interactive
 )
 }
 \arguments{
@@ -37,6 +38,8 @@
 \item{rob_variables}{Vector of RoB and indirectness variable names from 'pairwise'.}
 
 \item{palette}{Vector of colours to use}
+
+\item{interactive}{Whether the plot will be interactive}
 }
 \description{
 Add the treatment effect lines, confidence intervals, studies, and comparison header, for a single comparison.
