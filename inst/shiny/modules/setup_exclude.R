@@ -239,7 +239,7 @@ setup_exclude_module_results <- function(id){
   ns <- NS(id)
   tagList(
     accordion(
-      id = "collapse_table",
+      id = ns("collapse"),
       open = FALSE,
       accordion_panel(
         title = "Exclude studies (Click to open / hide this panel)",

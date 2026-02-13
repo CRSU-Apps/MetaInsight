@@ -40,7 +40,7 @@ test_that("rep_markdown produces a renderable .Rmd file after a frequentist anal
   app$set_inputs(setupSel = "setup_configure")
   app$wait_for_value(input = "setup_configure-ready")
   app$click("setup_configure-run")
-  expected_chunks <- expected_chunks + 1
+  expected_chunks <- expected_chunks + 2
 
   app$set_inputs(tabs = "summary")
   app$set_inputs("setup_exclude-exclusions" = c("Study01", "Study25"))
@@ -116,8 +116,8 @@ test_that("rep_markdown produces a renderable .Rmd file after a bayesian analysi
   app$click("setup_reload-goLoad_session")
   app$set_inputs(tabs = "bayes")
 
-  #intro + setup_load + setup_configure + setup_exclude + bayes_model (3)
-  expected_chunks <- 7
+  #intro + setup_load + setup_configure (2) + setup_exclude + bayes_model (3)
+  expected_chunks <- 8
 
   app$set_inputs(bayesSel = "bayes_forest")
   app$click("bayes_forest-run")
@@ -198,8 +198,8 @@ test_that("rep_markdown produces a renderable .Rmd file after a covariate analys
   # ensure inputs update
   app$set_inputs(covariateSel = "covariate_model")
 
-  # intro + setup_load + setup_configure + setup_exclude + covariate_model
-  expected_chunks <- 5
+  # intro + setup_load + setup_configure (2) + setup_exclude + covariate_model
+  expected_chunks <- 6
 
   app$set_inputs(covariateSel = "covariate_summary")
   app$click("covariate_summary-run")
@@ -283,8 +283,8 @@ test_that("rep_markdown produces a renderable .Rmd file after a baseline analysi
   app$click("setup_reload-goLoad_session")
   app$set_inputs(tabs = "baseline")
 
-  #intro + setup_load + setup_configure + setup_exclude + baseline_model
-  expected_chunks <- 5
+  #intro + setup_load + setup_configure (2) + setup_exclude + baseline_model
+  expected_chunks <- 6
 
   app$set_inputs(baselineSel = "baseline_summary")
   app$click("baseline_summary-run")
