@@ -517,11 +517,12 @@ summary_study_min_max <- function(pairwise, outcome){
 
 #' Produce an interactive version of the summary_study plot for use in the
 #' interface for excluding studies
-#'
+#' @param exclusions character. Vector of excluded studies. Defaults to NULL,
+#' but can be used to reset on loading
 #' @inheritParams common_params
 #' @inherit return-svg return
 #' @export
-summary_study_interactive <- function(configured_data){
+summary_study_interactive <- function(configured_data, exclusions = NULL){
 
   initial <- summary_study(configured_data, plot_area_width = 6, interactive = TRUE)
   svg_doc <- xml2::read_xml(initial)
@@ -612,9 +613,6 @@ summary_study_interactive <- function(configured_data){
     ns = c(d1 = "http://www.w3.org/2000/svg")
   )
 
-  # add pointer rule to main group
-  xml2::xml_attr(parent_group, "style") <- "cursor:not-allowed;"
-
   # Track which elements have been assigned
   assigned_elements <- c()
 
@@ -631,7 +629,6 @@ summary_study_interactive <- function(configured_data){
     xml2::xml_attr(new_rect, "y") <- rect_bound$y_min
     xml2::xml_attr(new_rect, "width") <- viewbox_width
     xml2::xml_attr(new_rect, "height") <- rect_bound$height
-    xml2::xml_attr(new_rect, "style") <- "stroke: none; opacity: 0.0; fill:#222222;"
 
     # Find elements inside this rect's y range and collect text content
     first_text_content <- NULL
@@ -671,6 +668,10 @@ summary_study_interactive <- function(configured_data){
       class_name <- gsub("[^A-Za-z0-9_-]", "_", first_text_content)
       xml2::xml_attr(new_group, "class") <- class_name
     }
+
+    # set style of rect
+    opacity <- ifelse(class_name %in% exclusions, 0.5, 0)
+    xml2::xml_attr(new_rect, "style") <- glue::glue("stroke: none; opacity: {opacity}; fill:#222222;")
 
     # add cursor style
     xml2::xml_attr(new_group, "style") <- "cursor:pointer;"

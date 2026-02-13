@@ -5,10 +5,13 @@
 \title{Produce an interactive version of the summary_study plot for use in the
 interface for excluding studies}
 \usage{
-summary_study_interactive(configured_data)
+summary_study_interactive(configured_data, exclusions = NULL)
 }
 \arguments{
 \item{configured_data}{list. Input dataset created by \code{setup_configure()} or \code{setup_exclude()}}
+
+\item{exclusions}{character. Vector of excluded studies. Defaults to NULL,
+but can be used to reset on loading}
 }
 \value{
 html. Contains the svg string to generate the plot. This can be saved

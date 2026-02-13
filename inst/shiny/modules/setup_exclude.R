@@ -12,25 +12,6 @@ setup_exclude_module_server <- function(id, common, parent_session) {
     init("effects")
     init("freq_all")
 
-    # can't get updatePickerInput to reblank on reset
-    # output$exclusions_out <- renderUI({
-    #   watch("setup_configure")
-    #   watch("setup_reset")
-    #   if (is.null(common$configured_data)){
-    #     shinyWidgets::pickerInput(session$ns("exclusions"), label = "Studies to exclude:", multiple = TRUE,
-    #                               choices = c(),
-    #                               options = shinyWidgets::pickerOptions(liveSearch = TRUE))
-    #   } else {
-    #     wrangled <- unique(common$configured_data$wrangled_data$Study)
-    #     connected <- unique(common$configured_data$connected_data$Study)
-    #     shinyWidgets::pickerInput(session$ns("exclusions"), label = "Studies to exclude:", multiple = TRUE,
-    #                               selected = isolate(input$exclusions),
-    #                               choices = wrangled,
-    #                               choicesOpt = list(disabled = !c(wrangled %in% connected)),
-    #                               options = shinyWidgets::pickerOptions(liveSearch = TRUE))
-    #   }
-    # })
-
     common$tasks$setup_exclude_all <- ExtendedTask$new(
       function(...) mirai::mirai(run(...), run = frequentist, .args = environment())
     )
@@ -57,7 +38,7 @@ setup_exclude_module_server <- function(id, common, parent_session) {
     # listen to all the triggers but only fire once they're static for 1200ms
     exclusion_triggers <- reactive({
       # prevent it triggering on reload
-      req((!identical(input$exclusions, common$excluded_studies) || watch("setup_configure") > 0 || watch("effects") > 0))
+      req((!identical(input$exclusions, common$excluded_studies) || watch("setup_configure") > 0 || watch("effects") > 1))
       list(input$exclusions,
            input$effects,
            watch("setup_configure"))
@@ -144,7 +125,6 @@ setup_exclude_module_server <- function(id, common, parent_session) {
             shinyjs::runjs("Shiny.setInputValue('setup_exclude-complete', 'complete');")
           }
 
-
           trigger("setup_exclude")
 
         } else {
@@ -169,20 +149,43 @@ setup_exclude_module_server <- function(id, common, parent_session) {
       trigger("effects")
     })
 
-    ns <- session$ns
-
     output$plot <- renderUI({
       watch("setup_reset")
       watch("setup_configure")
       req(common$configured_data)
       tagList(
         svg_container(
-          summary_study_interactive(common$configured_data),
+          summary_study_interactive(common$configured_data, isolate(input$exclusions)),
           style = "max-width: 1200px; margin: 0 auto;"
         ),
         tags$script(HTML(sprintf('
           $(document).ready(function() {
             var selectedClasses = [];
+
+            // Function to initialize selectedClasses from existing visual state
+            function reload() {
+              // Check if the element exists
+              if ($("#summary_exclude_interface").length === 0) {
+                // If not, wait and try again
+                setTimeout(reload, 100);
+                return;
+              }
+
+              // Find all groups with rects that have opacity 0.5
+              $("#summary_exclude_interface g[id^=\'line\']").each(function() {
+                var rect = $(this).find("rect");
+                if (rect.css("opacity") == "0.5") {
+                  var className = $(this).attr("class");
+                  if (className && selectedClasses.indexOf(className) === -1) {
+                    selectedClasses.push(className);
+                  }
+                }
+              });
+
+            }
+
+            // Start trying to initialize after a delay
+            setTimeout(reload, 200);
 
             $("#summary_exclude_interface g[id^=\'line\']").on("click", function() {
               var clickedClass = $(this).attr("class");
@@ -209,7 +212,7 @@ setup_exclude_module_server <- function(id, common, parent_session) {
               Shiny.setInputValue("%s", selectedClasses);
             });
           });
-        ', ns("exclusions"))))
+        ', session$ns("exclusions"))))
       )
     })
 
@@ -217,24 +220,15 @@ setup_exclude_module_server <- function(id, common, parent_session) {
     save = function() {list(
       ### Manual save start
       ### Manual save end
-      choices = unique(common$configured_data$wrangled_data$Study),
       exclusions = input$exclusions,
-      disabled = !c(unique(common$configured_data$wrangled_data$Study) %in% unique(common$configured_data$connected_data$Study)),
       effects = input$effects)
     },
     load = function(state) {
       ### Manual load start
+      # format to JS array
+      exclusions <- paste0("['", paste(state$exclusions, collapse = "','"), "']")
+      shinyjs::runjs(glue::glue("Shiny.setInputValue('setup_exclude-exclusions', {exclusions});"))
       ### Manual load end
-      if (is.null(state$exclusions)){
-        shinyWidgets::updatePickerInput(session, "exclusions",
-                                        choices = state$choices,
-                                        choicesOpt = list(disabled = state$disabled))
-      } else {
-        shinyWidgets::updatePickerInput(session, "exclusions",
-                                        selected = state$exclusions,
-                                        choices = state$choices,
-                                        choicesOpt = list(disabled = state$disabled))
-      }
       updateRadioButtons(session, "effects", selected = state$effects)
     }
   ))
@@ -249,7 +243,7 @@ setup_exclude_module_results <- function(id){
       open = FALSE,
       accordion_panel(
         title = "Exclude studies (Click to open / hide this panel)",
-        "Click on a study arm in the plot to select studies to exclude in the sensitivity analysis.",
+        "Click on a study arm in the plot to exclude or replace studies in the sensitivity analysis",
         uiOutput(ns("plot"))
       )
     )
