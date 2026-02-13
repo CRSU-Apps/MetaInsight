@@ -155,7 +155,7 @@ setup_exclude_module_server <- function(id, common, parent_session) {
       req(common$configured_data)
       tagList(
         svg_container(
-          summary_study_interactive(common$configured_data, isolate(input$exclusions)),
+          setup_exclude_plot(common$configured_data, isolate(input$exclusions), hover = TRUE),
           style = "max-width: 1200px; margin: 0 auto;"
         ),
         tags$script(HTML(sprintf('

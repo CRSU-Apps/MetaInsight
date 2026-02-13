@@ -6,3 +6,12 @@
 excluded_studies <- {{setup_exclude_exclusions}}
 subsetted_data <- setup_exclude(configured_data, excluded_studies)
 ```
+
+```{asis, echo = {{setup_exclude_knit}}, eval = {{setup_exclude_knit}}, include = {{setup_exclude_knit}}}
+### Display summary forest plot showing excluded studies
+{r, results = 'asis'}
+```
+```{r, echo = {{setup_exclude_knit}}, include = {{setup_exclude_knit}}}
+setup_exclude_plot(configured_data, excluded_studies)
+```
+
