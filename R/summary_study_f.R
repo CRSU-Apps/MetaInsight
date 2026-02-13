@@ -536,6 +536,12 @@ summary_study_interactive <- function(configured_data){
   # add to svg id to allow targeting later
   xml2::xml_set_attr(svg_node, "id", "summary_exclude_interface")
 
+  # Add CSS rule for on hover
+  style_elem <- xml2::xml_find_first(svg_doc, "//d1:style", ns = c(d1 = "http://www.w3.org/2000/svg"))
+  current_style <- xml2::xml_text(style_elem)
+  hover_rule <- "\n\n#summary_exclude_interface g[id^='line']:hover rect {opacity: 0.25 !important;}\n}"
+  xml2::xml_text(style_elem) <- paste0(current_style, hover_rule)
+
   # Find all rect elements with stroke-width: 0.75
   rects <- xml2::xml_find_all(
     svg_doc,
@@ -606,6 +612,9 @@ summary_study_interactive <- function(configured_data){
     ns = c(d1 = "http://www.w3.org/2000/svg")
   )
 
+  # add pointer rule to main group
+  xml2::xml_attr(parent_group, "style") <- "cursor:not-allowed;"
+
   # Track which elements have been assigned
   assigned_elements <- c()
 
@@ -622,7 +631,7 @@ summary_study_interactive <- function(configured_data){
     xml2::xml_attr(new_rect, "y") <- rect_bound$y_min
     xml2::xml_attr(new_rect, "width") <- viewbox_width
     xml2::xml_attr(new_rect, "height") <- rect_bound$height
-    xml2::xml_attr(new_rect, "style") <- "stroke: none; opacity: 0.0; fill:red"
+    xml2::xml_attr(new_rect, "style") <- "stroke: none; opacity: 0.0; fill:#222222;"
 
     # Find elements inside this rect's y range and collect text content
     first_text_content <- NULL
@@ -662,6 +671,9 @@ summary_study_interactive <- function(configured_data){
       class_name <- gsub("[^A-Za-z0-9_-]", "_", first_text_content)
       xml2::xml_attr(new_group, "class") <- class_name
     }
+
+    # add cursor style
+    xml2::xml_attr(new_group, "style") <- "cursor:pointer;"
 
     # Add ID
     xml2::xml_attr(new_group, "id") <- paste0("line", i)
