@@ -87,7 +87,7 @@ tagList(
       br(),
       conditionalPanel(
         "input.tabs != 'intro' & input.tabs != 'rep'",
-        core_table_module_ui("core_table"),
+        setup_exclude_module_results("setup_exclude"),
         navset_tab(
           id = 'main',
           nav_panel(

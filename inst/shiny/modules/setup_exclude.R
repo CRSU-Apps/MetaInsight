@@ -2,8 +2,7 @@ setup_exclude_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
     radioButtons(ns("effects"), label = "Model:",
-                  choices = c("Random effect (RE)" = "random", "Fixed effect (FE)" = "fixed"), inline = TRUE),
-    uiOutput(ns("exclusions_out"))
+                  choices = c("Random effect (RE)" = "random", "Fixed effect (FE)" = "fixed"), inline = TRUE)
   )
 }
 
@@ -14,23 +13,23 @@ setup_exclude_module_server <- function(id, common, parent_session) {
     init("freq_all")
 
     # can't get updatePickerInput to reblank on reset
-    output$exclusions_out <- renderUI({
-      watch("setup_configure")
-      watch("setup_reset")
-      if (is.null(common$configured_data)){
-        shinyWidgets::pickerInput(session$ns("exclusions"), label = "Studies to exclude:", multiple = TRUE,
-                                  choices = c(),
-                                  options = shinyWidgets::pickerOptions(liveSearch = TRUE))
-      } else {
-        wrangled <- unique(common$configured_data$wrangled_data$Study)
-        connected <- unique(common$configured_data$connected_data$Study)
-        shinyWidgets::pickerInput(session$ns("exclusions"), label = "Studies to exclude:", multiple = TRUE,
-                                  selected = isolate(input$exclusions),
-                                  choices = wrangled,
-                                  choicesOpt = list(disabled = !c(wrangled %in% connected)),
-                                  options = shinyWidgets::pickerOptions(liveSearch = TRUE))
-      }
-    })
+    # output$exclusions_out <- renderUI({
+    #   watch("setup_configure")
+    #   watch("setup_reset")
+    #   if (is.null(common$configured_data)){
+    #     shinyWidgets::pickerInput(session$ns("exclusions"), label = "Studies to exclude:", multiple = TRUE,
+    #                               choices = c(),
+    #                               options = shinyWidgets::pickerOptions(liveSearch = TRUE))
+    #   } else {
+    #     wrangled <- unique(common$configured_data$wrangled_data$Study)
+    #     connected <- unique(common$configured_data$connected_data$Study)
+    #     shinyWidgets::pickerInput(session$ns("exclusions"), label = "Studies to exclude:", multiple = TRUE,
+    #                               selected = isolate(input$exclusions),
+    #                               choices = wrangled,
+    #                               choicesOpt = list(disabled = !c(wrangled %in% connected)),
+    #                               options = shinyWidgets::pickerOptions(liveSearch = TRUE))
+    #   }
+    # })
 
     common$tasks$setup_exclude_all <- ExtendedTask$new(
       function(...) mirai::mirai(run(...), run = frequentist, .args = environment())
@@ -170,6 +169,50 @@ setup_exclude_module_server <- function(id, common, parent_session) {
       trigger("effects")
     })
 
+    ns <- session$ns
+
+    output$plot <- renderUI({
+      watch("setup_reset")
+      watch("setup_configure")
+      req(common$configured_data)
+      tagList(
+        svg_container(
+          summary_study_interactive(common$configured_data),
+          style = "max-width: 1200px; margin: 0 auto;"
+        ),
+        tags$script(HTML(sprintf('
+          $(document).ready(function() {
+            var selectedClasses = [];
+
+            $("#summary_exclude_interface g[id^=\'line\']").on("click", function() {
+              var clickedClass = $(this).attr("class");
+
+              // Toggle class selection
+              var index = selectedClasses.indexOf(clickedClass);
+              if (index > -1) {
+                selectedClasses.splice(index, 1);
+              } else {
+                selectedClasses.push(clickedClass);
+              }
+
+              // Update rect opacity for all groups with the same class
+              $("#summary_exclude_interface g." + clickedClass.replace(/\\s/g, ".")).each(function() {
+                var rect = $(this).find("rect");
+                if (selectedClasses.includes(clickedClass)) {
+                  rect.css("opacity", "0.5");
+                } else {
+                  rect.css("opacity", "0.0");
+                }
+              });
+
+              // Send selected classes to Shiny with namespaced id
+              Shiny.setInputValue("%s", selectedClasses);
+            });
+          });
+        ', ns("exclusions"))))
+      )
+    })
+
   return(list(
     save = function() {list(
       ### Manual save start
@@ -196,6 +239,21 @@ setup_exclude_module_server <- function(id, common, parent_session) {
     }
   ))
 })
+}
+
+setup_exclude_module_results <- function(id){
+  ns <- NS(id)
+  tagList(
+    accordion(
+      id = "collapse_table",
+      open = FALSE,
+      accordion_panel(
+        title = "Exclude studies (Click to open / hide this panel)",
+        "Click on a study arm in the plot to select studies to exclude in the sensitivity analysis.",
+        uiOutput(ns("plot"))
+      )
+    )
+  )
 }
 
 setup_exclude_module_rmd <- function(common){ list(
