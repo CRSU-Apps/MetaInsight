@@ -19,9 +19,9 @@ core_table_module_server <- function(id, common, parent_session) {
     # TABLE
     output$table <- DT::renderDataTable({
       watch("setup_configure")
-      req(common$non_covariate_data_all)
+      req(common$configured_data)
 
-      if (common$outcome == "Continuous") {
+      if (common$configured_data$outcome == "Continuous") {
         colnames <- c('StudyID', 'Author', 'Treatment', 'Number of participants in each arm',
                       'Mean value of the outcome in each arm', 'Standard deviation of the outcome in each arm')
 
@@ -30,12 +30,12 @@ core_table_module_server <- function(id, common, parent_session) {
                       'Number of participants in each arm')
       }
 
-      label <- common$treatment_df
-      dt <- common$non_covariate_data_all[, 1:length(colnames)]
+      label <- common$configured_data$treatments
+      dt <- common$configured_data$non_covariate_data[, 1:length(colnames)]
 
       # reformat wide data
       if ("T.1" %in% colnames(dt)){
-        dt <- WideToLong(dt, common$outcome)
+        dt <- WideToLong(dt, common$configured_data$outcome)
       }
 
       ntx <- nrow(label)
@@ -57,7 +57,7 @@ core_table_module_server <- function(id, common, parent_session) {
         "metainsight_data_table.csv"
       },
       content = function(file) {
-        write.csv(common$data, file, row.names = FALSE)
+        write.csv(common$loaded_data$data, file, row.names = FALSE)
       }
     )
 

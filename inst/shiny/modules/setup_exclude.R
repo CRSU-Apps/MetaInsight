@@ -157,6 +157,7 @@ setup_exclude_module_server <- function(id, common, parent_session) {
 
     # stop triggering at app load, but do so once data is loaded
     observe({
+      watch("setup_reset")
       # prevent it triggering on reload
       req(!identical(input$effects, common$effects))
       common$effects <- input$effects

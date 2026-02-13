@@ -64,12 +64,12 @@ setup_load_module_server <- function(id, common, parent_session) {
       watch("setup_load")
       watch("setup_reload")
       watch("setup_reset")
-      if (is.null(common$data)){
+      if (is.null(common$loaded_data)){
         shinyjs::hide("reset")
       } else {
         shinyjs::show("reset")
       }
-      if (is.null(common$is_data_uploaded) || !common$is_data_uploaded){
+      if (is.null(common$loaded_data$is_data_uploaded) || !common$loaded_data$is_data_uploaded){
         shinyjs::show("download")
       } else {
         shinyjs::hide("download")

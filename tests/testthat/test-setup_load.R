@@ -1,8 +1,6 @@
 data_path <- system.file("extdata", "continuous_long.csv", package = "metainsight")
 invalid_data_path <- file.path(test_data_dir, "invalid_data", "binary-missing-long.csv")
 
-# TODO add tests of upload, reset, rerun
-
 test_that("Check setup_load function returns errors for faulty inputs", {
   expect_error(setup_load(data_path = 123, outcome = "binary"), "data_path must be of class character")
   expect_error(setup_load(data_path = "word_doc.docx", outcome = "binary"), "data_path must link to either a .csv or .xlsx file")
@@ -159,5 +157,59 @@ test_that("Invalid data is loaded into common correctly and errors are passed to
 })
 
 
+test_that("Data can be reloaded after loading", {
+  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_setup_load")
+  app$set_inputs(tabs = "setup")
+  app$set_inputs(setupSel = "setup_load")
+  app$click("setup_load-run")
+  common <- app$get_value(export = "common")
+  expect_s3_class(common$loaded_data$data, "data.frame")
+  expect_equal(common$loaded_data$outcome, "continuous")
+
+  # when only setup_load is run, new data should be uploadable without deleting
+  app$set_inputs("setup_load-outcome" = "binary")
+  app$click("setup_load-run")
+  common <- app$get_value(export = "common")
+  expect_s3_class(common$loaded_data$data, "data.frame")
+  expect_equal(common$loaded_data$outcome, "binary")
+
+  # reset data
+  app$click("setup_load-reset")
+  # click the confirm button
+  app$wait_for_js("$('.sweet-alert.visible').length > 0")
+  app$click(selector = ".confirm")
+  app$wait_for_idle()
+  common <- app$get_value(export = "common")
+  expect_null(common$loaded_data)
+})
+
+test_that("Data can be reloaded after loading", {
+  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_setup_load")
+  app$set_inputs(tabs = "setup")
+  app$set_inputs(setupSel = "setup_load")
+  # load data again and configure
+  app$set_inputs("setup_load-outcome" = "continuous")
+  app$click("setup_load-run")
+  app$set_inputs(setupSel = "setup_configure")
+  app$click("setup_configure-run")
+  common <- app$get_value(export = "common")
+  # app$view()
+  expect_s3_class(common$configured_data, "configured_data")
+
+  # now loading again should generate an error
+  app$click("setup_load-run")
+  logger <- app$get_value(export = "logger")
+  expect_true(grepl("*Data has already been loaded*", logger))
+
+  # reset data
+  app$click("setup_load-reset")
+  # click the confirm button
+  app$wait_for_js("$('.sweet-alert.visible').length > 0")
+  app$click(selector = ".confirm")
+  app$wait_for_idle()
+  common <- app$get_value(export = "common")
+  expect_null(common$loaded_data)
+
+})
 
 
