@@ -109,7 +109,7 @@ setup_exclude_plot <- function(configured_data, exclusions = NULL, hover = FALSE
     # Add CSS rule for on hover
     style_elem <- xml2::xml_find_first(svg_doc, "//d1:style", ns = c(d1 = "http://www.w3.org/2000/svg"))
     current_style <- xml2::xml_text(style_elem)
-    hover_rule <- "\n\n#summary_exclude_interface g[id^='line']:hover rect {opacity: 0.25 !important;}\n}"
+    hover_rule <- "\n\n#summary_exclude_interface g[id^='setup_exclude-line']:hover rect {opacity: 0.25 !important;}\n}"
     xml2::xml_text(style_elem) <- paste0(current_style, hover_rule)
   }
 
@@ -225,7 +225,7 @@ setup_exclude_plot <- function(configured_data, exclusions = NULL, hover = FALSE
           xml2::xml_add_child(new_group, elem_copy)
           assigned_elements <- c(assigned_elements, j)
 
-          # Capture first text element's content for class name
+          # Capture study name
           if (is.null(first_text_content) && xml2::xml_name(elem) == "text") {
             first_text_content <- xml2::xml_text(elem)
           }
@@ -235,12 +235,12 @@ setup_exclude_plot <- function(configured_data, exclusions = NULL, hover = FALSE
 
     # Add class attribute based on first text element
     if (!is.null(first_text_content)) {
-      class_name <- gsub("[^A-Za-z0-9_-]", "_", first_text_content)
-      xml2::xml_attr(new_group, "class") <- class_name
+      study_name <- gsub("[^A-Za-z0-9_-]", "_", first_text_content)
+      xml2::xml_attr(new_group, "data-study-name") <- study_name
     }
 
     # set style of rect
-    opacity <- ifelse(class_name %in% exclusions, 0.5, 0)
+    opacity <- ifelse(study_name %in% exclusions, 0.5, 0)
     xml2::xml_attr(new_rect, "style") <- glue::glue("stroke: none; opacity: {opacity}; fill:#222222;")
 
     # add cursor style
@@ -249,7 +249,7 @@ setup_exclude_plot <- function(configured_data, exclusions = NULL, hover = FALSE
     }
 
     # Add ID
-    xml2::xml_attr(new_group, "id") <- paste0("line", i)
+    xml2::xml_attr(new_group, "id") <- paste0("setup_exclude-line", i)
   }
 
   # Remove original rects

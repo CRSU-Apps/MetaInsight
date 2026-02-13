@@ -160,9 +160,9 @@ setup_exclude_module_server <- function(id, common, parent_session) {
         ),
         tags$script(HTML(sprintf('
           $(document).ready(function() {
-            var selectedClasses = [];
+            var selectedStudies = [];
 
-            // Function to initialize selectedClasses from existing visual state
+            // Function to initialize selectedStudies from existing visual state
             function reload() {
               // Check if the element exists
               if ($("#summary_exclude_interface").length === 0) {
@@ -172,12 +172,12 @@ setup_exclude_module_server <- function(id, common, parent_session) {
               }
 
               // Find all groups with rects that have opacity 0.5
-              $("#summary_exclude_interface g[id^=\'line\']").each(function() {
+              $("#summary_exclude_interface g[id^=\'setup_exclude-line\']").each(function() {
                 var rect = $(this).find("rect");
                 if (rect.css("opacity") == "0.5") {
-                  var className = $(this).attr("class");
-                  if (className && selectedClasses.indexOf(className) === -1) {
-                    selectedClasses.push(className);
+                  var studyName = $(this).attr("data-study-name");
+                  if (studyName && selectedStudies.indexOf(studyName) === -1) {
+                    selectedStudies.push(studyName);
                   }
                 }
               });
@@ -187,29 +187,29 @@ setup_exclude_module_server <- function(id, common, parent_session) {
             // Start trying to initialize after a delay
             setTimeout(reload, 200);
 
-            $("#summary_exclude_interface g[id^=\'line\']").on("click", function() {
-              var clickedClass = $(this).attr("class");
+            $("#summary_exclude_interface g[id^=\'setup_exclude-line\']").on("click", function() {
+              var clickedStudy = $(this).attr("data-study-name");
 
-              // Toggle class selection
-              var index = selectedClasses.indexOf(clickedClass);
+              // Toggle study selection
+              var index = selectedStudies.indexOf(clickedStudy);
               if (index > -1) {
-                selectedClasses.splice(index, 1);
+                selectedStudies.splice(index, 1);
               } else {
-                selectedClasses.push(clickedClass);
+                selectedStudies.push(clickedStudy);
               }
 
-              // Update rect opacity for all groups with the same class
-              $("#summary_exclude_interface g." + clickedClass.replace(/\\s/g, ".")).each(function() {
-                var rect = $(this).find("rect");
-                if (selectedClasses.includes(clickedClass)) {
-                  rect.css("opacity", "0.5");
-                } else {
-                  rect.css("opacity", "0.0");
-                }
+              // Update opacity for all study lines
+              $("#summary_exclude_interface g[data-study-name=\'" + clickedStudy + "\']").each(function() {
+                  var rect = $(this).find("rect");
+                  if (selectedStudies.includes(clickedStudy)) {
+                      rect.css("opacity", "0.5");
+                  } else {
+                      rect.css("opacity", "0.0");
+                  }
               });
 
-              // Send selected classes to Shiny with namespaced id
-              Shiny.setInputValue("%s", selectedClasses);
+              // Send selected studies to Shiny input
+              Shiny.setInputValue("%s", selectedStudies);
             });
           });
         ', session$ns("exclusions"))))
