@@ -85,13 +85,6 @@ function(input, output, session) {
       observeEvent(input[[btn_id]], updateTabsetPanel(session, "main", "Guidance"))
       })})
 
-
-  ############################################# #
-  ### TABLE TAB ####
-  ############################################# #
-
-  core_table_module_server("core_table", common, session)
-
   ####################
   ### INITIALISATION ####
   ###################
