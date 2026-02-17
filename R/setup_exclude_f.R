@@ -267,6 +267,14 @@ setup_exclude_plot <- function(configured_data, exclusions = NULL, hover = FALSE
     xml2::xml_remove(all_elements[assigned_elements])
   }
 
+  empty_groups <- xml2::xml_find_all(
+    svg_doc,
+    ".//d1:g[not(*)]",
+    ns = c(d1 = "http://www.w3.org/2000/svg")
+  )
+
+  xml2::xml_remove(empty_groups)
+
   paste(svg_doc, collapse = "\n") |> HTML()
 
 }
