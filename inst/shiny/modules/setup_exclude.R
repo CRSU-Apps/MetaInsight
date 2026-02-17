@@ -243,7 +243,8 @@ setup_exclude_module_results <- function(id){
       open = FALSE,
       accordion_panel(
         title = "Exclude studies (Click to open / hide this panel)",
-        "Click on a study arm in the plot to exclude or replace studies in the sensitivity analysis",
+        "Click on a study arm in the plot to exclude or replace studies in the sensitivity analysis.
+        Clicking on one arm will exclude or replace all the arms from the analysis.",
         uiOutput(ns("plot"))
       )
     )
