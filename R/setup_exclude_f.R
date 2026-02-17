@@ -150,7 +150,12 @@ setup_exclude_plot <- function(configured_data, exclusions = NULL, hover = FALSE
       points <- xml2::xml_attr(elem, "points")
       points_clean <- gsub(",", " ", points)
       vals <- as.numeric(strsplit(trimws(points_clean), "\\s+")[[1]])
-      y_coords <- vals[seq(2, length(vals), 2)]
+      # stop the dashed line being added to a group
+      if (grepl("stroke-dasharray", xml2::xml_attr(elem, "style"))){
+        y_coords <- -100
+      } else {
+        y_coords <- vals[seq(2, length(vals), 2)]
+      }
     } else if (elem_name == "rect") {
       y <- as.numeric(xml2::xml_attr(elem, "y"))
       height <- as.numeric(xml2::xml_attr(elem, "height"))
