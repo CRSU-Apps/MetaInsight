@@ -171,14 +171,13 @@ setup_exclude_module_server <- function(id, common, parent_session) {
                 return;
               }
 
-              // Find all groups with rects that have opacity 0.5
+              // Find all groups 0.3
               $("#summary_exclude_interface g[id^=\'setup_exclude-line\']").each(function() {
-                var rect = $(this).find("rect");
-                if (rect.css("opacity") == "0.5") {
-                  var studyName = $(this).attr("data-study-name");
-                  if (studyName && selectedStudies.indexOf(studyName) === -1) {
-                    selectedStudies.push(studyName);
-                  }
+                if ($(this).css("opacity") == "0.3") {
+                    var studyName = $(this).attr("data-study-name");
+                    if (studyName && selectedStudies.indexOf(studyName) === -1) {
+                        selectedStudies.push(studyName);
+                    }
                 }
               });
 
@@ -200,12 +199,11 @@ setup_exclude_module_server <- function(id, common, parent_session) {
 
               // Update opacity for all study lines
               $("#summary_exclude_interface g[data-study-name=\'" + clickedStudy + "\']").each(function() {
-                  var rect = $(this).find("rect");
-                  if (selectedStudies.includes(clickedStudy)) {
-                      rect.css("opacity", "0.5");
-                  } else {
-                      rect.css("opacity", "0.0");
-                  }
+                if (selectedStudies.includes(clickedStudy)) {
+                    $(this).css("opacity", "0.3");
+                } else {
+                    $(this).css("opacity", "1.0");
+                }
               });
 
               // Send selected studies to Shiny input

@@ -143,7 +143,14 @@ setup_exclude_plot <- function(configured_data, exclusions = NULL, hover = FALSE
     y_coords <- c()
 
     if (elem_name == "text") {
-      y_coords <- as.numeric(xml2::xml_attr(elem, "y"))
+      y <- as.numeric(xml2::xml_attr(elem, "y"))
+      # Only adjust for bullet point characters which use large font sizes
+      if (grepl("•", xml2::xml_text(elem))) {
+        style <- xml2::xml_attr(elem, "style")
+        y_coords <- y - 12
+      } else {
+        y_coords <- y
+      }
     } else if (elem_name == "line") {
       y_coords <- c(as.numeric(xml2::xml_attr(elem, "y1")),
                     as.numeric(xml2::xml_attr(elem, "y2")))
@@ -225,28 +232,24 @@ setup_exclude_plot <- function(configured_data, exclusions = NULL, hover = FALSE
           xml2::xml_add_child(new_group, elem_copy)
           assigned_elements <- c(assigned_elements, j)
 
-          # Capture study name
-          if (is.null(first_text_content) && xml2::xml_name(elem) == "text") {
-            first_text_content <- xml2::xml_text(elem)
-          }
+
         }
       }
     }
 
-    # Add class attribute based on first text element
-    if (!is.null(first_text_content)) {
-      study_name <- gsub("[^A-Za-z0-9_-]", "_", first_text_content)
-      xml2::xml_attr(new_group, "data-study-name") <- study_name
-    }
+    # get study name from text element with lowest x coordinate
+    text_elements <- xml2::xml_find_all(new_group, "text")
+    x_coords <- sapply(text_elements, function(t) as.numeric(xml2::xml_attr(t, "x")))
+    study_name <- xml2::xml_text(text_elements[[which.min(x_coords)]])
+    xml2::xml_attr(new_group, "data-study-name") <- study_name
 
     # set style of rect
-    opacity <- ifelse(study_name %in% exclusions, 0.5, 0)
-    xml2::xml_attr(new_rect, "style") <- glue::glue("stroke: none; opacity: {opacity}; fill:#222222;")
+    xml2::xml_attr(new_rect, "style") <- glue::glue("stroke: none; opacity: 0; fill:#222222;")
 
-    # add cursor style
-    if (hover){
-      xml2::xml_attr(new_group, "style") <- "cursor:pointer;"
-    }
+    # set style of group, including cursor if hover is TRUE
+    pointer <- ifelse(hover, "cursor:pointer;", "")
+    opacity <- ifelse(study_name %in% exclusions, 0.3, 1)
+    xml2::xml_attr(new_group, "style") <- glue::glue("{pointer} opacity: {opacity};")
 
     # Add ID
     xml2::xml_attr(new_group, "id") <- paste0("setup_exclude-line", i)
