@@ -165,14 +165,14 @@ setup_exclude_module_server <- function(id, common, parent_session) {
             // Function to initialize selectedStudies from existing visual state
             function reload() {
               // Check if the element exists
-              if ($("#summary_exclude_interface").length === 0) {
+              if ($("#setup_exclude_interface").length === 0) {
                 // If not, wait and try again
                 setTimeout(reload, 100);
                 return;
               }
 
               // Find all groups 0.3
-              $("#summary_exclude_interface g[id^=\'setup_exclude-line\']").each(function() {
+              $("#setup_exclude_interface g[id^=\'setup_exclude-line\']").each(function() {
                 if ($(this).css("opacity") == "0.3") {
                     var studyName = $(this).attr("data-study-name");
                     if (studyName && selectedStudies.indexOf(studyName) === -1) {
@@ -187,7 +187,7 @@ setup_exclude_module_server <- function(id, common, parent_session) {
             setTimeout(reload, 200);
 
 
-            $("#summary_exclude_interface g[id^=\'setup_exclude-line\']").on({
+            $("#setup_exclude_interface g[id^=\'setup_exclude-line\']").on({
                 mouseenter: function() {
                     $(this).css("opacity", "1.0");
                     $(this).find("rect").css("opacity", "0.5");
@@ -204,7 +204,7 @@ setup_exclude_module_server <- function(id, common, parent_session) {
                 }
             });
 
-            $("#summary_exclude_interface g[id^=\'setup_exclude-line\']").on("click", function() {
+            $("#setup_exclude_interface g[id^=\'setup_exclude-line\']").on("click", function() {
               var clickedStudy = $(this).attr("data-study-name");
 
               // Toggle study selection
@@ -216,7 +216,7 @@ setup_exclude_module_server <- function(id, common, parent_session) {
               }
 
               // Update opacity for all study lines
-              $("#summary_exclude_interface g[data-study-name=\'" + clickedStudy + "\']").each(function() {
+              $("#setup_exclude_interface g[data-study-name=\'" + clickedStudy + "\']").each(function() {
                 if (selectedStudies.includes(clickedStudy)) {
                     $(this).css("opacity", "0.3");
                 } else {

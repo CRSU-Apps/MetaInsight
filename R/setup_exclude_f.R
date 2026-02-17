@@ -103,7 +103,7 @@ setup_exclude_plot <- function(configured_data, exclusions = NULL, hover = FALSE
   viewbox_width <- values[3]
 
   # add to svg id to allow targeting later
-  xml2::xml_set_attr(svg_node, "id", "summary_exclude_interface")
+  xml2::xml_set_attr(svg_node, "id", "setup_exclude_interface")
 
   # Find all rect elements with stroke-width: 0.75
   rects <- xml2::xml_find_all(
