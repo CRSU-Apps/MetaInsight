@@ -105,14 +105,6 @@ setup_exclude_plot <- function(configured_data, exclusions = NULL, hover = FALSE
   # add to svg id to allow targeting later
   xml2::xml_set_attr(svg_node, "id", "summary_exclude_interface")
 
-  if (hover){
-    # Add CSS rule for on hover
-    style_elem <- xml2::xml_find_first(svg_doc, "//d1:style", ns = c(d1 = "http://www.w3.org/2000/svg"))
-    current_style <- xml2::xml_text(style_elem)
-    hover_rule <- "\n\n#summary_exclude_interface g[id^='setup_exclude-line']:hover rect {opacity: 0.25 !important;}\n}"
-    xml2::xml_text(style_elem) <- paste0(current_style, hover_rule)
-  }
-
   # Find all rect elements with stroke-width: 0.75
   rects <- xml2::xml_find_all(
     svg_doc,
@@ -236,6 +228,18 @@ setup_exclude_plot <- function(configured_data, exclusions = NULL, hover = FALSE
         }
       }
     }
+
+    # add a clip path to each line - necessary because the RoB bullet points extend above and below
+    clip_id <- paste0("clip-line", i)
+    defs <- xml2::xml_find_first(svg_doc, ".//d1:defs", ns = c(d1 = "http://www.w3.org/2000/svg"))
+    clip_path <- xml2::xml_add_child(defs, "clipPath")
+    xml2::xml_attr(clip_path, "id") <- clip_id
+    clip_rect <- xml2::xml_add_child(clip_path, "rect")
+    xml2::xml_attr(clip_rect, "x") <- viewbox_x
+    xml2::xml_attr(clip_rect, "y") <- rect_bound$y_min
+    xml2::xml_attr(clip_rect, "width") <- viewbox_width
+    xml2::xml_attr(clip_rect, "height") <- rect_bound$height
+    xml2::xml_attr(new_group, "clip-path") <- paste0("url(#", clip_id, ")")
 
     # get study name from text element with lowest x coordinate
     text_elements <- xml2::xml_find_all(new_group, "text")

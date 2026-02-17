@@ -186,6 +186,24 @@ setup_exclude_module_server <- function(id, common, parent_session) {
             // Start trying to initialize after a delay
             setTimeout(reload, 200);
 
+
+            $("#summary_exclude_interface g[id^=\'setup_exclude-line\']").on({
+                mouseenter: function() {
+                    $(this).css("opacity", "1.0");
+                    $(this).find("rect").css("opacity", "0.5");
+                },
+                mouseleave: function() {
+                    // Restore to selected state or default
+                    var studyName = $(this).attr("data-study-name");
+                    if (selectedStudies.includes(studyName)) {
+                        $(this).css("opacity", "0.3");
+                    } else {
+                        $(this).css("opacity", "1.0");
+                    }
+                    $(this).find("rect").css("opacity", "0.0");
+                }
+            });
+
             $("#summary_exclude_interface g[id^=\'setup_exclude-line\']").on("click", function() {
               var clickedStudy = $(this).attr("data-study-name");
 
