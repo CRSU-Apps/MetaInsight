@@ -125,6 +125,10 @@ tagList(
         flex_wrap(includeMarkdown("modules/rep_refPackages.md"))
       ),
       conditionalPanel(
+        "input.tabs == 'rep' & input.repSel == 'rep_cinema'",
+        flex_wrap(includeMarkdown("modules/rep_cinema.md"))
+      ),
+      conditionalPanel(
         "input.tabs == 'intro'",
         flex_wrap(
           navset_tab(

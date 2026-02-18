@@ -72,7 +72,8 @@ base_module_configs <- c(
   "modules/covariate_details.yml",
   "modules/rep_markdown.yml",
   "modules/rep_renv.yml",
-  "modules/rep_refPackages.yml"
+  "modules/rep_refPackages.yml",
+  "modules/rep_cinema.yml"
 )
 
 # Load user-defined modules
