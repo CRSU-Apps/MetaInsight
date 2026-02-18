@@ -39,8 +39,15 @@ covariate_ranking_module_server <- function(id, common, parent_session) {
     }
   })
 
+  dataset <- reactive({
+    watch("covariate_model_fit")
+    dataset <- common$meta$covariate_model$dataset
+    common$meta$covariate_ranking$dataset <- dataset
+    dataset
+  })
+
   bayes_ranking_submodule_server("all", common, reactive(input$network_style), reactive(input$rank_style), reactive(input$colourblind), reactive(input$simple),
-                                 ".covariate_ranking_div", "covariate_model", "covariate_ranking", "configured_data", all_trigger, "covariate_ranking_plot")
+                                 ".covariate_ranking_div", "covariate_model", "covariate_ranking", dataset, all_trigger, "covariate_ranking_plot")
 
   return(list(
     save = function() {list(
@@ -75,6 +82,7 @@ covariate_ranking_module_result <- function(id) {
 
 covariate_ranking_module_rmd <- function(common) {list(
   covariate_ranking_knit = !is.null(common$meta$covariate_ranking$used),
+  covariate_ranking_dataset = common$meta$covariate_ranking$dataset,
   covariate_ranking_colourblind = common$meta$covariate_ranking$colourblind,
   covariate_ranking_simple = common$meta$covariate_ranking$simple,
   covariate_ranking_network_style = common$meta$covariate_ranking$network_style,

@@ -52,6 +52,7 @@ baseline_model <- function(configured_data, regressor_type, async = FALSE){
 
   # store this to avoid conversion later
   output$regressor <- regressor_type
+  output$dataset <- configured_data$dataset
   class(output) <- "baseline_model"
 
   return(output)

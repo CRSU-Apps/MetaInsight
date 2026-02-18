@@ -1,6 +1,9 @@
 baseline_model_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
+    radioButtons(ns("dataset"), "Dataset",
+                 choiceNames = list("All studies", "With selected studies excluded"),
+                 choiceValues = list("configured_data", "subsetted_data")),
     radioButtons(ns("regressor"), "Regression coefficient",
                  choiceNames = list(add_tooltip("Shared", "Coefficient is the same for all treatment comparisons"),
                                     add_tooltip("Exchangable", "Coefficient is different for each treatment comparison but all come from a shared distribution"),
@@ -39,55 +42,70 @@ baseline_model_module_server <- function(id, common, parent_session) {
         return()
       }
 
-      # METADATA ####
-      common$meta$baseline_model$used <- TRUE
-      common$meta$baseline_model$regressor <- input$regressor
-
       trigger("baseline_model")
     })
 
+    # needed to cancel in progress
+    base_model <- NULL
     common$tasks$baseline_model <- ExtendedTask$new(
-      function(...) mirai::mirai(run(...), run = baseline_model, .args = environment())
+      function(...) base_model <<- mirai::mirai(run(...), run = baseline_model, .args = environment())
     ) |> bind_task_button("run")
 
-    observeEvent(list(watch("baseline_model"), watch("setup_configure"), watch("effects"), input$regressor), {
+    observeEvent(list(watch("baseline_model"),
+                      watch("setup_configure"),
+                      watch("setup_exclude"),
+                      watch("effects"),
+                      input$regressor,
+                      input$dataset), {
       # trigger if run is pressed or if model is changed, but only if a model exists
       req((watch("baseline_model") > 0 || all(!is.null(common$baseline_model), watch("effects") > 0)))
 
-      if (is.null(common$baseline_model)){
-        common$logger |> writeLog(type = "starting", "Fitting baseline model")
-      } else {
-        common$logger |> writeLog(type = "starting", "Updating baseline model")
+      # cancel if the model is already updating
+      if (common$tasks$baseline_model$status() == "running"){
+        mirai::stop_mirai(base_model)
       }
 
-      common$tasks$baseline_model$invoke(common$configured_data,
+      if (is.null(common$baseline_model)){
+        common$logger |> writeLog(type = "starting", "Fitting baseline risk model")
+      } else {
+        common$logger |> writeLog(type = "starting", "Updating baseline risk model")
+      }
+
+      # METADATA ####
+      common$meta$baseline_model$used <- TRUE
+      common$meta$baseline_model$regressor <- input$regressor
+      common$meta$baseline_model$dataset <- input$dataset
+
+      common$tasks$baseline_model$invoke(common[[input$dataset]],
                                          input$regressor,
                                          async = TRUE)
       model_result$resume()
     })
 
     model_result <- observe({
+      # prevent loading when the task is cancelled
+      if (common$tasks$baseline_model$status() == "success"){
+        result <- common$tasks$baseline_model$result()
+        model_result$suspend()
+        if (inherits(result, "baseline_model")){
+          common$baseline_model <- result
+          shinyjs::runjs("Shiny.setInputValue('baseline_model-complete', 'complete');")
+          common$logger |> writeLog(type = "complete", "Baseline model has been fitted")
 
-      result <- common$tasks$baseline_model$result()
-      model_result$suspend()
-      if (inherits(result, "baseline_model")){
-        common$baseline_model <- result
-        shinyjs::runjs("Shiny.setInputValue('baseline_model-complete', 'complete');")
-        common$logger |> writeLog(type = "complete", "Baseline model has been fitted")
+          if (common$baseline_model$mtcResults$max.gelman > 1.05){
+            common$logger |> writeLog(type = "warning", glue(
+              "The Gelman-Rubin statistic is {round(common$baseline_model$mtcResults$max.gelman, 2)}.
+              A value greater than 1.05 may indicate lack of convergence. Please check the Gelman plot in the
+              Deviance report module"))
+          }
 
-        if (common$baseline_model$mtcResults$max.gelman > 1.05){
-          common$logger |> writeLog(type = "warning", glue(
-            "The Gelman-Rubin statistic is {round(common$baseline_model$mtcResults$max.gelman, 2)}.
-            A value greater than 1.05 may indicate lack of convergence. Please check the Gelman plot in the
-            Deviance report module"))
+        } else {
+          common$logger |> writeLog(type = "error", result)
         }
 
-      } else {
-        common$logger |> writeLog(type = "error", result)
+        trigger("baseline_model_table")
+        trigger("baseline_model_fit")
       }
-
-      trigger("baseline_model_table")
-      trigger("baseline_model_fit")
     })
 
     output$table <- renderTable({
@@ -108,12 +126,14 @@ baseline_model_module_server <- function(id, common, parent_session) {
       save = function() {list(
         ### Manual save start
         ### Manual save end
-      regressor = input$regressor)
+        regressor = input$regressor,
+        dataset = input$dataset)
       },
       load = function(state) {
         ### Manual load start
         ### Manual load end
-      updateRadioButtons(session, "regressor", selected = state$regressor)
+        updateRadioButtons(session, "regressor", selected = state$regressor)
+        updateRadioButtons(session, "dataset", selected = state$dataset)
       }
     ))
 })
@@ -130,6 +150,7 @@ baseline_model_module_result <- function(id) {
 
 baseline_model_module_rmd <- function(common) {list(
   baseline_model_knit = !is.null(common$meta$baseline_model$used),
-  baseline_model_regressor = common$meta$baseline_model$regressor)
+  baseline_model_regressor = common$meta$baseline_model$regressor,
+  baseline_model_dataset = common$meta$baseline_model$dataset)
 }
 

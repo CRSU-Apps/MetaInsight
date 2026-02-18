@@ -39,8 +39,15 @@ baseline_ranking_module_server <- function(id, common, parent_session) {
       }
     })
 
+    dataset <- reactive({
+      watch("baseline_model_fit")
+      dataset <- common$meta$baseline_model$dataset
+      common$meta$baseline_ranking$dataset <- dataset
+      dataset
+    })
+
     bayes_ranking_submodule_server("all", common, reactive(input$network_style), reactive(input$rank_style), reactive(input$colourblind), reactive(input$simple),
-                                   ".baseline_ranking_div", "baseline_model", "baseline_ranking", "configured_data", all_trigger, "baseline_ranking_plot")
+                                   ".baseline_ranking_div", "baseline_model", "baseline_ranking", dataset, all_trigger, "baseline_ranking_plot")
 
     return(list(
       save = function() {list(
@@ -77,6 +84,7 @@ baseline_ranking_module_result <- function(id) {
 
 baseline_ranking_module_rmd <- function(common) {list(
   baseline_ranking_knit = !is.null(common$meta$baseline_ranking$used),
+  baseline_ranking_dataset = common$meta$baseline_ranking$dataset,
   baseline_ranking_colourblind = common$meta$baseline_ranking$colourblind,
   baseline_ranking_simple = common$meta$baseline_ranking$simple,
   baseline_ranking_network_style = common$meta$baseline_ranking$network_style,

@@ -3,7 +3,7 @@
 ```
 
 ```{r, echo = {{baseline_ranking_knit}}, include = {{baseline_ranking_knit}}}
-baseline_ranking <- baseline_ranking(baseline_model, configured_data)
+baseline_ranking <- baseline_ranking(baseline_model, get({{baseline_ranking_dataset}}))
 ```
 
 ```{asis, echo = {{baseline_ranking_knit}}, eval = {{baseline_ranking_knit}}, include = {{baseline_ranking_knit}}}

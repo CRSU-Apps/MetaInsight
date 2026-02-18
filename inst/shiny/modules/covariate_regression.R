@@ -102,18 +102,27 @@ metaregression_regression_module_server <- function(id, common) {
 
     hide_and_show(module_id, show = FALSE)
 
+    dataset <- reactive({
+      watch(model_fit)
+      if (is.null(common[[model]]) || common[[model]]$dataset == "all"){
+        dataset <- "configured_data"
+      } else {
+        dataset <- "subsetted_data"
+      }
+      dataset
+    })
+
     observe({
-      watch("setup_configure")
-      req(common$configured_data)
-      all_treatments <- unique(common$configured_data$treatments$Label)
-      treatments <- all_treatments[all_treatments != common$configured_data$reference_treatment]
+      req(common[[dataset()]])
+      all_treatments <- unique(common[[dataset()]]$treatments$Label)
+      treatments <- all_treatments[all_treatments != common[[dataset()]]$reference_treatment]
       shinyWidgets::updatePickerInput(session, "comparators", choices = treatments, selected = character(0))
     })
 
     observeEvent(input$add_all_comparators, {
-      req(common$configured_data)
-      all_treatments <- unique(common$configured_data$treatments$Label)
-      treatments <- all_treatments[all_treatments != common$configured_data$reference_treatment]
+      req(common[[dataset()]])
+      all_treatments <- unique(common[[dataset()]]$treatments$Label)
+      treatments <- all_treatments[all_treatments != common[[dataset()]]$reference_treatment]
       shinyWidgets::updatePickerInput(session, "comparators", selected = treatments)
     })
 
@@ -150,7 +159,7 @@ metaregression_regression_module_server <- function(id, common) {
       }
 
       common$tasks[[module_id]]$invoke(common[[model]],
-                                      common$configured_data,
+                                      common[[dataset()]],
                                       async = TRUE)
 
       regress_result$resume()
@@ -180,6 +189,7 @@ metaregression_regression_module_server <- function(id, common) {
 
       # METADATA ####
       common$meta[[module_id]]$used <- TRUE
+      common$meta[[module_id]]$dataset <- dataset()
       common$meta[[module_id]]$comparators <- input$comparators
       common$meta[[module_id]]$covariate <- input$covariate
       common$meta[[module_id]]$credible <- input$credible
@@ -191,7 +201,7 @@ metaregression_regression_module_server <- function(id, common) {
       common$meta[[module_id]]$legend_position <- input$legend_position
 
       metaregression_plot(model = common[[model]],
-                          configured_data = common$configured_data,
+                          configured_data = common[[dataset()]],
                           regression_data = common[[module_id]],
                           comparators = input$comparators,
                           include_covariate = input$covariate,
@@ -223,8 +233,8 @@ metaregression_regression_module_server <- function(id, common) {
 
     return(list(
       save = function() {
-        all_treatments <- unique(common$configured_data$treatments$Label)
-        treatments <- all_treatments[all_treatments != common$configured_data$reference_treatment]
+        all_treatments <- unique(common[[dataset()]]$treatments$Label)
+        treatments <- all_treatments[all_treatments != common[[dataset()]]$reference_treatment]
         list(
           ### Manual save start
           treatments = treatments,
@@ -290,6 +300,7 @@ metaregression_regression_module_rmd <- function(common, module){
 
   template <- list(
     knit = !is.null(common$meta[[module]]$used),
+    dataset = common$meta[[module]]$dataset,
     comparators = common$meta[[module]]$comparators,
     covariate = common$meta[[module]]$covariate,
     credible = common$meta[[module]]$credible,
