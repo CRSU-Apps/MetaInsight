@@ -417,7 +417,7 @@ rep_cinema <- function(data, treatment_ids, outcome_type, contributions, model_t
 
 #' Extract the analysis statistics required for CINeMA from GEMTC output. This includes simulating a predictive distribution in order to get a prediction interval, which is not done in GEMTC.
 #' 
-#' @param gemtc_results Model results from gemtc::mtc.model.
+#' @param gemtc_results Model results from gemtc::mtc.run().
 #' @param treatments Vector of two treatments
 #' @return Named vector with names 'median', 'se', 'ci_lower', 'ci_upper', 'pi_lower', and 'pi_upper'.
 ExtractGemtcStats <- function(gemtc_results, treatments) {
