@@ -26,7 +26,7 @@ setup_load_module_server <- function(id, common, parent_session) {
 
     # Toggle visibility of guidance depending on selection
     observe({
-      selection <- paste0(tolower(input$outcome),"_guidance")
+      selection <- paste0(input$outcome,"_guidance")
       shinyjs::runjs(sprintf("
                      document.querySelectorAll('.continuous_guidance, .binary_guidance').forEach(el => el.style.display = 'none');
                      document.querySelectorAll('.%s').forEach(el => el.style.display = 'block');
@@ -109,7 +109,7 @@ setup_load_module_server <- function(id, common, parent_session) {
         if (result$is_data_uploaded){
           common$logger |> writeLog(type = "complete", "Data has been uploaded successfully")
         } else {
-          common$logger |> writeLog(type = "complete", glue("Default {tolower(input$outcome)} data has been loaded"))
+          common$logger |> writeLog(type = "complete", glue("Default {input$outcome} data has been loaded"))
         }
         # prevent running rmd if data is invalid
         common$meta$setup_load$used <- TRUE
@@ -129,11 +129,13 @@ setup_load_module_server <- function(id, common, parent_session) {
     })
 
     output$download <- downloadHandler(
-      filename = glue("MetaInsight_{tolower(input$outcome)}_{input$format}.csv"),
+      filename = function() {
+          glue("MetaInsight_{input$outcome}_{input$format}.csv")
+        },
       content = function(file) {
         file.copy(
           system.file("extdata",
-                      glue("{tolower(input$outcome)}_{input$format}.csv"),
+                      glue("{input$outcome}_{input$format}.csv"),
                       package = "metainsight"),
           file)
       }
