@@ -285,7 +285,6 @@ rep_cinema <- function(data, treatment_ids, outcome_type, contributions, model_t
   treatments <- stringr::str_extract(comparison, "^(.*?):(.*)$", c(1, 2))
   row <- treatments[1]
   col <- treatments[2]
-  
   if (!is.null(gemtc_results)) {
     gemtc_stats <- ExtractGemtcStats(gemtc_results = gemtc_results, treatments = treatments)
     nma_treatment_effect <- gemtc_stats["median"]
@@ -295,18 +294,20 @@ rep_cinema <- function(data, treatment_ids, outcome_type, contributions, model_t
     lower_pi <- gemtc_stats["pi_lower"]
     upper_pi <- gemtc_stats["pi_upper"]
   } else {
-    lower_pi <- freq_results$lower.predict[row, col]
-    upper_pi <- freq_results$upper.predict[row, col]
     if (model_type == "random") {
       nma_treatment_effect <- freq_results$TE.random[row, col]
       se_treat_effect <- freq_results$seTE.random[row, col]
       lower_ci <- freq_results$lower.random[row, col]
       upper_ci <- freq_results$upper.random[row, col]
+      lower_pi <- freq_results$lower.predict[row, col]
+      upper_pi <- freq_results$upper.predict[row, col]
     } else if (model_type == "fixed") {
       nma_treatment_effect <- freq_results$TE.common[row, col]
       se_treat_effect <- freq_results$seTE.common[row, col]
       lower_ci <- freq_results$lower.common[row, col]
       upper_ci <- freq_results$upper.common[row, col]
+      lower_pi <- lower_ci
+      upper_pi <- upper_ci
     }
   }
   
