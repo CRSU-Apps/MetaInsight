@@ -81,7 +81,6 @@ test_that("Treatments and data extracted from default binary file", {
 test_that("Check setup_load loads data into common correctly for default data", {
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_setup_load")
   app$set_inputs(tabs = "setup")
-  app$set_inputs(setupSel = "setup_load")
   app$click("setup_load-run")
   common <- app$get_value(export = "common")
 
@@ -122,7 +121,6 @@ test_that("Check setup_load loads data into common correctly for default data", 
 test_that("Check setup_load loads data into common correctly for an uploaded file", {
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_setup_load")
   app$set_inputs(tabs = "setup")
-  app$set_inputs(setupSel = "setup_load")
   app$upload_file("setup_load-file1" = data_path)
   app$click("setup_load-run")
   common <- app$get_value(export = "common")
@@ -139,7 +137,6 @@ test_that("Check setup_load loads data into common correctly for an uploaded fil
 test_that("Invalid data is loaded into common correctly and errors are passed to the logger", {
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_setup_load")
   app$set_inputs(tabs = "setup")
-  app$set_inputs(setupSel = "setup_load")
   app$set_inputs("setup_load-outcome" = "binary")
   app$upload_file("setup_load-file1" = invalid_data_path)
   app$click("setup_load-run")
@@ -160,7 +157,6 @@ test_that("Invalid data is loaded into common correctly and errors are passed to
 test_that("Data can be reloaded after loading", {
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_setup_load")
   app$set_inputs(tabs = "setup")
-  app$set_inputs(setupSel = "setup_load")
   app$click("setup_load-run")
   common <- app$get_value(export = "common")
   expect_s3_class(common$loaded_data$data, "data.frame")
@@ -186,7 +182,6 @@ test_that("Data can be reloaded after loading", {
 test_that("Data can be reloaded after loading", {
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_setup_load")
   app$set_inputs(tabs = "setup")
-  app$set_inputs(setupSel = "setup_load")
   # load data again and configure
   app$set_inputs("setup_load-outcome" = "continuous")
   app$click("setup_load-run")

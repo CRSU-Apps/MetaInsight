@@ -12,9 +12,9 @@ test_that("Check covariate_ranking function works as expected", {
 
   table_result <- ranking_table(result)
   expect_is(table_result, "data.frame")
-  expect_equal(table_result$Treatment[1], "Gabapentinoids")
-  expect_equal(nrow(table_result), 4)
-  expect_equal(ncol(table_result), 6)
+  expect_equal(table_result$Treatment[1], "the_Slit_nosed")
+  expect_equal(nrow(table_result), n_trt_all)
+  expect_equal(ncol(table_result), 8)
 
   litmus_result <- LitmusRankOGram(result)
   expect_match(litmus_result, "<svg")

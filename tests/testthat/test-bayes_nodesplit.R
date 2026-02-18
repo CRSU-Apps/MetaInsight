@@ -17,7 +17,8 @@ test_that("bayes_nodesplit produces errors for incorrect data types", {
 })
 
 test_that("bayes_nodesplit produces errors for data which cannot be split", {
-  expect_error(bayes_nodesplit(configured_data_con), "There are no loops in the network")
+  # expect_error(bayes_nodesplit(configured_data_con), "There are no loops in the network")
+  expect_error(bayes_nodesplit(configured_data_con), "In all loops, heterogeneity and inconsistency cannot be distinguished.")
 })
 
 test_that("bayes_nodesplit functions with valid data", {

@@ -64,7 +64,6 @@ test_that("{shinytest2} recording: e2e_baseline_model", {
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_baseline_model", timeout = 30000)
 
   app$set_inputs(tabs = "setup")
-  app$set_inputs(setupSel = "setup_load")
   app$click("setup_load-run")
   app$set_inputs(setupSel = "setup_configure")
   app$wait_for_value(input = "setup_configure-ready")

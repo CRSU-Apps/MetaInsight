@@ -146,7 +146,7 @@ covariate_model_module_server <- function(id, common, parent_session) {
   return(list(
     save = function() {
       # only save covariate info when it exists
-      if (is.null(common$covariate_column)){
+      if (length(common$configured_data$covariate) == 0){
         list()
       } else {
         covariate_min <- min(common$common$configured_data$connected_data[[common$configured_data$covariate$column]])

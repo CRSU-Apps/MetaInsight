@@ -15,7 +15,6 @@ test_that("{shinytest2} recording: e2e_baseline_summary", {
   app$click("setup_reload-goLoad_session")
 
   app$set_inputs(tabs = "baseline")
-  app$set_inputs(baselineSel = "baseline_summary")
   app$click("baseline_summary-run")
 
   app$wait_for_value(output = "baseline_summary-plot")

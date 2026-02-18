@@ -33,7 +33,6 @@ test_that("rep_markdown produces a renderable .Rmd file after a frequentist anal
   expected_chunks <- 1 #intro
 
   app$set_inputs(tabs = "setup")
-  app$set_inputs(setupSel = "setup_load")
   app$click("setup_load-run")
   expected_chunks <- expected_chunks + 1
 

@@ -1,8 +1,8 @@
 test_that("Check covariate_comparison function works as expected", {
   result <- covariate_comparison(fitted_covariate_model)
   expect_is(result, "data.frame")
-  expect_equal(nrow(result), 4)
-  expect_equal(ncol(result), 4)
+  expect_equal(nrow(result), n_trt_all)
+  expect_equal(ncol(result), n_trt_all)
 })
 
 test_that("Check bayes_mcmc function produces errors as expected", {
