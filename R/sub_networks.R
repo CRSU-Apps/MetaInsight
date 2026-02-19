@@ -34,7 +34,7 @@ IsNodesplittable <- function(data, treatments) {
     return(
       list(
         is_nodesplittable = FALSE,
-        reason = "There are no loops in the network."
+        reason = "There are no loops in the network"
       )
     )
   }
@@ -101,7 +101,7 @@ IsNodesplittable <- function(data, treatments) {
   return(
     list(
       is_nodesplittable = FALSE,
-      reason = "In all loops, heterogeneity and inconsistency cannot be distinguished."
+      reason = "In all loops, heterogeneity and inconsistency cannot be distinguished"
     )
   )
 }
