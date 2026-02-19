@@ -3,8 +3,8 @@ rep_cinema_module_ui <- function(id) {
   tagList(
     # UI
 
-    radioButtons(ns("select_model"), "Select model to export", choices = list("Frequentist" = "freq", "Bayesian" = "bayes")),
-    radioButtons(ns("select_data"), "Select dataset", choices = list("Full" = "full", "Sensitivity" = "sensitivity")),
+    radioButtons(ns("model"), "Select model to export", choices = list("Frequentist" = "freq", "Bayesian" = "bayes")),
+    radioButtons(ns("data"), "Select dataset", choices = list("All studies" = "configured_data", "With selected studies excluded" = "subsetted_data")),
     actionButton(ns("run"), "Create CINeMA export file", icon = icon("arrow-turn-down")),
     downloadButton(ns("download"), "Download")
 
@@ -24,71 +24,48 @@ rep_cinema_module_server <- function(id, common, parent_session) {
       return()
     }
     
-    if (input$select_model == "bayes" && is.null(common$bayes_all)) {
+    if (input$model == "bayes" && is.null(common$bayes_all)) {
       common$logger |> writeLog(type = "error", go_to = "bayes_model", "Please fit the Bayesian model first")
       shinyjs::hide("download")
       return()
     }
-    
-    trigger("rep_cinema")
       
     shinyjs::show("download")
 
   })
 
   observe({
-    if (input$select_model == "bayes" && is.null(common$bayes_all)) {
+    if (input$model == "bayes" && is.null(common$bayes_all)) {
       shinyjs::hide("download")
     }
   })
-
+  
   gemtc_results <- reactive({
-    if (input$select_model == "freq") {
+    if (input$model == "freq") {
       return(NULL)
-    } else if (input$select_model == "bayes") {
-      if (input$select_data == "full") {
-        return(common$bayes_all$mtcResults)
-      } else if (input$select_data == "sensitivity") {
-        return(common$bayes_sub$mtcResults)
-      }
+    } else if (input$model == "bayes") {
+      return(
+        switch(
+          input$data,
+          "full" = common$bayes_all$mtcResults,
+          "sensitivity" = common$bayes_sub$mtcResults
+        )
+      )
     }
   })
-  
-  selected_data <- reactive({
-    if (input$select_data == "full") {
-      return(common$configured_data) 
-    } else {
-      return(common$subsetted_data) 
-    }
-  })
-  
-  contributions <- reactive({
-    netmeta::netcontrib(
-      x = selected_data()$freq$net1,
-      method = "shortestpath",
-      study = TRUE
-    )
-  })
-  
-  cinema <- reactive({
-    rep_cinema(
-      data = selected_data()$connected_data,
-      treatment_ids = selected_data()$treatments,
-      outcome_type = selected_data()$outcome,
-      contributions = contributions(),
-      model_type = selected_data()$effects,
-      outcome_measure = selected_data()$outcome_measure,
-      gemtc_results = gemtc_results()
-    )
-  })
-  
 
   output$download <- downloadHandler(
     filename = function() {
-      paste0("cinema_", input$select_model, ".json")
+      paste0("cinema_", input$model, ".json")
     },
     content = function(file) {
-      writeLines(cinema(), file)
+      writeLines(
+        rep_cinema(
+          configured_data = common[[input$data]],
+          gemtc_results = gemtc_results()
+        ),
+        file
+      )
     })
 
   return(list(

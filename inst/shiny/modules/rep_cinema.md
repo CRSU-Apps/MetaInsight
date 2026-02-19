@@ -2,7 +2,7 @@
 
 **BACKGROUND**
 
-CINeMA (Confidence in Network Meta-Analysis) is a method of assessing confidence in the findings of a network meta-analysis. The easiest way to apply the method is to use the accompanying online application, which is also called CINeMA ([https://cinema.ispm.unibe.ch/](https://cinema.ispm.unibe.ch/)). Previously, in order to use the CINeMA app, the meta-analysis model had to be applied within the app itself. This module allows the results from an NMA fit in MetaInsight to be downloaded, in a file that can then be uploaded into CINeMA. Currently, only the frequentist and Bayesian NMA models are supported; results from meta-regression or baseline risk meta-regression cannot be exported.
+CINeMA (Confidence in Network Meta-Analysis) is a method of assessing confidence in the findings of a network meta-analysis. The easiest way to apply the method is to use the accompanying online application, which is also called CINeMA <a href="https://cinema.ispm.unibe.ch/" target="_blank">https://cinema.ispm.unibe.ch/</a>. Previously, in order to use the CINeMA app, the meta-analysis model had to be applied within the app itself. This module allows the results from an NMA fit in MetaInsight to be downloaded, in a file that can then be uploaded into CINeMA. Currently, only the frequentist and Bayesian NMA models are supported; results from meta-regression or baseline risk meta-regression cannot be exported.
 
 **IMPLEMENTATION**
 

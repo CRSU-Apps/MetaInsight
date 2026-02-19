@@ -41,6 +41,7 @@ Imports:
     grid,
     gt,
     igraph,
+    jsonlite,
     knitcitations,
     knitr,
     MCMCvis,
@@ -69,7 +70,7 @@ Imports:
     tools,
     xml2
 Suggests:
-    jsonlite,
+    jsonvalidate,
     mockery,
     pdftools,
     shinytest2,

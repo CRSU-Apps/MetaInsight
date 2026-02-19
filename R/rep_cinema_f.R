@@ -1,7 +1,10 @@
 
 #' @title rep_cinema
 #' @description Prepare project into a JSON format that CINeMA can read.
-#' This is a named list of lists. The top level list contains items:
+#' @inheritParams common_params
+#' @param gemtc_results Output from gemtc::mtc.run, as returned in the 'mtcResults' list element from baye(). If this parameter is NULL then the frequentist analysis results found in 'contributions' are used. If it is not NULL then the Bayesian analysis results contained in this parameter are used. Defaults to NULL.
+#' @return JSON string with the following structure:
+#' A named list of lists. The top level list contains items:
 #' - "project" Information for CINeMA project
 #'   - "CM" Contribution matrices
 #'     - "contributionMatrices" output from `.PrepareAnalysisForCinema()`
@@ -9,25 +12,40 @@
 #'   - "type" Outcome type. Either "binary" or "continuous"
 #'   - "Studies" Study data
 #'     - "long" Output from `.PrepareDataForCinema()`
-#' 
-#' @param data The dataframe used in MetaInsight.
-#' @param treatment_ids  Data frame containing treatment names (Label), original tratment names (RawLabel) and IDs (Number).
-#' @param outcome_type Type of outcome for which to reorder, either 'continuous' or 'binary'.
-#' @param contributions Contributions from {netmeta}.
-#' @param model_type Type of model: "fixed" or "random".
-#' @param outcome_measure Outcome measure, one of: ["OR", "RR", "RD", "MD", "SMD"].
-#' @param gemtc_results Output from gemtc::mtc.run, as returned in the 'mtcResults' list element from baye(). If this parameter is NULL then the frequentist analysis results found in 'contributions' are used. If it is not NULL then the Bayesian analysis results contained in this parameter are used. Defaults to NULL.
-#' @return JSON string with the described structure.
-rep_cinema <- function(data, treatment_ids, outcome_type, contributions, model_type, outcome_measure, gemtc_results = NULL, logger = NULL) {
-  prepared_project <- .PrepareProjectForCinema(
-    data,
-    treatment_ids,
-    outcome_type,
+rep_cinema <- function(configured_data, gemtc_results = NULL, logger = NULL) {
+
+  check_param_classes("configured_data", "configured_data", logger)
+  
+  contributions <- netmeta::netcontrib(
+    x = configured_data$freq$net1,
+    method = "shortestpath",
+    study = TRUE
+  )
+  
+  prepared_data <- .PrepareDataForCinema(
+    configured_data$connected_data,
+    configured_data$treatments,
+    configured_data$outcome
+  )
+  
+  prepared_analysis <- .PrepareAnalysisForCinema(
     contributions,
-    model_type,
-    outcome_measure,
+    configured_data$effects,
+    configured_data$outcome_measure,
     gemtc_results
   )
+  
+  prepared_project <- list(
+    project = list(
+      CM = prepared_analysis,
+      format = jsonlite::unbox("long"),
+      type = jsonlite::unbox(tolower(configured_data$outcome)),
+      studies = list(
+        long = prepared_data
+      )
+    )
+  )
+  
   return(jsonlite::toJSON(prepared_project, pretty = TRUE, na = "null"))
 }
 
@@ -205,42 +223,6 @@ rep_cinema <- function(data, treatment_ids, outcome_type, contributions, model_t
   )
   
   return(prepared_analysis)
-}
-
-#' Prepare project into a format that CINeMA can read.
-#' This is a named list of lists. The top level list contains items:
-#' - "project" Information for CINeMA project
-#'   - "CM" Contribution matrices
-#'     - "contributionMatrices" output from `.PrepareAnalysisForCinema()`
-#'   - "format" Data format. Always "long"
-#'   - "type" Outcome type. Either "binary" or "continuous"
-#'   - "Studies" Study data
-#'     - "long" Output from `.PrepareDataForCinema()`
-#' 
-#' @param data The dataframe used in MetaInsight.
-#' @param treatment_ids  Data frame containing treatment names (Label), original tratment names (RawLabel) and IDs (Number).
-#' @param outcome_type Type of outcome for which to reorder, either 'continuous' or 'binary'.
-#' @param contributions Contributions from {netmeta}.
-#' @param model_type Type of model: "fixed" or "random".
-#' @param outcome_measure Outcome measure, one of: ["OR", "RR", "RD", "MD", "SMD"].
-#' @param gemtc_results Output from gemtc::mtc.run, as returned in the 'mtcResults' list element from baye(). If this parameter is NULL then the frequentist analysis results found in 'contributions' are used. If it is not NULL then the Bayesian analysis results contained in this parameter are used. Defaults to NULL.
-#' @return A List with the described structure.
-.PrepareProjectForCinema <- function(data, treatment_ids, outcome_type, contributions, model_type, outcome_measure, gemtc_results = NULL) {
-  prepared_data <- .PrepareDataForCinema(data, treatment_ids, outcome_type)
-  prepared_analysis <- .PrepareAnalysisForCinema(contributions, model_type, outcome_measure, gemtc_results)
-  
-  prepared_project = list(
-    project = list(
-      CM = prepared_analysis,
-      format = jsonlite::unbox("long"),
-      type = jsonlite::unbox(tolower(outcome_type)),
-      studies = list(
-        long = prepared_data
-      )
-    )
-  )
-  
-  return(prepared_project)
 }
 
 #' Creates a list, each element of which is a named list containing the results of a comparison. In the outer list there is one element per comparison. Each inner list contains results including treatment effects, standard errors, confidence intervals, predictions intervals, and p-values, for NMA effects, direct and indirect effects, and SIDE inconsistency factors. If there is no such data (e.g. if there is no indirect evidence) then the list element does not appear.
