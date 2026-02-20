@@ -149,8 +149,8 @@ covariate_model_module_server <- function(id, common, parent_session) {
       if (length(common$configured_data$covariate) == 0){
         list()
       } else {
-        covariate_min <- min(common$common$configured_data$connected_data[[common$configured_data$covariate$column]])
-        covariate_max <- max(common$common$configured_data$connected_data[[common$configured_data$covariate$column]])
+        covariate_min <- min(common$configured_data$connected_data[[common$configured_data$covariate$column]])
+        covariate_max <- max(common$configured_data$connected_data[[common$configured_data$covariate$column]])
         log_val <- round(log10(covariate_max - covariate_min))
         step <- 10 ** (log_val - 2)
         list(
@@ -158,7 +158,7 @@ covariate_model_module_server <- function(id, common, parent_session) {
           covariate_min = covariate_min,
           covariate_max = covariate_max,
           covariate_step = ifelse(common$configured_data$covariate$type == "continuous", step, 1),
-          covariate_label = glue("Covariate value ({common$covariate_name})"),
+          covariate_label = glue("Covariate value ({common$configured_data$covariate$name})"),
           covariate_tick = ifelse(common$configured_data$covariate$type == "continuous", TRUE, FALSE),
           ### Manual save end
           covariate_value = as.numeric(input$covariate_value),

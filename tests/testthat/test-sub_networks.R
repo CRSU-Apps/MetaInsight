@@ -18,7 +18,7 @@ test_that("IsNodesplittable() identifies data with no loops", {
   treatments <- c("Placebo", "Hydrogen", "Oxygen")
 
   check_nodesplit <- IsNodesplittable(data = data, treatments = treatments)
-  expect_equal(check_nodesplit, list(is_nodesplittable = FALSE, reason = "There are no loops in the network."))
+  expect_equal(check_nodesplit, list(is_nodesplittable = FALSE, reason = "There are no loops in the network"))
 })
 
 test_that("IsNodesplittable() identifies data with loops but no splittable nodes", {
@@ -29,7 +29,7 @@ test_that("IsNodesplittable() identifies data with loops but no splittable nodes
   treatments <- c("Placebo", "Hydrogen", "Oxygen")
 
   check_nodesplit <- IsNodesplittable(data = data, treatments = treatments)
-  expect_equal(check_nodesplit, list(is_nodesplittable = FALSE, reason = "In all loops, heterogeneity and inconsistency cannot be distinguished."))
+  expect_equal(check_nodesplit, list(is_nodesplittable = FALSE, reason = "In all loops, heterogeneity and inconsistency cannot be distinguished"))
 })
 
 test_that("IdentifySubNetworks() finds single subnetwork for fully connected network for continuous long format", {
