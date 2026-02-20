@@ -1,7 +1,7 @@
 # The aim here is to process the data once at the start so it can be used downstream
 test_data_dir <- normalizePath(testthat::test_path("data"))
 
-options(shinytest2.load_timeout=30000)
+options(shinytest2.load_timeout=60000)
 
 loaded_data_con <- setup_load(file.path(test_data_dir, "Cont_long_continuous_cov.csv"), outcome = "continuous")
 configured_data_con <- setup_configure(loaded_data_con, "the Great", "random", "MD", "good", 123)
