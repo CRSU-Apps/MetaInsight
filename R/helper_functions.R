@@ -508,8 +508,8 @@ dic_table <- function(dic, analysis = "all"){
     stop("analysis must be 'all' or 'sub'")
   }
 
-  rownames(dic) <- c("Average deviance (Dbar)",
-                     "Estimated degrees of freedom (pD)",
+  rownames(dic) <- c("Posterior mean deviance (Dbar)",
+                     "Effective number of parameters (pD)",
                      "Dbar + pD = Deviance information criterion (DIC)",
                      "Study arms")
 

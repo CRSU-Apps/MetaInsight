@@ -11,15 +11,13 @@ bayes_model_module_ui <- function(id) {
 bayes_model_submodule_server <- function(id, common){
   moduleServer(id, function(input, output, session) {
 
-    output$table <- renderTable({
+    output$table <- renderUI({
       watch("bayes_model") # required for reset
       watch(paste0("bayes_model_table_", id))
       req(common[[paste0("bayes_", id)]])
       shinyjs::show(selector = ".bayes_model_div")
-      common[[paste0("bayes_", id)]]$dic
-    }, digits = 3, rownames = TRUE, colnames = FALSE)
-
-    outputOptions(output, "table", suspendWhenHidden = FALSE)
+      dic_table(common[[paste0("bayes_", id)]]$dic, id)
+    })
 
   })
 }
@@ -161,29 +159,26 @@ bayes_model_module_server <- function(id, common, parent_session) {
 })
 }
 
-bayes_model_submodule_result <- function(id, label) {
+bayes_model_submodule_result <- function(id) {
   ns <- NS(id)
   tagList(
-    p(paste0("Model fit ", label, ":")),
-    tableOutput(ns("table"))
+    uiOutput(ns("table"))
   )
 }
 
 bayes_model_module_result <- function(id) {
   ns <- NS(id)
   tagList(
-    div(class = "bayes_model_div",
-      fluidRow(
-        column(
-          width = 6,
-          align = "center",
-          bayes_model_submodule_result(ns("all"), "for all studies")
-        ),
-        column(
-          width = 6,
-          align = "center",
-          bayes_model_submodule_result(ns("sub"), "excluding selected studies")
-        )
+    fluidRow(
+      column(
+        width = 6,
+        align = "center",
+        bayes_model_submodule_result(ns("all"))
+      ),
+      column(
+        width = 6,
+        align = "center",
+        bayes_model_submodule_result(ns("sub"))
       )
     )
   )
