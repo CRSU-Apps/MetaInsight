@@ -4,7 +4,7 @@
 \alias{bayes_results}
 \alias{covariate_results}
 \alias{baseline_results}
-\title{Produces a summary of a Bayesian model}
+\title{Produce a summary of a Bayesian model}
 \usage{
 bayes_results(model, logger = NULL)
 
@@ -25,5 +25,5 @@ shiny, otherwise leave the default \code{NULL}}
 HTML summary of the model
 }
 \description{
-Produces a summary of a Bayesian model
+Produce a summary of a Bayesian model
 }

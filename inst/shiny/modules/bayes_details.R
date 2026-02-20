@@ -17,7 +17,7 @@ bayes_details_submodule_server <- function(id, common, model, model_trigger, mod
   observeEvent(run(), {
     if (is.null(common[[model]])){
       common$logger |> writeLog(type = "error",
-                                go_to = glue::glue("{id}_model"),
+                                go_to = glue("{id}_model"),
                                 error_message)
       return()
     } else {
@@ -30,7 +30,7 @@ bayes_details_submodule_server <- function(id, common, model, model_trigger, mod
     watch(model_trigger)
     req(watch(module_id) > 0)
     req(common[[model]])
-    shinyjs::show(selector = glue::glue(".{module_id}_div"))
+    shinyjs::show(selector = glue(".{module_id}_div"))
     bayes_details(common[[model]])
   })
 
@@ -41,7 +41,7 @@ bayes_details_submodule_server <- function(id, common, model, model_trigger, mod
   outputOptions(output, "mcmc", suspendWhenHidden = FALSE)
 
   output$download_mcmc <- downloadHandler(
-    filename = glue::glue("MetaInsight_{model_type}_mcmc_characteristics.csv"),
+    filename = glue("MetaInsight_{model_type}_mcmc_characteristics.csv"),
     content = function(file) {
       write.csv(details()$mcmc, file, row.names = FALSE, col.names = FALSE)
     }
@@ -52,7 +52,7 @@ bayes_details_submodule_server <- function(id, common, model, model_trigger, mod
   }, colnames = FALSE)
 
   output$download_priors <- downloadHandler(
-    filename = glue::glue("MetaInsight_{model_type}_prior_distributions.csv"),
+    filename = glue("MetaInsight_{model_type}_prior_distributions.csv"),
     content = function(file) {
       write.csv(details()$priors, file, row.names = FALSE, col.names = FALSE)
     }
@@ -67,7 +67,7 @@ bayes_details_submodule_server <- function(id, common, model, model_trigger, mod
   })
 
   output$download_code <- downloadHandler(
-    filename = glue::glue("MetaInsight_{model_type}_model_code.txt"),
+    filename = glue("MetaInsight_{model_type}_model_code.txt"),
     content = function(file) {
       location <- ifelse(model == "baseline_model", "network", "model")
       cat(
@@ -93,7 +93,7 @@ bayes_details_submodule_server <- function(id, common, model, model_trigger, mod
 
   create_chain_initial_data_download_handler <- function(index) {
     downloadHandler(
-      filename = glue::glue("MetaInsight_{model_type}_initial_values_chain_{index}.txt"),
+      filename = glue("MetaInsight_{model_type}_initial_values_chain_{index}.txt"),
       content = function(file) {
         # this should be able to be more elegant, but I can't get it to work.
         if (model == "baseline_model") {
@@ -128,7 +128,7 @@ bayes_details_submodule_server <- function(id, common, model, model_trigger, mod
 
   create_chain_data_download_handler <- function(index) {
     downloadHandler(
-      filename = glue::glue("MetaInsight_{model_type}_data_for_chain_{index}.csv"),
+      filename = glue("MetaInsight_{model_type}_data_for_chain_{index}.csv"),
       content = function(file) {
         data <- as.data.frame(common[[model]]$mtcResults$samples[[index]])
         write.csv(data, file)

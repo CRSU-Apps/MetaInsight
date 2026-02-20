@@ -1,27 +1,24 @@
-#' Produce deviance plots
+#' Produce deviance plots using the output of `gemtc::mtc.deviance()`
+#'
 #' @param model Bayesian model produced by `bayes_model()` or `covariate_model()`
-#' @param seed numeric. Seed value to use for calculating UME model. Only required
-#' when `model` was produced by `bayes_model()`
 #' @inheritParams common_params
 #'
 #' @return A list containing different elements depending on the input model:
 #'
-#' When model was created by `bayes_model()` containing:
-#' \itemize{
+#' When `model` was created by `bayes_model()` containing:
 #' \item{deviance_mtc}{results from `gemtc::mtc.deviance()` for model$mtcResults}
 #' \item{deviance_ume}{results from `gemtc::mtc.deviance()` for UME model}
 #' \item{scat_plot}{plotly object}
 #' \item{stem_plot}{plotly object}
 #' \item{lev_plot}{plotly object}
-#' }
-#' When model was created by `covariate_model()` containing:
-#' \itemize{
+#'
+#' When `model` was created by `covariate_model()` containing:
 #' \item{deviance_mtc}{results from `gemtc::mtc.deviance()` for model$mtcResults}
 #' \item{stem_plot}{plotly object}
 #' \item{lev_plot}{plotly object}
-#' }
+#'
 #' @export
-bayes_deviance <- function(model, seed = NULL, async = FALSE){
+bayes_deviance <- function(model, async = FALSE){
 
   if (!inherits(model, "bayes_model")){
     return(async |> asyncLog(type = "error", "model must be an object created by bayes_model() or covariate_model()"))
@@ -40,12 +37,7 @@ bayes_deviance <- function(model, seed = NULL, async = FALSE){
     )
   }
 
-  # check a seed exists and produce the scatter plot for non-covariate models
-  if (is.null(seed) || !is.numeric(seed)){
-    return(async |> asyncLog(type = "error", "Please provide a numeric seed value"))
-  }
-
-  scat <- scat_plot(model, deviance, model$model_type, model$outcome_measure, seed)
+  scat <- scat_plot(model, deviance, model$effects, model$outcome_measure, model$seed)
 
   list(
     deviance_mtc = deviance,
@@ -68,6 +60,7 @@ covariate_deviance <- function(...){
 #' @param deviance Output produced by `gemtc::mtc.deviance()`
 #' @param model_type Model effects type. "random" or "fixed".
 #' @param outcome_measure Outcome measure being analysed: one of "OR". "RR", "MD".
+#' @param seed numeric. Seed value to use for calculating UME model.
 scat_plot <- function(model, deviance, model_type, outcome_measure, seed) {
   if (outcome_measure == "MD") {
     like <- "normal"
@@ -122,10 +115,13 @@ scat_plot <- function(model, deviance, model_type, outcome_measure, seed) {
 
   dline <- data.frame(m, n)
 
-  p = plotly::plot_ly() |>   # plot
+  #The maximum number of arms
+  max_arms <- ncol(deviance$dev.ab) - 1
+
+  p <- plotly::plot_ly() |>   # plot
     plotly::add_trace(data = dline, x = ~m, y = ~n, type = 'scatter', mode = 'lines',
               line = list(color = '#45171D'))
-  p = p |>
+  p <- p |>
     plotly::add_trace(data = all, x = ~NMAmodel_arm1, y = ~UMEmodel_arm1, type = 'scatter', mode = 'markers',
               marker = list(size = 4, color = '#CAEFD1',
                             line = list(color = 'rgb(0,128,0)',
@@ -136,7 +132,7 @@ scat_plot <- function(model, deviance, model_type, outcome_measure, seed) {
                           '</br> Deviance from NMA model:',round(NMAmodel_arm1, digits = 2),
                           '</br> Deviance from UME model:',round(UMEmodel_arm1, digits = 2)
               ))
-  p = p |>
+  p <- p |>
     plotly::add_trace(
       x = ~NMAmodel_arm2, y = ~UMEmodel_arm2, type = 'scatter', mode = 'markers',
       marker = list(size = 4, color = '#CAEFD1',
@@ -152,56 +148,39 @@ scat_plot <- function(model, deviance, model_type, outcome_measure, seed) {
     plotly::layout(showlegend = FALSE, xaxis = list(title = "Deviance from NMA model"),
            yaxis = list(title = "Deviance from UME inconsistency model"))
 
-  if (ncol(c) > 3) {
-    p = p |>
-      plotly::add_trace(data = all,
-                x = ~X3.x, y = ~X3.y, type = 'scatter', mode = 'markers',
-                marker = list(size = 4, color = '#CAEFD1',
-                              line = list(color = 'rgb(0,128,0)',
-                                          width = 2)),
-                hoverinfo = 'text',
-                text = ~paste('</br>', all$names,
-                              '</br> Arm 3',
-                              '</br> Deviance from NMA model:', round(X3.x, digits = 2),
-                              '</br> Deviance from UME model:', round(X3.y, digits = 2)))}
-  if (ncol(c) > 4) {
-    p = p |>
-      plotly::add_trace(data = all,
-                x = ~X4.x, y = ~X4.y, type = 'scatter', mode = 'markers',
-                marker = list(size = 4, color = '#CAEFD1',
-                              line = list(color = 'rgb(0,128,0)',
-                                          width = 2)),
-                hoverinfo = 'text',
-                text = ~paste('</br>', all$names,
-                              '</br> Arm 4',
-                              '</br> Deviance from NMA model:', round(X4.x, digits = 2),
-                              '</br> Deviance from UME model:', round(X4.y, digits = 2)))}
-  if (ncol(c) > 5) {
-    p = p |>
-      plotly::add_trace(data = all,
-                x = ~X5.x, y = ~X5.y, type = 'scatter', mode = 'markers',
-                marker = list(size = 4, color = '#CAEFD1',
-                              line = list(color = 'rgb(0,128,0)',
-                                          width = 2)),
-                hoverinfo = 'text',
-                text = ~paste('</br>', all$names,
-                              '</br> Arm 5',
-                              '</br> Deviance from NMA model:', round(X5.x, digits = 2),
-                              '</br> Deviance from UME model:', round(X5.y, digits = 2)))}
-  if (ncol(c) > 6) {
-    p = p |>
-      plotly::add_trace(data = all,
-                x = ~X6.x, y = ~X6.y, type = 'scatter', mode = 'markers',
-                marker = list(size = 4, color = '#CAEFD1',
-                              line = list(color = 'rgb(0,128,0)',
-                                          width = 2)),
-                hoverinfo = 'text',
-                text = ~paste('</br>', all$names,
-                              '</br> Arm 6',
-                              '</br> Deviance from NMA model:', round(X6.x, digits = 2),
-                              '</br> Deviance from UME model:', round(X6.y, digits = 2)))}
+  if (max_arms >= 3) {
+    for (arm_number in 3:max_arms) {
+      p <- .add_trace_to_scat_plot(ume_plot = p, all = all, arm_number = arm_number)
+    }
+  }
 
   return(list(p = p, y = y))
+}
+
+#' Apply plotly::add_trace to the UME plot when there are more than two arms.
+#'
+#' @param ume_plot The current UME plot.
+#' @param all The full data frame of residual deviances.
+#' @param arm_number Current arm number.
+#' @return 'ume_plot' with additional points added, corresponding to 'arm_number'.
+.add_trace_to_scat_plot <- function(ume_plot, all, arm_number) {
+  x_column <- paste0("X", arm_number, ".x")
+  y_column <- paste0("X", arm_number, ".y")
+
+  return(
+    ume_plot |>
+      plotly::add_trace(data = all,
+                x = ~all[, x_column], y = ~all[, y_column], type = 'scatter', mode = 'markers',
+                marker = list(size = 4, color = '#CAEFD1',
+                              line = list(color = 'rgb(0,128,0)',
+                                          width = 2)),
+                hoverinfo = 'text',
+                text = ~paste('</br>', all$names,
+                              '</br> Arm', arm_number,
+                              '</br> Deviance from NMA model:', round(all[, x_column], digits = 2),
+                              '</br> Deviance from UME model:', round(all[, y_column], digits = 2))
+      )
+  )
 }
 
 #' Stem plot
@@ -239,7 +218,7 @@ stem_plot <- function(deviance) {
   )
   p <- plotly::plot_ly(data = d, x = ~v, y = ~devbar)
   for (i in 1:length(devbar)) {
-    p = p |>
+    p <- p |>
       plotly::add_segments(x = i,
                    xend = i,
                    y = 0,
@@ -251,7 +230,7 @@ stem_plot <- function(deviance) {
                                width = 1)
       )
   }
-  p = p|>
+  p <- p|>
     plotly::add_trace(data = d, x = ~v, y = ~devbar, type = 'scatter', mode = 'markers',
               marker = list(size = 4,
                             color = '#CAEFD1',
@@ -294,9 +273,9 @@ lev_plot <- function(deviance) {
   b4 <- 4 - a^2
   parabola <- data.frame(a, b1, b2, b3, b4)
 
-  xlab = "Square root of average residual deviance across the arms for each study"
+  xlab <- "Square root of average residual deviance across the arms for each study"
   'sqrt(average(residual deviance for arm 1, residual deviance for arm 2...))'
-  ylab = "Average leverage across the arms for each study"
+  ylab <- "Average leverage across the arms for each study"
 
   xl <- list(
     title = xlab,

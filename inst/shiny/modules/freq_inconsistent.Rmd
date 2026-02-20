@@ -3,13 +3,13 @@
 ```
 
 ```{r, echo = {{freq_inconsistent_knit}}, include = {{freq_inconsistent_knit}}}
-frequentist_inconsistency_all <- freq_inconsistent(frequentist_all, model_type)
+frequentist_inconsistency_all <- freq_inconsistent(configured_data)
 
 knitr::kable(frequentist_inconsistency_all, row.names = TRUE, caption = "Assessment of inconsistency for all studies")
 ```
 
 ```{r, echo = {{freq_inconsistent_knit}}, include = {{freq_inconsistent_knit}}}
-frequentist_inconsistency_sub <- freq_inconsistent(frequentist_sub, model_type)
+frequentist_inconsistency_sub <- freq_inconsistent(subsetted_data)
 
 knitr::kable(frequentist_inconsistency_sub, row.names = TRUE, caption = "Assessment of inconsistency with selected studies excluded")
 ```

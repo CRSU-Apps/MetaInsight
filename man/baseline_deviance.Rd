@@ -7,7 +7,7 @@
 baseline_deviance(model, async = FALSE)
 }
 \arguments{
-\item{model}{Baseline model produced by \code{baseline_model()}}
+\item{model}{Output model produced by \code{baseline_model()}}
 
 \item{async}{Whether or not the function is being used asynchronously. Default \code{FALSE}}
 }

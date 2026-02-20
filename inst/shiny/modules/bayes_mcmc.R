@@ -19,7 +19,7 @@ bayes_mcmc_submodule_server <- function(id, common, module_id, model, mcmc, trig
     output$gelman <- renderPlot({
       watch(trigger)
       req(common[[mcmc]])
-      shinyjs::show(selector = glue::glue(".{module_id}_div"))
+      shinyjs::show(selector = glue(".{module_id}_div"))
       cowplot::plot_grid(
         plotlist = gelman_plots(common[[mcmc]]$gelman_data, common[[mcmc]]$parameters),
         ncol = common[[mcmc]]$n_cols
@@ -129,12 +129,12 @@ bayes_mcmc_submodule_result <- function(id, class, label) {
   ns <- NS(id)
   tagList(
     div(class = class,
-      h5(glue::glue("Gelman convergence assessment plots {label}")),
+      h5(glue("Gelman convergence assessment plots {label}")),
       # auto makes the output height the same as the render
       plotOutput(ns("gelman"), height = "auto"),
-      h5(glue::glue("Trace plots {label}")),
+      h5(glue("Trace plots {label}")),
       plotOutput(ns("trace"), height = "auto"),
-      h5(glue::glue("Posterior density plots {label}")),
+      h5(glue("Posterior density plots {label}")),
       plotOutput(ns("density"), height = "auto")
     )
   )

@@ -15,13 +15,13 @@ covariate_summary_module_server <- function(id, common, parent_session) {
 
     observeEvent(input$run, {
       # WARNING ####
-      if (is.null(common$freq_sub)){
+      if (is.null(common$configured_data)){
         common$logger |> writeLog(type= "error", go_to = "setup_configure",
                                   "Please configure the analysis first in the Setup section")
         return()
       }
       # FUNCTION CALL ####
-      common$covariate_summary_plot <- covariate_summary(common$main_connected_data, common$outcome, common$treatment_df, common$logger)
+      common$covariate_summary_plot <- covariate_summary(common$configured_data, common$logger)
 
       # METADATA ####
       common$meta$covariate_summary$used <- TRUE
@@ -34,8 +34,8 @@ covariate_summary_module_server <- function(id, common, parent_session) {
     output$plot <- renderUI({
       watch("covariate_summary")
       req(common$covariate_summary_plot)
-      div(class = "svg_container", style = "max-width: 800px;",
-          HTML(common$covariate_summary_plot$svg)
+      svg_container( style = "max-width: 800px;",
+          common$covariate_summary_plot
       )
     })
 
@@ -43,7 +43,9 @@ covariate_summary_module_server <- function(id, common, parent_session) {
       filename = function(){
         paste0("MetaInsight_covariate_summary.", common$download_format)},
       content = function(file){
-        write_svg_plot(file, common$download_format, common$covariate_summary_plot)
+        write_plot(common$covariate_summary_plot,
+                   file,
+                   common$download_format)
       }
     )
 

@@ -1,24 +1,25 @@
-```{asis, echo = {{bayes_nodesplit_knit}}, eval = {{bayes_nodesplit_knit}}, include = {{bayes_nodesplit_knit}}}
+```{asis, echo = {{bayes_nodesplit_knit_all}}, eval = {{bayes_nodesplit_knit_all}}, include = {{bayes_nodesplit_knit_all}}}
 ### Fit Bayesian nodesplitting models
 ```
 
-```{r, echo = {{bayes_nodesplit_knit}}, include = {{bayes_nodesplit_knit}}}
-bayes_nodesplit_all <- bayes_nodesplit(main_connected_data, treatment_df, outcome, outcome_measure, model_type)
-bayes_nodesplit_sub <- bayes_nodesplit(connected_data_sub, treatment_df_sub, outcome, outcome_measure, model_type)
+```{r, echo = {{bayes_nodesplit_knit_all}}, include = {{bayes_nodesplit_knit_all}}}
+bayes_nodesplit_all <- bayes_nodesplit(configured_data)
 ```
 
-```{asis, echo = {{bayes_nodesplit_knit}}, eval = {{bayes_nodesplit_knit}}, include = {{bayes_nodesplit_knit}}}
-{r, fig.align='center', fig.width = 8, fig.height = {{bayes_nodesplit_plot_height_all}}}
-```
-```{r, echo = {{bayes_nodesplit_knit}}, include = {{bayes_nodesplit_knit}}}
-plot(summary(bayes_nodesplit_all), digits = 3)
-title(main = "Inconsistency test with nodesplitting \nmodel for all studies")
+```{r, echo = {{bayes_nodesplit_knit_sub}}, include = {{bayes_nodesplit_knit_sub}}}
+bayes_nodesplit_sub <- bayes_nodesplit(subsetted_data)
 ```
 
-```{asis, echo = {{bayes_nodesplit_knit}}, eval = {{bayes_nodesplit_knit}}, include = {{bayes_nodesplit_knit}}}
-{r, fig.align='center', fig.width = 8, fig.height = {{bayes_nodesplit_plot_height_sub}}}
+```{asis, echo = {{bayes_nodesplit_knit_all}}, eval = {{bayes_nodesplit_knit_all}}, include = {{bayes_nodesplit_knit_all}}}
+{r, results = 'asis'}
 ```
-```{r, echo = {{bayes_nodesplit_knit}}, include = {{bayes_nodesplit_knit}}}
-plot(summary(bayes_nodesplit_sub), digits = 3)
-title(main = "Inconsistency test with nodesplitting \nmodel with selected studies excluded")
+```{r, echo = {{bayes_nodesplit_knit_all}}, include = {{bayes_nodesplit_knit_all}}}
+bayes_nodesplit_plot(bayes_nodesplit_all, main_analysis = TRUE)
+```
+
+```{asis, echo = {{bayes_nodesplit_knit_sub}}, eval = {{bayes_nodesplit_knit_sub}}, include = {{bayes_nodesplit_knit_sub}}}
+{r, results = 'asis'}
+```
+```{r, echo = {{bayes_nodesplit_knit_sub}}, include = {{bayes_nodesplit_knit_sub}}}
+bayes_nodesplit_plot(bayes_nodesplit_sub, main_analysis = FALSE)
 ```

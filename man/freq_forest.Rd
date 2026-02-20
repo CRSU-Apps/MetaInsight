@@ -2,33 +2,22 @@
 % Please edit documentation in R/freq_forest_f.R
 \name{freq_forest}
 \alias{freq_forest}
-\title{Produce a forest plot and annotation}
+\title{Produce a frequentist forest plot and annotation using \code{meta::forest()}}
 \usage{
 freq_forest(
-  freq,
-  reference_treatment,
-  model_type,
-  outcome_measure,
-  xmin,
-  xmax,
-  title,
+  configured_data,
+  xmin = NULL,
+  xmax = NULL,
+  title = "",
   logger = NULL
 )
 }
 \arguments{
-\item{freq}{list. NMA results created by freq_wrap().}
+\item{configured_data}{list. Input dataset created by \code{setup_configure()} or \code{setup_exclude()}}
 
-\item{reference_treatment}{character. The reference treatment of the dataset}
+\item{xmin}{numeric. Minimum x-axis value. Default \code{NULL} in which case it is calculated internally}
 
-\item{model_type}{character. Type of model to fit, either \code{random} or \code{fixed}}
-
-\item{outcome_measure}{character. Outcome measure of the dataset. Either
-\code{OR}, \code{RR} or \code{RD} when \code{outcome} is \code{Binary} or \code{MD} or \code{SMD} when
-\code{outcome} is \code{Continuous}}
-
-\item{xmin}{numeric. Minimum x-axis limit.}
-
-\item{xmax}{numeric. Maximum x-axis limit.}
+\item{xmax}{numeric. Maximum x-axis value. Default \code{NULL} in which case it is calculated internally}
 
 \item{title}{character. Title for the plot.}
 
@@ -37,11 +26,9 @@ Window. Insert the logger reactive list here for running in
 shiny, otherwise leave the default \code{NULL}}
 }
 \value{
-List containing:
-\item{svg}{character. SVG code to produce the plot}
-\item{height}{numeric. Plot height in pixels}
-\item{width}{numeric. Plot width in pixels}
+html. Contains the svg string to generate the plot. This can be saved
+using \code{write_plot()}.
 }
 \description{
-Produce a forest plot and annotation
+Produce a frequentist forest plot and annotation using \code{meta::forest()}
 }

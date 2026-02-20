@@ -1,12 +1,17 @@
-#' Assess the data for validity. this checks the column names for required columns, and balanced wide format numbered columns.
+#' Assess the data for validity. This checks the column names for required columns
+#' and balanced wide format numbered columns.
 #'
-#' @param data_path character. Path to the file to be loaded or if `NULL` load the default data
+#' @param data_path character. Path to the file to be loaded or if `NULL` load
+#' the default data
 #' @inheritParams common_params
 #' @return List containing:
 #'  \item{is_data_valid}{logical. Whether the data is valid}
 #'  \item{is_data_uploaded}{logical. Whether the data is uploaded}
-#'  \item{data}{dataframe. The data that was uploaded or the default data if no data_path was provided}
-#'  \item{treatment_df}{Dataframe of the treatments in the data. `NULL` if `is_data_valid` is `FALSE`}
+#'  \item{data}{dataframe. The data that was uploaded or the default data if
+#'  no data_path was provided}
+#'  \item{treatments}{Dataframe of the treatments in the data. `NULL` if
+#'  `is_data_valid` is `FALSE`}
+#'  \item{outcome}{character. Whether the data is `binary` or `continuous`}
 #' @export
 setup_load <- function(data_path = NULL, outcome, logger = NULL){
 
@@ -31,8 +36,8 @@ setup_load <- function(data_path = NULL, outcome, logger = NULL){
     return()
   }
 
-  if (!outcome %in% c("Binary", "Continuous")){
-    logger |> writeLog(type = "error", "outcome must be either Binary or Continuous")
+  if (!outcome %in% c("binary", "continuous")){
+    logger |> writeLog(type = "error", "outcome must be either binary or continuous")
     return()
   }
 
@@ -41,7 +46,7 @@ setup_load <- function(data_path = NULL, outcome, logger = NULL){
     is_uploaded <- TRUE
   } else {
     is_uploaded <- FALSE
-    if (outcome == "Continuous"){
+    if (outcome == "continuous"){
       data_path <- system.file("extdata", "continuous_long.csv", package = "metainsight")
     } else {
       data_path <- system.file("extdata", "binary_long.csv", package = "metainsight")
@@ -57,28 +62,37 @@ setup_load <- function(data_path = NULL, outcome, logger = NULL){
     }
   )
 
-  is_valid <- ValidateUploadedData(data, outcome, logger)
+  is_valid <- ValidateUploadedData(data, outcome)
 
   # If the uploaded data is invalid, return that
   if (!is_valid$valid){
     logger |> writeLog(type = "error",
                               glue::glue("Uploaded data was invalid because: {is_valid$message}.
                                 Please check you data file and ensure that you have the correct outcome type selected."))
-    return(list(is_data_valid = is_valid$valid,
-                is_data_uploaded = is_uploaded,
-                data = data,
-                treatment_df = NULL))
+    output <- list(is_data_valid = is_valid$valid,
+                   is_data_uploaded = is_uploaded,
+                   data = data,
+                   treatments = NULL,
+                   outcome = outcome)
+
+    class(output) <- "loaded_data"
+    return(output)
+
   } else {
 
     # Process the data further if valid
     data <- CleanData(data)
     treatment_list <- FindAllTreatments(data)
-    treatment_df <- CreateTreatmentIds(treatment_list)
+    treatments <- CreateTreatmentIds(treatment_list)
 
-    return(list(is_data_valid = is_valid$valid,
-                is_data_uploaded = is_uploaded,
-                data = data,
-                treatment_df = treatment_df))
+    output <- list(is_data_valid = is_valid$valid,
+                   is_data_uploaded = is_uploaded,
+                   data = data,
+                   treatments = treatments,
+                   outcome = outcome)
+
+    class(output) <- "loaded_data"
+    return(output)
   }
 
 }
@@ -88,12 +102,12 @@ setup_load <- function(data_path = NULL, outcome, logger = NULL){
 #' Assess the data for validity. this checks the column names for required columns, and balanced wide format numbered columns.
 #'
 #' @param data Data frame to validate.
-#' @param outcome Outcome type selected for the data. Either "Binary" or "Continuous".
+#' @param outcome Outcome type selected for the data. Either "binary" or "continuous".
 #'
 #' @return Validation result in the form of a list:
 #' - "valid" = TRUE or FALSE defining whether data is valid
 #' - "message" = String describing any issues causing the data to be invalid
-ValidateUploadedData <- function(data, outcome, logger = NULL) {
+ValidateUploadedData <- function(data, outcome) {
   if (is.null(data) || nrow(data) == 0) {
     return(
       list(
@@ -103,16 +117,16 @@ ValidateUploadedData <- function(data, outcome, logger = NULL) {
     )
   }
 
-  if (outcome == "Continuous") {
+  if (outcome == "continuous") {
     outcome_columns <- continuous_column_names
-  } else if (outcome == "Binary") {
+  } else if (outcome == "binary") {
     outcome_columns <- binary_column_names
   } else {
-    stop(glue::glue("Outcome {outcome} is not recognised. Please use 'Continuous' or 'Binary'"))
+    stop(glue::glue("Outcome {outcome} is not recognised. Please use 'continuous' or 'binary'"))
   }
 
   required_columns <- outcome_columns |>
-    dplyr::filter(required)
+    dplyr::filter(.data$required)
 
   result <- .ValidateMissingColumns(data, required_columns, outcome)
   if (!result$valid) {
@@ -154,7 +168,7 @@ ValidateUploadedData <- function(data, outcome, logger = NULL) {
 #'
 #' @param data Data frame to validate.
 #' @param required_columns Data frame containing data definitions.
-#' @param outcome Outcome type selected for the data. Either "Binary" or "Continuous".
+#' @param outcome Outcome type selected for the data. Either "binary" or "continuous".
 #'
 #' @return Validation result in the form of a list:
 #' - "valid" = TRUE or FALSE defining whether data is valid
@@ -209,7 +223,7 @@ ValidateUploadedData <- function(data, outcome, logger = NULL) {
 #' - "message" = String describing any issues causing the data to be invalid
 .ValidateNumberedColumns <- function(data, required_columns) {
   numbered_columns <- required_columns |>
-    dplyr::filter(!is.na(number_group))
+    dplyr::filter(!is.na(.data$number_group))
 
   if (!.ValidateMatchingWideColumns(data, numbered_columns)) {
     return(
@@ -309,12 +323,12 @@ ValidateUploadedData <- function(data, outcome, logger = NULL) {
 #'
 #' @return A vector of column titles which contain data of the wrong type.
 .FindMistypedColumns <- function(data, outcome_columns) {
-  mistyped_columns = c()
+  mistyped_columns <- c()
   sapply(
     1:nrow(outcome_columns),
     function (index) {
       column_definition <- outcome_columns[index, ]
-      matching_column_names = grep(column_definition$pattern, names(data), value = TRUE)
+      matching_column_names <- grep(column_definition$pattern, names(data), value = TRUE)
 
       new_mistyped_columns <- unlist(
         sapply(
@@ -543,7 +557,7 @@ binary_column_names <- data.frame() |>
 
 # Treatments are in priority order, such that for any study with multiple matching treatments,
 # the first in this vector will be used as the reference, until the user selects another.
-.potential_reference_treatments = c(
+.potential_reference_treatments <- c(
   'control',
   'usual_care',
   'standard_care',
@@ -552,14 +566,14 @@ binary_column_names <- data.frame() |>
 )
 
 # Column ordering
-.common_order = c("StudyID", "Study")
-.rob_order = c("rob", "indirectness")
+.common_order <- c("StudyID", "Study")
+.rob_order <- c("rob", "indirectness")
 
 #' The column order for a continuous outcome, for wide and long data.
 #'
 #' @param max_arms Maximum number of arms in the data set.
 #' @return Vector of column names in order.
-.ContinuousOrder <- function(max_arms) {
+.continuousOrder <- function(max_arms) {
   continuous_specific_order <- unlist(
     lapply(
       c("", paste0(".", 1:max_arms)),
@@ -573,7 +587,7 @@ binary_column_names <- data.frame() |>
 #'
 #' @param max_arms Maximum number of arms in the data set.
 #' @return Vector of column names in order.
-.BinaryOrder <-function(max_arms) {
+.binaryOrder <-function(max_arms) {
   binary_specific_order <- unlist(
     lapply(
       c("", paste0(".", 1:max_arms)),
@@ -593,7 +607,7 @@ binary_column_names <- data.frame() |>
 #' @param data Data frame to clean
 #' @return Cleaned data frame
 CleanData <- function(data) {
-  return(dplyr::mutate(data, across(where(is.character), .TidyStringItem)))
+  return(dplyr::mutate(data, dplyr::across(dplyr::where(is.character), .TidyStringItem)))
 }
 
 #' Tidy a character column.
@@ -609,19 +623,19 @@ CleanData <- function(data) {
 #' Find all of the treatment names in the data, both for long and wide formats.
 #'
 #' @param wide_data Data frame of wide format
-#' @param outcome Indicator whether outcome is 'Binary' or 'Continuous'
+#' @param outcome Indicator whether outcome is 'binary' or 'continuous'
 #' @return Data frame in long format
 #' @export
 WideToLong <- function(wide_data, outcome) {
   # Specify columns that contain wide data
-  if (outcome == "Continuous") {
+  if (outcome == "continuous") {
     change_cols <- wide_data |>
-      dplyr::select(tidyselect::starts_with(c("T", "N", "Mean", "SD")))
-  } else if (outcome == "Binary") {
+      dplyr::select(dplyr::starts_with(c("T", "N", "Mean", "SD")))
+  } else if (outcome == "binary") {
     change_cols <- wide_data |>
-      dplyr::select(tidyselect::starts_with(c("T", "R", "N")))
+      dplyr::select(dplyr::starts_with(c("T", "R", "N")))
   } else {
-    paste0("outcome needs to be 'Binary' or 'Continuous'")
+    paste0("outcome needs to be 'binary' or 'continuous'")
   }
   # Transform to long
   long_data <- wide_data |>
@@ -630,28 +644,28 @@ WideToLong <- function(wide_data, outcome) {
                         names_pattern = "^(.*)\\.[0-9]+$",
                         values_drop_na = TRUE
     )
-  long_data <- long_data |> dplyr::relocate(FindCovariateNames(long_data), .after = last_col())
+  long_data <- long_data |> dplyr::relocate(FindCovariateNames(long_data), .after = dplyr::last_col())
   return(as.data.frame(long_data))
 }
 
 #' Convert long format to wide format (including covariate columns)
 #'
 #' @param long_data Data frame of long format
-#' @param outcome_type Indicator whether outcome is 'Binary' or 'Continuous'
+#' @param outcome Indicator whether outcome is 'binary' or 'continuous'
 #' @return Data frame in wide format
-LongToWide <- function(long_data, outcome_type) {
+LongToWide <- function(long_data, outcome) {
   # Specify columns that contain wide data
-  if (outcome_type == "Continuous") {
+  if (outcome == "continuous") {
     change_cols <- long_data |>
       dplyr::select(c("T", "N", "Mean", "SD"))
-  } else if (outcome_type == "Binary") {
+  } else if (outcome == "binary") {
     change_cols <- long_data |>
       dplyr::select(c("T", "R", "N"))
   } else {
-    paste0("outcome_type needs to be 'Binary' or 'Continuous'")
+    paste0("outcome needs to be 'binary' or 'continuous'")
   }
   # Add arms
-  long_data <- long_data |> dplyr::group_by(Study) |> dplyr::mutate(arm = dplyr::row_number())
+  long_data <- long_data |> dplyr::group_by(.data$Study) |> dplyr::mutate(arm = dplyr::row_number())
   # Transform to long
   wide_data <- long_data |>
     tidyr::pivot_wider(id_cols = c("StudyID", "Study", FindCovariateNames(long_data)),
@@ -694,7 +708,7 @@ FindAllTreatments <- function(data, treatment_ids = NULL, study = NULL) {
   treatment_column_matches <- stringr::str_match(names(data), "^(?i)T(\\.[0-9]+)?$")
   treatment_column_names <- treatment_column_matches[!is.na(treatment_column_matches)]
 
-  treatment_names = unlist(
+  treatment_names <- unlist(
     sapply(
       treatment_column_names,
       function (nom) {
@@ -775,16 +789,16 @@ CreateTreatmentIds <- function(all_treatments, reference_treatment = all_treatme
 #' Rename the columns of a data frame to match the expected letter casing.
 #'
 #' @param data Data frame to fix
-#' @param outcome Type of outcome for which to reorder, either 'Continuous' or 'Binary'
+#' @param outcome Type of outcome for which to reorder, either 'continuous' or 'binary'
 #'
 #' @return Data frame with renamed columns.
 .FixColumnNameCases <- function(data, outcome) {
-  if (outcome == "Continuous") {
+  if (outcome == "continuous") {
     column_names <- continuous_column_names
-  } else if (outcome == "Binary") {
+  } else if (outcome == "binary") {
     column_names <- binary_column_names
   } else {
-    stop(glue::glue("Outcome type {outcome} is not recognised. Please use 'Continuous' or 'Binary'"))
+    stop(glue::glue("Outcome type {outcome} is not recognised. Please use 'continuous' or 'binary'"))
   }
 
   corrected_names <- unlist(
@@ -836,7 +850,7 @@ CreateTreatmentIds <- function(all_treatments, reference_treatment = all_treatme
 #' Find all of the treatment names in the data, both for long and wide formats.
 #'
 #' @param data Data frame in which to search for treatment names
-#' @param treatent_ids Data frame containing treatment names (Label) and IDs (Number)
+#' @param treatment_ids Data frame containing treatment names (Label) and IDs (Number)
 #' @return Data frame where the treatments are given as IDs, not names
 ReplaceTreatmentIds <- function(data, treatment_ids) {
   if (FindDataShape(data) == "long") {
@@ -894,17 +908,17 @@ AddStudyIds <- function(data) {
 #' Reorder data frame columns to the correct order, both for long and wide formats.
 #'
 #' @param data Data frame to reorder
-#' @param outcome_type Type of outcome for which to reorder, either 'Continuous' or 'Binary'
+#' @param outcome_type Type of outcome for which to reorder, either 'continuous' or 'binary'
 #' @return Data frame with columns reordered
 ReorderColumns <- function(data, outcome_type) {
   #The maximum number of arms
   max_arms <- FindMaxArms(data)
   if (tolower(outcome_type) == "continuous") {
-    expected_order <- .ContinuousOrder(max_arms = max_arms)
+    expected_order <- .continuousOrder(max_arms = max_arms)
   } else if (tolower(outcome_type) == "binary") {
-    expected_order <- .BinaryOrder(max_arms = max_arms)
+    expected_order <- .binaryOrder(max_arms = max_arms)
   } else {
-    stop(paste0("Outcome type ", outcome_type, " not recognised. Use either 'Continuous' or 'Binary'"))
+    stop(paste0("Outcome type ", outcome_type, " not recognised. Use either 'continuous' or 'binary'"))
   }
 
   actual_order <- colnames(data)
@@ -933,6 +947,7 @@ SortLong <- function(long_data) {
 #' Sort the data by StudyID then T
 #'
 #' @param data Data frame to sort
+#' @param outcome Type of outcome for which to reorder, either 'continuous' or 'binary'
 #' @return Data frame ordered by StudyID, then T if applicable
 SortByStudyIDThenT <- function(data, outcome) {
   if (FindDataShape(data) == "long") {
@@ -950,7 +965,7 @@ SortByStudyIDThenT <- function(data, outcome) {
 #'
 #' @param data Data frame to wrangle
 #' @param treatment_ids Data frame containing treatment IDs and names in columns named 'Number' and 'Label' respectively
-#' @param outcome Type of outcome for which to reorder, either 'Continuous' or 'Binary'
+#' @param outcome Type of outcome for which to reorder, either 'continuous' or 'binary'
 #' @return Data frame which is uasable by the rest of the app
 WrangleUploadData <- function(data, treatment_ids, outcome) {
   new_df <- data |>
@@ -1020,7 +1035,7 @@ GetFriendlyCovariateName <- function(column_name) {
 
 #' Find the names of all columns which contain an individual RoB variable.
 #' @param df Data frame in which to find covariate columns.
-#' @return Names of all covariate columns
+#' @return Names of all individual RoB columns
 FindRobIndividualNames <- function(df) {
   return(names(dplyr::select(df, dplyr::matches(.rob_individual_prefix_regex))))
 }
@@ -1120,6 +1135,28 @@ FindRobIndividualNames <- function(df) {
   return(.valid_result)
 }
 
+#' Find the names of all columns which contain a RoB or indirectness variable.
+#' @param df Data frame in which to find covariate columns.
+#' @return Names of all RoB or indirectness columns
+FindRobNames <- function(df) {
+  all_rob <- c(FindRobIndividualNames(df), "rob", "indirectness")
+  return(c(grep("^rob\\.", names(df), value = TRUE),
+    dplyr::intersect(c("rob", "indirectness"), names(df))))
+}
+
+#' Shorten RoB and indirectness variable names.
+#' @param long_names Vector of risk of bias and indirectness variable names.
+#' @return Vector of the same length with shortened names.
+ShortenRobNames <- function(long_names) {
+  short_names <- long_names
+  short_names[long_names == "indirectness"] <- "ind"
+  rob_individual_index <- grep(pattern = "^rob\\.", x = long_names)
+  if (length(rob_individual_index) > 0) {
+    short_names[rob_individual_index] <- paste0("rob", 1:length(rob_individual_index))
+  }
+  return(short_names)
+}
+
 #' Keep or delete rows in @param data corresponding to the control treatment in each study.
 #'
 #' @param data Data in long format, plus the column 'Treatment', a text version of 'T'.
@@ -1139,7 +1176,6 @@ KeepOrDeleteControlTreatment <- function(data, treatments, keep_delete){
     stop("keep_delete must be 'keep' or 'delete'")
   }
 }
-
 
 #' Create a list of all columns starting with the given column prefix.
 #'

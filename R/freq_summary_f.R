@@ -1,34 +1,26 @@
-#' Create a summary forest plot matrix.
+#' Produce a summary forest plot matrix with treatments ranked by SUCRA score,
+#' determined by `netmeta::rankogram()`. This function can only be used when
+#' `configured_data` contains between 3 and 10 treatments.
 #'
-#' @param plot_title character. Title of the plot
+#' @param plot_title character. Title of the plot. Default is no title.
 #' @inheritParams common_params
-#'
-#' @return Summary forest matrix plot
+#' @inherit return-svg return
 #' @export
-freq_summary <- function(freq, treatment_df, plot_title, outcome_measure, ranking_option, model_type, logger = NULL) {
+freq_summary <- function(configured_data, plot_title = "", logger = NULL) {
 
-  check_param_classes(c("freq", "treatment_df", "plot_title", "outcome_measure", "ranking_option", "model_type"),
-                      c("list", "data.frame", "character", "character", "character", "character"), logger)
+  check_param_classes(c("configured_data", "plot_title"),
+                      c("configured_data", "character"), logger)
 
-  if (!ranking_option %in% c("good", "bad")){
-    logger |> writeLog(type = "error", "ranking_option must be 'good' or 'bad'")
-    return()
-  }
-
-  if (!outcome_measure %in% c("OR", "RR", "RD", "MD", "SMD")){
-    logger |> writeLog(type = "error", "outcome_measure must be 'OR', 'RR', 'RD', 'MD' or 'SMD'")
-    return()
-  }
-
-  if (!model_type %in% c("fixed", "random")){
-    logger |> writeLog(type = "error", "model_type must be 'fixed' or 'random'")
-    return()
-  }
-
-  lstx <- treatment_df$Label
+  lstx <- configured_data$treatments$Label
   ntx <- length(lstx)
 
-  net1 <- freq$net1
+  if (ntx < 3 || ntx > 10){
+    logger |> writeLog(type = "error", "configured_data must contain between 3 and 10 treatments")
+    return()
+  }
+
+  net1 <- configured_data$freq$net1
+  treatment_df <- configured_data$treatments
 
   ma <- list()
   mtc <- list()
@@ -43,10 +35,12 @@ freq_summary <- function(freq, treatment_df, plot_title, outcome_measure, rankin
   mtc$predint <- matrix(0, nrow = sum(1:(ntx - 1)), ncol = 4, dimnames = list(rep(NA, times = sum(1:(ntx - 1)))))
   mtc$rkgram <- matrix(0, nrow = ntx * ntx, ncol = 2)
 
-  small_value_desirability <- ifelse(ranking_option == "good", "desirable", "undesirable")
+  small_value_desirability <- ifelse(configured_data$ranking_option == "good", "desirable", "undesirable")
+
+  set.seed(configured_data$seed)
   rkgrm <- netmeta::rankogram(net1, small.values = small_value_desirability)
 
-  if (model_type == "random") {
+  if (configured_data$effects == "random") {
     ranking <- rkgrm$ranking.random
     ranking_matrix <- rkgrm$ranking.matrix.random
   } else {
@@ -56,16 +50,16 @@ freq_summary <- function(freq, treatment_df, plot_title, outcome_measure, rankin
 
   ordered_treatment_names <- names(ranking[order(-ranking)])
   # The rankogram command seems to sort the treatments alphabetically first, so this line converts back to the original treatment IDs
-  mtc$rank[, 3] <- match(treatment_df$Label, ordered_treatment_names)
+  mtc$rank[, 3] <- match(configured_data$treatments$Label, ordered_treatment_names)
 
   for (index in 1:ntx) {
     mtc$rkgram[((index - 1) * ntx) + (1:ntx), 1] <- ranking_matrix[ordered_treatment_names[index], ]
   }
 
-  mtc$type <- outcome_measure
+  mtc$type <- configured_data$outcome_measure
 
   #Sort the rows and columns of the netmeta matrix output by the original treatment order
-  if (model_type == "random") {
+  if (configured_data$effects == "random") {
     net1$lower.direct.random <- net1$lower.direct.random[treatment_df$Label, treatment_df$Label]
     net1$TE.direct.random <- net1$TE.direct.random[treatment_df$Label, treatment_df$Label]
     net1$upper.direct.random <- net1$upper.direct.random[treatment_df$Label, treatment_df$Label]
@@ -88,7 +82,7 @@ freq_summary <- function(freq, treatment_df, plot_title, outcome_measure, rankin
     for (j in (i + 1):ntx) {
 
       #Include rownames for debugging
-      if (model_type == "random") {
+      if (configured_data$effects == "random") {
         rownames(ma$lor)[count] <- paste0(rownames(net1$TE.direct.random)[i], "-", colnames(net1$TE.direct.random)[j])
         ma$lor[count, 5] <- net1$lower.direct.random[i, j]
         ma$lor[count, 6] <- net1$TE.direct.random[i, j]
@@ -116,7 +110,7 @@ freq_summary <- function(freq, treatment_df, plot_title, outcome_measure, rankin
 
       rownames(ma$or) <- rownames(ma$lor)
       rownames(mtc$or) <- rownames(mtc$lor)
-      if (outcome_measure == "RR" | outcome_measure == "OR") {
+      if (configured_data$outcome_measure == "RR" | configured_data$outcome_measure == "OR") {
         ma$or[count, 5:7] <- exp(ma$lor[count, 5:7])
         mtc$or[count, 2:4] <- exp(mtc$lor[count, 2:4])
       } else {
@@ -128,22 +122,33 @@ freq_summary <- function(freq, treatment_df, plot_title, outcome_measure, rankin
     }
   }
 
+  height_and_width <- 2.5 * nrow(configured_data$treatments)
+
   #Dynamic text size for the means and confidence intervals
   ucex <- max(1, 2 - 0.12 * ntx)
 
-  prjtitle <- plot_title
-  mtcMatrixCont(
-    prjtitle,
-    ntx,
-    lstx,
-    mtc,
-    ma,
-    outcome_measure,
-    bpredd = TRUE,
-    bkey = TRUE,
-    p.only = ntx,
-    ucex = ucex
-  )
+  svg <- svglite::xmlSVG({
+    mtcMatrixCont(
+      plot_title,
+      ntx,
+      lstx,
+      mtc,
+      ma,
+      configured_data$outcome_measure,
+      bpredd = TRUE,
+      bkey = TRUE,
+      p.only = ntx,
+      ucex = ucex
+    )
+  },
+  width = height_and_width,
+  height = height_and_width,
+  web_fonts = list(
+    arimo = "https://fonts.googleapis.com/css2?family=Arimo:wght@400;700&display=swap")
+  ) |> crop_svg()
+
+  return(svg)
+
 }
 
 #' MTC & MA estimates for Forest Matrix plot - used in for loop in multiplot function.
@@ -228,7 +233,7 @@ PrICrI <- function(offs, lower_confidence_limit, point_estimate, upper_confidenc
 singleSFP <- function(mtc, pw, bpredd = TRUE, baxis = TRUE, scaletype) {
 
   ##define axis offset
-  offs = 0
+  offs <- 0
 
   #Add reference line. This plots at 0 for continuous scales, and 1 for log scales
   lines(c(offs, offs), c(-3, 3), lty = 1, col = "grey80")
@@ -485,7 +490,7 @@ sortres.matrix <- function(ntx, po) {
 
   #create new 'ranked' tx combinations
   # require install.packages("combinat")
-  cm <- t(combn(st.txcode, 2))  #combination matrix of ntx choose 2
+  cm <- t(utils::combn(st.txcode, 2))  #combination matrix of ntx choose 2
 
   #New 'ranked' tx combinations matrix made up of c("ordering", "t1", "t2", "inversion number")
   mtnew <- cbind(1:(choose(ntx, 2)), cm, (ifelse(cm[, 1] < cm[, 2], 1, -1)) )
@@ -661,10 +666,11 @@ ma.redu <- function(ma, rmt) {
 #' @param mtc Meta-analysis data for direct and indirect evidence
 #' @param rmt Matrix reduction vector
 #' @param p.only Number of treatments to plot
-#' @param po Matrix containing ranking order of treatments
+#' @param po Matrix containing ranking order of treatments#
+#' @param ntx Number of treatments
 #'
 #' @return Reduced meta-analysis data
-mtc.redu <- function(mtc, rmt, p.only, po) {
+mtc.redu <- function(mtc, rmt, p.only, po, ntx) {
   #~VECTORS~ inputed mtc === st.mtc # already sorted, just truncate directly
   new.rank <- mtc$rank[1:p.only, ]
   if (exists("sucra", where = mtc)) {
@@ -741,7 +747,7 @@ mtcMatrixCont <- function(stytitle, ntx, lstx, mtc, ma, outcome_measure, bpredd 
     #reduce the results matrices & vectors
     mtred <- redu.matrix(ntx, po, p.only, mtso)
     r.ma <- ma.redu(st.ma, mtred)
-    r.mtc <- mtc.redu(st.mtc, mtred, p.only, po)
+    r.mtc <- mtc.redu(st.mtc, mtred, p.only, po, ntx)
     r.lstx <- st.lstx[1:p.only]
     multiplot(stytitle, p.only, r.lstx, r.mtc, r.ma, bpredd, plt.adj, ucex, key_text)
   }

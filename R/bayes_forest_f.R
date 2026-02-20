@@ -1,31 +1,41 @@
-#' Make a Bayesian forest plot
+#' Produce a Bayesian forest plot with `gemtc::forest()`
 #'
 #' @param model list. Object created by `bayes_model()` or `covariate_model()`
 #' @param title character. Title for the plot. Default is no title
 #' @param ranking logical. Whether the function is being used in `bayes_ranking`
 #' @inheritParams common_params
-#'
-#' @return List containing:
-#'  \item{svg}{character. SVG code to produce the plot}
-#'  \item{height}{numeric. Plot height in pixels}
-#'  \item{width}{numeric. Plot width in pixels}
-#'
+#' @inherit return-svg return
 #' @export
-bayes_forest <- function(model, treatment_df, reference_treatment, title = "", ranking = FALSE, logger = NULL){
+bayes_forest <- function(model, xmin = NULL, xmax = NULL, title = "", ranking = FALSE, logger = NULL){
 
-  check_param_classes(c("treatment_df", "reference_treatment", "title", "ranking"),
-                      c("data.frame", "character", "character", "logical"), logger)
+  check_param_classes(c("title", "ranking"),
+                      c("character", "logical"), logger)
 
   if (!inherits(model, "bayes_model")){
     logger |> writeLog(type = "error", "model must be an object created by bayes_model() or covariate_model()")
     return()
   }
 
-  height <- forest_height(nrow(treatment_df), title = TRUE, annotation = TRUE)
-  width <- forest_width(14 + nchar(reference_treatment))
+  # set default x-axis limits if not supplied and check if they are provided
+  if (any(is.null(xmin), is.null(xmax))){
+    xlim <- bayes_forest_limits(model)
+    xmin <- ifelse(is.null(xmin), xlim[1], xmin)
+    xmax <- ifelse(is.null(xmax), xlim[2], xmax)
+  } else {
+    check_param_classes(c("xmin", "xmax"), c("numeric", "numeric"), logger)
+  }
+
+  if (xmin >= xmax){
+    logger |> writeLog(type = "error", "xmin must be less than xmax")
+    return()
+  }
+
+  n_treatments <- length(unique(model$mtcResults$model$network$treatments$id))
+  height <- forest_height(n_treatments, title = TRUE, annotation = TRUE)
+  width <- forest_width(14 + nchar(model$reference_treatment))
 
   svg <- svglite::xmlSVG({
-    gemtc::forest(model$mtcRelEffects, digits = 3)
+    gemtc::forest(model$mtcRelEffects, digits = 3, xlim = c(xmin, xmax))
     if (!ranking){
       title(main = title)
       mtext(CreateTauSentence(model), padj = 0.5)
@@ -49,3 +59,35 @@ bayes_forest <- function(model, treatment_df, reference_treatment, title = "", r
 covariate_forest <- function(...){
   bayes_forest(...)
 }
+
+
+#' Extract the default x-axis limits using the same method internal to
+#' `gemtc::forest()`
+#'
+#' @param model list. Object created by `bayes_model()` or `covariate_model()`
+#' @export
+bayes_forest_limits <- function(model) {
+
+  # whether model is binary
+  log.scale <- ifelse(model$outcome_measure == "MD", FALSE, TRUE)
+
+  # Extract reference treatment index
+  rel_eff_tbl <- model$rel_eff_tbl
+  ref_index <- which(dimnames(rel_eff_tbl)[[1]] == model$reference_treatment)
+
+  # Extract raw confidence interval bounds
+  ci.l_raw <- rel_eff_tbl[ref_index,,1]  # 2.5% quantile
+  ci.u_raw <- rel_eff_tbl[ref_index,,3]  # 97.5% quantile
+
+  # Calculate rounded limits
+  xmin <- format_xlim(min(ci.l_raw, na.rm=TRUE), "min", log.scale)
+  xmax <- format_xlim(max(ci.u_raw, na.rm=TRUE), "max", log.scale)
+
+  # Ensure 0 is included if appropriate (as done in blobbogram)
+  xmin <- min(xmin, 0)
+  xmax <- max(xmax, 0)
+
+  c(xmin, xmax)
+}
+
+

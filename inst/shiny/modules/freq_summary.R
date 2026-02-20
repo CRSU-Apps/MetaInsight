@@ -1,5 +1,5 @@
 freq_summary_module_ui <- function(id) {
-  ns <- shiny::NS(id)
+  ns <- NS(id)
   tagList(
     actionButton(ns("run"), "Generate plots", icon = icon("arrow-turn-down")),
     div(class = "freq_summary_div",
@@ -15,13 +15,13 @@ freq_summary_module_server <- function(id, common, parent_session) {
 
   observeEvent(input$run, {
     # WARNING ####
-    if (is.null(common$freq_sub)){
+    if (is.null(common$configured_data)){
       common$logger |> writeLog(type = "error", go_to = "setup_configure",
                                 "Please configure the analysis first in the Setup section")
       return()
     }
 
-    if (nrow(common$treatment_df) < 3 || nrow(common$treatment_df) > 10){
+    if (nrow(common$configured_data$treatments) < 3 || nrow(common$configured_data$treatments) > 10){
       common$logger |> writeLog(type = "error", "Sorry this module is only available when there are between 3 and 10 treatments")
       return()
     }
@@ -29,32 +29,36 @@ freq_summary_module_server <- function(id, common, parent_session) {
     trigger("freq_summary")
   })
 
-  output$plot_all <- renderPlot({
-    watch("model")
+  svg_all <- reactive({
+    watch("freq_all")
     req(watch("freq_summary") > 0)
-    shinyjs::show(selector = ".freq_summary_div")
     common$meta$freq_summary$used <- TRUE
-    common$meta$freq_summary$height <- 2.5 * nrow(common$treatment_df)
-    common$meta$freq_summary$width <- 2.5 * nrow(common$treatment_df)
-    freq_summary(common$freq_all,
-                 common$treatment_df,
-                 "Summary Forest Plot",
-                 common$outcome_measure,
-                 common$ranking_option,
-                 common$model_type,
+    freq_summary(common$configured_data,
+                 "Summary forest plot for all studies",
                  common$logger)
   })
 
-  output$plot_sub <- renderPlot({
+  svg_sub <- reactive({
     watch("setup_exclude")
     req(watch("freq_summary") > 0)
-    freq_summary(common$freq_sub,
-                 common$treatment_df,
-                 "Summary Forest Plot with Selected Studies Excluded",
-                 common$outcome_measure,
-                 common$ranking_option,
-                 common$model_type,
+    if (nrow(common$subsetted_data$treatments) < 3){
+      common$logger |> writeLog(type = "error", "Sorry the plot with studies excluded cannot be produced when there are fewer than 3 treatments")
+      return()
+    }
+
+    freq_summary(common$subsetted_data,
+                 "Summary forest plot with selected studies excluded",
                  common$logger)
+  })
+
+  output$plot_all <- renderUI({
+    req(svg_all())
+    svg_container(svg_all(), style = "max-width: 800px;")
+  })
+
+  output$plot_sub <- renderUI({
+    req(svg_sub())
+    svg_container(svg_sub(), style = "max-width: 800px;")
   })
 
   output$download_all <- downloadHandler(
@@ -62,20 +66,7 @@ freq_summary_module_server <- function(id, common, parent_session) {
       paste0("MetaInsight_summary_forest_all.", common$download_format)
     },
     content = function(file) {
-      write_plot(
-        file = file,
-        type = common$download_format,
-        renderFunction = function() {
-          freq_summary(common$freq_all,
-                       common$treatment_df,
-                       "Summary Forest Plot",
-                       common$outcome_measure,
-                       common$ranking_option,
-                       common$model_type)
-        },
-        height = common$meta$freq_summary$height,
-        width = common$meta$freq_summary$width
-      )
+      write_plot(svg_all(), file, common$download_format)
     }
   )
 
@@ -84,20 +75,7 @@ freq_summary_module_server <- function(id, common, parent_session) {
       paste0("MetaInsight_summary_forest_sub.", common$download_format)
     },
     content = function(file) {
-      write_plot(
-        file = file,
-        type = common$download_format,
-        renderFunction = function() {
-          freq_summary(common$freq_sub,
-                       common$treatment_df,
-                       "Summary Forest Plot",
-                       common$outcome_measure,
-                       common$ranking_option,
-                       common$model_type)
-        },
-        height = common$meta$freq_summary$height,
-        width = common$meta$freq_summary$width
-      )
+      write_plot(svg_sub(), file, common$download_format)
     }
   )
 })
@@ -106,14 +84,14 @@ freq_summary_module_server <- function(id, common, parent_session) {
 freq_summary_module_result <- function(id) {
   ns <- NS(id)
   tagList(
-    plotOutput(ns("plot_all"), height = "700px"),
-    plotOutput(ns("plot_sub"), height = "700px")
+    div(align = "center",
+      uiOutput(ns("plot_all")),
+      uiOutput(ns("plot_sub"))
+    )
   )
 }
 
 freq_summary_module_rmd <- function(common) {
-  list(freq_summary_knit = !is.null(common$meta$freq_summary$used),
-       freq_summary_height = common$meta$freq_summary$height,
-       freq_summary_width = common$meta$freq_summary$width)
+  list(freq_summary_knit = !is.null(common$meta$freq_summary$used))
 }
 

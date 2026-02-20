@@ -4,7 +4,7 @@
 \alias{bayes_mcmc}
 \alias{covariate_mcmc}
 \alias{baseline_mcmc}
-\title{bayes_mcmc}
+\title{Produce Markov chain Monte Carlo plots for Bayesian models}
 \usage{
 bayes_mcmc(model, async = FALSE)
 
@@ -22,10 +22,10 @@ baseline_mcmc(...)
 \value{
 list containing:
 \item{gelman_plots}{Gelman plots}
-\item{trace_plots}{Gelman plots}
-\item{density_plots}{Gelman plots}
+\item{trace_plots}{Trace plots}
+\item{density_plots}{Density plots}
 \item{n_rows}{The number of rows for each plot}
 }
 \description{
-Produces Markov chain Monte Carlo plots
+Produce Markov chain Monte Carlo plots for Bayesian models
 }

@@ -9,7 +9,7 @@
 \arguments{
 \item{data}{Data frame to fix}
 
-\item{outcome}{Type of outcome for which to reorder, either 'Continuous' or 'Binary'}
+\item{outcome}{Type of outcome for which to reorder, either 'continuous' or 'binary'}
 }
 \value{
 Data frame with renamed columns.

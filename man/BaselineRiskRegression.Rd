@@ -2,7 +2,7 @@
 % Please edit documentation in R/baseline_model_f.R
 \name{BaselineRiskRegression}
 \alias{BaselineRiskRegression}
-\title{Fits the baseline risk meta-regression model in BNMA}
+\title{Fits the baseline risk meta-regression model in \CRANpkg{bnma}}
 \usage{
 BaselineRiskRegression(
   connected_data,
@@ -19,7 +19,7 @@ BaselineRiskRegression(
 
 \item{treatment_df}{Data frame containing treatment IDs and names in columns named 'Number' and 'Label' respectively.}
 
-\item{outcome}{"Continuous" or "Binary".}
+\item{outcome}{"continuous" or "binary".}
 
 \item{reference_treatment}{treatment An element of treatment_df$Label, the .}
 
@@ -30,8 +30,8 @@ BaselineRiskRegression(
 \item{seed}{Seed. Defaults to 123.}
 }
 \value{
-Output from bnma::network.run().
+Output from \code{bnma::network.run()}.
 }
 \description{
-Fits the baseline risk meta-regression model in BNMA
+Fits the baseline risk meta-regression model in \CRANpkg{bnma}
 }

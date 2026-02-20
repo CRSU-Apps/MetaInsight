@@ -1,39 +1,48 @@
-#' Create a composite meta-regression plot which comprises plots showing direct and indirect evidence.
+#' Produce a composite meta-regression plot which comprises plots showing direct
+#' and indirect evidence.
 #'
-#' @param model_output GEMTC model results found by calling `CovariateModelOutput()`.
-#' @param treatment_df Data frame containing treatment IDs (Number), sanitised names (Label), and original names (RawLabel).
-#' @param outcome_measure Outcome measure of analysis (OR, RR, RD or MD)
-#' @param comparators Vector of names of comparison treatments to plot in colour.
-#' @param directness Contributions from function `CalculateDirectness()`.
-#' @param credible_regions List of credible region data frames from function `CalculateCredibleRegions()`.
-#' @param include_covariate TRUE if the value of the covariate is to be plotted as a vertical line. Defaults to FALSE.
-#' @param include_ghosts TRUE if all other comparator studies should be plotted in grey in the background of the plot. Defaults to FALSE.
-#' @param include_extrapolation TRUE if regression lines should be extrapolated beyond the range of the given data. These will appear as dashed lines.
-#' Defaults to FALSE.
-#' @param include_credible TRUE if the credible regions should be plotted for the specified comparators. These will be partially transparent regions.
-#' Defaults to FALSE.
-#' @param credible_opacity The opacity of the credible regions. Can be any value between 0 and 1, inclusive. Defaults to 0.2.
-#' @param covariate_symbol The selected symbol for displaying covariates. Defaults to "circle open".
-#' @param covariate_symbol_size Size of the covariate symbols. Defaults to 10.
-#' @param legend_position String informing the position of the legend. Acceptable values are:
-#' - "BR" - Bottom-right of the plot area
-#' - "BL" - Bottom-left of the plot area
-#' - "TR" - Top-right of the plot area
-#' - "TL" - Top-left of the plot area
-#'
-#' @return List containing:
-#'  \item{svg}{character. SVG code to produce the plot}
-#'  \item{height}{numeric. Plot height in pixels}
-#'  \item{width}{numeric. Plot width in pixels}
-#'
+#' @param model Output from `baseline_model()` or `covariate_model()`
+#' @param regression_data Output from `baseline_regression()` or `covariate_regression()`
+#' @param comparators Vector of treatments to plot in colour. Cannot include the
+#' `reference_treatment` used in the model.
+#' @param include_covariate logical. Whether the value of the covariate should
+#' be plotted as a vertical line. Defaults to `FALSE`.
+#' @param include_ghosts logical. Whether the other comparator studies should
+#' be plotted in grey in the background of the plot. Defaults to `FALSE`.
+#' @param include_extrapolation logical. Whether the regression lines should be
+#' extrapolated beyond the range of the given data as dashed lines.
+#' Defaults to `FALSE`.
+#' @param include_credible logical. Whether the credible regions should be
+#' plotted for the specified comparators. These will be partially transparent
+#' regions. Defaults to `FALSE`.
+#' @param credible_opacity numeric. The opacity of the credible regions.
+#' Can be any value between `0` and `1`, inclusive. Defaults to `0.2`.
+#' @param covariate_symbol character. The selected symbol for displaying
+#' covariates. Defaults to `circle open`. Possible values are:
+#' \describe{
+#'   \item{cross}{Crosses}
+#'   \item{circle_open}{Open circles}
+#'   \item{none}{No symbols in which case only the plot of direct evidence is
+#' produced}
+#' }
+#' @param covariate_symbol_size numeric. Size of the covariate symbols.
+#' Defaults to `10`.
+#' @param legend_position character. The position of the legend. Defaults to
+#' `BR`. Possible values are:
+#' \describe{
+#'   \item{BR}{Bottom-right of the plot area}
+#'   \item{BL}{Bottom-left of the plot area}
+#'   \item{TR}{Top-right of the plot area}
+#'   \item{TL}{Top-left of the plot area}
+#'  }
+#' @inheritParams common_params
+#' @inherit return-svg return
 #' @export
 metaregression_plot <- function(
-    model_output,
-    treatment_df,
-    outcome_measure,
+    model,
+    configured_data,
+    regression_data,
     comparators,
-    directness,
-    credible_regions,
     include_covariate = FALSE,
     include_ghosts = FALSE,
     include_extrapolation = FALSE,
@@ -41,15 +50,58 @@ metaregression_plot <- function(
     credible_opacity = 0.2,
     covariate_symbol = "circle open",
     covariate_symbol_size = 10,
-    legend_position = "BR") {
+    legend_position = "BR",
+    logger = NULL) {
+
+  if (check_param_classes(c("configured_data", "include_covariate", "include_ghosts", "include_extrapolation", "include_credible",
+                            "credible_opacity", "covariate_symbol", "covariate_symbol_size", "legend_position"),
+                          c("configured_data", "logical", "logical", "logical", "logical",
+                            "numeric", "character", "numeric", "character"), logger)){
+    return()
+  }
+
+  if (!inherits(model, c("baseline_model", "covariate_model"))){
+    logger |> writeLog(type = "error", "model must be an object created by baseline_model() or covariate_model()")
+    return()
+  }
+
+  if (!inherits(regression_data, "regression_data")){
+    logger |> writeLog(type = "error", "regression_data must be an object created by baseline_regression() or covariate_regression()")
+    return()
+  }
+
+  if (configured_data$reference_treatment %in% comparators){
+    logger |> writeLog(type = "error", "comparators cannot contain the reference treatment")
+    return()
+  }
+
+  if (any(!comparators %in% configured_data$treatments$Label)){
+    logger |> writeLog(type = "error", "comparators must be present in the configured data")
+    return()
+  }
+
+  if (credible_opacity < 0 || credible_opacity > 1){
+    logger |> writeLog(type = "error", "credible_opacity must be between 0 and 1")
+    return()
+  }
+
+  if (!(covariate_symbol %in% c("circle open", "cross", "none"))){
+    logger |> writeLog(type = "error", "covariate_symbol must be either 'circle open', 'cross' or 'none'")
+    return()
+  }
+
+  if (!(legend_position %in% c("BR", "BL", "TR", "TL"))){
+    logger |> writeLog(type = "error", "legend_position must be either 'BR', 'BL', 'TR', 'TL'")
+    return()
+  }
 
   direct_plot <- CreateMainRegressionPlot(
-    model_output = model_output,
-    treatment_df = treatment_df,
-    outcome_measure = outcome_measure,
+    model_output = model,
+    treatment_df = configured_data$treatments,
+    outcome_measure = model$outcome_measure,
     comparators = comparators,
-    directness = directness,
-    credible_regions = credible_regions,
+    directness = regression_data$directness,
+    credible_regions = regression_data$credible_regions,
     include_covariate = include_covariate,
     include_ghosts = include_ghosts,
     include_extrapolation = include_extrapolation,
@@ -72,10 +124,10 @@ metaregression_plot <- function(
   }
 
   indirect_plot <- CreateIndirectCovariatePlot(
-    model_output = model_output,
-    treatment_df = treatment_df,
+    model_output = model,
+    treatment_df = configured_data$treatments,
     comparators = comparators,
-    directness = directness,
+    directness = regression_data$directness,
     include_covariate = include_covariate,
     include_ghosts = include_ghosts,
     covariate_symbol = covariate_symbol,
@@ -87,8 +139,8 @@ metaregression_plot <- function(
   x_range_2 <- ggplot_build(indirect_plot)$layout$panel_params[[1]]$x.range
 
   # Find the largest range covered by either plot
-  x_min = min(x_range_1[1], x_range_2[1])
-  x_max = max(x_range_1[2], x_range_2[2])
+  x_min <- min(x_range_1[1], x_range_2[1])
+  x_max <- max(x_range_1[2], x_range_2[2])
 
   # Scale both plots to cover the full x-axis range
   direct_plot <- direct_plot + coord_cartesian(xlim = c(x_min, x_max))
@@ -110,7 +162,7 @@ metaregression_plot <- function(
   ) |> crop_svg()
 }
 
-regression_ghost_name = "\"Other\""
+regression_ghost_name <- "\"Other\""
 
 #' Create a covariate regression plot where multiple comparisons can be plotted, and the contributions from each study are shown as circles.
 #'
@@ -153,7 +205,7 @@ CreateMainRegressionPlot <- function(
     covariate_symbol_size = 10,
     legend_position = "BR") {
 
-  reference = model_output$reference_name
+  reference <- model_output$reference_treatment
   comparators <- sort(comparators)
   all_comparators <- model_output$comparator_names
 
@@ -274,23 +326,23 @@ CreateMainRegressionPlot <- function(
   intervals <- .FormatRegressionCredibleRegion(credible_regions$intervals, comparators)
 
   plot <- plot +
-    geom_ribbon(
+    ggplot2::geom_ribbon(
       data = regions,
       mapping = aes(
-        x = covariate_value,
-        ymin = y_min,
-        ymax = y_max,
-        fill = Treatment
+        x = .data$covariate_value,
+        ymin = .data$y_min,
+        ymax = .data$y_max,
+        fill = .data$Treatment
       ),
       show.legend = FALSE
     ) +
-    geom_linerange(
+    ggplot2::geom_linerange(
       data = intervals,
       mapping = aes(
-        x = covariate_value,
-        ymin = y_min,
-        ymax = y_max,
-        color = Treatment
+        x = .data$covariate_value,
+        ymin = .data$y_min,
+        ymax = .data$y_max,
+        color = .data$Treatment
       ),
       linewidth = 2,
       alpha = credible_opacity,
@@ -315,7 +367,7 @@ CreateMainRegressionPlot <- function(
 #' @return The modified ggplot2 object.
 .PlotDirectCovariateCircles <- function(plot, model_output, treatment_df, reference, comparators, directness, covariate_symbol = "circle open", covariate_symbol_size = 10, ghosted = FALSE) {
 
-  contributions = .FindDirectRegressionContributions(model_output, reference, comparators, directness)
+  contributions <- .FindDirectRegressionContributions(model_output, reference, comparators, directness)
 
   if (nrow(contributions) == 0) {
     return(plot)
@@ -331,9 +383,9 @@ CreateMainRegressionPlot <- function(
     geom_point(
       data = contributions,
       mapping = aes(
-        x = covariate_value,
-        y = relative_effect,
-        color = Treatment,
+        x = .data$covariate_value,
+        y = .data$relative_effect,
+        color = .data$Treatment,
         stroke = 1.5
       ),
       shape = covariate_symbol,
@@ -359,7 +411,7 @@ CreateMainRegressionPlot <- function(
 .PlotRegressionLines <- function(plot, model_output, treatment_df, reference, comparators, extrapolate, ghosted = FALSE) {
 
   # Create data frame
-  lines = data.frame(
+  lines <- data.frame(
     Treatment = sapply(comparators, function(comparator) { treatment_df$RawLabel[treatment_df$Label == comparator] }),
     intercept = model_output$intercepts[comparators],
     slope = model_output$slopes[comparators],
@@ -377,9 +429,9 @@ CreateMainRegressionPlot <- function(
       geom_abline(
         data = lines,
         mapping = aes(
-          intercept = intercept,
-          slope = slope,
-          color = Treatment
+          intercept = .data$intercept,
+          slope = .data$slope,
+          color = .data$Treatment
         ),
         linewidth = 1,
         linetype = "dashed",
@@ -392,11 +444,11 @@ CreateMainRegressionPlot <- function(
     geom_segment(
       data = lines,
       mapping = aes(
-        x = start_x,
-        y = intercept + slope * start_x,
-        xend = end_x,
-        yend = intercept + slope * end_x,
-        color = Treatment
+        x = .data$start_x,
+        y = .data$intercept + .data$slope * .data$start_x,
+        xend = .data$end_x,
+        yend = .data$intercept + .data$slope * .data$end_x,
+        color = .data$Treatment
       ),
       linewidth = 1.2,
       show.legend = !ghosted
@@ -494,7 +546,7 @@ CreateMainRegressionPlot <- function(
 
 #' Setup the main components of the plot panel.
 #'
-#' @param reference Name of the reference treatment.
+#' @param plot The ggplot2 object
 #' @param comparators Vector of names of comparison treatments to plot.
 #' @param include_ghosts TRUE if all other comparator studies should be plotted in grey in the background of the plot.
 #' @param include_credible TRUE if all other comparator studies should be plotted in grey in the background of the plot.
@@ -517,7 +569,7 @@ SetupRegressionPlotColours <- function(plot, comparators, include_ghosts, includ
 
   # Only include fills if credible regions included
   if (include_credible) {
-    opacity_hex = format(
+    opacity_hex <- format(
       as.hexmode(as.integer(credible_opacity * 255)),
       width = 2
     )
@@ -553,7 +605,7 @@ CreateIndirectCovariatePlot <- function(
     covariate_symbol = "circle open",
     covariate_symbol_size = 10) {
 
-  reference = model_output$reference_name
+  reference <- model_output$reference_treatment
   comparators <- sort(comparators)
   all_comparators <- model_output$comparator_names
 
@@ -632,7 +684,7 @@ CreateIndirectCovariatePlot <- function(
 #'
 #' @return The modified ggplot2 object.
 .PlotIndirectCovariateCircles <- function(plot, model_output, treatment_df, reference, comparators, directness, covariate_symbol = "circle open", covariate_symbol_size = 10, ghosted = FALSE) {
-  contributions = .FindIndirectRegressionCovariates(model_output, reference, comparators, directness)
+  contributions <- .FindIndirectRegressionCovariates(model_output, reference, comparators, directness)
 
   if (nrow(contributions) == 0) {
     return(plot)
@@ -651,9 +703,9 @@ CreateIndirectCovariatePlot <- function(
     geom_point(
       data = contributions,
       mapping = aes(
-        x = covariate_value,
-        y = y_val,
-        color = Treatment,
+        x = .data$covariate_value,
+        y = .data$y_val,
+        color = .data$Treatment,
         stroke = 1.5,
       ),
       shape = covariate_symbol,

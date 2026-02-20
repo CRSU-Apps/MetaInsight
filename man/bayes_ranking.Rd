@@ -6,29 +6,16 @@
 \alias{covariate_ranking}
 \title{Generate ranking data required to produce SUCRA plots from Bayesian models}
 \usage{
-bayes_ranking(
-  connected_data,
-  treatment_df,
-  model,
-  ranking_option,
-  cov_value = NA,
-  logger = NULL
-)
+bayes_ranking(model, configured_data, logger = NULL)
 
 baseline_ranking(...)
 
 covariate_ranking(...)
 }
 \arguments{
-\item{connected_data}{dataframe. Input data set created by \code{setup_configure()} or \code{setup_exclude}}
-
-\item{treatment_df}{dataframe. Treatments}
-
 \item{model}{list. Output produced by \code{baseline_model()}, \code{bayes_model()} or \code{covariate_model()}.}
 
-\item{ranking_option}{character. \code{good} if the treatment effect is desirable, else \code{bad}}
-
-\item{cov_value}{numeric. Covariate value if a meta-regression. Default \code{NA}}
+\item{configured_data}{list. Input dataset created by \code{setup_configure()} or \code{setup_exclude()}}
 
 \item{logger}{Stores all notification messages to be displayed in the Log
 Window. Insert the logger reactive list here for running in
@@ -37,7 +24,12 @@ shiny, otherwise leave the default \code{NULL}}
 \item{...}{Parameters passed to \code{bayes_ranking()}}
 }
 \value{
-List of output created by \code{rankdata()}.
+List of output created by \code{rankdata()}
+\item{SUCRA}{Dataframe of SUCRA data}
+\item{Colour}{Dataframe of colours}
+\item{Cumulative}{Dataframe of cumulative ranking probabilities}
+\item{Probabilities}{Dataframe of ranking probabilities}
+\item{BUGSnetData}{ output from \code{BUGSnet::data.prep()}}
 }
 \description{
 Generate ranking data required to produce SUCRA plots from Bayesian models

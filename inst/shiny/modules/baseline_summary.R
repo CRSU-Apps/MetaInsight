@@ -15,13 +15,13 @@ baseline_summary_module_server <- function(id, common, parent_session) {
 
   observeEvent(input$run, {
     # WARNING ####
-    if (is.null(common$freq_sub)){
+    if (is.null(common$configured_data)){
       common$logger |> writeLog(type= "error", go_to = "setup_configure",
                                 "Please configure the analysis first in the Setup section")
       return()
     }
     # FUNCTION CALL ####
-    common$baseline_summary_plot <- baseline_summary(common$main_connected_data, common$outcome, common$treatment_df, common$logger)
+    common$baseline_summary_plot <- baseline_summary(common$configured_data, common$logger)
 
     # METADATA ####
     common$meta$baseline_summary$used <- TRUE
@@ -33,8 +33,8 @@ baseline_summary_module_server <- function(id, common, parent_session) {
   output$plot <- renderUI({
     watch("baseline_summary")
     req(common$baseline_summary_plot)
-    div(class = "svg_container", style = "max-width: 800px;",
-        HTML(common$baseline_summary_plot$svg)
+    svg_container( style = "max-width: 800px;",
+        common$baseline_summary_plot
     )
   })
 
@@ -42,7 +42,7 @@ baseline_summary_module_server <- function(id, common, parent_session) {
     filename = function(){
       paste0("MetaInsight_baseline_summary.", common$download_format)},
     content = function(file){
-      write_svg_plot(file, common$download_format, common$baseline_summary_plot)
+      write_plot(common$baseline_summary_plot, file, common$download_format)
     }
   )
 

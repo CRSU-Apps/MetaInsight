@@ -2,35 +2,36 @@
 % Please edit documentation in R/baseline_forest_f.R
 \name{baseline_forest}
 \alias{baseline_forest}
-\title{baseline_forest}
+\title{Produce a forest plot for a baseline risk model using \code{gemtc::blobbogram()}}
 \usage{
 baseline_forest(
   model,
-  treatment_df,
-  reference_treatment,
+  xmin = NULL,
+  xmax = NULL,
   title = "Baseline risk regression analysis",
+  ranking = FALSE,
   logger = NULL
 )
 }
 \arguments{
-\item{model}{model output produced by \code{baseline_model()}}
+\item{model}{Output produced by \code{baseline_model()}}
 
-\item{treatment_df}{dataframe. Treatments}
+\item{xmin}{numeric. Minimum x-axis value. Default \code{NULL} in which case it is calculated internally}
 
-\item{reference_treatment}{character. The reference treatment of the dataset}
+\item{xmax}{numeric. Maximum x-axis value. Default \code{NULL} in which case it is calculated internally}
 
 \item{title}{character. Title for the plot. Defaults to \verb{Baseline risk regression analysis}}
+
+\item{ranking}{logical. Whether the function is being used in \code{baseline_ranking}}
 
 \item{logger}{Stores all notification messages to be displayed in the Log
 Window. Insert the logger reactive list here for running in
 shiny, otherwise leave the default \code{NULL}}
 }
 \value{
-List containing:
-\item{svg}{character. SVG code to produce the plot}
-\item{height}{numeric. Plot height in pixels}
-\item{width}{numeric. Plot width in pixels}
+html. Contains the svg string to generate the plot. This can be saved
+using \code{write_plot()}.
 }
 \description{
-Produce a forest plot for a baseline risk model using \code{bnma::network.forest.plot()}
+Produce a forest plot for a baseline risk model using \code{gemtc::blobbogram()}
 }

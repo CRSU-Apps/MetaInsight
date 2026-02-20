@@ -1,40 +1,44 @@
-#' @title covariate_regression
-#' @description Calculate data from a covariate model required to produce a
+#' Generate data from a covariate model required to produce a
 #' metaregression plot
+#'
 #' @param model list. Output created by `covariate_model()`
-#' @param covariate_column character. Name of the column containing the covariate data
 #' @inheritParams common_params
 #' @return List containing:
 #'  \item{directness}{list. Output from `CalculateDirectness()`}
 #'  \item{credible_regions}{list. Output from `CalculateCredibleRegions()`}
 #' @export
 covariate_regression <- function(model,
-                                 connected_data,
-                                 covariate_column,
-                                 treatment_df,
-                                 outcome,
-                                 outcome_measure,
-                                 model_type,
+                                 configured_data,
                                  async = FALSE){
 
+  if (!async){ # only an issue if run outside the app
+    if (check_param_classes(c("model", "configured_data"),
+                            c("covariate_model", "configured_data"), NULL)){
+      return()
+    }
+  }
   # need to look this up
   # cov_parameters <- model_output$mtcResults$model$regressor$coefficient
 
-  if (FindDataShape(connected_data) == "wide") {
-    connected_data <- WideToLong(connected_data, outcome = outcome)
+  if (FindDataShape(configured_data$connected_data) == "wide") {
+    connected_data <- WideToLong(configured_data$connected_data, outcome = configured_data$outcome)
   }
   directness <- CalculateDirectness(
-    data = connected_data,
-    covariate_title = covariate_column,
-    treatment_ids = treatment_df,
-    outcome = outcome,
-    outcome_measure = outcome_measure,
-    effects_type = model_type)
+    data = configured_data$connected_data,
+    covariate_title = configured_data$covariate$column,
+    treatment_ids = configured_data$treatments,
+    outcome = configured_data$outcome,
+    outcome_measure = configured_data$outcome_measure,
+    effects_type = configured_data$effects)
 
   credible_regions <- CalculateCredibleRegions(model)
 
-  list(directness = directness,
-       credible_regions = credible_regions)
+  output <- list(
+    directness = directness,
+    credible_regions = credible_regions)
+
+  class(output) <- "regression_data"
+  output
 }
 
 
@@ -43,7 +47,7 @@ covariate_regression <- function(model,
 #' @param data Input data in long format.
 #' @param covariate_title Title of covariate column in data. Enter NULL if there is no covariate.
 #' @param treatment_ids Data frame containing treatment IDs and names in columns named 'Number' and 'Label' respectively.
-#' @param outcome_type "Continuous" or "Binary".
+#' @param outcome "continuous" or "binary".
 #' @param outcome_measure "MD", "OR", "RR" or "RD".
 #' @param effects_type "fixed" or "random".
 #' @return List of contributions:
@@ -61,12 +65,12 @@ CalculateDirectness <- function(
     outcome_measure,
     effects_type) {
 
-  if (outcome == "Binary") {
-    d0 <- meta::pairwise(treat = T, event = R, studlab = Study, n = N, data = data, sm = outcome_measure)
-  } else if (outcome == "Continuous") {
-    d0 <- meta::pairwise(treat = T, mean = Mean, sd = SD, studlab = Study, n = N, data = data, sm = outcome_measure)
+  if (outcome == "binary") {
+    d0 <- meta::pairwise(treat = data$T, event = data$R, studlab = data$Study, n = data$N, sm = outcome_measure, data = data)
+  } else if (outcome == "continuous") {
+    d0 <- meta::pairwise(treat = data$T, mean = data$Mean, sd = data$SD, studlab = data$Study, n = data$N, sm = outcome_measure, data = data)
   } else {
-    stop(glue::glue("Outcome type '{outcome_type}' is not supported. Please use 'Binary' or 'Continuous'"))
+    stop(glue::glue("Outcome type '{outcome}' is not supported. Please use 'binary' or 'continuous'"))
   }
 
   #Switch the treatment effects to match the rest of the app.
@@ -178,13 +182,13 @@ CalculateDirectness <- function(
 #' Each data frame in "intervals" contains a single row at the covariate value of that single contribution.
 CalculateCredibleRegions <- function(model_output) {
   mtc_results <- model_output$mtcResults
-  reference_name <- model_output$reference_name
+  reference_treatment <- model_output$reference_treatment
 
   credible_regions <- list()
   credible_intervals <- list()
 
   for (treatment_name in model_output$comparator_names) {
-    parameter_name <- glue::glue("d.{reference_name}.{treatment_name}")
+    parameter_name <- glue::glue("d.{reference_treatment}.{treatment_name}")
     cov_min <- model_output$covariate_min[treatment_name]
     cov_max <- model_output$covariate_max[treatment_name]
 
@@ -195,7 +199,7 @@ CalculateCredibleRegions <- function(model_output) {
 
     } else if (cov_min == cov_max) {
 
-      interval <- .FindCredibleInterval(mtc_results, reference_name, cov_min, parameter_name)
+      interval <- .FindCredibleInterval(mtc_results, reference_treatment, cov_min, parameter_name)
       df <- data.frame(cov_value = cov_min, lower = interval["2.5%"], upper = interval["97.5%"])
 
       # Strip out the row names
@@ -217,7 +221,7 @@ CalculateCredibleRegions <- function(model_output) {
       }
 
       for (cov_value in cov_value_sequence) {
-        interval <- .FindCredibleInterval(mtc_results, reference_name, cov_value, parameter_name)
+        interval <- .FindCredibleInterval(mtc_results, reference_treatment, cov_value, parameter_name)
         df <- rbind(
           df,
           data.frame(cov_value = cov_value, lower = interval["2.5%"], upper = interval["97.5%"])
@@ -251,13 +255,13 @@ CalculateCredibleRegions <- function(model_output) {
 #' Find the credible interval at a given covariate value.
 #'
 #' @param mtc_results Meta-analysis object from which to find credible interval.
-#' @param reference_name Name of reference treatment.
+#' @param reference_treatment Name of reference treatment.
 #' @param cov_value Covariate value at which to find the credible interval.
 #' @param parameter_name Name of the parameter for which to get the credible interval.
 #'
 #' @return Named vector of "2.5%" and "97.5" quantiles.
-.FindCredibleInterval <- function(mtc_results, reference_name, cov_value, parameter_name) {
-  rel_eff <- gemtc::relative.effect(mtc_results, reference_name, covariate = cov_value)
+.FindCredibleInterval <- function(mtc_results, reference_treatment, cov_value, parameter_name) {
+  rel_eff <- gemtc::relative.effect(mtc_results, reference_treatment, covariate = cov_value)
   rel_eff_summary <- summary(rel_eff)
   return(rel_eff_summary$summaries$quantiles[parameter_name, c("2.5%", "97.5%")])
 }

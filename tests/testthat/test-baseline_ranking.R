@@ -1,11 +1,6 @@
-connected <- defined_data_con$main_connected_data
-t_df <- defined_data_con$treatment_df
 
 test_that("Check baseline_ranking function works as expected", {
-  result <- baseline_ranking(connected,
-                             t_df,
-                              fitted_baseline_model,
-                              "good")
+  result <- baseline_ranking(fitted_baseline_model, configured_data_con)
 
   expect_is(result, "list")
   expect_true(all(c("SUCRA", "Colour", "Cumulative", "Probabilities", "BUGSnetData") %in% names(result)))
@@ -17,17 +12,15 @@ test_that("Check baseline_ranking function works as expected", {
 
   table_result <- ranking_table(result)
   expect_is(table_result, "data.frame")
-  expect_equal(table_result$Treatment[1], "Gabapentinoids")
-  expect_equal(nrow(table_result), 4)
-  expect_equal(ncol(table_result), 6)
+  expect_equal(table_result$Treatment[1], "the_Butcher")
+  expect_equal(nrow(table_result), n_trt_all)
+  expect_equal(ncol(table_result), 8)
 
   litmus_result <- LitmusRankOGram(result)
-  expect_is(litmus_result, "ggplot")
+  expect_match(litmus_result, "<svg")
 
   sucra_result <- RadialSUCRA(result)
-  expect_is(sucra_result, "list")
-  expect_is(sucra_result$Original, "ggplot")
-  expect_is(sucra_result$Alternative, "ggplot")
+  expect_match(sucra_result, "<svg")
 
 })
 
@@ -35,15 +28,11 @@ test_that("baseline_ranking produces errors for incorrect data types", {
 
   faulty_model <- list(mtcRelEffects = 1:4)
 
-  expect_error(baseline_ranking("not_a_dataframe", t_df, fitted_baseline_model, "good"), "connected_data must be of class data.frame")
-  expect_error(baseline_ranking(connected, "not_a_dataframe", fitted_baseline_model, "good"), "treatment_df must be of class data.frame")
-  expect_error(baseline_ranking(connected, t_df, fitted_baseline_model, 123), "ranking_option must be of class character")
+  expect_error(baseline_ranking(faulty_model, configured_data_con), "model must be an object created by baseline_model")
+  expect_error(baseline_ranking("faulty_model", configured_data_con), "model must be an object created by baseline_model")
+  expect_error(baseline_ranking(list(a = 1), configured_data_con), "model must be an object created by baseline_model")
+  expect_error(baseline_ranking("not_data", fitted_baseline_model), "configured_data must be of class configured_data")
 
-  expect_error(baseline_ranking(connected, t_df, faulty_model, "good"), "model must be an object created by baseline_model")
-  expect_error(baseline_ranking(connected, t_df, "faulty_model", "good"), "model must be an object created by baseline_model")
-  expect_error(baseline_ranking(connected, t_df, list(a = 1), "good"), "model must be an object created by baseline_model")
-
-  expect_error(baseline_ranking(connected, t_df, fitted_baseline_model, "not good"), "ranking_option must be either good or bad")
 })
 
 test_that("{shinytest2} recording: e2e_baseline_ranking", {
@@ -66,7 +55,7 @@ test_that("{shinytest2} recording: e2e_baseline_ranking", {
   expect_match(forest_all$html, "<svg")
 
   ranking_all <- app$get_value(output = "baseline_ranking-all-ranking")
-  expect_equal(substr(ranking_all$src, 1, 10), "data:image")
+  expect_match(ranking_all$html, "<svg")
 
   app$click("baseline_ranking-all-dropdown")
   ranking_table_all <- app$get_value(output = "baseline_ranking-all-ranking_table")
@@ -76,13 +65,8 @@ test_that("{shinytest2} recording: e2e_baseline_ranking", {
   expect_match(network_all$html, "<svg")
 
   test_bayes_plot_downloads(app, "baseline_ranking", "_forest", FALSE)
+  test_bayes_plot_downloads(app, "baseline_ranking", "_ranking_plot", FALSE)
   test_bayes_plot_downloads(app, "baseline_ranking", "_network", FALSE)
-
-  # only as a png at present
-  ranking_png_all <- app$get_download("baseline_ranking-all-download_ranking_plot")
-  expect_gt(file.info(ranking_png_all)$size, 1000)
-  expect_true(validate_plot(ranking_png_all, "png"))
-  unlink(ranking_png_all)
 
   ranking_table_dl_all <- app$get_download("baseline_ranking-all-download_ranking_table")
 

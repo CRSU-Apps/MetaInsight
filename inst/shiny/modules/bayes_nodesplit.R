@@ -19,43 +19,29 @@ bayes_nodesplit_module_ui <- function(id) {
 bayes_nodesplit_submodule_server <- function(id, common, nodesplit, run){
   moduleServer(id, function(input, output, session) {
 
-    plot_height <- reactive({
-      watch(run)
-      # removed a -1 here to make room for the title
-      n_comp <- length(common[[nodesplit]])
-      max(400, n_comp * 80)
-    })
-
-    plot_title = paste0("Inconsistency test with nodesplitting \nmodel",
-                        ifelse(id == "all", " for all studies", " with selected studies excluded"))
-
-    output$plot <- renderPlot({
+    svg <- reactive({
       watch(run)
       req(common[[nodesplit]])
       shinyjs::show(selector = ".bayes_nodesplit_div")
       on.exit(shinyjs::runjs(paste0("Shiny.setInputValue('bayes_nodesplit-",id ,"-complete', 'complete');")))
-      common$meta$bayes_nodesplit[[paste0("plot_height_", id)]] <- plot_height() / 72
-      plot(summary(common[[nodesplit]]), digits = 3)
-      title(main = plot_title)
-    }, height = function(){plot_height()})
+      bayes_nodesplit_plot(common[[nodesplit]], id == "all")
+    })
+
+    output$plot <- renderUI({
+      req(svg())
+      svg_container(
+        svg()
+      )
+    })
 
     output$download <- downloadHandler(
       filename = function(){
-          glue::glue("MetaInsight_nodesplit_{id}.{common$download_format}")
+          glue("MetaInsight_nodesplit_{id}.{common$download_format}")
       },
       content = function(file) {
-
-        plot_function <- function(){
-          plot(summary(common[[nodesplit]]))
-          title(main = plot_title)
-        }
-
-        write_plot(file,
-                   common$download_format,
-                   plot_function,
-                   # convert to inches
-                   height =  plot_height() / 72,
-                   width = 8)
+        write_plot(svg(),
+                   file,
+                   common$download_format)
       }
     )
 
@@ -71,9 +57,10 @@ bayes_nodesplit_module_server <- function(id, common, parent_session) {
     hide_and_show(id, show = FALSE)
 
     observeEvent(input$run, {
-      if (is.null(common$main_connected_data)){
+      if (is.null(common$configured_data)){
         common$logger |> writeLog(type = "error", go_to = "setup_configure",
                                   "Please configure the analysis in the Setup component first.")
+        return()
       }
       trigger("bayes_nodesplit")
     })
@@ -90,11 +77,7 @@ bayes_nodesplit_module_server <- function(id, common, parent_session) {
 
     observeEvent(watch("bayes_nodesplit"), {
       req(watch("bayes_nodesplit") > 0)
-      common$tasks$bayes_nodesplit_all$invoke(common$main_connected_data,
-                                              common$treatment_df,
-                                              common$outcome,
-                                              common$outcome_measure,
-                                              common$model_type,
+      common$tasks$bayes_nodesplit_all$invoke(common$configured_data,
                                               async = TRUE)
 
       result_all$resume()
@@ -109,10 +92,6 @@ bayes_nodesplit_module_server <- function(id, common, parent_session) {
       }
 
       common$tasks$bayes_nodesplit_sub$invoke(common$subsetted_data,
-                                              common$subsetted_treatment_df,
-                                              common$outcome,
-                                              common$outcome_measure,
-                                              common$model_type,
                                               async = TRUE)
       result_sub$resume()
     })
@@ -126,7 +105,7 @@ bayes_nodesplit_module_server <- function(id, common, parent_session) {
         common$meta$bayes_nodesplit$used <- TRUE
         trigger("bayes_nodesplit_all")
       } else {
-        common$logger |> writeLog(type = "error", result)
+        common$logger |> writeLog(type = "error", paste0(result, " in the main analysis."))
         shinyjs::runjs("Shiny.setInputValue('bayes_nodesplit-all-complete', 'complete');")
       }
 
@@ -139,11 +118,12 @@ bayes_nodesplit_module_server <- function(id, common, parent_session) {
         result_sub$suspend()
         if (inherits(result, "mtc.nodesplit")){
           common$nodesplit_sub <- result
-          trigger("bayes_nodesplit_sub")
         } else {
-          common$logger |> writeLog(type = "error", result)
+          common$nodesplit_sub <- NULL
+          common$logger |> writeLog(type = "error", paste0(result, " in the sensitivity analysis."))
           shinyjs::runjs("Shiny.setInputValue('bayes_nodesplit-sub-complete', 'complete');")
         }
+        trigger("bayes_nodesplit_sub")
       }
     })
 
@@ -156,7 +136,7 @@ bayes_nodesplit_module_server <- function(id, common, parent_session) {
 
 bayes_nodesplit_submodule_result <- function(id) {
   ns <- NS(id)
-  plotOutput(ns("plot"))
+  uiOutput(ns("plot"))
 }
 
 bayes_nodesplit_module_result <- function(id) {
@@ -171,9 +151,7 @@ bayes_nodesplit_module_result <- function(id) {
 
 
 bayes_nodesplit_module_rmd <- function(common) {
-  list(bayes_nodesplit_knit = !is.null(common$nodesplit_all),
-       bayes_nodesplit_plot_height_all = common$meta$bayes_nodesplit$plot_height_all,
-       bayes_nodesplit_plot_height_sub = common$meta$bayes_nodesplit$plot_height_sub
-       )
+  list(bayes_nodesplit_knit_all = !is.null(common$nodesplit_all),
+       bayes_nodesplit_knit_sub = !is.null(common$nodesplit_sub))
 }
 

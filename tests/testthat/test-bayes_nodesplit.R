@@ -1,29 +1,24 @@
-connected <- defined_data_con$main_connected_data
-t_df <- defined_data_con$treatment_df
-
-loaded_ns <- setup_load(data_path = file.path(test_data_dir, "Cont_nodesplit.csv"), outcome = "Continuous")
-defined_ns <- setup_configure(loaded_ns$data, loaded_ns$treatment_df, "Continuous", "MD", "Placebo")
+loaded_ns <- setup_load(data_path = file.path(test_data_dir, "Cont_nodesplit.csv"), outcome = "continuous")
+configured_ns <- setup_configure(loaded_ns, "Placebo", "random", "MD", "good", 123)
 
 test_that("Check bayes_nodesplit function works as expected", {
-  result <- bayes_nodesplit(defined_ns$main_connected_data, defined_ns$treatment_df, "Continuous", "MD", "random")
+  result <- bayes_nodesplit(configured_ns)
   expect_is(result, "mtc.nodesplit")
   expect_length(result, 9)
   expect_true(all(unlist(lapply(result, class)) == "mtc.result"))
+
+  plot <- bayes_nodesplit_plot(result)
+  expect_match(plot, "<svg")
+
 })
 
 test_that("bayes_nodesplit produces errors for incorrect data types", {
-  expect_error(bayes_nodesplit("not_a_dataframe", t_df, "Continuous", "MD", "random"), "connected_data must be of class data.frame")
-  expect_error(bayes_nodesplit(connected, "not_a_dataframe", "Continuous", "MD", "random"), "treatment_df must be of class data.frame")
-  expect_error(bayes_nodesplit(connected, t_df, 123, "MD", "random"), "outcome must be of class character")
-  expect_error(bayes_nodesplit(connected, t_df, "Continuous", 123, "random"), "outcome_measure must be of class character")
-  expect_error(bayes_nodesplit(connected, t_df, "Continuous", "MD", 123), "model_type must be of class character")
-  expect_error(bayes_nodesplit(connected, t_df, "invalid_outcome", "MD", "random"), "outcome must be either Binary or Continuous")
-  expect_error(bayes_nodesplit(connected, t_df, "Continuous", "invalid_measure", "random"), "Outcome_measure type 'invalid_measure' is not supported")
-  expect_error(bayes_nodesplit(connected, t_df, "Continuous", "MD", "not_random"), "model_type must be 'fixed' or 'random'")
+  expect_error(bayes_nodesplit("not_data"), "configured_data must be of class configured_data")
 })
 
 test_that("bayes_nodesplit produces errors for data which cannot be split", {
-  expect_error(bayes_nodesplit(connected, t_df, "Continuous", "MD", "random"), "There are no loops in the network")
+  # expect_error(bayes_nodesplit(configured_data_con), "There are no loops in the network")
+  expect_error(bayes_nodesplit(configured_data_con), "In all loops, heterogeneity and inconsistency cannot be distinguished.")
 })
 
 test_that("bayes_nodesplit functions with valid data", {
@@ -44,8 +39,9 @@ test_that("bayes_nodesplit functions with valid data", {
 
   plot_all <- app$get_value(output = "bayes_nodesplit-all-plot")
   plot_sub <- app$get_value(output = "bayes_nodesplit-sub-plot")
-  expect_equal(substr(plot_all$src, 1, 10), "data:image")
-  expect_equal(substr(plot_sub$src, 1, 10), "data:image")
+
+  expect_match(plot_all$html, "<svg")
+  expect_match(plot_sub$html, "<svg")
 
   test_bayes_plot_downloads(app, "bayes_nodesplit", "")
 

@@ -2,36 +2,12 @@
 % Please edit documentation in R/bayes_model_f.R
 \name{bayes_model}
 \alias{bayes_model}
-\title{Run Bayesian models}
+\title{Fit a Bayesian model using \CRANpkg{gemtc}}
 \usage{
-bayes_model(
-  connected_data,
-  treatment_df,
-  outcome,
-  outcome_measure,
-  model_type,
-  reference_treatment,
-  seed,
-  async = FALSE
-)
+bayes_model(configured_data, async = FALSE)
 }
 \arguments{
-\item{connected_data}{dataframe. Input data set created by \code{setup_configure()} or \code{setup_exclude}}
-
-\item{treatment_df}{dataframe. Treatments}
-
-\item{outcome}{character. Outcome type for the dataset. Either \code{Binary} or
-\code{Continuous}.}
-
-\item{outcome_measure}{character. Outcome measure of the dataset. Either
-\code{OR}, \code{RR} or \code{RD} when \code{outcome} is \code{Binary} or \code{MD} or \code{SMD} when
-\code{outcome} is \code{Continuous}}
-
-\item{model_type}{character. Type of model to fit, either \code{random} or \code{fixed}}
-
-\item{reference_treatment}{character. The reference treatment of the dataset}
-
-\item{seed}{numeric. Seed used to fit the model}
+\item{configured_data}{list. Input dataset created by \code{setup_configure()} or \code{setup_exclude()}}
 
 \item{async}{Whether or not the function is being used asynchronously. Default \code{FALSE}}
 }
@@ -43,9 +19,12 @@ List containing:
 \item{sumresults}{summary.mtc.result. Output from \code{summary(mtcRelEffects)}}
 \item{mtcNetwork}{mtc.network. Output from \code{gemtc::mtc.network()}}
 \item{dic}{dataframe. Containing the statistics 'Dbar', 'pD', 'DIC', and 'data points'}
-\item{outcome_measure}{character. The input \code{outcome_measure}}
-\item{model_type}{dataframe. The input \code{model_type}}
+\item{outcome}{character. The \code{outcome} from \code{configured_data}}
+\item{outcome_measure}{character. The \code{outcome_measure}from \code{configured_data}}
+\item{reference_treatment}{character. The \code{reference_treatment}from \code{configured_data}}
+\item{effects}{character. The \code{effects} from \code{configured_data}}
+\item{seed}{numeric. The \code{seed} from \code{configured_data}}
 }
 \description{
-Run Bayesian models
+Fit a Bayesian model using \CRANpkg{gemtc}
 }

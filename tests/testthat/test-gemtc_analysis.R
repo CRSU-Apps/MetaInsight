@@ -1,19 +1,19 @@
 test_that("PrepDataGemtc() gives correct data for wide binary", {
 
   # process data as would be in app
-  data <- read.csv("data/Binary_wide_continuous_cov.csv")
+  data <- read.csv(file.path(test_data_dir, "Binary_wide_continuous_cov.csv"))
   treatment_ids <- CreateTreatmentIds(FindAllTreatments(data))
-  data <- WrangleUploadData(data, treatment_ids, "Binary")
+  data <- WrangleUploadData(data, treatment_ids, "binary")
   wrangled_treatment_list <- CleanTreatmentIds(treatment_ids)
 
-  gemtc_data <- PrepDataGemtc(data, wrangled_treatment_list, "Binary", "covar.age", "age")
+  gemtc_data <- PrepDataGemtc(data, wrangled_treatment_list, "binary", "covar.age", "age")
 
-  expected_armData = data.frame(
+  expected_armData <- data.frame(
     study = c(rep("Constantine", 3), rep("Leo", 3), rep("Justinian", 2)),
     treatment = c("the_Great", "the_Younger", "the_Dung_named", "the_Great", "the_Little", "the_Butcher", "the_Great", "the_Slit_nosed"),
     responders = c(30, 31, 32, 34, 33, 35, 36, 37),
     sampleSize = c(100, 101, 102, 104, 103, 105, 106, 107))
-  expected_studyData = data.frame(
+  expected_studyData <- data.frame(
       study = c("Constantine", "Leo", "Justinian"),
       age = c(99, 98, 97))
 
@@ -23,19 +23,19 @@ test_that("PrepDataGemtc() gives correct data for wide binary", {
 
 test_that("PrepDataGemtc() gives correct data for long binary", {
 
-  data <- read.csv("data/Binary_long_continuous_cov.csv")
+  data <- read.csv(file.path(test_data_dir, "Binary_long_continuous_cov.csv"))
   treatment_ids <- CreateTreatmentIds(FindAllTreatments(data))
-  data <- WrangleUploadData(data, treatment_ids, "Binary")
+  data <- WrangleUploadData(data, treatment_ids, "binary")
   wrangled_treatment_list <- CleanTreatmentIds(treatment_ids)
 
-  gemtc_data <- PrepDataGemtc(data, wrangled_treatment_list, "Binary", "covar.age", "age")
+  gemtc_data <- PrepDataGemtc(data, wrangled_treatment_list, "binary", "covar.age", "age")
 
   expected_armData <- data.frame(
     study = c(rep("Constantine", 3), rep("Leo", 3), rep("Justinian", 2)),
     treatment = c("the_Great", "the_Younger", "the_Dung_named", "the_Great", "the_Little", "the_Butcher", "the_Great", "the_Slit_nosed"),
     responders = c(30, 31, 32, 34, 33, 35, 36, 37),
     sampleSize = c(100, 101, 102, 104, 103, 105, 106, 107))
-  expected_studyData = data.frame(
+  expected_studyData <- data.frame(
       study = c("Constantine", "Leo", "Justinian"),
       age = c(99, 98, 97))
 
@@ -45,12 +45,12 @@ test_that("PrepDataGemtc() gives correct data for long binary", {
 
 test_that("PrepDataGemtc() gives correct data for wide continuous", {
 
-  data <- read.csv("data/Cont_wide_continuous_cov.csv")
+  data <- read.csv(file.path(test_data_dir, "Cont_wide_continuous_cov.csv"))
   treatment_ids <- CreateTreatmentIds(FindAllTreatments(data))
-  data <- WrangleUploadData(data, treatment_ids, "Continuous")
+  data <- WrangleUploadData(data, treatment_ids, "continuous")
   wrangled_treatment_list <- CleanTreatmentIds(treatment_ids)
 
-  gemtc_data <- PrepDataGemtc(data, wrangled_treatment_list, "Continuous", "covar.age", "age")
+  gemtc_data <- PrepDataGemtc(data, wrangled_treatment_list, "continuous", "covar.age", "age")
 
   expected_armData <- data.frame(
     study = c(rep("Constantine", 3), rep("Leo", 3), rep("Justinian", 2)),
@@ -58,7 +58,7 @@ test_that("PrepDataGemtc() gives correct data for wide continuous", {
     mean = c(-1, -1.1, -1.2, -1.4, -1.3, -1.5, -1.6, -1.7),
     std.dev = c(11.1, 12.2, 13.3, 15.5, 14.4, 16.6, 17.7, 18.8),
     sampleSize = c(30, 31, 32, 34, 33, 35, 36, 37))
-  expected_studyData = data.frame(
+  expected_studyData <- data.frame(
       study = c("Constantine", "Leo", "Justinian"),
       age = c(99, 98, 97))
 
@@ -68,12 +68,12 @@ test_that("PrepDataGemtc() gives correct data for wide continuous", {
 
 test_that("PrepDataGemtc() gives correct data for long continuous", {
 
-  data <- read.csv("data/Cont_long_continuous_cov.csv")
+  data <- read.csv(file.path(test_data_dir, "Cont_long_continuous_cov.csv"))
   treatment_ids <- CreateTreatmentIds(FindAllTreatments(data))
-  data <- WrangleUploadData(data, treatment_ids, "Continuous")
+  data <- WrangleUploadData(data, treatment_ids, "continuous")
   wrangled_treatment_list <- CleanTreatmentIds(treatment_ids)
 
-  gemtc_data <- PrepDataGemtc(data, wrangled_treatment_list, "Continuous", "covar.age", "age")
+  gemtc_data <- PrepDataGemtc(data, wrangled_treatment_list, "continuous", "covar.age", "age")
 
   expected_armData <- data.frame(
     study = c(rep("Constantine", 3), rep("Leo", 3), rep("Justinian", 2)),
@@ -81,7 +81,7 @@ test_that("PrepDataGemtc() gives correct data for long continuous", {
     mean = c(-1, -1.1, -1.2, -1.4, -1.3, -1.5, -1.6, -1.7),
     std.dev = c(11.1, 12.2, 13.3, 15.5, 14.4, 16.6, 17.7, 18.8),
     sampleSize = c(30, 31, 32, 34, 33, 35, 36, 37))
-  expected_studyData = data.frame(
+  expected_studyData <- data.frame(
       study = c("Constantine", "Leo", "Justinian"),
       age = c(99, 98, 97))
 
@@ -172,7 +172,7 @@ test_that("CalculateCredibleRegions() gives nothing for NA evidence range", {
 
   model_output <- list(
     mtcResults = mtc_results,
-    reference_name = "Placebo",
+    reference_treatment = "Placebo",
     comparator_names = c("Ibuprofen"),
     covariate_min = c(Ibuprofen = NA),
     covariate_max = c(Ibuprofen = NA)
@@ -202,7 +202,7 @@ test_that("CalculateCredibleRegions() gives interval for zero-width evidence ran
 
   model_output <- list(
     mtcResults = mtc_results,
-    reference_name = "Placebo",
+    reference_treatment = "Placebo",
     comparator_names = c("Ibuprofen"),
     covariate_min = c(Ibuprofen = 7),
     covariate_max = c(Ibuprofen = 7)
@@ -244,7 +244,7 @@ test_that("CalculateCredibleRegions() gives region for non-zero-width evidence r
 
   model_output <- list(
     mtcResults = mtc_results,
-    reference_name = "Placebo",
+    reference_treatment = "Placebo",
     comparator_names = c("Ibuprofen"),
     covariate_min = c(Ibuprofen = 7),
     covariate_max = c(Ibuprofen = 17)

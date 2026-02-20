@@ -2,36 +2,22 @@
 % Please edit documentation in R/bayes_nodesplit_f.R
 \name{bayes_nodesplit}
 \alias{bayes_nodesplit}
-\title{Run the nodesplit model}
+\title{Fit a nodesplitting model with \code{gemtc::mtc.nodesplit()}. This is not possible
+for all networks and the function will return an error if the nodes cannot
+be split.}
 \usage{
-bayes_nodesplit(
-  connected_data,
-  treatment_df,
-  outcome,
-  outcome_measure,
-  model_type,
-  async = FALSE
-)
+bayes_nodesplit(configured_data, async = FALSE)
 }
 \arguments{
-\item{connected_data}{dataframe. Input data set created by \code{setup_configure()} or \code{setup_exclude}}
-
-\item{treatment_df}{dataframe. Treatments}
-
-\item{outcome}{character. Outcome type for the dataset. Either \code{Binary} or
-\code{Continuous}.}
-
-\item{outcome_measure}{character. Outcome measure of the dataset. Either
-\code{OR}, \code{RR} or \code{RD} when \code{outcome} is \code{Binary} or \code{MD} or \code{SMD} when
-\code{outcome} is \code{Continuous}}
-
-\item{model_type}{character. Type of model to fit, either \code{random} or \code{fixed}}
+\item{configured_data}{list. Input dataset created by \code{setup_configure()} or \code{setup_exclude()}}
 
 \item{async}{Whether or not the function is being used asynchronously. Default \code{FALSE}}
 }
 \value{
-\code{mtc.nodesplit} object containing an mtc.result object for each node
+\code{mtc.nodesplit} object containing an \code{mtc.result} object for each node
 }
 \description{
-Run the nodesplit model
+Fit a nodesplitting model with \code{gemtc::mtc.nodesplit()}. This is not possible
+for all networks and the function will return an error if the nodes cannot
+be split.
 }

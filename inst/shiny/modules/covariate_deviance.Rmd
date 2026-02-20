@@ -7,12 +7,6 @@ covariate_deviance <- covariate_deviance(covariate_model)
 ```
 
 ```{asis, echo = {{covariate_deviance_knit}}, eval = {{covariate_deviance_knit}}, include = {{covariate_deviance_knit}}}
-#### Residual deviance from NMA model and UME inconsistency model
-```
-```{r, echo = {{covariate_deviance_knit}}, include = {{covariate_deviance_knit}}}
-covariate_deviance$scat_plot
-```
-```{asis, echo = {{covariate_deviance_knit}}, eval = {{covariate_deviance_knit}}, include = {{covariate_deviance_knit}}}
 #### Per-arm residual deviance 
 ```
 ```{r, echo = {{covariate_deviance_knit}}, include = {{covariate_deviance_knit}}}

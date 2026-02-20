@@ -1,21 +1,10 @@
-connected <- defined_data_con$main_connected_data
-t_df <- defined_data_con$treatment_df
-
 test_that("Check baseline_summary function works as expected", {
-  result <- baseline_summary(connected, "Continuous", t_df)
-
-  expect_match(result$svg, "<svg")
-  expect_gt(result$width, 100)
-  expect_lt(result$width, 2000)
-  expect_gt(result$height, 100)
-  expect_lt(result$height, 2000)
+  result <- baseline_summary(configured_data_con)
+  expect_match(result, "<svg")
 })
 
 test_that("Check baseline_summary function produces errors as expected", {
-  expect_error(baseline_summary("not_a_dataframe", "Continuous", t_df), "connected_data must be of class data.frame")
-  expect_error(baseline_summary(connected, 123, t_df), "outcome must be of class character")
-  expect_error(baseline_summary(connected, "Continuous", "not_a_dataframe"), "treatment_df must be of class data.frame")
-  expect_error(baseline_summary(connected, "invalid_outcome", t_df), "outcome must be 'Binary' or 'Continuous'")
+  expect_error(baseline_summary("not_data"), "configured_data must be of class configured_data")
 })
 
 test_that("{shinytest2} recording: e2e_baseline_summary", {
@@ -26,7 +15,6 @@ test_that("{shinytest2} recording: e2e_baseline_summary", {
   app$click("setup_reload-goLoad_session")
 
   app$set_inputs(tabs = "baseline")
-  app$set_inputs(baselineSel = "baseline_summary")
   app$click("baseline_summary-run")
 
   app$wait_for_value(output = "baseline_summary-plot")

@@ -14,10 +14,16 @@ tagList(
       shinyjs::useShinyjs(),
       shinyjs::extendShinyjs(
         script = file.path("resources", "js", "shinyjs-funcs.js"),
-        functions = c("scrollLogger", "disableModule", "enableModule", "runOnEnter")
+        functions = c("scrollLogger", "disableModule", "enableModule", "runOnEnter",
+                      "fullscreenPlot", "fullscreenLabel", "scrollingPlot")
       ),
       tags$link(href = "css/styles.css", rel = "stylesheet"),
       includeHTML(file.path(resourcePath, "favicon", "favicon.html")),
+      tags$meta(name="description", content="A interactive web tool for network meta-analysis (NMA) that leverages established analysis routines"),
+      tags$meta(name="keywords", content="MetaInsight, NMA, Network, Meta, Analysis, App"),
+      tags$meta(property="og:title", content="Meta Insight: v7.0.0"),
+      tags$meta(property="og:description", content="An interactive web tool for network meta-analysis (NMA) that leverages established analysis routines"),
+      tags$meta(property="og:image", content="https://raw.githubusercontent.com/CRSU-Apps/MetaInsight/main/www/images/MetaInsightLogo.png"),
       core_analytics_module_ui("core_analytics")
       ),
     title = img(src = "logo.png", height = "40"),
@@ -81,22 +87,14 @@ tagList(
       br(),
       conditionalPanel(
         "input.tabs != 'intro' & input.tabs != 'rep'",
-        accordion(
-          id = "collapse_table",
-          open = FALSE,
-          accordion_panel(
-            title = "Data table (Click to open / hide this panel)",
-            "Use the filter box under each column of heading to select studies to exclude in the sensitivity analysis.",
-            DT::dataTableOutput("table")
-          )
-        ),
+        core_table_module_ui("core_table"),
         navset_tab(
           id = 'main',
           nav_panel(
             'Results',
             lapply(COMPONENTS, function(component) {
               conditionalPanel(
-                glue::glue("input.tabs == '{component}'"),
+                glue("input.tabs == '{component}'"),
                 insert_modules_results(component)
               )
             }),
@@ -143,6 +141,10 @@ tagList(
             nav_panel(
               'How to use',
               includeMarkdown("Rmd/text_how_to_use.Rmd")
+            ),
+            nav_panel(
+              'Latest updates',
+              includeMarkdown("Rmd/latest_updates.Rmd")
             )
           )
         )

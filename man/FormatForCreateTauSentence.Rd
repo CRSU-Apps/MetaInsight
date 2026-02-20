@@ -4,10 +4,10 @@
 \alias{FormatForCreateTauSentence}
 \title{Put the output from a bnma model into the format of a gemtc model, in order to apply CreateTauSentence().}
 \usage{
-FormatForCreateTauSentence(br_model)
+FormatForCreateTauSentence(model)
 }
 \arguments{
-\item{br_model}{Output from bnma::network.run.}
+\item{model}{Output from bnma::network.run.}
 }
 \value{
 List:

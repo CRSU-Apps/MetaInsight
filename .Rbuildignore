@@ -1,2 +1,6 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+developer_resources
+LICENSE
+CITATION.cff
+tests/testthat/saved_files

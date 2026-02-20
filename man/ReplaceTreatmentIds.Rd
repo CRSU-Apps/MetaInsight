@@ -9,7 +9,7 @@ ReplaceTreatmentIds(data, treatment_ids)
 \arguments{
 \item{data}{Data frame in which to search for treatment names}
 
-\item{treatent_ids}{Data frame containing treatment names (Label) and IDs (Number)}
+\item{treatment_ids}{Data frame containing treatment names (Label) and IDs (Number)}
 }
 \value{
 Data frame where the treatments are given as IDs, not names

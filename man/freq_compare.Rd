@@ -2,24 +2,23 @@
 % Please edit documentation in R/freq_compare_f.R
 \name{freq_compare}
 \alias{freq_compare}
-\title{Produce comparison tables}
+\title{Produce a comparison table of treatments using
+\code{netmeta::netleague()}.}
 \usage{
-freq_compare(freq, model_type, ranking_option, logger = NULL)
+freq_compare(configured_data, logger = NULL)
 }
 \arguments{
-\item{freq}{list. NMA results created by freq_wrap().}
-
-\item{model_type}{character. Type of model to fit, either \code{random} or \code{fixed}}
-
-\item{ranking_option}{character. \code{good} if the treatment effect is desirable, else \code{bad}}
+\item{configured_data}{list. Input dataset created by \code{setup_configure()} or \code{setup_exclude()}}
 
 \item{logger}{Stores all notification messages to be displayed in the Log
 Window. Insert the logger reactive list here for running in
 shiny, otherwise leave the default \code{NULL}}
 }
 \value{
-Ranking table created by \code{netmeta::netleague()}
+Dataframe of comparisons with one row and one column
+per treatment
 }
 \description{
-Produce comparison tables
+Produce a comparison table of treatments using
+\code{netmeta::netleague()}.
 }

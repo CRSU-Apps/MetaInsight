@@ -11,7 +11,7 @@ WrangleUploadData(data, treatment_ids, outcome)
 
 \item{treatment_ids}{Data frame containing treatment IDs and names in columns named 'Number' and 'Label' respectively}
 
-\item{outcome}{Type of outcome for which to reorder, either 'Continuous' or 'Binary'}
+\item{outcome}{Type of outcome for which to reorder, either 'continuous' or 'binary'}
 }
 \value{
 Data frame which is uasable by the rest of the app

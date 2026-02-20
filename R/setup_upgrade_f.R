@@ -23,7 +23,7 @@ setup_upgrade <- function(data_path, treatments, logger = NULL){
     return()
   }
 
-  data <- read.table(
+  data <- utils::read.table(
     file = data_path,
     sep = ",",
     header = TRUE,
@@ -86,7 +86,7 @@ CreateTreatmentsDataFrame <- function(treatment_names_string) {
     return(data.frame())
   }
 
-  treatment_df = data.frame(
+  treatment_df <- data.frame(
     Number = seq(length(treatments)),
     Label = treatments
   )

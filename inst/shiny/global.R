@@ -1,5 +1,6 @@
-library(glue)
 library(metainsight)
+library(glue)
+library(gargoyle)
 
 MB <- 1024^2
 UPLOAD_SIZE_MB <- 5000

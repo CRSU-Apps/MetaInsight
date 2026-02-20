@@ -4,17 +4,25 @@
 \alias{RadialSUCRA}
 \title{Radial SUCRA Plot}
 \usage{
-RadialSUCRA(ranking_data, colourblind = FALSE, regression_text = "")
+RadialSUCRA(
+  ranking_data,
+  original = TRUE,
+  colourblind = FALSE,
+  regression_text = ""
+)
 }
 \arguments{
 \item{ranking_data}{list created by bayes_ranking().}
 
-\item{colourblind}{TRUE for colourblind friendly colours (default = FALSE).}
+\item{original}{logical. Whether to display the original or simplified version (default = \code{TRUE})}
+
+\item{colourblind}{logical. \code{TRUE} for colourblind friendly colours (default = \code{FALSE}).}
 
 \item{regression_text}{Text to show for regression (default = "").}
 }
 \value{
-Radial SUCRA plot.
+html. Contains the svg string to generate the plot. This can be saved
+using \code{write_plot()}.
 }
 \description{
 Radial SUCRA Plot

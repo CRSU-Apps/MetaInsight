@@ -1,11 +1,5 @@
-connected <- defined_data_con$main_connected_data
-t_df <- defined_data_con$treatment_df
-
 test_that("Check bayes_ranking function works as expected", {
-  result <- bayes_ranking(connected,
-                          t_df,
-                          fitted_bayes_model,
-                          "good")
+  result <- bayes_ranking(fitted_bayes_model, configured_data_con)
 
   expect_is(result, "list")
   expect_true(all(c("SUCRA", "Colour", "Cumulative", "Probabilities", "BUGSnetData") %in% names(result)))
@@ -14,20 +8,18 @@ test_that("Check bayes_ranking function works as expected", {
   expect_is(result$Cumulative, "data.frame")
   expect_is(result$Probabilities, "data.frame")
   expect_is(result$BUGSnetData, "BUGSnetData")
-  expect_equal(result$SUCRA$Treatment[1], "Gabapentinoids")
+  expect_equal(result$SUCRA$Treatment[1], "the_Butcher")
 
   table_result <- ranking_table(result)
   expect_is(table_result, "data.frame")
-  expect_equal(nrow(table_result), 4)
-  expect_equal(ncol(table_result), 6)
+  expect_equal(nrow(table_result), n_trt_all)
+  expect_equal(ncol(table_result), 8)
 
   litmus_result <- LitmusRankOGram(result)
-  expect_is(litmus_result, "ggplot")
+  expect_match(litmus_result, "<svg")
 
   sucra_result <- RadialSUCRA(result)
-  expect_is(sucra_result, "list")
-  expect_is(sucra_result$Original, "ggplot")
-  expect_is(sucra_result$Alternative, "ggplot")
+  expect_match(sucra_result, "<svg")
 
 })
 
@@ -35,15 +27,10 @@ test_that("bayes_ranking produces errors for incorrect data types", {
 
   faulty_model <- list(mtcRelEffects = 1:4)
 
-  expect_error(bayes_ranking("not_a_dataframe", t_df, fitted_bayes_model, "good"), "connected_data must be of class data.frame")
-  expect_error(bayes_ranking(connected, "not_a_dataframe", fitted_bayes_model, "good"), "treatment_df must be of class data.frame")
-  expect_error(bayes_ranking(connected, t_df, fitted_bayes_model, 123), "ranking_option must be of class character")
-
-  expect_error(bayes_ranking(connected, t_df, faulty_model, "good"), "model must be an object created by baseline_model")
-  expect_error(bayes_ranking(connected, t_df, "faulty_model", "good"), "model must be an object created by baseline_model")
-  expect_error(bayes_ranking(connected, t_df, list(a = 1), "good"), "model must be an object created by baseline_model")
-
-  expect_error(bayes_ranking(connected, t_df, fitted_bayes_model, "not good"), "ranking_option must be either good or bad")
+  expect_error(bayes_ranking(faulty_model, configured_data_con), "model must be an object created by baseline_model")
+  expect_error(bayes_ranking("faulty_model", configured_data_con), "model must be an object created by baseline_model")
+  expect_error(bayes_ranking(list(a = 1), configured_data_con), "model must be an object created by baseline_model")
+  expect_error(bayes_ranking("not_data", fitted_bayes_model), "configured_data must be of class configured_data")
 })
 
 test_that("{shinytest2} recording: e2e_bayes_ranking", {
@@ -72,8 +59,8 @@ test_that("{shinytest2} recording: e2e_bayes_ranking", {
 
   ranking_all <- app$get_value(output = "bayes_ranking-all-ranking")
   ranking_sub <- app$get_value(output = "bayes_ranking-sub-ranking")
-  expect_equal(substr(ranking_all$src, 1, 10), "data:image")
-  expect_equal(substr(ranking_sub$src, 1, 10), "data:image")
+  expect_match(ranking_all$html, "<svg")
+  expect_match(ranking_sub$html, "<svg")
 
   app$click("bayes_ranking-all-dropdown")
   ranking_table_all <- app$get_value(output = "bayes_ranking-all-ranking_table")
@@ -88,16 +75,8 @@ test_that("{shinytest2} recording: e2e_bayes_ranking", {
   expect_match(network_sub$html, "<svg")
 
   test_bayes_plot_downloads(app, "bayes_ranking", "_forest")
+  test_bayes_plot_downloads(app, "bayes_ranking", "_ranking_plot")
   test_bayes_plot_downloads(app, "bayes_ranking", "_network")
-
-  # only as a png at present
-  ranking_png_all <- app$get_download("bayes_ranking-all-download_ranking_plot")
-  ranking_png_sub <- app$get_download("bayes_ranking-sub-download_ranking_plot")
-  expect_gt(file.info(ranking_png_all)$size, 1000)
-  expect_gt(file.info(ranking_png_sub)$size, 1000)
-  expect_true(validate_plot(ranking_png_all, "png"))
-  expect_true(validate_plot(ranking_png_sub, "png"))
-  unlink(c(ranking_png_all, ranking_png_sub))
 
   ranking_table_dl_all <- app$get_download("bayes_ranking-all-download_ranking_table")
   ranking_table_dl_sub <- app$get_download("bayes_ranking-sub-download_ranking_table")

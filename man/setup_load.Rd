@@ -2,15 +2,17 @@
 % Please edit documentation in R/setup_load_f.R
 \name{setup_load}
 \alias{setup_load}
-\title{Assess the data for validity. this checks the column names for required columns, and balanced wide format numbered columns.}
+\title{Assess the data for validity. This checks the column names for required columns
+and balanced wide format numbered columns.}
 \usage{
 setup_load(data_path = NULL, outcome, logger = NULL)
 }
 \arguments{
-\item{data_path}{character. Path to the file to be loaded or if \code{NULL} load the default data}
+\item{data_path}{character. Path to the file to be loaded or if \code{NULL} load
+the default data}
 
-\item{outcome}{character. Outcome type for the dataset. Either \code{Binary} or
-\code{Continuous}.}
+\item{outcome}{character. Outcome type for the dataset. Either \code{binary} or
+\code{continuous}.}
 
 \item{logger}{Stores all notification messages to be displayed in the Log
 Window. Insert the logger reactive list here for running in
@@ -20,9 +22,13 @@ shiny, otherwise leave the default \code{NULL}}
 List containing:
 \item{is_data_valid}{logical. Whether the data is valid}
 \item{is_data_uploaded}{logical. Whether the data is uploaded}
-\item{data}{dataframe. The data that was uploaded or the default data if no data_path was provided}
-\item{treatment_df}{Dataframe of the treatments in the data. \code{NULL} if \code{is_data_valid} is \code{FALSE}}
+\item{data}{dataframe. The data that was uploaded or the default data if
+no data_path was provided}
+\item{treatments}{Dataframe of the treatments in the data. \code{NULL} if
+\code{is_data_valid} is \code{FALSE}}
+\item{outcome}{character. Whether the data is \code{binary} or \code{continuous}}
 }
 \description{
-Assess the data for validity. this checks the column names for required columns, and balanced wide format numbered columns.
+Assess the data for validity. This checks the column names for required columns
+and balanced wide format numbered columns.
 }

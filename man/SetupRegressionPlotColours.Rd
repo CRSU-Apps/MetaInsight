@@ -13,6 +13,8 @@ SetupRegressionPlotColours(
 )
 }
 \arguments{
+\item{plot}{The ggplot2 object}
+
 \item{comparators}{Vector of names of comparison treatments to plot.}
 
 \item{include_ghosts}{TRUE if all other comparator studies should be plotted in grey in the background of the plot.}
@@ -20,8 +22,6 @@ SetupRegressionPlotColours(
 \item{include_credible}{TRUE if all other comparator studies should be plotted in grey in the background of the plot.}
 
 \item{credible_opacity}{The opacity of the credible regions. Can be any value between 0 and 1, inclusive. Defaults to 1.}
-
-\item{reference}{Name of the reference treatment.}
 }
 \value{
 Created ggplot2 object.

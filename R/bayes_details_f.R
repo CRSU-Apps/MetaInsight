@@ -1,6 +1,6 @@
-#' Produces a summary of a Bayesian model
+#' Produce a summary of a Bayesian model
 #'
-#' @param model list. Output produced by `baseline_model()`, `bayes_model()` or `covariate_model()`.
+#' @param model Output produced by `baseline_model()`, `bayes_model()` or `covariate_model()`.
 #' @inheritParams common_params
 #' @return HTML summary of the model
 #' @export

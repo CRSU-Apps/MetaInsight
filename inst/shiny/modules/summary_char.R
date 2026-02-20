@@ -15,7 +15,7 @@ summary_char_module_server <- function(id, common, parent_session) {
 
     observeEvent(input$run, {
       # WARNING ####
-      if (is.null(common$bugsnet_sub)){
+      if (is.null(common$configured_data)){
         common$logger |> writeLog(type = "error", go_to = "setup_configure",
                                   "Please configure the analysis first in the Setup section")
         return()
@@ -27,13 +27,13 @@ summary_char_module_server <- function(id, common, parent_session) {
     summary_all <- reactive({
       req(watch("summary_char") > 0)
       common$meta$summary_char$used <- TRUE
-      summary_char(common$bugsnet_all, common$outcome)
+      summary_char(common$configured_data)
     })
 
     summary_sub <- reactive({
       watch("setup_exclude")
       req(watch("summary_char") > 0)
-      summary_char(common$bugsnet_sub, common$outcome)
+      summary_char(common$subsetted_data)
     })
 
     table <- reactive({

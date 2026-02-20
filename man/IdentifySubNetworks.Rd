@@ -6,7 +6,7 @@
 \usage{
 IdentifySubNetworks(
   data,
-  treatment_df,
+  treatments,
   reference_treatment_name = NULL,
   subnet_name_prefix = "subnet_"
 )
@@ -14,9 +14,9 @@ IdentifySubNetworks(
 \arguments{
 \item{data}{Data frame containing all of the studies for binary or continuous outcomes, and wide or long format.}
 
-\item{treatment_df}{Data frame containing the names ("Label") and IDs ("Number") of the treatments.}
+\item{treatments}{Data frame containing the names ("Label") and IDs ("Number") of the treatments.}
 
-\item{reference_treatment_name}{The name of the reference treatment. If not specified, then defaults to treatment with "Number" 1 in treatment_df.}
+\item{reference_treatment_name}{The name of the reference treatment. If not specified, then defaults to treatment with "Number" 1 in treatments.}
 
 \item{subnet_name_prefix}{Names of the subnetworks. Defaults to "subnet_"}
 }

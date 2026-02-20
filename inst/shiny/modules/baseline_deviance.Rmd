@@ -7,12 +7,6 @@ baseline_deviance <- baseline_deviance(baseline_model)
 ```
 
 ```{asis, echo = {{baseline_deviance_knit}}, eval = {{baseline_deviance_knit}}, include = {{baseline_deviance_knit}}}
-#### Residual deviance from NMA model and UME inconsistency model
-```
-```{r, echo = {{baseline_deviance_knit}}, include = {{baseline_deviance_knit}}}
-baseline_deviance$scat_plot
-```
-```{asis, echo = {{baseline_deviance_knit}}, eval = {{baseline_deviance_knit}}, include = {{baseline_deviance_knit}}}
 #### Per-arm residual deviance 
 ```
 ```{r, echo = {{baseline_deviance_knit}}, include = {{baseline_deviance_knit}}}

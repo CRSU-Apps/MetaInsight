@@ -4,9 +4,13 @@
 \alias{run_all}
 \title{run_all}
 \usage{
-run_all(component, logger)
+run_all(COMPONENTS, COMPONENT_MODULES, component, logger)
 }
 \arguments{
+\item{COMPONENTS}{character. named vector of all components}
+
+\item{COMPONENT_MODULES}{list. Containing details of all modules}
+
 \item{component}{character. The component to run all the modules of.}
 
 \item{logger}{common$logger}

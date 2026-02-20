@@ -1,6 +1,6 @@
 metaregression_comparison_module_ui <- function(id, parent_id){
   ns <- NS(id)
-  div(class = glue::glue("{parent_id}_div download_buttons"),
+  div(class = glue("{parent_id}_div download_buttons"),
     downloadButton(ns("download"), "Download table")
   )
 }
@@ -16,16 +16,16 @@ covariate_comparison_module_ui <- function(id) {
 metaregression_comparison_module_server <- function(id, common, run) {
   moduleServer(id, function(input, output, session) {
 
-    module_id <- glue::glue("{id}_comparison")
-    model <- glue::glue("{id}_model")
-    model_fit <- glue::glue("{id}_model_fit")
-    class <- glue::glue(".{module_id}_div")
+    module_id <- glue("{id}_comparison")
+    model <- glue("{id}_model")
+    model_fit <- glue("{id}_model_fit")
+    class <- glue(".{module_id}_div")
 
     hide_and_show(module_id)
 
     observeEvent(run(), {
       if (is.null(common[[model]])){
-        common$logger |> writeLog(type = "error", go_to = model, glue::glue("Please fit the {id} model first"))
+        common$logger |> writeLog(type = "error", go_to = model, glue("Please fit the {id} model first"))
         return()
       } else {
         common$meta[[module_id]]$used <- TRUE
@@ -43,7 +43,7 @@ metaregression_comparison_module_server <- function(id, common, run) {
 
     output$download <- downloadHandler(
       filename = function(){
-        glue::glue("MetaInsight_{id}_comparison.csv")
+        glue("MetaInsight_{id}_comparison.csv")
       },
       content = function(file) {
         write.csv(do.call(module_id, list(common[[model]])), file)

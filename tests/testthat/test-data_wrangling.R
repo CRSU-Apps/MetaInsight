@@ -208,13 +208,13 @@ test_that("FindExpectedReferenceTreatment() returns first matching treatment whe
 })
 
 test_that(".FixColumnNameCases() fixes cases for continuous long data with covariate and QA", {
-  data <- CleanData(read.csv("data/Cont_long_quality_assessment.csv"))
+  data <- CleanData(read.csv(file.path(test_data_dir, "Cont_long_quality_assessment.csv")))
   names(data) <- c("sTuDy", "t", "n", "mEaN", "sD", "CoVaR.age", "RoB", "iNdIrEcTnEsS", "RoB.component1", "ROB.component2")
-  allowed_names = c("Study", "T", "N", "Mean", "SD", "covar.age", "rob", "indirectness", "rob.component1", "rob.component2")
+  allowed_names <- c("Study", "T", "N", "Mean", "SD", "covar.age", "rob", "indirectness", "rob.component1", "rob.component2")
 
   expect(all(!names(data) %in% allowed_names), failure_message = "Column names were not setup for the test correctly.")
 
-  wrangled_data <- .FixColumnNameCases(data, "Continuous")
+  wrangled_data <- .FixColumnNameCases(data, "continuous")
 
   expect_equal(colnames(wrangled_data), allowed_names,
                label = format_vector_to_string(colnames(wrangled_data)),
@@ -222,17 +222,17 @@ test_that(".FixColumnNameCases() fixes cases for continuous long data with covar
 })
 
 test_that(".FixColumnNameCases() fixes cases for continuous wide data with covariate and QA", {
-  data <- CleanData(read.csv("data/Cont_wide_quality_assessment.csv"))
+  data <- CleanData(read.csv(file.path(test_data_dir, "Cont_wide_quality_assessment.csv")))
 
-  arm_fields = c("t", "n", "mEaN", "sD")
+  arm_fields <- c("t", "n", "mEaN", "sD")
   names(data) <- c("sTuDy", paste0(arm_fields, ".1"), paste0(arm_fields, ".2"), paste0(arm_fields, ".3"), "CoVaR.age", "RoB", "iNdIrEcTnEsS", "RoB.component1", "ROB.component2")
 
-  allowed_arm_fields = c("T", "N", "Mean", "SD")
-  allowed_names = c("Study", paste0(allowed_arm_fields, ".1"), paste0(allowed_arm_fields, ".2"), paste0(allowed_arm_fields, ".3"), "covar.age", "rob", "indirectness", "rob.component1", "rob.component2")
+  allowed_arm_fields <- c("T", "N", "Mean", "SD")
+  allowed_names <- c("Study", paste0(allowed_arm_fields, ".1"), paste0(allowed_arm_fields, ".2"), paste0(allowed_arm_fields, ".3"), "covar.age", "rob", "indirectness", "rob.component1", "rob.component2")
 
   expect(all(!names(data) %in% allowed_names), failure_message = "Column names were not setup for the test correctly.")
 
-  wrangled_data <- .FixColumnNameCases(data, "Continuous")
+  wrangled_data <- .FixColumnNameCases(data, "continuous")
 
   expect_equal(colnames(wrangled_data), allowed_names,
                label = format_vector_to_string(colnames(wrangled_data)),
@@ -240,13 +240,13 @@ test_that(".FixColumnNameCases() fixes cases for continuous wide data with covar
 })
 
 test_that(".FixColumnNameCases() fixes cases for binary long data with covariate and QA", {
-  data <- CleanData(read.csv("data/Binary_long_quality_assessment.csv"))
+  data <- CleanData(read.csv(file.path(test_data_dir, "Binary_long_quality_assessment.csv")))
   names(data) <- c("sTuDy", "t", "r", "n", "CoVaR.age", "RoB", "iNdIrEcTnEsS", "RoB.component1", "ROB.component2")
-  allowed_names = c("Study", "T", "R", "N", "covar.age", "rob", "indirectness", "rob.component1", "rob.component2")
+  allowed_names <- c("Study", "T", "R", "N", "covar.age", "rob", "indirectness", "rob.component1", "rob.component2")
 
   expect(all(!names(data) %in% allowed_names), failure_message = "Column names were not setup for the test correctly.")
 
-  wrangled_data <- .FixColumnNameCases(data, "Binary")
+  wrangled_data <- .FixColumnNameCases(data, "binary")
 
   expect_equal(colnames(wrangled_data), allowed_names,
                label = format_vector_to_string(colnames(wrangled_data)),
@@ -254,17 +254,17 @@ test_that(".FixColumnNameCases() fixes cases for binary long data with covariate
 })
 
 test_that(".FixColumnNameCases() fixes cases for binary wide data with covariate and QA", {
-  data <- CleanData(read.csv("data/Binary_wide_quality_assessment.csv"))
+  data <- CleanData(read.csv(file.path(test_data_dir, "Binary_wide_quality_assessment.csv")))
 
-  arm_fields = c("t", "r", "n")
+  arm_fields <- c("t", "r", "n")
   names(data) <- c("sTuDy", paste0(arm_fields, ".1"), paste0(arm_fields, ".2"), paste0(arm_fields, ".3"), "CoVaR.age", "RoB", "iNdIrEcTnEsS", "RoB.component1", "ROB.component2")
 
-  allowed_arm_fields = c("T", "R", "N")
-  allowed_names = c("Study", paste0(allowed_arm_fields, ".1"), paste0(allowed_arm_fields, ".2"), paste0(allowed_arm_fields, ".3"), "covar.age", "rob", "indirectness", "rob.component1", "rob.component2")
+  allowed_arm_fields <- c("T", "R", "N")
+  allowed_names <- c("Study", paste0(allowed_arm_fields, ".1"), paste0(allowed_arm_fields, ".2"), paste0(allowed_arm_fields, ".3"), "covar.age", "rob", "indirectness", "rob.component1", "rob.component2")
 
   expect(all(!names(data) %in% allowed_names), failure_message = "Column names were not setup for the test correctly.")
 
-  wrangled_data <- .FixColumnNameCases(data, "Binary")
+  wrangled_data <- .FixColumnNameCases(data, "binary")
 
   expect_equal(colnames(wrangled_data), allowed_names,
                label = format_vector_to_string(colnames(wrangled_data)),
@@ -272,7 +272,7 @@ test_that(".FixColumnNameCases() fixes cases for binary wide data with covariate
 })
 
 test_that("ReplaceTreatmentIds() updates treatment names to IDs for continuous long data", {
-  data <- CleanData(read.csv("data/Cont_long.csv"))
+  data <- CleanData(read.csv(file.path(test_data_dir, "Cont_long.csv")))
   all_treatments <- FindAllTreatments(data)
   treatment_ids <- CreateTreatmentIds(all_treatments, all_treatments[1])
 
@@ -291,7 +291,7 @@ test_that("ReplaceTreatmentIds() updates treatment names to IDs for continuous l
 })
 
 test_that("ReplaceTreatmentIds() updates treatment names to IDs for continuous wide data", {
-  data <- CleanData(read.csv("data/Cont_wide.csv"))
+  data <- CleanData(read.csv(file.path(test_data_dir, "Cont_wide.csv")))
   all_treatments <- FindAllTreatments(data)
   treatment_ids <- CreateTreatmentIds(all_treatments, all_treatments[1])
 
@@ -314,7 +314,7 @@ test_that("ReplaceTreatmentIds() updates treatment names to IDs for continuous w
 })
 
 test_that("ReplaceTreatmentIds() updates treatment names to IDs for binary long data", {
-  data <- CleanData(read.csv("data/Binary_long.csv"))
+  data <- CleanData(read.csv(file.path(test_data_dir, "Binary_long.csv")))
   all_treatments <- FindAllTreatments(data)
   treatment_ids <- CreateTreatmentIds(all_treatments, all_treatments[1])
 
@@ -333,7 +333,7 @@ test_that("ReplaceTreatmentIds() updates treatment names to IDs for binary long 
 })
 
 test_that("ReplaceTreatmentIds() updates treatment names to IDs for binary wide data", {
-  data <- CleanData(read.csv("data/Binary_wide.csv"))
+  data <- CleanData(read.csv(file.path(test_data_dir, "Binary_wide.csv")))
   all_treatments <- FindAllTreatments(data)
   treatment_ids <- CreateTreatmentIds(all_treatments, all_treatments[1])
 
@@ -360,7 +360,7 @@ test_that("ReinstateTreatmentIds() reinstates treatment IDs for long data", {
     Study = c("A", "A", "B", "B", "C", "C", "C", "D", "D"),
     T = c(1, 2, 3, 4, 5, 6, 1, 6, 2)
   )
-  treatment_ids = data.frame(
+  treatment_ids <- data.frame(
     Label = c("Paracetamol", "Exercise", "Sleep", "Alcohol", "Bacon", "Denial"),
     Number = 1:6
   )
@@ -381,7 +381,7 @@ test_that("ReinstateTreatmentIds() reinstates treatment IDs for wide data", {
     T.2 = c(2, 4, 6, 2),
     T.3 = c(NA, NA, 1, NA)
   )
-  treatment_ids = data.frame(
+  treatment_ids <- data.frame(
     Label = c("Paracetamol", "Exercise", "Sleep", "Alcohol", "Bacon", "Denial"),
     Number = 1:6
   )
@@ -398,7 +398,7 @@ test_that("ReinstateTreatmentIds() reinstates treatment IDs for wide data", {
 })
 
 test_that("AddStudyIds() adds study IDs for continuous long data", {
-  data <- CleanData(read.csv("data/Cont_long.csv"))
+  data <- CleanData(read.csv(file.path(test_data_dir, "Cont_long.csv")))
 
   wrangled_data <- AddStudyIds(data)
 
@@ -415,7 +415,7 @@ test_that("AddStudyIds() adds study IDs for continuous long data", {
 })
 
 test_that("AddStudyIds() adds study IDs for continuous wide data", {
-  data <- CleanData(read.csv("data/Cont_wide.csv"))
+  data <- CleanData(read.csv(file.path(test_data_dir, "Cont_wide.csv")))
 
   wrangled_data <- AddStudyIds(data)
 
@@ -432,7 +432,7 @@ test_that("AddStudyIds() adds study IDs for continuous wide data", {
 })
 
 test_that("AddStudyIds() adds study IDs for binary long data", {
-  data <- CleanData(read.csv("data/Binary_long.csv"))
+  data <- CleanData(read.csv(file.path(test_data_dir, "Binary_long.csv")))
 
   wrangled_data <- AddStudyIds(data)
 
@@ -449,7 +449,7 @@ test_that("AddStudyIds() adds study IDs for binary long data", {
 })
 
 test_that("AddStudyIds() adds study IDs for binary wide data", {
-  data <- CleanData(read.csv("data/Binary_wide.csv"))
+  data <- CleanData(read.csv(file.path(test_data_dir, "Binary_wide.csv")))
 
   wrangled_data <- AddStudyIds(data)
 
@@ -465,12 +465,24 @@ test_that("AddStudyIds() adds study IDs for binary wide data", {
                data[, colnames(data) != "StudyID"])
 })
 
+test_that(".continuousOrder() creates the correct ordering", {
+  expected_order <- c("StudyID", "Study", "T", "N", "Mean", "SD", "T.1", "N.1", "Mean.1", "SD.1",
+                      "T.2", "N.2", "Mean.2", "SD.2", "T.3", "N.3", "Mean.3", "SD.3", "rob", "indirectness")
+  expect_equal(expected_order, .continuousOrder(3))
+})
+
+test_that(".binaryOrder() creates the correct ordering", {
+  expected_order <- c("StudyID", "Study", "T", "R", "N", "T.1", "R.1", "N.1",
+                      "T.2", "R.2", "N.2", "T.3", "R.3", "N.3", "rob", "indirectness")
+  expect_equal(expected_order, .binaryOrder(3))
+})
+
 test_that("ReorderColumns() reorders columns for continuous long data", {
-  data <- CleanData(read.csv("data/Cont_long.csv"))
+  data <- CleanData(read.csv(file.path(test_data_dir, "Cont_long.csv")))
 
   wrangled_data <- data %>%
     AddStudyIds() %>%
-    ReorderColumns("Continuous")
+    ReorderColumns("continuous")
 
   retained_columns <- c(
     "Study",
@@ -494,11 +506,11 @@ test_that("ReorderColumns() reorders columns for continuous long data", {
 })
 
 test_that("ReorderColumns() reorders columns for continuous wide data", {
-  data <- CleanData(read.csv("data/Cont_wide.csv"))
+  data <- CleanData(read.csv(file.path(test_data_dir, "Cont_wide.csv")))
 
   wrangled_data <- data %>%
     AddStudyIds() %>%
-    ReorderColumns("Continuous")
+    ReorderColumns("continuous")
 
   retained_columns <- c(
     "Study",
@@ -530,11 +542,11 @@ test_that("ReorderColumns() reorders columns for continuous wide data", {
 })
 
 test_that("ReorderColumns() reorders columns for binary long data", {
-  data <- CleanData(read.csv("data/Binary_long.csv"))
+  data <- CleanData(read.csv(file.path(test_data_dir, "Binary_long.csv")))
 
   wrangled_data <- data %>%
     AddStudyIds() %>%
-    ReorderColumns("Binary")
+    ReorderColumns("binary")
 
   retained_columns <- c(
     "Study",
@@ -557,11 +569,11 @@ test_that("ReorderColumns() reorders columns for binary long data", {
 })
 
 test_that("ReorderColumns() reorders columns for binary wide data", {
-  data <- CleanData(read.csv("data/Binary_wide.csv"))
+  data <- CleanData(read.csv(file.path(test_data_dir, "Binary_wide.csv")))
 
   wrangled_data <- data %>%
     AddStudyIds() %>%
-    ReorderColumns("Binary")
+    ReorderColumns("binary")
 
   retained_columns <- c(
     "Study",
@@ -589,7 +601,7 @@ test_that("ReorderColumns() reorders columns for binary wide data", {
 })
 
 test_that("ReorderColumns() retains covariate columns for long data", {
-  data <- CleanData(read.csv("data/Cont_long.csv"))
+  data <- CleanData(read.csv(file.path(test_data_dir, "Cont_long.csv")))
 
   # Add covariate columns
   covariate_column_name_1 <- paste0(.covariate_prefix, "uno")
@@ -604,7 +616,7 @@ test_that("ReorderColumns() retains covariate columns for long data", {
 
   wrangled_data <- data %>%
     AddStudyIds() %>%
-    ReorderColumns("Continuous")
+    ReorderColumns("continuous")
 
   retained_columns <- c(
     "Study",
@@ -631,7 +643,7 @@ test_that("ReorderColumns() retains covariate columns for long data", {
 })
 
 test_that("ReorderColumns() retains covariate columns for wide data", {
-  data <- CleanData(read.csv("data/Cont_wide.csv"))
+  data <- CleanData(read.csv(file.path(test_data_dir, "Cont_wide.csv")))
 
   # Add covariate columns
   covariate_column_name_1 <- paste0(.covariate_prefix, "uno")
@@ -646,7 +658,7 @@ test_that("ReorderColumns() retains covariate columns for wide data", {
 
   wrangled_data <- data %>%
     AddStudyIds() %>%
-    ReorderColumns("Continuous")
+    ReorderColumns("continuous")
 
   retained_columns <- c(
     "Study",
@@ -724,18 +736,18 @@ test_that("SortByStudyIDThenT() sorts wide data correctly", {
                                      N.2 = c(16, 11, 14),
                                      N.3 = c(17, NA, NA))
 
-  sorted_data <- SortByStudyIDThenT(data = wide_data, outcome = "Binary")
+  sorted_data <- SortByStudyIDThenT(data = wide_data, outcome = "binary")
 
   expect_equal(expected_sorted_data, sorted_data)
 })
 
 test_that("WrangleUploadData() wrangles continuous long data to be usable in the rest of the app", {
-  data <- CleanData(read.csv("data/Cont_long.csv"))
+  data <- CleanData(read.csv(file.path(test_data_dir, "Cont_long.csv")))
   treatment_ids <- data %>%
     FindAllTreatments() %>%
     CreateTreatmentIds()
 
-  wrangled_data <- WrangleUploadData(data, treatment_ids, "Continuous")
+  wrangled_data <- WrangleUploadData(data, treatment_ids, "continuous")
 
   expect_equal(colnames(wrangled_data), c("StudyID", "Study", "T", "N", "Mean", "SD"),
                label = format_vector_to_string(colnames(wrangled_data)))
@@ -758,12 +770,12 @@ test_that("WrangleUploadData() wrangles continuous long data to be usable in the
 })
 
 test_that("WrangleUploadData() wrangles continuous wide data to be usable in the rest of the app", {
-  data <- CleanData(read.csv("data/Cont_wide.csv"))
+  data <- CleanData(read.csv(file.path(test_data_dir, "Cont_wide.csv")))
   treatment_ids <- data %>%
     FindAllTreatments() %>%
     CreateTreatmentIds()
 
-  wrangled_data <- WrangleUploadData(data, treatment_ids, "Continuous")
+  wrangled_data <- WrangleUploadData(data, treatment_ids, "continuous")
 
   expected_columns <- c(
     "StudyID",
@@ -795,7 +807,7 @@ test_that("WrangleUploadData() wrangles continuous wide data to be usable in the
   data$T.1 <- c(1, 2, 1)
   data$T.2 <- c(3, 1, 4)
   data$T.3 <- c(5, 6, NA)
-  data <- data |> WideToLong("Continuous") |> SortLong() |> LongToWide("Continuous")
+  data <- data |> WideToLong("continuous") |> SortLong() |> LongToWide("continuous")
 
   # Contents of columns unchanged
   for (col in colnames(data)) {
@@ -807,12 +819,12 @@ test_that("WrangleUploadData() wrangles continuous wide data to be usable in the
 })
 
 test_that("WrangleUploadData() wrangles binary long data to be usable in the rest of the app", {
-  data <- CleanData(read.csv("data/Binary_long.csv"))
+  data <- CleanData(read.csv(file.path(test_data_dir, "Binary_long.csv")))
   treatment_ids <- data %>%
     FindAllTreatments() %>%
     CreateTreatmentIds()
 
-  wrangled_data <- WrangleUploadData(data, treatment_ids, "Binary")
+  wrangled_data <- WrangleUploadData(data, treatment_ids, "binary")
 
   expect_equal(colnames(wrangled_data), c("StudyID", "Study", "T", "R", "N"),
                label = format_vector_to_string(colnames(wrangled_data)))
@@ -835,12 +847,12 @@ test_that("WrangleUploadData() wrangles binary long data to be usable in the res
 })
 
 test_that("WrangleUploadData() wrangles binary wide data to be usable in the rest of the app", {
-  data <- CleanData(read.csv("data/Binary_wide.csv"))
+  data <- CleanData(read.csv(file.path(test_data_dir, "Binary_wide.csv")))
   treatment_ids <- data %>%
     FindAllTreatments() %>%
     CreateTreatmentIds()
 
-  wrangled_data <- WrangleUploadData(data, treatment_ids, "Binary")
+  wrangled_data <- WrangleUploadData(data, treatment_ids, "binary")
 
   expected_columns <- c(
     "StudyID",
@@ -869,7 +881,7 @@ test_that("WrangleUploadData() wrangles binary wide data to be usable in the res
   data$T.1 <- c(1, 2, 1)
   data$T.2 <- c(3, 1, 4)
   data$T.3 <- c(5, 6, NA)
-  data <- data |> WideToLong("Binary") |> SortLong() |> LongToWide("Binary")
+  data <- data |> WideToLong("binary") |> SortLong() |> LongToWide("binary")
 
   # Contents of columns unchanged
   for (col in colnames(data)) {
@@ -942,7 +954,7 @@ test_that("CleanStudies() creates 'RawStudy' and modifies 'Study' as expected", 
 })
 
 test_that("FindCovariateNames() finds covariate columns for long data", {
-  data <- CleanData(read.csv("data/Cont_long.csv"))
+  data <- CleanData(read.csv(file.path(test_data_dir, "Cont_long.csv")))
 
   # Add covariate columns
   covariate_column_name_1 <- paste0(.covariate_prefix, "uno")
@@ -965,7 +977,7 @@ test_that("FindCovariateNames() finds covariate columns for long data", {
 })
 
 test_that("FindCovariateNames() finds covariate columns for wide data", {
-  data <- CleanData(read.csv("data/Cont_wide.csv"))
+  data <- CleanData(read.csv(file.path(test_data_dir, "Cont_wide.csv")))
 
   # Add covariate columns
   covariate_column_name_1 <- paste0(.covariate_prefix, "uno")
@@ -995,7 +1007,7 @@ test_that("GetFriendlyCovariateName() gets friendly covariate name", {
 })
 
 test_that("RemoveCovariates() removes covariates for continuous long data", {
-  data <- read.csv("data/Cont_long_continuous_cov.csv") %>%
+  data <- read.csv(file.path(test_data_dir, "Cont_long_continuous_cov.csv")) %>%
     CleanData()
 
   column_names <- c(
@@ -1015,7 +1027,7 @@ test_that("RemoveCovariates() removes covariates for continuous long data", {
 })
 
 test_that("RemoveCovariates() removes covariates for continuous wide data", {
-  data <- read.csv("data/Cont_wide_continuous_cov.csv") %>%
+  data <- read.csv(file.path(test_data_dir, "Cont_wide_continuous_cov.csv")) %>%
     CleanData()
 
   column_names <- c(
@@ -1043,7 +1055,7 @@ test_that("RemoveCovariates() removes covariates for continuous wide data", {
 })
 
 test_that("RemoveCovariates() removes covariates for binary long data", {
-  data <- read.csv("data/Binary_long_continuous_cov.csv") %>%
+  data <- read.csv(file.path(test_data_dir, "Binary_long_continuous_cov.csv")) %>%
     CleanData()
 
   column_names <- c(
@@ -1062,7 +1074,7 @@ test_that("RemoveCovariates() removes covariates for binary long data", {
 })
 
 test_that("RemoveCovariates() removes covariates for binary wide data", {
-  data <- read.csv("data/Binary_wide_continuous_cov.csv") %>%
+  data <- read.csv(file.path(test_data_dir, "Binary_wide_continuous_cov.csv")) %>%
     CleanData()
 
   column_names <- c(
@@ -1087,7 +1099,7 @@ test_that("RemoveCovariates() removes covariates for binary wide data", {
 })
 
 test_that("RemoveCovariates() does nothing for continuous long data with no covariates", {
-  data <- read.csv("data/Cont_long.csv") %>%
+  data <- read.csv(file.path(test_data_dir, "Cont_long.csv")) %>%
     CleanData()
 
   column_names <- c(
@@ -1105,7 +1117,7 @@ test_that("RemoveCovariates() does nothing for continuous long data with no cova
 })
 
 test_that("RemoveCovariates() does nothing for continuous wide data with no covariates", {
-  data <- read.csv("data/Cont_wide.csv") %>%
+  data <- read.csv(file.path(test_data_dir, "Cont_wide.csv")) %>%
     CleanData()
 
   column_names <- c(
@@ -1131,7 +1143,7 @@ test_that("RemoveCovariates() does nothing for continuous wide data with no cova
 })
 
 test_that("RemoveCovariates() does nothing for binary long data with no covariates", {
-  data <- read.csv("data/Binary_long.csv") %>%
+  data <- read.csv(file.path(test_data_dir, "Binary_long.csv")) %>%
     CleanData()
 
   column_names <- c(
@@ -1148,7 +1160,7 @@ test_that("RemoveCovariates() does nothing for binary long data with no covariat
 })
 
 test_that("RemoveCovariates() does nothing for binary wide data with no covariates", {
-  data <- read.csv("data/Binary_wide.csv") %>%
+  data <- read.csv(file.path(test_data_dir, "Binary_wide.csv")) %>%
     CleanData()
 
   column_names <- c(
@@ -1171,71 +1183,71 @@ test_that("RemoveCovariates() does nothing for binary wide data with no covariat
 })
 
 test_that("FindDataShape() finds shape of continuous long data", {
-  data <- read.csv("data/Cont_long_continuous_cov.csv") %>%
+  data <- read.csv(file.path(test_data_dir, "Cont_long_continuous_cov.csv")) %>%
     CleanData()
 
   expect_equal(!!FindDataShape(data), "long")
 })
 
 test_that("FindDataShape() finds shape of continuous wide data", {
-  data <- read.csv("data/Cont_wide_continuous_cov.csv") %>%
+  data <- read.csv(file.path(test_data_dir, "Cont_wide_continuous_cov.csv")) %>%
     CleanData()
 
   expect_equal(!!FindDataShape(data), "wide")
 })
 
 test_that("FindDataShape() finds shape of binary long data", {
-  data <- read.csv("data/Binary_long_continuous_cov.csv") %>%
+  data <- read.csv(file.path(test_data_dir, "Binary_long_continuous_cov.csv")) %>%
     CleanData()
 
   expect_equal(!!FindDataShape(data), "long")
 })
 
 test_that("FindDataShape() finds shape of binary wide data", {
-  data <- read.csv("data/Binary_wide_continuous_cov.csv") %>%
+  data <- read.csv(file.path(test_data_dir, "Binary_wide_continuous_cov.csv")) %>%
     CleanData()
 
   expect_equal(!!FindDataShape(data), "wide")
 })
 
 test_that("WideToLong() correctly converts binary wide data with binary covariates", {
-  wide_data <- read.csv("data/Binary_wide_binary_cov.csv")
-  long_data <- WideToLong(wide_data, "Binary")
-  expected_data <- read.csv("data/Binary_long_binary_cov.csv")
+  wide_data <- read.csv(file.path(test_data_dir, "Binary_wide_binary_cov.csv"))
+  long_data <- WideToLong(wide_data, "binary")
+  expected_data <- read.csv(file.path(test_data_dir, "Binary_long_binary_cov.csv"))
 
   expect_equal(long_data, expected_data)
 })
 
 test_that("WideToLong() correctly converts binary wide data with continuous covariates", {
-  wide_data <- read.csv("data/Binary_wide_continuous_cov.csv")
-  long_data <- WideToLong(wide_data, "Binary")
-  expected_data <- read.csv("data/Binary_long_continuous_cov.csv")
+  wide_data <- read.csv(file.path(test_data_dir, "Binary_wide_continuous_cov.csv"))
+  long_data <- WideToLong(wide_data, "binary")
+  expected_data <- read.csv(file.path(test_data_dir, "Binary_long_continuous_cov.csv"))
 
   expect_equal(long_data, expected_data)
 })
 
 test_that("WideToLong() correctly converts continuous wide data with binary covariates", {
-  wide_data <- read.csv("data/Cont_wide_binary_cov.csv")
-  long_data <- WideToLong(wide_data, "Continuous")
-  expected_data <- read.csv("data/Cont_long_binary_cov.csv")
+  wide_data <- read.csv(file.path(test_data_dir, "Cont_wide_binary_cov.csv"))
+  long_data <- WideToLong(wide_data, "continuous")
+  expected_data <- read.csv(file.path(test_data_dir, "Cont_long_binary_cov.csv"))
 
   expect_equal(long_data, expected_data)
 })
 
 test_that("WideToLong() correctly converts continuous wide data with continuous covariates", {
-  wide_data <- read.csv("data/Cont_wide_continuous_cov.csv")
-  long_data <- WideToLong(wide_data, "Continuous")
-  expected_data <- read.csv("data/Cont_long_continuous_cov.csv")
+  wide_data <- read.csv(file.path(test_data_dir, "Cont_wide_continuous_cov.csv"))
+  long_data <- WideToLong(wide_data, "continuous")
+  expected_data <- read.csv(file.path(test_data_dir, "Cont_long_continuous_cov.csv"))
 
   expect_equal(long_data, expected_data)
 })
 
 test_that("LongToWide() correctly converts binary wide data with binary covariates", {
-  long_data <- read.csv("data/Binary_long_binary_cov.csv")
+  long_data <- read.csv(file.path(test_data_dir, "Binary_long_binary_cov.csv"))
   long_data$StudyID <- c(1, 1, 1, 2, 2, 2, 3, 3)
-  wide_data <- LongToWide(long_data, "Binary") %>%
+  wide_data <- LongToWide(long_data, "binary") %>%
     dplyr::relocate(sort(names(.)))
-  expected_data <- read.csv("data/Binary_wide_binary_cov.csv")
+  expected_data <- read.csv(file.path(test_data_dir, "Binary_wide_binary_cov.csv"))
   expected_data$StudyID <- 1:3
   expected_data <- expected_data %>%
     dplyr::relocate(sort(names(.)))
@@ -1244,11 +1256,11 @@ test_that("LongToWide() correctly converts binary wide data with binary covariat
 })
 
 test_that("LongToWide() correctly converts binary wide data with continuous covariates", {
-  long_data <- read.csv("data/Binary_long_continuous_cov.csv")
+  long_data <- read.csv(file.path(test_data_dir, "Binary_long_continuous_cov.csv"))
   long_data$StudyID <- c(1, 1, 1, 2, 2, 2, 3, 3)
-  wide_data <- LongToWide(long_data, "Binary") %>%
+  wide_data <- LongToWide(long_data, "binary") %>%
     dplyr::relocate(sort(names(.)))
-  expected_data <- read.csv("data/Binary_wide_continuous_cov.csv")
+  expected_data <- read.csv(file.path(test_data_dir, "Binary_wide_continuous_cov.csv"))
   expected_data$StudyID <- 1:3
   expected_data <- expected_data %>%
     dplyr::relocate(sort(names(.)))
@@ -1257,11 +1269,11 @@ test_that("LongToWide() correctly converts binary wide data with continuous cova
 })
 
 test_that("LongToWide() correctly converts continuous wide data with binary covariates", {
-  long_data <- read.csv("data/Cont_long_binary_cov.csv")
+  long_data <- read.csv(file.path(test_data_dir, "Cont_long_binary_cov.csv"))
   long_data$StudyID <- c(1, 1, 1, 2, 2, 2, 3, 3)
-  wide_data <- LongToWide(long_data, "Continuous") %>%
+  wide_data <- LongToWide(long_data, "continuous") %>%
     dplyr::relocate(sort(names(.)))
-  expected_data <- read.csv("data/Cont_wide_binary_cov.csv")
+  expected_data <- read.csv(file.path(test_data_dir, "Cont_wide_binary_cov.csv"))
   expected_data$StudyID <- 1:3
   expected_data <- expected_data %>%
     dplyr::relocate(sort(names(.)))
@@ -1270,11 +1282,11 @@ test_that("LongToWide() correctly converts continuous wide data with binary cova
 })
 
 test_that("LongToWide() correctly converts continuous wide data with continuous covariates", {
-  long_data <- read.csv("data/Cont_long_continuous_cov.csv")
+  long_data <- read.csv(file.path(test_data_dir, "Cont_long_continuous_cov.csv"))
   long_data$StudyID <- c(1, 1, 1, 2, 2, 2, 3, 3)
-  wide_data <- LongToWide(long_data, "Continuous") %>%
+  wide_data <- LongToWide(long_data, "continuous") %>%
     dplyr::relocate(sort(names(.)))
-  expected_data <- read.csv("data/Cont_wide_continuous_cov.csv")
+  expected_data <- read.csv(file.path(test_data_dir, "Cont_wide_continuous_cov.csv"))
   expected_data$StudyID <- 1:3
   expected_data <- expected_data %>%
     dplyr::relocate(sort(names(.)))
@@ -1317,3 +1329,27 @@ test_that("KeepOrDeleteControlTreatment() keeps only rows with control treatment
 })
 
 
+test_that("CreateListOfWideColumns() creates the correct list", {
+  data <- read.csv(file.path(test_data_dir, "Cont_wide.csv"))
+  expected_list_T <- list(T.1 = data$T.1, T.2 = data$T.2, T.3 = data$T.3)
+  expected_list_Mean <- list(Mean.1 = data$Mean.1, Mean.2 = data$Mean.2, Mean.3 = data$Mean.3)
+  expect_equal(CreateListOfWideColumns(data, "T"), expected_list_T)
+  expect_equal(CreateListOfWideColumns(data, "Mean"), expected_list_Mean)
+})
+
+
+test_that("FindMaxArms() returns the correct number of arms for long data", {
+  data <- read.csv(file.path(test_data_dir, "Cont_long.csv"))
+  expect_equal(FindMaxArms(data), 3)
+})
+
+
+test_that("FindMaxArms() returns the correct number of arms for wide data", {
+  data <- read.csv(file.path(test_data_dir, "Cont_wide.csv"))
+  expect_equal(FindMaxArms(data), 3)
+})
+
+test_that("RoundForDisplay() rounds correctly", {
+  expect_equal(RoundForDisplay(1234.5678), 1234.6)
+  expect_equal(RoundForDisplay(0.000789), 0.0008)
+})

@@ -22,21 +22,19 @@ printVecAsis <- function(x) {
 #' @export
 spurious <- function(x) {
   cookies::add_cookie_handlers(x)
+  cowplot::add_sub(x)
   DT::renderDataTable(x)
   grid::absolute.size(x)
-  jsonlite::as_gzjson_b64(x)
+  gt::adjust_luminance(x)
   knitr::all_labels(x)
-  markdown::html_format(x)
   mirai::call_mirai(x)
   quarto::is_using_quarto(x)
   R6::is.R6Class(x)
   rintrojs::hintjs(x)
   rmarkdown::github_document(x)
   shinyWidgets::pickerInput(x)
-  shinyBS::addPopover(x)
   shinyjs::disable(x)
   svglite::add_fonts(x)
-  zip::deflate(x)
   return()
 }
 
@@ -187,27 +185,12 @@ close_loading_modal <- function (session = getDefaultReactiveDomain())
 }
 
 ####################### #
-# LOADING SPINNER #
-####################### #
-#' @title loading_spinner
-#' @description For internal use. Show a loading spinner when an output is recalculating.
-#' Visibility is toggled using shinyjs::show(selector = ".class"). Note that you can use
-#' multiple classes and they can be shown / hidden with independent triggers i.e. use one
-#' to hide and a different one to show
-#' @param class character
-#' @keywords internal
-#' @export
-loading_spinner <- function(class) {
-  div(class = class, style = "display: none;", # initially hidden
-    div(class = "shiny-spinner-output-container",
-      div(class = "load-container",
-        div(class = "loader"))
-))}
-
-
-####################### #
 # ADD TOOLTIP #
 ####################### #
+#' Add a tooltip to the label of an input
+#'
+#' @param label character. The text to display initially
+#' @param message character. The text to display in the tooltip
 #' @keywords internal
 #' @export
 add_tooltip <- function(label, message){
@@ -258,43 +241,29 @@ suppress_jags_output <- function(expr) {
 # PLOTTING #
 ####################### #
 
-#' Write a plot to a .pdf, .png or .svg file.
-#'
-#' @param file The file to which to write.
-#' @param type String containing the type of file to which to write.
-#' @param renderFunction A function to render the plot.
-#' @param height The height of the plot in inches for pdf, or user specified units for png.
-#' @param width The width of the plot in inches for pdf, or user specified units for png.
-#' @export
-write_plot <- function(file, type, renderFunction, height = NULL, width = NULL) {
-  if (type == "pdf") {
-    grDevices::pdf(file = file, height = height, width = width)
-  }
-  if (type == "png") {
-    grDevices::png(file = file, height = height, width = width, units = "in", res = 300)
-  }
-  if (type == "svg") {
-    grDevices::svg(file = file, height = height, width = width)
-  }
-  renderFunction()
-  grDevices::dev.off()
-}
-
 #' Write an svg plot to either a png, pdf or svg file
 #'
+#' @param svg html. containing the svg string, returned from `crop_svg()`
 #' @param file character. The file to which to write.
 #' @param type character. Type of file to which to write.
-#' @param svg list. Containing the svg string, width and height returned from `crop_svg()`
 #' @export
-write_svg_plot <- function(file, type, svg) {
+write_plot <- function(svg, file, type) {
+
+  xml <- xml2::read_html(svg)
+  svg_node <- xml2::xml_find_first(xml, "//svg")
+  viewbox <- xml2::xml_attr(svg_node, "viewbox")
+  values <- strsplit(viewbox, " ")[[1]] |> as.numeric()
+  width <- values[3] - values[1]
+  height <- values[4] - values[2]
+
   if (type == "pdf") {
-    rsvg::rsvg_pdf(charToRaw(svg$svg), file, svg$width, svg$height)
+    rsvg::rsvg_pdf(charToRaw(svg), file, width, height)
   }
   if (type == "png") {
-    rsvg::rsvg_png(charToRaw(svg$svg), file, svg$width * 3, svg$height * 3)
+    rsvg::rsvg_png(charToRaw(svg), file, width * 3, height * 3)
   }
   if (type == "svg") {
-    writeLines(svg$svg, file)
+    writeLines(svg, file)
   }
 }
 
@@ -326,14 +295,12 @@ forest_height <- function(notrt, title=FALSE, annotation = FALSE) {
 #'
 #' @param n_chars The number of characters in the widest label.
 #' For frequentist plots this should be the longest treatment name.
-#' For Bayesian plots this should be 'Compared to {reference treatment}'
+#' For Bayesian plots this should be 'Compared to \{reference treatment\}'
 #' @return The width of the plot in inches
 #' @export
 forest_width <- function(n_chars) {
   5 + (n_chars / 10)
 }
-
-
 
 #' Create a pair of download buttons
 #'
@@ -357,16 +324,16 @@ download_button_pair <- function(id){
 #' @export
 CreateTauSentence <- function(model) {
   sumresults <- model$sumresults
-  if (model$model_type == "random") {   #SD and its 2.5% and 97.5%
+  if (model$effects == "random") {   #SD and its 2.5% and 97.5%
     sd_mean <- round(sumresults$summaries$statistics["sd.d", "Mean"], digits = 2)
     sd_lowCI <- round(sumresults$summaries$quantiles["sd.d", "2.5%"], digits = 2)
     sd_highCI <- round(sumresults$summaries$quantiles["sd.d", "97.5%"], digits = 2)
   }   else {
-    sd_mean = 0
-    sd_lowCI = 0
-    sd_highCI = 0
+    sd_mean <- 0
+    sd_lowCI <- 0
+    sd_highCI <- 0
   }
-  if (model$model_type=="random") {
+  if (model$effects=="random") {
     if (model$outcome=="OR") {
       paste("Between-study standard deviation (log-odds scale):", sd_mean, "\n 95% credible interval:", sd_lowCI, ",", sd_highCI)
     } else if (model$outcome=="RR") {
@@ -385,17 +352,52 @@ CreateTauSentence <- function(model) {
   }
 }
 
+#' Format xlimits to pretty values. Adapted from `gemtc::blobbogram()`
+#'
+#' @param x numeric. The value to format.
+#' @param limit character. Either `min` or `max`
+#' @param log.scale logical. Whether the values are on a log scale.
+format_xlim <- function(x, limit, log.scale) {
+
+  # Adapted from https://github.com/gertvv/gemtc/blob/b94d86a304eae57c8d16bb4aa8fc3f32155696e4/gemtc/R/blobbogram.R#L192
+
+  # Scale transform and its inverse
+  scale.trf <- if (log.scale) exp else identity
+  scale.inv <- if (log.scale) log else identity
+
+  # Round to a single significant digit, according to round.fun
+  y <- scale.trf(x)
+  p <- 10^floor(log10(abs(y)))
+  if (limit == "min"){
+    l <- scale.inv(floor(y / p) * p)
+  }
+  if (limit == "max"){
+    l <- scale.inv(ceiling(y / p) * p)
+  }
+
+  if (is.na(l) || !is.finite(l)) x else l
+}
+
+#' Calculate a sensible step value to use in numericInput
+#'
+#' @param x numeric. The value to create a step for
+#' @keywords internal
+#' @export
+format_step <- function(x){
+  y <- 10 ^ floor(log10(abs(x) / 10))
+  if (y == 0){
+    y <- 0.1
+  }
+  y
+}
+
 #' Crops an svg object, by rendering it, locating the non-white pixels and
-#' editing the svg viewBox property. The width and height are also returned
-#' to facilitate rendering to other formats.
+#' editing the svg viewBox property.
 #'
 #' @param svg xml_document. Output from `svglite::xmlSVG()`
 #' @param margin numeric. The margin in pixels to leave around the edge
 #' of the plot content. Defaults to 10.
-#' @return List containing:
-#'  \item{svg}{character. The cropped svg}
-#'  \item{width}{numeric. The width of the viewBox in pixels}
-#'  \item{height}{numeric. The height of the viewBox in pixels}
+#' @return html. The cropped svg
 #' @export
 
 crop_svg <- function(svg, margin = 10){
@@ -449,15 +451,40 @@ crop_svg <- function(svg, margin = 10){
   xml2::xml_attr(rect_node, "width") <- total_width
   xml2::xml_attr(rect_node, "height") <- total_height
 
+  # remove width and height
+  xml2::xml_set_attr(svg_node, "width", NULL)
+  xml2::xml_set_attr(svg_node, "height", NULL)
+
   # set namespace
   root <- xml2::xml_root(svg)
   xml2::xml_set_attr(root, "xmlns", "http://www.w3.org/2000/svg")
   xml2::xml_set_attr(root, "xmlns:xlink", "http://www.w3.org/1999/xlink")
 
-  list(
-    svg = paste(svg, collapse = "\n"),
-    width = bbox$width,
-    height = bbox$height)
+  shiny::HTML(paste(svg, collapse = "\n"))
+}
+
+#' Put an svg in a container with buttons for fullscreen
+#'
+#' @param svg character. Output from `crop_svg()`
+#' @param class character. Class of the container default `svg_container`
+#' @param style character. Styles to add to the container
+#' @keywords internal
+#' @export
+svg_container <- function(svg, class = "svg_container", style = ""){
+  div(class = class, style = style,
+      tags$button(
+        class = "height-toggle-btn",
+        onclick = "shinyjs.scrollingPlot(this)",
+        # left-right arrow unicode
+        "\u2194 Full width"
+      ),
+      tags$button(
+        class = "fullscreen-btn",
+        onclick = "shinyjs.fullscreenPlot(this.parentElement)",
+        # diagonal arrow unicode
+        "\u2922"
+      ),
+      svg)
 }
 
 ####################### #
@@ -475,7 +502,7 @@ reset_data <- function(common, session){
   common$reset()
   # blank outputs
   for (module in modules){
-    trigger(module)
+    gargoyle::trigger(module)
     # reset triggers
     session$userData[[module]](0)
   }
@@ -484,10 +511,12 @@ reset_data <- function(common, session){
 #' @title run_all
 #' @description For internal use. Runs all modules for a given component, excluding the model and nodesplit modules.
 #' @keywords internal
+#' @param COMPONENTS character. named vector of all components
+#' @param COMPONENT_MODULES list. Containing details of all modules
 #' @param component character. The component to run all the modules of.
 #' @param logger common$logger
 #' @export
-run_all <- function(component, logger){
+run_all <- function(COMPONENTS, COMPONENT_MODULES, component, logger){
 
   all_modules <- names(COMPONENT_MODULES[[component]])
 
@@ -545,8 +574,8 @@ run_all <- function(component, logger){
 #' @export
 hide_and_show <- function(module_id, show = TRUE){
   observe({
-    watch(module_id)
-    if (watch(module_id) == 0){
+    gargoyle::watch(module_id)
+    if (gargoyle::watch(module_id) == 0){
       shinyjs::hide(selector = glue::glue(".{module_id}_div"))
     } else {
       if (show){

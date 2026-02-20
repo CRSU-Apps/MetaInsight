@@ -2,8 +2,8 @@ setup_load_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
     radioButtons(ns("outcome"), "Select outcome type", choices = c(
-      "Continuous (e.g. mean difference) " = "Continuous",
-      "Binary (e.g. Odds Ratio)" = "Binary")
+      "Continuous (e.g. mean difference) " = "continuous",
+      "Binary (e.g. Odds Ratio)" = "binary")
     ),
     radioButtons(ns("format"), "Select data format", choices = c(
       "Long" = "long",
@@ -26,7 +26,7 @@ setup_load_module_server <- function(id, common, parent_session) {
 
     # Toggle visibility of guidance depending on selection
     observe({
-      selection <- paste0(tolower(input$outcome),"_guidance")
+      selection <- paste0(input$outcome,"_guidance")
       shinyjs::runjs(sprintf("
                      document.querySelectorAll('.continuous_guidance, .binary_guidance').forEach(el => el.style.display = 'none');
                      document.querySelectorAll('.%s').forEach(el => el.style.display = 'block');
@@ -62,13 +62,14 @@ setup_load_module_server <- function(id, common, parent_session) {
 
     observe({
       watch("setup_load")
+      watch("setup_reload")
       watch("setup_reset")
-      if (is.null(common$data)){
+      if (is.null(common$loaded_data)){
         shinyjs::hide("reset")
       } else {
         shinyjs::show("reset")
       }
-      if (is.null(common$is_data_uploaded) || !common$is_data_uploaded){
+      if (is.null(common$loaded_data$is_data_uploaded) || !common$loaded_data$is_data_uploaded){
         shinyjs::show("download")
       } else {
         shinyjs::hide("download")
@@ -97,49 +98,44 @@ setup_load_module_server <- function(id, common, parent_session) {
 
     observeEvent(input$run, {
       # WARNING ####
-     if (!is.null(common$data)){
+     if (!is.null(common$configured_data)){
        common$logger |> writeLog(type = "error", "Data has already been loaded - please delete it first")
        return()
      }
 
       # FUNCTION CALL ####
       result <- setup_load(input[[file_id$id]]$datapath, input$outcome, common$logger)
-
       if (result$is_data_valid){
         if (result$is_data_uploaded){
           common$logger |> writeLog(type = "complete", "Data has been uploaded successfully")
         } else {
-          common$logger |> writeLog(type = "complete", glue::glue("Default {tolower(input$outcome)} data has been loaded"))
+          common$logger |> writeLog(type = "complete", glue("Default {input$outcome} data has been loaded"))
         }
+        # prevent running rmd if data is invalid
+        common$meta$setup_load$used <- TRUE
       }
 
       # LOAD INTO COMMON ####
-      common$data <- result$data
-      common$is_data_valid <- result$is_data_valid
-      common$is_data_uploaded <- result$is_data_uploaded
-      common$treatment_df <- result$treatment_df
-      common$outcome <- input$outcome
+      common$loaded_data <- result
 
       # METADATA ####
-      common$meta$setup_load$used <- TRUE
       common$meta$setup_load$outcome <- input$outcome
       common$meta$setup_load$format <- input$format
-      common$meta$setup_load$treatment_df <- result$treatment_df
+      common$meta$setup_load$treatments <- result$treatments
 
       # TRIGGER
       trigger("setup_load")
-
       show_results(parent_session)
-
-
     })
 
     output$download <- downloadHandler(
-      filename = glue::glue("MetaInsight_{tolower(input$outcome)}_{input$format}.csv"),
+      filename = function() {
+          glue("MetaInsight_{input$outcome}_{input$format}.csv")
+        },
       content = function(file) {
         file.copy(
           system.file("extdata",
-                      glue::glue("{tolower(input$outcome)}_{input$format}.csv"),
+                      glue("{input$outcome}_{input$format}.csv"),
                       package = "metainsight"),
           file)
       }
@@ -148,8 +144,15 @@ setup_load_module_server <- function(id, common, parent_session) {
     # show the loaded data in the results tab
     output$table <- DT::renderDataTable({
       watch("setup_load")
-      req(common$data)
-      common$data
+      req(common$loaded_data)
+      DT::datatable(
+        common$loaded_data$data,
+        # enable scrolling if e.g. many ROB columns
+        options = list(
+          scrollX = TRUE,
+          autoWidth = FALSE
+          ))
+
     })
 
     return(list(
@@ -176,8 +179,8 @@ setup_load_module_result <- function(id) {
 
 setup_load_module_rmd <- function(common){ list(
   setup_load_knit = !is.null(common$meta$setup_load$used),
-  setup_load_data = common$data,
-  setup_load_treatment_df = common$meta$setup_load$treatment_df,
+  setup_load_data = common$loaded_data$data,
+  setup_load_treatments = common$meta$setup_load$treatments,
   setup_load_outcome = common$meta$setup_load$outcome
 )
 }

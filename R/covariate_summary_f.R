@@ -1,35 +1,26 @@
-#' @title baseline_summary
-#' @description Creates a plot of the covariate value for each study arm
-#' @inheritParams common_params
-#' @return List containing:
-#'  \item{svg}{character. SVG code to produce the plot}
-#'  \item{height}{numeric. Plot height in pixels}
-#'  \item{width}{numeric. Plot width in pixels}
+#' Produce a plot summarising the covariate value for each study arm
 #'
+#' @inheritParams common_params
+#' @inherit return-svg return
 #' @import ggplot2
 #' @export
-covariate_summary <- function(connected_data, outcome, treatment_df, logger = NULL){
+covariate_summary <- function(configured_data, logger = NULL){
 
-  check_param_classes(c("connected_data", "outcome", "treatment_df"),
-                      c("data.frame", "character", "data.frame"), logger)
+  check_param_classes(c("configured_data"),
+                      c("configured_data"), logger)
 
-  if (!any(grepl("covar\\.", names(connected_data)))){
-    logger |> asyncLog(type = "error", "connected_data does not contain a covariate column")
+  if (!any(grepl("covar\\.", names(configured_data$connected_data)))){
+    logger |> asyncLog(type = "error", "The data does not contain a covariate column")
     return()
   }
 
-  if (!outcome %in% c("Binary", "Continuous")){
-    logger |> writeLog(type = "error", "outcome must be 'Binary' or 'Continuous'")
-    return()
+  if (FindDataShape(configured_data$connected_data) == "wide") {
+    long_data <- as.data.frame(WideToLong(configured_data$connected_data, outcome = configured_data$outcome))
+  } else if (FindDataShape(configured_data$connected_data) == "long") {
+    long_data <- configured_data$connected_data
   }
 
-  if (FindDataShape(connected_data) == "wide") {
-    long_data <- as.data.frame(WideToLong(connected_data, outcome = outcome))
-  } else if (FindDataShape(connected_data) == "long") {
-    long_data <- connected_data
-  }
-
-  caption_setting <- "covariate" # Text to add to caption
+  caption_setting <- paste("Covariate", configured_data$covariate$name) # Text to add to caption
 
   # Use FindCovariateName function to find the covariate column
   covariate <- FindCovariateNames(long_data)[1]
@@ -38,8 +29,9 @@ covariate_summary <- function(connected_data, outcome, treatment_df, logger = NU
   y_axis_label <- GetFriendlyCovariateName(covariate)
 
   # Add column with treatment labels
+  # x$ and y$ syntax is used instead of .data$ as they are in different df
   mutated_data <- long_data |>
-    dplyr::inner_join(treatment_df, by = dplyr::join_by(T == Number))
+    dplyr::inner_join(configured_data$treatments, by = dplyr::join_by(x$T == y$Number))
 
   # Convert tibble created by dplyr to df
   BUGSnet_df <- as.data.frame(mutated_data)

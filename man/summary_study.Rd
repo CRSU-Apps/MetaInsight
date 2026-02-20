@@ -2,28 +2,41 @@
 % Please edit documentation in R/summary_study_f.R
 \name{summary_study}
 \alias{summary_study}
-\title{Creates a summary forest plot of all the studies.}
+\title{Produce a forest plot of pairwise comparisons, grouped by treatment pairs.
+If risk of bias data was loaded these are also included.}
 \usage{
-summary_study(freq, outcome_measure, header, title, logger = NULL)
+summary_study(
+  configured_data,
+  plot_area_width = 6,
+  colourblind = FALSE,
+  x_min = NULL,
+  x_max = NULL,
+  logger = NULL
+)
 }
 \arguments{
-\item{freq}{list. NMA results created by freq_wrap().}
+\item{configured_data}{list. Input dataset created by \code{setup_configure()} or \code{setup_exclude()}}
 
-\item{outcome_measure}{character. Outcome measure of the dataset. Either
-\code{OR}, \code{RR} or \code{RD} when \code{outcome} is \code{Binary} or \code{MD} or \code{SMD} when
-\code{outcome} is \code{Continuous}}
+\item{plot_area_width}{numeric. The width of the plot area containing the
+treatment effects in inches. Defaults to \code{6}.}
 
-\item{header}{numeric. Multiplier for size of text in treatment contrast headers.}
+\item{colourblind}{logical. Whether to use a colourblind-friendly palette. Defaults to \code{FALSE}}
 
-\item{title}{numeric. Multiplier for size of title.}
+\item{x_min}{numeric. Minimum value for the x-axis. Defaults to \code{NULL}. For binary outcomes
+values should be wrapped in \code{log()}}
+
+\item{x_max}{numeric. Maximum value for the x-axis. Defaults to \code{NULL}. For binary outcomes
+values should be wrapped in \code{log()}}
 
 \item{logger}{Stores all notification messages to be displayed in the Log
 Window. Insert the logger reactive list here for running in
 shiny, otherwise leave the default \code{NULL}}
 }
 \value{
-Plot created by \code{metafor::forest()}
+html. Contains the svg string to generate the plot. This can be saved
+using \code{write_plot()}.
 }
 \description{
-Creates a summary forest plot of all the studies.
+Produce a forest plot of pairwise comparisons, grouped by treatment pairs.
+If risk of bias data was loaded these are also included.
 }

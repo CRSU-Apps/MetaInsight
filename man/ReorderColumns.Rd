@@ -9,7 +9,7 @@ ReorderColumns(data, outcome_type)
 \arguments{
 \item{data}{Data frame to reorder}
 
-\item{outcome_type}{Type of outcome for which to reorder, either 'Continuous' or 'Binary'}
+\item{outcome_type}{Type of outcome for which to reorder, either 'continuous' or 'binary'}
 }
 \value{
 Data frame with columns reordered

@@ -3,7 +3,8 @@
 \name{bayes_compare}
 \alias{bayes_compare}
 \alias{covariate_comparison}
-\title{Creates a table of comparisons of all treatment pairs for Bayesian models}
+\title{Produce a table of comparisons of all treatment pairs for Bayesian models
+using \code{gemtc::relative.effect.table()}}
 \usage{
 bayes_compare(model, logger = NULL)
 
@@ -19,8 +20,9 @@ shiny, otherwise leave the default \code{NULL}}
 \item{...}{Parameters passed to \code{bayes_compare()}}
 }
 \value{
-Relative effects table created by \code{gemtc::relative.effect.table()}
+Relative effects table
 }
 \description{
-Creates a table of comparisons of all treatment pairs for Bayesian models
+Produce a table of comparisons of all treatment pairs for Bayesian models
+using \code{gemtc::relative.effect.table()}
 }

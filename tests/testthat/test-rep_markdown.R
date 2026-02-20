@@ -33,7 +33,6 @@ test_that("rep_markdown produces a renderable .Rmd file after a frequentist anal
   expected_chunks <- 1 #intro
 
   app$set_inputs(tabs = "setup")
-  app$set_inputs(setupSel = "setup_load")
   app$click("setup_load-run")
   expected_chunks <- expected_chunks + 1
 
@@ -95,6 +94,8 @@ test_that("rep_markdown produces a renderable .Rmd file after a frequentist anal
   app$wait_for_value(input = "rep_markdown-complete")
   sess_file <- app$get_download("rep_markdown-dlRMD")
 
+  app$stop()
+
   expect_false(is.null(sess_file))
   lines <- readLines(sess_file)
   chunks <- sum(grepl("```\\{r", lines))
@@ -102,7 +103,7 @@ test_that("rep_markdown produces a renderable .Rmd file after a frequentist anal
   quarto::quarto_render(sess_file)
   html_file <- gsub("qmd", "html", sess_file)
   expect_gt(file.info(html_file)$size, 100000)
-  app$stop()
+
 })
 
 test_that("rep_markdown produces a renderable .Rmd file after a bayesian analysis", {
@@ -165,6 +166,8 @@ test_that("rep_markdown produces a renderable .Rmd file after a bayesian analysi
   app$wait_for_value(input = "rep_markdown-complete")
   sess_file <- app$get_download("rep_markdown-dlRMD")
 
+  app$stop()
+
   expect_false(is.null(sess_file))
   lines <- readLines(sess_file)
   chunks <- sum(grepl("```\\{r", lines))
@@ -180,11 +183,7 @@ test_that("rep_markdown produces a renderable .Rmd file after a bayesian analysi
   expect_true(identical(html_text[[1]], forest_all_text))
   expect_true(identical(html_text[[2]], forest_sub_text))
 
-  app$stop()
-
 })
-
-
 
 test_that("rep_markdown produces a renderable .Rmd file after a covariate analysis", {
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 60000)
@@ -195,7 +194,10 @@ test_that("rep_markdown produces a renderable .Rmd file after a covariate analys
   app$click("setup_reload-goLoad_session")
   app$set_inputs(tabs = "covariate")
 
-  #intro + setup_load + setup_configure + setup_exclude + covariate_model
+  # ensure inputs update
+  app$set_inputs(covariateSel = "covariate_model")
+
+  # intro + setup_load + setup_configure + setup_exclude + covariate_model
   expected_chunks <- 5
 
   app$set_inputs(covariateSel = "covariate_summary")
@@ -223,7 +225,7 @@ test_that("rep_markdown produces a renderable .Rmd file after a covariate analys
   app$set_inputs(covariateSel = "covariate_deviance")
   app$click("covariate_deviance-run")
   app$wait_for_value(input = "covariate_deviance-complete")
-  expected_chunks <- expected_chunks + 4
+  expected_chunks <- expected_chunks + 3
 
   app$set_inputs(covariateSel = "covariate_ranking")
   app$click("covariate_ranking-run")
@@ -308,7 +310,7 @@ test_that("rep_markdown produces a renderable .Rmd file after a baseline analysi
   app$set_inputs(baselineSel = "baseline_deviance")
   app$click("baseline_deviance-run")
   app$wait_for_value(input = "baseline_deviance-complete")
-  expected_chunks <- expected_chunks + 4
+  expected_chunks <- expected_chunks + 3
 
   app$set_inputs(baselineSel = "baseline_ranking")
   app$click("baseline_ranking-run")
@@ -338,6 +340,8 @@ test_that("rep_markdown produces a renderable .Rmd file after a baseline analysi
   app$wait_for_value(input = "rep_markdown-complete")
   sess_file <- app$get_download("rep_markdown-dlRMD")
 
+  app$stop()
+
   expect_false(is.null(sess_file))
   lines <- readLines(sess_file)
   chunks <- sum(grepl("```\\{r", lines))
@@ -351,8 +355,6 @@ test_that("rep_markdown produces a renderable .Rmd file after a baseline analysi
   forest_text <- extract_svg_text_from_svg(forest_app$html)
   # 3rd svg plot, following module order in global.R
   expect_true(identical(html_text[[3]], forest_text))
-
-  app$stop()
 
 })
 

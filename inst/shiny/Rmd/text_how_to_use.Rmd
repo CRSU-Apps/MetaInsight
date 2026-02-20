@@ -6,7 +6,7 @@ output: html_document
 ### **Overview of** ***MetaInsight***
 This information is designed to orient users and developers to the *MetaInsight* interface. Two guided tours are also available - one for new users to *MetaInsight* and one for users of previous versions of *MetaInsight*.
 
-#### **sections and modules**
+#### **Sections and modules**
 *MetaInsight* is composed of **Sections** – discrete steps in the workflow. Navigate through the sections by clicking on the names in the top navigation panel. You must use the Setup section to either load your own data or example data, but afterwards you can choose to either use a single section or all of them.
   
 Within each section, there are various major options that can be run. These are the ***modules***. Selecting a module opens the control panel to make decisions and run the module’s functionalities. In some sections, some modules have to be run before you can move on to later steps - for example in the Setup section, both the *Load data* and *Configure analysis* modules must be used, but most can be run independently and if you try to run a module prematurely, error messages will tell you which module needs to be run in order to proceed.
@@ -30,5 +30,37 @@ Additionally, *MetaInsight* allows the user to download their results. After eac
 
 This version of *MetaInsight* is fully reproducible meaning that you can rerun the analysis outside of the app and produce the same results. This is useful for archiving and validation. To download the session code use the **Reproduce** section. This includes the option of a quarto file that can be opened and rerun in R, or an HTML file which can be opened in web browsers and contains a tab of results for each section of the app.
 
-  
+### Old user guide
+
+<a href="https://raw.githubusercontent.com/CRSU-Apps/MetaInsight/dfd9bcf471ef511ba85f7568c417c9cde6c3cd1d/www/MetaInsightUserGuide.pdf" download="MetaInsightUserGuide.pdf">
+  Download User Guide
+</a> This user guide is based on version 3 of MetaInsight. Some elements of the app have been changed since the guide was originally produced.
+
+### Reproducing NICE Technical Support Documents for Evidence Synthesis
+
+The University of Sheffield host a series of NICE Technical Support Documents on evidence synthesis: <a href = "https://www.sheffield.ac.uk/nice-dsu/tsds/evidence-synthesis" target = "_blank">https://www.sheffield.ac.uk/nice-dsu/tsds/evidence-synthesis</a> Some of the models described in TSD2 and TSD3 can be carried out in MetaInsight. A guide has been written with instructions to reproduce the relevant analyses, which can be <a href="https://raw.githubusercontent.com/CRSU-Apps/MetaInsight/dfd9bcf471ef511ba85f7568c417c9cde6c3cd1d/www/NICE-TSD-examples-in-MetaInsight.html?download=1" download="NICE-TSD-examples-in-MetaInsight.html">downloaded here</a>. The guide is based on MetaInsight version 6.0.0.
+
+### Video tutorials
+
+These tutorials were made for older versions of MetaInsight, with a different user interface, but may still be of use.
+
+#### Tutorial for MetaInsight v4.0.0 produced for ESMARConf 2023 
+<iframe width="560" height="315" src="https://www.youtube.com/embed/g-RDnQ75Hv4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe> 
+
+#### Treatment Ranking Demo
+
+A short demo video of how to use the ranking module in Bayesian, Baselink Risk and Covariate analyses.</p> 
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/scbLwTY0kvc" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe> 
+
+#### Cochrane Training Webinar
+These videos were recorded live in 2019 as part of the <a href="https://training.cochrane.org/resource/metainsight-complex-review-support-unit-crsu-network-meta-analysis-nma-web-based-app" target="_blank">Cochrane Training network meta-analysis learning live webinar series.</a> They are intended for people who are interested in undertaking a network meta-analysis using MetaInsight.
+
+##### MetaInsight: Background, introduction, demonstration, limitations, and future plans
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/RR_tkICQv_s" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe> 
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/b-fYoUdksRo" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe> 
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/g0n5yxQ4Z34" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 

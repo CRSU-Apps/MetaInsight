@@ -4,31 +4,15 @@ freq_forest_module_ui <- function(id) {
     actionButton(ns("run"), "Generate plots", icon = icon("arrow-turn-down")),
     actionButton(ns("run_all"), "Run all modules", icon = icon("forward-fast")),
     div(class = "freq_forest_div",
-      fixedRow(
+      layout_columns(
+        col_widths = rep(6, 6),  # six items: 2 per row
+        row_heights = c("auto", "auto", "auto"),  # three rows
         p("Limits of the x-axis for all studies:"),
-        column(
-          width = 6,
-          align = "center",
-          numericInput(ns("xmin_all"), label = "Minimum", value = 0, step = 0.1),
-        ),
-        column(
-          width = 6,
-          align = "center",
-          numericInput(ns("xmax_all"), label = "Maximum", value = 5, step = 0.1),
-        )
-      ),
-      fixedRow(
-        p("Limits of the x-axis without excluded studies:"),
-        column(
-          width = 6,
-          align = "center",
-          numericInput(ns("xmin_sub"), label = "Minimum", value = 0, step = 0.1)
-        ),
-        column(
-          width = 6,
-          align = "center",
-          numericInput(ns("xmax_sub"), label = "Maximum", value = 5, step = 0.1)
-        )
+        p("Limits of the x-axis with selected studies excluded:"),
+        numericInput(ns("xmin_all"), "Minimum", 0),
+        numericInput(ns("xmin_sub"), "Minimum", 0),
+        numericInput(ns("xmax_all"), "Maximum", 0),
+        numericInput(ns("xmax_sub"), "Maximum", 0),
       ),
       download_button_pair(id)
     )
@@ -42,7 +26,7 @@ freq_forest_module_server <- function(id, common, parent_session) {
 
   observeEvent(input$run, {
     # WARNING ####
-    if (is.null(common$freq_sub)){
+    if (is.null(common$configured_data)){
       common$logger |> writeLog(type = "error", go_to = "setup_configure",
                                  "Please configure the analysis first in the Setup section")
       return()
@@ -52,43 +36,39 @@ freq_forest_module_server <- function(id, common, parent_session) {
   })
 
   observe({
-    watch("model")
-    req(watch("freq_forest") > 0)
-    ci <- extract_ci(common$freq_all, common$outcome)
-    updateNumericInput(session, "xmin_all", value = ci$xmin)
-    updateNumericInput(session, "xmax_all", value = ci$xmax)
+    watch("freq_all")
+    req(common$configured_data$freq)
+    min_max <- freq_forest_limits(common$configured_data$freq, common$configured_data$outcome)
+    updateNumericInput(session, "xmin_all", value = min_max[1], step = format_step(min_max[1]))
+    updateNumericInput(session, "xmax_all", value = min_max[2], step = format_step(min_max[2]))
 
     # prevent errors when set to 0
-    if (common$outcome == "Binary"){
-      updateNumericInput(session, "xmin_sub", min = 0.01, step = 0.01)
+    if (common$configured_data$outcome == "binary"){
+      updateNumericInput(session, "xmin_all", min = 0.01)
     }
   })
 
   observe({
     watch("setup_exclude")
-    req(watch("freq_forest") > 0)
-    ci <- extract_ci(common$freq_sub, common$outcome)
-    updateNumericInput(session, "xmin_sub", value = ci$xmin)
-    updateNumericInput(session, "xmax_sub", value = ci$xmax)
+    req(common$subsetted_data$freq)
+    min_max <- freq_forest_limits(common$subsetted_data$freq, common$subsetted_data$outcome)
+    updateNumericInput(session, "xmin_sub", value = min_max[1], step = format_step(min_max[1]))
+    updateNumericInput(session, "xmax_sub", value = min_max[2], step = format_step(min_max[2]))
 
     # prevent errors when set to 0
-    if (common$outcome == "Binary"){
-      updateNumericInput(session, "xmin_sub", min = 0.01, step = 0.01)
+    if (common$configured_data$outcome == "binary"){
+      updateNumericInput(session, "xmin_sub", min = 0.01)
     }
   })
 
   result_all <- reactive({
-    watch("model")
+    watch("freq_all")
     req(watch("freq_forest") > 0)
     common$meta$freq_forest$used <- TRUE
     common$meta$freq_forest$xmin_all <- as.numeric(input$xmin_all)
     common$meta$freq_forest$xmax_all <- as.numeric(input$xmax_all)
-    # shinyjs::show(selector = ".freq_forest_div")
 
-    freq_forest(common$freq_all,
-                common$reference_treatment_all,
-                common$model_type,
-                common$outcome_measure,
+    freq_forest(common$configured_data,
                 as.numeric(input$xmin_all),
                 as.numeric(input$xmax_all),
                 "Results for all studies")
@@ -100,24 +80,21 @@ freq_forest_module_server <- function(id, common, parent_session) {
     common$meta$freq_forest$xmin_sub <- as.numeric(input$xmin_sub)
     common$meta$freq_forest$xmax_sub <- as.numeric(input$xmax_sub)
 
-    freq_forest(common$freq_sub,
-                common$reference_treatment_sub,
-                common$model_type,
-                common$outcome_measure,
+    freq_forest(common$subsetted_data,
                 as.numeric(input$xmin_sub),
                 as.numeric(input$xmax_sub),
                 "Results with selected studies excluded")
   })
 
   output$plot_sub <- renderUI({
-    div(class = "svg_container",
-        HTML(result_sub()$svg)
+    svg_container(
+        result_sub()
     )
   })
 
   output$plot_all <- renderUI({
-    div(class = "svg_container",
-        HTML(result_all()$svg)
+    svg_container(
+        result_all()
     )
   })
 
@@ -125,7 +102,7 @@ freq_forest_module_server <- function(id, common, parent_session) {
     filename = function(){
       paste0("MetaInsight_frequentist_forest_all.", common$download_format)},
     content = function(file){
-      write_svg_plot(file, common$download_format, result_all())
+      write_plot(result_all(), file, common$download_format)
     }
   )
 
@@ -133,7 +110,7 @@ freq_forest_module_server <- function(id, common, parent_session) {
     filename = function(){
       paste0("MetaInsight_frequentist_forest_sub.", common$download_format)},
     content = function(file){
-      write_svg_plot(file, common$download_format, result_sub())
+      write_plot(result_sub(), file, common$download_format)
     }
   )
 
@@ -143,7 +120,7 @@ freq_forest_module_server <- function(id, common, parent_session) {
                                 "Please configure the analysis first in the Setup section")
       return()
     }
-    run_all("freq", common$logger)
+    run_all(COMPONENTS, COMPONENT_MODULES, "freq", common$logger)
   })
 
   return(list(
@@ -158,10 +135,10 @@ freq_forest_module_server <- function(id, common, parent_session) {
     load = function(state) {
       ### Manual load start
       ### Manual load end
-      updateNumericInput(session, "xmin_all", value = state$xmin_all)
-      updateNumericInput(session, "xmax_all", value = state$xmax_all)
-      updateNumericInput(session, "xmin_sub", value = state$xmin_sub)
-      updateNumericInput(session, "xmax_sub", value = state$xmax_sub)
+      updateNumericInput(session, "xmin_all", value = state$xmin_all, step = format_step(state$xmin_all))
+      updateNumericInput(session, "xmax_all", value = state$xmax_all, step = format_step(state$xmax_all))
+      updateNumericInput(session, "xmin_sub", value = state$xmin_sub, step = format_step(state$xmin_sub))
+      updateNumericInput(session, "xmax_sub", value = state$xmax_sub, step = format_step(state$xmax_sub))
     }
   ))
 })

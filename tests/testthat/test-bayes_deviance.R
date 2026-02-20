@@ -1,5 +1,5 @@
 test_that("Check bayes_deviance function works as expected", {
-  result <- bayes_deviance(fitted_bayes_model, 123)
+  result <- bayes_deviance(fitted_bayes_model)
   expect_type(result, "list")
   expect_true(all(c("deviance_mtc", "deviance_ume", "scat_plot", "stem_plot", "lev_plot") %in% names(result)))
   expect_is(result$deviance_mtc, "mtc.deviance")
@@ -9,19 +9,16 @@ test_that("Check bayes_deviance function works as expected", {
   expect_is(result$lev_plot, "plotly")
 
   # check ume results are reproducible
-  result_1 <- bayes_deviance(fitted_bayes_model, 123)
+  result_1 <- bayes_deviance(fitted_bayes_model)
   expect_true(identical(result$deviance_ume, result_1$deviance_ume))
 
 })
 
 test_that("Check bayes_mcmc function produces errors as expected", {
   faulty_model <- list(mtcResults = 1:4)
-  expect_error(bayes_deviance("faulty_model", 123), "model must be an object created by bayes_model")
-  expect_error(bayes_deviance(list(a = 1), 123), "model must be an object created by bayes_model")
-  expect_error(bayes_deviance(faulty_model, 123), "model must be an object created by bayes_model")
-  expect_error(bayes_deviance(fitted_bayes_model), "Please provide a numeric seed value")
-  expect_error(bayes_deviance(fitted_bayes_model, NULL), "Please provide a numeric seed value")
-  expect_error(bayes_deviance(fitted_bayes_model, "NULL"), "Please provide a numeric seed value")
+  expect_error(bayes_deviance("faulty_model"), "model must be an object created by bayes_model")
+  expect_error(bayes_deviance(list(a = 1)), "model must be an object created by bayes_model")
+  expect_error(bayes_deviance(faulty_model), "model must be an object created by bayes_model")
 })
 
 test_that("{shinytest2} recording: e2e_bayes_deviance", {

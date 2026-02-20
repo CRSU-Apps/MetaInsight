@@ -1,8 +1,8 @@
 test_that("Check baseline_comparison function works as expected", {
   result <- baseline_comparison(fitted_baseline_model)
   expect_is(result, "matrix")
-  expect_equal(nrow(result), 4)
-  expect_equal(ncol(result), 4)
+  expect_equal(nrow(result), n_trt_all)
+  expect_equal(ncol(result), n_trt_all)
 })
 
 test_that("Check bayes_mcmc function produces errors as expected", {
@@ -40,5 +40,6 @@ test_that("{shinytest2} recording: e2e_baseline_comparison", {
   expect_equal(nrow(df), 6)
   expect_equal(ncol(df), 7)
 
+  app$stop()
 })
 

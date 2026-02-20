@@ -2,7 +2,7 @@
 % Please edit documentation in R/covariate_model_f.R
 \name{CreateGemtcModel}
 \alias{CreateGemtcModel}
-\title{Function for setting up covariate {gemtc} model object}
+\title{Function for setting up covariate \CRANpkg{gemtc} model object}
 \usage{
 CreateGemtcModel(
   data,
@@ -30,5 +30,5 @@ CreateGemtcModel(
 An object of class mtc.model
 }
 \description{
-Function for setting up covariate {gemtc} model object
+Function for setting up covariate \CRANpkg{gemtc} model object
 }

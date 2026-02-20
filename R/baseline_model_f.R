@@ -1,58 +1,54 @@
-#' @title baseline_model
-#' @description Fit a baseline risk regression model with `bnma::network.run()`
+#' Fit a baseline risk regression model using `bnma::network.run()`
+#'
 #' @param regressor_type character. Type of regression coefficient, either `shared`, `unrelated`, or `exchangeable`
 #' @inheritParams common_params
 #' @return List of bnma related output:
 #'  \item{mtcResults}{model object itself carried through (needed to match existing code)}
 #'  \item{covariate_value}{The mean covariate value, used for centring}
-#'  \item{reference_name}{The name of the reference treatment}
+#'  \item{reference_treatment}{character. The `reference_treatment`from `configured_data`}
 #'  \item{comparator_names}{Vector containing the names of the comparators}
 #'  \item{a}{text output stating whether fixed or random effects}
 #'  \item{cov_value_sentence}{text output stating the value for which the covariate has been set to for producing output}
 #'  \item{slopes}{named list of slopes for the regression equations (unstandardised - equal to one 'increment')}
 #'  \item{intercepts}{named list of intercepts for the regression equations at cov_value}
-#'  \item{outcome_measure}{The outcome measures for the analysis}
-#'  \item{model}{effects type, "fixed" or "random"}
+#'  \item{outcome}{character. The `outcome` from `configured_data`}
+#'  \item{outcome_measure}{character. The `outcome_measure`from `configured_data`}
+#'  \item{effects}{character. The `effects` from `configured_data`}
 #'  \item{covariate_min}{Vector of minimum covariate values directly contributing to the regression}
 #'  \item{covariate_max}{Vector of maximum covariate values directly contributing to the regression}
 #'  \item{dic}{Summary of model fit}
 #'  \item{sumresults}{Output of summary(model)}
-#'  \item{regressor}{regressor_type}
+#'  \item{regressor}{Type of regression coefficient}
 #' @export
-baseline_model <- function(connected_data, treatment_df, outcome, outcome_measure, reference_treatment, model_type, regressor_type, seed, async = FALSE){
+baseline_model <- function(configured_data, regressor_type, async = FALSE){
 
   if (!async){ # only an issue if run outside the app
-    if (check_param_classes(c("connected_data", "treatment_df", "outcome", "outcome_measure", "model_type",  "reference_treatment", "regressor_type", "seed"),
-                            c("data.frame", "data.frame", "character", "character", "character", "character", "character", "numeric"), NULL)){
+    if (check_param_classes(c("configured_data", "regressor_type"),
+                            c("configured_data", "character"), NULL)){
       return()
     }
   }
 
-  if (!outcome %in% c("Binary", "Continuous")){
-    return(async |> asyncLog(type = "error", "outcome must be 'Binary' or 'Continuous'"))
-  }
-
-  if (!model_type %in% c("fixed", "random")){
-    return(async |> asyncLog(type = "error", "model_type must be 'fixed' or 'random'"))
-  }
-
-  if (!outcome_measure %in% c("OR", "RR", "MD")){
-    return(async |> asyncLog(type = "error", "outcome_measure must be 'OR', 'RR' or 'MD'"))
+  if (!configured_data$outcome_measure %in% c("OR", "RR", "MD")){
+    return(async |> asyncLog(type = "error", "configured data must have an outcome_measure of 'OR', 'RR' or 'MD'"))
   }
 
   if (!regressor_type %in% c("shared", "unrelated", "exchangeable")){
     return(async |> asyncLog(type = "error", "regressor_type must be 'shared', 'unrelated', or 'exchangeable'"))
   }
 
-  if (!reference_treatment %in% treatment_df$Label){
-    return(async |> asyncLog(type = "error", "reference_treatment must be one of the treatments in treatment_df"))
-  }
 
   model <- suppress_jags_output(
-    BaselineRiskRegression(connected_data, treatment_df, outcome, reference_treatment, model_type, regressor_type, seed)
+    BaselineRiskRegression(configured_data$connected_data,
+                           configured_data$treatments,
+                           configured_data$outcome,
+                           configured_data$reference_treatment,
+                           configured_data$effects,
+                           regressor_type,
+                           configured_data$seed)
   )
 
-  output <- BaselineRiskModelOutput(connected_data, treatment_df, model, outcome_measure)
+  output <- BaselineRiskModelOutput(configured_data$connected_data, configured_data$treatments, model, configured_data$outcome_measure)
 
   # store this to avoid conversion later
   output$regressor <- regressor_type
@@ -61,14 +57,14 @@ baseline_model <- function(connected_data, treatment_df, outcome, outcome_measur
   return(output)
 }
 
-#' Takes MetaInsight data and converts it into BNMA format
+#' Takes MetaInsight data and converts it into \CRANpkg{bnma} format
 #'
 #' @param connected_data A data frame of data in MetaInsight format
 #' @param treatment_df Data frame containing treatment IDs and names in columns named 'Number' and 'Label' respectively
-#' @param outcome "Continuous" or "Binary"
+#' @param outcome "continuous" or "binary"
 #' @param reference_treatment An element of treatment_df$Label, the reference treatment.
 #' @return List:
-#'  - 'ArmLevel' = Data frame containing 'Study', 'Treat', 'N', 'Outcomes', and (for outcome_type="Continuous") 'SD'
+#'  - 'ArmLevel' = Data frame containing 'Study', 'Treat', 'N', 'Outcomes', and (for outcome_type="continuous") 'SD'
 #'  - 'Treat.order' = Vector of (unique) treatments, with the reference treatment first
 FormatForBnma <- function(connected_data, treatment_df, outcome, reference_treatment) {
   if (FindDataShape(connected_data) == "wide") {
@@ -86,14 +82,14 @@ FormatForBnma <- function(connected_data, treatment_df, outcome, reference_treat
   Treat.order <- VectorWithItemFirst(vector = unique(br_data$Treat), first_item = reference_treatment)
 
   #Arm-level data
-  if (outcome == "Binary") {
+  if (outcome == "binary") {
     ArmLevel <- dplyr::rename(br_data, "Outcomes" = "R")
     ArmLevel <- dplyr::select(ArmLevel, c("Study", "Treat", "Outcomes", "N"))
-  } else if (outcome == "Continuous") {
+  } else if (outcome == "continuous") {
     ArmLevel <- dplyr::rename(br_data, "Outcomes" = "Mean")
     ArmLevel <- dplyr::select(ArmLevel, c("Study", "Treat", "Outcomes", "SD", "N"))
   } else {
-    stop("outcome_type has to be 'Continuous' or 'Binary'")
+    stop("outcome_type has to be 'continuous' or 'binary'")
   }
 
   return(list(ArmLevel = ArmLevel, Treat.order = Treat.order))
@@ -101,10 +97,10 @@ FormatForBnma <- function(connected_data, treatment_df, outcome, reference_treat
 
 
 
-#' Creates the baseline risk meta-regression network in BNMA
+#' Creates the baseline risk meta-regression network in \CRANpkg{bnma}
 #'
-#' @param br_data A list of data in the format produced by FormatForBnma().
-#' @param outcome "Continuous" or "Binary".
+#' @param br_data A list of data in the format produced by `FormatForBnma()`.
+#' @param outcome "continuous" or "binary".
 #' @param model_type "fixed" or "random".
 #' @param cov_parameters "shared", "exchangable", or "unrelated".
 #' @return Output from bnma::network.data().
@@ -118,7 +114,7 @@ BaselineRiskNetwork <- function(br_data, outcome, model_type, cov_parameters) {
     stop("cov_parameters must be 'shared', 'exchangeable', or 'unrelated'")
   }
 
-  if(outcome == "Binary") {
+  if(outcome == "binary") {
     network <- with(br_data, bnma::network.data(Outcomes = ArmLevel$Outcomes,
                                                 Study = ArmLevel$Study,
                                                 Treat = ArmLevel$Treat,
@@ -129,7 +125,7 @@ BaselineRiskNetwork <- function(br_data, outcome, model_type, cov_parameters) {
                                                 baseline = cov_parameters,
                                                 baseline.risk = "independent"))
   }
-  if(outcome == "Continuous") {
+  if(outcome == "continuous") {
     network <- with(br_data, bnma::network.data(Outcomes = ArmLevel$Outcomes,
                                                 Study = ArmLevel$Study,
                                                 Treat = ArmLevel$Treat,
@@ -145,16 +141,16 @@ BaselineRiskNetwork <- function(br_data, outcome, model_type, cov_parameters) {
 
 
 
-#' Fits the baseline risk meta-regression model in BNMA
+#' Fits the baseline risk meta-regression model in \CRANpkg{bnma}
 #'
 #' @param connected_data A data frame of data in MetaInsight format.
 #' @param treatment_df Data frame containing treatment IDs and names in columns named 'Number' and 'Label' respectively.
-#' @param outcome "Continuous" or "Binary".
+#' @param outcome "continuous" or "binary".
 #' @param reference_treatment treatment An element of treatment_df$Label, the .
 #' @param model_type "fixed" or "random".
 #' @param cov_parameters "shared", "exchangable", or "unrelated".
 #' @param seed Seed. Defaults to 123.
-#' @return Output from bnma::network.run().
+#' @return Output from `bnma::network.run()`.
 BaselineRiskRegression <- function(connected_data, treatment_df, outcome, reference_treatment, model_type, cov_parameters, seed = 123) {
   formatted_data <- FormatForBnma(connected_data = connected_data, treatment_df = treatment_df,
                                   outcome = outcome, reference_treatment = reference_treatment)
@@ -192,7 +188,7 @@ BaselineRiskRegression <- function(connected_data, treatment_df, outcome, refere
 #' @return List of bnma related output:
 #'  mtcResults = model object itself carried through (needed to match existing code).
 #'  covariate_value = The mean covariate value, used for centring.
-#'  reference_name = The name of the reference treatment.
+#'  reference_treatment = The name of the reference treatment.
 #'  comparator_names = Vector containing the names of the comparators.
 #'  a = text output stating whether fixed or random effects.
 #'  cov_value_sentence = text output stating the value for which the covariate has been set to for producing output.
@@ -217,8 +213,13 @@ BaselineRiskModelOutput <- function(connected_data, treatment_df, model, outcome
 
   mean_covariate_value <- model$network$mx_bl
 
+  value_unit <- switch(outcome_measure,
+                       "OR" = "(log-odds scale)",
+                       "RR" = "(log scale)",
+                       "MD" = "")
+
   #Summary sentence of where covariate value has been set for results
-  cov_value_sentence <- paste0("Value for baseline risk set at ", mean_covariate_value)
+  cov_value_sentence <- paste("Value for baseline risk set at", round(mean_covariate_value, 2), value_unit)
 
   #Obtain slope(s), which are named b_bl[number]
   slope_indices <- grep("^b_bl\\[[0-9]+\\]$", rownames(model_summary$summary.samples$quantiles))
@@ -237,9 +238,9 @@ BaselineRiskModelOutput <- function(connected_data, treatment_df, model, outcome
 
   #Convert bnma outcome type into MetaInsight language
   if (model$network$response == "binomial") {
-    outcome <- "Binary"
+    outcome <- "binary"
   } else if (model$network$response == "normal") {
-    outcome <- "Continuous"
+    outcome <- "continuous"
   }
 
   min_max <- FindCovariateRanges(
@@ -263,14 +264,15 @@ BaselineRiskModelOutput <- function(connected_data, treatment_df, model, outcome
 
   return(list(mtcResults = model,
               covariate_value = mean_covariate_value,
-              reference_name = reference_treatment,
+              reference_treatment = reference_treatment,
               comparator_names = comparator_names,
               a = model_text,
               cov_value_sentence = cov_value_sentence,
               slopes = slopes,
               intercepts = intercepts,
+              outcome = outcome,
               outcome_measure = outcome_measure,
-              model = model$network$type,
+              effects = model$network$type,
               covariate_min = min_max$min,
               covariate_max = min_max$max,
               dic = dic,
@@ -278,39 +280,6 @@ BaselineRiskModelOutput <- function(connected_data, treatment_df, model, outcome
   )
   )
 }
-
-
-
-#' An equivalent to {gemtc}'s relative.effect() function, for baseline risk in {bnma}.
-#'
-#' @param model bnma model object created by BaselineRiskRegression().
-#' @param covariate_value The covariate value at which to calculate relative effects.
-#' @return Matrix with the median and 95\% credible interval relative effect
-#'  - columns: '50%', '2.5%' and '97.5%'
-#'  - rows: one row per non-reference treatment, named by the corresponding treatment parameter (e.g. the first one is `d[2]`).
-BnmaRelativeEffects <- function(model, covariate_value) {
-  model_summary <- summary(model)
-  parameters <- rownames(model_summary$summary.samples$quantiles)
-  #Extract parameters that begin with "d[", except d[1]
-  treatment_parameters <- grep("d\\[([0-9][0-9]+|[2-9])\\]",
-                               parameters,
-                               value = TRUE)
-  #Extract parameters that begin with "b_bl[", except b_bl[1]
-  covariate_parameters <- grep("b_bl\\[([0-9][0-9]+|[2-9])\\]",
-                               parameters,
-                               value = TRUE)
-  centred_covariate_value <- covariate_value - model$network$mx_bl
-
-  samples <- list()
-  #The number of chains is always left at the default 3
-  for (chain in 1:3) {
-    samples[[chain]] <- model$samples[[chain]][, treatment_parameters] + centred_covariate_value * model$samples[[chain]][, covariate_parameters]
-  }
-
-  relative_effects <- MCMCvis::MCMCsummary(samples)
-  return(as.matrix(relative_effects[, c("50%", "2.5%", "97.5%")]))
-}
-
 
 
 #' Calculate the confidence regions within direct evidence for the baseline risk model.
@@ -385,7 +354,6 @@ CalculateConfidenceRegionsBnma <- function(model_output) {
 #' Find the confidence interval at a given covariate value.
 #'
 #' @param mtc_results Meta-analysis object from which to find confidence interval.
-#' @param reference_name Name of reference treatment.
 #' @param cov_value Covariate value at which to find the confidence interval.
 #' @param parameter_name Name of the parameter for which to get the confidence interval.
 #'
@@ -489,12 +457,11 @@ GetBnmaParameters <- function(all_parameters, effects_type, cov_parameters) {
 
 
 
-
-#' An equivalent to {gemtc}'s relative.effect() function, for baseline risk in {bnma}.
+#' An equivalent to the `relative.effect()` function in \CRANpkg{gemtc}, for baseline risk in \CRANpkg{bnma}.
 #'
-#' @param model bnma model object created by BaselineRiskRegression().
+#' @param model \CRANpkg{bnma} model object created by `BaselineRiskRegression()`.
 #' @param covariate_value The covariate value at which to calculate relative effects.
-#' @return Matrix with the median and 95% credible interval relative effect
+#' @return Matrix with the median and 95\% credible interval relative effect
 #'  - columns: '50%', '2.5%' and '97.5%'
 #'  - rows: one row per non-reference treatment, named by the corresponding treatment parameter (e.g. the first one is `d[2]`).
 BnmaRelativeEffects <- function(model, covariate_value) {

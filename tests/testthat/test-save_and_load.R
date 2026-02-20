@@ -5,18 +5,20 @@ test_that("The app can be saved after an analysis and the data restored", {
   app$set_inputs(setupSel = "setup_configure")
   app$wait_for_value(input = "setup_configure-ready")
   app$click("setup_configure-run")
-  app$set_inputs("setup_exclude-exclusions" = c("Study01", "Study25"))
   app$wait_for_value(input = "setup_exclude-complete")
+  app$set_inputs("setup_exclude-exclusions" = c("Study01", "Study25"))
+  app$wait_for_value(input = "setup_exclude-complete", ignore = list(NULL, "", "initial"))
 
   app$get_download("core_save-save_session", filename = save_file)
   expect_gt(file.info(save_file)$size, 1000)
   common_saved <- readRDS(save_file)
+  expect_equal(common_saved$state$setup_exclude$exclusions, c("Study01", "Study25"))
 
   # check data is in the save file (non-exhaustive)
-  expect_s3_class(common_saved$bugsnet_all, "data.frame")
-  expect_s3_class(common_saved$bugsnet_sub, "data.frame")
-  expect_type(common_saved$freq_all, "list")
-  expect_type(common_saved$freq_sub, "list")
+  expect_s3_class(common_saved$configured_data$bugsnet, "data.frame")
+  expect_s3_class(common_saved$subsetted_data$bugsnet, "data.frame")
+  expect_type(common_saved$configured_data$freq, "list")
+  expect_type(common_saved$subsetted_data$freq, "list")
 
   # this is important as this is the object used to reload module outputs on loading
   used_modules <- c("setup_load", "setup_configure", "setup_exclude")
@@ -31,12 +33,16 @@ test_that("The app can be saved after an analysis and the data restored", {
   app_load$upload_file("setup_reload-load_session" = save_file)
   app_load$click("setup_reload-goLoad_session")
 
-  # check that data has been reloaded into common
+  # check that data has been reloaded into common and is the same as before
   common_restored <- app_load$get_value(export = "common")
-  expect_s3_class(common_restored$bugsnet_all, "data.frame")
-  expect_s3_class(common_restored$bugsnet_sub, "data.frame")
-  expect_type(common_restored$freq_all, "list")
-  expect_type(common_restored$freq_sub, "list")
+  expect_s3_class(common_restored$configured_data$bugsnet, "data.frame")
+  expect_s3_class(common_restored$subsetted_data$bugsnet, "data.frame")
+  expect_type(common_restored$configured_data$freq, "list")
+  expect_type(common_restored$subsetted_data$freq, "list")
+  expect_equal(common_saved$configured_data$bugsnet, common_restored$configured_data$bugsnet)
+  expect_equal(common_saved$configured_data$freq, common_restored$configured_data$freq)
+  expect_equal(common_saved$subsetted_data$bugsnet, common_restored$subsetted_data$bugsnet)
+  expect_equal(common_saved$subsetted_data$freq, common_restored$subsetted_data$freq)
 
   # check that input values have been restored
   # should be expanded upon...

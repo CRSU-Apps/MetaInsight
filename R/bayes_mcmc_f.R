@@ -1,11 +1,11 @@
-#' @title bayes_mcmc
-#' @description Produces Markov chain Monte Carlo plots
+#' Produce Markov chain Monte Carlo plots for Bayesian models
+#'
 #' @param model Output from `baseline_model()`, `bayes_model()` or `covariate_model()`
 #' @inheritParams common_params
 #' @return list containing:
 #' \item{gelman_plots}{Gelman plots}
-#' \item{trace_plots}{Gelman plots}
-#' \item{density_plots}{Gelman plots}
+#' \item{trace_plots}{Trace plots}
+#' \item{density_plots}{Density plots}
 #' \item{n_rows}{The number of rows for each plot}
 #' @export
 bayes_mcmc <- function(model, async = FALSE){
@@ -105,7 +105,7 @@ GelmanPlot <- function(gelman_data, parameter) {
                   levels = c("median", "97.5%"))
   )
 
-  ggplot(plot_data, aes(x = x, y = y, color = type, linetype = type)) +
+  ggplot(plot_data, aes(x = .data$x, y = .data$y, color = .data$type, linetype = .data$type)) +
     geom_line() +
     geom_hline(yintercept = 1, color = "black", linetype = 1) +
     scale_color_manual(values = c("median" = "black", "97.5%" = "red")) +

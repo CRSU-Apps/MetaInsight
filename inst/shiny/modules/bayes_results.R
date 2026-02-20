@@ -72,7 +72,7 @@ bayes_results_submodule_result <- function(id, label, class) {
     div(class = class,
       tagList(
         br(),
-        h5(glue::glue("Results details {label}")),
+        h5(glue("Results details {label}")),
         uiOutput(ns("text")),
         br(),
         h5("Empirical mean and standard deviation for each variable,
