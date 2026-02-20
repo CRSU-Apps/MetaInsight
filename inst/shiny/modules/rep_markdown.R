@@ -84,10 +84,7 @@ rep_markdown_module_server <- function(id, common, parent_session, COMPONENT_MOD
       md_files <- c()
 
       rmd_intro_file <- tempfile(pattern = "intro_", fileext = ".Rmd")
-      knit_params <- c(
-        file = "Rmd/userReport_intro.Rmd",
-        list(seed = common$seed)
-      )
+      knit_params <- c(file = "Rmd/userReport_intro.Rmd", list())
       intro_rmd <- do.call(knitr::knit_expand, knit_params)
       writeLines(intro_rmd, rmd_intro_file)
 
@@ -175,7 +172,7 @@ rep_markdown_module_server <- function(id, common, parent_session, COMPONENT_MOD
 
       # add quarto header
       quarto_header <- readLines("Rmd/quarto_header.txt")
-      quarto_header <- append(quarto_header, glue::glue("title: MetaInsight Session {Sys.Date()}"), 1)
+      quarto_header <- append(quarto_header, glue::glue("title: MetaInsight v{packageVersion('metainsight')} Session {Sys.Date()}"), 1)
       combined_rmd <- c(quarto_header, combined_rmd)
 
       # convert chunk control lines
@@ -193,9 +190,9 @@ rep_markdown_module_server <- function(id, common, parent_session, COMPONENT_MOD
       combined_rmd <- gsub("’", "'", combined_rmd)
 
       # fix any very long lines
-      long_lines <- which(nchar(combined_rmd) > 4000)
+      long_lines <- which(nchar(combined_rmd) > 1000)
       for (l in long_lines){
-        split_lines <- strwrap(combined_rmd[l], 4000)
+        split_lines <- strwrap(combined_rmd[l], 1000)
         combined_rmd <- combined_rmd[-l]
         combined_rmd <- append(combined_rmd, split_lines, l-1)
       }
@@ -279,6 +276,7 @@ rep_markdown_module_server <- function(id, common, parent_session, COMPONENT_MOD
         paste0("metainsight-session-", Sys.Date(), input$file_type)
       },
       content = function(file) {
+        on.exit(unlink(task$result()))
         file.copy(task$result(), file)
       }
     )
