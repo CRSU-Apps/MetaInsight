@@ -37,7 +37,7 @@ freq_forest_module_server <- function(id, common, parent_session) {
 
   observe({
     watch("freq_all")
-    req(common$configured_data)
+    req(common$configured_data$freq)
     min_max <- freq_forest_limits(common$configured_data$freq, common$configured_data$outcome)
     updateNumericInput(session, "xmin_all", value = min_max[1], step = format_step(min_max[1]))
     updateNumericInput(session, "xmax_all", value = min_max[2], step = format_step(min_max[2]))
@@ -50,7 +50,7 @@ freq_forest_module_server <- function(id, common, parent_session) {
 
   observe({
     watch("setup_exclude")
-    req(common$subsetted_data)
+    req(common$subsetted_data$freq)
     min_max <- freq_forest_limits(common$subsetted_data$freq, common$subsetted_data$outcome)
     updateNumericInput(session, "xmin_sub", value = min_max[1], step = format_step(min_max[1]))
     updateNumericInput(session, "xmax_sub", value = min_max[2], step = format_step(min_max[2]))
