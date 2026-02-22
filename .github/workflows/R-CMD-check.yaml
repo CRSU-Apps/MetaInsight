@@ -70,6 +70,10 @@ jobs:
         if: runner.os == 'Windows'
         uses: browser-actions/setup-chrome@v1
 
+      - name: Install system dependencies (macOS)
+        if: runner.os == 'macOS'
+        run: brew install cairo
+
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: rcmdcheck, any::XML

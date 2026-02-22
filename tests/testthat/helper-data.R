@@ -3,6 +3,8 @@ test_data_dir <- normalizePath(testthat::test_path("data"))
 
 options(shinytest2.load_timeout=60000)
 
+Sys.setenv(QUARTO_LOG_LEVEL = "DEBUG")
+
 loaded_data_con <- setup_load(file.path(test_data_dir, "Cont_long_continuous_cov.csv"), outcome = "continuous")
 configured_data_con <- setup_configure(loaded_data_con, "the Great", "random", "MD", "good", 123)
 excluded_data_con <- setup_exclude(configured_data_con, c("Leo"))
@@ -50,6 +52,9 @@ app$wait_for_value(input = "bayes_model-sub-complete")
 app$get_download("core_save-save_session", filename = bayes_model_path)
 app$stop()
 
+gc()  # sometimes enough to trigger cleanup
+Sys.sleep(5)
+
 app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 30000)
 app$upload_file("setup_load-file1" = file.path(test_data_dir, "Cont_long.csv"))
 app$click("setup_load-run")
@@ -58,6 +63,9 @@ app$click("baseline_model-run")
 app$wait_for_value(input = "baseline_model-complete")
 app$get_download("core_save-save_session", filename = baseline_model_path)
 app$stop()
+
+gc()  # sometimes enough to trigger cleanup
+Sys.sleep(5)
 
 app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 30000)
 app$upload_file("setup_load-file1" = file.path(test_data_dir, "Cont_long_continuous_cov.csv"))
@@ -72,6 +80,9 @@ app$click("covariate_model-run")
 app$wait_for_value(input = "covariate_model-complete")
 app$get_download("core_save-save_session", filename = covariate_model_path)
 app$stop()
+
+gc()  # sometimes enough to trigger cleanup
+Sys.sleep(5)
 
 fitted_bayes_model <- readRDS(bayes_model_path)$bayes_all
 fitted_baseline_model <- readRDS(baseline_model_path)$baseline_model
