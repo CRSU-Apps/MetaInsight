@@ -66,9 +66,8 @@ jobs:
           # Install rjags with correct paths
           Rscript -e "install.packages('rjags')"
 
-      - name: Install Chrome (Windows)
-        if: runner.os == 'Windows'
-        uses: browser-actions/setup-chrome@v1
+      - name: Install Chrome
+        uses: browser-actions/setup-chrome@latest
 
       - name: Install system dependencies (macOS)
         if: runner.os == 'macOS'
