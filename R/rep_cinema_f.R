@@ -15,26 +15,29 @@
 rep_cinema <- function(configured_data, gemtc_results = NULL, logger = NULL) {
 
   check_param_classes("configured_data", "configured_data", logger)
-  
+  if (!is.null(gemtc_results)) {
+    check_param_classes("gemtc_results", "mtc.result", logger)
+  }
+
   contributions <- netmeta::netcontrib(
     x = configured_data$freq$net1,
     method = "shortestpath",
     study = TRUE
   )
-  
+
   prepared_data <- .PrepareDataForCinema(
     configured_data$connected_data,
     configured_data$treatments,
     configured_data$outcome
   )
-  
+
   prepared_analysis <- .PrepareAnalysisForCinema(
     contributions,
     configured_data$effects,
     configured_data$outcome_measure,
     gemtc_results
   )
-  
+
   prepared_project <- list(
     project = list(
       CM = prepared_analysis,
@@ -45,7 +48,7 @@ rep_cinema <- function(configured_data, gemtc_results = NULL, logger = NULL) {
       )
     )
   )
-  
+
   return(jsonlite::toJSON(prepared_project, pretty = TRUE, na = "null"))
 }
 
