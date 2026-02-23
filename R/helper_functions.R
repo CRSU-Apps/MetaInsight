@@ -487,6 +487,41 @@ svg_container <- function(svg, class = "svg_container", style = ""){
       svg)
 }
 
+
+####################### #
+# DIC TABLE #
+####################### #
+
+#' Create a summary table of deviance information criterion stats for Bayesian models
+#'
+#' @param dic dataframe of DIC stats from `baseline_model`, `bayes_model()`
+#' or `covariate_model()`
+#' @param analysis Whether the analysis is using all studies (`all`) or a subset (`sub`)
+#' @export
+dic_table <- function(dic, analysis = "all"){
+
+  if (analysis == "all"){
+    title = "Model fit for all studies"
+  } else if (analysis == "sub"){
+    title = "Model fit with selected studies excluded"
+  } else {
+    stop("analysis must be 'all' or 'sub'")
+  }
+
+  rownames(dic) <- c("Posterior mean deviance (Dbar)",
+                     "Effective number of parameters (pD)",
+                     "Dbar + pD = Deviance information criterion (DIC)",
+                     "Study arms")
+
+  dic |>
+    gt::gt(rownames_to_stub = TRUE) |>
+    gt::tab_header(title = title) |>
+    gt::tab_options(column_labels.hidden = TRUE) |>
+    gt::fmt_number(rows = c(1:3), decimals = 3) |>
+    gt::fmt_number(rows = 4, decimals = 0)
+}
+
+
 ####################### #
 # RESET DATA #
 ####################### #
