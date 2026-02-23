@@ -12,7 +12,7 @@ summary_network <- function(configured_data, style, label_size = 1, title = "", 
   check_param_classes(c("configured_data", "style", "label_size", "title"),
                       c("configured_data", "character", "numeric", "character"), logger)
 
-  if (!(style %in% c("netgraph", "netplot"))){
+  if (!(style %in% c("netgraph", "netplot", "bugs"))){
     logger |> writeLog(type = "error", "style must be either netgraph or netplot")
     return()
   }
@@ -35,6 +35,25 @@ summary_network <- function(configured_data, style, label_size = 1, title = "", 
       title(title)
 
     } else if (style == "netplot"){
+      netmeta::netgraph(configured_data$freq$net1,
+                        adj = 0.5,
+                        scale = 1,
+                        cex = 1,
+                        lwd.max = max(configured_data$freq$net1$k.trts) ,
+                        cex.points = configured_data$freq$net1$k.trts,
+                        number.of.studies = FALSE,
+                        col = "grey",
+                        points.max = 20,
+                        col.points = "#f69c54",
+                        thickness = "number.of.studies",
+                        rescale.thickness = TRUE,
+                        plastic = FALSE,
+                        points = TRUE,
+                        multiarm = TRUE,
+                        start = "circle",
+                        rotate = 90)
+
+    } else if (style == "bugs"){
       data.rh <- BUGSnet::data.prep(arm.data = configured_data$bugsnet, varname.t = "T", varname.s = "Study")
       BUGSnet::net.plot(data.rh, node.scale = 3, edge.scale = 1.5, node.lab.cex = label_size,
                                layout.params = NULL)
