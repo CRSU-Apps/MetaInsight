@@ -62,8 +62,8 @@ covariate_model_module_server <- function(id, common, parent_session) {
       }
 
       if (length(common$configured_data$covariate) == 0){
-        common$logger |> writeLog(type = "error", paste("No covariate data exists. To add covariate data, add a column titled
-                                                         covar.* where the * is replaced by the covariate name. e.g. covar.age"))
+        common$logger |> writeLog(type = "error", "No covariate data exists. To add covariate data, add a column titled
+                                                         covar.* where the * is replaced by the covariate name. e.g. covar.age")
         return()
       }
 

@@ -10,7 +10,8 @@ covariate_summary <- function(configured_data, logger = NULL){
                       c("configured_data"), logger)
 
   if (!any(grepl("covar\\.", names(configured_data$connected_data)))){
-    logger |> asyncLog(type = "error", "The data does not contain a covariate column")
+    logger |> writeLog(type = "error", "No covariate data exists. To add covariate data, add a column titled
+                                        covar.* where the * is replaced by the covariate name. e.g. covar.age")
     return()
   }
 
