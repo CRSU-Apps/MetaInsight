@@ -208,7 +208,7 @@ rep_markdown_module_server <- function(id, common, parent_session, COMPONENT_MOD
         if (render_html){
           writeLines(combined_rmd, "combined.qmd")
           on.exit(unlink("combined.qmd"))
-          render_dir <- normalizePath(dirname("combined.qmd"), winslash = "/")
+          render_dir <- normalizePath(getwd(), winslash = "/")
           withr::with_dir(render_dir, {
             quarto::quarto_render(
               input = "combined.qmd",
