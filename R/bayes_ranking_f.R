@@ -392,10 +392,12 @@ ranking_table <- function(ranking_data) {
 #' @param order character. Vector of treatments names in rank order.
 #' @return data.frame containing the number of studies that compare each treatment against the reference treatment.
 network.structure <- function(freq, order = NA) {
-  freq$d1 |>
-    dplyr::group_by(from = .data$treat2) |>
-    dplyr::summarise(edge.weight = n()) |>
-    dplyr::mutate(to = unique(freq$d1$treat1)) |>
+  ng <- netmeta::netgraph(freq$net1, figure = FALSE)  # suppress plot
+  edges <- ng$edges[, c("treat1", "treat2", "n.stud")]
+  names(edges) <- c("from", "to", "edge.weight")
+  edges |>
     dplyr::arrange(factor(.data$from, levels = order))
+
+  return(edges)
 }
 
