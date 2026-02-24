@@ -245,9 +245,13 @@ suppress_jags_output <- function(expr) {
 #'
 #' @param svg html. containing the svg string, returned from `crop_svg()`
 #' @param file character. The file to which to write.
-#' @param type character. Type of file to which to write.
 #' @export
-write_plot <- function(svg, file, type) {
+write_plot <- function(svg, file) {
+
+  type <- tools::file_ext(file)
+  if (!(type %in% c("pdf", "png", "svg"))){
+    stop("file must have an extenstion of pdf, png or svg")
+  }
 
   xml <- xml2::read_html(svg)
   svg_node <- xml2::xml_find_first(xml, "//svg")

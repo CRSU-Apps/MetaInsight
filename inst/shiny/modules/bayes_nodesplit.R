@@ -39,9 +39,7 @@ bayes_nodesplit_submodule_server <- function(id, common, nodesplit, run){
           glue("MetaInsight_nodesplit_{id}.{common$download_format}")
       },
       content = function(file) {
-        write_plot(svg(),
-                   file,
-                   common$download_format)
+        write_plot(svg(), file)
       }
     )
 

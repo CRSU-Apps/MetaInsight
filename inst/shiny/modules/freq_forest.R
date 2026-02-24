@@ -102,7 +102,7 @@ freq_forest_module_server <- function(id, common, parent_session) {
     filename = function(){
       paste0("MetaInsight_frequentist_forest_all.", common$download_format)},
     content = function(file){
-      write_plot(result_all(), file, common$download_format)
+      write_plot(result_all(), file)
     }
   )
 
@@ -110,7 +110,7 @@ freq_forest_module_server <- function(id, common, parent_session) {
     filename = function(){
       paste0("MetaInsight_frequentist_forest_sub.", common$download_format)},
     content = function(file){
-      write_plot(result_sub(), file, common$download_format)
+      write_plot(result_sub(), file)
     }
   )
 

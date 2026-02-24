@@ -87,11 +87,7 @@ summary_study_module_server <- function(id, common, parent_session) {
       paste0('MetaInsight_study_results.', common$download_format)
     },
     content = function(file) {
-      write_plot(
-        svg(),
-        file,
-        common$download_format
-      )
+      write_plot(svg(), file)
     }
   )
 

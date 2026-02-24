@@ -4,14 +4,12 @@
 \alias{write_plot}
 \title{Write an svg plot to either a png, pdf or svg file}
 \usage{
-write_plot(svg, file, type)
+write_plot(svg, file)
 }
 \arguments{
 \item{svg}{html. containing the svg string, returned from \code{crop_svg()}}
 
 \item{file}{character. The file to which to write.}
-
-\item{type}{character. Type of file to which to write.}
 }
 \description{
 Write an svg plot to either a png, pdf or svg file
