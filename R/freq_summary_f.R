@@ -19,6 +19,17 @@ freq_summary <- function(configured_data, plot_title = "", logger = NULL) {
     return()
   }
 
+  # check for at least reference treatment and two pairs of other treatments
+  treatment_sum <- configured_data$connected_data |>
+    dplyr::group_by(.data$T) |>
+    dplyr::summarise(n = dplyr::n())
+
+  if (sum(treatment_sum$n >= 2) < 3){
+    logger |> writeLog(type = "error", paste("configured_data must contain at least two treatments",
+                                          "that each have two comparisons with the reference treatment"))
+    return()
+  }
+
   net1 <- configured_data$freq$net1
   treatment_df <- configured_data$treatments
 
