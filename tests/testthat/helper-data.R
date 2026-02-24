@@ -31,8 +31,10 @@ if (Sys.getenv("GITHUB_ACTIONS") == "true"){
   save_file <- file.path(rds_path, "save_file.rds")
 }
 
+minimal_data_path <- system.file("extdata", "continuous_minimal.csv", package = "metainsight")
+
 app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 30000)
-app$upload_file("setup_load-file1" = file.path(test_data_dir, "Cont_long_continuous_cov.csv"))
+app$upload_file("setup_load-file1" = minimal_data_path)
 app$set_inputs(tabs = "setup")
 app$click("setup_load-run")
 app$set_inputs("setupSel" = "setup_configure")
@@ -40,7 +42,7 @@ app$wait_for_value(input = "setup_configure-ready")
 app$set_inputs("setup_configure-reference_treatment" = "the Great", wait_ = FALSE)
 app$click("setup_configure-run")
 app$wait_for_value(input = "setup_exclude-complete")
-app$set_inputs("setup_exclude-exclusions" = "Leo")
+app$set_inputs("setup_exclude-exclusions" = "Minerva")
 app$wait_for_value(input = "setup_exclude-complete", ignore = list(NULL, "", "initial"))
 app$set_inputs(tabs = "covariate")
 app$set_inputs(covariateSel = "covariate_model")
@@ -52,11 +54,8 @@ app$wait_for_value(input = "bayes_model-sub-complete")
 app$get_download("core_save-save_session", filename = bayes_model_path)
 app$stop()
 
-gc()  # sometimes enough to trigger cleanup
-Sys.sleep(5)
-
 app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 30000)
-app$upload_file("setup_load-file1" = file.path(test_data_dir, "Cont_long.csv"))
+app$upload_file("setup_load-file1" = minimal_data_path)
 app$click("setup_load-run")
 app$click("setup_configure-run")
 app$click("baseline_model-run")
@@ -64,11 +63,8 @@ app$wait_for_value(input = "baseline_model-complete")
 app$get_download("core_save-save_session", filename = baseline_model_path)
 app$stop()
 
-gc()  # sometimes enough to trigger cleanup
-Sys.sleep(5)
-
 app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 30000)
-app$upload_file("setup_load-file1" = file.path(test_data_dir, "Cont_long_continuous_cov.csv"))
+app$upload_file("setup_load-file1" = minimal_data_path)
 app$click("setup_load-run")
 app$set_inputs("setupSel" = "setup_configure")
 app$wait_for_value(input = "setup_configure-ready")
@@ -80,9 +76,6 @@ app$click("covariate_model-run")
 app$wait_for_value(input = "covariate_model-complete")
 app$get_download("core_save-save_session", filename = covariate_model_path)
 app$stop()
-
-gc()  # sometimes enough to trigger cleanup
-Sys.sleep(5)
 
 fitted_bayes_model <- readRDS(bayes_model_path)$bayes_all
 fitted_baseline_model <- readRDS(baseline_model_path)$baseline_model

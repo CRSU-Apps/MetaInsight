@@ -1,5 +1,4 @@
 test_that("freq_summary produces errors for incorrect data types and invalid values", {
-  skip(message = "currently broken")
   result <- freq_summary(configured_data_con, "Title")
   expect_match(result, "<svg")
 
@@ -13,7 +12,6 @@ test_that("freq_summary produces errors for incorrect data types and invalid val
 })
 
 test_that("freq_summary produces downloadable plots", {
-  skip(message = "currently broken")
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_setup_load", timeout = 30000)
   reload_app(app, config_path)
   app$set_inputs(tabs = "freq")

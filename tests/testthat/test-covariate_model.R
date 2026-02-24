@@ -179,8 +179,8 @@ test_that("{shinytest2} recording: e2e_covariate_model", {
   mean_value <- app$get_text(".form-group:has(#covariate_model-covariate_value) .irs-single")
   max_value <- app$get_text(".form-group:has(#covariate_model-covariate_value) .irs-max")
 
-  expect_equal(min_value, "97")
-  expect_equal(mean_value, "98.12")
+  expect_equal(min_value, "95")
+  expect_equal(mean_value, "97")
   expect_equal(max_value, "99")
 
   common <- app$get_value(export = "common")
