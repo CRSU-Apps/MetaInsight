@@ -2,18 +2,18 @@
 % Please edit documentation in R/bayes_ranking_f.R
 \name{network.structure}
 \alias{network.structure}
-\title{Function taken and adapted from BUGSnet GitHub}
+\title{Calculate edge.weights for network}
 \usage{
-network.structure(data.nma, my_order = NA)
+network.structure(freq, order = NA)
 }
 \arguments{
-\item{data.nma}{BUGSnetData item, created using \code{data.prep(arm.data=longdata, varname.t = "T", varname.s="Study")}}
+\item{freq}{list. Output from \code{frequentist()}}
 
-\item{my_order}{character. Vector of treatments names in rank order.}
+\item{order}{character. Vector of treatments names in rank order.}
 }
 \value{
 data.frame containing the number of studies that compare each treatment against the reference treatment.
 }
 \description{
-Function taken and adapted from BUGSnet GitHub
+Calculate edge.weights for network
 }

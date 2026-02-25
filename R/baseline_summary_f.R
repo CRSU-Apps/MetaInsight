@@ -78,7 +78,6 @@ baseline_summary <- function(configured_data, logger = NULL){
   x_max <- format_xlim(x_max, "max", FALSE)
 
   x_ticks <- .FindXTicks(lower = x_min, upper = x_max)
-  increment <- x_ticks[2] - x_ticks[1]
 
   x_label <- switch(
     configured_data$outcome_measure,
@@ -122,6 +121,8 @@ baseline_summary <- function(configured_data, logger = NULL){
   top_margin <- 4
   left_margin <- 4 + (outcome_width_inches + label_width_inches + (2 * inches_to_lines)) / inches_to_lines
   right_margin <- 4
+
+  plot_area_width <- 6
 
   plot_height <- (bottom_margin + top_margin + top_line) * inches_to_lines
 
@@ -168,12 +169,8 @@ baseline_summary <- function(configured_data, logger = NULL){
       labels = x_labels
     )
 
-    # add the line of no effect
-    lines(
-      x = rep(mean(df$baseline, na.rm = TRUE), times = 2),
-      y = c(0, top_line),
-      lty = 2
-    )
+    # add the mean line
+    abline(v = mean(df$baseline, na.rm = TRUE), lty = 2)
 
     # add header of the within-study comparison-level outcomes
     mtext(
