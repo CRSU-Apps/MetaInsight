@@ -200,7 +200,7 @@ baseline_summary <- function(configured_data, logger = NULL){
     mtext(
       PasteCaptionText("baseline risk", error_bar_text),
       side = 2,
-      line = label_x_position,
+      line = label_x_position - 1,
       las = 1,
       at = -6:-9,
       adj = 0
