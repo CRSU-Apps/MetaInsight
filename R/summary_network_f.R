@@ -49,7 +49,7 @@ summary_network <- function(configured_data, style, label_size = 1, title = "", 
                         rescale.thickness = TRUE,
                         plastic = FALSE,
                         points = TRUE,
-                        multiarm = TRUE,
+                        multiarm = FALSE,
                         start = "circle",
                         rotate = 90)
 
