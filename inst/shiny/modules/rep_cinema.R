@@ -16,8 +16,6 @@ rep_cinema_module_ui <- function(id) {
 rep_cinema_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
-  shinyjs::hide("download")
-
   observeEvent(input$run, {
 
     if (is.null(common$configured_data$freq)) {
@@ -64,10 +62,18 @@ rep_cinema_module_server <- function(id, common, parent_session) {
 
   return(list(
     save = function() {
-      shinyscholar::save_and_load(".", "rep_cinema")
+      list(
+        ### Manual save start
+        ### Manual save end
+        model = input$model, 
+        data = input$data
+      )
     },
     load = function(state) {
-      shinyscholar::save_and_load(".", "rep_cinema")
+      ### Manual load start
+      ### Manual load end
+      updateRadioButtons(session, "model", selected = state$model) 
+      updateRadioButtons(session, "data", selected = state$data)
     }
   ))
 
