@@ -8,9 +8,13 @@ options(shiny.maxRequestSize = UPLOAD_SIZE_MB*MB)
 SAVE_SESSION_SIZE_MB_WARNING <- 100
 
 # set daemons when not in testing
-if (isTRUE(getOption("shiny.testmode"))) {
+if (isFALSE(getOption("shiny.testmode"))) {
   # add sync = TRUE for debugging
   mirai::daemons(4)
+}
+
+if (isTRUE(getOption("shiny.testmode"))) {
+  mirai::daemons(1, dispatcher = FALSE)
 }
 
 onStop(function() mirai::daemons(0))
