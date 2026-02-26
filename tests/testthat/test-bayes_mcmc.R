@@ -20,7 +20,7 @@ test_that("Check bayes_mcmc function works as expected", {
   expect_length(gelman, n_trt_all)
   expect_length(trace, n_trt_all)
   expect_length(density, n_trt_all)
-  expect_equal(result$n_rows, 3)
+  expect_equal(result$n_rows, ceiling(n_trt_all/2))
 })
 
 test_that("Check bayes_mcmc function produces errors as expected", {

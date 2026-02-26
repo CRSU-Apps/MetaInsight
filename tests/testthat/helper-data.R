@@ -32,8 +32,6 @@ if (Sys.getenv("GITHUB_ACTIONS") == "true"){
   save_file <- file.path(rds_path, "save_file.rds")
 }
 
-
-
 app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 30000)
 app$upload_file("setup_load-file1" = minimal_data_path)
 app$set_inputs(tabs = "setup")

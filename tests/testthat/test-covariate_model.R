@@ -54,7 +54,7 @@ test_that("Check covariate_model function works as expected", {
   expect_equal(result_1$effects, "random")
   expect_equal(result_1$covariate_value, 98)
   expect_equal(result_1$reference_treatment, "the_Great")
-  expect_setequal(result_1$comparator_names, configured_data_con$treatments$Label[2:6])
+  expect_setequal(result_1$comparator_names, configured_data_con$treatments$Label[2:n_trt_all])
 
   expected_mcmc_table <- data.frame(characteristic = c("Chains",
                                                        "Burn-in iterations",
