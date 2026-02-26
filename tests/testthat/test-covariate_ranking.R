@@ -9,12 +9,13 @@ test_that("Check covariate_ranking function works as expected", {
   expect_is(result$Cumulative, "data.frame")
   expect_is(result$Probabilities, "data.frame")
   expect_is(result$BUGSnetData, "BUGSnetData")
+  expect_equal(result$SUCRA$Treatment[which.max(result$SUCRA$SUCRA)], "the_Great")
 
   table_result <- ranking_table(result)
   expect_is(table_result, "data.frame")
-  expect_equal(table_result$Treatment[1], "the_Slit_nosed")
+  expect_equal(table_result$Treatment[1], "the_Great")
   expect_equal(nrow(table_result), n_trt_all)
-  expect_equal(ncol(table_result), 8)
+  expect_equal(ncol(table_result), n_trt_all + 2)
 
   litmus_result <- LitmusRankOGram(result)
   expect_match(litmus_result, "<svg")
@@ -71,8 +72,8 @@ test_that("{shinytest2} recording: e2e_covariate_ranking", {
   ranking_table_dl_all <- app$get_download("covariate_ranking-all-download_ranking_table")
 
   df_all <- read.csv(ranking_table_dl_all)
-  expect_equal(nrow(df_all), 6)
-  expect_equal(ncol(df_all), 8)
+  expect_equal(nrow(df_all), n_trt_all)
+  expect_equal(ncol(df_all), n_trt_all + 2)
 
   app$stop()
 

@@ -208,10 +208,13 @@ rep_markdown_module_server <- function(id, common, parent_session, COMPONENT_MOD
         if (render_html){
           writeLines(combined_rmd, "combined.qmd")
           on.exit(unlink("combined.qmd"))
-          quarto::quarto_render(
-            input = "combined.qmd",
-            output_format = "html"
-          )
+          render_dir <- normalizePath(getwd(), winslash = "/")
+          withr::with_dir(render_dir, {
+            quarto::quarto_render(
+              input = "combined.qmd",
+              output_format = "html"
+            )
+          })
         } else {
           combined_rmd[grep("\\{r", combined_rmd)] <- "``` r"
           writeLines(combined_rmd, "combined.md")
