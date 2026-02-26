@@ -18,11 +18,10 @@ summary_network <- function(configured_data, style, label_size = 1, title = "", 
   }
 
   n_trt <- configured_data$freq$ntx
-  arm_adjust <- sqrt(nrow(configured_data$connected_data) / 10)
   if (n_trt < 5){
-    height_and_width <- 4 + arm_adjust
+    height_and_width <- 5
   } else {
-    height_and_width  <- 4 + sqrt(n_trt-5) + arm_adjust
+    height_and_width  <- 5 + sqrt(n_trt-5)
   }
 
   svg <- svglite::xmlSVG({
@@ -45,7 +44,8 @@ summary_network <- function(configured_data, style, label_size = 1, title = "", 
                         points.max = 20,
                         col.points = "#f69c54",
                         thickness = "number.of.studies",
-                        rescale.thickness = TRUE,
+                        rescale.thickness = I,  # avoid sqrt rescaling
+                        rescale.pointsize = I,
                         plastic = FALSE,
                         points = TRUE,
                         multiarm = FALSE,
