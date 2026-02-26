@@ -4,6 +4,8 @@ minimal_data_path <- system.file("extdata", "continuous_minimal.csv", package = 
 
 options(shinytest2.load_timeout=60000)
 
+mirai::daemons(1, sync = TRUE)
+
 Sys.setenv(QUARTO_LOG_LEVEL = "DEBUG")
 
 loaded_data_con <- setup_load(minimal_data_path, outcome = "continuous")

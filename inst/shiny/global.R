@@ -7,7 +7,12 @@ UPLOAD_SIZE_MB <- 5000
 options(shiny.maxRequestSize = UPLOAD_SIZE_MB*MB)
 SAVE_SESSION_SIZE_MB_WARNING <- 100
 
-mirai::daemons(1, sync = TRUE) # add sync = TRUE for debugging
+# set daemons when not in testing
+if (isTRUE(getOption("shiny.testmode"))) {
+  # add sync = TRUE for debugging
+  mirai::daemons(4)
+}
+
 onStop(function() mirai::daemons(0))
 
 source("ui_helpers.R")
