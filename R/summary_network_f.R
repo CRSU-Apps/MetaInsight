@@ -18,12 +18,11 @@ summary_network <- function(configured_data, style, label_size = 1, title = "", 
   }
 
   n_trt <- configured_data$freq$ntx
-  if (n_trt < 8){
-    height <- 5
-    width <- 5
+  arm_adjust <- sqrt(nrow(configured_data$connected_data) / 10)
+  if (n_trt < 5){
+    height_and_width <- 4 + arm_adjust
   } else {
-    width <- 5 + sqrt(n_trt-5)
-    height <- width
+    height_and_width  <- 4 + sqrt(n_trt-5) + arm_adjust
   }
 
   svg <- svglite::xmlSVG({
@@ -60,8 +59,8 @@ summary_network <- function(configured_data, style, label_size = 1, title = "", 
       title(title)
     }
   },
-  width = width,
-  height = height,
+  width = height_and_width,
+  height = height_and_width,
   web_fonts = list(
     arimo = "https://fonts.googleapis.com/css2?family=Arimo:wght@400;700&display=swap")
   ) |> crop_svg()
