@@ -9,6 +9,7 @@ test_that("Check baseline_ranking function works as expected", {
   expect_is(result$Cumulative, "data.frame")
   expect_is(result$Probabilities, "data.frame")
   expect_is(result$BUGSnetData, "BUGSnetData")
+  expect_equal(result$SUCRA$Treatment[which.max(result$SUCRA$SUCRA)], "the_Great")
 
   table_result <- ranking_table(result)
   expect_is(table_result, "data.frame")

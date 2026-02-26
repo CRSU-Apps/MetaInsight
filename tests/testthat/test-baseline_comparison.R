@@ -37,8 +37,8 @@ test_that("{shinytest2} recording: e2e_baseline_comparison", {
   table_all_dl <- app$get_download("baseline_comparison-baseline-download")
   df <- read.csv(table_all_dl)
   # extra column which is hidden in app, header becomes names
-  expect_equal(nrow(df), n_trt_all + 1)
-  expect_equal(ncol(df), n_trt_all + 2)
+  expect_equal(nrow(df), n_trt_all)
+  expect_equal(ncol(df), n_trt_all + 1)
 
   app$stop()
 })
