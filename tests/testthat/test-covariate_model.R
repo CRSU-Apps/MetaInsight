@@ -154,7 +154,7 @@ test_that("covariate_model produces errors for incorrect data types", {
   # when no covariate exists
   no_cov_load <- setup_load(file.path(test_data_dir, "Cont_long.csv"), "continuous")
   no_cov_con <- setup_configure(no_cov_load, "the Great", "random", "MD", "good", 123)
-  expect_error(covariate_model(no_cov_con, 99, "shared"), "The data does not contain a covariate column")
+  expect_error(covariate_model(no_cov_con, 99, "shared"), "No covariate data exists")
 
   # when covariate_value is out of range
   expect_error(covariate_model(configured_data_con, 1, "shared"), "covariate_value must not be lower than the minimum")
@@ -182,6 +182,9 @@ test_that("{shinytest2} recording: e2e_covariate_model", {
   expect_equal(min_value, "95")
   expect_equal(mean_value, "97")
   expect_equal(max_value, "99")
+
+  table <- app$wait_for_value(output = "covariate_model-table")
+  expect_match(table$html, "<table")
 
   common <- app$get_value(export = "common")
   result <- common$covariate_model
@@ -227,6 +230,7 @@ test_that("{shinytest2} recording: e2e_covariate_model", {
   expect_true(is.numeric(result$covariate_min))
   expect_true(is.numeric(result$covariate_max))
 
+  app$stop()
 })
 
 test_that("sliderinput updates for binary covariate", {
