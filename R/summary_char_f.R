@@ -18,7 +18,6 @@ summary_char <- function(configured_data, logger = NULL) {
   n_interventions <- length(unique(df$T))
   n_studies <- length(unique(df$Study))
   n_patients <- sum(df$N)
-  # I think this is right - a fully connected network
   n_pairwise <- (n_interventions * (n_interventions - 1) / 2)
   n_pairwise_direct <- length(connections$comparisons)
   connected <- ifelse(connections$n.subnets == 1, "Yes", "No")
@@ -45,14 +44,22 @@ summary_char <- function(configured_data, logger = NULL) {
 
   if (configured_data$outcome == "binary"){
     total_events <- sum(df$R)
-    non_zero_events <- df |>
+    zero_events <- df |>
       dplyr::group_by(.data$Study) |>
-      dplyr::summarise(min_events = min(.data$R)) |>
-      dplyr::filter(min_events > 0) |>
-      nrow()
+      dplyr::summarise(any_zero = any(.data$R == 0),
+                       all_zero = all(.data$R == 0))
 
-    descriptions <- append(descriptions, c("Total number of events", "Number of studies with no zero events"))
-    values <- append(values, c(total_events, non_zero_events))
+    any_zero <- sum(zero_events$any_zero)
+    all_zero <- sum(zero_events$all_zero)
+    no_zero <- n_studies - any_zero
+
+    event_descriptions <- c("Total number of events",
+                            "Number of studies with no zero events",
+                            "Number of studies with at least one zero event",
+                            "Number of studies with all zero events")
+
+    descriptions <- append(descriptions, event_descriptions)
+    values <- append(values, c(total_events, no_zero, any_zero, all_zero))
 
     trt_summary <- df |>
       dplyr::mutate(outcome = .data$R / .data$N) |>
@@ -60,13 +67,20 @@ summary_char <- function(configured_data, logger = NULL) {
       dplyr::summarise(n_studies = dplyr::n(),
                        n_events = sum(.data$R),
                        n_patients = sum(.data$N),
-                       min_outcome = round(min(.data$R / .data$N), 3),
-                       max_outcome = round(max(.data$R / .data$N), 3),
-                       average_outcome = round(.data$n_events / .data$n_patients, 3)
+                       min_outcome = signif(min(.data$R / .data$N), 3),
+                       average_outcome = signif(.data$n_events / .data$n_patients, 3),
+                       max_outcome = signif(max(.data$R / .data$N), 3)
       )
 
-    pair_summary <- data.frame()
+    colnames(trt_summary) <- c("Treatment",
+                               "Number of studies",
+                               "Number of events",
+                               "Number of patients",
+                               "Minimum outcome",
+                               "Average outcome",
+                               "Maximum outcome")
 
+    pair_summary <- data.frame()
     for (pair in connections$comparisons) {
       treatments <- unlist(strsplit(pair, ":"))
 
@@ -79,14 +93,19 @@ summary_char <- function(configured_data, logger = NULL) {
         dplyr::summarise(n_studies = dplyr::n_distinct(.data$Study),
                          n_patients = sum(.data$N),
                          n_outcomes = sum(.data$R),
-                         proportion = round(.data$n_outcomes / .data$n_patients, 3)
+                         proportion = signif(.data$n_outcomes / .data$n_patients, 3)
         )
       pair_summary <- rbind(pair_summary, row)
     }
+    colnames(pair_summary) <- c("Treatment comparison",
+                                "Number of studies",
+                                "Number of patients",
+                                "Number of outcomes",
+                                "Proportion")
   }
 
   if (configured_data$outcome == "continuous"){
-    average_outcome <- (sum(df$Mean * df$N) / sum(df$N)) |> round(2)
+    average_outcome <- (sum(df$Mean * df$N) / sum(df$N)) |> signif(3)
 
     descriptions <- append(descriptions, "Average outcome")
     values <- append(values, average_outcome)
@@ -95,13 +114,19 @@ summary_char <- function(configured_data, logger = NULL) {
       dplyr::group_by(.data$T) |>
       dplyr::summarise(n_studies = dplyr::n(),
                        n_patients = sum(.data$N),
-                       min_outcome = min(.data$Mean),
-                       max_outcome = max(.data$Mean),
-                       average_outcome = round(sum(.data$Mean * .data$N) / sum(.data$N), 2)
+                       min_outcome = signif(min(.data$Mean), 3),
+                       average_outcome = signif(sum(.data$Mean * .data$N) / sum(.data$N), 3),
+                       max_outcome = signif(max(.data$Mean), 3)
       )
 
-    pair_summary <- data.frame()
+    colnames(trt_summary) <- c("Treatment",
+                               "Number of studies",
+                               "Number of patients",
+                               "Minimum outcome",
+                               "Average outcome",
+                               "Maximum outcome")
 
+    pair_summary <- data.frame()
     for (pair in connections$comparisons) {
       treatments <- unlist(strsplit(pair, ":"))
 
@@ -116,9 +141,13 @@ summary_char <- function(configured_data, logger = NULL) {
 
       pair_summary <- rbind(pair_summary, row)
     }
+    colnames(pair_summary) <- c("Treatment comparison",
+                                "Number of studies",
+                                "Number of patients")
   }
 
   network_summary <- data.frame(descriptions, values)
+  colnames(network_structure) <- c("Characteristic", "Value")
 
   return(list(network = network_summary,
               treatments = trt_summary,
