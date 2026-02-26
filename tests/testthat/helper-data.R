@@ -1,13 +1,14 @@
 # The aim here is to process the data once at the start so it can be used downstream
 test_data_dir <- normalizePath(testthat::test_path("data"))
+minimal_data_path <- system.file("extdata", "continuous_minimal.csv", package = "metainsight")
 
 options(shinytest2.load_timeout=60000)
 
 Sys.setenv(QUARTO_LOG_LEVEL = "DEBUG")
 
-loaded_data_con <- setup_load(file.path(test_data_dir, "Cont_long_continuous_cov.csv"), outcome = "continuous")
+loaded_data_con <- setup_load(minimal_data_path, outcome = "continuous")
 configured_data_con <- setup_configure(loaded_data_con, "the Great", "random", "MD", "good", 123)
-excluded_data_con <- setup_exclude(configured_data_con, c("Leo"))
+excluded_data_con <- setup_exclude(configured_data_con, c("Minerva"))
 loaded_data_bin <- setup_load(file.path(test_data_dir, "Binary_long_continuous_cov.csv"), outcome = "binary")
 configured_data_bin <- setup_configure(loaded_data_bin, "the Great", "random", "OR", "good", 123)
 
@@ -31,7 +32,7 @@ if (Sys.getenv("GITHUB_ACTIONS") == "true"){
   save_file <- file.path(rds_path, "save_file.rds")
 }
 
-minimal_data_path <- system.file("extdata", "continuous_minimal.csv", package = "metainsight")
+
 
 app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 30000)
 app$upload_file("setup_load-file1" = minimal_data_path)
