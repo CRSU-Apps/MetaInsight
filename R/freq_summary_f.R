@@ -19,17 +19,6 @@ freq_summary <- function(configured_data, plot_title = "", logger = NULL) {
     return()
   }
 
-  # check for at least reference treatment and two pairs of other treatments
-  treatment_sum <- configured_data$connected_data |>
-    dplyr::group_by(.data$T) |>
-    dplyr::summarise(n = dplyr::n())
-
-  if (sum(treatment_sum$n >= 2) < 3){
-    logger |> writeLog(type = "error", paste("configured_data must contain at least two treatments",
-                                          "that each have two comparisons with the reference treatment"))
-    return()
-  }
-
   net1 <- configured_data$freq$net1
   treatment_df <- configured_data$treatments
 
@@ -196,7 +185,7 @@ singleest <- function(mtc, pw, xpos = 0, ucex) {
 #' @param predbd Predictive data
 PrICrI <- function(offs, lower_confidence_limit, point_estimate, upper_confidence_limit, ypos, ucol = "black", ulwd = 1, pcI = FALSE, predbd = c(NA, NA)) {
   # Show predictive interval
-  if (pcI & predbd[1] != 0 & predbd[2] != 0) {
+  if (pcI && !is.na(predbd[1]) && !is.na(predbd[2]) && predbd[1] != 0 && predbd[2] != 0) {
     # Predictive interval line
     lines(c(predbd[1] + offs, predbd[2] + offs), c(ypos, ypos), lty = "dotted", lwd = ulwd, col = ucol)
     # Predictive lower limit line
