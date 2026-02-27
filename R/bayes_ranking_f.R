@@ -8,7 +8,7 @@
 #' \item{Colour}{Dataframe of colours}
 #' \item{Cumulative}{Dataframe of cumulative ranking probabilities}
 #' \item{Probabilities}{Dataframe of ranking probabilities}
-#' \item{BUGSnetData}{ output from `BUGSnet::data.prep()`}
+#' \item{Network}{Dataframe of network characteristics}
 #' @export
 bayes_ranking <- function(model, configured_data, logger = NULL) {
 
@@ -79,7 +79,7 @@ covariate_ranking <- function(...){
 #'     - 'Rank 1' = Probability 'Treatment' is ranked first.
 #'     - ...
 #'     - 'Rank n_t' = Probability 'Treatment' is ranked last (n_t = number of treatments).
-#' - 'BUGSnetData' = Output from BUGSnet::data.prep with arguments from @param longdata.
+#' - 'Network' = Output network_structure.
 rankdata <- function(NMAdata, rankdirection, longdata, cov_value = NA, package = "gemtc") {
   # data frame of colours
   colour_dat <- data.frame(SUCRA = seq(0, 100, by = 0.1))

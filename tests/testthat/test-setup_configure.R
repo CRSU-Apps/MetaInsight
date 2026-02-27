@@ -19,7 +19,7 @@ test_that("setup_configure returns errors for faulty inputs", {
 test_that("setup_configure returns correctly structured objects", {
 
   expected_items <- c("wrangled_data", "treatments", "disconnected_indices", "connected_data",
-    "non_covariate_data", "covariate", "bugsnet", "freq", "outcome", "outcome_measure", "effects", "ranking_option", "seed")
+    "non_covariate_data", "covariate", "freq", "outcome", "outcome_measure", "effects", "ranking_option", "seed")
 
   result <- setup_configure(mock_data, "the Great", "fixed", "MD", "good", 999)
   expect_type(result, "list")
@@ -35,7 +35,6 @@ test_that("setup_configure returns correctly structured objects", {
   expect_type(result$covariate$column, "character")
   expect_type(result$covariate$name, "character")
   expect_type(result$covariate$type, "character")
-  expect_s3_class(result$bugsnet, "data.frame")
   expect_type(result$freq, "list")
   expect_type(result$outcome, "character")
   expect_type(result$outcome_measure, "character")
@@ -64,7 +63,6 @@ test_that("setup_configure loads data into common correctly for continuous long 
   expect_type(result$covariate$column, "character")
   expect_type(result$covariate$name, "character")
   expect_type(result$covariate$type, "character")
-  expect_s3_class(result$bugsnet, "data.frame")
   expect_type(result$freq, "list")
   expect_type(result$outcome, "character")
   expect_type(result$outcome_measure, "character")
@@ -100,7 +98,6 @@ test_that("setup_configure loads data into common correctly for wide binary data
   expect_type(result$covariate$column, "character")
   expect_type(result$covariate$name, "character")
   expect_type(result$covariate$type, "character")
-  expect_s3_class(result$bugsnet, "data.frame")
   expect_type(result$freq, "list")
   expect_type(result$outcome, "character")
   expect_type(result$outcome_measure, "character")
@@ -132,7 +129,6 @@ test_that("setup_configure logs errors when disconnected data is uploaded", {
   expect_s3_class(result$connected_data, "data.frame")
   expect_s3_class(result$non_covariate_data, "data.frame")
   expect_type(result$covariate, "list")
-  expect_s3_class(result$bugsnet, "data.frame")
   expect_type(result$freq, "list")
   expect_equal(result$reference_treatment, "A")
   expect_equal(result$outcome_measure, "MD")

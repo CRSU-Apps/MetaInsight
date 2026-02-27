@@ -5,7 +5,6 @@
 \title{Radial SUCRA Plot}
 \usage{
 RadialSUCRA(
-  configured_data,
   ranking_data,
   original = TRUE,
   colourblind = FALSE,

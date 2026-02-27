@@ -20,7 +20,6 @@
 #'      \item{type}{character. Whether the covariate is `binary` or `continuous`}
 #'    }
 #'  }
-#'  \item{bugsnet}{dataframe. Processed data for bugsnet analyses created by `bugsnetdata`}
 #'  \item{freq}{list. Processed data for frequentist analyses created by `frequentist()`}
 #'  \item{outcome}{character. Whether the data is `binary` or `continuous`}
 #'  \item{outcome_measure}{character. Outcome measure of the dataset.}
@@ -110,8 +109,6 @@ setup_configure <- function(loaded_data, reference_treatment, effects, outcome_m
     covariate <- list()
   }
 
-  bugsnet <- bugsnetdata(non_covariate_data, loaded_data$outcome, treatments)
-
   # random is the default model type, this structure is updated in setup_exclude if the model type changes
   freq <- frequentist(non_covariate_data,
                       loaded_data$outcome,
@@ -127,7 +124,6 @@ setup_configure <- function(loaded_data, reference_treatment, effects, outcome_m
                  connected_data = connected_data,
                  non_covariate_data = non_covariate_data,
                  covariate = covariate,
-                 bugsnet = bugsnet,
                  freq = freq,
                  outcome = loaded_data$outcome,
                  outcome_measure = outcome_measure,
@@ -286,17 +282,3 @@ dataform.df <- function(newData1, treat_list, CONBI) {
   return(long_sort)
 }
 
-#' Reformats the treatment labels then calls dataform.df().
-#'
-#' @param data Input dataset.
-#' @param metaoutcome "continuous" or "binary".
-#' @param treatment_list Data frame containing the treatment ID ('Number') and the treatment name ('Label').
-#' @return Output from dataform.df().
-bugsnetdata <- function(data, metaoutcome, treatment_list){
-  newData1 <- as.data.frame(data)
-  treatment_list$Label <- stringr::str_wrap(gsub("_", " ", treatment_list$Label), width = 10)  # better formatting (although does assume underscores have only been added due to the treatment label entry limitations) CRN
-  longsort2 <- dataform.df(newData1 = newData1,
-                           treat_list = treatment_list,
-                           CONBI = metaoutcome)
-  return(longsort2)
-}

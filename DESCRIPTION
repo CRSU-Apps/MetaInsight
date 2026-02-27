@@ -2,7 +2,7 @@ Package: metainsight
 Version: 7.0.0
 Title: A 'shiny' Application for Network Metaanalysis
 Description: Conduct network metaanalyses through a graphical user interface generated with 
-    'shinyscholar', using 'bnma', 'BUGSnet', 'gemtc', 'metafor' and 'netmeta'. Many options 
+    'shinyscholar', using 'bnma', 'gemtc', 'metafor' and 'netmeta'. Many options 
     for downloading publication-ready outputs are provided and analyses can be reproduced 
     outside of the application by downloading a 'quarto' file.
 Authors@R: 
@@ -22,7 +22,6 @@ Depends:
     bslib,
     shiny (>= 1.8.1)
 Imports:
-    BUGSnet,
     bayesplot,
     bnma,
     coda,
@@ -74,8 +73,6 @@ Suggests:
     pdftools,
     shinytest2,
     testthat
-Remotes:
-    audrey-b/BUGSnet
 License: GPL-3
 URL: 
 Encoding: UTF-8

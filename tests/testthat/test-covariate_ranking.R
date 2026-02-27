@@ -3,12 +3,12 @@ test_that("Check covariate_ranking function works as expected", {
   result <- covariate_ranking(fitted_covariate_model, configured_data_con)
 
   expect_is(result, "list")
-  expect_true(all(c("SUCRA", "Colour", "Cumulative", "Probabilities", "BUGSnetData") %in% names(result)))
+  expect_true(all(c("SUCRA", "Colour", "Cumulative", "Probabilities", "Network") %in% names(result)))
   expect_is(result$SUCRA, "data.frame")
   expect_is(result$Colour, "data.frame")
   expect_is(result$Cumulative, "data.frame")
   expect_is(result$Probabilities, "data.frame")
-  expect_is(result$BUGSnetData, "BUGSnetData")
+  expect_is(result$Network, "data.frame")
 
   table_result <- ranking_table(result)
   expect_is(table_result, "data.frame")
@@ -49,7 +49,7 @@ test_that("{shinytest2} recording: e2e_covariate_ranking", {
 
   common <- app$get_value(export = "common")
   expect_is(common$covariate_ranking, "list")
-  expect_true(all(c("SUCRA", "Colour", "Cumulative", "Probabilities", "BUGSnetData") %in% names(common$covariate_ranking)))
+  expect_true(all(c("SUCRA", "Colour", "Cumulative", "Probabilities", "Network") %in% names(common$covariate_ranking)))
 
   forest_all <- app$get_value(output = "covariate_ranking-all-forest")
   expect_match(forest_all$html, "<svg")

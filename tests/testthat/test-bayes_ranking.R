@@ -2,12 +2,12 @@ test_that("Check bayes_ranking function works as expected", {
   result <- bayes_ranking(fitted_bayes_model, configured_data_con)
 
   expect_is(result, "list")
-  expect_true(all(c("SUCRA", "Colour", "Cumulative", "Probabilities", "BUGSnetData") %in% names(result)))
+  expect_true(all(c("SUCRA", "Colour", "Cumulative", "Probabilities", "Network") %in% names(result)))
   expect_is(result$SUCRA, "data.frame")
   expect_is(result$Colour, "data.frame")
   expect_is(result$Cumulative, "data.frame")
   expect_is(result$Probabilities, "data.frame")
-  expect_is(result$BUGSnetData, "BUGSnetData")
+  expect_is(result$Network, "data.frame")
   expect_equal(result$SUCRA$Treatment[1], "the_Butcher")
 
   table_result <- ranking_table(result)
@@ -49,8 +49,8 @@ test_that("{shinytest2} recording: e2e_bayes_ranking", {
   common <- app$get_value(export = "common")
   expect_is(common$bayes_rank_all, "list")
   expect_is(common$bayes_rank_sub, "list")
-  expect_true(all(c("SUCRA", "Colour", "Cumulative", "Probabilities", "BUGSnetData") %in% names(common$bayes_rank_all)))
-  expect_true(all(c("SUCRA", "Colour", "Cumulative", "Probabilities", "BUGSnetData") %in% names(common$bayes_rank_sub)))
+  expect_true(all(c("SUCRA", "Colour", "Cumulative", "Probabilities", "Network") %in% names(common$bayes_rank_all)))
+  expect_true(all(c("SUCRA", "Colour", "Cumulative", "Probabilities", "Network") %in% names(common$bayes_rank_sub)))
 
   forest_all <- app$get_value(output = "bayes_ranking-all-forest")
   forest_sub <- app$get_value(output = "bayes_ranking-sub-forest")

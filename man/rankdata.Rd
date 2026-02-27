@@ -48,7 +48,7 @@ List:
 \item ...
 \item 'Rank n_t' = Probability 'Treatment' is ranked last (n_t = number of treatments).
 }
-\item 'BUGSnetData' = Output from BUGSnet::data.prep with arguments from @param longdata.
+\item 'Network' = Output network_structure.
 }
 }
 \description{

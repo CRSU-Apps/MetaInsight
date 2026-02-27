@@ -29,7 +29,7 @@ List of output created by \code{rankdata()}
 \item{Colour}{Dataframe of colours}
 \item{Cumulative}{Dataframe of cumulative ranking probabilities}
 \item{Probabilities}{Dataframe of ranking probabilities}
-\item{BUGSnetData}{ output from \code{BUGSnet::data.prep()}}
+\item{Network}{Dataframe of network characteristics}
 }
 \description{
 Generate ranking data required to produce SUCRA plots from Bayesian models
