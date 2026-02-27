@@ -163,12 +163,15 @@ rankdata <- function(NMAdata, rankdirection, longdata, cov_value = NA, package =
   prob <- data.table::setDT(prob, keep.rownames = "Treatment") # treatment as a column rather than rownames (useful for exporting)
   prob$Treatment <- prob$Treatment
 
+  network <- network_structure(configured_data$freq, order = SUCRA$Treatment)
+
   return(
     list(
       SUCRA = SUCRA,
       Colour = colour_dat,
       Cumulative = Cumulative_Data,
-      Probabilities = prob
+      Probabilities = prob,
+      Network = network
     )
   )
 }
@@ -232,7 +235,7 @@ LitmusRankOGram <- function(ranking_data, colourblind=FALSE, regression_text="")
 #' @import ggplot2
 #' @import patchwork
 #' @export
-RadialSUCRA <- function(configured_data, ranking_data, original = TRUE, colourblind = FALSE, regression_text = "") {      # SUCRAData needs Treatment & Rank; ColourData needs SUCRA & colour; colourblind friendly option; regression annotation text
+RadialSUCRA <- function(ranking_data, original = TRUE, colourblind = FALSE, regression_text = "") {      # SUCRAData needs Treatment & Rank; ColourData needs SUCRA & colour; colourblind friendly option; regression annotation text
   n <- nrow(ranking_data$SUCRA) # number of treatments
 
   # Add values to angle and adjust radial treatment labels
@@ -280,7 +283,7 @@ RadialSUCRA <- function(configured_data, ranking_data, original = TRUE, colourbl
 
   # Create network data #
   SUCRA <- SUCRAData |> dplyr::arrange(-SUCRA)
-  edges <- network.structure(configured_data$freq, order = SUCRA$Treatment)
+  edges <- ranking_data$Network
   dat.edges <- data.frame(pairwiseID = rep(NA, nrow(edges) * 2),
                           treatment = "",
                           n.stud = NA,
@@ -391,7 +394,7 @@ ranking_table <- function(ranking_data) {
 #' @param freq list. Output from `frequentist()`
 #' @param order character. Vector of treatments names in rank order.
 #' @return data.frame containing the number of studies that compare each treatment against the reference treatment.
-network.structure <- function(freq, order = NA) {
+network_structure <- function(freq, order = NA) {
   ng <- netmeta::netgraph(freq$net1, figure = FALSE)  # suppress plot
   edges <- ng$edges[, c("treat1", "treat2", "n.stud")]
   names(edges) <- c("from", "to", "edge.weight")
