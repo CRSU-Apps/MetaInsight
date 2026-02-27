@@ -4,15 +4,21 @@ test_that("summary_char produces errors for incorrect inputs", {
 
 test_that("summary_char functions correctly", {
   result <- summary_char(configured_data_con)
-  expect_s3_class(result, "data.frame")
-  expect_equal(ncol(result), 2)
-  expect_equal(nrow(result), 9)
-  expect_true(all(c("Value", "Characteristic") %in% colnames(result)))
+
+  expect_setequal(c("network", "treatments", "pairs"), colnames(result$network))
+
+  expect_s3_class(result$network, "data.frame")
+  expect_equal(ncol(result$network), 2)
+  expect_equal(nrow(result$network), 9)
+  expect_setequal(c("Value", "Characteristic"), colnames(result$network))
 
   result_sub <- summary_char(excluded_data_con)
-  expect_equal(ncol(result_sub), 2)
-  expect_equal(nrow(result_sub), 9)
-  expect(!identical(result_sub$Value[3], result$Value[3]), "The subsetted summary is not different to the summary of all studies")
+  expect_equal(ncol(result_sub$network), 2)
+  expect_equal(nrow(result_sub$network), 9)
+  expect(!identical(result_sub$network$Value[3], result$network$Value[3]), "The subsetted summary is not different to the summary of all studies")
+
+  result <- summary_char(configured_data_bin)
+  expect_setequal(c("network", "treatments", "pairs"), colnames(result$network))
 })
 
 test_that("summary_char produces a merged table that can be downloaded", {
@@ -21,12 +27,12 @@ test_that("summary_char produces a merged table that can be downloaded", {
   app$set_inputs(tabs = "summary")
   app$set_inputs(summarySel = "summary_char")
   app$click("summary_char-run")
-  app$wait_for_value(output = "summary_char-table")
-  table <- app$get_value(output = "summary_char-table")
-  expect_match(table, "<table")
 
-  result_table <- app$get_download("summary_char-download")
-  df <- read.csv(result_table)
+  app$wait_for_value(output = "summary_char-network")
+  network <- app$get_value(output = "summary_char-network")
+  expect_match(network, "<table")
+  network_dl <- app$get_download("summary_char-download_network")
+  df <- read.csv(network_dl)
   expect_equal(ncol(df), 3) # names are now a column
   expect_equal(nrow(df), 9)
   expect_true(all(c("All.studies", "With.selected.studies.excluded") %in% colnames(df)[2:3]))
