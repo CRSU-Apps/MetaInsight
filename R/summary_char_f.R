@@ -147,7 +147,7 @@ summary_char <- function(configured_data, logger = NULL) {
   }
 
   network_summary <- data.frame(descriptions, values)
-  colnames(network_structure) <- c("Characteristic", "Value")
+  colnames(network_summary) <- c("Characteristic", "Value")
 
   return(list(network = network_summary,
               treatments = trt_summary,

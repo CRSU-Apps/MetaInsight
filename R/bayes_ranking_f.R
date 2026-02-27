@@ -26,61 +26,11 @@ bayes_ranking <- function(model, configured_data, logger = NULL) {
     cov_value <- NA
   }
 
-  longsort <- dataform.df(configured_data$connected_data, configured_data$treatments, model$outcome)
+  longdata  <- dataform.df(configured_data$connected_data, configured_data$treatments, model$outcome)
+  NMAdata <-  model$mtcResults
+  rankdirection <-  configured_data$ranking_option
+  package <-  ifelse(inherits(model, "baseline_model"), "bnma", "gemtc")
 
-  rankdata(
-    NMAdata = model$mtcResults,
-    rankdirection = configured_data$ranking_option,
-    longdata = longsort,
-    cov_value = cov_value,
-    package = ifelse(inherits(model, "baseline_model"), "bnma", "gemtc")
-  )
-}
-
-#' @rdname bayes_ranking
-#' @param ... Parameters passed to `bayes_ranking()`
-#' @export
-baseline_ranking <- function(...){
-  bayes_ranking(...)
-}
-
-#' @rdname bayes_ranking
-#' @param ... Parameters passed to `bayes_ranking()`
-#' @export
-covariate_ranking <- function(...){
-  bayes_ranking(...)
-}
-
-#' Get SUCRA data.
-#'
-#' @param NMAdata Output from 'baye' function or from bnma::network.run.
-#' @param rankdirection "good" or "bad" (referring to smaller outcome values).
-#' @param longdata Output from 'dataform.df' function. This should be the same dataset that was passed as the 'data' argument to baye(), which resulted in @param NMAdata.
-#'        (TM: Suggested improvement: baye() should output its 'data' argument, then @param longdata becomes superfluous, and there is no possibility of a mismatch between @param NMAdata and @param longdata.)
-#' @param cov_value covariate value if a meta-regression
-#' @param package "gemtc" or "bnma", defaults to "gemtc".
-#' @return List:
-#' - 'SUCRA' = Data frame of SUCRA data.
-#'     - 'Treatment'
-#'     - 'SUCRA' = Sucra percentages.
-#'     - 'N' = Total number of patients in 'Treatment' arms (summed over all studies).
-#'     - 'SizeO' = Size of points (relative to 'N') in original SUCRA plot.
-#'     - 'SizeA' = Size of points (relative to 'N') in alternative SUCRA plot.
-#' - 'Colour' = Data frame of colours.
-#'     - 'SUCRA' = Possible SUCRA values.
-#'     - 'colour' = Colour values corresponding to 'SUCRA'.
-#' - 'Cumulative' = Data frame of cumulative ranking probabilities, in long format.
-#'     - 'Treatment'
-#'     - 'Rank'
-#'     - 'Cumulative_Probability'
-#'     - 'SUCRA'
-#' - 'Probabilities' = Data frame of ranking probabilities.
-#'     - 'Treatment'
-#'     - 'Rank 1' = Probability 'Treatment' is ranked first.
-#'     - ...
-#'     - 'Rank n_t' = Probability 'Treatment' is ranked last (n_t = number of treatments).
-#' - 'Network' = Output network_structure.
-rankdata <- function(NMAdata, rankdirection, longdata, cov_value = NA, package = "gemtc") {
   # data frame of colours
   colour_dat <- data.frame(SUCRA = seq(0, 100, by = 0.1))
   colour_dat <- dplyr::mutate(colour_dat, colour = seq(0, 100, length.out = 1001))
@@ -174,6 +124,21 @@ rankdata <- function(NMAdata, rankdirection, longdata, cov_value = NA, package =
       Network = network
     )
   )
+
+}
+
+#' @rdname bayes_ranking
+#' @param ... Parameters passed to `bayes_ranking()`
+#' @export
+baseline_ranking <- function(...){
+  bayes_ranking(...)
+}
+
+#' @rdname bayes_ranking
+#' @param ... Parameters passed to `bayes_ranking()`
+#' @export
+covariate_ranking <- function(...){
+  bayes_ranking(...)
 }
 
 #' Litmus Rank-O-Gram
