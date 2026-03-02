@@ -2,22 +2,27 @@
 % Please edit documentation in R/setup_exclude_f.R
 \name{setup_exclude_plot}
 \alias{setup_exclude_plot}
-\title{Produce an interactive version of the summary_study plot for use in the
-interface for excluding studies}
+\title{Produce an version of the \code{summary_study()} plot for use in the
+interface for excluding studies. Inside the app this is interactive,
+but it can also be rendered for non-interactive use.}
 \usage{
-setup_exclude_plot(configured_data, exclusions = NULL)
+setup_exclude_plot(configured_data, exclusions = NULL, hover = FALSE)
 }
 \arguments{
 \item{configured_data}{list. Input dataset created by \code{setup_configure()} or \code{setup_exclude()}}
 
-\item{exclusions}{character. Vector of excluded studies. Defaults to NULL,
+\item{exclusions}{character. Vector of excluded studies. Defaults to \code{NULL},
 but can be used to reset on loading}
+
+\item{hover}{logical. Whether change the cursor on clickable lines.
+Defaults to \code{FALSE}}
 }
 \value{
 html. Contains the svg string to generate the plot. This can be saved
 using \code{write_plot()}.
 }
 \description{
-Produce an interactive version of the summary_study plot for use in the
-interface for excluding studies
+Produce an version of the \code{summary_study()} plot for use in the
+interface for excluding studies. Inside the app this is interactive,
+but it can also be rendered for non-interactive use.
 }

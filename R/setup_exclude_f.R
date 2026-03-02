@@ -85,8 +85,8 @@ setup_exclude <- function(configured_data, exclusions, async = FALSE){
 #' but it can also be rendered for non-interactive use.
 #' @param exclusions character. Vector of excluded studies. Defaults to `NULL`,
 #' but can be used to reset on loading
-#' @param hover logical. Whether to shade the line on mouse hover and change
-#' the cursor on clickable lines. Defaults to `FALSE`
+#' @param hover logical. Whether change the cursor on clickable lines.
+#' Defaults to `FALSE`
 #' @inheritParams common_params
 #' @inherit return-svg return
 #' @export
@@ -103,7 +103,7 @@ setup_exclude_plot <- function(configured_data, exclusions = NULL, hover = FALSE
   viewbox_width <- values[3]
 
   # add to svg id to allow targeting later
-  xml2::xml_set_attr(svg_node, "id", "setup_exclude_interface")
+  xml2::xml_set_attr(svg_node, "id", "setup_exclude-interface")
 
   # Find all rect elements with stroke-width: 0.75
   rects <- xml2::xml_find_all(
@@ -137,7 +137,8 @@ setup_exclude_plot <- function(configured_data, exclusions = NULL, hover = FALSE
     if (elem_name == "text") {
       y <- as.numeric(xml2::xml_attr(elem, "y"))
       # Only adjust for bullet point characters which use large font sizes
-      if (grepl("•", xml2::xml_text(elem))) {
+      # unicode required for R function source
+      if (grepl("\u2022", xml2::xml_text(elem))) {
         style <- xml2::xml_attr(elem, "style")
         y_coords <- y - 12
       } else {
@@ -229,7 +230,6 @@ setup_exclude_plot <- function(configured_data, exclusions = NULL, hover = FALSE
           xml2::xml_add_child(new_group, elem_copy)
           assigned_elements <- c(assigned_elements, j)
 
-
         }
       }
     }
@@ -264,20 +264,20 @@ setup_exclude_plot <- function(configured_data, exclusions = NULL, hover = FALSE
     xml2::xml_attr(new_group, "id") <- paste0("setup_exclude-line", i)
   }
 
-  # Remove original rects
+  # remove original rects
   xml2::xml_remove(rects)
 
-  # Remove assigned elements
+  # remove assigned elements
   if (length(assigned_elements) > 0) {
     xml2::xml_remove(all_elements[assigned_elements])
   }
 
+  # remove empty groups
   empty_groups <- xml2::xml_find_all(
     svg_doc,
     ".//d1:g[not(*)]",
     ns = c(d1 = "http://www.w3.org/2000/svg")
   )
-
   xml2::xml_remove(empty_groups)
 
   paste(svg_doc, collapse = "\n") |> HTML()

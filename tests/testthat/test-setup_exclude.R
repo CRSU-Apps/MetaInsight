@@ -1,3 +1,18 @@
+
+# function to click on the exclusions forest plot
+click_setup_exclude <- function(app, study){
+  app$run_js(sprintf('
+  var elem = document.querySelector(\'[data-study-name="%s"]\');
+  if (elem) {
+    elem.dispatchEvent(new MouseEvent("click", {
+      bubbles: true,
+      cancelable: true,
+      view: window
+    }));
+  }
+  ', study))
+}
+
 test_that("setup_exclude produces errors for incorrect data types", {
   expect_error(setup_exclude("not_configured", c("Study01")), "configured_data must be of class configured_data")
   expect_error(setup_exclude(configured_data_con, 123), "exclusions must be of class character")
@@ -37,10 +52,10 @@ test_that("setup_exclude_plot functions correctly with a single line per study",
   svg_doc <- xml2::as_xml_document(result)
   selected_lines <- xml2::xml_find_all(
     svg_doc,
-    ".//d1:rect[contains(@style, 'opacity: 0.5')]",
+    ".//d1:g[contains(@style, 'opacity: 0.3')]",
     ns = c(d1 = "http://www.w3.org/2000/svg")
   )
-  study_names <- xml2::xml_attr(xml2::xml_parent(selected_lines), "data-study-name")
+  study_names <- xml2::xml_attr(selected_lines, "data-study-name")
   expect_setequal(exclusions, study_names)
 })
 
@@ -54,10 +69,10 @@ test_that("setup_exclude_plot functions correctly with multiple lines per study"
   svg_doc <- xml2::as_xml_document(result)
   selected_lines <- xml2::xml_find_all(
     svg_doc,
-    ".//d1:rect[contains(@style, 'opacity: 0.5')]",
+    ".//d1:g[contains(@style, 'opacity: 0.3')]",
     ns = c(d1 = "http://www.w3.org/2000/svg")
   )
-  study_names <- xml2::xml_attr(xml2::xml_parent(selected_lines), "data-study-name")
+  study_names <- xml2::xml_attr(selected_lines, "data-study-name")
   expect_length(study_names, 3)
   expect_setequal(exclusions, unique(study_names))
 })
@@ -95,34 +110,15 @@ test_that("setup_exclude loads data into common correctly", {
   app$click(selector = "#setup_exclude-collapse .accordion-button")
   app$wait_for_idle()
 
-  # click on study lines (overly complicated, but app$click doesn't work)
-  app$run_js('
-  var elem = document.querySelector(\'[data-study-name="Study01"]\');
-  if (elem) {
-    elem.dispatchEvent(new MouseEvent("click", {
-      bubbles: true,
-      cancelable: true,
-      view: window
-    }));
-  }
-  ')
-  app$run_js('
-  var elem = document.querySelector(\'[data-study-name="Study25"]\');
-  if (elem) {
-    elem.dispatchEvent(new MouseEvent("click", {
-      bubbles: true,
-      cancelable: true,
-      view: window
-    }));
-  }
-  ')
+  # click on study lines
+  click_setup_exclude(app, "Study01")
+  click_setup_exclude(app, "Study25")
 
   app$wait_for_idle()
   exclusions <- app$get_value(input = "setup_exclude-exclusions")
   expect_setequal(exclusions, c("Study01", "Study25"))
   app$wait_for_value(input = "setup_exclude-complete", ignore = list(NULL, "", "initial"))
-  # this should not be necessary but for some reason is!
-  Sys.sleep(10)
+
   common <- app$get_value(export = "common")
 
   expect_s3_class(common$subsetted_data$bugsnet, "data.frame")
@@ -159,47 +155,11 @@ test_that("setup_exclude launches a note when reference_treatment_sub changes", 
   app$click(selector = "#setup_exclude-collapse .accordion-button")
   app$wait_for_idle()
 
-  # click on study lines (overly complicated, but app$click doesn't work)
-  app$run_js('
-  var elem = document.querySelector(\'[data-study-name="Study01"]\');
-  if (elem) {
-    elem.dispatchEvent(new MouseEvent("click", {
-      bubbles: true,
-      cancelable: true,
-      view: window
-    }));
-  }
-  ')
-  app$run_js('
-  var elem = document.querySelector(\'[data-study-name="Study02"]\');
-  if (elem) {
-    elem.dispatchEvent(new MouseEvent("click", {
-      bubbles: true,
-      cancelable: true,
-      view: window
-    }));
-  }
-  ')
-  app$run_js('
-  var elem = document.querySelector(\'[data-study-name="Study03"]\');
-  if (elem) {
-    elem.dispatchEvent(new MouseEvent("click", {
-      bubbles: true,
-      cancelable: true,
-      view: window
-    }));
-  }
-  ')
-  app$run_js('
-  var elem = document.querySelector(\'[data-study-name="Study04"]\');
-  if (elem) {
-    elem.dispatchEvent(new MouseEvent("click", {
-      bubbles: true,
-      cancelable: true,
-      view: window
-    }));
-  }
-  ')
+  # click on study lines
+  click_setup_exclude(app, "Study01")
+  click_setup_exclude(app, "Study02")
+  click_setup_exclude(app, "Study03")
+  click_setup_exclude(app, "Study04")
 
   app$wait_for_idle()
   exclusions <- app$get_value(input = "setup_exclude-exclusions")
