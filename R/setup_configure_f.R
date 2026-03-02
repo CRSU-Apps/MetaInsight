@@ -81,6 +81,10 @@ setup_configure <- function(loaded_data, reference_treatment, effects, outcome_m
 
   connected_data <- data[connected_indices,]
 
+  if (FindDataShape(connected_data) == "wide"){
+    connected_data <- WideToLong(connected_data, loaded_data$outcome)
+  }
+
   studies <- unique(data$Study)
   subnetwork_exclusions <- studies[!studies %in% connected_data$Study]
 

@@ -116,12 +116,7 @@ covariate_model <- function(configured_data,
 #' @param cov_friendly Friendly name of chosen covariate
 #' @return list containing two dataframes: armData containing the core data; studyData containing covariate data
 PrepDataGemtc <- function(data, treatment_df, outcome, covariate, cov_friendly){
-  # ensure data is in long format
-  if (FindDataShape(data) == "wide") {
-    long_data <- WideToLong(data, outcome)
-  } else {
-    long_data <- data
-  }
+  long_data <- data
   # specify arm level data
   if (outcome == "continuous") {
     armData <- data.frame(study = long_data$Study,

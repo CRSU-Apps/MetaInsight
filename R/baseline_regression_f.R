@@ -16,10 +16,6 @@ baseline_regression <- function(model, configured_data, async = FALSE){
     }
   }
 
-  if (FindDataShape(configured_data$connected_data) == "wide") {
-    connected_data <- WideToLong(configured_data$connected_data, outcome = configured_data$outcome)
-  }
-
   reference_outcome <- GetReferenceOutcome(configured_data$connected_data,
                                            configured_data$treatments,
                                            configured_data$outcome,

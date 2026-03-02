@@ -67,13 +67,8 @@ baseline_model <- function(configured_data, regressor_type, async = FALSE){
 #'  - 'ArmLevel' = Data frame containing 'Study', 'Treat', 'N', 'Outcomes', and (for outcome_type="continuous") 'SD'
 #'  - 'Treat.order' = Vector of (unique) treatments, with the reference treatment first
 FormatForBnma <- function(connected_data, treatment_df, outcome, reference_treatment) {
-  if (FindDataShape(connected_data) == "wide") {
-    br_data <- as.data.frame(WideToLong(connected_data, outcome = outcome))
-  } else if (FindDataShape(connected_data) == "long") {
-    br_data <- connected_data
-  } else {
-    stop("data_format has to be 'wide' or 'long'")
-  }
+
+  br_data <- connected_data
 
   #Use wrangled treatment names
   br_data$Treat <- treatment_df$Label[match(br_data$T, treatment_df$Number)]
