@@ -135,7 +135,7 @@ freq_summary <- function(configured_data, plot_title = "", logger = NULL) {
       mtc,
       ma,
       configured_data$outcome_measure,
-      bpredd = TRUE,
+      bpredd = configured_data$effects == "random",
       bkey = TRUE,
       p.only = ntx,
       ucex = ucex
