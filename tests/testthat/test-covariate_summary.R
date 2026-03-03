@@ -15,7 +15,6 @@ test_that("{shinytest2} recording: e2e_covariate_summary", {
   app$click("setup_reload-goLoad_session")
 
   app$set_inputs(tabs = "covariate")
-  app$set_inputs(covariateSel = "covariate_summary")
   app$click("covariate_summary-run")
 
   app$wait_for_value(output = "covariate_summary-plot")

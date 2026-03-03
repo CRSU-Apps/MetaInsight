@@ -54,6 +54,7 @@ freq_forest <- function(configured_data, xmin = NULL, xmax = NULL, title = "", l
 #' @return List containing:
 #'  \item{xmin}{numeric. Minimum confidence interval}
 #'  \item{xmax}{numeric. Maximum confidence interval}
+#'
 #' @export
 freq_forest_limits <- function(freq, outcome){
 

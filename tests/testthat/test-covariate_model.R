@@ -2,7 +2,7 @@ test_that("Check covariate_model function works as expected", {
 
   # time to compare later
   start_time <- proc.time()
-  result_1 <- covariate_model(configured_data_con, 50, "shared")
+  result_1 <- covariate_model(configured_data_con, 98, "shared")
   end_time <- proc.time()
   elapsed_1 <- end_time - start_time
 
@@ -30,7 +30,6 @@ test_that("Check covariate_model function works as expected", {
   expect_is(result_1$mtcResults, "mtc.result")
   expect_is(result_1$mtcRelEffects, "mtc.result")
   expect_is(result_1$rel_eff_tbl, "mtc.relative.effect.table")
-  expect_is(result_1$covariate_value, "numeric")
   expect_is(result_1$reference_treatment, "character")
   expect_is(result_1$comparator_names, "character")
   expect_is(result_1$a, "character")
@@ -43,17 +42,19 @@ test_that("Check covariate_model function works as expected", {
   expect_is(result_1$outcome_measure, "character")
   expect_is(result_1$mtcNetwork, "mtc.network")
   expect_is(result_1$effects, "character")
-  expect_is(result_1$covariate_min, "numeric")
-  expect_is(result_1$covariate_max, "numeric")
+  # catch integers and floats
+  expect_true(is.numeric(result_1$covariate_value))
+  expect_true(is.numeric(result_1$covariate_min))
+  expect_true(is.numeric(result_1$covariate_max))
 
   expect_equal(result_1$a, "random effect")
-  expect_equal(result_1$cov_value_sentence, "Value for covariate age set at 50")
+  expect_equal(result_1$cov_value_sentence, "Value for covariate age set at 98")
   expect_equal(result_1$outcome, "continuous")
   expect_equal(result_1$outcome_measure, "MD")
   expect_equal(result_1$effects, "random")
-  expect_equal(result_1$covariate_value, 50)
-  expect_equal(result_1$reference_treatment, "Placebo")
-  expect_equal(result_1$comparator_names, c("Gabapentinoids", "Glucocorticoids", "Ketamine"))
+  expect_equal(result_1$covariate_value, 98)
+  expect_equal(result_1$reference_treatment, "the_Great")
+  expect_setequal(result_1$comparator_names, configured_data_con$treatments$Label[2:n_trt_all])
 
   expected_mcmc_table <- data.frame(characteristic = c("Chains",
                                                        "Burn-in iterations",
@@ -65,18 +66,18 @@ test_that("Check covariate_model function works as expected", {
 
   # adjust the output for a different covariate value. This should take less time than for result
   start_time <- proc.time()
-  result_2 <- covariate_model(configured_data_con, 55, "shared", result_1)
+  result_2 <- covariate_model(configured_data_con, 99, "shared", result_1)
   end_time <- proc.time()
   elapsed_2 <- end_time - start_time
   expect_false(identical(remove_igraph(result_1), remove_igraph(result_2)))
   expect_gt(elapsed_1[3], elapsed_2[3])
 
   # adjust the output for a different regressor type
-  result_3 <- covariate_model(configured_data_con, 55, "unrelated", result_1)
+  result_3 <- covariate_model(configured_data_con, 99, "unrelated", result_1)
   expect_false(identical(remove_igraph(result_2), remove_igraph(result_3)))
 
   # refit the first to ensure reproducibility
-  result_4 <- covariate_model(configured_data_con, 50, "shared")
+  result_4 <- covariate_model(configured_data_con, 98, "shared")
   expect_true(identical(remove_igraph(result_1), remove_igraph(result_4)))
 
 })
@@ -141,19 +142,19 @@ test_that("FindCovariateRanges() finds ranges for continuous wide data", {
 })
 
 test_that("covariate_model produces errors for incorrect data types", {
-  expect_error(covariate_model("not_data", 50, "shared"), "configured_data must be of class configured_data")
+  expect_error(covariate_model("not_data", 98, "shared"), "configured_data must be of class configured_data")
   expect_error(covariate_model(configured_data_con, "not_numeric", "shared"), "covariate_value must be of class numeric")
-  expect_error(covariate_model(configured_data_con, 50, 123), "regressor_type must be of class character")
+  expect_error(covariate_model(configured_data_con, 98, 123), "regressor_type must be of class character")
 
   invalid_outcome_measure <- configured_data_con
   invalid_outcome_measure$outcome_measure <- "SMD"
-  expect_error(covariate_model(invalid_outcome_measure, 50, "shared"), "configured data must have an outcome_measure")
-  expect_error(covariate_model(configured_data_con, 50, "not_shared"), "regressor_type must be")
+  expect_error(covariate_model(invalid_outcome_measure, 98, "shared"), "configured data must have an outcome_measure")
+  expect_error(covariate_model(configured_data_con, 98, "not_shared"), "regressor_type must be")
 
   # when no covariate exists
   no_cov_load <- setup_load(file.path(test_data_dir, "Cont_long.csv"), "continuous")
   no_cov_con <- setup_configure(no_cov_load, "the Great", "random", "MD", "good", 123)
-  expect_error(covariate_model(no_cov_con, 99, "shared"), "The data does not contain a covariate column")
+  expect_error(covariate_model(no_cov_con, 99, "shared"), "No covariate data exists")
 
   # when covariate_value is out of range
   expect_error(covariate_model(configured_data_con, 1, "shared"), "covariate_value must not be lower than the minimum")
@@ -162,14 +163,8 @@ test_that("covariate_model produces errors for incorrect data types", {
 })
 
 test_that("{shinytest2} recording: e2e_covariate_model", {
-  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_covariate_model", timeout = 30000)
-  app$set_inputs(tabs = "setup")
-  app$set_inputs(setupSel = "setup_load")
-  app$click("setup_load-run")
-  app$set_inputs(setupSel = "setup_configure")
-  app$wait_for_value(input = "setup_configure-ready")
-  app$click("setup_configure-run")
-  app$wait_for_value(input = "setup_exclude-complete")
+  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_bayes_model", timeout = 30000)
+  reload_app(app, config_path)
 
   app$set_inputs(tabs = "covariate")
   app$set_inputs(covariateSel = "covariate_model")
@@ -184,9 +179,12 @@ test_that("{shinytest2} recording: e2e_covariate_model", {
   mean_value <- app$get_text(".form-group:has(#covariate_model-covariate_value) .irs-single")
   max_value <- app$get_text(".form-group:has(#covariate_model-covariate_value) .irs-max")
 
-  expect_equal(min_value, "24")
-  expect_equal(mean_value, "55")
-  expect_equal(max_value, "75.5")
+  expect_equal(min_value, "95")
+  expect_equal(mean_value, "97")
+  expect_equal(max_value, "99")
+
+  table <- app$wait_for_value(output = "covariate_model-table")
+  expect_match(table$html, "<table")
 
   common <- app$get_value(export = "common")
   result <- common$covariate_model
@@ -215,7 +213,6 @@ test_that("{shinytest2} recording: e2e_covariate_model", {
   expect_is(result$mtcResults, "mtc.result")
   expect_is(result$mtcRelEffects, "mtc.result")
   expect_is(result$rel_eff_tbl, "mtc.relative.effect.table")
-  expect_is(result$covariate_value, "integer")
   expect_is(result$reference_treatment, "character")
   expect_is(result$comparator_names, "character")
   expect_is(result$a, "character")
@@ -228,16 +225,18 @@ test_that("{shinytest2} recording: e2e_covariate_model", {
   expect_is(result$outcome_measure, "character")
   expect_is(result$mtcNetwork, "mtc.network")
   expect_is(result$effects, "character")
-  expect_is(result$covariate_min, "numeric")
-  expect_is(result$covariate_max, "numeric")
+  # catch integers and floats
+  expect_true(is.numeric(result$covariate_value))
+  expect_true(is.numeric(result$covariate_min))
+  expect_true(is.numeric(result$covariate_max))
 
+  app$stop()
 })
 
 test_that("sliderinput updates for binary covariate", {
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_covariate_model", timeout = 30000)
   app$set_inputs(tabs = "setup")
   app$upload_file("setup_load-file1" = file.path(test_data_dir, "Cont_wide_binary_cov.csv"))
-  app$set_inputs(setupSel = "setup_load")
   app$click("setup_load-run")
   app$set_inputs(setupSel = "setup_configure")
   app$wait_for_value(input = "setup_configure-ready")

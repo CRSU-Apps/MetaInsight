@@ -1,18 +1,19 @@
 test_that("freq_compare functions correctly", {
+
   result <- freq_inconsistent(configured_data_con)
   expect_s3_class(result, "data.frame")
   expect_equal(ncol(result), 9)
-  expect_equal(nrow(result), 6)
+  expect_equal(nrow(result), sum(1:(n_trt_all-1)))
 
   result <- freq_inconsistent(excluded_data_con)
   expect_s3_class(result, "data.frame")
   expect_equal(ncol(result), 9)
-  expect_equal(nrow(result), 3)
+  expect_equal(nrow(result), sum(1:(n_trt_sub-1)))
 
   result <- freq_inconsistent(configured_data_bin)
   expect_s3_class(result, "data.frame")
   expect_equal(ncol(result), 9)
-  expect_equal(nrow(result), 21)
+  expect_equal(nrow(result), sum(1:(n_trt_bin-1)))
 
 })
 
@@ -21,17 +22,9 @@ test_that("freq_inconsistent produces errors for incorrect data types and invali
 })
 
 test_that("freq_inconsistent produces downloadable tables", {
-  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 30000)
-  app$set_inputs(tabs = "setup")
-  app$set_inputs(setupSel = "setup_load")
-  app$click("setup_load-run")
-  app$wait_for_value(input = "setup_configure-ready")
-  app$set_inputs(setupSel = "setup_configure")
-  app$click("setup_configure-run")
-  app$wait_for_idle()
-  app$set_inputs(tabs = "summary")
-  app$set_inputs("setup_exclude-exclusions" = c("Study01", "Study02", "Study03", "Study04"))
-  app$wait_for_value(input = "setup_exclude-complete")
+  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_setup_load", timeout = 30000)
+  reload_app(app, config_path)
+
   app$set_inputs(tabs = "freq")
   app$set_inputs(freqSel = "freq_inconsistent")
   app$click("freq_inconsistent-run")
@@ -50,14 +43,14 @@ test_that("freq_inconsistent produces downloadable tables", {
   df <- df[, -1] # drop index
 
   expect_equal(ncol(df), 9)
-  expect_equal(nrow(df), 6)
+  expect_equal(nrow(df), sum(1:(n_trt_all-1)))
 
   table_sub <- app$get_download("freq_inconsistent-download_sub")
   df <- read.csv(table_sub)
   df <- df[, -1] # drop index
 
   expect_equal(ncol(df), 9)
-  expect_equal(nrow(df), 3)
+  expect_equal(nrow(df), sum(1:(n_trt_sub-1)))
 
   app$stop()
 })

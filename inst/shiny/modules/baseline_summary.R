@@ -42,7 +42,7 @@ baseline_summary_module_server <- function(id, common, parent_session) {
     filename = function(){
       paste0("MetaInsight_baseline_summary.", common$download_format)},
     content = function(file){
-      write_plot(common$baseline_summary_plot, file, common$download_format)
+      write_plot(common$baseline_summary_plot, file)
     }
   )
 

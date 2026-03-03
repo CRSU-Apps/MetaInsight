@@ -42,7 +42,8 @@ covariate_model <- function(configured_data,
   }
 
   if (!any(grepl("covar\\.", names(configured_data$connected_data)))){
-    return(async |> asyncLog(type = "error", "The data does not contain a covariate column"))
+    return(async |> asyncLog(type = "error", "No covariate data exists. To add covariate data, add a column titled
+                                              covar.* where the * is replaced by the covariate name. e.g. covar.age"))
   }
 
   if (!configured_data$outcome_measure %in% c("OR", "RR", "MD")){

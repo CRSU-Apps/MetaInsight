@@ -665,7 +665,11 @@ LongToWide <- function(long_data, outcome) {
     paste0("outcome needs to be 'binary' or 'continuous'")
   }
   # Add arms
-  long_data <- long_data |> dplyr::group_by(.data$Study) |> dplyr::mutate(arm = dplyr::row_number())
+  long_data <- long_data |>
+    dplyr::group_by(.data$Study) |>
+    dplyr::mutate(arm = dplyr::row_number()) |>
+    dplyr::ungroup()
+
   # Transform to long
   wide_data <- long_data |>
     tidyr::pivot_wider(id_cols = c("StudyID", "Study", FindCovariateNames(long_data)),

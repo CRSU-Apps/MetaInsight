@@ -21,8 +21,8 @@ test_that("{shinytest2} recording: e2e_bayes_results", {
   expect_match(stats_all, "<table")
   expect_match(stats_sub, "<table")
   # Test number of rows (including header)
-  expect_equal(stringr::str_count(stats_all, "<tr"), 7)
-  expect_equal(stringr::str_count(stats_sub, "<tr"), 5)
+  expect_equal(stringr::str_count(stats_all, "<tr"), n_trt_all + 1)
+  expect_equal(stringr::str_count(stats_sub, "<tr"), n_trt_sub + 1)
   # Test number of columns
   expect_equal(stringr::str_count(stringr::str_extract(stats_all, "<tr>.+?</tr>"), "<th"), 5)
   expect_equal(stringr::str_count(stringr::str_extract(stats_sub, "<tr>.+?</tr>"), "<th"), 5)
@@ -32,8 +32,8 @@ test_that("{shinytest2} recording: e2e_bayes_results", {
   expect_match(quant_all, "<table")
   expect_match(quant_sub, "<table")
   # Test number of rows (including header)
-  expect_equal(stringr::str_count(quant_all, "<tr"), 7)
-  expect_equal(stringr::str_count(quant_sub, "<tr"), 5)
+  expect_equal(stringr::str_count(quant_all, "<tr"), n_trt_all + 1)
+  expect_equal(stringr::str_count(quant_sub, "<tr"), n_trt_sub + 1)
   # Test number of columns
   expect_equal(stringr::str_count(stringr::str_extract(quant_all, "<tr>.+?</tr>"), "<th"), 6)
   expect_equal(stringr::str_count(stringr::str_extract(quant_sub, "<tr>.+?</tr>"), "<th"), 6)

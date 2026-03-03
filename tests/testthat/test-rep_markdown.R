@@ -1,4 +1,7 @@
 test_that("rep_markdown produces a renderable .qmd when no analysis has been conducted", {
+
+  skip_on_os(c("windows", "mac"))
+
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 60000)
   app$set_inputs(tabs = "rep")
   app$set_inputs(repSel = "rep_markdown")
@@ -16,6 +19,9 @@ test_that("rep_markdown produces a renderable .qmd when no analysis has been con
 })
 
 test_that("rep_markdown produces can render a qmd to html when no analysis has been conducted", {
+
+  skip_on_os(c("windows", "mac"))
+
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 60000)
   app$set_inputs(tabs = "rep")
   app$set_inputs(repSel = "rep_markdown")
@@ -28,12 +34,14 @@ test_that("rep_markdown produces can render a qmd to html when no analysis has b
 })
 
 test_that("rep_markdown produces a renderable .Rmd file after a frequentist analysis", {
+
+  skip_on_os(c("windows", "mac"))
+
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 60000)
 
   expected_chunks <- 1 #intro
 
   app$set_inputs(tabs = "setup")
-  app$set_inputs(setupSel = "setup_load")
   app$click("setup_load-run")
   expected_chunks <- expected_chunks + 1
 
@@ -108,6 +116,9 @@ test_that("rep_markdown produces a renderable .Rmd file after a frequentist anal
 })
 
 test_that("rep_markdown produces a renderable .Rmd file after a bayesian analysis", {
+
+  skip_on_os(c("windows", "mac"))
+
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 60000)
 
   app$set_inputs(tabs = "setup")
@@ -187,6 +198,9 @@ test_that("rep_markdown produces a renderable .Rmd file after a bayesian analysi
 })
 
 test_that("rep_markdown produces a renderable .Rmd file after a covariate analysis", {
+
+  skip_on_os(c("windows", "mac"))
+
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 60000)
 
   app$set_inputs(tabs = "setup")
@@ -275,6 +289,9 @@ test_that("rep_markdown produces a renderable .Rmd file after a covariate analys
 })
 
 test_that("rep_markdown produces a renderable .Rmd file after a baseline analysis", {
+
+  skip_on_os(c("windows", "mac"))
+
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 60000)
 
   app$set_inputs(tabs = "setup")

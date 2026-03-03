@@ -62,8 +62,8 @@ covariate_model_module_server <- function(id, common, parent_session) {
       }
 
       if (length(common$configured_data$covariate) == 0){
-        common$logger |> writeLog(type = "error", paste("No covariate data exists. To add covariate data, add a column titled
-                                                         covar.* where the * is replaced by the covariate name. e.g. covar.age"))
+        common$logger |> writeLog(type = "error", "No covariate data exists. To add covariate data, add a column titled
+                                                         covar.* where the * is replaced by the covariate name. e.g. covar.age")
         return()
       }
 
@@ -129,15 +129,13 @@ covariate_model_module_server <- function(id, common, parent_session) {
       }
     })
 
-  output$table <- renderTable({
+  output$table <- renderUI({
     watch("covariate_model") # required for reset
     watch("covariate_model_table")
     req(common$covariate_model)
     shinyjs::show(selector = ".covariate_model_div")
-    common$covariate_model$dic
-  }, digits = 3, rownames = TRUE, colnames = FALSE)
-
-  outputOptions(output, "table", suspendWhenHidden = FALSE)
+    dic_table(common$covariate_model$dic)
+  })
 
   observeEvent(input$run_all, {
     run_all(COMPONENTS, COMPONENT_MODULES, "covariate", common$logger)
@@ -146,11 +144,11 @@ covariate_model_module_server <- function(id, common, parent_session) {
   return(list(
     save = function() {
       # only save covariate info when it exists
-      if (is.null(common$covariate_column)){
+      if (length(common$configured_data$covariate) == 0){
         list()
       } else {
-        covariate_min <- min(common$common$configured_data$connected_data[[common$configured_data$covariate$column]])
-        covariate_max <- max(common$common$configured_data$connected_data[[common$configured_data$covariate$column]])
+        covariate_min <- min(common$configured_data$connected_data[[common$configured_data$covariate$column]])
+        covariate_max <- max(common$configured_data$connected_data[[common$configured_data$covariate$column]])
         log_val <- round(log10(covariate_max - covariate_min))
         step <- 10 ** (log_val - 2)
         list(
@@ -158,7 +156,7 @@ covariate_model_module_server <- function(id, common, parent_session) {
           covariate_min = covariate_min,
           covariate_max = covariate_max,
           covariate_step = ifelse(common$configured_data$covariate$type == "continuous", step, 1),
-          covariate_label = glue("Covariate value ({common$covariate_name})"),
+          covariate_label = glue("Covariate value ({common$configured_data$covariate$name})"),
           covariate_tick = ifelse(common$configured_data$covariate$type == "continuous", TRUE, FALSE),
           ### Manual save end
           covariate_value = as.numeric(input$covariate_value),
@@ -190,9 +188,8 @@ covariate_model_module_server <- function(id, common, parent_session) {
 
 covariate_model_module_result <- function(id) {
   ns <- NS(id)
-  div(align = "center", class = "covariate_model_div",
-      p("Model fit for all studies:"),
-      tableOutput(ns("table"))
+  div(align = "center",
+      uiOutput(ns("table"))
   )
 }
 

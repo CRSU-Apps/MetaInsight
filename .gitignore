@@ -9,5 +9,5 @@ www.zip
 debug*
 _modules
 inst/shiny/rsconnect
-tests/testthat/temprds
 .Renviron
+tests/testthat/saved_files

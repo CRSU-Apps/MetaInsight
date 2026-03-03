@@ -167,10 +167,7 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
         paste0("MetaInsight_bayesian_forest_plot_", id, ".", common$download_format)
       },
       content = function(file) {
-        write_plot(forest_svg(),
-                   file,
-                   common$download_format
-                   )
+        write_plot(forest_svg(), file)
       }
     )
 
@@ -179,10 +176,7 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
         paste0("MetaInsight_bayesian_ranking_plot_", id, ".", common$download_format)
       },
       content = function(file) {
-        write_plot(ranking_svg(),
-                   file,
-                   common$download_format
-        )
+        write_plot(ranking_svg(), file)
       }
     )
 
@@ -191,10 +185,7 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
         paste0("MetaInsight_network_plot_", id, ".", common$download_format)
       },
       content = function(file) {
-        write_plot(network_svg(),
-                   file,
-                   common$download_format
-        )
+        write_plot(network_svg(), file)
       }
     )
 
