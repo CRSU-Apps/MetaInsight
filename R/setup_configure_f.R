@@ -67,6 +67,10 @@ setup_configure <- function(loaded_data, reference_treatment, effects, outcome_m
   # update using the selected reference treatment
   treatments <- CreateTreatmentIds(loaded_data$treatments$Label, reference_treatment)
 
+  if (FindDataShape(loaded_data$data) == "wide"){
+    loaded_data$data <- WideToLong(loaded_data$data, loaded_data$outcome)
+  }
+
   data <- WrangleUploadData(loaded_data$data, treatments, loaded_data$outcome)
   treatments <- CleanTreatmentIds(treatments)
   reference_treatment <- CleanStrings(reference_treatment)
@@ -80,10 +84,6 @@ setup_configure <- function(loaded_data, reference_treatment, effects, outcome_m
   connected_indices <- indices[data$Study %in% primary_network$studies]
 
   connected_data <- data[connected_indices,]
-
-  if (FindDataShape(connected_data) == "wide"){
-    connected_data <- WideToLong(connected_data, loaded_data$outcome)
-  }
 
   studies <- unique(data$Study)
   subnetwork_exclusions <- studies[!studies %in% connected_data$Study]
