@@ -620,7 +620,7 @@ CleanData <- function(data) {
   return(tidied)
 }
 
-#' Find all of the treatment names in the data, both for long and wide formats.
+#' Convert long format to wide format (including covariate columns).
 #'
 #' @param wide_data Data frame of wide format
 #' @param outcome Indicator whether outcome is 'binary' or 'continuous'
@@ -851,7 +851,7 @@ CreateTreatmentIds <- function(all_treatments, reference_treatment = all_treatme
   return(original_name)
 }
 
-#' Find all of the treatment names in the data, both for long and wide formats.
+#' Replace all of the treatment names in the data with IDs, both for long and wide formats.
 #'
 #' @param data Data frame in which to search for treatment names
 #' @param treatment_ids Data frame containing treatment names (Label) and IDs (Number)

@@ -2,7 +2,7 @@
 % Please edit documentation in R/setup_load_f.R
 \name{ReplaceTreatmentIds}
 \alias{ReplaceTreatmentIds}
-\title{Find all of the treatment names in the data, both for long and wide formats.}
+\title{Replace all of the treatment names in the data with IDs, both for long and wide formats.}
 \usage{
 ReplaceTreatmentIds(data, treatment_ids)
 }
@@ -15,5 +15,5 @@ ReplaceTreatmentIds(data, treatment_ids)
 Data frame where the treatments are given as IDs, not names
 }
 \description{
-Find all of the treatment names in the data, both for long and wide formats.
+Replace all of the treatment names in the data with IDs, both for long and wide formats.
 }

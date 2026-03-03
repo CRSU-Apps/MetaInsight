@@ -2,7 +2,7 @@
 % Please edit documentation in R/setup_load_f.R
 \name{WideToLong}
 \alias{WideToLong}
-\title{Find all of the treatment names in the data, both for long and wide formats.}
+\title{Convert long format to wide format (including covariate columns).}
 \usage{
 WideToLong(wide_data, outcome)
 }
@@ -15,5 +15,5 @@ WideToLong(wide_data, outcome)
 Data frame in long format
 }
 \description{
-Find all of the treatment names in the data, both for long and wide formats.
+Convert long format to wide format (including covariate columns).
 }
