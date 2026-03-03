@@ -53,10 +53,7 @@ bayes_forest_submodule_server <- function(id, common, model, run, xmin, xmax, ti
         glue("MetaInsight_bayesian_forest_plot_{id}.{common$download_format}")
       },
       content = function(file) {
-        write_plot(svg(),
-                   file,
-                   common$download_format
-                   )
+        write_plot(svg(), file)
 
       }
     )

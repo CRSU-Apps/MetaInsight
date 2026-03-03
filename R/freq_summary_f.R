@@ -185,7 +185,7 @@ singleest <- function(mtc, pw, xpos = 0, ucex) {
 #' @param predbd Predictive data
 PrICrI <- function(offs, lower_confidence_limit, point_estimate, upper_confidence_limit, ypos, ucol = "black", ulwd = 1, pcI = FALSE, predbd = c(NA, NA)) {
   # Show predictive interval
-  if (pcI & predbd[1] != 0 & predbd[2] != 0) {
+  if (pcI && !is.na(predbd[1]) && !is.na(predbd[2]) && predbd[1] != 0 && predbd[2] != 0) {
     # Predictive interval line
     lines(c(predbd[1] + offs, predbd[2] + offs), c(ypos, ypos), lty = "dotted", lwd = ulwd, col = ucol)
     # Predictive lower limit line

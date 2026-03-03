@@ -4,14 +4,20 @@
 \alias{freq_forest}
 \title{Produce a frequentist forest plot and annotation using \code{meta::forest()}}
 \usage{
-freq_forest(configured_data, xmin, xmax, title, logger = NULL)
+freq_forest(
+  configured_data,
+  xmin = NULL,
+  xmax = NULL,
+  title = "",
+  logger = NULL
+)
 }
 \arguments{
 \item{configured_data}{list. Input dataset created by \code{setup_configure()} or \code{setup_exclude()}}
 
-\item{xmin}{numeric. Minimum x-axis limit.}
+\item{xmin}{numeric. Minimum x-axis value. Default \code{NULL} in which case it is calculated internally}
 
-\item{xmax}{numeric. Maximum x-axis limit.}
+\item{xmax}{numeric. Maximum x-axis value. Default \code{NULL} in which case it is calculated internally}
 
 \item{title}{character. Title for the plot.}
 

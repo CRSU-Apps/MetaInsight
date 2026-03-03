@@ -150,7 +150,7 @@ test_that("Check covariate_regression function works as expected", {
   plot_result <- metaregression_plot(fitted_covariate_model,
                                      configured_data_con,
                                      result,
-                                     c("Gabapentinoids", "Ketamine"))
+                                     configured_data_con$treatments$Label[2:3])
 
   expect_match(plot_result, "<svg")
 

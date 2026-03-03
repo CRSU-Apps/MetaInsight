@@ -18,7 +18,7 @@ test_that("Check baseline_regression function works as expected", {
   plot_result <- metaregression_plot(fitted_baseline_model,
                                      configured_data_con,
                                      result,
-                                     c("Gabapentinoids", "Ketamine"))
+                                     configured_data_con$treatments$Label[2:3])
 
   expect_match(plot_result, "<svg")
 })
@@ -27,16 +27,17 @@ test_that("baseline_regression and metaregression_plot produce errors for incorr
 
   fake_reg <- list()
   class(fake_reg) <- "regression_data"
+  comparator <- configured_data_con$treatments$Label[2]
 
   expect_error(baseline_regression("faulty_model", configured_data_con), "model must be of class baseline_model")
   expect_error(baseline_regression(fitted_baseline_model, "not_data"), "configured_data must be of class configured_data")
 
-  expect_error(metaregression_plot("faulty_model", configured_data_con, fake_reg, "Gabapentinoids"), "model must be an object created by baseline_model")
-  expect_error(metaregression_plot(fitted_baseline_model, "not_data", fake_reg, "Gabapentinoids"), "configured_data must be of class configured_data")
-  expect_error(metaregression_plot(fitted_baseline_model, configured_data_con, "fake_reg", "Gabapentinoids"), "regression_data must be an object created by baseline_regression")
+  expect_error(metaregression_plot("faulty_model", configured_data_con, fake_reg, comparator), "model must be an object created by baseline_model")
+  expect_error(metaregression_plot(fitted_baseline_model, "not_data", fake_reg, comparator), "configured_data must be of class configured_data")
+  expect_error(metaregression_plot(fitted_baseline_model, configured_data_con, "fake_reg", comparator), "regression_data must be an object created by baseline_regression")
 
-  expect_error(metaregression_plot(fitted_baseline_model, configured_data_con, fake_reg, c("Gabapentinoids", "Placebo")), "comparators cannot contain the reference treatment")
-  expect_error(metaregression_plot(fitted_baseline_model, configured_data_con, fake_reg, c("Gabapentinoids", "Meth")), "comparators must be present in the configured data")
+  expect_error(metaregression_plot(fitted_baseline_model, configured_data_con, fake_reg, c(comparator, configured_data_con$treatments$Label[1])), "comparators cannot contain the reference treatment")
+  expect_error(metaregression_plot(fitted_baseline_model, configured_data_con, fake_reg, c(comparator, "Meth")), "comparators must be present in the configured data")
 })
 
 test_that("{shinytest2} recording: e2e_baseline_regression", {

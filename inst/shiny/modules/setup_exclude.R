@@ -11,6 +11,7 @@ setup_exclude_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
     init("effects")
+    init("freq_all")
 
     # can't get updatePickerInput to reblank on reset
     output$exclusions_out <- renderUI({
@@ -24,6 +25,7 @@ setup_exclude_module_server <- function(id, common, parent_session) {
         wrangled <- unique(common$configured_data$wrangled_data$Study)
         connected <- unique(common$configured_data$connected_data$Study)
         shinyWidgets::pickerInput(session$ns("exclusions"), label = "Studies to exclude:", multiple = TRUE,
+                                  selected = isolate(input$exclusions),
                                   choices = wrangled,
                                   choicesOpt = list(disabled = !c(wrangled %in% connected)),
                                   options = shinyWidgets::pickerOptions(liveSearch = TRUE))
@@ -40,15 +42,14 @@ setup_exclude_module_server <- function(id, common, parent_session) {
       function(...) excluding <<- mirai::mirai(run(...), run = setup_exclude, .args = environment())
     )
 
-    # update freq_all if effects selection changes
-    observeEvent(input$effects, {
+    # update freq_all if effects selection changes or analysis has been reconfigured
+    observeEvent(list(input$effects, watch("setup_configure")), {
       req(common$configured_data)
-
       common$tasks$setup_exclude_all$invoke(common$configured_data$non_covariate_data,
                                             common$configured_data$outcome,
                                             common$configured_data$treatments,
                                             common$configured_data$outcome_measure,
-                                            common$effects,
+                                            input$effects,
                                             common$configured_data$treatments$Label[common$configured_data$treatments$Number == 1])
 
       result_all$resume()
@@ -57,7 +58,7 @@ setup_exclude_module_server <- function(id, common, parent_session) {
     # listen to all the triggers but only fire once they're static for 1200ms
     exclusion_triggers <- reactive({
       # prevent it triggering on reload
-      req((!identical(input$exclusions, common$excluded_studies) || watch("setup_configure") > 0 || watch("effects") > 0))
+      req((!identical(input$exclusions, common$excluded_studies) || watch("setup_configure") > 0 || watch("effects") > 1))
       list(input$exclusions,
            input$effects,
            watch("setup_configure"))
@@ -65,6 +66,24 @@ setup_exclude_module_server <- function(id, common, parent_session) {
 
     observeEvent(exclusion_triggers(), {
       req(common$configured_data)
+
+      # log removals / additions of studies
+      new_exclusions <- input$exclusions[!(input$exclusions %in% common$excluded_studies)]
+      if (length(new_exclusions) > 0){
+        single_plural <- ifelse(length(new_exclusions) == 1, "has", "have")
+        new_exclusions <- paste(new_exclusions, collapse = ", ")
+        common$logger |> writeLog(type = "complete", glue("{new_exclusions} {single_plural} been excluded from the sensitivity analysis"))
+      }
+
+      new_additions <- common$excluded_studies[!(common$excluded_studies %in% input$exclusions)]
+      if (length(new_additions) > 0){
+        single_plural <- ifelse(length(new_additions) == 1, "has", "have")
+        new_additions <- paste(new_additions, collapse = ", ")
+        common$logger |> writeLog(type = "complete", glue("{new_additions} {single_plural} been added to the sensitivity analysis"))
+      }
+
+      # storing this here so they are always in sync
+      common$excluded_studies <- input$exclusions
 
       # cancel if already updating
       if (common$tasks$setup_exclude_sub$status() == "running"){
@@ -75,14 +94,11 @@ setup_exclude_module_server <- function(id, common, parent_session) {
                                             input$exclusions,
                                             async = TRUE)
 
-      if (length(common$freq_sub) == 0){
+      if (is.null(common$subsetted_data)){
         common$logger |> writeLog(type = "starting", "Running initial frequentist analysis")
       } else {
         common$logger |> writeLog(type = "starting", "Updating sensitivity analysis")
       }
-
-      # storing this here so they are always in sync
-      common$excluded_studies <- input$exclusions
 
       # METADATA ####
       common$meta$setup_exclude$used <- TRUE
@@ -95,6 +111,7 @@ setup_exclude_module_server <- function(id, common, parent_session) {
 
     result_all <- observe({
       common$configured_data$freq <- common$tasks$setup_exclude_all$result()
+      trigger("freq_all")
       result_all$suspend()
     })
 
@@ -140,9 +157,17 @@ setup_exclude_module_server <- function(id, common, parent_session) {
 
     # stop triggering at app load, but do so once data is loaded
     observe({
-      common$effects <- input$effects
+      watch("setup_reset")
       # prevent it triggering on reload
       req(!identical(input$effects, common$effects))
+      common$effects <- input$effects
+
+      if(!is.null(common$configured_data)){
+        common$configured_data$effects <- input$effects
+      }
+      if(!is.null(common$subsetted_data)){
+        common$subsetted_data$effects <- input$effects
+      }
       trigger("effects")
     })
 

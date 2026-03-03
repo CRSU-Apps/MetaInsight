@@ -11,7 +11,7 @@ covariate_summary_module_ui <- function(id) {
 covariate_summary_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
-    hide_and_show(id)
+    hide_and_show(id, show = FALSE)
 
     observeEvent(input$run, {
       # WARNING ####
@@ -20,6 +20,7 @@ covariate_summary_module_server <- function(id, common, parent_session) {
                                   "Please configure the analysis first in the Setup section")
         return()
       }
+
       # FUNCTION CALL ####
       common$covariate_summary_plot <- covariate_summary(common$configured_data, common$logger)
 
@@ -34,6 +35,7 @@ covariate_summary_module_server <- function(id, common, parent_session) {
     output$plot <- renderUI({
       watch("covariate_summary")
       req(common$covariate_summary_plot)
+      on.exit(shinyjs::show(selector = ".covariate_summary_div"))
       svg_container( style = "max-width: 800px;",
           common$covariate_summary_plot
       )
@@ -43,9 +45,7 @@ covariate_summary_module_server <- function(id, common, parent_session) {
       filename = function(){
         paste0("MetaInsight_covariate_summary.", common$download_format)},
       content = function(file){
-        write_plot(common$covariate_summary_plot,
-                   file,
-                   common$download_format)
+        write_plot(common$covariate_summary_plot, file)
       }
     )
 

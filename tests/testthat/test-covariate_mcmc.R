@@ -17,9 +17,9 @@ test_that("Check covariate_mcmc function works as expected", {
   expect_is(trace[[1]], "ggplot")
   expect_is(density[[1]], "ggplot")
 
-  expect_length(gelman, 5)
-  expect_length(trace, 5)
-  expect_length(density, 5)
+  expect_length(gelman, (n_trt_all + 1))
+  expect_length(trace, (n_trt_all + 1))
+  expect_length(density, (n_trt_all + 1))
   expect_equal(result$n_cols, 4)
 })
 

@@ -1,8 +1,8 @@
 test_that("Check bayes_compare function works as expected", {
   result <- bayes_compare(fitted_bayes_model)
   expect_is(result, "data.frame")
-  expect_equal(nrow(result), 4)
-  expect_equal(ncol(result), 4)
+  expect_equal(nrow(result), n_trt_all)
+  expect_equal(ncol(result), n_trt_all)
 })
 
 test_that("Check bayes_mcmc function produces errors as expected", {
@@ -32,23 +32,23 @@ test_that("{shinytest2} recording: e2e_bayes_compare", {
   expect_match(table_sub, "<table")
 
   # Test number of rows (including header)
-  expect_equal(stringr::str_count(table_all, "<tr"), 7)
-  expect_equal(stringr::str_count(table_sub, "<tr"), 5)
+  expect_equal(stringr::str_count(table_all, "<tr"), n_trt_all + 1)
+  expect_equal(stringr::str_count(table_sub, "<tr"), n_trt_sub + 1)
 
   # Test number of columns
-  expect_equal(stringr::str_count(stringr::str_extract(table_all, "<tr>.+?</tr>"), "<th"), 7)
-  expect_equal(stringr::str_count(stringr::str_extract(table_sub, "<tr>.+?</tr>"), "<th"), 5)
+  expect_equal(stringr::str_count(stringr::str_extract(table_all, "<tr>.+?</tr>"), "<th"), n_trt_all + 1)
+  expect_equal(stringr::str_count(stringr::str_extract(table_sub, "<tr>.+?</tr>"), "<th"), n_trt_sub + 1)
 
   table_all_dl <- app$get_download("bayes_compare-all-download")
   df <- read.csv(table_all_dl)
   # extra column which is hidden in app, header becomes names
-  expect_equal(nrow(df), 6)
-  expect_equal(ncol(df), 7)
+  expect_equal(nrow(df), n_trt_all)
+  expect_equal(ncol(df), n_trt_all + 1)
 
   table_sub_dl <- app$get_download("bayes_compare-sub-download")
   df <- read.csv(table_sub_dl)
-  expect_equal(nrow(df), 4)
-  expect_equal(ncol(df), 5)
+  expect_equal(nrow(df), n_trt_sub)
+  expect_equal(ncol(df), n_trt_sub + 1)
 
   app$stop()
 })

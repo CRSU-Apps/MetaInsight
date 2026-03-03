@@ -23,7 +23,7 @@ freq_compare_module_server <- function(id, common, parent_session) {
   })
 
   table_all <- reactive({
-    watch("effects")
+    watch("freq_all")
     req(watch("freq_compare") > 0)
     common$meta$freq_compare$used <- TRUE
     freq_compare(common$configured_data)

@@ -30,7 +30,7 @@ freq_summary_module_server <- function(id, common, parent_session) {
   })
 
   svg_all <- reactive({
-    watch("effects")
+    watch("freq_all")
     req(watch("freq_summary") > 0)
     common$meta$freq_summary$used <- TRUE
     freq_summary(common$configured_data,
@@ -38,8 +38,8 @@ freq_summary_module_server <- function(id, common, parent_session) {
                  common$logger)
   })
 
+  # bindEvent is required here because otherwise the error can trigger an infinite loop
   svg_sub <- reactive({
-    watch("setup_exclude")
     req(watch("freq_summary") > 0)
     if (nrow(common$subsetted_data$treatments) < 3){
       common$logger |> writeLog(type = "error", "Sorry the plot with studies excluded cannot be produced when there are fewer than 3 treatments")
@@ -49,7 +49,7 @@ freq_summary_module_server <- function(id, common, parent_session) {
     freq_summary(common$subsetted_data,
                  "Summary forest plot with selected studies excluded",
                  common$logger)
-  })
+  }) |> bindEvent(list(watch("setup_exclude"), watch("freq_summary")))
 
   output$plot_all <- renderUI({
     req(svg_all())
@@ -66,7 +66,7 @@ freq_summary_module_server <- function(id, common, parent_session) {
       paste0("MetaInsight_summary_forest_all.", common$download_format)
     },
     content = function(file) {
-      write_plot(svg_all(), file, common$download_format)
+      write_plot(svg_all(), file)
     }
   )
 
@@ -75,7 +75,7 @@ freq_summary_module_server <- function(id, common, parent_session) {
       paste0("MetaInsight_summary_forest_sub.", common$download_format)
     },
     content = function(file) {
-      write_plot(svg_sub(), file, common$download_format)
+      write_plot(svg_sub(), file)
     }
   )
 })

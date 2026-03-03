@@ -36,33 +36,33 @@ freq_forest_module_server <- function(id, common, parent_session) {
   })
 
   observe({
-    watch("effects")
-    req(watch("freq_forest") > 0)
-    ci <- extract_ci(common$configured_data$freq, common$configured_data$outcome)
-    updateNumericInput(session, "xmin_all", value = ci$xmin, step = format_step(ci$xmin))
-    updateNumericInput(session, "xmax_all", value = ci$xmax, step = format_step(ci$xmax))
+    watch("freq_all")
+    req(common$configured_data$freq)
+    min_max <- freq_forest_limits(common$configured_data$freq, common$configured_data$outcome)
+    updateNumericInput(session, "xmin_all", value = min_max[1], step = format_step(min_max[1]))
+    updateNumericInput(session, "xmax_all", value = min_max[2], step = format_step(min_max[2]))
 
     # prevent errors when set to 0
     if (common$configured_data$outcome == "binary"){
-      updateNumericInput(session, "xmin_all", min = 0.01, step = 0.01)
+      updateNumericInput(session, "xmin_all", min = 0.01)
     }
   })
 
   observe({
     watch("setup_exclude")
-    req(watch("freq_forest") > 0)
-    ci <- extract_ci(common$subsetted_data$freq, common$subsetted_data$outcome)
-    updateNumericInput(session, "xmin_sub", value = ci$xmin, step = format_step(ci$xmin))
-    updateNumericInput(session, "xmax_sub", value = ci$xmax, step = format_step(ci$xmax))
+    req(common$subsetted_data$freq)
+    min_max <- freq_forest_limits(common$subsetted_data$freq, common$subsetted_data$outcome)
+    updateNumericInput(session, "xmin_sub", value = min_max[1], step = format_step(min_max[1]))
+    updateNumericInput(session, "xmax_sub", value = min_max[2], step = format_step(min_max[2]))
 
     # prevent errors when set to 0
     if (common$configured_data$outcome == "binary"){
-      updateNumericInput(session, "xmin_sub", min = 0.01, step = 0.01)
+      updateNumericInput(session, "xmin_sub", min = 0.01)
     }
   })
 
   result_all <- reactive({
-    watch("effects")
+    watch("freq_all")
     req(watch("freq_forest") > 0)
     common$meta$freq_forest$used <- TRUE
     common$meta$freq_forest$xmin_all <- as.numeric(input$xmin_all)
@@ -102,7 +102,7 @@ freq_forest_module_server <- function(id, common, parent_session) {
     filename = function(){
       paste0("MetaInsight_frequentist_forest_all.", common$download_format)},
     content = function(file){
-      write_plot(result_all(), file, common$download_format)
+      write_plot(result_all(), file)
     }
   )
 
@@ -110,7 +110,7 @@ freq_forest_module_server <- function(id, common, parent_session) {
     filename = function(){
       paste0("MetaInsight_frequentist_forest_sub.", common$download_format)},
     content = function(file){
-      write_plot(result_sub(), file, common$download_format)
+      write_plot(result_sub(), file)
     }
   )
 
