@@ -106,7 +106,7 @@ summary_char_module_server <- function(id, common, parent_session) {
     )
 
     output$download_pairs_sub <- downloadHandler(
-      filename = "MetaInsight_treatement_characteristics_sub.csv",
+      filename = "MetaInsight_treatment_pair_characteristics_sub.csv",
       content = function(file) {
         write.csv(summary_sub()$pairs, file)
       }
