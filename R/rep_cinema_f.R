@@ -60,7 +60,7 @@ rep_cinema <- function(configured_data, gemtc_results = NULL, logger = NULL) {
 #' Each item in the second level is a named list of numerical values for the contribution of each
 #' study towards the comparison. The name of each item is the name of the relevant study, and
 #' every study is included in the list. The values sum to 1.
-#' 
+#'
 #' @param study_contributions The contribution matrix calculated by {netmeta}.
 #' @return A List with the described structure.
 .PrepareStudyContibutionsForCinema <- function(study_contributions, data) {
@@ -78,7 +78,7 @@ rep_cinema <- function(configured_data, gemtc_results = NULL, logger = NULL) {
         )
       ) |>
         as.character()
-      
+
       return(
         sapply(
           simplify = FALSE,
@@ -95,7 +95,7 @@ rep_cinema <- function(configured_data, gemtc_results = NULL, logger = NULL) {
       )
     }
   )
-  
+
   return(prepared_contributions)
 }
 
@@ -112,7 +112,7 @@ rep_cinema <- function(configured_data, gemtc_results = NULL, logger = NULL) {
 #' - "sd" Standard deviation of treatment effect (continuous outcome)
 #' - "indirectness" Indirectness of study
 #' - "rob" Risk of bias of study
-#' 
+#'
 #' @param data The dataframe used in MetaInsight.
 #' @param treatment_ids  Data frame containing treatment names (Label), original tratment names (RawLabel) and IDs (Number).
 #' @param outcome_type Type of outcome for which to reorder, either 'continuous' or 'binary'.
@@ -124,21 +124,21 @@ rep_cinema <- function(configured_data, gemtc_results = NULL, logger = NULL) {
   } else {
     long_data <- data
   }
-  
+
   long_data <- ReinstateTreatmentIds(long_data, treatment_ids)
-  
+
   prepared_data <- lapply(
     1:nrow(long_data),
     function(index) {
       item = list()
-      
+
       item$study <- jsonlite::unbox(long_data[index, "Study"])
       item$id <- jsonlite::unbox(long_data[index, "StudyID"])
       item$t <- jsonlite::unbox(long_data[index, "T"])
       item$n <- jsonlite::unbox(long_data[index, "N"])
       item$rob <- jsonlite::unbox(long_data[index, "rob"])
       item$indirectness <- jsonlite::unbox(long_data[index, "indirectness"])
-      
+
       if (outcome_type == "binary") {
         item$r <- jsonlite::unbox(long_data[index, "R"])
       } else if (outcome_type == "continuous") {
@@ -147,11 +147,11 @@ rep_cinema <- function(configured_data, gemtc_results = NULL, logger = NULL) {
       } else {
         stop(glue::glue("Outcome type '{outcome_type}' not supported"))
       }
-      
+
       return(item)
     }
   )
-  
+
   return(prepared_data)
 }
 
@@ -162,12 +162,12 @@ rep_cinema <- function(configured_data, gemtc_results = NULL, logger = NULL) {
 #'   - "H" Matrix of matrices
 #'   - "model" Type of model: "fixed" or "random"
 #'   - "rowNames" Vector of row names in form "<TREATMENT_N>:<TREATMENT_M>"
-#'   - "sm" Outcome measure, one of: ["OR", "RR", "RD", "MD", "SMD"]
+#'   - "sm" Outcome measure, one of: "OR", "RR", "RD", "MD", "SMD"
 #' - "studycontributions" Output from `.PrepareStudyContibutionsForCinema()`
-#' 
+#'
 #' @param contributions Contributions from {netmeta}.
 #' @param model_type Type of model: "fixed" or "random".
-#' @param outcome_measure Outcome measure, one of: ["OR", "RR", "RD", "MD", "SMD"].
+#' @param outcome_measure Outcome measure, one of: "OR", "RR", "RD", "MD", "SMD".
 #' @param gemtc_results Output from gemtc::mtc.run, as returned in the 'mtcResults' list element from baye(). If this parameter is NULL then the frequentist analysis results found in 'contributions' are used. If it is not NULL then the Bayesian analysis results contained in this parameter are used. Defaults to NULL.
 #' @return A List with the described structure.
 .PrepareAnalysisForCinema <- function(contributions, model_type, outcome_measure, gemtc_results = NULL) {
@@ -181,7 +181,7 @@ rep_cinema <- function(configured_data, gemtc_results = NULL, logger = NULL) {
   } else {
     stop(glue::glue("Model type'{model_type}' not supported"))
   }
-  
+
   nma_col_names = c(
     "Direct",
     "DirectL",
@@ -204,7 +204,7 @@ rep_cinema <- function(configured_data, gemtc_results = NULL, logger = NULL) {
     "PropDirNetmeta",
     "_row"
   )
-  
+
   prepared_hat_matrix <- list(
     colNames = colnames(h),
     colNamesNMAresults = nma_col_names,
@@ -215,7 +215,7 @@ rep_cinema <- function(configured_data, gemtc_results = NULL, logger = NULL) {
     rowNamesNMAresults = rownames(h),
     sm = jsonlite::unbox(outcome_measure)
   )
-  
+
   prepared_analysis <- list(
     contributionMatrices = list(
       list(
@@ -224,7 +224,7 @@ rep_cinema <- function(configured_data, gemtc_results = NULL, logger = NULL) {
       )
     )
   )
-  
+
   return(prepared_analysis)
 }
 
@@ -232,7 +232,7 @@ rep_cinema <- function(configured_data, gemtc_results = NULL, logger = NULL) {
 #'
 #' @param contributions Contributions from {netmeta}.
 #' @param model_type Type of model: "fixed" or "random".
-#' @param outcome_measure Outcome measure, one of: ["OR", "RR", "RD", "MD", "SMD"].
+#' @param outcome_measure Outcome measure, one of: "OR", "RR", "RD", "MD", "SMD".
 #' @param gemtc_results Output from gemtc::mtc.run, as returned in the 'mtcResults' list element from baye(). If this parameter is NULL then the frequentist analysis results found in 'contributions' are used. If it is not NULL then the Bayesian analysis results contained in this parameter are used. Defaults to NULL.
 #' @return List of results with the described structure.
 .PrepareComparisonsForCinema <- function(contributions, model_type, outcome_measure, gemtc_results = NULL) {
@@ -243,15 +243,15 @@ rep_cinema <- function(configured_data, gemtc_results = NULL, logger = NULL) {
   } else {
     stop(glue::glue("Model type '{model_type}' is not supported. Please use 'random' or 'fixed'"))
   }
-  
-  
+
+
   prepared_analysis <- lapply(
     comparisons,
     function(comparison) {
       return(.PrepareComparisonForCinema(contributions$x, model_type, comparison, gemtc_results))
     }
   )
-  
+
   return(prepared_analysis)
 }
 
@@ -295,18 +295,18 @@ rep_cinema <- function(configured_data, gemtc_results = NULL, logger = NULL) {
       upper_pi <- upper_ci
     }
   }
-  
+
   if (model_type == "random") {
     direct <- freq_results$TE.direct.random[row, col]
     indirect <- freq_results$TE.indirect.random[row, col]
-    
+
     direct_lower <- freq_results$lower.direct.random[row, col]
     direct_upper <- freq_results$upper.direct.random[row, col]
     indirect_lower <- freq_results$lower.indirect.random[row, col]
     indirect_upper <- freq_results$upper.indirect.random[row, col]
-    
+
     sideif <- .CalculateSideif(direct, indirect, direct_lower, direct_upper, indirect_lower, indirect_upper)
-    
+
     prepared_comparison <- list(
       "Direct" = jsonlite::unbox(direct),
       "DirectL" = jsonlite::unbox(direct_lower),
@@ -332,14 +332,14 @@ rep_cinema <- function(configured_data, gemtc_results = NULL, logger = NULL) {
   } else if (model_type == "fixed") {
     direct <- freq_results$TE.direct.common[row, col]
     indirect <- freq_results$TE.indirect.common[row, col]
-    
+
     direct_lower <- freq_results$lower.direct.common[row, col]
     direct_upper <- freq_results$upper.direct.common[row, col]
     indirect_lower <- freq_results$lower.indirect.common[row, col]
     indirect_upper <- freq_results$upper.indirect.common[row, col]
-    
+
     sideif <- .CalculateSideif(direct, indirect, direct_lower, direct_upper, indirect_lower, indirect_upper)
-    
+
     prepared_comparison <- list(
       "Direct" = jsonlite::unbox(direct),
       "DirectL" = jsonlite::unbox(direct_lower),
@@ -363,7 +363,7 @@ rep_cinema <- function(configured_data, gemtc_results = NULL, logger = NULL) {
       "_row" = jsonlite::unbox(comparison)
     )
   }
-  
+
   return(prepared_comparison[!is.na(prepared_comparison)])
 }
 
@@ -380,15 +380,15 @@ rep_cinema <- function(configured_data, gemtc_results = NULL, logger = NULL) {
 .CalculateSideif <- function(direct, indirect, direct_lower, direct_upper, indirect_lower, indirect_upper) {
   direct_se <- (direct_upper - direct_lower) / (2 * 1.96)
   indirect_se <- (indirect_upper - indirect_lower) / (2 * 1.96)
-  
+
   sideif <- direct - indirect
   sideif_se <- sqrt((direct_se * direct_se) + (indirect_se * indirect_se))
   sideif_lower <- sideif - sideif_se * 1.96
   sideif_upper <- sideif + sideif_se * 1.96
-  
+
   sideif_z <- sideif / sideif_se
   sideif_pval <- 2 * pnorm(q = -abs(sideif), mean = 0, sd = sideif_se)
-  
+
   return(
     list(
       sideif = sideif,
@@ -402,7 +402,7 @@ rep_cinema <- function(configured_data, gemtc_results = NULL, logger = NULL) {
 
 
 #' Extract the analysis statistics required for CINeMA from GEMTC output. This includes simulating a predictive distribution in order to get a prediction interval, which is not done in GEMTC.
-#' 
+#'
 #' @param gemtc_results Model results from gemtc::mtc.run().
 #' @param treatments Vector of two treatments
 #' @return Named vector with names 'median', 'se', 'ci_lower', 'ci_upper', 'pi_lower', and 'pi_upper'.
@@ -416,13 +416,13 @@ ExtractGemtcStats <- function(gemtc_results, treatments) {
   )
   mcmc_summary <- summary(mcmc_rel_eff)
   quantiles <- mcmc_summary$summaries$quantiles
-  
+
   if (is.element("sd.d", colnames(gemtc_results[[1]][[1]]))) {
     effects <- "random"
   } else {
     effects <- "fixed"
   }
-  
+
   #All medians, CIs and PIs are negated to match the frequentist model
   if (effects == "fixed") {
     median <- -unname(quantiles["50%"])
@@ -435,7 +435,7 @@ ExtractGemtcStats <- function(gemtc_results, treatments) {
     ci_lower <- -quantiles[gemtc_treatments, "97.5%"]
     ci_upper <- -quantiles[gemtc_treatments, "2.5%"]
   }
-  
+
   if (effects == "fixed") {
     pi_lower <- ci_lower
     pi_upper <- ci_upper
@@ -455,10 +455,10 @@ ExtractGemtcStats <- function(gemtc_results, treatments) {
         )
       }
     )
-    
+
     pi_lower <- -MCMCvis::MCMCsummary(prediction_samples)[, "97.5%"]
     pi_upper <- -MCMCvis::MCMCsummary(prediction_samples)[, "2.5%"]
   }
-  
+
   return(c(median = median, se = se, ci_lower =  ci_lower, ci_upper = ci_upper, pi_lower = pi_lower, pi_upper = pi_upper))
 }

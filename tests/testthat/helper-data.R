@@ -12,6 +12,9 @@ excluded_data_con <- setup_exclude(configured_data_con, c("Minerva"))
 loaded_data_bin <- setup_load(file.path(test_data_dir, "Binary_long_continuous_cov.csv"), outcome = "binary")
 configured_data_bin <- setup_configure(loaded_data_bin, "the Great", "random", "OR", "good", 123)
 
+cinema_load <- setup_load(file.path(test_data_dir, "cinema_data", "NMA_data_binary_FE_two_arm_CINeMA.csv"), outcome = "binary")
+cinema_con <- setup_configure(cinema_load, cinema_load$treatments$Label[1], "fixed", "OR", "good", 123)
+
 n_trt_all <- configured_data_con$freq$ntx
 n_trt_sub <- excluded_data_con$freq$ntx
 n_trt_bin <- configured_data_bin$freq$ntx

@@ -1,87 +1,45 @@
-
-LoadCinemaData <- function(file_path = "data/cinema_data/NMA_data_binary_FE_two_arm_CINeMA.csv") {
-  data <- CleanData(read.csv(file_path))
-  outcome_type = "binary"
-  all_treatments <- FindAllTreatments(data)
-  treatment_ids <- CreateTreatmentIds(all_treatments) |>
-    CleanTreatmentIds()
-  data <- WrangleUploadData(data, treatment_ids, outcome_type)
-  
-  return(
-    list(
-      long_data = data,
-      treatment_ids = treatment_ids,
-      outcome_type = outcome_type
-    )
-  )
-}
-
-GenerateCinemaAnalysis <- function(cinema_data, model_type, outcome_measure) {
-  reference <- cinema_data$treatment_ids$Label[cinema_data$treatment_ids$Number == 1]
-  wide_data <- LongToWide(long_data = cinema_data$long_data, outcome = cinema_data$outcome_type)
-  
-  # transform data to contrast form
-  d0 <- contrastform.df(wide_data, outcome_measure, cinema_data$outcome_type)
-  #obtain treatment labels
-  lstx <- cinema_data$treatment_ids$Label
-  #count treatment numbers
-  ntx <- length(lstx)
-  #matching treatment labels to treatment code
-  d1 <- labelmatching.df(d1 = d0, ntx = ntx, treatments = cinema_data$treatment_ids)
-  # NMA of all studies
-  net1 <- freq.df(effects = model_type, outcome_measure = outcome_measure, dataf = d1, reference_treatment = reference)
-  
-  freq_all <- list(
-    net1 = net1,
-    lstx = lstx,
-    ntx = ntx,
-    d0 = d0,
-    d1 = d1
-  )
-  
+GenerateCinemaAnalysis <- function(cinema_data) {
   contributions <- netmeta::netcontrib(
-    x = freq_all$net1,
+    x = cinema_data$freq$net1,
     method = "shortestpath",
     study = TRUE
   )
-  
+
   return(contributions)
 }
 
 RecreateAnalysisFromCinemaProject <- function() {
-  cinema_project_json <- readr::read_file("data/cinema_data/diabetes_basic.cnm")
+  cinema_project_json <- readLines(file.path(test_data_dir, "cinema_data", "diabetes_basic.cnm"))
   cinema_project <- jsonlite::fromJSON(cinema_project_json)
   cinema_project$project$studies$long$study <- CleanStrings(cinema_project$project$studies$long$study)
-  
-  cinema_model_type <- unlist(cinema_project$project$CM$contributionMatrices$hatmatrix$model)
-  cinema_outcome_type <- tolower(unlist(stringr::str_to_sentence(cinema_project$project$type)))
+
+  cinema_effects <- unlist(cinema_project$project$CM$contributionMatrices$hatmatrix$model)
+  cinema_outcome <- tolower(unlist(stringr::str_to_sentence(cinema_project$project$type)))
   cinema_outcome_measure <- unlist(cinema_project$project$CM$contributionMatrices$hatmatrix$sm)
-  
+
   cinema_long_data <- cinema_project$project$studies$long
   treatment_ids <- cinema_long_data |>
     FindAllTreatments() |>
     CreateTreatmentIds() |>
     CleanTreatmentIds()
-  cinema_long_data <- WrangleUploadData(cinema_long_data, treatment_ids, cinema_outcome_type)
-  
+  cinema_long_data <- WrangleUploadData(cinema_long_data, treatment_ids, cinema_outcome)
+  cinema_long_data <- metainsight:::ReinstateTreatmentIds(cinema_long_data, treatment_ids)
+
   data <- list(
-    long_data = cinema_long_data,
-    treatment_ids = treatment_ids,
-    outcome_type = cinema_outcome_type
+    is_data_valid = TRUE,
+    data = cinema_long_data,
+    treatments = treatment_ids,
+    outcome = cinema_outcome
   )
-  
-  calculated_analysis <- GenerateCinemaAnalysis(data, cinema_model_type, cinema_outcome_measure)
-  
-  exported_json <- rep_cinema(
-    cinema_long_data,
-    treatment_ids,
-    cinema_outcome_type,
-    calculated_analysis,
-    cinema_model_type,
-    cinema_outcome_measure
-  )
+  class(data) <- "loaded_data"
+
+  config <- setup_configure(data, data$treatments$Label[1], cinema_effects, cinema_outcome_measure, "good", 123)
+
+  calculated_analysis <- GenerateCinemaAnalysis(config)
+
+  exported_json <- rep_cinema(config)
   exported_project <- jsonlite::fromJSON(exported_json)
-  
+
   return(
     list(
       imported_project = cinema_project,
@@ -97,14 +55,9 @@ exported_project <- recreated_project$exported_project
 
 
 test_that("Should produce valid JSON", {
-  cinema_data <- LoadCinemaData()
-  model_type <- "fixed"
-  outcome_measure <- "OR"
-  cinema_analysis <- GenerateCinemaAnalysis(cinema_data, model_type, outcome_measure)
-  
-  json <- rep_cinema(cinema_data$long_data, cinema_data$treatment_ids, cinema_data$outcome_type, cinema_analysis, model_type, outcome_measure)
-  result <- jsonvalidate::json_validate(json, "data/cinema_data/cinema_schema.json", verbose = TRUE)
-  
+  json <- rep_cinema(cinema_con)
+  result <- jsonvalidate::json_validate(json, file.path(test_data_dir, "cinema_data", "cinema_schema.json"), verbose = TRUE)
+
   expect_true(result, label = result)
 })
 
@@ -146,23 +99,23 @@ test_that("Should export expected row and column names", {
     exported_project$project$CM$contributionMatrices$hatmatrix$rowNames,
     "row names"
   )
-  
+
   expect_equal_and_not_na(
     imported_project$project$CM$contributionMatrices$hatmatrix$colNames,
     exported_project$project$CM$contributionMatrices$hatmatrix$colNames,
     "column names"
   )
-  
+
   expect_equal_and_not_na(
     imported_project$project$CM$contributionMatrices$hatmatrix$rowNamesNMAresults,
     exported_project$project$CM$contributionMatrices$hatmatrix$rowNamesNMAresults,
     "NMA result row names"
   )
-  
+
   # "_row" column is a special case which is handled differently
   exportedColNames <- exported_project$project$CM$contributionMatrices$hatmatrix$colNamesNMAresults[[1]]
   exportedColNames <- exportedColNames[-which(exportedColNames == "_row")]
-  
+
   expect_equal_and_not_na(
     imported_project$project$CM$contributionMatrices$hatmatrix$colNamesNMAresults[[1]],
     exportedColNames,
@@ -177,6 +130,9 @@ test_that("Should export NMA results", {
     "NMA results",
     equality_expectation = expect_data_frames_equal
   )
+
+  expect_equal(imported_project$project$CM$contributionMatrices$hatmatrix$NMAresults[[1]],
+               exported_project$project$CM$contributionMatrices$hatmatrix$NMAresults[[1]], tolerance = 0.0002)
 })
 
 test_that("Should export H matrix", {
@@ -188,6 +144,11 @@ test_that("Should export H matrix", {
       expect_matrices_equal(actual, expected, numerical_tolerance = 0.1)
     }
   )
+
+  expect_equal(imported_project$project$CM$contributionMatrices$hatmatrix$H[[1]],
+               exported_project$project$CM$contributionMatrices$hatmatrix$H[[1]],
+               tolerance = 0.1)
+
 })
 
 test_that("Should export study contributions", {
