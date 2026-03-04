@@ -17,3 +17,4 @@ A vector of column titles which contain data of the wrong type.
 \description{
 Identify any columns which are not of the expected type.
 }
+\keyword{internal}

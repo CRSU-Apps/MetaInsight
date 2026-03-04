@@ -15,3 +15,4 @@ A relative effects table in the same format as from gemtc.
 \description{
 Puts a relative effects table from bnma into gemtc format
 }
+\keyword{internal}

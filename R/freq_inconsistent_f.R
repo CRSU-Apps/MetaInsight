@@ -1,4 +1,5 @@
-#' Produce inconsistency tables using `netmeta::netsplit()`
+#' @title Inconsistency tables for frequentist models
+#' @description Produce inconsistency tables using `netmeta::netsplit()`
 #'
 #' @inheritParams common_params
 #'
@@ -12,6 +13,12 @@
 #' \item{Diff_95CI_lower}{2.5% limit of difference in treatment effects}
 #' \item{Diff_95CI_upper}{97.5% limit of difference in treatment effects}
 #' \item{pValue}{p-value for test of "difference in treatment effects == 0"}
+#' @examples
+#' configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
+#' configured_data <- readRDS(configured_data_path)
+#'
+#' freq_inconsistent(configured_data = configured_data)
+#'
 #' @export
 freq_inconsistent <- function(configured_data, logger = NULL) {
 

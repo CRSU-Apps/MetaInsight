@@ -21,3 +21,4 @@ Validation result in the form of a list:
 \description{
 Validate that numbered columns in the data are seqential from 1.
 }
+\keyword{internal}

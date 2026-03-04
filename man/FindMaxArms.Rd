@@ -15,3 +15,4 @@ The maximum number of arms.
 \description{
 Find the maximum number of arms in a study, for long or wide data.
 }
+\keyword{internal}

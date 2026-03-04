@@ -17,3 +17,4 @@ The reordered vector
 \description{
 Create a copy of a vector with the given item as the first element.
 }
+\keyword{internal}

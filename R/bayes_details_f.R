@@ -1,8 +1,15 @@
-#' Produce a summary of a Bayesian model
+#' @title Summarise a Bayesian model
+#' @description Produce a summary of a Bayesian model
 #'
 #' @param model Output produced by `baseline_model()`, `bayes_model()` or `covariate_model()`.
 #' @inheritParams common_params
 #' @return HTML summary of the model
+#' @examples
+#' configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
+#' configured_data <- readRDS(configured_data_path)
+#'
+#' fitted_bayes_model <- bayes_model(configured_data = configured_data)
+#' bayes_details(model = fitted_bayes_model)
 #' @export
 bayes_details <- function(model, logger = NULL){
 
@@ -36,12 +43,11 @@ baseline_details <- function(...){
   bayes_details(...)
 }
 
-
-
 #' MCMC characteristics from a GEMTC model.
 #'
 #' @param model GEMTC model output.
 #' @return Data frame with four MCMC characteristics.
+#' @keywords internal
 GetGemtcMcmcCharacteristics <- function(model) {
   return(
     data.frame(
@@ -64,6 +70,7 @@ GetGemtcMcmcCharacteristics <- function(model) {
 #'
 #' @param model GEMTC model output.
 #' @return Data frame with prior distribution information.
+#' @keywords internal
 GetGemtcPriors <- function(model) {
   treatment_effect_var <- round(model$model$data$re.prior.sd^2, digits = 1)
   prior_table <- data.frame(
@@ -136,6 +143,7 @@ GetGemtcPriors <- function(model) {
 #'
 #' @param model BNMA model output.
 #' @return Data frame with four MCMC characteristics.
+#' @keywords internal
 GetBnmaMcmcCharacteristics <- function(model) {
   return(
     data.frame(
@@ -156,6 +164,7 @@ GetBnmaMcmcCharacteristics <- function(model) {
 #'
 #' @param model BNMA model output.
 #' @return Data frame with prior distribution information.
+#' @keywords internal
 GetBnmaPriors <- function(model) {
   treatment_effect_mean <- model$network$prior.data$mean.d
   treatment_effect_var <- round(1 / model$network$prior.data$prec.d, digits = 1)
@@ -226,6 +235,7 @@ GetBnmaPriors <- function(model) {
 #'
 #' @param number Any number.
 #' @return 'number' with 1 decimal place or 1 significant figure.
+#' @keywords internal
 RoundForDisplay <- function(number) {
   rounded <- round(number, digits = 1)
   if (rounded == 0) {

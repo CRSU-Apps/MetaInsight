@@ -17,3 +17,4 @@ Data frame with columns reordered
 \description{
 Reorder data frame columns to the correct order, both for long and wide formats.
 }
+\keyword{internal}

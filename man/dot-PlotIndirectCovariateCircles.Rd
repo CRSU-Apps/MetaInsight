@@ -41,3 +41,4 @@ The modified ggplot2 object.
 \description{
 Plot the contribution circles on the plot.
 }
+\keyword{internal}

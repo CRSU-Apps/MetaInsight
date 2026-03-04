@@ -1,10 +1,17 @@
-#' Produce a Bayesian forest plot with `gemtc::forest()`
+#' @title Bayesian forest plot
+#' @description Produce a Bayesian forest plot with `gemtc::forest()`
 #'
 #' @param model list. Object created by `bayes_model()` or `covariate_model()`
 #' @param title character. Title for the plot. Default is no title
 #' @param ranking logical. Whether the function is being used in `bayes_ranking`
 #' @inheritParams common_params
 #' @inherit return-svg return
+#' @examples
+#' configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
+#' configured_data <- readRDS(configured_data_path)
+#'
+#' fitted_bayes_model <- bayes_model(configured_data = configured_data)
+#' bayes_forest(model = fitted_bayes_model)
 #' @export
 bayes_forest <- function(model, xmin = NULL, xmax = NULL, title = "", ranking = FALSE, logger = NULL){
 
@@ -65,6 +72,7 @@ covariate_forest <- function(...){
 #' `gemtc::forest()`
 #'
 #' @param model list. Object created by `bayes_model()` or `covariate_model()`
+#' @keywords internal
 #' @export
 bayes_forest_limits <- function(model) {
 

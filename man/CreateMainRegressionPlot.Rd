@@ -65,3 +65,4 @@ Created ggplot2 object.
 \description{
 Create a covariate regression plot where multiple comparisons can be plotted, and the contributions from each study are shown as circles.
 }
+\keyword{internal}

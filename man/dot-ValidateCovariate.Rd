@@ -31,3 +31,4 @@ In error cases, this function will throw exceptions:
 \item If any study contains multiple different covariate values
 }
 }
+\keyword{internal}

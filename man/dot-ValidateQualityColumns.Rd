@@ -19,3 +19,4 @@ Validation result in the form of a list:
 \description{
 Validate that the quality assessment columns in the data are of the expected format.
 }
+\keyword{internal}

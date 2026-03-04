@@ -24,3 +24,4 @@ Find all of the treatment names in the data, both for long and wide formats.
 If a study is specified, then the treatments are only found for that study.
 Otherwise, treatments are found for all studies.
 }
+\keyword{internal}

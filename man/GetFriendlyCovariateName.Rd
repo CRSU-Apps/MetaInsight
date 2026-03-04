@@ -15,3 +15,4 @@ Friendly covariate name
 \description{
 Convert a covariate column name to a display name.
 }
+\keyword{internal}

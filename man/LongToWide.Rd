@@ -17,3 +17,4 @@ Data frame in wide format
 \description{
 Convert long format to wide format (including covariate columns)
 }
+\keyword{internal}

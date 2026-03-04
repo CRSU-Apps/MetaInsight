@@ -30,6 +30,7 @@ model = effects type, "fixed" or "random".
 covariate_min = Vector of minimum covariate values directly contributing to the regression.
 covariate_max = Vector of maximum covariate values directly contributing to the regression.
 dic = Summary of model fit
+@keywords internal
 }
 \description{
 Function to collate model output to be used in the novel graph.

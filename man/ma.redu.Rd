@@ -17,3 +17,4 @@ Reduced meta-analysis data
 \description{
 Function to reduce the matrix size based on user defined plotting range reduction.
 }
+\keyword{internal}

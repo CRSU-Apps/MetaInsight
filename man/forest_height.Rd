@@ -19,3 +19,4 @@ The height of the plot in pixels
 \description{
 Calculate the height in inches of a forest plot for a given number of treatments
 }
+\keyword{internal}

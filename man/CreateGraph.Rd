@@ -15,3 +15,4 @@ Created igraph object.
 \description{
 Create a graph where the nodes are treatments and the links are studies comparing those treatments.
 }
+\keyword{internal}

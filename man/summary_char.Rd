@@ -2,7 +2,7 @@
 % Please edit documentation in R/summary_char_f.R
 \name{summary_char}
 \alias{summary_char}
-\title{Produce a summary dataframe of the studies using \code{BUGSnet::net.tab()}}
+\title{Characterise the data}
 \usage{
 summary_char(configured_data, logger = NULL)
 }
@@ -17,5 +17,5 @@ shiny, otherwise leave the default \code{NULL}}
 dataframe of characteristics
 }
 \description{
-Produce a summary dataframe of the studies using \code{BUGSnet::net.tab()}
+Produce summaries characterising the dataset
 }

@@ -19,3 +19,4 @@ Validation result in the form of a list:
 \description{
 Validate that all studies have at least 2 arms.
 }
+\keyword{internal}

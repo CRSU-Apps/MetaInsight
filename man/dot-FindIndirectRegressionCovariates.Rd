@@ -31,3 +31,4 @@ Data frame containing contribution details. Each row represents a study contribu
 \description{
 Find the contributions to the regression analysis.
 }
+\keyword{internal}

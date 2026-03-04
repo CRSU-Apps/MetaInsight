@@ -15,3 +15,4 @@ Data frame with 'Number' column defining treatment IDs and 'Label' column defini
 \description{
 Create data frame containing treatment IDs and names.
 }
+\keyword{internal}

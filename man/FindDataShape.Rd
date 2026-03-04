@@ -15,3 +15,4 @@ Either "wide" or "long"
 \description{
 Find which shape the data takes: either wide or long.
 }
+\keyword{internal}

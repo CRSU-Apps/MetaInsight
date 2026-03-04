@@ -15,3 +15,4 @@ A DIC table in the same format as from gemtc.
 \description{
 Creates a DIC table in gemtc format from a bnma model
 }
+\keyword{internal}

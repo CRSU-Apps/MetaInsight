@@ -11,6 +11,12 @@
 #' values should be wrapped in `log()`
 #' @inherit return-svg return
 #' @import graphics
+#' @examples
+#' configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
+#' configured_data <- readRDS(configured_data_path)
+#'
+#' summary_study(configured_data = configured_data)
+#'
 #' @export
 summary_study <- function(configured_data, plot_area_width = 6, colourblind = FALSE, x_min = NULL, x_max = NULL, logger = NULL) {
 

@@ -21,3 +21,4 @@ Matrix reduction vector
 \description{
 Function to create the matrix reduction vector.
 }
+\keyword{internal}

@@ -15,3 +15,4 @@ Cleaned version of the strings.
 \description{
 Clean strings by replacing all characters that are not a number, letter, or underscore, with an underscore.
 }
+\keyword{internal}

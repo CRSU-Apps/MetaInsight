@@ -46,3 +46,4 @@ List of contributions:
 \description{
 Determine whether comparisons contribute to relative treatment effects directly, indirectly, or not at all.
 }
+\keyword{internal}

@@ -19,17 +19,18 @@ GetReferenceOutcome(
 
 \item{outcome}{"binary" or "continuous".}
 
-\item{observed}{"Observed" or "Imputed". See @return.}
+\item{observed}{"Observed" or "Imputed". See return for details.}
 
-\item{model}{Model created by bnma::network.run(). Only required when @param observed == "Imputed". Defaults to NULL.}
+\item{model}{Model created by \code{bnma::network.run()}. Only required when \code{observed} = \code{Imputed}. Defaults to NULL.}
 }
 \value{
 Vector of reference arm outcomes, named by study.
 If a study contains the reference treatment then the value returned is the observed outcome in the reference arm.
 If a study does not contain the reference treatment then the value returned is:
-- NA if @param observed == "Observed";
-- The median of the study-specific intercept parameter if @param observed == "Imputed".
+- NA if \code{observed} = \code{Observed};
+- The median of the study-specific intercept parameter if \code{observed} = \code{Imputed}.
 }
 \description{
 Get the outcome in the reference arm.
 }
+\keyword{internal}

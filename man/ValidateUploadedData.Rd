@@ -21,3 +21,4 @@ Validation result in the form of a list:
 \description{
 Assess the data for validity. this checks the column names for required columns, and balanced wide format numbered columns.
 }
+\keyword{internal}

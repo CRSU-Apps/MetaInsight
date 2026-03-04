@@ -15,3 +15,4 @@ the calculated shading vector
 \description{
 Function to create a vector indexing shading in mtcMultiplot.
 }
+\keyword{internal}

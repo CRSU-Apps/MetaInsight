@@ -67,7 +67,6 @@ Imports:
     svglite,
     tidyr,
     tools,
-    withr,
     xml2
 Suggests:
     jsonlite,

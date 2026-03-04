@@ -54,3 +54,4 @@ List:
 \description{
 Get SUCRA data.
 }
+\keyword{internal}

@@ -17,3 +17,4 @@ Data frame in the new format with treatment names
 \description{
 Replace treatment IDs with treatment names.
 }
+\keyword{internal}

@@ -20,3 +20,4 @@ html. The cropped svg
 Crops an svg object, by rendering it, locating the non-white pixels and
 editing the svg viewBox property.
 }
+\keyword{internal}

@@ -22,3 +22,4 @@ Input data in contrast form.
 \description{
 Puts data in contrast form using netmeta::pairwise().
 }
+\keyword{internal}

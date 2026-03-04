@@ -36,3 +36,4 @@ The modified ggplot2 object.
 \description{
 Plot the regression lines on the plot.
 }
+\keyword{internal}

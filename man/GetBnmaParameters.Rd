@@ -18,10 +18,12 @@ GetBnmaParameters(all_parameters, effects_type, cov_parameters)
 \value{
 Vector of treatment effect and covariate parameter names, plus random effects sd and/or exchangeable covariate sd.
 
-Vector of treatment effect and covariate parameter names, plus random effects sd and/or exchangeable covariate sd.
+Vector of treatment effect and covariate parameter names,
+plus random effects sd and/or exchangeable covariate sd.
 }
 \description{
 Get the parameters that are to be displayed in Gelman plots.
 
 Get the parameters that are to be displayed in Gelman plots.
 }
+\keyword{internal}

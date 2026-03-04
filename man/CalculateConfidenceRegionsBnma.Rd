@@ -26,3 +26,4 @@ Each data frame in "intervals" contains a single row at the covariate value of t
 \description{
 Calculate the confidence regions within direct evidence for the baseline risk model.
 }
+\keyword{internal}

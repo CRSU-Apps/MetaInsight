@@ -15,3 +15,4 @@ Vector of column names in order.
 \description{
 The column order for a binary outcome, for wide and long data.
 }
+\keyword{internal}

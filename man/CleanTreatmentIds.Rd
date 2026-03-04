@@ -15,3 +15,4 @@ Cleaned version of treatment_ids
 \description{
 Clean the treatment labels to replace all characters which are not a number, letter, or underscore, with an underscore.
 }
+\keyword{internal}

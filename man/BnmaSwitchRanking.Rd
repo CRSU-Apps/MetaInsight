@@ -15,3 +15,4 @@ A relative effects table in the same format as from gemtc.
 \description{
 Change the ranking direction in a bnma ranking table.
 }
+\keyword{internal}

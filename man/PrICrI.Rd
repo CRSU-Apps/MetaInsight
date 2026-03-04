@@ -38,3 +38,4 @@ PrICrI(
 \description{
 Function to draw two-tiered error bars for summary relative estimates.
 }
+\keyword{internal}

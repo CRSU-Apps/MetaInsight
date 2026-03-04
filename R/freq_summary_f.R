@@ -1,10 +1,17 @@
-#' Produce a summary forest plot matrix with treatments ranked by SUCRA score,
+#' @title Summary forest plot matrix
+#' @description Produce a summary forest plot matrix with treatments ranked by SUCRA score,
 #' determined by `netmeta::rankogram()`. This function can only be used when
 #' `configured_data` contains between 3 and 10 treatments.
 #'
 #' @param plot_title character. Title of the plot. Default is no title.
 #' @inheritParams common_params
 #' @inherit return-svg return
+#' @examples
+#' configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
+#' configured_data <- readRDS(configured_data_path)
+#'
+#' freq_summary(configured_data = configured_data)
+#'
 #' @export
 freq_summary <- function(configured_data, plot_title = "", logger = NULL) {
 
@@ -157,6 +164,7 @@ freq_summary <- function(configured_data, plot_title = "", logger = NULL) {
 #' @param pw Meta-analysis data for direct (pairwise) evidence only
 #' @param xpos Position of text in X axis
 #' @param ucex Text size
+#' @keywords internal
 singleest <- function(mtc, pw, xpos = 0, ucex) {
 
   #define pos to be the same
@@ -183,6 +191,7 @@ singleest <- function(mtc, pw, xpos = 0, ucex) {
 #' @param ulwd Line width. Defaults to 1
 #' @param pcI  TRUE if both confidence interval and predictive interval to be plotted, otherwise only confidence interval plotted. Defaults to FALSE
 #' @param predbd Predictive data
+#' @keywords internal
 PrICrI <- function(offs, lower_confidence_limit, point_estimate, upper_confidence_limit, ypos, ucol = "black", ulwd = 1, pcI = FALSE, predbd = c(NA, NA)) {
   # Show predictive interval
   if (pcI && !is.na(predbd[1]) && !is.na(predbd[2]) && predbd[1] != 0 && predbd[2] != 0) {
@@ -229,7 +238,10 @@ PrICrI <- function(offs, lower_confidence_limit, point_estimate, upper_confidenc
 #' @param pw Meta-analysis data for direct (pairwise) evidence only
 #' @param bpredd TRUE if predictive interval to be plotted as error bars
 #' @param baxis TRUE if axes to be drawn for forest plots
-#' @param scaletype The outcome type being plotted. "RR" for risk ratio, and "OR" for odds ratio will be plotted on a log scale, anything else will be plotted on a linear scale
+#' @param scaletype The outcome type being plotted. "RR" for risk ratio, and
+#'  "OR" for odds ratio will be plotted on a log scale, anything else will be
+#'  plotted on a linear scale
+#' @keywords internal
 singleSFP <- function(mtc, pw, bpredd = TRUE, baxis = TRUE, scaletype) {
 
   ##define axis offset
@@ -270,6 +282,7 @@ singleSFP <- function(mtc, pw, bpredd = TRUE, baxis = TRUE, scaletype) {
 #' @param ntx Number of treatments
 #' @param rkgram Vector containing rankogram data
 #' @param cumu True if to draw cumulative rankogram. Defaults to False
+#' @keywords internal
 rankogram <- function(ntx, rkgram, cumu = FALSE) {
   ori.ntx <- length(rkgram) / ntx
   xseq <- seq(0, 1, length.out = (2 * ntx + 1))
@@ -306,6 +319,7 @@ rankogram <- function(ntx, rkgram, cumu = FALSE) {
 #' @param ntx Number of treatments
 #'
 #' @return the calculated shading vector
+#' @keywords internal
 shading.vec <- function(ntx) {
   ordvec <- seq(1, ntx * ntx)
   shgvec <- rep(0, ntx * ntx)
@@ -332,6 +346,7 @@ shading.vec <- function(ntx) {
 #' @param plt.adj Plot position adjustment
 #' @param ucex Text size
 #' @param key_text Vector of length 3 containing strings for the key underneath the plot.
+#' @keywords internal
 multiplot <- function(stytitle, ntx, lstx, mtc, ma, bpredd = TRUE, plt.adj, ucex, key_text = NULL) {
 
   #Start a matrix plot - define number of elements "squares" in Matrix
@@ -482,6 +497,7 @@ multiplot <- function(stytitle, ntx, lstx, mtc, ma, bpredd = TRUE, plt.adj, ucex
 #' @param po Ranking order of treatments
 #'
 #' @return Sorting order matrix
+#' @keywords internal
 sortres.matrix <- function(ntx, po) {
   #Correctly create corresponding treatment code no.
   txcode <- c(1:ntx)
@@ -511,6 +527,7 @@ sortres.matrix <- function(ntx, po) {
 #' @param po Ranking order of treatments
 #'
 #' @return Rankgram matrix sorting order
+#' @keywords internal
 sortrkg.ord <- function(ntx, po) {
   #Correctly create corresponding treatment code no.
   txcode <- c(1:ntx)
@@ -535,6 +552,7 @@ sortrkg.ord <- function(ntx, po) {
 #' @param indices Indices of the meta-analysis data to invert
 #'
 #' @return Inverted meta-analysis data
+#' @keywords internal
 InvertMetaAnalysis <- function(meta_analysis, mtorg, outcome_measure, indices) {
   #Re-calculate estimates after inverting the reference group, using mtorg[, 4 = inv]
   tmp.lor <- mtorg[, 4] * meta_analysis$lor[, indices]
@@ -567,6 +585,7 @@ InvertMetaAnalysis <- function(meta_analysis, mtorg, outcome_measure, indices) {
 #' @param outcome_measure Type of outcome being plotted
 #'
 #' @return Updated meta-analysis data
+#' @keywords internal
 ma.sortres <- function(ma, mtc, mtorg, outcome_measure) {
   tmp <- InvertMetaAnalysis(ma, mtorg, outcome_measure, 4:7)
   tmp.lor <- tmp$lor
@@ -597,6 +616,7 @@ ma.sortres <- function(ma, mtc, mtorg, outcome_measure) {
 #' @param outcome_measure Type of outcome being plotted
 #'
 #' @return Updated meta-analysis data
+#' @keywords internal
 mtc.sortres <- function(mtc, mtorg, rkgmo, po, outcome_measure) {
   #~VECTORS~
   new.rank <- mtc$rank[po, ]
@@ -633,6 +653,7 @@ mtc.sortres <- function(mtc, mtorg, rkgmo, po, outcome_measure) {
 #' @param mtorg Sorting order matrix
 #'
 #' @return Matrix reduction vector
+#' @keywords internal
 redu.matrix <- function(ntx, po, p.only, mtorg) {
 
   #Correctly create corresponding treatment code no.
@@ -652,6 +673,7 @@ redu.matrix <- function(ntx, po, p.only, mtorg) {
 #' @param rmt Matrix reduction vector
 #'
 #' @return Reduced meta-analysis data
+#' @keywords internal
 ma.redu <- function(ma, rmt) {
   new.lor <- ma$lor[!is.na(rmt), ]
   new.or <-  ma$or[!is.na(rmt), ]
@@ -670,6 +692,7 @@ ma.redu <- function(ma, rmt) {
 #' @param ntx Number of treatments
 #'
 #' @return Reduced meta-analysis data
+#' @keywords internal
 mtc.redu <- function(mtc, rmt, p.only, po, ntx) {
   #~VECTORS~ inputed mtc === st.mtc # already sorted, just truncate directly
   new.rank <- mtc$rank[1:p.only, ]
@@ -699,6 +722,7 @@ mtc.redu <- function(mtc, rmt, p.only, po, ntx) {
 #' @param bkey TRUE if key should be included in plot
 #' @param p.only Number of treatments to plot
 #' @param ucex Font size multiplier. Defaults to 1
+#' @keywords internal
 mtcMatrixCont <- function(stytitle, ntx, lstx, mtc, ma, outcome_measure, bpredd = TRUE, bkey = TRUE, p.only = ntx, ucex = 1) {
   if (p.only < 3) {
     stop("Print selection must not be less than 3")

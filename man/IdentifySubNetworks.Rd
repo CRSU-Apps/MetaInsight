@@ -30,3 +30,4 @@ List of subnetworks, where each subnetwork is a list containing:
 \description{
 Identify all of the disconnected subnetworks contained in the data.
 }
+\keyword{internal}

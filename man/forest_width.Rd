@@ -17,3 +17,4 @@ The width of the plot in inches
 \description{
 Calculate the width in inches of a forest plot for a given label.
 }
+\keyword{internal}

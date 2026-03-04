@@ -1,8 +1,16 @@
-#' Produce a frequentist forest plot and annotation using `meta::forest()`
+#' @title Produce a frequentist forest plot
+#' @description Produce an annotated frequentist forest plot using
+#' `meta::forest()`
 #'
 #' @param title character. Title for the plot.
 #' @inheritParams common_params
 #' @inherit return-svg return
+#' @examples
+#' configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
+#' configured_data <- readRDS(configured_data_path)
+#'
+#' freq_forest(configured_data = configured_data)
+#'
 #' @export
 freq_forest <- function(configured_data, xmin = NULL, xmax = NULL, title = "", logger = NULL) {
 
@@ -55,6 +63,7 @@ freq_forest <- function(configured_data, xmin = NULL, xmax = NULL, title = "", l
 #'  \item{xmin}{numeric. Minimum confidence interval}
 #'  \item{xmax}{numeric. Maximum confidence interval}
 #'
+#' @keywords internal
 #' @export
 freq_forest_limits <- function(freq, outcome){
 
@@ -88,6 +97,7 @@ freq_forest_limits <- function(freq, outcome){
 #' @param effects "fixed" or "random".
 #' @param outcome_measure "MD", "SMD", "OR", "RR", or "RD".
 #' @return Text as described above.
+#' @keywords internal
 freq_forest_annotation <- function(freq, effects, outcome_measure) {
 
   tau <- round(freq$net1$tau, 2)

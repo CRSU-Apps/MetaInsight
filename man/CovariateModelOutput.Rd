@@ -55,6 +55,7 @@ mtcNetwork = The network object from GEMTC
 model_type = The type of linear model, either "fixed" or "random"
 covariate_min = Vector of minimum covariate values directly contributing to the regression.
 covariate_max = Vector of maximum covariate values directly contributing to the regression.
+@keywords internal
 }
 \description{
 Function to collate all the model output to be used in other existing functions

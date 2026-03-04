@@ -21,3 +21,4 @@ TRUE if the columns are correctly numbered, else FALSE.
 \description{
 Validate wide columns that all columns are numbered sequentially from 1 to the same number across all numbered columns.
 }
+\keyword{internal}

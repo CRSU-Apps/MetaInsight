@@ -15,3 +15,4 @@ Vector of the same length with shortened names.
 \description{
 Shorten RoB and indirectness variable names.
 }
+\keyword{internal}

@@ -41,3 +41,4 @@ The lowest and highest covariate values of relevant studies. This is structured 
 Find the lowest and highest covariate values given by a study comparing the reference and comparator treatments.
 This does noes not include studies which do not directly compare treatments to the reference.
 }
+\keyword{internal}

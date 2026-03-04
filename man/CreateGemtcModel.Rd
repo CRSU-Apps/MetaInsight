@@ -32,3 +32,4 @@ An object of class mtc.model
 \description{
 Function for setting up covariate \CRANpkg{gemtc} model object
 }
+\keyword{internal}

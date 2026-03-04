@@ -17,3 +17,4 @@ Data frame where the treatments are given as IDs, not names
 \description{
 Replace all of the treatment names in the data with IDs, both for long and wide formats.
 }
+\keyword{internal}

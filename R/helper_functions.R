@@ -24,8 +24,6 @@ spurious <- function(x) {
   cookies::add_cookie_handlers(x)
   cowplot::add_sub(x)
   DT::renderDataTable(x)
-  grid::absolute.size(x)
-  gt::adjust_luminance(x)
   knitr::all_labels(x)
   mirai::call_mirai(x)
   quarto::is_using_quarto(x)
@@ -34,7 +32,6 @@ spurious <- function(x) {
   rmarkdown::github_document(x)
   shinyWidgets::pickerInput(x)
   shinyjs::disable(x)
-  svglite::add_fonts(x)
   return()
 }
 
@@ -212,15 +209,6 @@ show_results <- function(parent_session){
   bslib::accordion_panel_close("collapse_table", TRUE, session = parent_session)
 }
 
-#' @title show_table
-#' @description For internal use. Switches the view to the Table panel
-#' @param parent_session Session object of the main server function
-#' @keywords internal
-#' @export
-show_table <- function(parent_session){
-  bslib::accordion_panel_open("collapse_table", TRUE, session = parent_session)
-}
-
 ####################### #
 # SUPPRESS JAGS OUTPUT #
 ####################### #
@@ -241,10 +229,20 @@ suppress_jags_output <- function(expr) {
 # PLOTTING #
 ####################### #
 
-#' Write an svg plot to either a png, pdf or svg file
+#' @title Write plots to a file
+#' @description Write an svg plot to either a png, pdf or svg file.
 #'
 #' @param svg html. containing the svg string, returned from `crop_svg()`
 #' @param file character. The file to which to write.
+#' @examples
+#' configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
+#' configured_data <- readRDS(configured_data_path)
+#'
+#' tmp <- tempfile(fileext = ".png")
+#' summary_network(configured_data = configured_data,
+#'                 style = "netgraph") |>
+#'                 write_plot(tmp)
+#' unlink(tmp)
 #' @export
 write_plot <- function(svg, file) {
 
@@ -277,7 +275,7 @@ write_plot <- function(svg, file) {
 #' @param title TRUE if the title is included in the plot
 #' @param annotation TRUE if an annotation is included in the plot
 #' @return The height of the plot in pixels
-#' @export
+#' @keywords internal
 forest_height <- function(notrt, title=FALSE, annotation = FALSE) {
   # original calculations are pixel-based
   height <- 15 * (notrt - 1) + 60
@@ -301,7 +299,7 @@ forest_height <- function(notrt, title=FALSE, annotation = FALSE) {
 #' For frequentist plots this should be the longest treatment name.
 #' For Bayesian plots this should be 'Compared to \{reference treatment\}'
 #' @return The width of the plot in inches
-#' @export
+#' @keywords internal
 forest_width <- function(n_chars) {
   5 + (n_chars / 10)
 }
@@ -325,7 +323,7 @@ download_button_pair <- function(id){
 #'
 #' @param model Output created by `bayes_model()`
 #' @return Text with the point estimate and 95% CrI of between-trial SD of treatment effects (all 0 if fixed effects)
-#' @export
+#' @keywords internal
 CreateTauSentence <- function(model) {
   sumresults <- model$sumresults
   if (model$effects == "random") {   #SD and its 2.5% and 97.5%
@@ -361,6 +359,8 @@ CreateTauSentence <- function(model) {
 #' @param x numeric. The value to format.
 #' @param limit character. Either `min` or `max`
 #' @param log.scale logical. Whether the values are on a log scale.
+#' @keywords internal
+#' @export
 format_xlim <- function(x, limit, log.scale) {
 
   # Adapted from https://github.com/gertvv/gemtc/blob/b94d86a304eae57c8d16bb4aa8fc3f32155696e4/gemtc/R/blobbogram.R#L192
@@ -402,8 +402,7 @@ format_step <- function(x){
 #' @param margin numeric. The margin in pixels to leave around the edge
 #' of the plot content. Defaults to 10.
 #' @return html. The cropped svg
-#' @export
-
+#' @keywords internal
 crop_svg <- function(svg, margin = 10){
 
   pixel_data <- paste(svg, collapse = "\n") |>
@@ -534,6 +533,7 @@ dic_table <- function(dic, analysis = "all"){
 #' @description For internal use. Clears the common structure of data and resets all plots etc.
 #' @keywords internal
 #' @param common The common data structure
+#' @keywords internal
 #' @export
 reset_data <- function(common, session){
   modules <- names(common$meta)
@@ -554,6 +554,7 @@ reset_data <- function(common, session){
 #' @param COMPONENT_MODULES list. Containing details of all modules
 #' @param component character. The component to run all the modules of.
 #' @param logger common$logger
+#' @keywords internal
 #' @export
 run_all <- function(COMPONENTS, COMPONENT_MODULES, component, logger){
 
@@ -610,6 +611,7 @@ run_all <- function(COMPONENTS, COMPONENT_MODULES, component, logger){
 #' @param module_id character. The module identifier.
 #' @param show logical. Whether to show the div when `trigger(module_id)` is
 #' called
+#' @keywords internal
 #' @export
 hide_and_show <- function(module_id, show = TRUE){
   observe({

@@ -15,8 +15,11 @@ singleSFP(mtc, pw, bpredd = TRUE, baxis = TRUE, scaletype)
 
 \item{baxis}{TRUE if axes to be drawn for forest plots}
 
-\item{scaletype}{The outcome type being plotted. "RR" for risk ratio, and "OR" for odds ratio will be plotted on a log scale, anything else will be plotted on a linear scale}
+\item{scaletype}{The outcome type being plotted. "RR" for risk ratio, and
+"OR" for odds ratio will be plotted on a log scale, anything else will be
+plotted on a linear scale}
 }
 \description{
 Single plot for MTC & MA SFP in NMA SPF Matrix.
 }
+\keyword{internal}

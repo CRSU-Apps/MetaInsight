@@ -15,3 +15,4 @@ Names of all covariate columns
 \description{
 Find the names of all columns which contain a covariate.
 }
+\keyword{internal}

@@ -18,3 +18,4 @@ if no problems are found}
 \description{
 Throw an error if any study meets given criteria.
 }
+\keyword{internal}

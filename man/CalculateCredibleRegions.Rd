@@ -26,3 +26,4 @@ Each data frame in "intervals" contains a single row at the covariate value of t
 \description{
 Calculate the credible regions within direct evidence for the regression model.
 }
+\keyword{internal}

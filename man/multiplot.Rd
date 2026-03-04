@@ -38,3 +38,4 @@ multiplot(
 \description{
 Draw the elements of the summary forest matrix plot.
 }
+\keyword{internal}

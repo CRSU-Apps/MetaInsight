@@ -15,3 +15,4 @@ Leverage vs residual deviance plot.
 \description{
 Creates a plot of leverage versus residual deviance, by study.
 }
+\keyword{internal}

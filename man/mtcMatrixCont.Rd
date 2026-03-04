@@ -41,3 +41,4 @@ mtcMatrixCont(
 \description{
 Create summary forest matrix plot.
 }
+\keyword{internal}

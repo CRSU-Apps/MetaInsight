@@ -15,3 +15,4 @@ Tidied character vector.
 \description{
 Tidy a character column.
 }
+\keyword{internal}

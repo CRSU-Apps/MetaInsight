@@ -15,3 +15,4 @@ Vector of all treatment names
 \description{
 Add a new column in the data for study IDs, both for long and wide formats.
 }
+\keyword{internal}

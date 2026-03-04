@@ -15,3 +15,4 @@ RoundForDisplay(number)
 \description{
 Returns a number rounded in a nice manner.
 }
+\keyword{internal}

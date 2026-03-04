@@ -21,6 +21,14 @@
 #'  \item{effects}{character. Whether the models are `fixed` or `random` effects}
 #'  \item{ranking_option}{character. Whether higher values in the data are `good` or `bad`}
 #'  \item{seed}{numeric. A seed value to be passed to models}
+#'
+#' @examples
+#' configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
+#' configured_data <- readRDS(configured_data_path)
+#'
+#' subsetted_data <- setup_exclude(configured_data = configured_data,
+#'                                 exclusions = c("Leo", "Minerva"))
+#'
 #' @export
 #'
 setup_exclude <- function(configured_data, exclusions, async = FALSE){

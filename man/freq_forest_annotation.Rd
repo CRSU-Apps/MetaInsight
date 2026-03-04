@@ -19,3 +19,4 @@ Text as described above.
 \description{
 Creates the text to be displayed underneath the forest plots, with between-study SD, number of studies and number of treatments.
 }
+\keyword{internal}

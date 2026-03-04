@@ -1,9 +1,16 @@
-#' Assess the data for validity. this checks the column names for required columns, and balanced wide format numbered columns.
+#' @title Upgrade old data formats
+#' @description Loads a `.csv` file and converts it into a suitable format
+#' for use by `setup_load`.
 #'
 #' @param data_path character. Path to the file to be upgraded
-#' @param treatments character. The treatments in the data seperated by commas.
+#' @param treatments character. The treatments in the data separated by commas.
 #' @inheritParams common_params
 #' @return Dataframe containing the upgraded data
+#' @examples
+#' old_data_path <- system.file("extdata", "old_data.csv", package = "metainsight")
+#' upgraded_data <- setup_upgrade(data_path = old_data_path,
+#'                                treatments = "A,B,C,D,E")
+#'
 #' @export
 setup_upgrade <- function(data_path, treatments, logger = NULL){
 
@@ -55,6 +62,7 @@ setup_upgrade <- function(data_path, treatments, logger = NULL){
 #' @param old_data Data frame with old data format where treatments are specified as IDs
 #' @param treatment_df Data frame with 'Number' column defining treatment IDs and 'Label' column defining treatment names
 #' @return Data frame in the new format with treatment names
+#' @keywords internal
 ReplaceTreatments <- function(old_data, treatment_df) {
   upgraded <- CleanData(old_data)
   if ('T' %in% colnames(upgraded)) {
@@ -76,6 +84,7 @@ ReplaceTreatments <- function(old_data, treatment_df) {
 #'
 #' @param treatment_names_string String containing treatment names, separated by commas
 #' @return Data frame with 'Number' column defining treatment IDs and 'Label' column defining treatment names
+#' @keywords internal
 CreateTreatmentsDataFrame <- function(treatment_names_string) {
   treatments <- stringr::str_split(treatment_names_string, pattern = ",")[[1]] |>
     stringr::str_trim() |>
@@ -98,6 +107,7 @@ CreateTreatmentsDataFrame <- function(treatment_names_string) {
 #' @param old_data Data frame with old data format where treatments are specified as IDs
 #' @param treatment_df Data frame with 'Number' column defining treatment IDs and 'Label' column defining treatment names
 #' @return Data frame in the new format with treatment names
+#' @keywords internal
 UpgradeData <- function(old_data, treatment_df) {
   new_data <- ReplaceTreatments(old_data, treatment_df)
   new_data$StudyID <- NULL

@@ -15,3 +15,4 @@ Data frame with four MCMC characteristics.
 \description{
 MCMC characteristics from a BNMA model.
 }
+\keyword{internal}

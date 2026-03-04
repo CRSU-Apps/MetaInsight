@@ -2,8 +2,7 @@
 % Please edit documentation in R/baseline_regression_f.R
 \name{baseline_regression}
 \alias{baseline_regression}
-\title{Generate data required to produce a metaregression plot
-for a baseline risk model.}
+\title{Baseline regression data}
 \usage{
 baseline_regression(model, configured_data, async = FALSE)
 }
@@ -22,4 +21,13 @@ List containing:
 \description{
 Generate data required to produce a metaregression plot
 for a baseline risk model.
+}
+\examples{
+\donttest{
+configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
+configured_data <- readRDS(configured_data_path)
+
+fitted_baseline_model <- baseline_model(configured_data = configured_data)
+regression_data <- baseline_regression(model = fitted_baseline_model, configured_data = configured_data)
+}
 }

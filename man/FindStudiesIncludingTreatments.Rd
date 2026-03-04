@@ -19,3 +19,4 @@ Vector of all matching study names.
 \description{
 Find all of the studies which include the given treatments, both for long and wide formats.
 }
+\keyword{internal}

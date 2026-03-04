@@ -2,8 +2,7 @@
 % Please edit documentation in R/baseline_comparison_f.R
 \name{baseline_comparison}
 \alias{baseline_comparison}
-\title{Produce a table of comparisons of all treatment pairs for baseline risk
-models using \code{bnma::relative.effects.table()}}
+\title{Compare treatment pairs}
 \usage{
 baseline_comparison(model, logger = NULL)
 }
@@ -20,4 +19,13 @@ Relative effects table
 \description{
 Produce a table of comparisons of all treatment pairs for baseline risk
 models using \code{bnma::relative.effects.table()}
+}
+\examples{
+\donttest{
+configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
+configured_data <- readRDS(configured_data_path)
+
+fitted_baseline_model <- baseline_model(configured_data = configured_data)
+baseline_comparison(model = fitted_baseline_model)
+}
 }

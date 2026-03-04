@@ -2,7 +2,7 @@
 % Please edit documentation in R/setup_load_f.R
 \name{WideToLong}
 \alias{WideToLong}
-\title{Convert long format to wide format (including covariate columns).}
+\title{Convert wide format to long format (including covariate columns).}
 \usage{
 WideToLong(wide_data, outcome)
 }
@@ -15,5 +15,6 @@ WideToLong(wide_data, outcome)
 Data frame in long format
 }
 \description{
-Convert long format to wide format (including covariate columns).
+Convert wide format to long format (including covariate columns).
 }
+\keyword{internal}

@@ -23,3 +23,4 @@ list containing two dataframes: armData containing the core data; studyData cont
 \description{
 Function for formatting standard app user data ready for start of \CRANpkg{gemtc} chain of commands
 }
+\keyword{internal}

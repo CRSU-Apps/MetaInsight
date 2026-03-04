@@ -17,3 +17,4 @@ Data frame containing the treatment ID ('Number') and the treatment name ('Label
 \description{
 Create a data frame with treatment IDs and treatment names.
 }
+\keyword{internal}

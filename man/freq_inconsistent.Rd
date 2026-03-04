@@ -2,7 +2,7 @@
 % Please edit documentation in R/freq_inconsistent_f.R
 \name{freq_inconsistent}
 \alias{freq_inconsistent}
-\title{Produce inconsistency tables using \code{netmeta::netsplit()}}
+\title{Inconsistency tables for frequentist models}
 \usage{
 freq_inconsistent(configured_data, logger = NULL)
 }
@@ -27,4 +27,11 @@ Dataframe of inconsistency data:
 }
 \description{
 Produce inconsistency tables using \code{netmeta::netsplit()}
+}
+\examples{
+configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
+configured_data <- readRDS(configured_data_path)
+
+freq_inconsistent(configured_data = configured_data)
+
 }

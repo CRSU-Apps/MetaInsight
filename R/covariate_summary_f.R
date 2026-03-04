@@ -3,6 +3,12 @@
 #' @inheritParams common_params
 #' @inherit return-svg return
 #' @import ggplot2
+#' @examples
+#' configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
+#' configured_data <- readRDS(configured_data_path)
+#'
+#' covariate_summary(configured_data)
+#'
 #' @export
 covariate_summary <- function(configured_data, logger = NULL){
 

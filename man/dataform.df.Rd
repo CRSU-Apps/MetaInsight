@@ -19,3 +19,4 @@ Input data set in long format with the variable 'se' for a continuous outcome.
 \description{
 Converts wide data to long, adds the variable 'se' for a continuous outcomes, and does some formatting.
 }
+\keyword{internal}

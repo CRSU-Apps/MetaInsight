@@ -1,4 +1,5 @@
-#' Produce Markov chain Monte Carlo plots for Bayesian models
+#' @title Markov chain Monte Carlo plots
+#' @description Produce Markov chain Monte Carlo plots for Bayesian models
 #'
 #' @param model Output from `baseline_model()`, `bayes_model()` or `covariate_model()`
 #' @inheritParams common_params
@@ -7,6 +8,12 @@
 #' \item{trace_plots}{Trace plots}
 #' \item{density_plots}{Density plots}
 #' \item{n_rows}{The number of rows for each plot}
+#' @examples
+#' configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
+#' configured_data <- readRDS(configured_data_path)
+#'
+#' fitted_bayes_model <- bayes_model(configured_data = configured_data)
+#' bayes_mcmc(model = fitted_bayes_model)
 #' @export
 bayes_mcmc <- function(model, async = FALSE){
 
@@ -64,7 +71,9 @@ baseline_mcmc <- function(...){
 #' @param all_parameters Vector of monitored parameters from a bnma model.
 #' @param effects_type "fixed" or "random".
 #' @param cov_parameters "shared", "exchangeable", or "unrelated".
-#' @return Vector of treatment effect and covariate parameter names, plus random effects sd and/or exchangeable covariate sd.
+#' @return Vector of treatment effect and covariate parameter names,
+#' plus random effects sd and/or exchangeable covariate sd.
+#' @keywords internal
 GetBnmaParameters <- function(all_parameters, effects_type, cov_parameters) {
   #Extract parameters which begin with "d[" or "b_bl[", except d[1] and b_bl[1]
   parameters <- grep(
@@ -92,6 +101,7 @@ GetBnmaParameters <- function(all_parameters, effects_type, cov_parameters) {
 #' @param parameter The parameter from the previous argument, used as the title.
 #' @return A function that reproduces the Gelman plot mentioned in @param gelman_plot as a plot that can be put in a grid.
 #' @import ggplot2
+#' @keywords internal
 GelmanPlot <- function(gelman_data, parameter) {
   y_vals_median <- gelman_data$shrink[, , "median"]
   y_vals_975 <- gelman_data$shrink[, , "97.5%"]

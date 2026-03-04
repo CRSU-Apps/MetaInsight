@@ -38,3 +38,4 @@ Created ggplot2 object.
 \description{
 Setup the main components of the plot panel.
 }
+\keyword{internal}

@@ -17,3 +17,4 @@ List with one element per selected column in 'wide_data', with each element name
 \description{
 Create a list of all columns starting with the given column prefix.
 }
+\keyword{internal}

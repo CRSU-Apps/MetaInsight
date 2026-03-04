@@ -18,3 +18,4 @@ singleest(mtc, pw, xpos = 0, ucex)
 \description{
 MTC & MA estimates for Forest Matrix plot - used in for loop in multiplot function.
 }
+\keyword{internal}

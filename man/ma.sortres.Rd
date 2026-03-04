@@ -21,3 +21,4 @@ Updated meta-analysis data
 \description{
 Function to update the pairwise meta-analysis results after changes to the tx rankings.
 }
+\keyword{internal}

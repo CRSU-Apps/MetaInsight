@@ -19,3 +19,4 @@ Named vector of "2.5\%" and "97.5" quantiles.
 \description{
 Find the credible interval at a given covariate value.
 }
+\keyword{internal}

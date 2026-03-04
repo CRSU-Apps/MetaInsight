@@ -21,3 +21,4 @@ Output from bnma::network.data().
 \description{
 Creates the baseline risk meta-regression network in \CRANpkg{bnma}
 }
+\keyword{internal}

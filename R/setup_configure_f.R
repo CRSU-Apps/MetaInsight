@@ -1,4 +1,5 @@
-#' Checks the connectivity of the loaded data and converts it into formats for
+#' @title Configure the analysis
+#' @description Checks the connectivity of the loaded data and converts it into formats for
 #' later analyses. Conducts a frequentist analysis using `netmeta::netmeta()`.
 #' The output can be passed to many other functions - all `summary_` and `freq_`
 #' functions and `bayes_model()`, `baseline_model()` and `covariate_model()`.
@@ -27,6 +28,18 @@
 #'  \item{effects}{character. Whether the models are `fixed` or `random` effects}
 #'  \item{ranking_option}{character. Whether higher values in the data are `good` or `bad`}
 #'  \item{seed}{numeric. A seed value to be passed to models}
+#' @examples
+#' minimal_data_path <- system.file("extdata", "continuous_minimal.csv", package = "metainsight")
+#' loaded_data <- setup_load(data_path = minimal_data_path,
+#'                           outcome = "continuous")
+#'
+#' configured_data <- setup_configure(loaded_data = loaded_data,
+#'                                    reference_treatment = "the Great",
+#'                                    effects = "random",
+#'                                    outcome_measure = "MD",
+#'                                    ranking_option = "good",
+#'                                    seed = 123)
+#'
 #' @export
 
 setup_configure <- function(loaded_data, reference_treatment, effects, outcome_measure, ranking_option, seed, logger = NULL){
@@ -150,6 +163,7 @@ setup_configure <- function(loaded_data, reference_treatment, effects, outcome_m
 #' @return List of subnetworks, where each subnetwork is a list containing:
 #' - "treatments" = The IDs of the treatments included in the given network
 #' - "studies" = The names of the studies included in the given subnetwork
+#' @keywords internal
 IdentifySubNetworks <- function(data, treatments, reference_treatment_name = NULL, subnet_name_prefix = "subnet_") {
   if (is.null(reference_treatment_name)) {
     reference_treatment <- 1
@@ -210,6 +224,7 @@ IdentifySubNetworks <- function(data, treatments, reference_treatment_name = NUL
 #'
 #' @param treatments vector containing all treatment names
 #' @return Name of the expected reference treatment if one is found, else NULL
+#' @keywords internal
 #' @export
 FindExpectedReferenceTreatment <- function(treatments) {
   expected_reference_treatments <- match(.potential_reference_treatments, tolower(treatments))
@@ -226,6 +241,7 @@ FindExpectedReferenceTreatment <- function(treatments) {
 #' @param outcome "binary" or "continuous".
 #' @param data Input dataset.
 #' @return "good" or "bad".
+#' @keywords internal
 #' @export
 RankingOrder <- function(outcome, data) {
   file1 <- data
@@ -241,7 +257,7 @@ RankingOrder <- function(outcome, data) {
 #'
 #' @param data Data from which to remove covariate columns
 #' @return Data without covariate columns
-#' @export
+#' @keywords internal
 RemoveCovariates <- function(data) {
   covariate_column_names <- FindCovariateNames(data)
 
@@ -253,7 +269,11 @@ RemoveCovariates <- function(data) {
   return(data[, -covariate_column_indices])
 }
 
-
+#' Infer whether the covariate data is binary or continuous
+#'
+#' @param covariate_data Data from which to remove covariate columns
+#' @return Data without covariate columns
+#' @keywords internal
 InferCovariateType <- function(covariate_data) {
   unique_items <- unique(covariate_data)
   if (length(unique_items) == 2 && all(sort(unique_items) == c(0, 1))) {
@@ -269,6 +289,7 @@ InferCovariateType <- function(covariate_data) {
 #' @param treat_list Data frame containing the treatment ID ('Number') and the treatment name ('Label').
 #' @param CONBI "continuous" or "binary".
 #' @return Input data set in long format with the variable 'se' for a continuous outcome.
+#' @keywords internal
 dataform.df <- function(newData1, treat_list, CONBI) {
   if (FindDataShape(newData1) == "long") {
     long <- newData1

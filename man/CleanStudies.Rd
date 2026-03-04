@@ -15,3 +15,4 @@ The data frame with 'Study' cleaned and a new column 'RawStudy' which is a copy 
 \description{
 Clean study names by replacing all characters that are not a number, letter, or underscore, with an underscore.
 }
+\keyword{internal}

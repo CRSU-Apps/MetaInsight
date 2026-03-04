@@ -15,3 +15,4 @@ Cleaned data frame
 \description{
 Remove leading and trailing whitespace and collapse multiple whitespace characters between words.
 }
+\keyword{internal}

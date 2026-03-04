@@ -2,7 +2,7 @@
 % Please edit documentation in R/baseline_forest_f.R
 \name{baseline_forest}
 \alias{baseline_forest}
-\title{Produce a forest plot for a baseline risk model using \code{gemtc::blobbogram()}}
+\title{Produce a forest plot for baseline risk models}
 \usage{
 baseline_forest(
   model,
@@ -29,9 +29,20 @@ Window. Insert the logger reactive list here for running in
 shiny, otherwise leave the default \code{NULL}}
 }
 \value{
-html. Contains the svg string to generate the plot. This can be saved
+html. Contains the svg string to generate the plot. This will display
+the plot when at the end of a quarto or rmarkdown chunk. To view in the viewer
+panel of Rstudio, use \code{htmltools::browsable()}. The output can be saved
 using \code{write_plot()}.
 }
 \description{
 Produce a forest plot for a baseline risk model using \code{gemtc::blobbogram()}
+}
+\examples{
+\donttest{
+configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
+configured_data <- readRDS(configured_data_path)
+
+fitted_baseline_model <- baseline_model(configured_data = configured_data)
+baseline_forest(model = fitted_baseline_model)
+}
 }

@@ -23,3 +23,4 @@ Updated meta-analysis data
 \description{
 Function to update the MTC results after changes to the tx rankings.
 }
+\keyword{internal}

@@ -22,3 +22,4 @@ List:
 \description{
 Put the output from a bnma model into the format of a gemtc model, in order to apply CreateTauSentence().
 }
+\keyword{internal}

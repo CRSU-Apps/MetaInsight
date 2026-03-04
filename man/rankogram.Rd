@@ -16,3 +16,4 @@ rankogram(ntx, rkgram, cumu = FALSE)
 \description{
 Function to draw graphs along diagonal - for NMA SPF Matrix.
 }
+\keyword{internal}

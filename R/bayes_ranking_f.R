@@ -1,4 +1,5 @@
-#' Generate ranking data required to produce SUCRA plots from Bayesian models
+#' @title Treatment rankings
+#' @description Generate treatment ranking data required to produce SUCRA plots from Bayesian models
 #'
 #' @param model list. Output produced by `baseline_model()`, `bayes_model()` or `covariate_model()`.
 #' @inheritParams common_params
@@ -9,6 +10,12 @@
 #' \item{Cumulative}{Dataframe of cumulative ranking probabilities}
 #' \item{Probabilities}{Dataframe of ranking probabilities}
 #' \item{BUGSnetData}{ output from `BUGSnet::data.prep()`}
+#' @examples
+#' configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
+#' configured_data <- readRDS(configured_data_path)
+#'
+#' fitted_bayes_model <- bayes_model(configured_data = configured_data)
+#' ranking_data <- bayes_ranking(fitted_bayes_model, configured_data)
 #' @export
 bayes_ranking <- function(model, configured_data, logger = NULL) {
 
@@ -80,6 +87,7 @@ covariate_ranking <- function(...){
 #'     - ...
 #'     - 'Rank n_t' = Probability 'Treatment' is ranked last (n_t = number of treatments).
 #' - 'BUGSnetData' = Output from BUGSnet::data.prep with arguments from @param longdata.
+#' @keywords internal
 rankdata <- function(NMAdata, rankdirection, longdata, cov_value = NA, package = "gemtc") {
   # data frame of colours
   colour_dat <- data.frame(SUCRA = seq(0, 100, by = 0.1))

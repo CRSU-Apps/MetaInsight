@@ -19,3 +19,4 @@ Data frame which is uasable by the rest of the app
 \description{
 Wrangle the uploaded data into a form usable by the internals of the app, both for long and wide formats.
 }
+\keyword{internal}

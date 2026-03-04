@@ -15,3 +15,4 @@ Text with the point estimate and 95\% CrI of between-trial SD of treatment effec
 \description{
 Create text with the point estimate and 95\% CrI of between-trial SD of treatment effects.
 }
+\keyword{internal}

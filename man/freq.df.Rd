@@ -23,3 +23,4 @@ NMA results from netmeta::netmeta().
 \description{
 Frequentist NMA.
 }
+\keyword{internal}

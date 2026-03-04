@@ -2,7 +2,7 @@
 % Please edit documentation in R/setup_load_f.R
 \name{KeepOrDeleteControlTreatment}
 \alias{KeepOrDeleteControlTreatment}
-\title{Keep or delete rows in @param data corresponding to the control treatment in each study.}
+\title{Keep or delete rows in data corresponding to the control treatment in each study.}
 \usage{
 KeepOrDeleteControlTreatment(data, treatments, keep_delete)
 }
@@ -14,8 +14,9 @@ KeepOrDeleteControlTreatment(data, treatments, keep_delete)
 \item{keep_delete}{"keep" or "delete".}
 }
 \value{
-@param data with rows corresponding to the control treatment kept or deleted, and a new column 'Control'.
+data with rows corresponding to the control treatment kept or deleted, and a new column 'Control'.
 }
 \description{
-Keep or delete rows in @param data corresponding to the control treatment in each study.
+Keep or delete rows in data corresponding to the control treatment in each study.
 }
+\keyword{internal}

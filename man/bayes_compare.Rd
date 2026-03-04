@@ -3,8 +3,7 @@
 \name{bayes_compare}
 \alias{bayes_compare}
 \alias{covariate_comparison}
-\title{Produce a table of comparisons of all treatment pairs for Bayesian models
-using \code{gemtc::relative.effect.table()}}
+\title{Compare treatment pairs}
 \usage{
 bayes_compare(model, logger = NULL)
 
@@ -23,6 +22,13 @@ shiny, otherwise leave the default \code{NULL}}
 Relative effects table
 }
 \description{
-Produce a table of comparisons of all treatment pairs for Bayesian models
-using \code{gemtc::relative.effect.table()}
+Produce a table of comparisons of all treatment pairs for Bayesian
+models using \code{gemtc::relative.effect.table()}
+}
+\examples{
+configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
+configured_data <- readRDS(configured_data_path)
+
+fitted_bayes_model <- bayes_model(configured_data = configured_data)
+bayes_compare(model = fitted_bayes_model)
 }

@@ -15,3 +15,4 @@ Data without covariate columns
 \description{
 Create a copy of a data from which does not contain any covariate columns.
 }
+\keyword{internal}

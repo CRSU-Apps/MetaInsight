@@ -21,3 +21,4 @@ List:
 \description{
 Determine if the network contains any splittable nodes. If not, state the reason.
 }
+\keyword{internal}

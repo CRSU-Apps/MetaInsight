@@ -4,7 +4,7 @@
 \alias{bayes_ranking}
 \alias{baseline_ranking}
 \alias{covariate_ranking}
-\title{Generate ranking data required to produce SUCRA plots from Bayesian models}
+\title{Treatment rankings}
 \usage{
 bayes_ranking(model, configured_data, logger = NULL)
 
@@ -32,5 +32,12 @@ List of output created by \code{rankdata()}
 \item{BUGSnetData}{ output from \code{BUGSnet::data.prep()}}
 }
 \description{
-Generate ranking data required to produce SUCRA plots from Bayesian models
+Generate treatment ranking data required to produce SUCRA plots from Bayesian models
+}
+\examples{
+configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
+configured_data <- readRDS(configured_data_path)
+
+fitted_bayes_model <- bayes_model(configured_data = configured_data)
+ranking_data <- bayes_ranking(fitted_bayes_model, configured_data)
 }

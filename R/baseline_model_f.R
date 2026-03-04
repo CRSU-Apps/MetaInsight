@@ -1,4 +1,6 @@
-#' Fit a baseline risk regression model using `bnma::network.run()`
+#' @title Fit a baseline risk regression model
+#' @description Fit a baseline risk regression model using `bnma::network.run()`.
+#' The output is consistent with outputs produced by \CRANpkg{gemtc}.
 #'
 #' @param regressor_type character. Type of regression coefficient, either `shared`, `unrelated`, or `exchangeable`
 #' @inheritParams common_params
@@ -19,6 +21,15 @@
 #'  \item{dic}{Summary of model fit}
 #'  \item{sumresults}{Output of summary(model)}
 #'  \item{regressor}{Type of regression coefficient}
+#' @examples
+#' \donttest{
+#' configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
+#' configured_data <- readRDS(configured_data_path)
+#'
+#' fitted_baseline_model <- baseline_model(configured_data = configured_data,
+#'                                         regressor_type = "shared")
+#' }
+#'
 #' @export
 baseline_model <- function(configured_data, regressor_type, async = FALSE){
 
@@ -66,6 +77,7 @@ baseline_model <- function(configured_data, regressor_type, async = FALSE){
 #' @return List:
 #'  - 'ArmLevel' = Data frame containing 'Study', 'Treat', 'N', 'Outcomes', and (for outcome_type="continuous") 'SD'
 #'  - 'Treat.order' = Vector of (unique) treatments, with the reference treatment first
+#' @keywords internal
 FormatForBnma <- function(connected_data, treatment_df, outcome, reference_treatment) {
   if (FindDataShape(connected_data) == "wide") {
     br_data <- as.data.frame(WideToLong(connected_data, outcome = outcome))
@@ -104,6 +116,7 @@ FormatForBnma <- function(connected_data, treatment_df, outcome, reference_treat
 #' @param model_type "fixed" or "random".
 #' @param cov_parameters "shared", "exchangable", or "unrelated".
 #' @return Output from bnma::network.data().
+#' @keywords internal
 BaselineRiskNetwork <- function(br_data, outcome, model_type, cov_parameters) {
   #Use bnma terms
   if (cov_parameters == "shared") {
@@ -151,6 +164,7 @@ BaselineRiskNetwork <- function(br_data, outcome, model_type, cov_parameters) {
 #' @param cov_parameters "shared", "exchangable", or "unrelated".
 #' @param seed Seed. Defaults to 123.
 #' @return Output from `bnma::network.run()`.
+#' @keywords internal
 BaselineRiskRegression <- function(connected_data, treatment_df, outcome, reference_treatment, model_type, cov_parameters, seed = 123) {
   formatted_data <- FormatForBnma(connected_data = connected_data, treatment_df = treatment_df,
                                   outcome = outcome, reference_treatment = reference_treatment)
@@ -199,6 +213,7 @@ BaselineRiskRegression <- function(connected_data, treatment_df, outcome, refere
 #'  covariate_min = Vector of minimum covariate values directly contributing to the regression.
 #'  covariate_max = Vector of maximum covariate values directly contributing to the regression.
 #'  dic = Summary of model fit
+#'  @keywords internal
 BaselineRiskModelOutput <- function(connected_data, treatment_df, model, outcome_measure) {
 
   treatments <- model$network$Treat.order
@@ -296,6 +311,7 @@ BaselineRiskModelOutput <- function(connected_data, treatment_df, model, outcome
 #' - upper: the 97.5% quantile.
 #' Each data frame in "regions" contains 11 rows creating a 10-polygon region.
 #' Each data frame in "intervals" contains a single row at the covariate value of that single contribution.
+#' @keywords internal
 CalculateConfidenceRegionsBnma <- function(model_output) {
 
   mtc_results <- model_output$mtcResults
@@ -358,6 +374,7 @@ CalculateConfidenceRegionsBnma <- function(model_output) {
 #' @param parameter_name Name of the parameter for which to get the confidence interval.
 #'
 #' @return Named vector of "2.5%" and "97.5" quantiles.
+#' @keywords internal
 .FindConfidenceIntervalBnma <- function(mtc_results, cov_value, parameter_name) {
   rel_eff <- BnmaRelativeEffects(model = mtc_results, covariate_value = cov_value)
   return(rel_eff[parameter_name, c("2.5%", "97.5%")])
@@ -369,6 +386,7 @@ CalculateConfidenceRegionsBnma <- function(model_output) {
 #'
 #' @param br_model Output from bnma::network.run(), typically created from BaselineRiskRegression().
 #' @return A DIC table in the same format as from gemtc.
+#' @keywords internal
 BaselineRiskDicTable <- function(br_model) {
   summary <- summary(br_model)
   dic_table <- c(summary$deviance, summary$total_n)
@@ -382,6 +400,7 @@ BaselineRiskDicTable <- function(br_model) {
 #'
 #' @param median_ci_table Output from bnma::relative.effects.table(, summary_stat = "ci")
 #' @return A relative effects table in the same format as from gemtc.
+#' @keywords internal
 BaselineRiskRelativeEffectsTable <- function(median_ci_table) {
   #Entries in the input table are in the form "[lower_ci,median,upper_ci]" (no spaces)
 
@@ -422,6 +441,7 @@ BaselineRiskRelativeEffectsTable <- function(median_ci_table) {
 #'
 #' @param ranking_table The $rank.tx table from output from bnma::network.run()
 #' @return A relative effects table in the same format as from gemtc.
+#' @keywords internal
 BnmaSwitchRanking <- function(ranking_table) {
   ranking_table <- cbind(ranking_table, data.frame(new_ranks = nrow(ranking_table):1))
   new_table <- dplyr::arrange(ranking_table, ranking_table$new_ranks)
@@ -437,6 +457,7 @@ BnmaSwitchRanking <- function(ranking_table) {
 #' @param effects_type "fixed" or "random".
 #' @param cov_parameters "shared", "exchangeable", or "unrelated".
 #' @return Vector of treatment effect and covariate parameter names, plus random effects sd and/or exchangeable covariate sd.
+#' @keywords internal
 GetBnmaParameters <- function(all_parameters, effects_type, cov_parameters) {
   #Extract parameters which begin with "d[" or "b_bl[", except d[1] and b_bl[1]
   parameters <- grep("(d|b_bl)\\[([0-9][0-9]+|[2-9])\\]",
@@ -464,6 +485,7 @@ GetBnmaParameters <- function(all_parameters, effects_type, cov_parameters) {
 #' @return Matrix with the median and 95\% credible interval relative effect
 #'  - columns: '50%', '2.5%' and '97.5%'
 #'  - rows: one row per non-reference treatment, named by the corresponding treatment parameter (e.g. the first one is `d[2]`).
+#'  @keywords internal
 BnmaRelativeEffects <- function(model, covariate_value) {
 
   parameters <- colnames(model$samples[[1]])
@@ -488,9 +510,3 @@ BnmaRelativeEffects <- function(model, covariate_value) {
 }
 
 
-BaselineRiskDicTable <- function(br_model) {
-  summary <- summary(br_model)
-  dic_table <- c(summary$deviance, summary$total_n)
-  names(dic_table)[4] <- "Data points"
-  return(dic_table)
-}

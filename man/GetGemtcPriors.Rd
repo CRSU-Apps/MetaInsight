@@ -15,3 +15,4 @@ Data frame with prior distribution information.
 \description{
 Prior distributions from a GEMTC model.
 }
+\keyword{internal}

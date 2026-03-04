@@ -15,3 +15,4 @@ Names of all RoB or indirectness columns
 \description{
 Find the names of all columns which contain a RoB or indirectness variable.
 }
+\keyword{internal}

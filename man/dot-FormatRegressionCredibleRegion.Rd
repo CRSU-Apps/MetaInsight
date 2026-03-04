@@ -23,3 +23,4 @@ Data frame containing contribution details. Each row represents a credible inter
 \description{
 Format the credible regions for the regression analysis into a plottable data frame.
 }
+\keyword{internal}

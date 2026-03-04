@@ -17,3 +17,4 @@ Rankgram matrix sorting order
 \description{
 Function to create the rankgram matrix sorting order.
 }
+\keyword{internal}

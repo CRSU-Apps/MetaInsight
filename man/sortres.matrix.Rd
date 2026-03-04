@@ -17,3 +17,4 @@ Sorting order matrix
 \description{
 Function to create the matrix sorting order - to be used for the MTC & MA numerical results (Upper triangle results),
 }
+\keyword{internal}

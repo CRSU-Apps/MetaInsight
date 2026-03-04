@@ -16,3 +16,4 @@ format_baseline_forest(median_ci_table, reference_treatment)
 Convert output of \code{bnma::relative.effects.table()} into a suitable format
 to pass to \code{gemtc::blobbogram()}
 }
+\keyword{internal}

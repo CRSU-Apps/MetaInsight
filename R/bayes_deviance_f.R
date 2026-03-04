@@ -1,4 +1,8 @@
-#' Produce deviance plots using the output of `gemtc::mtc.deviance()`
+#' @title Produce deviance plots
+#' @description Produce deviance plots using the output of `gemtc::mtc.deviance()`
+#' for Bayesian and covariate models. Because these plots are interactive, it is
+#' not currently possible to download them, although they can be included in
+#' html reports.
 #'
 #' @param model Bayesian model produced by `bayes_model()` or `covariate_model()`
 #' @inheritParams common_params
@@ -17,6 +21,14 @@
 #' \item{stem_plot}{plotly object}
 #' \item{lev_plot}{plotly object}
 #'
+#' @examples
+#' \donttest{
+#' configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
+#' configured_data <- readRDS(configured_data_path)
+#'
+#' fitted_bayes_model <- bayes_model(configured_data = configured_data)
+#' bayes_deviance(model = fitted_bayes_model)
+#' }
 #' @export
 bayes_deviance <- function(model, async = FALSE){
 
@@ -61,6 +73,7 @@ covariate_deviance <- function(...){
 #' @param model_type Model effects type. "random" or "fixed".
 #' @param outcome_measure Outcome measure being analysed: one of "OR". "RR", "MD".
 #' @param seed numeric. Seed value to use for calculating UME model.
+#' @keywords internal
 scat_plot <- function(model, deviance, model_type, outcome_measure, seed) {
   if (outcome_measure == "MD") {
     like <- "normal"
@@ -163,6 +176,7 @@ scat_plot <- function(model, deviance, model_type, outcome_measure, seed) {
 #' @param all The full data frame of residual deviances.
 #' @param arm_number Current arm number.
 #' @return 'ume_plot' with additional points added, corresponding to 'arm_number'.
+#' @keywords internal
 .add_trace_to_scat_plot <- function(ume_plot, all, arm_number) {
   x_column <- paste0("X", arm_number, ".x")
   y_column <- paste0("X", arm_number, ".y")
@@ -185,6 +199,7 @@ scat_plot <- function(model, deviance, model_type, outcome_measure, seed) {
 
 #' Stem plot
 #' @param deviance Output produced by `gemtc::mtc.deviance()`
+#' @keywords internal
 stem_plot <- function(deviance) {
   c <- data.frame(deviance$dev.ab)
   c$names <- rownames(c)
@@ -253,6 +268,7 @@ stem_plot <- function(deviance) {
 #'
 #' @param deviance gemtc::mtc.deviance() object.
 #' @return Leverage vs residual deviance plot.
+#' @keywords internal
 lev_plot <- function(deviance) {
   fit.ab <- apply(deviance[['fit.ab']], 1, sum, na.rm = TRUE)
   dev.ab <- apply(deviance[['dev.ab']], 1, sum, na.rm = TRUE)

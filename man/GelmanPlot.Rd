@@ -17,3 +17,4 @@ A function that reproduces the Gelman plot mentioned in @param gelman_plot as a 
 \description{
 Creates a Gelman plot for a gemtc or bnma model.
 }
+\keyword{internal}

@@ -1,4 +1,5 @@
-#' Produce a summary dataframe of the studies using `BUGSnet::net.tab()`
+#' @title Characterise the data
+#' @description Produce summaries characterising the dataset
 #'
 #' @inheritParams common_params
 #' @return dataframe of characteristics

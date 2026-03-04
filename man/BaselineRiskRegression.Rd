@@ -35,3 +35,4 @@ Output from \code{bnma::network.run()}.
 \description{
 Fits the baseline risk meta-regression model in \CRANpkg{bnma}
 }
+\keyword{internal}

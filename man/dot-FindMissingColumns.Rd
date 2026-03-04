@@ -21,3 +21,4 @@ Vector containing names of any columns which are required, but are missing.
 \description{
 Find the names of any required columns which are missing from the data frame.
 }
+\keyword{internal}

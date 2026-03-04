@@ -19,3 +19,4 @@ List containing:
 \description{
 Extract the minimum and maximum confidence intervals from the summary produced by netmeta
 }
+\keyword{internal}

@@ -16,6 +16,7 @@ Matrix with the median and 95\\% credible interval relative effect
 \itemize{
 \item columns: '50\%', '2.5\%' and '97.5\%'
 \item rows: one row per non-reference treatment, named by the corresponding treatment parameter (e.g. the first one is \code{d[2]}).
+@keywords internal
 }
 }
 \description{

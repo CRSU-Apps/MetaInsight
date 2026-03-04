@@ -12,3 +12,4 @@ stem_plot(deviance)
 \description{
 Stem plot
 }
+\keyword{internal}

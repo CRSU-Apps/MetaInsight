@@ -20,3 +20,4 @@ scat_plot(model, deviance, model_type, outcome_measure, seed)
 \description{
 UME scatter plot
 }
+\keyword{internal}

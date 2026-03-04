@@ -17,3 +17,4 @@ The corrected column name.
 \description{
 Correct a column name to match the expected letter casing.
 }
+\keyword{internal}

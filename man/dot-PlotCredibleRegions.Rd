@@ -26,3 +26,4 @@ The modified ggplot2 object.
 \description{
 Plot the credible regions and intervals on the plot.
 }
+\keyword{internal}

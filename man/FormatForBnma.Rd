@@ -25,3 +25,4 @@ List:
 \description{
 Takes MetaInsight data and converts it into \CRANpkg{bnma} format
 }
+\keyword{internal}

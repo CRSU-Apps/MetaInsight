@@ -19,3 +19,4 @@ Input data with the columns treat1 and treat2 now labelled.
 \description{
 Adds treatment labels to contrast data.
 }
+\keyword{internal}

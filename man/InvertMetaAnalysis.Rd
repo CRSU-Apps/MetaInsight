@@ -21,3 +21,4 @@ Inverted meta-analysis data
 \description{
 Conditionally invert the meta-analysis data based on the sorting order.
 }
+\keyword{internal}
