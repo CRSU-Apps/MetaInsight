@@ -18,8 +18,7 @@ printVecAsis <- function(x) {
 #' @title Spurious package call to avoid note of functions outside R folder
 #' @description For internal use.
 #' @param x x
-#' @keywords internal
-#' @export
+#' @noRd
 spurious <- function(x) {
   cookies::add_cookie_handlers(x)
   cowplot::add_sub(x)
@@ -142,7 +141,7 @@ asyncLog <- function(async, ..., type = "default"){
 #' @param logger Stores all notification messages to be displayed in the Log
 #'   Window or returned as errors.
 #' @return `TRUE` if any errors are found. `FALSE` if not
-#' @keywords internal
+#' @noRd
 check_param_classes <- function(params, classes, logger){
   for (i in seq_along(params)) {
     if (!inherits(get(params[i], envir = parent.frame()), classes[i])) {
@@ -217,7 +216,7 @@ show_results <- function(parent_session){
 #' @description For internal use. Stop JAGS output appearing in the console /
 #' html reports by wrapping model functions
 #' @param expr The model function to be used
-#' @keywords internal
+#' @noRd
 suppress_jags_output <- function(expr) {
   null_device <- if (.Platform$OS.type == "windows") "NUL" else "/dev/null"
   sink(null_device)
@@ -275,7 +274,7 @@ write_plot <- function(svg, file) {
 #' @param title TRUE if the title is included in the plot
 #' @param annotation TRUE if an annotation is included in the plot
 #' @return The height of the plot in pixels
-#' @keywords internal
+#' @noRd
 forest_height <- function(notrt, title=FALSE, annotation = FALSE) {
   # original calculations are pixel-based
   height <- 15 * (notrt - 1) + 60
@@ -299,7 +298,7 @@ forest_height <- function(notrt, title=FALSE, annotation = FALSE) {
 #' For frequentist plots this should be the longest treatment name.
 #' For Bayesian plots this should be 'Compared to \{reference treatment\}'
 #' @return The width of the plot in inches
-#' @keywords internal
+#' @noRd
 forest_width <- function(n_chars) {
   5 + (n_chars / 10)
 }
@@ -323,7 +322,7 @@ download_button_pair <- function(id){
 #'
 #' @param model Output created by `bayes_model()`
 #' @return Text with the point estimate and 95% CrI of between-trial SD of treatment effects (all 0 if fixed effects)
-#' @keywords internal
+#' @noRd
 CreateTauSentence <- function(model) {
   sumresults <- model$sumresults
   if (model$effects == "random") {   #SD and its 2.5% and 97.5%
@@ -402,7 +401,7 @@ format_step <- function(x){
 #' @param margin numeric. The margin in pixels to leave around the edge
 #' of the plot content. Defaults to 10.
 #' @return html. The cropped svg
-#' @keywords internal
+#' @noRd
 crop_svg <- function(svg, margin = 10){
 
   pixel_data <- paste(svg, collapse = "\n") |>

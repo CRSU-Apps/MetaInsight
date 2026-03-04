@@ -131,7 +131,7 @@ covariate_model <- function(configured_data,
 #' @param covariate Chosen covariate name as per uploaded data
 #' @param cov_friendly Friendly name of chosen covariate
 #' @return list containing two dataframes: armData containing the core data; studyData containing covariate data
-#' @keywords internal
+#' @noRd
 PrepDataGemtc <- function(data, treatment_df, outcome, covariate, cov_friendly){
   # ensure data is in long format
   if (FindDataShape(data) == "wide") {
@@ -172,7 +172,7 @@ PrepDataGemtc <- function(data, treatment_df, outcome, covariate, cov_friendly){
 #' @param ref_choice The choice of reference treatment as selected by user
 #' @param seed Seed value to use when fitting model
 #' @return An object of class mtc.model
-#' @keywords internal
+#' @noRd
 CreateGemtcModel <- function(data, model_type, outcome_measure, regressor_type, ref_choice, seed) {
   # Create 'network' object
   network_object <- gemtc::mtc.network(data.ab = data$armData,
@@ -246,7 +246,8 @@ CreateGemtcModel <- function(data, model_type, outcome_measure, regressor_type, 
 #'  model_type = The type of linear model, either "fixed" or "random"
 #'  covariate_min = Vector of minimum covariate values directly contributing to the regression.
 #'  covariate_max = Vector of maximum covariate values directly contributing to the regression.
-#'  @keywords internal
+#'
+#' @noRd
 CovariateModelOutput <- function(connected_data, treatments, model, covariate_title, covariate_value, outcome, outcome_measure, covariate_type) {
 
   model_levels <- levels(model$model$data$reg.control)
@@ -359,7 +360,7 @@ CovariateModelOutput <- function(connected_data, treatments, model, covariate_ti
 #' @return The lowest and highest covariate values of relevant studies. This is structured as a list containing 2 items:
 #' - "min" a named vector of the lowest values, where the names are the treatment names.
 #' - "max" a named vector of the highest values, where the names are the treatment names.
-#' @keywords internal
+#' @noRd
 FindCovariateRanges <- function(connected_data, treatment_df, reference_treatment, covariate_title, baseline_risk = FALSE, outcome = NULL, model = NULL) {
 
   studies <- unique(connected_data$Study)
@@ -453,7 +454,7 @@ FindCovariateRanges <- function(connected_data, treatment_df, reference_treatmen
 #'   If a study does not contain the reference treatment then the value returned is:
 #'     - NA if `observed` = `Observed`;
 #'     - The median of the study-specific intercept parameter if `observed` = `Imputed`.
-#' @keywords internal
+#' @noRd
 GetReferenceOutcome <- function(connected_data, treatment_df, outcome, observed, model = NULL){
 
   if (!(observed %in% c("Observed", "Imputed"))) {

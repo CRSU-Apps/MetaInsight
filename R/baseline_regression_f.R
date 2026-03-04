@@ -77,7 +77,7 @@ baseline_regression <- function(model, configured_data, async = FALSE){
 #' - upper: the 97.5% quantile.
 #' Each data frame in "regions" contains 11 rows creating a 10-polygon region.
 #' Each data frame in "intervals" contains a single row at the covariate value of that single contribution.
-#' @keywords internal
+#' @noRd
 CalculateCredibleRegionsBnma <- function(model_output) {
 
   mtc_results <- model_output$mtcResults
@@ -155,7 +155,7 @@ CalculateCredibleRegionsBnma <- function(model_output) {
 #' @param parameter_name Name of the parameter for which to get the credible interval.
 #'
 #' @return Named vector of "2.5%" and "97.5" quantiles.
-#' @keywords internal
+#' @noRd
 .FindCredibleIntervalBnma <- function(mtc_results, cov_value, parameter_name) {
   rel_eff <- BnmaRelativeEffects(
     model = mtc_results,

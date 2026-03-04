@@ -69,7 +69,7 @@ covariate_regression <- function(model,
 #'   - Matrix of relative effects of treatments compared to the reference. Rows are studies, columns are treatments
 #' - "covariate_value"
 #'   - Vector of covariate values from the studies.
-#' @keywords internal
+#' @noRd
 CalculateDirectness <- function(
     data,
     covariate_title,
@@ -193,7 +193,7 @@ CalculateDirectness <- function(
 #' - upper: the 97.5% quantile.
 #' Each data frame in "regions" contains 11 rows creating a 10-polygon region.
 #' Each data frame in "intervals" contains a single row at the covariate value of that single contribution.
-#' @keywords internal
+#' @noRd
 CalculateCredibleRegions <- function(model_output) {
   mtc_results <- model_output$mtcResults
   reference_treatment <- model_output$reference_treatment
@@ -272,7 +272,7 @@ CalculateCredibleRegions <- function(model_output) {
 #' @param parameter_name Name of the parameter for which to get the credible interval.
 #'
 #' @return Named vector of "2.5%" and "97.5" quantiles.
-#' @keywords internal
+#' @noRd
 .FindCredibleInterval <- function(mtc_results, reference_treatment, cov_value, parameter_name) {
   rel_eff <- gemtc::relative.effect(mtc_results, reference_treatment, covariate = cov_value)
   rel_eff_summary <- summary(rel_eff)

@@ -204,7 +204,7 @@ regression_ghost_name <- "\"Other\""
 #' Defaults to "BR"
 #'
 #' @return Created ggplot2 object.
-#' @keywords internal
+#' @noRd
 CreateMainRegressionPlot <- function(
     model_output,
     treatment_df,
@@ -281,7 +281,7 @@ CreateMainRegressionPlot <- function(
 #' - "TL" - Top-left of the plot area
 #'
 #' @return Created ggplot2 object.
-#' @keywords internal
+#' @noRd
 .SetupMainRegressionPlot <- function(reference, comparators, outcome_measure, include_ghosts, credible_opacity, legend_position) {
 
   # Set up basic plot
@@ -337,7 +337,7 @@ CreateMainRegressionPlot <- function(
 #' @param credible_opacity The opacity of the credible regions. Can be any value between 0 and 1, inclusive. Defaults to 0.2.
 #'
 #' @return The modified ggplot2 object.
-#' @keywords internal
+#' @noRd
 .PlotCredibleRegions <- function(plot, credible_regions, comparators, credible_opacity = 0.2) {
 
   regions <- .FormatRegressionCredibleRegion(credible_regions$regions, comparators)
@@ -383,7 +383,7 @@ CreateMainRegressionPlot <- function(
 #' @param ghosted TRUE if studies should be plotted in grey. Defaults to FALSE.
 #'
 #' @return The modified ggplot2 object.
-#' @keywords internal
+#' @noRd
 .PlotDirectCovariateCircles <- function(plot, model_output, treatment_df, reference, comparators, directness, covariate_symbol = "circle open", covariate_symbol_size = 10, ghosted = FALSE) {
 
   contributions <- .FindDirectRegressionContributions(model_output, reference, comparators, directness)
@@ -427,7 +427,7 @@ CreateMainRegressionPlot <- function(
 #' @param ghosted TRUE if studies should be plotted in grey. Defaults to FALSE.
 #'
 #' @return The modified ggplot2 object.
-#' @keywords internal
+#' @noRd
 .PlotRegressionLines <- function(plot, model_output, treatment_df, reference, comparators, extrapolate, ghosted = FALSE) {
 
   # Create data frame
@@ -489,7 +489,7 @@ CreateMainRegressionPlot <- function(
 #' - covariate_value: Value of the covariate for this study.
 #' - relative_effect Relative effect for this study.
 #' - contribution: Size of contribution for this study.
-#' @keywords internal
+#' @noRd
 .FindDirectRegressionContributions <- function(model_output, reference, comparator, directness) {
 
   treatments <- c()
@@ -532,7 +532,7 @@ CreateMainRegressionPlot <- function(
 #' - covariate_value: Value of the covariate for this interval
 #' - y_min Relative effect of the lower end of this interval
 #' - y_max: Relative effect of the upper end of this interval
-#' @keywords internal
+#' @noRd
 .FormatRegressionCredibleRegion <- function(credible_regions, comparator) {
 
   treatments <- c()
@@ -575,7 +575,7 @@ CreateMainRegressionPlot <- function(
 #' @param credible_opacity The opacity of the credible regions. Can be any value between 0 and 1, inclusive. Defaults to 1.
 #'
 #' @return Created ggplot2 object.
-#' @keywords internal
+#' @noRd
 SetupRegressionPlotColours <- function(plot, comparators, include_ghosts, include_credible, credible_opacity = 1) {
   # Ensure that enough colours are always provided, by cycling the given colours
   base_colours <- c("#bb0000", "#bba000", "#00bb00", "#00bbbb", "#0000bb", "#bb00bb",
@@ -618,7 +618,7 @@ SetupRegressionPlotColours <- function(plot, comparators, include_ghosts, includ
 #' @param covariate_symbol_size Size of the covariate symbols. Defaults to 10.
 #'
 #' @return Created ggplot2 object.
-#' @keywords internal
+#' @noRd
 CreateIndirectCovariatePlot <- function(
     model_output,
     treatment_df,
@@ -668,7 +668,7 @@ CreateIndirectCovariatePlot <- function(
 #' @param include_ghosts TRUE if all otherc omparator studies should be plotted in grey in the background of the plot. Defaults to FALSE.
 #'
 #' @return Created ggplot2 object.
-#' @keywords internal
+#' @noRd
 .SetupIndirectCovariatePlot <- function(reference, comparators, include_ghosts) {
   # Set up basic plot
   plot <- ggplot() +
@@ -708,7 +708,7 @@ CreateIndirectCovariatePlot <- function(
 #' @param ghosted TRUE if studies should be plotted in grey. Defaults to FALSE.
 #'
 #' @return The modified ggplot2 object.
-#' @keywords internal
+#' @noRd
 .PlotIndirectCovariateCircles <- function(plot, model_output, treatment_df, reference, comparators, directness, covariate_symbol = "circle open", covariate_symbol_size = 10, ghosted = FALSE) {
   contributions <- .FindIndirectRegressionCovariates(model_output, reference, comparators, directness)
 
@@ -754,7 +754,7 @@ CreateIndirectCovariatePlot <- function(
 #' - Treatment: The treatment for which this contribution relates.
 #' - covariate_value: Value of the covariate for this study.
 #' - contribution: Size of contribution for this study.
-#' @keywords internal
+#' @noRd
 .FindIndirectRegressionCovariates <- function(model_output, reference, comparator, directness) {
   treatments <- c()
   covariate_values <- c()

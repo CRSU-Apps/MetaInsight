@@ -125,6 +125,7 @@ baseline_summary <- function(configured_data, logger = NULL){
 #' @param caption_setting Text string to describe type of plot. Can be "baseline risk" or "covariate"
 #' @param error_bar_text Text string to explain the error bar (optional)
 #' @return Text string to be used for caption
+#' @noRd
 
 PasteCaptionText <- function(caption_setting, error_bar_text = NULL) {
 

@@ -73,7 +73,7 @@ covariate_deviance <- function(...){
 #' @param model_type Model effects type. "random" or "fixed".
 #' @param outcome_measure Outcome measure being analysed: one of "OR". "RR", "MD".
 #' @param seed numeric. Seed value to use for calculating UME model.
-#' @keywords internal
+#' @noRd
 scat_plot <- function(model, deviance, model_type, outcome_measure, seed) {
   if (outcome_measure == "MD") {
     like <- "normal"
@@ -176,7 +176,7 @@ scat_plot <- function(model, deviance, model_type, outcome_measure, seed) {
 #' @param all The full data frame of residual deviances.
 #' @param arm_number Current arm number.
 #' @return 'ume_plot' with additional points added, corresponding to 'arm_number'.
-#' @keywords internal
+#' @noRd
 .add_trace_to_scat_plot <- function(ume_plot, all, arm_number) {
   x_column <- paste0("X", arm_number, ".x")
   y_column <- paste0("X", arm_number, ".y")
@@ -199,7 +199,7 @@ scat_plot <- function(model, deviance, model_type, outcome_measure, seed) {
 
 #' Stem plot
 #' @param deviance Output produced by `gemtc::mtc.deviance()`
-#' @keywords internal
+#' @noRd
 stem_plot <- function(deviance) {
   c <- data.frame(deviance$dev.ab)
   c$names <- rownames(c)
@@ -268,7 +268,7 @@ stem_plot <- function(deviance) {
 #'
 #' @param deviance gemtc::mtc.deviance() object.
 #' @return Leverage vs residual deviance plot.
-#' @keywords internal
+#' @noRd
 lev_plot <- function(deviance) {
   fit.ab <- apply(deviance[['fit.ab']], 1, sum, na.rm = TRUE)
   dev.ab <- apply(deviance[['dev.ab']], 1, sum, na.rm = TRUE)

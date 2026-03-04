@@ -73,7 +73,7 @@ baseline_mcmc <- function(...){
 #' @param cov_parameters "shared", "exchangeable", or "unrelated".
 #' @return Vector of treatment effect and covariate parameter names,
 #' plus random effects sd and/or exchangeable covariate sd.
-#' @keywords internal
+#' @noRd
 GetBnmaParameters <- function(all_parameters, effects_type, cov_parameters) {
   #Extract parameters which begin with "d[" or "b_bl[", except d[1] and b_bl[1]
   parameters <- grep(
@@ -101,7 +101,7 @@ GetBnmaParameters <- function(all_parameters, effects_type, cov_parameters) {
 #' @param parameter The parameter from the previous argument, used as the title.
 #' @return A function that reproduces the Gelman plot mentioned in @param gelman_plot as a plot that can be put in a grid.
 #' @import ggplot2
-#' @keywords internal
+#' @noRd
 GelmanPlot <- function(gelman_data, parameter) {
   y_vals_median <- gelman_data$shrink[, , "median"]
   y_vals_975 <- gelman_data$shrink[, , "97.5%"]

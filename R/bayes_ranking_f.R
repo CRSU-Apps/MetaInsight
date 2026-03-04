@@ -87,7 +87,7 @@ covariate_ranking <- function(...){
 #'     - ...
 #'     - 'Rank n_t' = Probability 'Treatment' is ranked last (n_t = number of treatments).
 #' - 'BUGSnetData' = Output from BUGSnet::data.prep with arguments from @param longdata.
-#' @keywords internal
+#' @noRd
 rankdata <- function(NMAdata, rankdirection, longdata, cov_value = NA, package = "gemtc") {
   # data frame of colours
   colour_dat <- data.frame(SUCRA = seq(0, 100, by = 0.1))

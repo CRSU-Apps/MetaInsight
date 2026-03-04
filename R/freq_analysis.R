@@ -37,7 +37,7 @@ frequentist <- function(non_covariate_data, outcome, treatments, outcome_measure
 #' @param wide_data non-covariate data in a wide format
 #' @inheritParams common_params
 #' @return Input data in contrast form.
-#' @keywords internal
+#' @noRd
 contrastform.df <- function(wide_data, outcome_measure, outcome) {
 
   #Create a list of columns of the variables to be passed to meta::pairwise()
@@ -78,7 +78,7 @@ contrastform.df <- function(wide_data, outcome_measure, outcome) {
 #' @param ntx = Number of treatments.
 #' @inheritParams common_params
 #' @return Input data with the columns treat1 and treat2 now labelled.
-#' @keywords internal
+#' @noRd
 labelmatching.df <- function(d1, ntx, treatments) {
 
   d1$treat1 <- factor(d1$treat1,
@@ -95,7 +95,7 @@ labelmatching.df <- function(d1, ntx, treatments) {
 #' @param dataf Data in contrast form with treatment labels, typically output from labelmatching.df().
 #' @inheritParams common_params
 #' @return NMA results from netmeta::netmeta().
-#' @keywords internal
+#' @noRd
 freq.df <- function(effects, outcome_measure, dataf, reference_treatment) {
   net1 <- netmeta::netmeta(TE = dataf$TE, seTE = dataf$seTE, treat1 = dataf$treat1, treat2 = dataf$treat2, studlab = dataf$studlab, data = dataf, subset=NULL,
                   sm = outcome_measure, level = 0.95, level.ma = 0.95, random = (effects == "random"),

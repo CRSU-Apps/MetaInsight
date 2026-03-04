@@ -62,7 +62,7 @@ setup_upgrade <- function(data_path, treatments, logger = NULL){
 #' @param old_data Data frame with old data format where treatments are specified as IDs
 #' @param treatment_df Data frame with 'Number' column defining treatment IDs and 'Label' column defining treatment names
 #' @return Data frame in the new format with treatment names
-#' @keywords internal
+#' @noRd
 ReplaceTreatments <- function(old_data, treatment_df) {
   upgraded <- CleanData(old_data)
   if ('T' %in% colnames(upgraded)) {
@@ -84,7 +84,7 @@ ReplaceTreatments <- function(old_data, treatment_df) {
 #'
 #' @param treatment_names_string String containing treatment names, separated by commas
 #' @return Data frame with 'Number' column defining treatment IDs and 'Label' column defining treatment names
-#' @keywords internal
+#' @noRd
 CreateTreatmentsDataFrame <- function(treatment_names_string) {
   treatments <- stringr::str_split(treatment_names_string, pattern = ",")[[1]] |>
     stringr::str_trim() |>
@@ -107,7 +107,7 @@ CreateTreatmentsDataFrame <- function(treatment_names_string) {
 #' @param old_data Data frame with old data format where treatments are specified as IDs
 #' @param treatment_df Data frame with 'Number' column defining treatment IDs and 'Label' column defining treatment names
 #' @return Data frame in the new format with treatment names
-#' @keywords internal
+#' @noRd
 UpgradeData <- function(old_data, treatment_df) {
   new_data <- ReplaceTreatments(old_data, treatment_df)
   new_data$StudyID <- NULL

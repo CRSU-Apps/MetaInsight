@@ -97,7 +97,7 @@ freq_forest_limits <- function(freq, outcome){
 #' @param effects "fixed" or "random".
 #' @param outcome_measure "MD", "SMD", "OR", "RR", or "RD".
 #' @return Text as described above.
-#' @keywords internal
+#' @noRd
 freq_forest_annotation <- function(freq, effects, outcome_measure) {
 
   tau <- round(freq$net1$tau, 2)

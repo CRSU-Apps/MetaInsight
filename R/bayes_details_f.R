@@ -47,7 +47,7 @@ baseline_details <- function(...){
 #'
 #' @param model GEMTC model output.
 #' @return Data frame with four MCMC characteristics.
-#' @keywords internal
+#' @noRd
 GetGemtcMcmcCharacteristics <- function(model) {
   return(
     data.frame(
@@ -70,7 +70,7 @@ GetGemtcMcmcCharacteristics <- function(model) {
 #'
 #' @param model GEMTC model output.
 #' @return Data frame with prior distribution information.
-#' @keywords internal
+#' @noRd
 GetGemtcPriors <- function(model) {
   treatment_effect_var <- round(model$model$data$re.prior.sd^2, digits = 1)
   prior_table <- data.frame(
@@ -143,7 +143,7 @@ GetGemtcPriors <- function(model) {
 #'
 #' @param model BNMA model output.
 #' @return Data frame with four MCMC characteristics.
-#' @keywords internal
+#' @noRd
 GetBnmaMcmcCharacteristics <- function(model) {
   return(
     data.frame(
@@ -164,7 +164,7 @@ GetBnmaMcmcCharacteristics <- function(model) {
 #'
 #' @param model BNMA model output.
 #' @return Data frame with prior distribution information.
-#' @keywords internal
+#' @noRd
 GetBnmaPriors <- function(model) {
   treatment_effect_mean <- model$network$prior.data$mean.d
   treatment_effect_var <- round(1 / model$network$prior.data$prec.d, digits = 1)
@@ -235,7 +235,7 @@ GetBnmaPriors <- function(model) {
 #'
 #' @param number Any number.
 #' @return 'number' with 1 decimal place or 1 significant figure.
-#' @keywords internal
+#' @noRd
 RoundForDisplay <- function(number) {
   rounded <- round(number, digits = 1)
   if (rounded == 0) {

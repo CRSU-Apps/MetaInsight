@@ -136,7 +136,7 @@ setup_load <- function(data_path = NULL, outcome, logger = NULL){
 #' @return Validation result in the form of a list:
 #' - "valid" = TRUE or FALSE defining whether data is valid
 #' - "message" = String describing any issues causing the data to be invalid
-#' @keywords internal
+#' @noRd
 ValidateUploadedData <- function(data, outcome) {
   if (is.null(data) || nrow(data) == 0) {
     return(
@@ -203,7 +203,7 @@ ValidateUploadedData <- function(data, outcome) {
 #' @return Validation result in the form of a list:
 #' - "valid" = TRUE or FALSE defining whether data is valid
 #' - "message" = String describing any issues causing the data to be invalid
-#' @keywords internal
+#' @noRd
 .ValidateMissingColumns <- function(data, required_columns, outcome) {
   missing_names <- .FindMissingColumns(data, required_columns)
 
@@ -227,7 +227,7 @@ ValidateUploadedData <- function(data, outcome) {
 #' - name = The generic name of the column.
 #'
 #' @return Vector containing names of any columns which are required, but are missing.
-#' @keywords internal
+#' @noRd
 .FindMissingColumns <- function(data, required_columns) {
   return(
     unlist(
@@ -253,7 +253,7 @@ ValidateUploadedData <- function(data, outcome) {
 #' @return Validation result in the form of a list:
 #' - "valid" = TRUE or FALSE defining whether data is valid
 #' - "message" = String describing any issues causing the data to be invalid
-#' @keywords internal
+#' @noRd
 .ValidateNumberedColumns <- function(data, required_columns) {
   numbered_columns <- required_columns |>
     dplyr::filter(!is.na(.data$number_group))
@@ -280,7 +280,7 @@ ValidateUploadedData <- function(data, outcome) {
 #' - number_group = Regular expression replacement to extract the number from a column.
 #'
 #' @return TRUE if the columns are correctly numbered, else FALSE.
-#' @keywords internal
+#' @noRd
 .ValidateMatchingWideColumns <- function(uploaded_data, required_columns) {
   # Extract all of the numbers for each column in wide format eg. T.1 -> 1, N.3 -> 3
   wide_numbers <- list()
@@ -335,7 +335,7 @@ ValidateUploadedData <- function(data, outcome) {
 #' @return Validation result in the form of a list:
 #' - "valid" = TRUE or FALSE defining whether data is valid
 #' - "message" = String describing any issues causing the data to be invalid
-#' @keywords internal
+#' @noRd
 .ValidateColumnTypes <- function(data, outcome_columns) {
   mistyped_columns <- .FindMistypedColumns(data, outcome_columns)
 
@@ -357,7 +357,7 @@ ValidateUploadedData <- function(data, outcome) {
 #' @param outcome_columns Data frame containing data definitions.
 #'
 #' @return A vector of column titles which contain data of the wrong type.
-#' @keywords internal
+#' @noRd
 .FindMistypedColumns <- function(data, outcome_columns) {
   mistyped_columns <- c()
   sapply(
@@ -390,7 +390,7 @@ ValidateUploadedData <- function(data, outcome) {
 #' @return Validation result in the form of a list:
 #' - "valid" = TRUE or FALSE defining whether data is valid
 #' - "message" = String describing any issues causing the data to be invalid
-#' @keywords internal
+#' @noRd
 .ValidateSingleArmStudies <- function(data) {
   all_studies <- unique(data$Study)
   single_arm_studies <- unlist(
@@ -424,7 +424,7 @@ ValidateUploadedData <- function(data, outcome) {
 #' @return Validation result in the form of a list:
 #' - "valid" = TRUE or FALSE defining whether data is valid
 #' - "message" = String describing any issues causing the data to be invalid
-#' @keywords internal
+#' @noRd
 .ValidateQualityColumns <- function(data) {
   #The rob and indirectness columns
   rob_indirectness_columns <- grep(pattern = "^rob|^indirectness$", x = names(data), value = TRUE)
@@ -611,7 +611,7 @@ binary_column_names <- data.frame() |>
 #'
 #' @param max_arms Maximum number of arms in the data set.
 #' @return Vector of column names in order.
-#' @keywords internal
+#' @noRd
 .continuousOrder <- function(max_arms) {
   continuous_specific_order <- unlist(
     lapply(
@@ -626,7 +626,7 @@ binary_column_names <- data.frame() |>
 #'
 #' @param max_arms Maximum number of arms in the data set.
 #' @return Vector of column names in order.
-#' @keywords internal
+#' @noRd
 .binaryOrder <-function(max_arms) {
   binary_specific_order <- unlist(
     lapply(
@@ -646,7 +646,7 @@ binary_column_names <- data.frame() |>
 #'
 #' @param data Data frame to clean
 #' @return Cleaned data frame
-#' @keywords internal
+#' @noRd
 CleanData <- function(data) {
   return(dplyr::mutate(data, dplyr::across(dplyr::where(is.character), .TidyStringItem)))
 }
@@ -655,7 +655,7 @@ CleanData <- function(data) {
 #'
 #' @param string A character vector to be tidied.
 #' @return Tidied character vector.
-#' @keywords internal
+#' @noRd
 .TidyStringItem <- function(string) {
   tidied <- stringr::str_squish(string)
   tidied[tidied == ""] <- NA
@@ -667,7 +667,7 @@ CleanData <- function(data) {
 #' @param wide_data Data frame of wide format
 #' @param outcome Indicator whether outcome is 'binary' or 'continuous'
 #' @return Data frame in long format
-#' @keywords internal
+#' @noRd
 WideToLong <- function(wide_data, outcome) {
   # Specify columns that contain wide data
   if (outcome == "continuous") {
@@ -695,7 +695,7 @@ WideToLong <- function(wide_data, outcome) {
 #' @param long_data Data frame of long format
 #' @param outcome Indicator whether outcome is 'binary' or 'continuous'
 #' @return Data frame in wide format
-#' @keywords internal
+#' @noRd
 LongToWide <- function(long_data, outcome) {
   # Specify columns that contain wide data
   if (outcome == "continuous") {
@@ -727,7 +727,7 @@ LongToWide <- function(long_data, outcome) {
 #'
 #' @param data Data for which to check shape
 #' @return Either "wide" or "long"
-#' @keywords internal
+#' @noRd
 FindDataShape <- function(data) {
   if ('T' %in% colnames(data)) {
     # Regular expression explanation:
@@ -746,7 +746,7 @@ FindDataShape <- function(data) {
 #' This is only needed if the "T" column in the data frame contains IDs instead of names. Defaults to NULL.
 #' @param study Name of study for which to find treatment names. Defaults to NULL.
 #' @return Vector of all treatment names.
-#' @keywords internal
+#' @noRd
 FindAllTreatments <- function(data, treatment_ids = NULL, study = NULL) {
   # Regular expression explanation:
   # ^ = Start of string
@@ -784,7 +784,7 @@ FindAllTreatments <- function(data, treatment_ids = NULL, study = NULL) {
 #' @param treatments Vector of matching treatments.
 #' @param all_or_any Set to "all" to return studies containing all treatments. Set to "any" to return studies containing any of the treatments.
 #' @return Vector of all matching study names.
-#' @keywords internal
+#' @noRd
 FindStudiesIncludingTreatments <- function(data, treatments, all_or_any) {
   if ("T" %in% colnames(data)) {
     # Long format
@@ -818,7 +818,7 @@ FindStudiesIncludingTreatments <- function(data, treatments, all_or_any) {
 #' @param vector Vector to reorder
 #' @param first_item The element to push to the front of the vector
 #' @return The reordered vector
-#' @keywords internal
+#' @noRd
 VectorWithItemFirst <- function(vector, first_item) {
   if (is.null(first_item) || !(first_item %in% vector)) {
     return(vector)
@@ -831,7 +831,7 @@ VectorWithItemFirst <- function(vector, first_item) {
 #' @param all_treatments Vector of all treatment names
 #' @param reference_treatment Name of treatment to be assigned ID 1
 #' @return Data frame containing the treatment ID ('Number') and the treatment name ('Label')
-#' @keywords internal
+#' @noRd
 CreateTreatmentIds <- function(all_treatments, reference_treatment = all_treatments[1]) {
   treatment_names <- VectorWithItemFirst(all_treatments, reference_treatment)
   return(data.frame(Number = 1:length(treatment_names), Label = treatment_names))
@@ -843,6 +843,7 @@ CreateTreatmentIds <- function(all_treatments, reference_treatment = all_treatme
 #' @param outcome Type of outcome for which to reorder, either 'continuous' or 'binary'
 #'
 #' @return Data frame with renamed columns.
+#' @noRd
 .FixColumnNameCases <- function(data, outcome) {
   if (outcome == "continuous") {
     column_names <- continuous_column_names
@@ -871,7 +872,7 @@ CreateTreatmentIds <- function(all_treatments, reference_treatment = all_treatme
 #' @param column_names Named vector where each name is a regular expression to match, and the value is the replacement string.
 #'
 #' @return The corrected column name.
-#' @keywords internal
+#' @noRd
 .CorrectColumnName <- function(original_name, column_names) {
   matches <- unlist(
     sapply(
@@ -904,7 +905,7 @@ CreateTreatmentIds <- function(all_treatments, reference_treatment = all_treatme
 #' @param data Data frame in which to search for treatment names
 #' @param treatment_ids Data frame containing treatment names (Label) and IDs (Number)
 #' @return Data frame where the treatments are given as IDs, not names
-#' @keywords internal
+#' @noRd
 ReplaceTreatmentIds <- function(data, treatment_ids) {
   if (FindDataShape(data) == "long") {
     # Long format
@@ -927,7 +928,7 @@ ReplaceTreatmentIds <- function(data, treatment_ids) {
 #' @param data Data frame in which to search for treatment IDs.
 #' @param treatment_ids Data frame containing treatment names (Label) and IDs (Number).
 #' @return Data frame where the treatments are given as names, not IDs.
-#' @keywords internal
+#' @noRd
 ReinstateTreatmentIds <- function(data, treatment_ids) {
   if ("T" %in% colnames(data)) {
     # Long format
@@ -949,7 +950,7 @@ ReinstateTreatmentIds <- function(data, treatment_ids) {
 #'
 #' @param data Data frame in which to search for treatment names
 #' @return Vector of all treatment names
-#' @keywords internal
+#' @noRd
 AddStudyIds <- function(data) {
   study_names <- unique(data$Study)
 
@@ -964,7 +965,7 @@ AddStudyIds <- function(data) {
 #' @param data Data frame to reorder
 #' @param outcome_type Type of outcome for which to reorder, either 'continuous' or 'binary'
 #' @return Data frame with columns reordered
-#' @keywords internal
+#' @noRd
 ReorderColumns <- function(data, outcome_type) {
   #The maximum number of arms
   max_arms <- FindMaxArms(data)
@@ -995,7 +996,7 @@ ReorderColumns <- function(data, outcome_type) {
 #'
 #' @param long_data Data in long format.
 #' @return Long data sorted by StudyID then T.
-#' @keywords internal
+#' @noRd
 SortLong <- function(long_data) {
   return(long_data[order(long_data$StudyID, long_data$T), ])
 }
@@ -1005,7 +1006,7 @@ SortLong <- function(long_data) {
 #' @param data Data frame to sort
 #' @param outcome Type of outcome for which to reorder, either 'continuous' or 'binary'
 #' @return Data frame ordered by StudyID, then T if applicable
-#' @keywords internal
+#' @noRd
 SortByStudyIDThenT <- function(data, outcome) {
   if (FindDataShape(data) == "long") {
     return(SortLong(data))
@@ -1024,7 +1025,7 @@ SortByStudyIDThenT <- function(data, outcome) {
 #' @param treatment_ids Data frame containing treatment IDs and names in columns named 'Number' and 'Label' respectively
 #' @param outcome Type of outcome for which to reorder, either 'continuous' or 'binary'
 #' @return Data frame which is uasable by the rest of the app
-#' @keywords internal
+#' @noRd
 WrangleUploadData <- function(data, treatment_ids, outcome) {
   new_df <- data |>
     .FixColumnNameCases(outcome) |>
@@ -1042,7 +1043,7 @@ WrangleUploadData <- function(data, treatment_ids, outcome) {
 #'
 #' @param strings Vector of the strings to be cleaned.
 #' @return Cleaned version of the strings.
-#' @keywords internal
+#' @noRd
 CleanStrings <- function(strings) {
   return(strings |>
            stringr::str_replace_all("(?![a-zA-Z0-9_]).", "_") |>
@@ -1054,7 +1055,7 @@ CleanStrings <- function(strings) {
 #' Clean study names by replacing all characters that are not a number, letter, or underscore, with an underscore.
 #' @param data Data frame with the column 'Study' that contains study names.
 #' @return The data frame with 'Study' cleaned and a new column 'RawStudy' which is a copy of the original 'Study'.
-#' @keywords internal
+#' @noRd
 CleanStudies <- function(data) {
   data$RawStudy <- data$Study
   data$Study <- CleanStrings(data$Study)
@@ -1066,7 +1067,7 @@ CleanStudies <- function(data) {
 #'
 #' @param treatment_ids Data frame containing treatment IDs and names in columns named 'Number' and 'Label' respectively
 #' @return Cleaned version of treatment_ids
-#' @keywords internal
+#' @noRd
 CleanTreatmentIds <- function(treatment_ids) {
   new_treatment_ids <- treatment_ids
   new_treatment_ids$RawLabel <- treatment_ids$Label
@@ -1080,7 +1081,7 @@ CleanTreatmentIds <- function(treatment_ids) {
 #'
 #' @param df Data frame in which to find covariate columns.
 #' @return Names of all covariate columns
-#' @keywords internal
+#' @noRd
 FindCovariateNames <- function(df) {
   return(names(dplyr::select(df, dplyr::matches(.covariate_prefix_regex))))
 }
@@ -1089,7 +1090,7 @@ FindCovariateNames <- function(df) {
 #'
 #' @param column_name Covariate column name to convert
 #' @return Friendly covariate name
-#' @keywords internal
+#' @noRd
 GetFriendlyCovariateName <- function(column_name) {
   return(stringr::str_replace(column_name, .covariate_prefix_regex, ""))
 }
@@ -1097,7 +1098,7 @@ GetFriendlyCovariateName <- function(column_name) {
 #' Find the names of all columns which contain an individual RoB variable.
 #' @param df Data frame in which to find covariate columns.
 #' @return Names of all individual RoB columns
-#' @keywords internal
+#' @noRd
 FindRobIndividualNames <- function(df) {
   return(names(dplyr::select(df, dplyr::matches(.rob_individual_prefix_regex))))
 }
@@ -1109,7 +1110,7 @@ FindRobIndividualNames <- function(df) {
 #' This should return TRUE in the error case.
 #' @param message Message to show before listing the problem studies or FALSE
 #' if no problems are found
-#' @keywords internal
+#' @noRd
 .ThrowErrorForMatchingStudies <- function(values, condition, message) {
   study_conditions <- sapply(
     names(values),
@@ -1144,7 +1145,7 @@ FindRobIndividualNames <- function(df) {
 #' @param covariate_title Name of the covariate column.
 #'
 #' @return list containing `valid` and `message` to pass to logger
-#' @keywords internal
+#' @noRd
 .ValidateCovariate <- function(data, covariate_title) {
   covariate_data <- data[[covariate_title]]
 
@@ -1202,7 +1203,7 @@ FindRobIndividualNames <- function(df) {
 #' Find the names of all columns which contain a RoB or indirectness variable.
 #' @param df Data frame in which to find covariate columns.
 #' @return Names of all RoB or indirectness columns
-#' @keywords internal
+#' @noRd
 FindRobNames <- function(df) {
   all_rob <- c(FindRobIndividualNames(df), "rob", "indirectness")
   return(c(grep("^rob\\.", names(df), value = TRUE),
@@ -1212,7 +1213,7 @@ FindRobNames <- function(df) {
 #' Shorten RoB and indirectness variable names.
 #' @param long_names Vector of risk of bias and indirectness variable names.
 #' @return Vector of the same length with shortened names.
-#' @keywords internal
+#' @noRd
 ShortenRobNames <- function(long_names) {
   short_names <- long_names
   short_names[long_names == "indirectness"] <- "ind"
@@ -1229,7 +1230,7 @@ ShortenRobNames <- function(long_names) {
 #' @param treatments Vector of treatments with the reference treatment first.
 #' @param keep_delete "keep" or "delete".
 #' @return data with rows corresponding to the control treatment kept or deleted, and a new column 'Control'.
-#' @keywords internal
+#' @noRd
 KeepOrDeleteControlTreatment <- function(data, treatments, keep_delete){
   #Add a Control column to the data set
   for (i in 1:length(data$Study)) {
@@ -1249,7 +1250,7 @@ KeepOrDeleteControlTreatment <- function(data, treatments, keep_delete){
 #' @param wide_data Data in wide format.
 #' @param column_prefix String containing the opening letters of one or more columns in 'wide_data'.
 #' @return List with one element per selected column in 'wide_data', with each element named by the column name.
-#' @keywords internal
+#' @noRd
 CreateListOfWideColumns <- function(wide_data, column_prefix) {
   return(
     as.list(
@@ -1264,7 +1265,7 @@ CreateListOfWideColumns <- function(wide_data, column_prefix) {
 #'
 #' @param data Long or wide format data.
 #' @return The maximum number of arms.
-#' @keywords internal
+#' @noRd
 FindMaxArms <- function(data) {
   if (FindDataShape(data) == "long") {
     return(max(table(data$Study)))

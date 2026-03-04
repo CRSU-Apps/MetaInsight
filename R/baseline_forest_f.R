@@ -118,7 +118,7 @@ format_baseline_forest <- function(median_ci_table, reference_treatment) {
 #'  - 'sumresults' = List:
 #'    - 'summaries' = equivalent of summary(gemtc model)$summaries.
 #'    - 'a' = "fixed effect" or "random effect".
-#' @keywords internal
+#' @noRd
 FormatForCreateTauSentence <- function(model){
   #Rename "sd" (bnma name) to "sd.d" (gemtc name)
   br_summary <- model$sumresults
