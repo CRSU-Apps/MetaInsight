@@ -79,15 +79,6 @@ baseline_summary <- function(configured_data, logger = NULL){
 
   x_ticks <- .FindXTicks(lower = x_min, upper = x_max)
 
-  x_label <- switch(
-    configured_data$outcome_measure,
-    "MD" = "Mean difference",
-    "SMD" = "Standardised MD",
-    "OR" = "Odds ratio",
-    "RR" = "Risk ratio",
-    "RD" = "Risk difference"
-  )
-
   inches_to_lines <- par("cin")[2]
 
   # process df data needed for layout
