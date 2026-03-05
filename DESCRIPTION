@@ -8,7 +8,7 @@ Description: Conduct network metaanalyses through a graphical user interface gen
     provided for downloading publication-ready outputs and analyses can be reproduced 
     outside of the application by downloading a 'quarto' file.
 Authors@R: 
-    c(person("Sutton", "Alex, email = "ajs22@leicester.ac.uk", role = c("aut","cre")),
+    c(person("Sutton", "Alex", email = "ajs22@leicester.ac.uk", role = c("aut","cre")),
       person("Naomi", "Bradbury", role = c("aut")),
       person("Ryan", "Field", role = c("aut")),
       person("Tom", "Morris", role = c("aut")),
