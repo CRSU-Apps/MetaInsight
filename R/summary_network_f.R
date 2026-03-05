@@ -5,6 +5,13 @@
 #' @param title character. Title of plot. Default of no title.
 #' @inheritParams common_params
 #' @inherit return-svg return
+#' @examples
+#' configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
+#' configured_data <- readRDS(configured_data_path)
+#'
+#' summary_network(configured_data = configured_data,
+#'                 style = "netgraph")
+#'
 #' @export
 
 summary_network <- function(configured_data, style, label_size = 1, title = "", logger = NULL){

@@ -2,7 +2,7 @@
 % Please edit documentation in R/freq_analysis.R
 \name{frequentist}
 \alias{frequentist}
-\title{Converts long data to wide if necessary, then applies freq_wrap().}
+\title{Fit a frequentist model}
 \usage{
 frequentist(
   non_covariate_data,
@@ -38,5 +38,6 @@ List containing:
 \item{d1}{dataframe.Same as 'd0' but with treatment labels}
 }
 \description{
-Converts long data to wide if necessary, then applies freq_wrap().
+Fits a frequentist model with \code{netmeta::netmeta()}
 }
+\keyword{internal}

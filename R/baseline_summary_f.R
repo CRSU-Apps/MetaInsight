@@ -3,6 +3,12 @@
 #'
 #' @inheritParams common_params
 #' @import graphics
+#' @examples
+#' configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
+#' configured_data <- readRDS(configured_data_path)
+#'
+#' baseline_summary(configured_data)
+#'
 #' @export
 baseline_summary <- function(configured_data, logger = NULL){
 

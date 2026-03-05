@@ -2,7 +2,7 @@
 % Please edit documentation in R/bayes_model_f.R
 \name{bayes_model}
 \alias{bayes_model}
-\title{Fit a Bayesian model using \CRANpkg{gemtc}}
+\title{Fit a Bayesian model}
 \usage{
 bayes_model(configured_data, async = FALSE)
 }
@@ -27,4 +27,11 @@ List containing:
 }
 \description{
 Fit a Bayesian model using \CRANpkg{gemtc}
+}
+\examples{
+configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
+configured_data <- readRDS(configured_data_path)
+
+fitted_bayes_model <- bayes_model(configured_data = configured_data)
+
 }

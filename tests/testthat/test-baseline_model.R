@@ -74,10 +74,12 @@ test_that("{shinytest2} recording: e2e_baseline_model", {
   app$set_inputs(baselineSel = "baseline_model")
   app$click("baseline_model-run")
   app$wait_for_value(input = "baseline_model-complete")
+
+  table <- app$wait_for_value(output = "baseline_model-table")
+  expect_match(table$html, "<table")
+
   common <- app$get_value(export = "common")
-
   result <- common$baseline_model
-
   expect_is(result, "baseline_model")
 
   expected_items <- c("mtcResults",

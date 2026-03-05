@@ -17,3 +17,4 @@ RankingOrder(outcome, data)
 \description{
 Returns the default ranking order, for the example datasets.
 }
+\keyword{internal}

@@ -20,3 +20,4 @@ Vector of xmin and xmax
 Find the default minimum and maximum values for the x-axis and calculate
 a sensible step to use in the numeric input
 }
+\keyword{internal}

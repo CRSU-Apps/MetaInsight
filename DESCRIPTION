@@ -2,19 +2,21 @@ Package: metainsight
 Version: 7.0.0
 Title: A 'shiny' Application for Network Metaanalysis
 Description: Conduct network metaanalyses through a graphical user interface generated with 
-    'shinyscholar', using 'bnma', 'gemtc', 'metafor' and 'netmeta'. Many options 
-    for downloading publication-ready outputs are provided and analyses can be reproduced 
+    'shinyscholar', using 'bnma', 'gemtc' and 'netmeta' with additional analysis provided by
+    'meta' and 'metafor'. Frequentist, Bayesian, baseline risk and covariate metaregression 
+    can all be conducted using a consistent data structure and terminology. Many options are 
+    provided for downloading publication-ready outputs and analyses can be reproduced 
     outside of the application by downloading a 'quarto' file.
 Authors@R: 
-    c(person("Simon E. H.", "Smart", email = "simon.smart@cantab.net", role = c("aut","cre")),
+    c(person("Sutton", "Alex", email = "ajs22@leicester.ac.uk", role = c("aut","cre")),
       person("Naomi", "Bradbury", role = c("aut")),
       person("Ryan", "Field", role = c("aut")),
       person("Tom", "Morris", role = c("aut")),
       person("Clareece", "Nevill", role = c("aut")),
       person("Janion", "Nevill", role = c("aut")),
       person("Rhiannon", "Owen", role = c("aut")),
+      person("Simon E. H.", "Smart", role = c("aut")),
       person("Yiqiao", "Xin", role = c("aut")),
-      person("Sutton", "Alex", role = c("ctb")),
       person("Nicola", "Cooper", role = c("ctb"))
       )
 Depends:
@@ -23,14 +25,14 @@ Depends:
     shiny (>= 1.8.1)
 Imports:
     bayesplot,
-    bnma,
+    bnma (>= 1.4.0),
     coda,
     cookies,
     cowplot,
     DT (>= 0.5),
     dplyr,
     gargoyle,
-    gemtc,
+    gemtc (>= 1.0.2),
     ggpubr,
     ggiraphExtra,
     ggplot2,
@@ -43,10 +45,10 @@ Imports:
     knitr,
     MCMCvis,
     magick,
-    meta,
+    meta (>= 8.1.0),
     metafor,
-    mirai,
-    netmeta,
+    mirai (>= 2.0.0),
+    netmeta (>= 3.1.0),
     patchwork,
     plotly,
     quarto,

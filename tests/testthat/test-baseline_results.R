@@ -26,14 +26,14 @@ test_that("{shinytest2} recording: e2e_baseline_results", {
   stats_all <- app$get_value(output = "baseline_results-all-statistics")
   expect_match(stats_all, "<table")
   # Test number of rows (including header)
-  expect_equal(stringr::str_count(stats_all, "<tr"), 14)
+  expect_equal(stringr::str_count(stats_all, "<tr"), (2 * n_trt_all) + 2)
   # Test number of columns
   expect_equal(stringr::str_count(stringr::str_extract(stats_all, "<tr>.+?</tr>"), "<th"), 5)
 
   quant_all <- app$get_value(output = "baseline_results-all-quantiles")
   expect_match(quant_all, "<table")
   # Test number of rows (including header)
-  expect_equal(stringr::str_count(quant_all, "<tr"), 14)
+  expect_equal(stringr::str_count(quant_all, "<tr"), (2 * n_trt_all) + 2)
   # Test number of columns
   expect_equal(stringr::str_count(stringr::str_extract(quant_all, "<tr>.+?</tr>"), "<th"), 6)
 

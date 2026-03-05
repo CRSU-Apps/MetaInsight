@@ -43,6 +43,7 @@ test_that("setup_exclude removes the correct studies", {
 
 test_that("setup_exclude loads data into common correctly", {
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 30000)
+  app$upload_file("setup_load-file1" = file.path(test_data_dir, "Cont_long_continuous_cov.csv"))
   app$set_inputs(tabs = "setup")
   app$click("setup_load-run")
   app$set_inputs(setupSel = "setup_configure")

@@ -1,9 +1,16 @@
-#' Produce a comparison table of treatments using
+#' @title Compare treatments for frequentist models
+#' @description Produce a comparison table of treatments using
 #' `netmeta::netleague()`.
 #'
 #' @inheritParams common_params
 #' @return Dataframe of comparisons with one row and one column
 #' per treatment
+#' @examples
+#' configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
+#' configured_data <- readRDS(configured_data_path)
+#'
+#' freq_compare(configured_data = configured_data)
+#'
 #' @export
 freq_compare <- function(configured_data, logger = NULL) {
 

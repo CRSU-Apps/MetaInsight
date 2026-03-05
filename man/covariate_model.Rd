@@ -2,7 +2,7 @@
 % Please edit documentation in R/covariate_model_f.R
 \name{covariate_model}
 \alias{covariate_model}
-\title{Fit a covariate regression model using \CRANpkg{gemtc}.}
+\title{Fit a covariate regression model}
 \usage{
 covariate_model(
   configured_data,
@@ -50,4 +50,20 @@ List of \CRANpkg{gemtc} related output:
 }
 \description{
 Fit a covariate regression model using \CRANpkg{gemtc}.
+}
+\examples{
+configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
+configured_data <- readRDS(configured_data_path)
+
+# initial model
+fitted_covariate_model <- covariate_model(configured_data = configured_data,
+                                          covariate_value = 98,
+                                          regressor_type = "shared")
+
+# updated for new covariate value
+updated_covariate_model <- covariate_model(configured_data = configured_data,
+                                          covariate_value = 97,
+                                          regressor_type = "shared",
+                                          covariate_model_output = fitted_covariate_model)
+
 }

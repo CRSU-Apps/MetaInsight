@@ -1,15 +1,23 @@
-#' Produce a plot summarising the covariate value for each study arm
+#' @title Summarise covariate data
+#' @description Produce a plot summarising the covariate value for each study arm
 #'
 #' @inheritParams common_params
 #' @inherit return-svg return
 #' @import graphics
+#' @examples
+#' configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
+#' configured_data <- readRDS(configured_data_path)
+#'
+#' covariate_summary(configured_data)
+#'
 #' @export
 covariate_summary <- function(configured_data, logger = NULL){
   check_param_classes(c("configured_data"),
                       c("configured_data"), logger)
 
   if (!any(grepl("covar\\.", names(configured_data$connected_data)))){
-    logger |> asyncLog(type = "error", "The data does not contain a covariate column")
+    logger |> writeLog(type = "error", "No covariate data exists. To add covariate data, add a column titled
+                                        covar.* where the * is replaced by the covariate name. e.g. covar.age")
     return()
   }
 

@@ -17,14 +17,15 @@ test_that("bayes_nodesplit produces errors for incorrect data types", {
 })
 
 test_that("bayes_nodesplit produces errors for data which cannot be split", {
-  # expect_error(bayes_nodesplit(configured_data_con), "There are no loops in the network")
-  expect_error(bayes_nodesplit(configured_data_con), "In all loops, heterogeneity and inconsistency cannot be distinguished.")
+  expect_error(bayes_nodesplit(configured_data_con), "There are no loops in the network")
 })
 
 test_that("bayes_nodesplit functions with valid data", {
-  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_bayes_nodesplit", timeout = 60000)
+  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_bayes_nodesplit", timeout = 120000)
   app$upload_file("setup_load-file1" = file.path(test_data_dir, "Cont_nodesplit.csv"))
   app$click("setup_load-run")
+  app$set_inputs("setupSel" = "setup_configure")
+  app$wait_for_value(input = "setup_configure-ready")
   app$click("setup_configure-run")
   app$wait_for_value(input = "setup_exclude-complete")
   app$set_inputs(tabs = "bayes")

@@ -4,7 +4,7 @@
 \alias{bayes_mcmc}
 \alias{covariate_mcmc}
 \alias{baseline_mcmc}
-\title{Produce Markov chain Monte Carlo plots for Bayesian models}
+\title{Markov chain Monte Carlo plots}
 \usage{
 bayes_mcmc(model, async = FALSE)
 
@@ -28,4 +28,11 @@ list containing:
 }
 \description{
 Produce Markov chain Monte Carlo plots for Bayesian models
+}
+\examples{
+configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
+configured_data <- readRDS(configured_data_path)
+
+fitted_bayes_model <- bayes_model(configured_data = configured_data)
+bayes_mcmc(model = fitted_bayes_model)
 }

@@ -29,16 +29,16 @@ test_that("{shinytest2} recording: e2e_covariate_comparison", {
   expect_match(table, "<table")
 
   # Test number of rows (including header)
-  expect_equal(stringr::str_count(table, "<tr"), 7)
+  expect_equal(stringr::str_count(table, "<tr"), n_trt_all + 1)
 
   # Test number of columns
-  expect_equal(stringr::str_count(stringr::str_extract(table, "<tr>.+?</tr>"), "<th"), 7)
+  expect_equal(stringr::str_count(stringr::str_extract(table, "<tr>.+?</tr>"), "<th"), n_trt_all + 1)
 
   table_all_dl <- app$get_download("covariate_comparison-covariate-download")
   df <- read.csv(table_all_dl)
   # extra column which is hidden in app, header becomes names
-  expect_equal(nrow(df), 6)
-  expect_equal(ncol(df), 7)
+  expect_equal(nrow(df), n_trt_all)
+  expect_equal(ncol(df), n_trt_all + 1)
 
   app$stop()
 

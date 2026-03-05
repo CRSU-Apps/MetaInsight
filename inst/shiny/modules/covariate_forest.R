@@ -68,7 +68,7 @@ metaregression_forest_module_server <- function(id, common, run, xmin, xmax) {
         glue("MetaInsight_{id}_forest_plot.{common$download_format}")
       },
       content = function(file) {
-        write_plot(svg(), file, common$download_format)
+        write_plot(svg(), file)
       }
     )
 

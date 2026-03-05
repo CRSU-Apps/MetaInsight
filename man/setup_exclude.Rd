@@ -37,3 +37,11 @@ else empty:}
 Takes the configured data, removes any excluded studies and returns
 subsets of the data to be passed to other functions.
 }
+\examples{
+configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
+configured_data <- readRDS(configured_data_path)
+
+subsetted_data <- setup_exclude(configured_data = configured_data,
+                                exclusions = c("Leo", "Minerva"))
+
+}

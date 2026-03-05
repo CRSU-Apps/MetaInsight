@@ -16,3 +16,10 @@ shiny, otherwise leave the default \code{NULL}}
 \description{
 Produce a plot summarising baselink risk for each study arm
 }
+\examples{
+configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
+configured_data <- readRDS(configured_data_path)
+
+baseline_summary(configured_data)
+
+}

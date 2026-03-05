@@ -17,3 +17,4 @@ Name of the expected reference treatment if one is found, else NULL
 Find the expected reference treatment from a vector.
 This is done by comparing treatment names to expected reference treatment names.
 }
+\keyword{internal}

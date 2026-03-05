@@ -2,17 +2,25 @@
 % Please edit documentation in R/helper_functions.R
 \name{write_plot}
 \alias{write_plot}
-\title{Write an svg plot to either a png, pdf or svg file}
+\title{Write plots to a file}
 \usage{
-write_plot(svg, file, type)
+write_plot(svg, file)
 }
 \arguments{
 \item{svg}{html. containing the svg string, returned from \code{crop_svg()}}
 
 \item{file}{character. The file to which to write.}
-
-\item{type}{character. Type of file to which to write.}
 }
 \description{
-Write an svg plot to either a png, pdf or svg file
+Write an svg plot to either a png, pdf or svg file.
+}
+\examples{
+configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
+configured_data <- readRDS(configured_data_path)
+
+tmp <- tempfile(fileext = ".png")
+summary_network(configured_data = configured_data,
+                style = "netgraph") |>
+                write_plot(tmp)
+unlink(tmp)
 }

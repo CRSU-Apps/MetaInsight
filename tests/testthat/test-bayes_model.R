@@ -54,8 +54,8 @@ test_that("bayes_model works e2e - that models are initally different, update af
   table_all <- app$wait_for_value(output = "bayes_model-all-table")
   table_sub <- app$wait_for_value(output = "bayes_model-sub-table")
 
-  expect_match(table_all, "<table")
-  expect_match(table_sub, "<table")
+  expect_match(table_all$html, "<table")
+  expect_match(table_sub$html, "<table")
 
   common <- app$get_value(export = "common")
   expect_is(common$bayes_all, "bayes_model")

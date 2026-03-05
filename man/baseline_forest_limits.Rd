@@ -14,3 +14,4 @@ baseline_forest_limits(forest_data)
 Extract the default x-axis limits using the same method internal to
 \code{gemtc::forest()}
 }
+\keyword{internal}

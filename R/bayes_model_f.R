@@ -1,4 +1,5 @@
-#' Fit a Bayesian model using \CRANpkg{gemtc}
+#' @title Fit a Bayesian model
+#' @description Fit a Bayesian model using \CRANpkg{gemtc}
 #'
 #' @inheritParams common_params
 #' @return List containing:
@@ -13,6 +14,12 @@
 #'  \item{reference_treatment}{character. The `reference_treatment`from `configured_data`}
 #'  \item{effects}{character. The `effects` from `configured_data`}
 #'  \item{seed}{numeric. The `seed` from `configured_data`}
+#' @examples
+#' configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
+#' configured_data <- readRDS(configured_data_path)
+#'
+#' fitted_bayes_model <- bayes_model(configured_data = configured_data)
+#'
 #' @export
 
 bayes_model <- function(configured_data, async = FALSE){

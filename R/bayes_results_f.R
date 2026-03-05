@@ -1,4 +1,5 @@
-#' Produce a summary of a Bayesian model
+#' @title Summarise a Bayesian model
+#' @description Produce a table summarising Bayesian models
 #'
 #' @param model list. Output produced by `baseline_model()`, `bayes_model()` or `covariate_model()`.
 #' @inheritParams common_params

@@ -106,8 +106,7 @@ summary_network_module_server <- function(id, common, parent_session) {
       content = function(file) {
         write_plot(
           plot_all(),
-          file,
-          common$download_format
+          file
         )
       }
     )
@@ -119,8 +118,7 @@ summary_network_module_server <- function(id, common, parent_session) {
       content = function(file) {
         write_plot(
           plot_sub(),
-          file,
-          common$download_format
+          file
         )
       }
     )

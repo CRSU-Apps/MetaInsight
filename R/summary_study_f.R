@@ -11,6 +11,12 @@
 #' values should be wrapped in `log()`
 #' @inherit return-svg return
 #' @import graphics
+#' @examples
+#' configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
+#' configured_data <- readRDS(configured_data_path)
+#'
+#' summary_study(configured_data = configured_data)
+#'
 #' @export
 summary_study <- function(configured_data, plot_area_width = 6, colourblind = FALSE, x_min = NULL, x_max = NULL, logger = NULL) {
 
@@ -263,6 +269,7 @@ summary_study <- function(configured_data, plot_area_width = 6, colourblind = FA
 #' @param lower x-axis minimum.
 #' @param upper x-axis maximum.
 #' @return Vector of x-axis ticks.
+#' @noRd
 .FindXTicks <- function(lower, upper) {
   #If the interval is entirely above 0 then replace the lower limit with 0
   lower <- min(0, lower)
@@ -289,6 +296,7 @@ summary_study <- function(configured_data, plot_area_width = 6, colourblind = FA
 #' @param treatment2 Second treatment in the comparison.
 #' @param ci_limit_height Height of the vertical lines at the end of the confidence intervals. Defaults to 0.3.
 #' @importFrom graphics points lines
+#' @noRd
 .AddTreatmentEffect <- function(pairwise, y_position, studlab, treatment1, treatment2, ci_limit_height = 0.3) {
   row <- which(pairwise$studlab == studlab & pairwise$treat1 == treatment1 & pairwise$treat2 == treatment2)
   # point estimate
@@ -323,6 +331,7 @@ summary_study <- function(configured_data, plot_area_width = 6, colourblind = FA
 #' @param studlab Study.
 #' @param treatment1 First treatment in the comparison.
 #' @param treatment2 Second treatment in the comparison.
+#' @noRd
 .AddOutcomeText <- function(pairwise, x_position, y_position, studlab, treatment1, treatment2) {
   row <- which(pairwise$studlab == studlab & pairwise$treat1 == treatment1 & pairwise$treat2 == treatment2)
   graphics::mtext(
@@ -347,6 +356,7 @@ summary_study <- function(configured_data, plot_area_width = 6, colourblind = FA
 #' @param treatment2 Second treatment in the comparison.
 #' @param rob_variables Vector of RoB and indirectness variable names from 'pairwise'.
 #' @param palette Vector of colours to use
+#' @noRd
 .AddRiskOfBias <- function(pairwise, x_positions, y_position, studlab, treatment1, treatment2, rob_variables, palette) {
   row <- which(pairwise$studlab == studlab & pairwise$treat1 == treatment1 & pairwise$treat2 == treatment2)
   colours <- palette
@@ -377,6 +387,7 @@ summary_study <- function(configured_data, plot_area_width = 6, colourblind = FA
 #' @param treatment2 Second treatment in the comparison.
 #' @param rob_variables Vector of RoB and indirectness variable names from 'pairwise'.
 #' @param palette Vector of colours to use
+#' @noRd
 .AddTreatmentEffectBlock <- function(pairwise, label_x_position, outcome_x_position, rob_x_positions, y_header_position, y_positions, treatment1, treatment2, rob_variables, palette) {
 
   # header
@@ -450,6 +461,7 @@ summary_study <- function(configured_data, plot_area_width = 6, colourblind = FA
 #'  - 'treat2': Second treatment in the comparison.
 #'  - 'y_position_first': y co-ordinate of the lowest point on the graph corresponding to this comparison.
 #'  - 'y_position_last': y co-ordinate of the highest point on the graph corresponding to this comparison.
+#' @noRd
 PairwiseTreatments <- function(pairwise, treatment_order) {
   #The number of studies comparing each pair of treatments
   pairwise_treatments <- as.data.frame(table(pairwise[, c("treat1", "treat2")]))
@@ -481,6 +493,7 @@ PairwiseTreatments <- function(pairwise, treatment_order) {
 #' @param pairwise Results of pairwise analysis
 #' @inheritParams common_params
 #' @return Vector of xmin and xmax
+#' @keywords internal
 #' @export
 summary_study_min_max <- function(pairwise, outcome){
 
