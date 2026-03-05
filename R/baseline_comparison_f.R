@@ -10,7 +10,9 @@
 #' configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
 #' configured_data <- readRDS(configured_data_path)
 #'
-#' fitted_baseline_model <- baseline_model(configured_data = configured_data)
+#' fitted_baseline_model <- baseline_model(configured_data = configured_data,
+#'                                         regressor_type = "shared")
+#'
 #' baseline_comparison(model = fitted_baseline_model)
 #' }
 #' @export

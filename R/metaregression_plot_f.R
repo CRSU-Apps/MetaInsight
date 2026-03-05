@@ -45,8 +45,12 @@
 #' configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
 #' configured_data <- readRDS(configured_data_path)
 #'
-#' fitted_baseline_model <- baseline_model(configured_data = configured_data)
-#' regression_data <- baseline_regression(model = fitted_baseline_model, configured_data = configured_data)
+#' fitted_baseline_model <- baseline_model(configured_data = configured_data,
+#'                                         regressor_type = "shared")
+#'
+#' regression_data <- baseline_regression(model = fitted_baseline_model,
+#'                                        configured_data = configured_data)
+#'
 #' metaregression_plot(model = fitted_baseline_model,
 #'                     configured_data = configured_data,
 #'                     regression_data = regression_data,
