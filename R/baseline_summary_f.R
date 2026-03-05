@@ -143,7 +143,7 @@ baseline_summary <- function(configured_data, logger = NULL){
       yaxt = "n",
       xaxt = "n",
       ylab = "",
-      xlab = x_label,
+      xlab = "Baseline risk",
       frame.plot = F, # remove border
       yaxs = "i" # remove internal padding
     )
@@ -152,7 +152,7 @@ baseline_summary <- function(configured_data, logger = NULL){
 
     # define the ticks and labels for the x-axis
     if (is.element(configured_data$outcome_measure, c("OR", "RR"))) {
-      x_labels <- signif(exp(x_ticks), digits = 2)
+      x_labels <- signif(stats::plogis(x_ticks), digits = 2)
     } else if (is.element(configured_data$outcome_measure, c("MD", "SMD", "RD"))) {
       x_labels <- x_ticks
     }
@@ -174,7 +174,7 @@ baseline_summary <- function(configured_data, logger = NULL){
 
     # add header of the within-study comparison-level outcomes
     mtext(
-      text = c(x_label, "(95% CI)"),
+      text = c("Baseline risk", "(95% CI)"),
       side = 2,
       at = c(top_line + 3.2, top_line + 2),
       line = 1 + (outcome_width * 0.5), # centered
@@ -221,7 +221,7 @@ baseline_summary <- function(configured_data, logger = NULL){
 #' @param caption_setting Text string to describe type of plot. Can be "baseline risk" or "covariate"
 #' @param error_bar_text Text string to explain the error bar (optional)
 #' @return Text string to be used for caption
-
+#' @noRd
 PasteCaptionText <- function(caption_setting, error_bar_text = NULL) {
 
   caption_text <- paste('The plotted', caption_setting, 'value is the same for all treatment arms across')
@@ -242,6 +242,7 @@ PasteCaptionText <- function(caption_setting, error_bar_text = NULL) {
 #'
 #' @param treatments vector of treatments
 #' @return vector of y positions
+#' @noRd
 baseline_summary_y_position <- function(treatments){
   result <- numeric(length(treatments))
   result[1] <- 1  # Start with 1 for the first element
@@ -264,6 +265,7 @@ baseline_summary_y_position <- function(treatments){
 #' @param treatment Treatment
 #' @param ci_limit_height Height of the vertical lines at the end of the confidence intervals. Defaults to 0.3.
 #' @importFrom graphics points lines
+#' @noRd
 baseline_summary_treatment_effect <- function(df, y_position, studlab, treatment, ci_limit_height = 0.3) {
   row <- which(df$Study == studlab & df$Label == treatment)
   # point estimate
@@ -298,6 +300,7 @@ baseline_summary_treatment_effect <- function(df, y_position, studlab, treatment
 #' @param y_position y co-ordinate for the effect size and confidence interval.
 #' @param studlab Study.
 #' @param treatment Treatment.
+#' @noRd
 baseline_summary_outcome_text <- function(df, x_position, studlab, treatment) {
   row <- which(df$Study == studlab & df$Label == treatment)
   # exclude if missing
@@ -320,6 +323,7 @@ baseline_summary_outcome_text <- function(df, x_position, studlab, treatment) {
 #' @param outcome_x_position x co-ordinate for the start of the text.
 #' @param y_positions Vector of y co-ordinates for the study labels and confidence intervals.
 #' @param treatment Treatment.
+#' @noRd
 baseline_summary_block <- function(df, label_x_position, outcome_x_position, y_positions, treatment) {
 
   # select the rows comparing to the two treatments
@@ -363,4 +367,3 @@ baseline_summary_block <- function(df, label_x_position, outcome_x_position, y_p
     )
   }
 }
-
