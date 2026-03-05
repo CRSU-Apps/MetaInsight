@@ -2,7 +2,7 @@
 % Please edit documentation in R/baseline_summary_f.R
 \name{baseline_summary}
 \alias{baseline_summary}
-\title{Produce a plot summarising baselink risk for each study arm}
+\title{Summarise baseline risk}
 \usage{
 baseline_summary(configured_data, logger = NULL)
 }

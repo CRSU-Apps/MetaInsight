@@ -1,8 +1,13 @@
-#' Produce a summary dataframe of the studies using.
+#' @title Characterise the data
+#' @description Produce summaries of network characteristics, treatments and
+#' treatment pairs such as the number of participants and and the mean outcome.
 #' Inspired by `BUGSnet::net.tab()`
 #'
 #' @inheritParams common_params
-#' @return dataframe of characteristics
+#' @return List containing:
+#'  \item{network}{network characteristics}
+#'  \item{treatments}{treatment characteristics}
+#'  \item{pairs}{treatment pair characteristics}
 #' @export
 summary_char <- function(configured_data, logger = NULL) {
 

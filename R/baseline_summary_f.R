@@ -1,7 +1,7 @@
-#' Produce a plot summarising baselink risk for each study arm
+#' @title Summarise baseline risk
+#' @description Produce a plot summarising baselink risk for each study arm
 #'
 #' @inheritParams common_params
-#' @import ggplot2
 #' @export
 baseline_summary <- function(configured_data, logger = NULL){
 
