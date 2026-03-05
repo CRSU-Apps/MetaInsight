@@ -110,8 +110,11 @@ bayes_ranking <- function(model, configured_data, logger = NULL) {
     }
   }
 
-  prob <- data.table::setDT(prob, keep.rownames = "Treatment") # treatment as a column rather than rownames (useful for exporting)
-  prob$Treatment <- prob$Treatment
+
+  # treatment as a column rather than rownames (useful for exporting)
+  prob$Treatment <- rownames(prob)
+  # move to first column
+  prob <- prob[, c(ncol(prob), 1:(ncol(prob)-1))]
 
   network <- network_structure(configured_data$freq, order = SUCRA$Treatment)
 
