@@ -6,7 +6,6 @@
 #' @param loaded_data list. Output from `setup_load()`
 #' @inheritParams common_params
 #' @return `configured_data` containing:
-#'  \item{wrangled_data}{dataframe. To be presented in the data table}
 #'  \item{treatments}{dataframe. Treatment names and IDs}
 #'  \item{reference_treatment}{character. The selected reference treatment}
 #'  \item{disconnected_indices}{vector. Indices of studies that are not connected to the main network}
@@ -124,8 +123,7 @@ setup_configure <- function(loaded_data, reference_treatment, effects, outcome_m
                       effects,
                       treatments$Label[treatments$Number == 1])
 
-  output <- list(wrangled_data = data,
-                 treatments = treatments,
+  output <- list(treatments = treatments,
                  reference_treatment = reference_treatment,
                  disconnected_indices = disconnected_indices,
                  connected_data = connected_data,
