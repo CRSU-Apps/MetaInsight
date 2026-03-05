@@ -2,20 +2,25 @@
 #' @description Produce a plot summarising baselink risk for each study arm
 #'
 #' @inheritParams common_params
+#' @import graphics
 #' @export
 baseline_summary <- function(configured_data, logger = NULL){
 
   check_param_classes(c("configured_data"),
                       c("configured_data"), logger)
 
-  # connected_data, outcome, treatment_df
+  if (!configured_data$outcome_measure %in% c("OR", "MD")){
+    logger |> writeLog(type = "error", "configured data must have an outcome_measure of 'OR' or 'MD'")
+    return()
+  }
+
   if (FindDataShape(configured_data$connected_data) == "wide") {
     long_data <- as.data.frame(WideToLong(configured_data$connected_data, outcome = configured_data$outcome))
   } else if (FindDataShape(configured_data$connected_data) == "long") {
     long_data <- configured_data$connected_data
   }
 
-  if (configured_data$outcome == "continuous") {
+  if (configured_data$outcome_measure == "MD") {
 
     # Add baseline column that is the mean value and
     # baseline_error column that is 1.96 * SD / sqrt(N)
@@ -33,7 +38,7 @@ baseline_summary <- function(configured_data, logger = NULL){
     # Error bar text for continuous outcomes
     error_bar_text <- "Error bars: mean +/- 1.96 * SD / sqrt(N)"
 
-  } else if (configured_data$outcome == "binary") {
+  } else if (configured_data$outcome_measure == "OR") {
 
     # Use escalc function with the logit transformed proportion (PLO) measure
     effects <- metafor::escalc(measure = "PLO", xi = long_data$R, ni = long_data$N)
@@ -85,7 +90,7 @@ baseline_summary <- function(configured_data, logger = NULL){
   df$point_estimate <- df$baseline
   df$ci_lower <- df$baseline - df$baseline_error
   df$ci_upper <- df$baseline + df$baseline_error
-  if (is.element(configured_data$outcome_measure, c("OR", "RR"))) {
+  if (configured_data$outcome_measure == "OR"){
     df$point_estimate <- stats::plogis(df$point_estimate)
     df$ci_lower <- stats::plogis(df$ci_lower)
     df$ci_upper <- stats::plogis(df$ci_upper)

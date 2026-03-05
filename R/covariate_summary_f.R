@@ -2,6 +2,7 @@
 #'
 #' @inheritParams common_params
 #' @inherit return-svg return
+#' @import graphics
 #' @export
 covariate_summary <- function(configured_data, logger = NULL){
   check_param_classes(c("configured_data"),
