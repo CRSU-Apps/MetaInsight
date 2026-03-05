@@ -86,9 +86,9 @@ baseline_summary <- function(configured_data, logger = NULL){
   df$ci_lower <- df$baseline - df$baseline_error
   df$ci_upper <- df$baseline + df$baseline_error
   if (is.element(configured_data$outcome_measure, c("OR", "RR"))) {
-    df$point_estimate <- exp(df$point_estimate)
-    df$ci_lower <- exp(df$ci_lower)
-    df$ci_upper <- exp(df$ci_upper)
+    df$point_estimate <- stats::plogis(df$point_estimate)
+    df$ci_lower <- stats::plogis(df$ci_lower)
+    df$ci_upper <- stats::plogis(df$ci_upper)
   }
   df$point_estimate <- df$point_estimate |> sprintf(fmt = "%-.2f")
   df$ci_lower <- df$ci_lower |> sprintf(fmt = "%-.2f")
