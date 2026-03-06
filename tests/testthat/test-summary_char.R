@@ -85,22 +85,22 @@ test_that("summary_char produces tables that can be downloaded", {
 
   trt_all_dl <- app$get_download("summary_char-download_treatments_all")
   df <- read.csv(trt_all_dl)
-  expect_equal(ncol(df), 7) # names are now a column
+  expect_equal(ncol(df), 6)
   expect_equal(nrow(df), n_trt_all)
 
   trt_sub_dl <- app$get_download("summary_char-download_treatments_sub")
   df <- read.csv(trt_sub_dl)
-  expect_equal(ncol(df), 7) # names are now a column
+  expect_equal(ncol(df), 6)
   expect_equal(nrow(df), n_trt_sub)
 
   pairs_all_dl <- app$get_download("summary_char-download_pairs_all")
   df <- read.csv(pairs_all_dl)
-  expect_equal(ncol(df), 4) # names are now a column
+  expect_equal(ncol(df), 3)
   expect_equal(nrow(df), n_comparisons_all)
 
   pairs_sub_dl <- app$get_download("summary_char-download_pairs_sub")
   df <- read.csv(pairs_sub_dl)
-  expect_equal(ncol(df), 4) # names are now a column
+  expect_equal(ncol(df), 3)
   expect_equal(nrow(df), n_comparisons_sub)
 
   app$stop()

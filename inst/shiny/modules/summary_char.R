@@ -79,14 +79,14 @@ summary_char_module_server <- function(id, common, parent_session) {
     output$download_treatments_all <- downloadHandler(
       filename = "MetaInsight_treatment_characteristics_all.csv",
       content = function(file) {
-        write.csv(summary_all()$treatments, file)
+        write.csv(summary_all()$treatments, file, row.names = FALSE)
       }
     )
 
     output$download_treatments_sub <- downloadHandler(
       filename = "MetaInsight_treatment_characteristics_sub.csv",
       content = function(file) {
-        write.csv(summary_sub()$treatments, file)
+        write.csv(summary_sub()$treatments, file, row.names = FALSE)
       }
     )
 
@@ -101,14 +101,14 @@ summary_char_module_server <- function(id, common, parent_session) {
     output$download_pairs_all <- downloadHandler(
       filename = "MetaInsight_treatment_pair_characteristics_all.csv",
       content = function(file) {
-        write.csv(summary_all()$pairs, file)
+        write.csv(summary_all()$pairs, file, row.names = FALSE)
       }
     )
 
     output$download_pairs_sub <- downloadHandler(
       filename = "MetaInsight_treatment_pair_characteristics_sub.csv",
       content = function(file) {
-        write.csv(summary_sub()$pairs, file)
+        write.csv(summary_sub()$pairs, file, row.names = FALSE)
       }
     )
 })
