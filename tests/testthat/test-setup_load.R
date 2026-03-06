@@ -17,17 +17,64 @@ test_that("Check setup_load function loads default data when no path is specifie
   expect_true(all(expected_components %in% names(result)))
 })
 
+test_that("Check setup_load function provides errors for invalid data", {
+
+  files <-c("binary-empty-long.csv",
+            "binary-empty-wide.csv",
+            "binary-misnumbered-wide.csv",
+            "binary-missing-partially-wide.csv",
+            "binary-missing-entirely-wide.csv",
+            "binary-missing-long.csv",
+            "binary-mistyped-columns-long.csv",
+            "binary-mistyped-columns-wide.csv",
+            "binary-single-arm-long.csv",
+            "binary-single-arm-wide.csv",
+            "continuous-empty-long.csv",
+            "continuous-empty-wide.csv",
+            "continuous-misnumbered-wide.csv",
+            "continuous-missing-partially-wide.csv",
+            "continuous-missing-entirely-wide.csv",
+            "continuous-missing-long.csv",
+            "continuous-mistyped-columns-long.csv",
+            "continuous-mistyped-columns-wide.csv",
+            "continuous-single-arm-long.csv",
+            "continuous-single-arm-wide.csv"
+  )
+
+  reasons <- c("File is empty",
+               "File is empty",
+               "must all have matching sequential indices",
+               "must all have matching sequential indices",
+               "Missing columns for binary data",
+               "Missing columns for binary data",
+               "Some columns have incorrect data types",
+               "Some columns have incorrect data types",
+               "Some studies have single arms",
+               "Some studies have single arms",
+               "File is empty",
+               "File is empty",
+               "must all have matching sequential indices",
+               "must all have matching sequential indices",
+               "Missing columns for continuous data",
+               "Missing columns for continuous data",
+               "Some columns have incorrect data types",
+               "Some columns have incorrect data types",
+               "Some studies have single arms",
+               "Some studies have single arms")
+
+  for (f in seq_along(files)){
+    outcome <- strsplit(files[f], "-")[[1]][1]
+    expect_error(setup_load(file.path(test_data_dir, "invalid_data", files[f]), outcome), reasons[f])
+  }
+
+})
+
 test_that("Check setup_load returns the correct data classes", {
   result <- setup_load(outcome = "continuous")
   expect_type(result$is_data_valid, "logical")
   expect_type(result$is_data_uploaded, "logical")
   expect_s3_class(result$data, "data.frame")
   expect_s3_class(result$treatments, "data.frame")
-})
-
-# only using one example here as all the others are tested in test-data_validation.R
-test_that("Check setup_load handles invalid data correctly", {
-  expect_error(setup_load(data_path = invalid_data_path, outcome = "binary"), "*Missing columns for binary data: N*")
 })
 
 # from here, tests have been refactored from test-data_input_panel.R
