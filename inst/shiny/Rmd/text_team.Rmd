@@ -9,7 +9,7 @@ Developers are listed in alphabetical order:
 
 <a href="https://github.com/nabury" target="_blank">Naomi Bradbury</a> is a Research Associate in the Biostatistics Research Group and developed the initial version of *MetaInsight*.
 
-<a href="https://github.com/RyanJField" target="_blank">Ryan Field</a> is a Research Software Engineer at the University of Glasgow.
+<a href="https://github.com/RyanJField" target="_blank">Ryan Field</a> is a Research Software Engineer within the Shared Research Facilities at the University of Glasgow. He has a background in computer science, software engineering and public health, and a focus on FAIR and reproducible data. With interests in research software, data analysis, evidence synthesis, web application development and statistical analysis.
 
 <a href="https://github.com/tommorris168" target="_blank">Tom Morris</a> is a Research Associate in the Biostatistics Research Group. He is a mathematician and clinical trials statistician by background, and now mostly works in meta-analysis.
 
