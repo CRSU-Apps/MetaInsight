@@ -755,6 +755,10 @@ FindAllTreatments <- function(data, treatment_ids = NULL, study = NULL) {
   # (?i) = Ignore case for matching
   # (\\.[0-9]+)? = Optional group of full stop, followed by at least one digit
   # $ = End of string
+
+  # decapitalise names
+  colnames(data) <- tolower(colnames(data))
+
   treatment_column_matches <- stringr::str_match(names(data), "^(?i)T(\\.[0-9]+)?$")
   treatment_column_names <- treatment_column_matches[!is.na(treatment_column_matches)]
 
@@ -765,7 +769,7 @@ FindAllTreatments <- function(data, treatment_ids = NULL, study = NULL) {
         if (is.null(study)) {
           treatments <- data[[nom]]
         } else {
-          treatments <- data[[nom]][data$Study == study]
+          treatments <- data[[nom]][data$study == study]
         }
         return(treatments[!is.na(treatments)])
       }
