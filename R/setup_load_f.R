@@ -147,6 +147,8 @@ ValidateUploadedData <- function(data, outcome) {
     )
   }
 
+  colnames(data) <- tolower(colnames(data))
+
   if (outcome == "continuous") {
     outcome_columns <- continuous_column_names
   } else if (outcome == "binary") {
@@ -392,7 +394,7 @@ ValidateUploadedData <- function(data, outcome) {
 #' - "message" = String describing any issues causing the data to be invalid
 #' @noRd
 .ValidateSingleArmStudies <- function(data) {
-  all_studies <- unique(data$Study)
+  all_studies <- unique(data$study)
   single_arm_studies <- unlist(
     lapply(
       all_studies,
@@ -449,8 +451,8 @@ ValidateUploadedData <- function(data, outcome) {
   #Loop through the rob and indirectness columns
   for (var in rob_indirectness_columns) {
     #Check for studies that have more than one value
-    rob_table <- table(data[, c("Study", var)])
-    studies_with_multiple_rob <- dimnames(rob_table)$Study[as.vector(rowSums(rob_table != 0) > 1)]
+    rob_table <- table(data[, c("study", var)])
+    studies_with_multiple_rob <- dimnames(rob_table)$study[as.vector(rowSums(rob_table != 0) > 1)]
     if (length((studies_with_multiple_rob) > 0)) {
       return(
         list(
@@ -460,7 +462,7 @@ ValidateUploadedData <- function(data, outcome) {
       )
     }
     #Check for studies that have invalid values
-    studies_with_wrong_qa_values <- unique(data$Study[!data[, var] %in% 1:3])
+    studies_with_wrong_qa_values <- unique(data$study[!data[, var] %in% 1:3])
     if (length(studies_with_wrong_qa_values) > 0) {
       return(
         list(
@@ -1159,8 +1161,8 @@ FindRobIndividualNames <- function(df) {
   }
 
   covariate_values <- list()
-  for (study in unique(data$Study)) {
-    covariate_values[[study]] <- unique(covariate_data[data$Study == study])
+  for (study in unique(data$study)) {
+    covariate_values[[study]] <- unique(covariate_data[data$study == study])
   }
 
   na_values <- .ThrowErrorForMatchingStudies(
