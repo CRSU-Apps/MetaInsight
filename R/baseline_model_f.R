@@ -179,9 +179,10 @@ BaselineRiskRegression <- function(connected_data, treatment_df, outcome, refere
 
   #Put the seeds in the required format for passing to bnma::network.run()
   rng_inits <- list()
-  for (i in 1:length(seeds)) {
-    rng_inits[[i]] <- list(.RNG.name = "base::Wichmann-Hill", .RNG.seed = seeds[i])
-  }
+  rng_inits[[1]] <- list(.RNG.name = "base::Wichmann-Hill", .RNG.seed = seeds[1])
+  rng_inits[[2]] <- list(.RNG.name = "base::Marsaglia-Multicarry", .RNG.seed = seeds[2])
+  rng_inits[[3]] <- list(.RNG.name = "base::Super-Duper", .RNG.seed = seeds[3])
+  rng_inits[[4]] <- list(.RNG.name = "base::Mersenne-Twister", .RNG.seed = seeds[4])
 
   return(bnma::network.run(network,
                            n.run = 20000,
