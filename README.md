@@ -25,6 +25,11 @@ Please consult our [Wiki](https://github.com/CRSU-Apps/MetaInsight/wiki) for fur
 
 ### JAGS
 
+The Bayesian models used in MetaInsight rely on Just Another Gibbs Sampler (JAGS) to fit them. JAGS is a system dependency
+rather than an R package and you should install JAGS first prior to installing MetaInsight. You can download JAGS from
+<https://mcmc-jags.sourceforge.io/> 
+
+### Installation
 
 You can install MetaInsight in R using:
 
@@ -38,7 +43,7 @@ Once that is complete, you can run the application with:
 metainsight::run_metainsight()
 ```
 
-The package is mainly intended to be used through the app, but you can also use the underlying functions yourself.
+The package is mainly intended to be used through the app, but you can also use the underlying functions in R scripts.
 Once the analysis has been configured using `setup_configure()` the result can be passed to all the `summary_*()` 
 and `freq_*()` functions and the `baseline_model()`, `bayes_model()` and `covariate_model()` functions. The results of the
 `*_model()` functions can be passed to all the other functions with the same prefix, apart from `baseline_summary()` 
@@ -47,14 +52,13 @@ and `covariate_summary()` which require `configured_data`. For example, to fit a
 ```r
 library(metainsight)
 
-loaded_data <- setup_load(data_path = "<path to file>", outcome = "Continuous")
+loaded_data <- setup_load(data_path = "<path to file>", outcome = "continuous")
 configured_data <- setup_configure(loaded_data = loaded_data, 
                                    reference_treatment = "Placebo", 
                                    effects = "random", 
                                    outcome_measure = "MD",
                                    ranking_option = "good",
                                    seed = 123)
-                                   
                 
 fitted_model <- bayes_model(configured_data)
 bayes_forest(fitted_model)
@@ -64,9 +68,17 @@ bayes_forest(fitted_model)
 
 ### Running locally
 
+To run the app locally, clone the repository with:
 
+```
+git clone https://github.com/CRSU-Apps/MetaInsight
+```
 
+Create an Rstudio project and associate it with the directory.
 
+Install the local version of the package with either `devtools::install_local()` or with Ctrl+Shift+B
+
+Then run the application with `shiny::runApp("inst/shiny")`
 
 ### Application structure
 
@@ -112,9 +124,12 @@ They are displayed in the app by calling the function inside a `reactive()` and 
 to download the plot as either an `.png`, `.pdf` or `.svg`.  This also enables saving outside of the application for example 
 using e.g. `plotting_function() |> write_plot("plot.png")`
 
+If you call the plotting function in an `.Rmd` of `.qmd` chunk, the plot will be displayed, but if calling it from an R terminal, pipe it to
+`htmltools::browsable()` to show the plot in the Viewer pane of Rstudio.
+
 ```r
 
-### SERVER
+### Inside server function
 
 svg <- reactive({
   plotting_function()
@@ -136,7 +151,7 @@ output$download <- downloadHandler(
   }
 )
 
-### UI
+### Inside results function
 
 uiOutput(ns("plot"))
 
@@ -145,10 +160,12 @@ uiOutput(ns("plot"))
 ### Updating modules or creating new modules
 
 Development of new modules or modification of existing modules should generally begin by creating or editing the module function. 
-This should occur outside of the application, but you may find it helpful to save the app state at the relevant point prior to where 
+Running `devtools::load_all(".")` or using Ctrl+Shift+L will load all the package functions and data that you need. This will take a
+few minutes the first time, but afterwards will take a few seconds.
+Function development should occur outside of the application, but you may find it helpful to save the app state at the relevant point prior to where 
 the change is to be made so that the same data can be used in development. For example, if developing a new module for the Frequentist 
 component, run the `setup_load` and `setup_configure` modules, save the app and then read the data in using `common <- readRDS(<save_file>.rds)` 
-you can then access the data using e.g. `common$freq_all`. To be able to use the function once you have developed it or modified it, 
+you can then access the data using e.g. `common$configured_data$freq`. To be able to use the function once you have developed it or modified it, 
 you need to document and reinstall the package with Ctrl+Shift+D and Ctrl+Shift+B.
 
 You can create a new module from scratch using `shinyscholar::create_module()` but it is probably easier to adapt an existing module 
@@ -160,3 +177,9 @@ is run, so you do not need to reinstall the package in order to see your changes
 Each module should have unit tests that check that the function works correctly written with `{testthat}` and end-to-end tests that 
 check that the function works correctly inside the app written with `{shinytest2}`. These are located in `tests/testthat` in a file 
 called `test-<identifier>.R`. It is probably easiest to use tests for an existing module as the basis for the new module.
+
+### Testing
+
+After making changes, you should run the tests for the module you have worked on locally and then run the full test suite on Github. To run 
+the tests, open the relevant file in `tests/testthat/` and either load `{testthat}` with `library(testthat)` and then select all the tests you 
+want to run and hit Ctrl+Enter, or just click the Run Tests button in the top right of the window pane.
