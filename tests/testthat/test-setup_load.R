@@ -234,10 +234,8 @@ test_that("Data can be reloaded after loading", {
 test_that("Data can't be loaded after configuring", {
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_setup_load", timeout = 30000)
   app$set_inputs(tabs = "setup")
-  # load data again and configure
-  app$set_inputs("setup_load-outcome" = "continuous")
   app$click("setup_load-run")
-  app$set_inputs(setupSel = "setup_configure")
+  app$wait_for_value(input = "setup_configure-ready")
   app$click("setup_configure-run")
   common <- app$get_value(export = "common")
   expect_s3_class(common$configured_data, "configured_data")
