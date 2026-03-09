@@ -127,7 +127,6 @@ setup_load_module_server <- function(id, common, parent_session) {
 
       # TRIGGER
       trigger("setup_load")
-      show_results(parent_session)
     })
 
     output$download <- downloadHandler(
