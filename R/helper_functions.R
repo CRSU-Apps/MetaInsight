@@ -23,6 +23,7 @@ spurious <- function(x) {
   cookies::add_cookie_handlers(x)
   cowplot::add_sub(x)
   DT::renderDataTable(x)
+  gargoyle::watch(x)
   knitr::all_labels(x)
   mirai::call_mirai(x)
   quarto::is_using_quarto(x)
@@ -30,6 +31,7 @@ spurious <- function(x) {
   rintrojs::hintjs(x)
   rmarkdown::github_document(x)
   shinyWidgets::pickerInput(x)
+  shinybusy::add_busy_bar(x)
   shinyjs::disable(x)
   return()
 }

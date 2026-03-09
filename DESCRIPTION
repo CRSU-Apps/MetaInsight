@@ -54,7 +54,6 @@ Imports:
     quarto,
     R6,
     reshape2,
-    rlang,
     rio,
     rintrojs,
     rmarkdown,
