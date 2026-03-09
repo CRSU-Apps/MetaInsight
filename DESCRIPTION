@@ -24,14 +24,12 @@ Depends:
     bslib,
     shiny (>= 1.8.1)
 Imports:
-    BUGSnet,
     bayesplot,
     bnma (>= 1.4.0),
     coda,
     cookies,
     cowplot,
     DT (>= 0.5),
-    data.table,
     dplyr,
     gargoyle,
     gemtc (>= 1.0.2),
@@ -76,8 +74,6 @@ Suggests:
     pdftools,
     shinytest2,
     testthat
-Remotes:
-    audrey-b/BUGSnet
 License: GPL-3
 URL: 
 Encoding: UTF-8

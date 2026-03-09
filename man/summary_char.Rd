@@ -14,8 +14,13 @@ Window. Insert the logger reactive list here for running in
 shiny, otherwise leave the default \code{NULL}}
 }
 \value{
-dataframe of characteristics
+List containing:
+\item{network}{network characteristics}
+\item{treatments}{treatment characteristics}
+\item{pairs}{treatment pair characteristics}
 }
 \description{
-Produce summaries characterising the dataset
+Produce summaries of network characteristics, treatments and
+treatment pairs such as the number of participants and and the mean outcome.
+Inspired by \code{BUGSnet::net.tab()}
 }

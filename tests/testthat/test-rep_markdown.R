@@ -59,8 +59,8 @@ test_that("rep_markdown produces a renderable .Rmd file after a frequentist anal
 
   app$set_inputs(summarySel = "summary_char", wait_ = FALSE)
   app$click("summary_char-run")
-  app$wait_for_value(output = "summary_char-table")
-  expected_chunks <- expected_chunks + 1
+  app$wait_for_value(output = "summary_char-network")
+  expected_chunks <- expected_chunks + 5
 
   app$set_inputs(summarySel = "summary_study")
   app$click("summary_study-run")

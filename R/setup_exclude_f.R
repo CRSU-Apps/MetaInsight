@@ -14,7 +14,6 @@
 #'   \item \code{circle_open}: Open circles
 #'   \item \code{none}: No symbols in which case only the plot of direct evidence is
 #'  }
-#'  \item{bugsnet}{dataframe. Processed data for bugsnet analyses created by `bugsnetdata`}
 #'  \item{freq}{list. Processed data for frequentist analyses created by `frequentist()`}
 #'  \item{outcome}{character. Whether the data is `binary` or `continuous`}
 #'  \item{outcome_measure}{character. Outcome measure of the dataset.}
@@ -62,10 +61,6 @@ setup_exclude <- function(configured_data, exclusions, async = FALSE){
 
   reference_treatment <- treatments$Label[treatments$Number == 1]
 
-  bugsnet <- bugsnetdata(non_covariate_data,
-                         configured_data$outcome,
-                         treatments)
-
   freq <- frequentist(non_covariate_data,
                       configured_data$outcome,
                       treatments,
@@ -78,7 +73,6 @@ setup_exclude <- function(configured_data, exclusions, async = FALSE){
   output$non_covariate_data <- NULL
   output$wrangled_data <- NULL
   output$disconnected_indices <- NULL
-  output$bugsnet <- bugsnet
   output$freq <- freq
   output$reference_treatment <- reference_treatment
   output$connected_data <- connected_data

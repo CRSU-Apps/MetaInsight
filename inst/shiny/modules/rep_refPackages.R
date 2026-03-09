@@ -27,7 +27,6 @@ rep_refPackages_module_server <- function(id, common, parent_session) {
         knitcitations::citep(citation("knitr"))
         knitcitations::citep(citation("rmarkdown"))
         knitcitations::citep(citation("gemtc"))
-        knitcitations::citep(citation("BUGSnet"))
         knitcitations::citep(citation("bayesplot"))
         knitcitations::citep(citation("bnma"))
         knitcitations::citep(citation("cookies"))

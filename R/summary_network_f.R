@@ -25,12 +25,10 @@ summary_network <- function(configured_data, style, label_size = 1, title = "", 
   }
 
   n_trt <- configured_data$freq$ntx
-  if (n_trt < 8){
-    height <- 5
-    width <- 5
+  if (n_trt < 5){
+    height_and_width <- 5
   } else {
-    width <- 5 + sqrt(n_trt-5)
-    height <- width
+    height_and_width  <- 5 + sqrt(n_trt-5)
   }
 
   svg <- svglite::xmlSVG({
@@ -42,14 +40,28 @@ summary_network <- function(configured_data, style, label_size = 1, title = "", 
       title(title)
 
     } else if (style == "netplot"){
-      data.rh <- BUGSnet::data.prep(arm.data = configured_data$bugsnet, varname.t = "T", varname.s = "Study")
-      BUGSnet::net.plot(data.rh, node.scale = 3, edge.scale = 1.5, node.lab.cex = label_size,
-                               layout.params = NULL)
-      title(title)
+      netmeta::netgraph(configured_data$freq$net1,
+                        adj = 0.5,
+                        scale = 1,
+                        cex = 1,
+                        lwd.max = max(configured_data$freq$net1$k.trts) ,
+                        cex.points = configured_data$freq$net1$k.trts,
+                        number.of.studies = FALSE,
+                        col = "grey",
+                        points.max = 20,
+                        col.points = "#f69c54",
+                        thickness = "number.of.studies",
+                        rescale.thickness = I,  # avoid sqrt rescaling
+                        rescale.pointsize = I,
+                        plastic = FALSE,
+                        points = TRUE,
+                        multiarm = FALSE,
+                        start = "circle",
+                        rotate = 90)
     }
   },
-  width = width,
-  height = height,
+  width = height_and_width,
+  height = height_and_width,
   web_fonts = list(
     arimo = "https://fonts.googleapis.com/css2?family=Arimo:wght@400;700&display=swap")
   ) |> crop_svg()

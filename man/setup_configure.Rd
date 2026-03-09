@@ -49,7 +49,6 @@ else empty:
 \item{type}{character. Whether the covariate is \code{binary} or \code{continuous}}
 }
 }
-\item{bugsnet}{dataframe. Processed data for bugsnet analyses created by \code{bugsnetdata}}
 \item{freq}{list. Processed data for frequentist analyses created by \code{frequentist()}}
 \item{outcome}{character. Whether the data is \code{binary} or \code{continuous}}
 \item{outcome_measure}{character. Outcome measure of the dataset.}

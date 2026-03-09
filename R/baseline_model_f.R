@@ -40,8 +40,8 @@ baseline_model <- function(configured_data, regressor_type, async = FALSE){
     }
   }
 
-  if (!configured_data$outcome_measure %in% c("OR", "RR", "MD")){
-    return(async |> asyncLog(type = "error", "configured data must have an outcome_measure of 'OR', 'RR' or 'MD'"))
+  if (!configured_data$outcome_measure %in% c("OR", "MD")){
+    return(async |> asyncLog(type = "error", "configured data must have an outcome_measure of 'OR' or 'MD'"))
   }
 
   if (!regressor_type %in% c("shared", "unrelated", "exchangeable")){

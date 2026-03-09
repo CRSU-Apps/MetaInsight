@@ -2,7 +2,7 @@
 % Please edit documentation in R/covariate_summary_f.R
 \name{covariate_summary}
 \alias{covariate_summary}
-\title{Produce a plot summarising the covariate value for each study arm}
+\title{Summarise covariate data}
 \usage{
 covariate_summary(configured_data, logger = NULL)
 }

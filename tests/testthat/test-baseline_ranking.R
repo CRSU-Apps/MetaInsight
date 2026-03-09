@@ -3,12 +3,12 @@ test_that("Check baseline_ranking function works as expected", {
   result <- baseline_ranking(fitted_baseline_model, configured_data_con)
 
   expect_is(result, "list")
-  expect_true(all(c("SUCRA", "Colour", "Cumulative", "Probabilities", "BUGSnetData") %in% names(result)))
+  expect_true(all(c("SUCRA", "Colour", "Cumulative", "Probabilities", "Network") %in% names(result)))
   expect_is(result$SUCRA, "data.frame")
   expect_is(result$Colour, "data.frame")
   expect_is(result$Cumulative, "data.frame")
   expect_is(result$Probabilities, "data.frame")
-  expect_is(result$BUGSnetData, "BUGSnetData")
+  expect_is(result$Network, "data.frame")
   expect_equal(result$SUCRA$Treatment[which.max(result$SUCRA$SUCRA)], "the_Great")
 
   table_result <- ranking_table(result)
@@ -50,7 +50,7 @@ test_that("{shinytest2} recording: e2e_baseline_ranking", {
 
   common <- app$get_value(export = "common")
   expect_is(common$baseline_ranking, "list")
-  expect_true(all(c("SUCRA", "Colour", "Cumulative", "Probabilities", "BUGSnetData") %in% names(common$baseline_ranking)))
+  expect_true(all(c("SUCRA", "Colour", "Cumulative", "Probabilities", "Network") %in% names(common$baseline_ranking)))
 
   forest_all <- app$get_value(output = "baseline_ranking-all-forest")
   expect_match(forest_all$html, "<svg")

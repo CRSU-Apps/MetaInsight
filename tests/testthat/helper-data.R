@@ -102,6 +102,9 @@ if (on_cran){
 }
 
 n_trt_all <- configured_data_con$freq$ntx
+n_comparisons_all <- length(netmeta::netconnection(configured_data_con$freq$net1)$comparisons)
 n_trt_sub <- excluded_data_con$freq$ntx
+n_comparisons_sub <- length(netmeta::netconnection(excluded_data_con$freq$net1)$comparisons)
 n_trt_bin <- configured_data_bin$freq$ntx
+n_comparisons_bin <- length(netmeta::netconnection(configured_data_bin$freq$net1)$comparisons)
 

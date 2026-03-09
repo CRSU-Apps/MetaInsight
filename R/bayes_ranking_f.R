@@ -9,7 +9,7 @@
 #' \item{Colour}{Dataframe of colours}
 #' \item{Cumulative}{Dataframe of cumulative ranking probabilities}
 #' \item{Probabilities}{Dataframe of ranking probabilities}
-#' \item{BUGSnetData}{ output from `BUGSnet::data.prep()`}
+#' \item{Network}{Dataframe of network characteristics}
 #' @examples
 #' configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
 #' configured_data <- readRDS(configured_data_path)
@@ -33,62 +33,11 @@ bayes_ranking <- function(model, configured_data, logger = NULL) {
     cov_value <- NA
   }
 
-  longsort <- dataform.df(configured_data$connected_data, configured_data$treatments, model$outcome)
+  longdata  <- dataform.df(configured_data$connected_data, configured_data$treatments, model$outcome)
+  NMAdata <-  model$mtcResults
+  rankdirection <-  configured_data$ranking_option
+  package <-  ifelse(inherits(model, "baseline_model"), "bnma", "gemtc")
 
-  rankdata(
-    NMAdata = model$mtcResults,
-    rankdirection = configured_data$ranking_option,
-    longdata = longsort,
-    cov_value = cov_value,
-    package = ifelse(inherits(model, "baseline_model"), "bnma", "gemtc")
-  )
-}
-
-#' @rdname bayes_ranking
-#' @param ... Parameters passed to `bayes_ranking()`
-#' @export
-baseline_ranking <- function(...){
-  bayes_ranking(...)
-}
-
-#' @rdname bayes_ranking
-#' @param ... Parameters passed to `bayes_ranking()`
-#' @export
-covariate_ranking <- function(...){
-  bayes_ranking(...)
-}
-
-#' Get SUCRA data.
-#'
-#' @param NMAdata Output from 'baye' function or from bnma::network.run.
-#' @param rankdirection "good" or "bad" (referring to smaller outcome values).
-#' @param longdata Output from 'dataform.df' function. This should be the same dataset that was passed as the 'data' argument to baye(), which resulted in @param NMAdata.
-#'        (TM: Suggested improvement: baye() should output its 'data' argument, then @param longdata becomes superfluous, and there is no possibility of a mismatch between @param NMAdata and @param longdata.)
-#' @param cov_value covariate value if a meta-regression
-#' @param package "gemtc" or "bnma", defaults to "gemtc".
-#' @return List:
-#' - 'SUCRA' = Data frame of SUCRA data.
-#'     - 'Treatment'
-#'     - 'SUCRA' = Sucra percentages.
-#'     - 'N' = Total number of patients in 'Treatment' arms (summed over all studies).
-#'     - 'SizeO' = Size of points (relative to 'N') in original SUCRA plot.
-#'     - 'SizeA' = Size of points (relative to 'N') in alternative SUCRA plot.
-#' - 'Colour' = Data frame of colours.
-#'     - 'SUCRA' = Possible SUCRA values.
-#'     - 'colour' = Colour values corresponding to 'SUCRA'.
-#' - 'Cumulative' = Data frame of cumulative ranking probabilities, in long format.
-#'     - 'Treatment'
-#'     - 'Rank'
-#'     - 'Cumulative_Probability'
-#'     - 'SUCRA'
-#' - 'Probabilities' = Data frame of ranking probabilities.
-#'     - 'Treatment'
-#'     - 'Rank 1' = Probability 'Treatment' is ranked first.
-#'     - ...
-#'     - 'Rank n_t' = Probability 'Treatment' is ranked last (n_t = number of treatments).
-#' - 'BUGSnetData' = Output from BUGSnet::data.prep with arguments from @param longdata.
-#' @noRd
-rankdata <- function(NMAdata, rankdirection, longdata, cov_value = NA, package = "gemtc") {
   # data frame of colours
   colour_dat <- data.frame(SUCRA = seq(0, 100, by = 0.1))
   colour_dat <- dplyr::mutate(colour_dat, colour = seq(0, 100, length.out = 1001))
@@ -168,20 +117,38 @@ rankdata <- function(NMAdata, rankdirection, longdata, cov_value = NA, package =
     }
   }
 
-  prob <- data.table::setDT(prob, keep.rownames = "Treatment") # treatment as a column rather than rownames (useful for exporting)
-  prob$Treatment <- prob$Treatment
 
-  # Number of trials as line thickness taken from BUDGnetData object #
-  BUGSnetData <- BUGSnet::data.prep(arm.data = longdata, varname.t = "T", varname.s = "Study")
+  # treatment as a column rather than rownames (useful for exporting)
+  prob$Treatment <- rownames(prob)
+  # move to first column
+  prob <- prob[, c(ncol(prob), 1:(ncol(prob)-1))]
+
+  network <- network_structure(configured_data$freq, order = SUCRA$Treatment)
+
   return(
     list(
       SUCRA = SUCRA,
       Colour = colour_dat,
       Cumulative = Cumulative_Data,
       Probabilities = prob,
-      BUGSnetData = BUGSnetData
+      Network = network
     )
   )
+
+}
+
+#' @rdname bayes_ranking
+#' @param ... Parameters passed to `bayes_ranking()`
+#' @export
+baseline_ranking <- function(...){
+  bayes_ranking(...)
+}
+
+#' @rdname bayes_ranking
+#' @param ... Parameters passed to `bayes_ranking()`
+#' @export
+covariate_ranking <- function(...){
+  bayes_ranking(...)
 }
 
 #' Litmus Rank-O-Gram
@@ -291,7 +258,7 @@ RadialSUCRA <- function(ranking_data, original = TRUE, colourblind = FALSE, regr
 
   # Create network data #
   SUCRA <- SUCRAData |> dplyr::arrange(-SUCRA)
-  edges <- network.structure(ranking_data$BUGSnetData, my_order = SUCRA$Treatment)
+  edges <- ranking_data$Network
   dat.edges <- data.frame(pairwiseID = rep(NA, nrow(edges) * 2),
                           treatment = "",
                           n.stud = NA,
@@ -398,95 +365,16 @@ ranking_table <- function(ranking_data) {
   return(df)
 }
 
-#' Function taken and adapted from BUGSnet GitHub
-#' @param data.nma BUGSnetData item, created using `data.prep(arm.data=longdata, varname.t = "T", varname.s="Study")`
-#' @param my_order character. Vector of treatments names in rank order.
+#' Calculate edge.weights for network
+#' @param freq list. Output from `frequentist()`
+#' @param order character. Vector of treatments names in rank order.
 #' @return data.frame containing the number of studies that compare each treatment against the reference treatment.
-network.structure <- function(data.nma, my_order = NA) {
-
-  # Bind Variables to function
-  from <- NULL
-  to <- NULL
-  trt <- NULL
-  flag <- NULL
-  mtchvar <- NULL
-  trial <- rlang::quo(!!as.name(data.nma$varname.s))
-  varname.t.quo <- rlang::quo(!!as.name(data.nma$varname.t))
-
-  # Change underscores if present (as when my_order is based on rank results, it'll already have underscores removed)
-  data.nma$arm.data$T <- data.nma$arm.data$T
-  data.nma$treatments$T <- data.nma$treatments$T
-
-  studytrt <- data.nma$arm.data |>
-    dplyr::select(data.nma$varname.s, data.nma$varname.t) |>
-    tidyr::nest(data = c(data.nma$varname.t)) # nest treatments within each study
-
-  cnt <- data.nma$arm.data |>
-    dplyr::select(data.nma$varname.s, data.nma$varname.t) |>
-    dplyr::count(data.nma$varname.s) # number of treatments within each study
-
-  tmp1 <- dplyr::bind_cols(studytrt, cnt) |>
-    dplyr::filter(.data$n > 1) # removes single arm studies
-
-  if (rlang::is_empty(my_order)) {
-    pairs <- tmp1[1, "data"] |>
-      unlist() |>
-      sort() |>
-      utils::combn(2) # each set of treatment pairs is put in alphabetical order
-  } else {
-    pairs <- tmp1[1, "data"] |>
-      unlist() |>
-      (\(x) x[order(match(x, my_order))])() |>
-      utils::combn(2) # orders according to 'my_order'
-  }
-
-  for(i in 2:nrow(tmp1)){
-    if (rlang::is_empty(my_order)) {
-      pairs <- tmp1[i, "data"] |>
-        unlist() |>
-        sort() |>
-        utils::combn(2) |>
-        cbind(pairs)
-    } else {
-      pairs <- tmp1[i, "data"] |>
-        unlist() |>
-        (\(x) x[order(match(x, my_order))])() |>
-        utils::combn(2) |>
-        cbind(pairs)
-    }
-  }
-
-  # data of each pairwise comparison and number of trials
-  pairs2 <- data.frame(
-    from = pairs[1, ],
-    to = pairs[2, ]) |>
-    dplyr::group_by(from, to) |>
-    dplyr::mutate(edge.weight = max(1:dplyr::n())) |>
-    dplyr::arrange(from, to) |>
-    dplyr::distinct() |>
-    dplyr::mutate(mtchvar = 1)
-
-  studylabs <- studytrt |>
-    dplyr::group_by(!! trial) |>
-    dplyr::mutate(trt = paste(unlist(.data$data), collapse = ';')) |> # counts number of pairwise comparisons
-    dplyr::select(!!trial, trt) |>
-    dplyr::mutate(mtchvar = 1)
-
-  edges <- dplyr::left_join(pairs2, studylabs, by = "mtchvar", relationship = "many-to-many") |>
-    dplyr::ungroup() |>
-    dplyr::mutate(
-      flag = ifelse(
-        stringr::str_detect(trt, stringr::coll(from)) & stringr::str_detect(trt, stringr::coll(to)),
-        1,
-        0
-      )
-    ) |>
-    dplyr::filter(flag == 1) |>
-    dplyr::select(-c(mtchvar, flag, trt)) |>
-    tidyr::nest(data = c(!!trial)) |> # nests the studies for which belonged to each treatment comparison
-    dplyr::group_by(from, to) |>
-    dplyr::mutate(study = paste(unlist(data), collapse = ', \n')) |>
-    dplyr::select(-data)
+network_structure <- function(freq, order = NA) {
+  ng <- netmeta::netgraph(freq$net1, figure = FALSE)  # suppress plot
+  edges <- ng$edges[, c("treat1", "treat2", "n.stud")]
+  names(edges) <- c("from", "to", "edge.weight")
+  edges |>
+    dplyr::arrange(factor(.data$from, levels = order))
 
   return(edges)
 }

@@ -15,8 +15,6 @@ test_that("The app can be saved after an analysis and the data restored", {
   expect_equal(common_saved$state$setup_exclude$exclusions, c("Study01", "Study25"))
 
   # check data is in the save file (non-exhaustive)
-  expect_s3_class(common_saved$configured_data$bugsnet, "data.frame")
-  expect_s3_class(common_saved$subsetted_data$bugsnet, "data.frame")
   expect_type(common_saved$configured_data$freq, "list")
   expect_type(common_saved$subsetted_data$freq, "list")
 
@@ -35,13 +33,9 @@ test_that("The app can be saved after an analysis and the data restored", {
 
   # check that data has been reloaded into common and is the same as before
   common_restored <- app_load$get_value(export = "common")
-  expect_s3_class(common_restored$configured_data$bugsnet, "data.frame")
-  expect_s3_class(common_restored$subsetted_data$bugsnet, "data.frame")
   expect_type(common_restored$configured_data$freq, "list")
   expect_type(common_restored$subsetted_data$freq, "list")
-  expect_equal(common_saved$configured_data$bugsnet, common_restored$configured_data$bugsnet)
   expect_equal(common_saved$configured_data$freq, common_restored$configured_data$freq)
-  expect_equal(common_saved$subsetted_data$bugsnet, common_restored$subsetted_data$bugsnet)
   expect_equal(common_saved$subsetted_data$freq, common_restored$subsetted_data$freq)
 
   # check that input values have been restored
