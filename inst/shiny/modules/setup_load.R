@@ -93,6 +93,8 @@ setup_load_module_server <- function(id, common, parent_session) {
         file_id$value <- file_id$value + 1
         file_id$id <- paste0("file", file_id$value)
         trigger("setup_reset")
+        # for testing
+        shinyjs::runjs("Shiny.setInputValue('setup_load-reset_complete', 'complete');")
       }
     })
 
@@ -125,7 +127,6 @@ setup_load_module_server <- function(id, common, parent_session) {
 
       # TRIGGER
       trigger("setup_load")
-      show_results(parent_session)
     })
 
     output$download <- downloadHandler(

@@ -392,7 +392,10 @@ ValidateUploadedData <- function(data, outcome) {
 #' - "message" = String describing any issues causing the data to be invalid
 #' @noRd
 .ValidateSingleArmStudies <- function(data) {
-  all_studies <- unique(data$Study)
+
+  study_column <- grep("^study$", names(data), value = TRUE, ignore.case = TRUE)
+
+  all_studies <- unique(data[[study_column]])
   single_arm_studies <- unlist(
     lapply(
       all_studies,
@@ -446,11 +449,13 @@ ValidateUploadedData <- function(data, outcome) {
     )
   }
 
+  study_column <- grep("^study$", names(data), value = TRUE, ignore.case = TRUE)
+
   #Loop through the rob and indirectness columns
   for (var in rob_indirectness_columns) {
     #Check for studies that have more than one value
-    rob_table <- table(data[, c("Study", var)])
-    studies_with_multiple_rob <- dimnames(rob_table)$Study[as.vector(rowSums(rob_table != 0) > 1)]
+    rob_table <- table(data[, c(study_column, var)])
+    studies_with_multiple_rob <- dimnames(rob_table)[[study_column]][as.vector(rowSums(rob_table != 0) > 1)]
     if (length((studies_with_multiple_rob) > 0)) {
       return(
         list(
@@ -460,7 +465,7 @@ ValidateUploadedData <- function(data, outcome) {
       )
     }
     #Check for studies that have invalid values
-    studies_with_wrong_qa_values <- unique(data$Study[!data[, var] %in% 1:3])
+    studies_with_wrong_qa_values <- unique(data[[study_column]][!data[, var] %in% 1:3])
     if (length(studies_with_wrong_qa_values) > 0) {
       return(
         list(
@@ -753,6 +758,9 @@ FindAllTreatments <- function(data, treatment_ids = NULL, study = NULL) {
   # (?i) = Ignore case for matching
   # (\\.[0-9]+)? = Optional group of full stop, followed by at least one digit
   # $ = End of string
+
+  study_column <- grep("^study$", names(data), value = TRUE, ignore.case = TRUE)
+
   treatment_column_matches <- stringr::str_match(names(data), "^(?i)T(\\.[0-9]+)?$")
   treatment_column_names <- treatment_column_matches[!is.na(treatment_column_matches)]
 
@@ -763,7 +771,7 @@ FindAllTreatments <- function(data, treatment_ids = NULL, study = NULL) {
         if (is.null(study)) {
           treatments <- data[[nom]]
         } else {
-          treatments <- data[[nom]][data$Study == study]
+          treatments <- data[[nom]][data[[study_column]] == study]
         }
         return(treatments[!is.na(treatments)])
       }
@@ -1148,6 +1156,7 @@ FindRobIndividualNames <- function(df) {
 #' @noRd
 .ValidateCovariate <- function(data, covariate_title) {
   covariate_data <- data[[covariate_title]]
+  study_column <- grep("^study$", names(data), value = TRUE, ignore.case = TRUE)
 
   if (!is.numeric(covariate_data)) {
     return(
@@ -1159,8 +1168,8 @@ FindRobIndividualNames <- function(df) {
   }
 
   covariate_values <- list()
-  for (study in unique(data$Study)) {
-    covariate_values[[study]] <- unique(covariate_data[data$Study == study])
+  for (study in unique(data[[study_column]])) {
+    covariate_values[[study]] <- unique(covariate_data[data[[study_column]] == study])
   }
 
   na_values <- .ThrowErrorForMatchingStudies(
