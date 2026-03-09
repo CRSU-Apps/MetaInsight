@@ -21,7 +21,7 @@ if the nodes cannot be split.
 }
 \examples{
 \donttest{
-nodesplit_path <- system.file("extdata", "continuous_nodesplot.csv", package = "metainsight")
+nodesplit_path <- system.file("extdata", "continuous_nodesplit.csv", package = "metainsight")
 loaded_data <- setup_load(data_path = nodesplit_path,
                           outcome = "continuous")
 configured_data <- setup_configure(loaded_data = loaded_data,
