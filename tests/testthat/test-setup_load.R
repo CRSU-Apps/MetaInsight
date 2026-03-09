@@ -79,26 +79,26 @@ test_that("Check setup_load returns the correct data classes", {
 
 # from here, tests have been refactored from test-data_input_panel.R
 test_that("continuous wide data matches between .csv and .xlsx files", {
-  result_csv <- setup_load(data_path = file.path("data", "Non_opioids_wide.csv"), outcome = "continuous")
-  result_xlsx <- setup_load(data_path = file.path("data", "Non_opioids_wide.xlsx"), outcome = "continuous")
+  result_csv <- setup_load(data_path = file.path(test_data_dir, "Non_opioids_wide.csv"), outcome = "continuous")
+  result_xlsx <- setup_load(data_path = file.path(test_data_dir, "Non_opioids_wide.xlsx"), outcome = "continuous")
   expect_equal(result_csv, result_xlsx)
 })
 
 test_that("continuous long data matches between .csv and .xlsx files", {
-  result_csv <- setup_load(data_path = file.path("data", "Non_opioids_long.csv"), outcome = "continuous")
-  result_xlsx <- setup_load(data_path = file.path("data", "Non_opioids_long.xlsx"), outcome = "continuous")
+  result_csv <- setup_load(data_path = file.path(test_data_dir, "Non_opioids_long.csv"), outcome = "continuous")
+  result_xlsx <- setup_load(data_path = file.path(test_data_dir, "Non_opioids_long.xlsx"), outcome = "continuous")
   expect_equal(result_csv, result_xlsx)
 })
 
 test_that("continuous long data matches between .csv and .xlsx files", {
-  result_csv <- setup_load(data_path = file.path("data", "Certolizumab_long.csv"), outcome = "binary")
-  result_xlsx <- setup_load(data_path = file.path("data", "Certolizumab_long.xlsx"), outcome = "binary")
+  result_csv <- setup_load(data_path = file.path(test_data_dir, "Certolizumab_long.csv"), outcome = "binary")
+  result_xlsx <- setup_load(data_path = file.path(test_data_dir, "Certolizumab_long.xlsx"), outcome = "binary")
   expect_equal(result_csv, result_xlsx)
 })
 
 test_that("continuous long data matches between .csv and .xlsx files", {
-  result_csv <- setup_load(data_path = file.path("data", "Certolizumab_wide.csv"), outcome = "binary")
-  result_xlsx <- setup_load(data_path = file.path("data", "Certolizumab_wide.xlsx"), outcome = "binary")
+  result_csv <- setup_load(data_path = file.path(test_data_dir, "Certolizumab_wide.csv"), outcome = "binary")
+  result_xlsx <- setup_load(data_path = file.path(test_data_dir, "Certolizumab_wide.xlsx"), outcome = "binary")
   expect_equal(result_csv, result_xlsx)
 })
 
@@ -163,6 +163,8 @@ test_that("Check setup_load loads data into common correctly for default data", 
 
   expect_equal(common$loaded_data$treatments, data.frame(Number = seq(4), Label = c('Placebo','Glucocorticoids','Ketamine','Gabapentinoids')))
 
+  app$stop()
+
 })
 
 test_that("Check setup_load loads data into common correctly for an uploaded file", {
@@ -179,6 +181,7 @@ test_that("Check setup_load loads data into common correctly for an uploaded fil
 
   expect_true(common$loaded_data$is_data_valid)
   expect_true(common$loaded_data$is_data_uploaded)
+  app$stop()
 })
 
 test_that("Invalid data is loaded into common correctly and errors are passed to the logger", {
@@ -198,11 +201,12 @@ test_that("Invalid data is loaded into common correctly and errors are passed to
 
   logger <- app$get_value(export = "logger")
   expect_true(grepl("*Missing columns for binary data*", logger))
+  app$stop()
 })
 
 
 test_that("Data can be reloaded after loading", {
-  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_setup_load")
+  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_setup_load", timeout = 30000)
   app$set_inputs(tabs = "setup")
   app$click("setup_load-run")
   common <- app$get_value(export = "common")
@@ -221,13 +225,14 @@ test_that("Data can be reloaded after loading", {
   # click the confirm button
   app$wait_for_js("$('.sweet-alert.visible').length > 0")
   app$click(selector = ".confirm")
-  app$wait_for_idle()
+  app$wait_for_value(input = "setup_load-reset_complete")
   common <- app$get_value(export = "common")
   expect_null(common$loaded_data)
+  app$stop()
 })
 
-test_that("Data can be reloaded after loading", {
-  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_setup_load")
+test_that("Data can't be loaded after configuring", {
+  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_setup_load", timeout = 30000)
   app$set_inputs(tabs = "setup")
   # load data again and configure
   app$set_inputs("setup_load-outcome" = "continuous")
@@ -235,7 +240,6 @@ test_that("Data can be reloaded after loading", {
   app$set_inputs(setupSel = "setup_configure")
   app$click("setup_configure-run")
   common <- app$get_value(export = "common")
-  # app$view()
   expect_s3_class(common$configured_data, "configured_data")
 
   # now loading again should generate an error
@@ -248,10 +252,10 @@ test_that("Data can be reloaded after loading", {
   # click the confirm button
   app$wait_for_js("$('.sweet-alert.visible').length > 0")
   app$click(selector = ".confirm")
-  app$wait_for_idle()
+  app$wait_for_value(input = "setup_load-reset_complete")
   common <- app$get_value(export = "common")
   expect_null(common$loaded_data)
-
+  app$stop()
 })
 
 
