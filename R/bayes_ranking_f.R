@@ -125,15 +125,17 @@ bayes_ranking <- function(model, configured_data, logger = NULL) {
 
   network <- network_structure(configured_data$freq, order = SUCRA$Treatment)
 
-  return(
-    list(
-      SUCRA = SUCRA,
-      Colour = colour_dat,
-      Cumulative = Cumulative_Data,
-      Probabilities = prob,
-      Network = network
-    )
+  output <- list(
+    SUCRA = SUCRA,
+    Colour = colour_dat,
+    Cumulative = Cumulative_Data,
+    Probabilities = prob,
+    Network = network
   )
+
+  class(output) <- "ranking_data"
+
+  return(output)
 
 }
 
@@ -151,6 +153,39 @@ covariate_ranking <- function(...){
   bayes_ranking(...)
 }
 
+#' @title Treatment ranking plots
+#' @description Produce either a rankogram or radial SUCRA plot ranking the treatments
+#'
+#' @param ranking_data list created by `baseline_ranking()`, `bayes_ranking()` or
+#' `covariate_ranking()`.
+#' @param style character. The style of plot to produce. Either `rankogram` or `radial`
+#' @param simple logical. Whether to display a simplified version of the radial plot. Does
+#' not affect the rankogram plot. Defaults to `FALSE`
+#' @param colourblind logical. Whether to use a colourblind-friendly palette. Defaults to `FALSE`.
+#' @param regression_text Text to show for regression. Defaults to no text.
+#' @inherit return-svg return
+#' @export
+ranking_plot <- function(ranking_data, style, colourblind = FALSE, simple = FALSE, regression_text = "", logger = NULL){
+
+  check_param_classes(c("ranking_data", "style", "colourblind", "simple", "regression_text"),
+                      c("ranking_data", "character", "logical", "logical", "character"), logger)
+
+  if (!(style %in% c("rankogram", "radial"))){
+    logger |> writeLog(type = "error", "style must be either rankogram or radial")
+    return()
+  }
+
+  if (style == "rankogram"){
+    return(LitmusRankOGram(ranking_data, colourblind, regression_text))
+  }
+
+  if (style == "radial"){
+    # invert simple to original
+    return(RadialSUCRA(ranking_data, !simple, colourblind, regression_text))
+  }
+
+}
+
 #' Litmus Rank-O-Gram
 #'
 #' @param ranking_data list created by bayes_ranking().
@@ -159,7 +194,7 @@ covariate_ranking <- function(...){
 #' @inherit return-svg return
 #' @import patchwork
 #' @import ggplot2
-#' @export
+#' @noRd
 LitmusRankOGram <- function(ranking_data, colourblind=FALSE, regression_text="") {    #CumData needs Treatment, Rank, Cumulative_Probability and SUCRA; SUCRAData needs Treatment & SUCRA; COlourData needs SUCRA & colour; colourblind friendly option; regression annotation text
   # Basic Rankogram #
   Rankogram <- ggplot(ranking_data$Cumulative, aes(x = .data$Rank, y = .data$Cumulative_Probability, group = .data$Treatment)) +
@@ -209,7 +244,7 @@ LitmusRankOGram <- function(ranking_data, colourblind=FALSE, regression_text="")
 #' @inherit return-svg return
 #' @import ggplot2
 #' @import patchwork
-#' @export
+#' @noRd
 RadialSUCRA <- function(ranking_data, original = TRUE, colourblind = FALSE, regression_text = "") {      # SUCRAData needs Treatment & Rank; ColourData needs SUCRA & colour; colourblind friendly option; regression annotation text
   n <- nrow(ranking_data$SUCRA) # number of treatments
 

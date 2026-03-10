@@ -51,7 +51,7 @@ bayes_ranking_module_ui <- function(id) {
     radioButtons(ns("rank_style"),
                  label = "Ranking plot style",
                  choices = c(
-                   "Litmus Rank-O-Gram" = "litmus",
+                   "Litmus Rank-O-Gram" = "rankogram",
                    "Radial SUCRA" = "radial"
                  ),
                  inline = TRUE
@@ -102,18 +102,11 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
 
     ranking_svg <- reactive({
       req(watch(trigger) > 0)
-
-      if (rank_style() == "litmus"){
-        return(LitmusRankOGram(common[[ranking]], colourblind = colourblind()))
-      }
-      if (rank_style() == "radial"){
-        return(RadialSUCRA(common[[ranking]], original = !simple(), colourblind = colourblind()))
-      }
-
+      ranking_plot(common[[ranking]], rank_style(), colourblind(), simple())
     })
 
     output$ranking_text <- renderText({
-      if (rank_style() == "litmus"){
+      if (rank_style() == "rankogram"){
         return("Litmus Rank-O-Gram: Higher SUCRA (Surface Under the Cumulative Ranking Curve) values and cumulative ranking curves nearer the top left indicate better performance")
       }
       if (rank_style() == "radial"){

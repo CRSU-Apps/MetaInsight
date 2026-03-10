@@ -2,7 +2,7 @@
 test_that("Check baseline_ranking function works as expected", {
   result <- baseline_ranking(fitted_baseline_model, configured_data_con)
 
-  expect_is(result, "list")
+  expect_is(result, "ranking_data")
   expect_true(all(c("SUCRA", "Colour", "Cumulative", "Probabilities", "Network") %in% names(result)))
   expect_is(result$SUCRA, "data.frame")
   expect_is(result$Colour, "data.frame")
@@ -49,20 +49,20 @@ test_that("{shinytest2} recording: e2e_baseline_ranking", {
   app$wait_for_value(output = "baseline_ranking-all-forest")
 
   common <- app$get_value(export = "common")
-  expect_is(common$baseline_ranking, "list")
+  expect_is(common$baseline_ranking, "ranking_data")
   expect_true(all(c("SUCRA", "Colour", "Cumulative", "Probabilities", "Network") %in% names(common$baseline_ranking)))
 
-  forest_all <- app$get_value(output = "baseline_ranking-all-forest")
+  forest_all <- app$wait_for_value(output = "baseline_ranking-all-forest")
   expect_match(forest_all$html, "<svg")
 
-  ranking_all <- app$get_value(output = "baseline_ranking-all-ranking")
+  ranking_all <- app$wait_for_value(output = "baseline_ranking-all-ranking")
   expect_match(ranking_all$html, "<svg")
 
   app$click("baseline_ranking-all-dropdown")
-  ranking_table_all <- app$get_value(output = "baseline_ranking-all-ranking_table")
+  ranking_table_all <- app$wait_for_value(output = "baseline_ranking-all-ranking_table")
   expect_match(ranking_table_all, "<table")
 
-  network_all <- app$get_value(output = "baseline_ranking-all-network")
+  network_all <- app$wait_for_value(output = "baseline_ranking-all-network")
   expect_match(network_all$html, "<svg")
 
   test_bayes_plot_downloads(app, "baseline_ranking", "_forest", FALSE)
