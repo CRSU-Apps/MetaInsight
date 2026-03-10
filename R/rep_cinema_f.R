@@ -12,6 +12,8 @@
 #'   - "type" Outcome type. Either "binary" or "continuous"
 #'   - "Studies" Study data
 #'     - "long" Output from `.PrepareDataForCinema()`
+#'
+#' @export
 rep_cinema <- function(configured_data, gemtc_results = NULL, logger = NULL) {
 
   check_param_classes("configured_data", "configured_data", logger)
