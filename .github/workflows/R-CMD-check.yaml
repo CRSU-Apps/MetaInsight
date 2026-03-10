@@ -67,8 +67,8 @@ jobs:
           # Install rjags with correct paths
           Rscript -e "install.packages('rjags')"
 
-          # Symlink JAGS libs to R's default lib search path
-          sudo ln -sf /usr/local/lib/libjags.4.dylib /usr/lib/libjags.4.dylib
+          RLIB=$(Rscript -e "cat(R.home('lib'))")
+          sudo ln -sf /usr/local/lib/libjags.4.dylib ${RLIB}/libjags.4.dylib
 
       - name: Install Chrome
         uses: browser-actions/setup-chrome@latest
