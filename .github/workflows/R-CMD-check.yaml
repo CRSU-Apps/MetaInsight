@@ -65,8 +65,7 @@ jobs:
           /usr/bin/sudo installer -allowUntrusted -dumplog -pkg ${{ runner.temp }}/jags.pkg -target /
 
           # Add JAGS lib to dynamic library path for all subsequent steps
-          echo "/usr/local/lib" >> $GITHUB_PATH
-          echo "DYLD_LIBRARY_PATH=/usr/local/lib:$DYLD_LIBRARY_PATH" >> $GITHUB_ENV
+          echo "DYLD_FALLBACK_LIBRARY_PATH=/usr/local/lib:$DYLD_FALLBACK_LIBRARY_PATH" >> $GITHUB_ENV
 
           # Install rjags with correct paths
           Rscript -e "install.packages('rjags')"
