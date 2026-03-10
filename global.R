@@ -8,4 +8,4 @@ future::plan(multisession)
 
 options(shiny.sanitize.errors = FALSE)
 
-settings.meta(method.tau="DL")
+settings.meta(method.tau = "DL")
