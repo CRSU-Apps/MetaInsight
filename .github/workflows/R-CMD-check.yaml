@@ -64,11 +64,19 @@ jobs:
           curl -L https://sourceforge.net/projects/mcmc-jags/files/JAGS/4.x/Mac%20OS%20X/JAGS-4.3.2.pkg/download -o ${{ runner.temp }}/jags.pkg
           /usr/bin/sudo installer -allowUntrusted -dumplog -pkg ${{ runner.temp }}/jags.pkg -target /
 
-          # Add JAGS lib to dynamic library path for all subsequent steps
-          echo "DYLD_FALLBACK_LIBRARY_PATH=/usr/local/lib:$DYLD_FALLBACK_LIBRARY_PATH" >> $GITHUB_ENV
-
+          # Find JAGS lib dir and add to environment
+          JAGS_LIB=$(dirname $(find /usr/local /Library -name "libjags*" 2>/dev/null | head -1))
+          echo "JAGS lib found at: $JAGS_LIB"
+          echo "DYLD_FALLBACK_LIBRARY_PATH=${JAGS_LIB}:$DYLD_FALLBACK_LIBRARY_PATH" >> $GITHUB_ENV
           # Install rjags with correct paths
           Rscript -e "install.packages('rjags')"
+
+      - name: Find JAGS libs (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          find /usr/local -name "libjags*"
+          find /Library -name "libjags*"
+          otool -L $(Rscript -e "cat(system.file('libs', package='rjags'))")/rjags.so
 
       - name: Install Chrome
         uses: browser-actions/setup-chrome@latest
