@@ -71,13 +71,6 @@ jobs:
           # Install rjags with correct paths
           Rscript -e "install.packages('rjags')"
 
-      - name: Find JAGS libs (macOS)
-        if: runner.os == 'macOS'
-        run: |
-          find /usr/local -name "libjags*"
-          find /Library -name "libjags*"
-          otool -L $(Rscript -e "cat(system.file('libs', package='rjags'))")/rjags.so
-
       - name: Install Chrome
         uses: browser-actions/setup-chrome@latest
 
