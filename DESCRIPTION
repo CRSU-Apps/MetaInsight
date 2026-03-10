@@ -72,8 +72,7 @@ Suggests:
     mockery,
     pdftools,
     shinytest2,
-    testthat,
-    withr
+    testthat
 License: GPL-3
 URL: 
 Encoding: UTF-8
