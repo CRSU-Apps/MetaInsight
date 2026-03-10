@@ -14,6 +14,8 @@ setup_configure_module_ui <- function(id) {
 setup_configure_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
+  hide_and_show(id)
+
   # Update UI depending on selections in previous module
   observe({
     watch("setup_load")
@@ -105,6 +107,11 @@ setup_configure_module_server <- function(id, common, parent_session) {
 })
 }
 
+setup_configure_module_result <- function(id) {
+  div(class = "setup_configure_div", style = "margin: 20px; font-size: 30px",
+    tags$p("The analysis has been configured")
+  )
+}
 
 setup_configure_module_rmd <- function(common){ list(
   setup_configure_knit = !is.null(common$meta$setup_configure$used),
