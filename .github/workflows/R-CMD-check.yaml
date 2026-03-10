@@ -46,7 +46,7 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           # 1. Install JAGS
-          $jagsUrl = "https://sourceforge.net/projects/mcmc-jags/files/JAGS/4.x/Windows/JAGS-4.3.1.exe/download"
+          $jagsUrl = "https://sourceforge.net/projects/mcmc-jags/files/JAGS/4.x/Windows/JAGS-4.3.2.exe/download"
           $installerPath = "$env:TEMP\JAGS.exe"
           Invoke-WebRequest -UserAgent "Wget" -Uri $jagsUrl -OutFile $installerPath
           Start-Process -FilePath $installerPath -ArgumentList "/S" -Wait

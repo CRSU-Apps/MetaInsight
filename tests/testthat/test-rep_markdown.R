@@ -1,7 +1,5 @@
 test_that("rep_markdown produces a renderable .qmd when no analysis has been conducted", {
 
-  skip_on_os(c("windows", "mac"))
-
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 60000)
   app$set_inputs(tabs = "rep")
   app$set_inputs(repSel = "rep_markdown")
@@ -10,17 +8,21 @@ test_that("rep_markdown produces a renderable .qmd when no analysis has been con
   app$wait_for_value(input = "rep_markdown-complete")
   sess_file <- app$get_download("rep_markdown-dlRMD")
   expect_false(is.null(sess_file))
-  lines <- readLines(sess_file)
-  writeLines(lines, sess_file)
-  quarto::quarto_render(sess_file)
-  html_file <- gsub("qmd","html", sess_file)
+
+  # Copy to clean path before rendering (avoids Windows short/long path issue)
+  clean_file <- file.path(getwd(), "test_render.qmd")
+  file.copy(sess_file, clean_file)
+  on.exit(unlink(clean_file))
+  on.exit(unlink(gsub("qmd", "html", clean_file)), add = TRUE)
+  withr::with_dir(getwd(), {
+    quarto::quarto_render(clean_file, output_format = "html")
+  })
+  html_file <- gsub("qmd", "html", clean_file)
   expect_gt(file.info(html_file)$size, 1000)
   app$stop()
 })
 
 test_that("rep_markdown produces can render a qmd to html when no analysis has been conducted", {
-
-  skip_on_os(c("windows", "mac"))
 
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 60000)
   app$set_inputs(tabs = "rep")
@@ -34,8 +36,6 @@ test_that("rep_markdown produces can render a qmd to html when no analysis has b
 })
 
 test_that("rep_markdown produces a renderable .Rmd file after a frequentist analysis", {
-
-  skip_on_os(c("windows", "mac"))
 
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 60000)
 
@@ -109,15 +109,21 @@ test_that("rep_markdown produces a renderable .Rmd file after a frequentist anal
   lines <- readLines(sess_file)
   chunks <- sum(grepl("```\\{r", lines))
   expect_equal(chunks, expected_chunks)
-  quarto::quarto_render(sess_file)
-  html_file <- gsub("qmd", "html", sess_file)
+
+  # Copy to clean path before rendering (avoids Windows short/long path issue)
+  clean_file <- file.path(getwd(), "test_render.qmd")
+  file.copy(sess_file, clean_file)
+  on.exit(unlink(clean_file))
+  on.exit(unlink(gsub("qmd", "html", clean_file)), add = TRUE)
+  withr::with_dir(getwd(), {
+    quarto::quarto_render(clean_file, output_format = "html")
+  })
+  html_file <- gsub("qmd", "html", clean_file)
   expect_gt(file.info(html_file)$size, 100000)
 
 })
 
 test_that("rep_markdown produces a renderable .Rmd file after a bayesian analysis", {
-
-  skip_on_os(c("windows", "mac"))
 
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 60000)
 
@@ -184,8 +190,17 @@ test_that("rep_markdown produces a renderable .Rmd file after a bayesian analysi
   lines <- readLines(sess_file)
   chunks <- sum(grepl("```\\{r", lines))
   expect_equal(chunks, expected_chunks)
-  quarto::quarto_render(sess_file)
-  html_file <- gsub("qmd", "html", sess_file)
+
+  # Copy to clean path before rendering (avoids Windows short/long path issue)
+  clean_file <- file.path(getwd(), "test_render.qmd")
+  file.copy(sess_file, clean_file)
+  on.exit(unlink(clean_file))
+  on.exit(unlink(gsub("qmd", "html", clean_file)), add = TRUE)
+  withr::with_dir(getwd(), {
+    quarto::quarto_render(clean_file, output_format = "html")
+  })
+
+  html_file <- gsub("qmd", "html", clean_file)
   expect_gt(file.info(html_file)$size, 100000)
 
   # test that results are reproducible by comparing forest plots
@@ -198,8 +213,6 @@ test_that("rep_markdown produces a renderable .Rmd file after a bayesian analysi
 })
 
 test_that("rep_markdown produces a renderable .Rmd file after a covariate analysis", {
-
-  skip_on_os(c("windows", "mac"))
 
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 60000)
 
@@ -274,8 +287,17 @@ test_that("rep_markdown produces a renderable .Rmd file after a covariate analys
   lines <- readLines(sess_file)
   chunks <- sum(grepl("```\\{r", lines))
   expect_equal(chunks, expected_chunks)
-  quarto::quarto_render(sess_file)
-  html_file <- gsub("qmd", "html", sess_file)
+
+  # Copy to clean path before rendering (avoids Windows short/long path issue)
+  clean_file <- file.path(getwd(), "test_render.qmd")
+  file.copy(sess_file, clean_file)
+  on.exit(unlink(clean_file))
+  on.exit(unlink(gsub("qmd", "html", clean_file)), add = TRUE)
+  withr::with_dir(getwd(), {
+    quarto::quarto_render(clean_file, output_format = "html")
+  })
+
+  html_file <- gsub("qmd", "html", clean_file)
   expect_gt(file.info(html_file)$size, 100000)
 
   # test that results are reproducible by comparing forest plots
@@ -289,8 +311,6 @@ test_that("rep_markdown produces a renderable .Rmd file after a covariate analys
 })
 
 test_that("rep_markdown produces a renderable .Rmd file after a baseline analysis", {
-
-  skip_on_os(c("windows", "mac"))
 
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 60000)
 
@@ -364,8 +384,17 @@ test_that("rep_markdown produces a renderable .Rmd file after a baseline analysi
   lines <- readLines(sess_file)
   chunks <- sum(grepl("```\\{r", lines))
   expect_equal(chunks, expected_chunks)
-  quarto::quarto_render(sess_file)
-  html_file <- gsub("qmd", "html", sess_file)
+
+  # Copy to clean path before rendering (avoids Windows short/long path issue)
+  clean_file <- file.path(getwd(), "test_render.qmd")
+  file.copy(sess_file, clean_file)
+  on.exit(unlink(clean_file))
+  on.exit(unlink(gsub("qmd", "html", clean_file)), add = TRUE)
+  withr::with_dir(getwd(), {
+    quarto::quarto_render(clean_file, output_format = "html")
+  })
+
+  html_file <- gsub("qmd", "html", clean_file)
   expect_gt(file.info(html_file)$size, 100000)
 
   # test that results are reproducible by comparing forest plots
