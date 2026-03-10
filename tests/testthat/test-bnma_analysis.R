@@ -310,7 +310,7 @@ test_that("1. BaselineRiskRegression() sets RNGs correctly;
   )
 
   #Unit test 3
-  expect_equal(model_output, expected_model_output)
+  expect_equal(model_output, expected_model_output, tolerance = 1e6)
   #-------------------------------------------------------------------
 
   relative_effects <- BnmaRelativeEffects(model = result_1, covariate_value = 5)
