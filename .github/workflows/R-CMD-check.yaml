@@ -45,23 +45,28 @@ jobs:
       - name: Install JAGS and rjags (Windows)
         if: runner.os == 'Windows'
         run: |
-          # 1. Install JAGS
+          # Install JAGS
           $jagsUrl = "https://sourceforge.net/projects/mcmc-jags/files/JAGS/4.x/Windows/JAGS-4.3.2.exe/download"
           $installerPath = "$env:TEMP\JAGS.exe"
           Invoke-WebRequest -UserAgent "Wget" -Uri $jagsUrl -OutFile $installerPath
           Start-Process -FilePath $installerPath -ArgumentList "/S" -Wait
 
-          # 2. Install rjags using the short paths
+          # Add JAGS to PATH for all subsequent steps
+          echo "C:\Program Files\JAGS\JAGS-4.3.2\x64\bin" >> $env:GITHUB_PATH
+
+          # Install rjags using the short paths
           Rscript -e "install.packages('rjags')"
 
       - name: Install JAGS and rjags (macOS)
         if: runner.os == 'macOS'
         run: |
-
           # Install JAGS using PKG
-
           curl -L https://sourceforge.net/projects/mcmc-jags/files/JAGS/4.x/Mac%20OS%20X/JAGS-4.3.2.pkg/download -o ${{ runner.temp }}/jags.pkg
           /usr/bin/sudo installer -allowUntrusted -dumplog -pkg ${{ runner.temp }}/jags.pkg -target /
+
+          # Add JAGS lib to dynamic library path for all subsequent steps
+          echo "/usr/local/lib" >> $GITHUB_PATH
+          echo "DYLD_LIBRARY_PATH=/usr/local/lib:$DYLD_LIBRARY_PATH" >> $GITHUB_ENV
 
           # Install rjags with correct paths
           Rscript -e "install.packages('rjags')"
