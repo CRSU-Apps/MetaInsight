@@ -7,7 +7,9 @@ tagList(
                      bootswatch = "spacelab",
                      primary = "#e4042c",
                      secondary = "#005c8a",
-                     info = "#005c8a"),
+                     info = "#005c8a",
+                     "nav-tabs-link-active-bg" = "#005c8a",
+                     "nav-tabs-link-active-color" = "white"),
     id = "tabs",
     header = tagList(
       rintrojs::introjsUI(),
