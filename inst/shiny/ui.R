@@ -92,12 +92,14 @@ tagList(
           id = 'main',
           nav_panel(
             'Results',
-            lapply(COMPONENTS, function(component) {
-              conditionalPanel(
-                glue("input.tabs == '{component}'"),
-                insert_modules_results(component)
-              )
-            }),
+            div(style = "margin: 20px",
+              lapply(COMPONENTS, function(component) {
+                conditionalPanel(
+                  glue("input.tabs == '{component}'"),
+                  insert_modules_results(component)
+                )
+              })
+            ),
             # invisible but contains download button
             core_save_module_ui("core_save")
           ),
