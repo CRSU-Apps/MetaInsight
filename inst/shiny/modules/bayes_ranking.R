@@ -263,15 +263,15 @@ bayes_ranking_submodule_result <- function(id, title, class) {
         open = TRUE,
         accordion_panel(
           title = title,
-          div(style = "display: flex; gap: 16px;",
-            div(style = "flex: 0 0 30%; padding: 16px; border: 2px solid #005c8a; white-space: normal;",
+          div(style = "display: flex;",
+            div(style = "flex: 0 0 30%; padding: 16px; border: 2px solid #005c8a; margin-right: -2px;",
               fluidRow(
                 align = "center",
                   h4("Relative effects"),
                   uiOutput(ns("forest"))
               )
             ),
-            div(style = "flex: 0 0 40%; padding: 16px; border: 2px solid #005c8a; white-space: normal;",
+            div(style = "flex: 0 0 40%; padding: 16px; border: 2px solid #005c8a; margin-right: -2px;",
               fluidRow(
                 align = "center",
                   h4("Ranking results"),
@@ -288,7 +288,7 @@ bayes_ranking_submodule_result <- function(id, title, class) {
                 )
               )
             ),
-            div(style = "flex: 0 0 30%; padding: 16px; border: 2px solid #005c8a; white-space: normal;",
+            div(style = "flex: 0 0 30%; padding: 16px; border: 2px solid #005c8a;",
               fluidRow(
                 align = "center",
                   h4("Summary of evidence"),
