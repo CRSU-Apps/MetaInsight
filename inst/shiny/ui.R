@@ -107,7 +107,10 @@ tagList(
           ),
           nav_panel(
             'Guidance', icon = icon("circle-info", class = "mod_icon"),
-            flex_wrap(uiOutput('gtext_module'))
+            flex_wrap(
+              div(style = "margin: 20px",
+                uiOutput('gtext_module'))
+            )
           )
         )
       ),
