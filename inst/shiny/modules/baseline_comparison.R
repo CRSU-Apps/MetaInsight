@@ -14,7 +14,7 @@ baseline_comparison_module_server <- function(id, common, parent_session) {
 
 baseline_comparison_module_result <- function(id) {
   ns <- NS(id)
-  metaregression_comparison_module_result(ns("baseline"), "baseline_comparison_div")
+  metaregression_comparison_module_result(ns("baseline"), "baseline_comparison")
 }
 
 baseline_comparison_module_rmd <- function(common) {

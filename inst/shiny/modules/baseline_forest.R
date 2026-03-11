@@ -1,7 +1,7 @@
 baseline_forest_module_ui <- function(id) {
   ns <- NS(id)
   tagList(
-    div(class = "baseline_forest_div",
+    div(class = "baseline_forest",
       p("Limits of the x-axis:"),
       numericInput(ns("xmin"), "Minimum", 0),
       numericInput(ns("xmax"), "Maximum", 0)

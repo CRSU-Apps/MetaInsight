@@ -51,7 +51,7 @@ bayes_deviance_submodule_server <- function(id, common, trigger){
     output$scat <- plotly::renderPlotly({
       watch(trigger)
       req(common[[paste0("bayes_deviance_", id)]])
-      on.exit(shinyjs::show(selector = ".bayes_deviance_div"))
+      on.exit(shinyjs::show(selector = ".bayes_deviance"))
       common[[paste0("bayes_deviance_", id)]]$scat_plot
 
     })
@@ -148,7 +148,7 @@ bayes_deviance_module_server <- function(id, common, parent_session) {
 bayes_deviance_module_result <- function(id) {
   ns <- NS(id)
   tagList(
-    div(class = "bayes_deviance_div",
+    div(class = "bayes_deviance",
       # this is a bit unusual as we are using the non-namespaced ids to allow the plot | plot, annotation layout
       layout_columns(
         div(

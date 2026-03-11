@@ -9,7 +9,7 @@ summary_network_module_ui <- function(id) {
                  ),
                  selected = "netplot"),
     actionButton(ns("run"), "Generate plots", icon = icon("arrow-turn-down")),
-    div(class = "summary_network_div",
+    div(class = "summary_network",
       fluidRow(
         tags$label("Label size"),
         column(width = 6,
@@ -148,7 +148,7 @@ summary_network_module_server <- function(id, common, parent_session) {
 
 summary_network_module_result <- function(id) {
   ns <- NS(id)
-  div(class = "summary_network_div",
+  div(class = "summary_network",
     fluidRow(
       conditionalPanel(
         condition = "input.style == 'netgraph'",

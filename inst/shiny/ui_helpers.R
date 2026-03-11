@@ -316,10 +316,10 @@ hide_and_show <- function(module_id, show = TRUE){
   observe({
     gargoyle::watch(module_id)
     if (gargoyle::watch(module_id) == 0){
-      shinyjs::hide(selector = glue::glue(".{module_id}_div"))
+      shinyjs::hide(selector = glue::glue(".{module_id}"))
     } else {
       if (show){
-        shinyjs::show(selector = glue::glue(".{module_id}_div"))
+        shinyjs::show(selector = glue::glue(".{module_id}"))
       }
     }
   })

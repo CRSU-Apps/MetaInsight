@@ -19,7 +19,7 @@ bayes_mcmc_submodule_server <- function(id, common, module_id, model, mcmc, trig
     output$gelman <- renderPlot({
       watch(trigger)
       req(common[[mcmc]])
-      shinyjs::show(selector = glue(".{module_id}_div"))
+      shinyjs::show(selector = glue(".{module_id}"))
       cowplot::plot_grid(
         plotlist = gelman_plots(common[[mcmc]]$gelman_data, common[[mcmc]]$parameters),
         ncol = common[[mcmc]]$n_cols
@@ -147,12 +147,12 @@ bayes_mcmc_module_result <- function(id) {
       column(
         width = 6,
         align = "center",
-        bayes_mcmc_submodule_result(ns("all"), "bayes_mcmc_div", "for all studies")
+        bayes_mcmc_submodule_result(ns("all"), "bayes_mcmc", "for all studies")
       ),
       column(
         width = 6,
         align = "center",
-        bayes_mcmc_submodule_result(ns("sub"), "bayes_mcmc_div", "excluding selected studies")
+        bayes_mcmc_submodule_result(ns("sub"), "bayes_mcmc", "excluding selected studies")
       )
     )
   )

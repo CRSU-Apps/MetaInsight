@@ -1,6 +1,6 @@
 metaregression_forest_module_ui <- function(id, parent_id) {
   ns <- NS(id)
-  div(class = glue("{parent_id}_div download_buttons"),
+  div(class = glue("{parent_id} download_buttons"),
       downloadButton(ns("download"), "Download plot")
   )
 }
@@ -8,7 +8,7 @@ metaregression_forest_module_ui <- function(id, parent_id) {
 covariate_forest_module_ui <- function(id) {
   ns <- NS(id)
   tagList(
-    div(class = "covariate_forest_div",
+    div(class = "covariate_forest",
       p("Limits of the x-axis:"),
       numericInput(ns("xmin"), "Minimum", 0),
       numericInput(ns("xmax"), "Maximum", 0)

@@ -2,7 +2,7 @@ summary_study_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
     actionButton(ns("run"), "Generate plot", icon = icon("arrow-turn-down")),
-    div(class = "summary_study_div download_buttons",
+    div(class = "summary_study download_buttons",
        checkboxInput(ns("colourblind"), "Use colourblind palette", FALSE),
        numericInput(ns("width"), "Plot area width:", value = 6, step = 1, min = 6, max = 20),
        p("Limits of the x-axis:"),

@@ -30,7 +30,7 @@ bayes_details_submodule_server <- function(id, common, model, model_trigger, mod
     watch(model_trigger)
     req(watch(module_id) > 0)
     req(common[[model]])
-    shinyjs::show(selector = glue(".{module_id}_div"))
+    shinyjs::show(selector = glue(".{module_id}"))
     bayes_details(common[[model]])
   })
 
@@ -274,7 +274,7 @@ bayes_details_submodule_result <- function(id, class) {
 
 bayes_details_module_result <- function(id) {
   ns <- NS(id)
-  bayes_details_submodule_result(ns("bayes"), "bayes_details_div")
+  bayes_details_submodule_result(ns("bayes"), "bayes_details")
 }
 
 

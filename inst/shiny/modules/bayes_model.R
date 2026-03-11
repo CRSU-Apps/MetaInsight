@@ -2,7 +2,7 @@ bayes_model_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
     input_task_button(ns("run"), "Fit models", type = "default", icon = icon("arrow-turn-down")),
-    div(class = "bayes_model_div download_buttons",
+    div(class = "bayes_model download_buttons",
         actionButton(ns("run_all"), "Run all modules", icon = icon("forward-fast"))
     )
   )
@@ -15,7 +15,7 @@ bayes_model_submodule_server <- function(id, common){
       watch("bayes_model") # required for reset
       watch(paste0("bayes_model_table_", id))
       req(common[[paste0("bayes_", id)]])
-      shinyjs::show(selector = ".bayes_model_div")
+      shinyjs::show(selector = ".bayes_model")
       dic_table(common[[paste0("bayes_", id)]]$dic, id)
     })
 

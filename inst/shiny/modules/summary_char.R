@@ -2,7 +2,7 @@ summary_char_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
     actionButton(ns("run"), "Generate tables", icon = icon("arrow-turn-down")),
-    div(class = "summary_char_div download_buttons",
+    div(class = "summary_char download_buttons",
         downloadButton(ns("download_network"), "Network"),
         layout_columns(
           div(
@@ -117,7 +117,7 @@ summary_char_module_server <- function(id, common, parent_session) {
 summary_char_module_result <- function(id) {
   ns <- NS(id)
   fluidRow(
-    div(class = "summary_char_div",
+    div(class = "summary_char",
         h4("Network characteristics"),
         tableOutput(ns("network")),
         h4("Treatments"),

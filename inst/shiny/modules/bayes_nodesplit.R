@@ -1,6 +1,6 @@
 bayes_nodesplit_submodule_ui <- function(id, download_label) {
   ns <- NS(id)
-  div(class = "bayes_nodesplit_div",
+  div(class = "bayes_nodesplit",
       downloadButton(ns("download"), download_label)
   )
 }
@@ -22,7 +22,7 @@ bayes_nodesplit_submodule_server <- function(id, common, nodesplit, run){
     svg <- reactive({
       watch(run)
       req(common[[nodesplit]])
-      shinyjs::show(selector = ".bayes_nodesplit_div")
+      shinyjs::show(selector = ".bayes_nodesplit")
       on.exit(shinyjs::runjs(paste0("Shiny.setInputValue('bayes_nodesplit-",id ,"-complete', 'complete');")))
       bayes_nodesplit_plot(common[[nodesplit]], id == "all")
     })

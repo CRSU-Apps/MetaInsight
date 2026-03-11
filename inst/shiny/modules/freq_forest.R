@@ -3,7 +3,7 @@ freq_forest_module_ui <- function(id) {
   tagList(
     actionButton(ns("run"), "Generate plots", icon = icon("arrow-turn-down")),
     actionButton(ns("run_all"), "Run all modules", icon = icon("forward-fast")),
-    div(class = "freq_forest_div",
+    div(class = "freq_forest",
       layout_columns(
         col_widths = rep(6, 6),  # six items: 2 per row
         row_heights = c("auto", "auto", "auto"),  # three rows

@@ -1,6 +1,6 @@
 metaregression_comparison_module_ui <- function(id, parent_id){
   ns <- NS(id)
-  div(class = glue("{parent_id}_div download_buttons"),
+  div(class = glue("{parent_id} download_buttons"),
     downloadButton(ns("download"), "Download table")
   )
 }
@@ -19,7 +19,7 @@ metaregression_comparison_module_server <- function(id, common, run) {
     module_id <- glue("{id}_comparison")
     model <- glue("{id}_model")
     model_fit <- glue("{id}_model_fit")
-    class <- glue(".{module_id}_div")
+    class <- glue(".{module_id}")
 
     hide_and_show(module_id)
 
@@ -68,7 +68,7 @@ metaregression_comparison_module_result <- function(id, class) {
 
 covariate_comparison_module_result <- function(id) {
   ns <- NS(id)
-  metaregression_comparison_module_result(ns("covariate"), "covariate_comparison_div")
+  metaregression_comparison_module_result(ns("covariate"), "covariate_comparison")
 }
 
 covariate_comparison_module_rmd <- function(common) {

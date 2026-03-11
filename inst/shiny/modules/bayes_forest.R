@@ -7,7 +7,7 @@ bayes_forest_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
     # these need to be in the main module for saving and loading.
-    div(class = "bayes_forest_div",
+    div(class = "bayes_forest",
       layout_columns(
         col_widths = rep(6, 6),  # six items: 2 per row
         row_heights = c("auto", "auto", "auto"),  # three rows
@@ -20,7 +20,7 @@ bayes_forest_module_ui <- function(id) {
       )
     ),
     actionButton(ns("run"), "Generate plots", icon = icon("arrow-turn-down")),
-    div(class = "bayes_forest_div download_buttons",
+    div(class = "bayes_forest download_buttons",
       layout_columns(
         bayes_forest_submodule_ui(ns("all"), "All studies"),
         bayes_forest_submodule_ui(ns("sub"), "Selected studies excluded")

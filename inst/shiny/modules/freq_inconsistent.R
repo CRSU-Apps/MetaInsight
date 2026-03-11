@@ -2,7 +2,7 @@ freq_inconsistent_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
     actionButton(ns("run"), "Generate tables", icon = icon("arrow-turn-down")),
-    div(class = "freq_inconsistent_div", download_button_pair(id))
+    div(class = "freq_inconsistent", download_button_pair(id))
   )
 }
 
@@ -60,11 +60,11 @@ freq_inconsistent_module_server <- function(id, common, parent_session) {
 freq_inconsistent_module_result <- function(id) {
   ns <- NS(id)
   tagList(
-    h4(class = "freq_inconsistent_div",
+    h4(class = "freq_inconsistent",
        "Assessment of inconsistency for all studies"),
     tableOutput(ns("table_all")),
     br(),
-    h4(class = "freq_inconsistent_div",
+    h4(class = "freq_inconsistent",
        "Assessment of inconsistency with selected studies excluded"),
     tableOutput(ns("table_sub"))
   )

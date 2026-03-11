@@ -108,7 +108,7 @@ setup_configure_module_server <- function(id, common, parent_session) {
 }
 
 setup_configure_module_result <- function(id) {
-  div(class = "setup_configure_div", style = "margin: 20px; font-size: 30px",
+  div(class = "setup_configure", style = "margin: 20px; font-size: 30px",
     tags$p("The analysis has been configured")
   )
 }

@@ -21,7 +21,7 @@ bayes_ranking_module_ui <- function(id) {
   ns <- NS(id)
 
   download_buttons <- function(id){
-    class <- paste0(id, "_div")
+    class <- id
     if (id == "bayes_ranking"){
       fixedRow(
         column(
@@ -228,9 +228,9 @@ bayes_ranking_module_server <- function(id, common, parent_session) {
     })
 
     bayes_ranking_submodule_server("all", common, reactive(input$network_style), reactive(input$rank_style), reactive(input$colourblind), reactive(input$simple),
-                                   ".bayes_ranking_div", "bayes_all", "bayes_rank_all", "configured_data", all_trigger, "bayes_ranking_all")
+                                   ".bayes_ranking", "bayes_all", "bayes_rank_all", "configured_data", all_trigger, "bayes_ranking_all")
     bayes_ranking_submodule_server("sub", common, reactive(input$network_style), reactive(input$rank_style), reactive(input$colourblind), reactive(input$simple),
-                                   ".bayes_ranking_div", "bayes_sub", "bayes_rank_sub", "subsetted_data", sub_trigger, "bayes_ranking_sub")
+                                   ".bayes_ranking", "bayes_sub", "bayes_rank_sub", "subsetted_data", sub_trigger, "bayes_ranking_sub")
 
     return(list(
     save = function() {list(
@@ -307,12 +307,12 @@ bayes_ranking_module_result <- function(id) {
   tagList(
     p("If you export and include the Litmus Rank-O-Gram or the Radial SUCRA plot in your work, please cite it as:
         Nevill CR, Cooper NJ, Sutton AJ, A multifaceted graphical display, including treatment ranking, was developed
-        to aid interpretation of network meta-analysis, Journal of Clinical Epidemiology (2023)", class = "bayes_ranking_div"),
+        to aid interpretation of network meta-analysis, Journal of Clinical Epidemiology (2023)", class = "bayes_ranking"),
     fluidRow(
-      bayes_ranking_submodule_result(ns("all"), "Ranking panel for all studies", "bayes_ranking_div")
+      bayes_ranking_submodule_result(ns("all"), "Ranking panel for all studies", "bayes_ranking")
     ),
     fluidRow(
-      bayes_ranking_submodule_result(ns("sub"), "Ranking panel with selected studies excluded", "bayes_ranking_div")
+      bayes_ranking_submodule_result(ns("sub"), "Ranking panel with selected studies excluded", "bayes_ranking")
     )
   )
 }
