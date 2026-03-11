@@ -220,8 +220,7 @@ IdentifySubNetworks <- function(data, treatments, reference_treatment_name = NUL
 #'
 #' @param treatments vector containing all treatment names
 #' @return Name of the expected reference treatment if one is found, else NULL
-#' @keywords internal
-#' @export
+#' @noRd
 FindExpectedReferenceTreatment <- function(treatments) {
   expected_reference_treatments <- match(.potential_reference_treatments, tolower(treatments))
   expected_reference_treatments <- expected_reference_treatments[!is.na(expected_reference_treatments)]
@@ -230,23 +229,6 @@ FindExpectedReferenceTreatment <- function(treatments) {
   } else {
     return(NULL)
   }
-}
-
-#' Returns the default ranking order, for the example datasets.
-#'
-#' @param outcome "binary" or "continuous".
-#' @param data Input dataset.
-#' @return "good" or "bad".
-#' @keywords internal
-#' @export
-RankingOrder <- function(outcome, data) {
-  file1 <- data
-  if (outcome == "binary" & is.null(file1)) {
-    choice <- "bad"
-  } else {
-    choice <- "good"
-  }
-  return(choice)
 }
 
 #' Create a copy of a data from which does not contain any covariate columns.
