@@ -74,7 +74,7 @@ To run the app locally, clone the repository with:
 git clone https://github.com/CRSU-Apps/MetaInsight
 ```
 
-Create an Rstudio project and associate it with the directory.
+Create an RStudio project and associate it with the directory.
 
 Install the local version of the package with either `devtools::install_local()` or with Ctrl+Shift+B
 
@@ -82,7 +82,7 @@ Then run the application with `shiny::runApp("inst/shiny")`
 
 ### Application structure
 
-v7 was built using *shinyscholar* and the app is structured as an R package and divided into components 
+v7 was built using {shinyscholar} and the app is structured as an R package and divided into components 
 (Setup, Summary, Frequentist, Bayesian, Baseline risk, Covariate and Reproduce) each containing multiple modules. 
 Each module has an identifier made up of the component identifier and the module name, for example `freq_forest` 
 refers to the module that produces a forest plot in the Frequentist component. Each module is made up four files 
@@ -99,6 +99,27 @@ file and reused in the `baseline_<module>.R` e.g. in `covariate_regression` and 
 Each module calls a synonymous function which is found in `R/` and in a file named `<identifier>_f.R`. 
 In the Baseline risk and Covariate components however, the function is an alias for that used in the equivalent Bayesian 
 module and these are defined in the relevant Bayesian module's function file.
+
+### Triggering events
+
+Reactivity within and between modules is triggered using {gargoyle} which provides explicit control for when code is rerun and. 
+uses the module identifier in three functions. `init(<identifier>)` is called when the app is started. 
+`trigger(<identifer>)` is used at the end of `observeEvent(input$run, ...` block in each
+module. `watch(<identifer>)` can be included in any code chunks that need to be rerun. Under the hood, these set a `reactiveVal` 
+and each trigger adds one to the value (similar to how an `actionButton` works). This means that they can also be used to 'guard' 
+code chunks by using `req(watch(<identifier>) > 0)` to only start executing code once the trigger can has been used. In some modules
+it is necessary to add another trigger, for example in the `bayes_model` module, the trigger fits both models, but 
+events that are triggered by the model being fitted need to listen to `bayes_model_all` or `bayes_model_sub`. When this is the
+case, you need to add `init()` at the start of the module.
+
+### Hiding and showing content
+
+The module identifier is also used as a CSS class to hide and show content like download buttons or explanatory text in the 
+Results panel. Wrap content inside `div(class = <identifier>, ...)` to enable this. By default `hide_and_show(<identifier>)` will hide 
+content until `trigger(<identifier>)` is called, but you can override this (for example when a function is slow to run and you 
+want to wait until it is complete) by using `hide_and_show(<identifier>, show = FALSE)` and then including 
+`on.exit(shinyjs::show(selector = paste0(".", <identifier>)))` inside a function. If the app is reset, the content will be 
+hidden again.
 
 ### Plots
 
@@ -121,11 +142,11 @@ plotting_function <- function(){
 
 They are displayed in the app by calling the function inside a `reactive()` and wrapping the output inside `svg_container()` 
 (which also adds a button to enable fullscreen viewing) placed in a `renderUI()`. The output can be passed to `write_plot()` 
-to download the plot as either an `.png`, `.pdf` or `.svg`.  This also enables saving outside of the application for example 
+to download the plot as either a `.png`, `.pdf` or `.svg`.  This also enables saving outside of the application for example 
 using e.g. `plotting_function() |> write_plot("plot.png")`
 
 If you call the plotting function in an `.Rmd` of `.qmd` chunk, the plot will be displayed, but if calling it from an R terminal, pipe it to
-`htmltools::browsable()` to show the plot in the Viewer pane of Rstudio.
+`htmltools::browsable()` to show the plot in the Viewer pane of RStudio.
 
 ```r
 
@@ -162,17 +183,18 @@ uiOutput(ns("plot"))
 Development of new modules or modification of existing modules should generally begin by creating or editing the module function. 
 Running `devtools::load_all(".")` or using Ctrl+Shift+L will load all the package functions and data that you need. This will take a
 few minutes the first time, but afterwards will take a few seconds.
-Function development should occur outside of the application, but you may find it helpful to save the app state at the relevant point prior to where 
-the change is to be made so that the same data can be used in development. For example, if developing a new module for the Frequentist 
-component, run the `setup_load` and `setup_configure` modules, save the app and then read the data in using `common <- readRDS(<save_file>.rds)` 
-you can then access the data using e.g. `common$configured_data$freq`. To be able to use the function once you have developed it or modified it, 
+Function development should occur outside of the application and after running `load_all()` you will have access to all the data 
+required for development, for example `configured_data_con` is the configured data for a continuous outcome and `configured_data_bin`
+is the configured data for a binary outcome, `fitted_bayes_model` is a Bayesian model, `fitted_baseline_model` is a baseline risk
+model and `fitted_covariate_model` is a covariate model. To be able to use the function once you have developed it or modified it, 
 you need to document and reinstall the package with Ctrl+Shift+D and Ctrl+Shift+B.
 
 You can create a new module from scratch using `shinyscholar::create_module()` but it is probably easier to adapt an existing module 
-that is similar to the one you are developing. Once the function is developed, you can also use the saved file to restore the app 
-state by setting a variable called `load_file_path` to the path of the saved file. This enables making rapid changes to the module 
-under development without having to rerun the preceding modules. Unlike developing the function, modules are loaded whenever the app 
-is run, so you do not need to reinstall the package in order to see your changes.
+that is similar to the one you are developing. Once the function is developed, you can also use save files to restore the app 
+state by setting a variable called `load_file_path` to the path of the saved file. For example to test a module using the result
+of the Bayesian models, run `load_file_path <- bayes_model_path` and run the app. This enables making rapid changes to the module 
+under development without having to rerun the preceding modules. Unlike when developing the function, modules are loaded whenever 
+the app is run, so you do not need to reinstall the package in order to see your changes.
 
 Each module should have unit tests that check that the function works correctly written with `{testthat}` and end-to-end tests that 
 check that the function works correctly inside the app written with `{shinytest2}`. These are located in `tests/testthat` in a file 
