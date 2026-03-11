@@ -25,6 +25,10 @@ ranking_plot(
 not affect the rankogram plot. Defaults to \code{FALSE}}
 
 \item{regression_text}{Text to show for regression. Defaults to no text.}
+
+\item{logger}{Stores all notification messages to be displayed in the Log
+Window. Insert the logger reactive list here for running in
+shiny, otherwise leave the default \code{NULL}}
 }
 \value{
 html. Contains the svg string to generate the plot. This will display

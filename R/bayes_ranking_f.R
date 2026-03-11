@@ -163,6 +163,7 @@ covariate_ranking <- function(...){
 #' not affect the rankogram plot. Defaults to `FALSE`
 #' @param colourblind logical. Whether to use a colourblind-friendly palette. Defaults to `FALSE`.
 #' @param regression_text Text to show for regression. Defaults to no text.
+#' @inheritParams common_params
 #' @inherit return-svg return
 #' @export
 ranking_plot <- function(ranking_data, style, colourblind = FALSE, simple = FALSE, regression_text = "", logger = NULL){
