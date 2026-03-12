@@ -196,6 +196,11 @@ CreateGemtcModel <- function(data, model_type, outcome_measure, regressor_type, 
     paste0("Outcome can only be OR, RR, or MD")
   }
 
+  # see https://github.com/gertvv/gemtc/issues/81
+  old_settings <- suppress_jags_output(meta::settings.meta())
+  meta::settings.meta(method.tau = "DL")
+  on.exit(meta::settings.meta(method.tau = old_settings$method.tau))
+
   # use same RNG inside and outside of mirai
   RNGkind("L'Ecuyer-CMRG")
   # needs to be set before mtc.model
