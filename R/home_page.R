@@ -33,7 +33,7 @@ home_page_ui <- function(id) {
       ),
       style="margin: 0; padding: 0;"
     ),
-    h2("MetaInsight v6.4.1", align = "left"),
+    h2("MetaInsight v6.4.2", align = "left"),
     fluidRow(
       column(
         width = 3,
