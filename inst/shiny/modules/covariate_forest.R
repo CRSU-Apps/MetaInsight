@@ -94,9 +94,9 @@ covariate_forest_module_server <- function(id, common, parent_session) {
 
     })
 
-    # convert values back to log when outcome is Binary
-    xmin <- reactive(ifelse(common$configured_data$outcome == "binary", log(as.numeric(input$xmin)), as.numeric(input$xmin)))
-    xmax <- reactive(ifelse(common$configured_data$outcome == "binary", log(as.numeric(input$xmax)), as.numeric(input$xmax)))
+    # make limits reactive
+    xmin <- reactive(as.numeric(input$xmin))
+    xmax <- reactive(as.numeric(input$xmax))
 
     metaregression_forest_module_server("covariate", common, reactive(input$run), xmin, xmax)
 

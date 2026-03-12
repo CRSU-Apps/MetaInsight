@@ -30,6 +30,11 @@ bayes_forest <- function(model, xmin = NULL, xmax = NULL, title = "", ranking = 
     xmax <- ifelse(is.null(xmax), xlim[2], xmax)
   } else {
     check_param_classes(c("xmin", "xmax"), c("numeric", "numeric"), logger)
+    # transform user-supplied limits for binary outcomes
+    if (model$outcome == "binary"){
+      xmin <- log(xmin)
+      xmax <- log(xmax)
+    }
   }
 
   if (xmin >= xmax){
