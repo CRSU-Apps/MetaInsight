@@ -3,7 +3,7 @@ uiTop <- function(mod_INFO) {
   modName <- mod_INFO$modName
   pkgName <- mod_INFO$pkgName
 
-  ls <- list(span(div(paste("Module: ", modName), class = "mod"),
+  ls <- list(span(div(modName, class = "mod"),
                   actionLink(paste0(modID, "Help"),
                              label = "", icon = icon("circle-question"),
                              class = "modHelpButton")

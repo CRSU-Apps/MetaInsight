@@ -8,8 +8,10 @@ tagList(
                      primary = "#e4042c",
                      secondary = "#005c8a",
                      info = "#005c8a",
+                     # modify nav_panel colours
                      "nav-tabs-link-active-bg" = "#005c8a",
-                     "nav-tabs-link-active-color" = "white"),
+                     "nav-tabs-link-active-color" = "white",
+                     "nav-link-color" = "white"),
     id = "tabs",
     header = tagList(
       rintrojs::introjsUI(),
@@ -114,7 +116,6 @@ tagList(
           )
         )
       ),
-      ## save module data END ##
       conditionalPanel(
         "input.tabs == 'rep' & input.repSel == null",
         flex_wrap(includeMarkdown("Rmd/gtext_rep.Rmd"))
