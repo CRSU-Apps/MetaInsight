@@ -1,17 +1,17 @@
 bayes_nodesplit_submodule_ui <- function(id, download_label) {
   ns <- NS(id)
-  div(class = "bayes_nodesplit",
-      downloadButton(ns("download"), download_label)
-  )
+  downloadButton(ns("download"), download_label)
 }
 
 bayes_nodesplit_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
-    input_task_button(ns("run"), "Run nodesplitting models", icon = icon("arrow-turn-down"), type = "default"),
-    layout_columns(
-      bayes_nodesplit_submodule_ui(ns("all"), "All studies"),
-      bayes_nodesplit_submodule_ui(ns("sub"), "With selected studies excluded")
+    input_task_button(ns("run"), "Fit nodesplitting models", icon = icon("arrow-turn-down"), type = "default"),
+    div(class = "bayes_nodesplit download_buttons",
+      layout_columns(
+        bayes_nodesplit_submodule_ui(ns("all"), "All studies"),
+        bayes_nodesplit_submodule_ui(ns("sub"), "With selected studies excluded")
+      )
     )
   )
 }
@@ -73,8 +73,15 @@ bayes_nodesplit_module_server <- function(id, common, parent_session) {
       function(...) sub_nodesplit <<- mirai::mirai(run(...), run = bayes_nodesplit, .args = environment())
     ) |> bind_task_button("run")
 
-    observeEvent(watch("bayes_nodesplit"), {
+    observeEvent(list(watch("bayes_nodesplit"), watch("setup_configure"), watch("effects")), {
       req(watch("bayes_nodesplit") > 0)
+
+      if (is.null(common$nodesplit_all)){
+        common$logger |> writeLog(type = "starting", "Attempting to fit nodesplitting models")
+      } else {
+        common$logger |> writeLog(type = "starting", "Updating nodesplitting model for main analysis")
+      }
+
       common$tasks$bayes_nodesplit_all$invoke(common$configured_data,
                                               async = TRUE)
 
@@ -89,6 +96,11 @@ bayes_nodesplit_module_server <- function(id, common, parent_session) {
         mirai::stop_mirai(sub_nodesplit)
       }
 
+      # prevent showing on first run
+      if (!is.null(common$nodesplit_sub)){
+        common$logger |> writeLog(type = "starting", "Attempting to update nodesplitting model for sensitivity analysis")
+      }
+
       common$tasks$bayes_nodesplit_sub$invoke(common$subsetted_data,
                                               async = TRUE)
       result_sub$resume()
@@ -98,6 +110,7 @@ bayes_nodesplit_module_server <- function(id, common, parent_session) {
       result <- common$tasks$bayes_nodesplit_all$result()
       result_all$suspend()
       if (inherits(result, "mtc.nodesplit")){
+        common$logger |> writeLog(type = "complete", "Nodesplitting models have been fitted")
         common$nodesplit_all <- result
         # METADATA ####
         common$meta$bayes_nodesplit$used <- TRUE
@@ -115,6 +128,11 @@ bayes_nodesplit_module_server <- function(id, common, parent_session) {
         result <- common$tasks$bayes_nodesplit_sub$result()
         result_sub$suspend()
         if (inherits(result, "mtc.nodesplit")){
+          # prevent showing on first run
+          if (!is.null(common$bayes_sub)){
+            shinyjs::runjs("Shiny.setInputValue('bayes_model-sub-updated', 'updated');")
+            common$logger |> writeLog(type = "complete", "The nodesplitting model for the sensitivity analysis has been updated")
+          }
           common$nodesplit_sub <- result
         } else {
           common$nodesplit_sub <- NULL
