@@ -47,9 +47,9 @@ home_page_ui <- function(id) {
       column(
         width = 5,
         p(tags$strong("Latest Updates:")),
-        p(tags$strong("Minor update (9 Feb 2026 v6.4.1):")),
+        p(tags$strong("Minor update (12 Mar 2026 v6.4.2):")),
         tags$ul(
-          tags$li("Added link to beta version 7.0.0."),
+          tags$li("Fixed rare bug where initial values were not being produced for the Bayesian model."),
         ),
         p(tags$strong("Major update (10 July 2024 v6.0.0):")),
         p(
