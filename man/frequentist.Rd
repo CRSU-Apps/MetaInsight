@@ -31,11 +31,9 @@ frequentist(
 }
 \value{
 List containing:
-\item{net1}{list. NMA results from netmeta::netmeta()}
-\item{lstx}{character. Vector of treatment labels}
-\item{ntx}{numeric. Number of treatments}
-\item{d0}{dataframe.Data in contrast form}
-\item{d1}{dataframe.Same as 'd0' but with treatment labels}
+\item{netmeta}{list. NMA results from netmeta::netmeta()}
+\item{pairwise}{dataframe. Results from meta::pairwise() but with treatment labels}
+\item{pairwise_reversed}{dataframe. pairwise as if the treatments had been the other way round}
 }
 \description{
 Fits a frequentist model with \code{netmeta::netmeta()}

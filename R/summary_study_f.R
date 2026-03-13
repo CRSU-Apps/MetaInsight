@@ -491,12 +491,11 @@ PairwiseTreatments <- function(pairwise, treatment_order) {
 #' Find the default minimum and maximum values for the x-axis and calculate
 #' a sensible step to use in the numeric input
 #' @param pairwise Results of pairwise analysis
-#' @param app Whether being used in the app or not. Default `FALSE`
 #' @inheritParams common_params
 #' @return Vector of xmin and xmax
 #' @keywords internal
 #' @export
-summary_study_min_max <- function(pairwise, outcome, app = FALSE){
+summary_study_min_max <- function(pairwise, outcome){
 
   log.scale <- ifelse(outcome == "binary", TRUE, FALSE)
 
