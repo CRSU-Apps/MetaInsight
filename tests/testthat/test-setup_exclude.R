@@ -32,11 +32,11 @@ test_that("setup_exclude produces data of the correct type", {
 test_that("setup_exclude removes the correct studies", {
   result <- setup_exclude(configured_data_con, c("Leo", "Constantine"))
   n_studies_all <- length(unique(configured_data_con$connected_data$Study))
-  n_studies_freq <- length(unique(result$freq$d0$Study))
+  n_studies_freq <- length(unique(result$freq$pairwise$studlab))
 
-  expect_false("Leo" %in% result$freq$d0$Study)
-  expect_false("Constantine" %in% result$freq$d0$Study)
-  expect_true("Justinian" %in% result$freq$d0$Study)
+  expect_false("Leo" %in% result$freq$pairwise$studlab)
+  expect_false("Constantine" %in% result$freq$pairwise$studlab)
+  expect_true("Justinian" %in% result$freq$pairwise$studlab)
   expect_equal(n_studies_all - 2, n_studies_freq)
 
 })
@@ -59,12 +59,12 @@ test_that("setup_exclude loads data into common correctly", {
   expect_type(common$subsetted_data$freq, "list")
   expect_type(common$subsetted_data$reference_treatment, "character")
 
-  n_studies_all <- length(unique(common$configured_data$freq$d0$Study))
-  n_studies_sub_freq <- length(unique(common$subsetted_data$freq$d0$Study))
+  n_studies_all <- length(unique(common$configured_data$freq$pairwise$studlab))
+  n_studies_sub_freq <- length(unique(common$subsetted_data$freq$pairwise$studlab))
 
-  expect_false("Leo" %in% common$subsetted_data$freq$d0$Study)
-  expect_false("Constantine" %in% common$subsetted_data$freq$d0$Study)
-  expect_true("Justinian" %in% common$subsetted_data$freq$d0$Study)
+  expect_false("Leo" %in% common$subsetted_data$freq$pairwise$studlab)
+  expect_false("Constantine" %in% common$subsetted_data$freq$pairwise$studlab)
+  expect_true("Justinian" %in% common$subsetted_data$freq$pairwise$studlab)
   expect_equal(n_studies_all - 2, n_studies_sub_freq)
 
   app$stop()
