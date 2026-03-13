@@ -49,7 +49,11 @@ freq_inconsistent <- function(configured_data, logger = NULL) {
     pValue <- incona$compare.fixed$p
   }
 
-  return(data.frame(Comparison, No.Studies, NMA, Direct, Indirect, Difference, Diff_95CI_lower,
-                    Diff_95CI_upper, pValue))
+  df <- data.frame(Comparison, No.Studies, NMA, Direct, Indirect, Difference, Diff_95CI_lower,
+                   Diff_95CI_upper, pValue)
+
+  df[3:9] <- round(df[3:9], 3)
+
+  return(df)
 
 }
