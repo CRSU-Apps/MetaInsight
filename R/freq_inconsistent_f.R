@@ -25,7 +25,7 @@ freq_inconsistent <- function(configured_data, logger = NULL) {
   check_param_classes(c("configured_data"),
                       c("configured_data"), logger)
 
-  incona <- netmeta::netsplit(configured_data$freq$net1)
+  incona <- netmeta::netsplit(configured_data$freq$netmeta)
 
   Comparison <- incona$comparison
   No.Studies <- as.integer(incona$k)

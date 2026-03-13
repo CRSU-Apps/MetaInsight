@@ -406,7 +406,7 @@ ranking_table <- function(ranking_data) {
 #' @param order character. Vector of treatments names in rank order.
 #' @return data.frame containing the number of studies that compare each treatment against the reference treatment.
 network_structure <- function(freq, order = NA) {
-  ng <- netmeta::netgraph(freq$net1, figure = FALSE)  # suppress plot
+  ng <- netmeta::netgraph(freq$netmeta, figure = FALSE)  # suppress plot
   edges <- ng$edges[, c("treat1", "treat2", "n.stud")]
   names(edges) <- c("from", "to", "edge.weight")
   edges |>

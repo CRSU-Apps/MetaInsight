@@ -30,9 +30,9 @@ summary_study <- function(configured_data, plot_area_width = 6, colourblind = FA
 
   rob_data_frame <- unique(configured_data$connected_data[, c("Study", FindRobNames(configured_data$connected_data))])
   if (!is.data.frame(rob_data_frame)) {
-    pairwise <- configured_data$freq$reversed_pairwise
+    pairwise <- configured_data$freq$reverse_pairwise
   } else {
-    pairwise <- as.data.frame(merge(configured_data$freq$reversed_pairwise, rob_data_frame, by = "Study"))
+    pairwise <- as.data.frame(merge(configured_data$freq$reverse_pairwise, rob_data_frame, by = "Study"))
   }
 
   if (is.null(x_min) || is.null(x_max)){

@@ -26,7 +26,7 @@ freq_summary <- function(configured_data, plot_title = "", logger = NULL) {
     return()
   }
 
-  net1 <- configured_data$freq$net1
+  net1 <- configured_data$freq$netmeta
   treatment_df <- configured_data$treatments
 
   ma <- list()
