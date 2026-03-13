@@ -491,17 +491,23 @@ PairwiseTreatments <- function(pairwise, treatment_order) {
 #' Find the default minimum and maximum values for the x-axis and calculate
 #' a sensible step to use in the numeric input
 #' @param pairwise Results of pairwise analysis
+#' @param app Whether being used in the app or not. Default `FALSE`
 #' @inheritParams common_params
 #' @return Vector of xmin and xmax
 #' @keywords internal
 #' @export
-summary_study_min_max <- function(pairwise, outcome){
+summary_study_min_max <- function(pairwise, outcome, app = FALSE){
 
   log.scale <- ifelse(outcome == "binary", TRUE, FALSE)
 
-  #Negate these to what they would have been if the treatments had been the other way round, to align with all the other graphs.
-  all_min <- (-pairwise$TE - 1.96 * pairwise$seTE)
-  all_max <- (-pairwise$TE + 1.96 * pairwise$seTE)
+  if (app){
+    #Negate these to what they would have been if the treatments had been the other way round, to align with all the other graphs.
+    all_min <- (-pairwise$TE - 1.96 * pairwise$seTE)
+    all_max <- (-pairwise$TE + 1.96 * pairwise$seTE)
+  } else {
+    all_min <- (pairwise$TE - 1.96 * pairwise$seTE)
+    all_max <- (pairwise$TE + 1.96 * pairwise$seTE)
+  }
 
   x_min <- format_xlim(min(all_min, na.rm = TRUE), "min", log.scale)
   x_max <- format_xlim(max(all_max, na.rm = TRUE), "max", log.scale)
@@ -518,29 +524,29 @@ summary_study_min_max <- function(pairwise, outcome){
 #' @export
 ReverseFreqD1 <- function(freq_d1) {
   freq_d1$TE <- -freq_d1$TE
-  
-  treat1_original <- freq_d1$treat1 
+
+  treat1_original <- freq_d1$treat1
   freq_d1$treat1 <- freq_d1$treat2
   freq_d1$treat2 <- treat1_original
-  
-  T1_original <- freq_d1$T.1 
+
+  T1_original <- freq_d1$T.1
   freq_d1$T.1 <- freq_d1$T.2
   freq_d1$T.2 <- T1_original
-  
-  N1_original <- freq_d1$N.1 
+
+  N1_original <- freq_d1$N.1
   freq_d1$N.1 <- freq_d1$N.2
   freq_d1$N.2 <- N1_original
-  
+
   if (is.element("R.1", names(freq_d1))) {
-    R1_original <- freq_d1$R.1 
+    R1_original <- freq_d1$R.1
     freq_d1$R.1 <- freq_d1$R.2
     freq_d1$R.2 <- R1_original
   } else {
-    Mean1_original <- freq_d1$Mean.1 
+    Mean1_original <- freq_d1$Mean.1
     freq_d1$Mean.1 <- freq_d1$Mean.2
     freq_d1$Mean.2 <- Mean1_original
-    
-    SD1_original <- freq_d1$SD.1 
+
+    SD1_original <- freq_d1$SD.1
     freq_d1$SD.1 <- freq_d1$SD.2
     freq_d1$SD.2 <- SD1_original
   }
