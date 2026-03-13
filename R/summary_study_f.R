@@ -30,9 +30,9 @@ summary_study <- function(configured_data, plot_area_width = 6, colourblind = FA
 
   rob_data_frame <- unique(configured_data$connected_data[, c("Study", FindRobNames(configured_data$connected_data))])
   if (!is.data.frame(rob_data_frame)) {
-    pairwise <- configured_data$freq$d1
+    pairwise <- ReverseFreqD1(configured_data$freq$d1)
   } else {
-    pairwise <- as.data.frame(merge(configured_data$freq$d1, rob_data_frame, by = "Study"))
+    pairwise <- as.data.frame(merge(ReverseFreqD1(configured_data$freq$d1), rob_data_frame, by = "Study"))
   }
 
   if (is.null(x_min) || is.null(x_max)){
@@ -499,8 +499,9 @@ summary_study_min_max <- function(pairwise, outcome){
 
   log.scale <- ifelse(outcome == "binary", TRUE, FALSE)
 
-  all_min <- (pairwise$TE - 1.96 * pairwise$seTE)
-  all_max <- (pairwise$TE + 1.96 * pairwise$seTE)
+  #Negate these to what they would have been if the treatments had been the other way round, to align with all the other graphs.
+  all_min <- (-pairwise$TE - 1.96 * pairwise$seTE)
+  all_max <- (-pairwise$TE + 1.96 * pairwise$seTE)
 
   x_min <- format_xlim(min(all_min, na.rm = TRUE), "min", log.scale)
   x_max <- format_xlim(max(all_max, na.rm = TRUE), "max", log.scale)
@@ -508,3 +509,40 @@ summary_study_min_max <- function(pairwise, outcome){
   c(x_min, x_max)
 }
 
+
+#' Reverses the freq$d1 data frame created by meta::pairwise, as if the treatments had been the other way round.
+#' @param freq_d1 The $freq$d1 element of the common data.
+#' @inheritParams common_params
+#' @return Data frame
+#' @keywords internal
+#' @export
+ReverseFreqD1 <- function(freq_d1) {
+  freq_d1$TE <- -freq_d1$TE
+  
+  treat1_original <- freq_d1$treat1 
+  freq_d1$treat1 <- freq_d1$treat2
+  freq_d1$treat2 <- treat1_original
+  
+  T1_original <- freq_d1$T.1 
+  freq_d1$T.1 <- freq_d1$T.2
+  freq_d1$T.2 <- T1_original
+  
+  N1_original <- freq_d1$N.1 
+  freq_d1$N.1 <- freq_d1$N.2
+  freq_d1$N.2 <- N1_original
+  
+  if (is.element("R.1", names(freq_d1))) {
+    R1_original <- freq_d1$R.1 
+    freq_d1$R.1 <- freq_d1$R.2
+    freq_d1$R.2 <- R1_original
+  } else {
+    Mean1_original <- freq_d1$Mean.1 
+    freq_d1$Mean.1 <- freq_d1$Mean.2
+    freq_d1$Mean.2 <- Mean1_original
+    
+    SD1_original <- freq_d1$SD.1 
+    freq_d1$SD.1 <- freq_d1$SD.2
+    freq_d1$SD.2 <- SD1_original
+  }
+  return(freq_d1)
+}
