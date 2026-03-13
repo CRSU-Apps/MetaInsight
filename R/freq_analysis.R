@@ -4,11 +4,9 @@
 #' @param non_covariate_data Input dataset with any covariates removed.
 #' @inheritParams common_params
 #' @return List containing:
-#'  \item{net1}{list. NMA results from netmeta::netmeta()}
-#'  \item{lstx}{character. Vector of treatment labels}
-#'  \item{ntx}{numeric. Number of treatments}
-#'  \item{d0}{dataframe.Data in contrast form}
-#'  \item{d1}{dataframe.Same as 'd0' but with treatment labels}
+#'  \item{netmeta}{list. NMA results from netmeta::netmeta()}
+#'  \item{pairwise}{dataframe. Results from meta::pairwise() but with treatment labels}
+#'  \item{pairwise_reversed}{dataframe. pairwise as if the treatments had been the other way round}
 #' @keywords internal
 #' @export
 frequentist <- function(non_covariate_data, outcome, treatments, outcome_measure, effects, reference_treatment) {
@@ -18,17 +16,36 @@ frequentist <- function(non_covariate_data, outcome, treatments, outcome_measure
     wide_data <- non_covariate_data
   }
 
-  ntx <- nrow(treatments)
-  d0 <- contrastform.df(wide_data, outcome_measure, outcome)    # transform data to contrast form
-  d1 <- labelmatching.df(d1 = d0, ntx = ntx, treatments = treatments) #matching treatment labels to treatment code
-  net1 <- freq.df(effects = effects, outcome_measure = outcome_measure, dataf = d1, reference_treatment = reference_treatment) # NMA of all studies
+  # transform data to contrast form
+  pairwise <- contrastform.df(wide_data, outcome_measure, outcome)
+  # matching treatment labels to treatment code
+  labelled_pairwise <- labelmatching.df(pairwise, treatments)
+  reverse_pairwise <- reverse_pairwise(labelled_pairwise)
+
+  netmeta <- netmeta::netmeta(TE = labelled_pairwise$TE,
+                          seTE = labelled_pairwise$seTE,
+                          treat1 = labelled_pairwise$treat1,
+                          treat2 = labelled_pairwise$treat2,
+                          studlab = labelled_pairwise$studlab,
+                          data = labelled_pairwise,
+                          subset=NULL,
+                          sm = outcome_measure,
+                          level = 0.95,
+                          level.ma = 0.95,
+                          random = (effects == "random"),
+                          common = (effects == "fixed"),
+                          reference.group = reference_treatment,
+                          all.treatments = NULL,
+                          seq = NULL,
+                          tau.preset = NULL,
+                          tol.multiarm = 0.05,
+                          tol.multiarm.se = 0.2,
+                          warn = TRUE)
 
   return(list(
-    net1 = net1,
-    lstx = treatments$Label,
-    ntx = ntx,
-    d0 = d0,
-    d1 = d1))
+    netmeta = netmeta,
+    pairwise = labelled_pairwise,
+    reverse_pairwise = reverse_pairwise))
 
 }
 
@@ -74,33 +91,55 @@ contrastform.df <- function(wide_data, outcome_measure, outcome) {
 
 #' Adds treatment labels to contrast data.
 #'
-#' @param d1 Data in contrast form, typically created by contrastform.df().
-#' @param ntx = Number of treatments.
+#' @param pairwise Data in contrast form, typically created by contrastform.df().
 #' @inheritParams common_params
 #' @return Input data with the columns treat1 and treat2 now labelled.
 #' @noRd
-labelmatching.df <- function(d1, ntx, treatments) {
+labelmatching.df <- function(pairwise, treatments) {
 
-  d1$treat1 <- factor(d1$treat1,
+  ntx <- nrow(treatments)
+
+  pairwise$treat1 <- factor(pairwise$treat1,
                       levels = 1:ntx,
                       labels = as.character(treatments$Label))
-  d1$treat2 <- factor(d1$treat2,
+  pairwise$treat2 <- factor(pairwise$treat2,
                       levels = 1:ntx,
                       labels = as.character(treatments$Label))
-  return(d1)
+  return(pairwise)
 }
 
-#' Frequentist NMA.
-#'
-#' @param dataf Data in contrast form with treatment labels, typically output from labelmatching.df().
+#' Reverses the pairwise data frame created by meta::pairwise, as if the treatments had been the other way round.
+#' @param pairwise The results of meta::pairwise with labelled treatments.
 #' @inheritParams common_params
-#' @return NMA results from netmeta::netmeta().
+#' @return Data frame
 #' @noRd
-freq.df <- function(effects, outcome_measure, dataf, reference_treatment) {
-  net1 <- netmeta::netmeta(TE = dataf$TE, seTE = dataf$seTE, treat1 = dataf$treat1, treat2 = dataf$treat2, studlab = dataf$studlab, data = dataf, subset=NULL,
-                  sm = outcome_measure, level = 0.95, level.ma = 0.95, random = (effects == "random"),
-                  common = (effects == "fixed"), reference.group = reference_treatment, all.treatments = NULL, seq = NULL,
-                  tau.preset = NULL, tol.multiarm = 0.05, tol.multiarm.se = 0.2, warn = TRUE)
-  return(net1)
-}
+reverse_pairwise <- function(pairwise) {
+  pairwise$TE <- -pairwise$TE
 
+  treat1_original <- pairwise$treat1
+  pairwise$treat1 <- pairwise$treat2
+  pairwise$treat2 <- treat1_original
+
+  T1_original <- pairwise$T.1
+  pairwise$T.1 <- pairwise$T.2
+  pairwise$T.2 <- T1_original
+
+  N1_original <- pairwise$N.1
+  pairwise$N.1 <- pairwise$N.2
+  pairwise$N.2 <- N1_original
+
+  if (is.element("R.1", names(pairwise))) {
+    R1_original <- pairwise$R.1
+    pairwise$R.1 <- pairwise$R.2
+    pairwise$R.2 <- R1_original
+  } else {
+    Mean1_original <- pairwise$Mean.1
+    pairwise$Mean.1 <- pairwise$Mean.2
+    pairwise$Mean.2 <- Mean1_original
+
+    SD1_original <- pairwise$SD.1
+    pairwise$SD.1 <- pairwise$SD.2
+    pairwise$SD.2 <- SD1_original
+  }
+  return(pairwise)
+}

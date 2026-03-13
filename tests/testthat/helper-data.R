@@ -101,10 +101,10 @@ if (on_cran){
   fitted_covariate_model <- covariate_model(configured_data_con, 97, "shared")
 }
 
-n_trt_all <- configured_data_con$freq$ntx
-n_comparisons_all <- length(netmeta::netconnection(configured_data_con$freq$net1)$comparisons)
-n_trt_sub <- excluded_data_con$freq$ntx
-n_comparisons_sub <- length(netmeta::netconnection(excluded_data_con$freq$net1)$comparisons)
-n_trt_bin <- configured_data_bin$freq$ntx
-n_comparisons_bin <- length(netmeta::netconnection(configured_data_bin$freq$net1)$comparisons)
+n_trt_all <- nrow(configured_data_con$treatments)
+n_comparisons_all <- length(netmeta::netconnection(configured_data_con$freq$netmeta)$comparisons)
+n_trt_sub <- nrow(excluded_data_con$treatments)
+n_comparisons_sub <- length(netmeta::netconnection(excluded_data_con$freq$netmeta)$comparisons)
+n_trt_bin <- nrow(configured_data_bin$treatments)
+n_comparisons_bin <- length(netmeta::netconnection(configured_data_bin$freq$netmeta)$comparisons)
 

@@ -26,10 +26,10 @@ freq_forest <- function(configured_data, xmin = NULL, xmax = NULL, title = "", l
     check_param_classes(c("xmin", "xmax"), c("numeric", "numeric"), logger)
   }
 
-  n_treatments <- length(configured_data$freq$lstx)
+  n_treatments <- nrow(configured_data$treatments)
   annotation <- freq_forest_annotation(configured_data$freq, configured_data$effects, configured_data$outcome_measure)
   height <- forest_height(n_treatments, title = TRUE, annotation = TRUE)
-  width <- forest_width(max(nchar(configured_data$freq$lstx)))
+  width <- forest_width(max(nchar(configured_data$treatments$Label)))
 
   svg <- svglite::xmlSVG({
    meta::forest(configured_data$freq$net1,

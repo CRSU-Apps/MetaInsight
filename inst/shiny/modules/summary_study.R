@@ -30,7 +30,7 @@ summary_study_module_server <- function(id, common, parent_session) {
       shinyjs::show("colourblind")
     }
 
-    min_max <- summary_study_min_max(common$subsetted_data$freq$d1, common$subsetted_data$outcome, app = TRUE)
+    min_max <- summary_study_min_max(common$subsetted_data$freq$reversed_pairwise, common$subsetted_data$outcome)
     if (common$subsetted_data$outcome == "binary"){
       min_max <- exp(min_max)
     }
