@@ -14,7 +14,7 @@ bayes_model_submodule_server <- function(id, common){
     output$table <- renderUI({
       watch("bayes_model") # required for reset
       watch(paste0("bayes_model_table_", id))
-      req(common[[paste0("bayes_", id)]])
+      req(common[[paste0("bayes_model_", id)]])
       shinyjs::show(selector = ".bayes_model")
       dic_table(common[[paste0("bayes_", id)]]$dic, id)
     })
@@ -66,7 +66,7 @@ bayes_model_module_server <- function(id, common, parent_session) {
 
     observeEvent(list(watch("bayes_model"), watch("setup_configure"), watch("effects")), {
       # trigger if run is pressed or if model is changed, but only if a model exists
-      req((watch("bayes_model") > 0 || all(!is.null(common$bayes_all), watch("effects") > 0)))
+      req((watch("bayes_model") > 0 || all(!is.null(common$bayes_model_all), watch("effects") > 0)))
 
       # prevent both models fitting at once if the data is large
       if (nrow(common$configured_data$treatments) > 20){
@@ -74,7 +74,7 @@ bayes_model_module_server <- function(id, common, parent_session) {
         mirai::daemons(1)
       }
 
-      if (is.null(common$bayes_all)){
+      if (is.null(common$bayes_model_all)){
         common$logger |> writeLog(type = "starting", "Fitting Bayesian models")
       } else {
         common$logger |> writeLog(type = "starting", "Updating Bayesian model for main analysis")
@@ -97,7 +97,7 @@ bayes_model_module_server <- function(id, common, parent_session) {
       }
 
       # prevent showing on first run
-      if (!is.null(common$bayes_sub)){
+      if (!is.null(common$bayes_model_sub)){
         common$logger |> writeLog(type = "starting", "Updating Bayesian model for sensitivity analysis")
       }
 
@@ -111,7 +111,7 @@ bayes_model_module_server <- function(id, common, parent_session) {
       result <- common$tasks$bayes_model_all$result()
       result_all$suspend()
       if (inherits(result, "bayes_model")){
-        common$bayes_all <- result
+        common$bayes_model_all <- result
         shinyjs::runjs("Shiny.setInputValue('bayes_model-all-complete', 'complete');")
         common$logger |> writeLog(type = "complete", "Bayesian models have been fitted")
       } else {
@@ -129,11 +129,11 @@ bayes_model_module_server <- function(id, common, parent_session) {
         result_sub$suspend()
         if (inherits(result, "bayes_model")){
           # prevent showing on first run
-          if (!is.null(common$bayes_sub)){
+          if (!is.null(common$bayes_model_sub)){
             shinyjs::runjs("Shiny.setInputValue('bayes_model-sub-updated', 'updated');")
             common$logger |> writeLog(type = "complete", "The Bayesian model for the sensitivity analysis has been updated")
           }
-          common$bayes_sub <- result
+          common$bayes_model_sub <- result
           shinyjs::runjs("Shiny.setInputValue('bayes_model-sub-complete', 'complete');")
         } else {
           common$logger |> writeLog(type = "error", result)
@@ -185,6 +185,6 @@ bayes_model_module_result <- function(id) {
 }
 
 bayes_model_module_rmd <- function(common) {
-  list(bayes_model_knit = !is.null(common$bayes_all))
+  list(bayes_model_knit = !is.null(common$bayes_model_all))
 }
 

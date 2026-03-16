@@ -21,7 +21,7 @@ bayes_compare_submodule_server <- function(id, common, run){
 
     output$table <- renderTable({
       shinyjs::show(selector = ".bayes_compare")
-      bayes_compare(common[[paste0("bayes_", id)]])
+      bayes_compare(common[[paste0("bayes_model_", id)]])
     }, rownames = TRUE) |> bindEvent(run())
 
     outputOptions(output, "table", suspendWhenHidden = FALSE)
@@ -31,7 +31,7 @@ bayes_compare_submodule_server <- function(id, common, run){
          glue("MetaInsight_bayesian_comparison_{id}.csv")
       },
       content = function(file) {
-        write.csv(bayes_compare(common[[paste0("bayes_", id)]]), file)
+        write.csv(bayes_compare(common[[paste0("bayes_model_", id)]]), file)
       }
     )
 
@@ -45,7 +45,7 @@ bayes_compare_module_server <- function(id, common, parent_session) {
 
     # check that a fitted model exists and error if not
     observeEvent(input$run, {
-      if (is.null(common$bayes_all)){
+      if (is.null(common$bayes_model_all)){
         common$logger |> writeLog(type = "error", go_to = "bayes_model", "Please fit the Bayesian models first")
         return()
       } else {

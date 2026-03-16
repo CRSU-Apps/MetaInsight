@@ -35,7 +35,7 @@ bayes_results_module_server <- function(id, common, parent_session) {
     # check that a fitted model exists and error if not
     observeEvent(input$run, {
 
-      if (is.null(common$bayes_all)){
+      if (is.null(common$bayes_model_all)){
         common$logger |> writeLog(type = "error", go_to = "bayes_model", "Please fit the Bayesian models first")
         return()
       } else {
@@ -47,7 +47,6 @@ bayes_results_module_server <- function(id, common, parent_session) {
     # trigger for the main analysis - when run is clicked, but only if there is a valid model
     all_trigger <- reactive({
       if (watch("bayes_results") > 0){
-        shinyjs::show(selector = ".bayes_results")
         return(list(watch("bayes_results"), watch("bayes_model_all")))
       }
     })
@@ -59,8 +58,8 @@ bayes_results_module_server <- function(id, common, parent_session) {
       }
     })
 
-    bayes_results_submodule_server("all", common, "bayes_all", all_trigger)
-    bayes_results_submodule_server("sub", common, "bayes_sub", sub_trigger)
+    bayes_results_submodule_server("all", common, "bayes_model_all", all_trigger)
+    bayes_results_submodule_server("sub", common, "bayes_model_sub", sub_trigger)
 
   })
 }

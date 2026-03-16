@@ -65,7 +65,7 @@ bayes_mcmc_module_server <- function(id, common, parent_session) {
     hide_and_show(id, show = FALSE)
 
     observeEvent(input$run, {
-      if (is.null(common$bayes_all)){
+      if (is.null(common$bayes_model_all)){
         common$logger |> writeLog(type = "error", go_to = "bayes_model", "Please fit the Bayesian models first")
         return()
       } else {
@@ -85,7 +85,7 @@ bayes_mcmc_module_server <- function(id, common, parent_session) {
     observeEvent(list(watch("bayes_mcmc"), watch("bayes_model_all")), {
       req(watch("bayes_mcmc") > 0)
       common$logger |> writeLog(type = "starting", "Generating data for Markov chain Monte Carlo plots")
-      common$tasks$bayes_mcmc_all$invoke(common$bayes_all)
+      common$tasks$bayes_mcmc_all$invoke(common$bayes_model_all)
       result_all$resume()
     })
 
@@ -97,7 +97,7 @@ bayes_mcmc_module_server <- function(id, common, parent_session) {
         common$logger |> writeLog(type = "complete", "Updating data for Markov chain Monte Carlo plots")
       }
 
-      common$tasks$bayes_mcmc_sub$invoke(common$bayes_sub)
+      common$tasks$bayes_mcmc_sub$invoke(common$bayes_model_sub)
       result_sub$resume()
     })
 
@@ -119,8 +119,8 @@ bayes_mcmc_module_server <- function(id, common, parent_session) {
       trigger("bayes_mcmc_sub")
     })
 
-    bayes_mcmc_submodule_server("all", common, "bayes_mcmc", "bayes_all", "bayes_mcmc_all", "bayes_mcmc_all")
-    bayes_mcmc_submodule_server("sub", common, "bayes_mcmc", "bayes_sub", "bayes_mcmc_sub", "bayes_mcmc_sub")
+    bayes_mcmc_submodule_server("all", common, "bayes_mcmc", "bayes_model_all", "bayes_mcmc_all", "bayes_mcmc_all")
+    bayes_mcmc_submodule_server("sub", common, "bayes_mcmc", "bayes_model_sub", "bayes_mcmc_sub", "bayes_mcmc_sub")
 
   })
 }

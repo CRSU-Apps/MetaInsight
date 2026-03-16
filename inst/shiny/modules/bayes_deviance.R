@@ -85,7 +85,7 @@ bayes_deviance_module_server <- function(id, common, parent_session) {
     observeEvent(input$run, {
       # add check for a running model
 
-      if (is.null(common$bayes_all)){
+      if (is.null(common$bayes_model_all)){
         common$logger |> writeLog(type = "error", go_to = "bayes_model", "Please fit the Bayesian models first")
         return()
       } else {
@@ -105,7 +105,7 @@ bayes_deviance_module_server <- function(id, common, parent_session) {
     observeEvent(list(watch("bayes_deviance"), watch("bayes_model_all")), {
       req(watch("bayes_deviance") > 0)
       common$logger |> writeLog(type = "starting", "Generating Bayesian deviance plots")
-      common$tasks$bayes_deviance_all$invoke(common$bayes_all, async = TRUE)
+      common$tasks$bayes_deviance_all$invoke(common$bayes_model_all, async = TRUE)
       result_all$resume()
     })
 
@@ -117,7 +117,7 @@ bayes_deviance_module_server <- function(id, common, parent_session) {
         common$logger |> writeLog(type = "starting", "Updating Bayesian deviance plots")
       }
 
-      common$tasks$bayes_deviance_sub$invoke(common$bayes_sub, async = TRUE)
+      common$tasks$bayes_deviance_sub$invoke(common$bayes_model_sub, async = TRUE)
       result_sub$resume()
     })
 

@@ -153,7 +153,7 @@ bayes_details_submodule_server <- function(id, common, model, model_trigger, mod
     watch(deviance_trigger)
     watch(model_trigger)
     req(watch(module_id) > 0)
-    if (model == "bayes_all"){
+    if (model == "bayes_model_all"){
       validate(need(common[[deviance]], "Please run the Deviance report module first"))
       common[[deviance]]$deviance_ume
     } else {
@@ -163,7 +163,7 @@ bayes_details_submodule_server <- function(id, common, model, model_trigger, mod
 
   # this is a bit messy, but the simplest way to display the _sub deviance
   output$dev_mtc_sub <- renderPrint({
-    req(model == "bayes_all")
+    req(model == "bayes_model_all")
     watch(gsub("all", "sub", deviance_trigger))
     watch(gsub("all", "sub", model_trigger))
     req(watch(module_id) > 0)
@@ -173,7 +173,7 @@ bayes_details_submodule_server <- function(id, common, model, model_trigger, mod
   })
 
   output$dev_ume_sub <- renderPrint({
-    req(model == "bayes_all")
+    req(model == "bayes_model_all")
     watch(gsub("all", "sub", deviance_trigger))
     watch(gsub("all", "sub", model_trigger))
     req(watch(module_id) > 0)
@@ -183,7 +183,7 @@ bayes_details_submodule_server <- function(id, common, model, model_trigger, mod
 
   output$deviance <- renderUI({
     ns <- session$ns
-    if (model == "bayes_all"){
+    if (model == "bayes_model_all"){
       tagList(
         layout_columns(
           div(
@@ -213,7 +213,7 @@ bayes_details_submodule_server <- function(id, common, model, model_trigger, mod
 bayes_details_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
-    bayes_details_submodule_server("bayes", common, "bayes_all", "bayes_model_all", "bayes_details", "bayes_deviance_all", "bayes_deviance",
+    bayes_details_submodule_server("bayes", common, "bayes_model_all", "bayes_model_all", "bayes_details", "bayes_deviance_all", "bayes_deviance",
                                    "Please fit the Bayesian models first", reactive(input$run))
 })
 }

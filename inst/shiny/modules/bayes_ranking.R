@@ -192,7 +192,7 @@ bayes_ranking_module_server <- function(id, common, parent_session) {
 
     # check that a fitted model exists and error if not
     observeEvent(input$run, {
-      if (is.null(common$bayes_all)){
+      if (is.null(common$bayes_model_all)){
         common$logger |> writeLog(type = "error", go_to = "bayes_model", "Please fit the Bayesian models first")
         return()
       } else {
@@ -228,9 +228,9 @@ bayes_ranking_module_server <- function(id, common, parent_session) {
     })
 
     bayes_ranking_submodule_server("all", common, reactive(input$network_style), reactive(input$rank_style), reactive(input$colourblind), reactive(input$simple),
-                                   ".bayes_ranking", "bayes_all", "bayes_rank_all", "configured_data", all_trigger, "bayes_ranking_all")
+                                   ".bayes_ranking", "bayes_model_all", "bayes_rank_all", "configured_data", all_trigger, "bayes_ranking_all")
     bayes_ranking_submodule_server("sub", common, reactive(input$network_style), reactive(input$rank_style), reactive(input$colourblind), reactive(input$simple),
-                                   ".bayes_ranking", "bayes_sub", "bayes_rank_sub", "subsetted_data", sub_trigger, "bayes_ranking_sub")
+                                   ".bayes_ranking", "bayes_model_sub", "bayes_rank_sub", "subsetted_data", sub_trigger, "bayes_ranking_sub")
 
     return(list(
     save = function() {list(
