@@ -14,7 +14,7 @@ summary_char <- function(configured_data, logger = NULL) {
   check_param_classes(c("configured_data"), c("configured_data"), logger)
 
   df <- ReplaceTreatments(configured_data$connected_data, configured_data$treatments)
-  connections <- netmeta::netconnection(configured_data$freq$net1, details.disconnected = TRUE)
+  connections <- netmeta::netconnection(configured_data$freq$netmeta, details.disconnected = TRUE)
 
   arm_summary <- df |>
     dplyr::group_by(.data$Study) |>

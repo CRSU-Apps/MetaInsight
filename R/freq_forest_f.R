@@ -26,13 +26,13 @@ freq_forest <- function(configured_data, xmin = NULL, xmax = NULL, title = "", l
     check_param_classes(c("xmin", "xmax"), c("numeric", "numeric"), logger)
   }
 
-  n_treatments <- length(configured_data$freq$lstx)
+  n_treatments <- nrow(configured_data$treatments)
   annotation <- freq_forest_annotation(configured_data$freq, configured_data$effects, configured_data$outcome_measure)
   height <- forest_height(n_treatments, title = TRUE, annotation = TRUE)
-  width <- forest_width(max(nchar(configured_data$freq$lstx)))
+  width <- forest_width(max(nchar(configured_data$treatments$Label)))
 
   svg <- svglite::xmlSVG({
-   meta::forest(configured_data$freq$net1,
+   meta::forest(configured_data$freq$netmeta,
                 reference.group = configured_data$reference_treatment,
                 pooled = configured_data$effects,
                 xlim = c(xmin, xmax))
@@ -67,12 +67,12 @@ freq_forest <- function(configured_data, xmin = NULL, xmax = NULL, title = "", l
 #' @export
 freq_forest_limits <- function(freq, outcome){
 
-  # store the result of print(freq$net1) produced by netmeta
-  net1_summary <- utils::capture.output(freq$net1)
+  # store the result of print(freq$netmeta) produced by netmeta
+  net1_summary <- utils::capture.output(freq$netmeta)
 
   # extract the treatment estimate lines
   first_line <- grep("Treatment estimate", net1_summary ) + 2
-  last_line <- first_line + length(levels(freq$net1$data$treat1)) - 1
+  last_line <- first_line + length(levels(freq$netmeta$data$treat1)) - 1
   treatment_estimates <- net1_summary[first_line:last_line]
 
   # extract the square brackets and then the values inside
@@ -100,9 +100,9 @@ freq_forest_limits <- function(freq, outcome){
 #' @noRd
 freq_forest_annotation <- function(freq, effects, outcome_measure) {
 
-  tau <- round(freq$net1$tau, 2)
-  k <- freq$net1$k
-  n <- freq$net1$n
+  tau <- round(freq$netmeta$tau, 2)
+  k <- freq$netmeta$k
+  n <- freq$netmeta$n
 
   if (effects == "random") {
     if (outcome_measure == "OR") {

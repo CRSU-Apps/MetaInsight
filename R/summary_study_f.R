@@ -30,9 +30,9 @@ summary_study <- function(configured_data, plot_area_width = 6, colourblind = FA
 
   rob_data_frame <- unique(configured_data$connected_data[, c("Study", FindRobNames(configured_data$connected_data))])
   if (!is.data.frame(rob_data_frame)) {
-    pairwise <- configured_data$freq$d1
+    pairwise <- configured_data$freq$reverse_pairwise
   } else {
-    pairwise <- as.data.frame(merge(configured_data$freq$d1, rob_data_frame, by = "Study"))
+    pairwise <- as.data.frame(merge(configured_data$freq$reverse_pairwise, rob_data_frame, by = "Study"))
   }
 
   if (is.null(x_min) || is.null(x_max)){
@@ -47,7 +47,7 @@ summary_study <- function(configured_data, plot_area_width = 6, colourblind = FA
 
   pairwise_treatments <- PairwiseTreatments(
     pairwise = pairwise,
-    treatment_order = configured_data$freq$lstx
+    treatment_order = configured_data$treatments$Label
   )
 
   if (colourblind) {
@@ -245,7 +245,7 @@ summary_study <- function(configured_data, plot_area_width = 6, colourblind = FA
         outcome_x_position = outcome_x_position,
         rob_x_positions = rob_x_positions,
         y_header_position = pairwise_treatments$y_position_last[row],
-        y_positions = (pairwise_treatments$y_position_first[row] + 1):(pairwise_treatments$y_position_last[row] - 1),
+        y_positions = (pairwise_treatments$y_position_last[row] - 1):(pairwise_treatments$y_position_first[row] + 1),
         treatment1 = pairwise_treatments$treat1[row],
         treatment2 = pairwise_treatments$treat2[row],
         rob_variables = rob_variables,
@@ -507,4 +507,3 @@ summary_study_min_max <- function(pairwise, outcome){
 
   c(x_min, x_max)
 }
-

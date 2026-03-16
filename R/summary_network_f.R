@@ -33,19 +33,19 @@ summary_network <- function(configured_data, style, label_size = 1, title = "", 
 
   svg <- svglite::xmlSVG({
     if (style == "netgraph"){
-      netmeta::netgraph(configured_data$freq$net1, lwd = 2, number.of.studies = TRUE, plastic = FALSE, points = TRUE,
+      netmeta::netgraph(configured_data$freq$netmeta, lwd = 2, number.of.studies = TRUE, plastic = FALSE, points = TRUE,
                                cex = label_size, cex.points = 2, col.points = 1, col = 8, pos.number.of.studies = 0.43,
                                col.number.of.studies = "forestgreen", col.multiarm = "white",
                                bg.number.of.studies = "white")
       title(title)
 
     } else if (style == "netplot"){
-      netmeta::netgraph(configured_data$freq$net1,
+      netmeta::netgraph(configured_data$freq$netmeta,
                         adj = 0.5,
                         scale = 1,
                         cex = 1,
-                        lwd.max = max(configured_data$freq$net1$k.trts) ,
-                        cex.points = configured_data$freq$net1$k.trts,
+                        lwd.max = max(configured_data$freq$netmeta$k.trts) ,
+                        cex.points = configured_data$freq$netmeta$k.trts,
                         number.of.studies = FALSE,
                         col = "grey",
                         points.max = 20,
@@ -76,7 +76,7 @@ summary_network <- function(configured_data, style, label_size = 1, title = "", 
 #' @return Vector summarising network connectivity created by netmeta::netconnection().
 #' @export
 make_netconnect <- function(freq) {
-  d1 <- freq$d1
+  d1 <- freq$pairwise
   nc <- netmeta::netconnection(treat1 = d1$treat1, treat2 = d1$treat2, studLab = d1$studlab, data = NULL)
   # keep only the parts we want, match ensures the order
   summary <- nc[match(c("k", "m", "n", "d", "n.subnets"), names(nc))]
