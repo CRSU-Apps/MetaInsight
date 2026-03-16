@@ -85,7 +85,7 @@ if (!on_cran){
   configured_data_con <- readRDS(config_path)$configured_data
   excluded_data_con <- readRDS(config_path)$subsetted_data
 
-  fitted_bayes_model <- readRDS(bayes_model_path)$bayes_all
+  fitted_bayes_model <- readRDS(bayes_model_path)$bayes_model_all
   fitted_baseline_model <- readRDS(baseline_model_path)$baseline_model
   fitted_covariate_model <- readRDS(covariate_model_path)$covariate_model
 
