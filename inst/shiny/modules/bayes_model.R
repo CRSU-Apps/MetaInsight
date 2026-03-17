@@ -16,7 +16,7 @@ bayes_model_submodule_server <- function(id, common){
       watch(paste0("bayes_model_table_", id))
       req(common[[paste0("bayes_model_", id)]])
       shinyjs::show(selector = ".bayes_model")
-      dic_table(common[[paste0("bayes_", id)]]$dic, id)
+      dic_table(common[[paste0("bayes_model_", id)]]$dic, id)
     })
 
   })

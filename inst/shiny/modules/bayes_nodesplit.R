@@ -143,8 +143,8 @@ bayes_nodesplit_module_server <- function(id, common, parent_session) {
       }
     })
 
-    bayes_nodesplit_submodule_server("all", common, "nodesplit_all", "bayes_nodesplit_all")
-    bayes_nodesplit_submodule_server("sub", common, "nodesplit_sub", "bayes_nodesplit_sub")
+    bayes_nodesplit_submodule_server("all", common, "bayes_nodesplit_all", "bayes_nodesplit_all")
+    bayes_nodesplit_submodule_server("sub", common, "bayes_nodesplit_sub", "bayes_nodesplit_sub")
 
   })
 }

@@ -24,7 +24,7 @@ summary_network <- function(configured_data, style, label_size = 1, title = "", 
     return()
   }
 
-  n_trt <- configured_data$freq$ntx
+  n_trt <- nrow(configured_data$treatments)
   if (n_trt < 5){
     height_and_width <- 5
   } else {
