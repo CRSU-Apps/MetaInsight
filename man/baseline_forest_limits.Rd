@@ -8,7 +8,7 @@
 baseline_forest_limits(forest_data)
 }
 \arguments{
-\item{forest_data}{data.frame. Created by \code{format_baseline_forest()}}
+\item{forest_data}{data.frame. Created by \code{baseline_forest_format()}}
 }
 \description{
 Extract the default x-axis limits using the same method internal to
