@@ -36,7 +36,7 @@ summary_study <- function(configured_data, plot_area_width = 6, colourblind = FA
   }
 
   if (is.null(x_min) || is.null(x_max)){
-    min_max <- summary_study_min_max(pairwise, configured_data$outcome)
+    min_max <- summary_study_limits(pairwise, configured_data$outcome)
     x_min <- min_max[1]
     x_max <- min_max[2]
   }
@@ -495,7 +495,7 @@ PairwiseTreatments <- function(pairwise, treatment_order) {
 #' @return Vector of xmin and xmax
 #' @keywords internal
 #' @export
-summary_study_min_max <- function(pairwise, outcome){
+summary_study_limits <- function(pairwise, outcome){
 
   log.scale <- ifelse(outcome == "binary", TRUE, FALSE)
 
