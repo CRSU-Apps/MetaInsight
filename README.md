@@ -100,6 +100,8 @@ Each module calls a synonymous function which is found in `R/` and in a file nam
 In the Baseline risk and Covariate components however, the function is an alias for that used in the equivalent Bayesian 
 module and these are defined in the relevant Bayesian module's function file.
 
+Functions which are used exclusively in the app, for example `reset_data` and `run_all` are located in `inst/shiny/ui_helpers.R`.
+
 ### Triggering events
 
 Reactivity within and between modules is triggered using {gargoyle} which provides explicit control for when code is rerun and. 
