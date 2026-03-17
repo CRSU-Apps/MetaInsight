@@ -150,7 +150,7 @@ baseline_summary <- function(configured_data, logger = NULL){
       yaxs = "i" # remove internal padding
     )
 
-    title("Baseline risk")
+    title(glue::glue("Baseline risk based on {configured_data$reference_treatment}"))
 
     # define the ticks and labels for the x-axis
     if (is.element(configured_data$outcome_measure, c("OR", "RR"))) {

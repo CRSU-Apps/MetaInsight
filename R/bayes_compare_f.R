@@ -29,6 +29,6 @@ bayes_compare <- function(model, logger = NULL){
 #' @rdname bayes_compare
 #' @param ... Parameters passed to `bayes_compare()`
 #' @export
-covariate_comparison <- function(...){
+covariate_compare <- function(...){
   bayes_compare(...)
 }

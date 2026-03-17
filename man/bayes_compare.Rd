@@ -2,12 +2,12 @@
 % Please edit documentation in R/bayes_compare_f.R
 \name{bayes_compare}
 \alias{bayes_compare}
-\alias{covariate_comparison}
+\alias{covariate_compare}
 \title{Compare treatment pairs}
 \usage{
 bayes_compare(model, logger = NULL)
 
-covariate_comparison(...)
+covariate_compare(...)
 }
 \arguments{
 \item{model}{list. Object created by \code{bayes_model()} or \code{covariate_model()}}

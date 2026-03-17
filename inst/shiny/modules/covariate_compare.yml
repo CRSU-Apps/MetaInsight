@@ -1,5 +1,5 @@
 component: "covariate"
-short_name: "Comparison"
-long_name: "Comparison of all treatment pairs"
+short_name: "Compare treatments"
+long_name: "Compare all treatment pairs"
 authors: "Ryan Field, Tom Morris, Clareece Nevill, Janion Nevill, Simon Smart"
 package: [gemtc]

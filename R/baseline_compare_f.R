@@ -13,10 +13,10 @@
 #' fitted_baseline_model <- baseline_model(configured_data = configured_data,
 #'                                         regressor_type = "shared")
 #'
-#' baseline_comparison(model = fitted_baseline_model)
+#' baseline_compare(model = fitted_baseline_model)
 #' }
 #' @export
-baseline_comparison <- function(model, logger = NULL){
+baseline_compare <- function(model, logger = NULL){
 
   if (!inherits(model, "baseline_model")){
     logger |> writeLog(type = "error", "model must be an object created by baseline_model()")

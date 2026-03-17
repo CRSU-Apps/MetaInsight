@@ -230,9 +230,9 @@ test_that("rep_markdown produces a renderable .Rmd file after a covariate analys
   forest_app <- app$wait_for_value(output = "covariate_forest-covariate-plot")
   expected_chunks <- expected_chunks + 1
 
-  app$set_inputs(covariateSel = "covariate_comparison")
-  app$click("covariate_comparison-run")
-  app$wait_for_value(output = "covariate_comparison-covariate-table")
+  app$set_inputs(covariateSel = "covariate_compare")
+  app$click("covariate_compare-run")
+  app$wait_for_value(output = "covariate_compare-covariate-table")
   expected_chunks <- expected_chunks + 1
 
   app$set_inputs(covariateSel = "covariate_deviance")
@@ -318,9 +318,9 @@ test_that("rep_markdown produces a renderable .Rmd file after a baseline analysi
   forest_app <- app$wait_for_value(output = "baseline_forest-baseline-plot")
   expected_chunks <- expected_chunks + 1
 
-  app$set_inputs(baselineSel = "baseline_comparison")
-  app$click("baseline_comparison-run")
-  app$wait_for_value(output = "baseline_comparison-baseline-table")
+  app$set_inputs(baselineSel = "baseline_compare")
+  app$click("baseline_compare-run")
+  app$wait_for_value(output = "baseline_compare-baseline-table")
   expected_chunks <- expected_chunks + 1
 
   app$set_inputs(baselineSel = "baseline_deviance")
