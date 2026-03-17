@@ -18,7 +18,8 @@ Authors@R:
       person("Rhiannon", "Owen", role = c("aut")),
       person("Simon E. H.", "Smart", role = c("aut")),
       person("Yiqiao", "Xin", role = c("aut")),
-      person("Nicola", "Cooper", role = c("ctb"))
+      person("Nicola", "Cooper", role = c("ctb")),
+      person("Suzanne", "Freeman", role = c("ctb"))
       )
 Depends:
     R (>= 4.1.0),
