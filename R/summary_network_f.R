@@ -26,9 +26,11 @@ summary_network <- function(configured_data, style, label_size = 1, title = "", 
 
   n_trt <- nrow(configured_data$treatments)
   if (n_trt < 5){
-    height_and_width <- 5
+    height <- 5
+    width <- height * 1.5
   } else {
-    height_and_width  <- 5 + sqrt(n_trt-5)
+    height  <- 5 + sqrt(n_trt-5)
+    width <- height * 1.5
   }
 
   svg <- svglite::xmlSVG({
@@ -60,8 +62,8 @@ summary_network <- function(configured_data, style, label_size = 1, title = "", 
                         rotate = 90)
     }
   },
-  width = height_and_width,
-  height = height_and_width,
+  width = width,
+  height = height,
   web_fonts = list(
     arimo = "https://fonts.googleapis.com/css2?family=Arimo:wght@400;700&display=swap")
   ) |> crop_svg()
