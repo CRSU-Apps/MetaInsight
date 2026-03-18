@@ -438,12 +438,13 @@ ValidateUploadedData <- function(data, outcome) {
   if (FindDataShape(data) == "wide"){
     study_column <- grep("^study$", names(data), value = TRUE, ignore.case = TRUE)
     duplicates <- data[[study_column]][duplicated(data[[study_column]])]
+    unique_duplicates <- unique(duplicates)
 
-    if (length(duplicates) > 0) {
+    if (length(unique_duplicates) > 0) {
       return(
         list(
           valid = FALSE,
-          message = glue::glue("Some study names are not unique: {paste0(duplicates, collapse = ', ')}")
+          message = glue::glue("Some study names are not unique: {paste0(unique_duplicates, collapse = ', ')}")
         )
       )
     }
