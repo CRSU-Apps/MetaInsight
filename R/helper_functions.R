@@ -330,11 +330,9 @@ format_step <- function(x){
 #' @param svg xml_document. Output from `svglite::xmlSVG()`
 #' @param margin numeric. The margin in pixels to leave around the edge
 #' of the plot content. Defaults to 10.
-#' @param render_text logical. Whether to convert text to paths. Defaults to
-#' `TRUE`.
 #' @return html. The cropped svg
 #' @noRd
-crop_svg <- function(svg, margin = 10, render_text = TRUE){
+crop_svg <- function(svg, margin = 10){
 
   pixel_data <- paste(svg, collapse = "\n") |>
     magick::image_read_svg() |>
@@ -395,14 +393,6 @@ crop_svg <- function(svg, margin = 10, render_text = TRUE){
   xml2::xml_set_attr(root, "xmlns:xlink", "http://www.w3.org/1999/xlink")
 
   svg_string <- paste(svg, collapse = "\n")
-
-  # convert <text> elements to <path>
-  if (render_text){
-    svg_string <- svg_string |>
-      charToRaw() |>
-      rsvg::rsvg_svg(NULL) |>
-      rawToChar()
-  }
 
   shiny::HTML(svg_string)
 }
