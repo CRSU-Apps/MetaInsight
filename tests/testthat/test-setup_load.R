@@ -19,7 +19,8 @@ test_that("Check setup_load function loads default data when no path is specifie
 
 test_that("Check setup_load function provides errors for invalid data", {
 
-  files <-c("binary-empty-long.csv",
+  files <-c("binary-duplicate-study-wide.csv",
+            "binary-empty-long.csv",
             "binary-empty-wide.csv",
             "binary-misnumbered-wide.csv",
             "binary-missing-partially-wide.csv",
@@ -41,7 +42,8 @@ test_that("Check setup_load function provides errors for invalid data", {
             "continuous-single-arm-wide.csv"
   )
 
-  reasons <- c("File is empty",
+  reasons <- c("Some study names are not unique",
+               "File is empty",
                "File is empty",
                "must all have matching sequential indices",
                "must all have matching sequential indices",
