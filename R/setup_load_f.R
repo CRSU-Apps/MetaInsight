@@ -178,6 +178,11 @@ ValidateUploadedData <- function(data, outcome) {
     return(result)
   }
 
+  result <- .ValidateUniqueStudies(data)
+  if (!result$valid) {
+    return(result)
+  }
+
   result <- .ValidateQualityColumns(data)
   if (!result$valid) {
     return(result)
@@ -415,6 +420,34 @@ ValidateUploadedData <- function(data, outcome) {
         message = glue::glue("Some studies have single arms: {paste0(single_arm_studies, collapse = ', ')}")
       )
     )
+  }
+
+  return(.valid_result)
+}
+
+#' Validate that studies in wide data are unique
+#'
+#' @param data Data frame to validate.
+#'
+#' @return Validation result in the form of a list:
+#' - "valid" = TRUE or FALSE defining whether data is valid
+#' - "message" = String describing any issues causing the data to be invalid
+#' @noRd
+.ValidateUniqueStudies <- function(data) {
+
+  if (FindDataShape(data) == "wide"){
+    study_column <- grep("^study$", names(data), value = TRUE, ignore.case = TRUE)
+    duplicates <- data[[study_column]][duplicated(data[[study_column]])]
+    unique_duplicates <- unique(duplicates)
+
+    if (length(unique_duplicates) > 0) {
+      return(
+        list(
+          valid = FALSE,
+          message = glue::glue("Some study names are not unique: {paste0(unique_duplicates, collapse = ', ')}")
+        )
+      )
+    }
   }
 
   return(.valid_result)
