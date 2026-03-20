@@ -48,7 +48,7 @@ base_module_configs <- c(
   "modules/summary_network.yml",
   "modules/freq_forest.yml",
   "modules/freq_compare.yml",
-  "modules/freq_inconsistent.yml",
+  "modules/freq_inconsistency.yml",
   "modules/freq_summary.yml",
   "modules/bayes_model.yml",
   "modules/bayes_forest.yml",

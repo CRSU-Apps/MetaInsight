@@ -84,9 +84,9 @@ test_that("rep_markdown produces a renderable .Rmd file after a frequentist anal
   app$wait_for_value(output = "freq_compare-table_sub")
   expected_chunks <- expected_chunks + 2
 
-  app$set_inputs(freqSel = "freq_inconsistent")
-  app$click("freq_inconsistent-run")
-  app$wait_for_value(output = "freq_inconsistent-table_all")
+  app$set_inputs(freqSel = "freq_inconsistency")
+  app$click("freq_inconsistency-run")
+  app$wait_for_value(output = "freq_inconsistency-table_all")
   expected_chunks <- expected_chunks + 2
 
   app$set_inputs(freqSel = "freq_summary")

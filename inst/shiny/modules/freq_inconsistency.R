@@ -1,12 +1,12 @@
-freq_inconsistent_module_ui <- function(id) {
+freq_inconsistency_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
     actionButton(ns("run"), "Generate tables", icon = icon("arrow-turn-down")),
-    div(class = "freq_inconsistent", download_button_pair(id))
+    div(class = "freq_inconsistency", download_button_pair(id))
   )
 }
 
-freq_inconsistent_module_server <- function(id, common, parent_session) {
+freq_inconsistency_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
     hide_and_show(id)
@@ -19,20 +19,20 @@ freq_inconsistent_module_server <- function(id, common, parent_session) {
         return()
       }
       # TRIGGER
-      trigger("freq_inconsistent")
+      trigger("freq_inconsistency")
     })
 
     table_all <- reactive({
       watch("freq_all")
-      req(watch("freq_inconsistent") > 0)
-      common$meta$freq_inconsistent$used <- TRUE
-      freq_inconsistent(common$configured_data)
+      req(watch("freq_inconsistency") > 0)
+      common$meta$freq_inconsistency$used <- TRUE
+      freq_inconsistency(common$configured_data)
     })
 
     table_sub <- reactive({
       watch("setup_exclude")
-      req(watch("freq_inconsistent") > 0)
-      freq_inconsistent(common$subsetted_data)
+      req(watch("freq_inconsistency") > 0)
+      freq_inconsistency(common$subsetted_data)
     })
 
     output$table_all <- renderTable(colnames = TRUE, table_all())
@@ -57,20 +57,20 @@ freq_inconsistent_module_server <- function(id, common, parent_session) {
 })
 }
 
-freq_inconsistent_module_result <- function(id) {
+freq_inconsistency_module_result <- function(id) {
   ns <- NS(id)
   tagList(
-    h4(class = "freq_inconsistent",
+    h4(class = "freq_inconsistency",
        "Assessment of inconsistency for all studies"),
     tableOutput(ns("table_all")),
     br(),
-    h4(class = "freq_inconsistent",
+    h4(class = "freq_inconsistency",
        "Assessment of inconsistency with selected studies excluded"),
     tableOutput(ns("table_sub"))
   )
 }
 
-freq_inconsistent_module_rmd <- function(common) {
-  list(freq_inconsistent_knit = !is.null(common$meta$freq_inconsistent$used))
+freq_inconsistency_module_rmd <- function(common) {
+  list(freq_inconsistency_knit = !is.null(common$meta$freq_inconsistency$used))
 }
 

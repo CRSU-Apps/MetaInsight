@@ -17,10 +17,10 @@
 #' configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
 #' configured_data <- readRDS(configured_data_path)
 #'
-#' freq_inconsistent(configured_data = configured_data)
+#' freq_inconsistency(configured_data = configured_data)
 #'
 #' @export
-freq_inconsistent <- function(configured_data, logger = NULL) {
+freq_inconsistency <- function(configured_data, logger = NULL) {
 
   check_param_classes(c("configured_data"),
                       c("configured_data"), logger)
