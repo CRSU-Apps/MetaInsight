@@ -114,7 +114,7 @@ FormatForBnma <- function(connected_data, treatment_df, outcome, reference_treat
 #' @param br_data A list of data in the format produced by `FormatForBnma()`.
 #' @param outcome "continuous" or "binary".
 #' @param model_type "fixed" or "random".
-#' @param cov_parameters "shared", "exchangable", or "unrelated".
+#' @param cov_parameters "shared", "exchangeable", or "unrelated".
 #' @return Output from bnma::network.data().
 #' @noRd
 BaselineRiskNetwork <- function(br_data, outcome, model_type, cov_parameters) {
@@ -161,7 +161,7 @@ BaselineRiskNetwork <- function(br_data, outcome, model_type, cov_parameters) {
 #' @param outcome "continuous" or "binary".
 #' @param reference_treatment treatment An element of treatment_df$Label, the .
 #' @param model_type "fixed" or "random".
-#' @param cov_parameters "shared", "exchangable", or "unrelated".
+#' @param cov_parameters "shared", "exchangeable", or "unrelated".
 #' @param seed Seed. Defaults to 123.
 #' @return Output from `bnma::network.run()`.
 #' @noRd
