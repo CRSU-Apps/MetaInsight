@@ -30,7 +30,7 @@ show_plot <- function(svg){
 
 The **metainsight** package contains functions to conduct network meta-analyses (NMA). 
 NMA can compare treatments between studies even when no direct comparisons have been made and help determine the 'best' intervention for patients. 
-Options are provided for conducting frequentist, Bayesian, meta-regression and baseline risk meta-regression using a consistent data format and terminology.
+Options are provided for conducting frequentist NMA, Bayesian NMA and Bayesian meta-regression including baseline risk can all be conducted using a single data format and consistent terminology.
 MetaInsight is primarily designed to be used through the Shiny app, but the functions can also be used outside of the app and provide a consistent and simple-to-use interface to the underlying analytical packages ([bnma](https://cran.r-project.org/package=bnma), [gemtc](https://cran.r-project.org/package=gemtc) and [netmeta](https://cran.r-project.org/package=netmeta), with additional functionality from [meta](https://cran.r-project.org/package=meta) and [metafor](https://cran.r-project.org/package=metafor)).
 
 ## Installation
@@ -59,7 +59,7 @@ run_metainsight()
 If you have a saved file from the app, you can restore the app state using:
 
 ```r
-run_metainsight(load_file = <path to file>)
+run_metainsight(load_file = "<path to file>")
 ```
 
 ## Plots
@@ -86,16 +86,18 @@ For all analyses, the data must be loaded and configured prior to producing outp
 Two example datasets are built into the package for either a binary or continuous outcome. 
 We will use the built in continuous dataset for these examples which are loaded when `data_path` is not provided to the `setup_load` function. 
 Data can be provided either in a long format, where each row is a study arm or a wide format, where each row is a study. 
+Studies must contain a minimum of two arms and share a treatment with another study.
+
 For continuous outcomes, long data should contain the columns:
 
 - `Study` - an identifier, e.g. author and year
-- `T` - treatment
+- `T` - name of treatment
 - `N` - number of participants 
 - `Mean` - mean value of the outcome
 - `SD` - standard deviation of the outcome. 
 
 Wide data for continuous outcomes should contain at least the following columns where the number refers to the arm of the study and extra columns should be added depending on the number of arms. 
-If studies contain different numbers of arms, `NA` should be added.
+For studies with fewer arms, the later-numbered columns should be left blank or set as `NA`.
 
 - `Study`
 - `N.1` 
@@ -122,8 +124,8 @@ Wide data for binary outcomes follows the same convention and should contain at 
 - `N.1`
 - `N.2`
 
-Additionally, a `covar.<name>` column can be added to all formats containing covariate data where <name> should be replaced with the name of the covariate. 
-For long data, covariate values must be equal for every study arm. 
+Additionally, a `covar.<name>` column can be added to all formats containing covariate data where `<name>` should be replaced with the name of the covariate. 
+For long data, covariate values must be equal for every study arm within a study. 
 Risk of bias data can also be included with all columns containing values ranging from 1 (low risk) to 3 (high risk): `rob` for the overall risk of bias, `indirectness` for indirectness and `rob.<name>` for up to ten individual components.
 
 `setup_load` checks that the data is valid and reports any errors that make it unsuitable to analyse.
@@ -143,8 +145,8 @@ After loading the data, the analysis needs to be configured using the `setup_con
 - `reference_treatment`: One of the treatments in the dataset which the others will be compared to. Typically placebo or standard care but can be any treatment.
 - `effects`: What type of models to fit, either `fixed` or `random`.
 - `outcome_measure`: The outcome measure to use in the analysis. For binary outcomes this can be `OR` (odds ratio), `RR` (relative risk) or `RD` (risk difference) and for continuous outcomes this can be `MD` (mean difference) or `SMD` (standardised mean difference). The outcome measure chosen has an impact on the rest of the analysis as not all analyses can be conducted for all outcome measures. All analyses of continuous outcomes can be conducted using `MD` and all analyses of  binary outcomes can be conducted using `OR`.
-- `ranking_option`: Whether outcome values that are less than the mean are `good` (for example blood pressure) or `bad` (for example bone density)
-- `seed`: A value used to generate random numbers that ensures the analyses are reproducible.
+- `ranking_option`: Whether low outcome values are `good` (for example blood pressure when treating hypertension) or `bad` (for example bone density when treating osteoporosis)
+- `seed`: A value used to generate random numbers that ensures the analyses are reproducible. 
 
 If your dataset contains studies which are not connected to the others (i.e. do not share a common treatment), they will be removed from the analysis. 
 
@@ -194,7 +196,7 @@ Two styles are available - `netplot` which shows the number of studies as the si
 summary_network(configured_data, style = "netplot") |> show_plot()
 ```
 
-### Frequentist analysis
+### Frequentist network meta-analysis
 
 Frequentist analyses use netmeta and the model is fitted in `setup_configure` so there is no explicit function to fit the model.
 Outputs are generated using the `freq_*` functions.
@@ -204,17 +206,17 @@ Outputs are generated using the `freq_*` functions.
 freq_forest(configured_data) |> show_plot()
 ```
 
-`freq_compare` produces a matrix of all treatment comparisons:
+`freq_compare` produces a matrix of all treatment comparisons. Above the leading diagonal are estimates from pairwise meta-analyses, below the leading diagonal are estimates from network meta-analyses:
 
 ```{r freq_compare}
 freq_compare(configured_data) |> knitr::kable()
 ```
 
-`freq_inconsistent` summarises the direct and indirect evidence for each treatment pair and any differences between the direct and indirect evidence. 
+`freq_inconsistency` summarises the direct and indirect evidence for each treatment pair and any inconsistencies between the direct and indirect evidence. 
 For this dataset where all studies were only comparing with the reference treatment, for each treatment pair the evidence is entirely direct or indirect so no differences occur.
 
-```{r freq_inconsistent}
-freq_inconsistent(configured_data) |> knitr::kable()
+```{r freq_inconsistency}
+freq_inconsistency(configured_data) |> knitr::kable()
 ```
 
 `freq_summary` summarises all the results in a graphical format, ranking the treatments by their effect on the outcome. 
@@ -223,7 +225,7 @@ freq_inconsistent(configured_data) |> knitr::kable()
 freq_summary(configured_data) |> show_plot()
 ```
 
-### Bayesian analysis
+### Bayesian network meta-analysis
 
 Bayesian analyses use gemtc and all the functions have the `bayes_*` prefix. To fit the model pass the configured data to `bayes_model`:
 
@@ -261,9 +263,10 @@ deviance_plots$stem_plot
 deviance_plots$lev_plot
 ```
 
+#### Nodesplitting models
+
 Nodesplitting models test the consistency of direct and indirect evidence for each treatment pair within the network. 
-These models cannot be fitted to every dataset and it is not possible to determine whether it will be possible. 
-The function will return an error when it is not possible.
+These models cannot be fitted to every dataset and the function will return an error when it is not possible.
 Nodesplitting is not possible with the default dataset because all the evidence for each treatment pair is either entirely direct or indirect so a different bundled dataset is used in this example:
 
 ```{r bayes_nodesplit}
@@ -286,12 +289,12 @@ nodesplit_model <- bayes_nodesplit(nodesplit_configured_data)
 bayes_nodesplit_plot(nodesplit_model) |> show_plot()
 ```
 
-### Covariate analysis
+### Bayesian network meta-regression with a covariate
 
 If a covariate is included in the loaded data, the `covariate_` functions can be used to assess whether the covariate affects the outcome. 
-As for the Bayesian models, these models are fitted with gemtc, but two parameters are required in addition to the configured data. 
+As for the Bayesian NMA models, these models are fitted with gemtc, but two parameters are required in addition to the configured data. 
 The `covariate_value` determines the covariate value at which to fit the model and this value must be within the range of covariate values in the data. 
-The `regressor_type` specifies how slopes are fitted for each treatment. When `shared` the regression coefficients are the same for all treatment comparisons, when `exchangable` they differ but all come from a shared distribution and when  `unrelated` they all differ.
+The `regressor_type` specifies how slopes are fitted for each treatment. When `shared` the regression coefficients are the same for all treatment comparisons, when `exchangeable` they differ but all come from a shared distribution and when  `unrelated` they all differ.
 
 ```{r covariate_model}
 fitted_covariate_model <- covariate_model(configured_data,
@@ -313,12 +316,13 @@ metaregression_plot(fitted_covariate_model,
                                     "Gabapentinoids")) |> show_plot()
 ```
 
-Other outputs are directly equivalent to those produced for Bayesian analyses and the functions have the same suffixes. Nodesplitting is not currently available for these models.
+Other outputs are directly equivalent to those produced for with the `bayes_*` functions and the `covariate_*` functions have the same suffixes. Nodesplitting is not currently available for these models.
 
-### Baseline risk analysis
+### Bayesian baseline-risk network meta-regression
 
-Baseline risk quantifies differences in the initial health of participants in the studies by comparing the outcomes of study arms which imposed the reference treatment. 
-These models are fitted with [bnma](https://cran.r-project.org/package=bnma) but the outputs are converted into a format consistent with gemtc. 
+Baseline risk adjusts for an approximation of the baseline health of participants in the studies by including the expected outcome in the reference arm as a covariate. This outcome is imputed for studies that did not include the reference treatment.
+
+These models are fitted with bnma but the outputs are converted into a format consistent with gemtc. 
 All the functions use the `baseline_*` prefix.
 
 The data can be summarised with `baseline_summary`:
