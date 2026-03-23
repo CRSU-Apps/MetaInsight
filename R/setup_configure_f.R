@@ -149,6 +149,56 @@ setup_configure <- function(loaded_data, reference_treatment, effects, outcome_m
   return(output)
 }
 
+
+#' @title Summarise the analysis configuration
+#' @description Create a table summarising how the analysis has been configured
+#' @inheritParams common_params
+#' @examples
+#' configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
+#' configured_data <- readRDS(configured_data_path)
+#'
+#' setup_configure_table(configured_data)
+#'
+#' @export
+
+setup_configure_table <- function(configured_data){
+
+  # choose elements to extract from configured_data
+  selection <- list(
+    "Outcome type:" = "outcome",
+    "Outcome measure:" = "outcome_measure",
+    "Model effects type:" = "effects",
+    "Reference treatment:" = "reference_treatment",
+    placeholder = "ranking_option",
+    "Seed value:" = "seed"
+  )
+
+  # adapt label depending on outcome
+  names(selection)[5] <- ifelse(configured_data$outcome == "continuous",
+                                "For treatment rankings, values lower than the mean are:",
+                                "For treatment rankings, ORs less than 1 are:")
+
+  # match elements with labels and convert to title case
+  df <- data.frame(
+    value = sapply(selection, function(x) stringr::str_to_title(configured_data[[x]])),
+    row.names = names(selection)
+  )
+
+  # format values
+  df$value[2] <- switch(df$value[2],
+                        "Md" = "Mean Difference",
+                        "Smd" = "Standarised Mean Difference",
+                        "Or" = "Odds Ratio",
+                        "Rr" = "Risk Ratio",
+                        "Rd" = "Risk Difference")
+
+  df$value[5] <- ifelse(df$value[5] == "Good",
+                        "Desirable",
+                        "Undesirable")
+
+  return(df)
+}
+
 #' Identify all of the disconnected subnetworks contained in the data.
 #'
 #' @param data Data frame containing all of the studies for binary or continuous outcomes, and wide or long format.

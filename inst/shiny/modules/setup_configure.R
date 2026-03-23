@@ -89,6 +89,14 @@ setup_configure_module_server <- function(id, common, parent_session) {
 
   })
 
+  output$table <- renderTable({
+    watch("setup_configure")
+    watch("effects")
+    req(common$configured_data)
+    setup_configure_table(common$configured_data)
+  }, colnames = FALSE,
+     rownames = TRUE)
+
   return(list(
     save = function() {list(
       ### Manual save start
@@ -111,8 +119,10 @@ setup_configure_module_server <- function(id, common, parent_session) {
 }
 
 setup_configure_module_result <- function(id) {
-  div(class = "setup_configure", style = "margin: 20px; font-size: 30px",
-    tags$p("The analysis has been configured")
+  ns <- NS(id)
+  tagList(
+    h4(class = "setup_configure", "Analysis configuration"),
+    tableOutput(ns("table"))
   )
 }
 

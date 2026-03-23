@@ -74,6 +74,9 @@ test_that("setup_configure loads data into common correctly for continuous long 
   expect_equal(result$outcome, "continuous")
   expect_equal(result$outcome_measure, "MD")
 
+  table <- app$wait_for_value(output = "setup_configure-table")
+  expect_match(table, "<table")
+
   app$stop()
 })
 
@@ -287,3 +290,46 @@ test_that("Covariate info is extracted when available", {
   expect_equal(config$covariate$type, "continuous")
 
 })
+
+
+test_that("Summary table is produced correctly", {
+
+  expected_rows <- c(
+    "Outcome type:",
+    "Outcome measure:",
+    "Model effects type:",
+    "Reference treatment:",
+    "For treatment rankings, ORs less than 1 are:",
+    "Seed value:"
+  )
+
+  expected_values <- c(
+    "Binary",
+    "Odds Ratio",
+    "Random",
+    "The_great",
+    "Desirable",
+    123
+  )
+
+
+  table <- setup_configure_table(configured_data_bin)
+
+  expect_equal(rownames(table), expected_rows)
+  expect_equal(table$value, expected_values)
+  expect_equal(nrow(table), 6)
+  expect_equal(ncol(table), 1)
+
+  expected_rows[5] <- "For treatment rankings, values lower than the mean are:"
+  expected_values[1] <- "Continuous"
+  expected_values[2] <- "Mean Difference"
+
+  table <- setup_configure_table(configured_data_con)
+  expect_equal(rownames(table), expected_rows)
+  expect_equal(table$value, expected_values)
+  expect_equal(nrow(table), 6)
+  expect_equal(ncol(table), 1)
+
+})
+
+
