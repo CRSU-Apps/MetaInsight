@@ -31,7 +31,7 @@ freq_forest <- function(configured_data, xmin = NULL, xmax = NULL, title = "", l
   height <- forest_height(n_treatments, title = TRUE, annotation = TRUE)
   width <- forest_width(max(nchar(configured_data$treatments$Label)))
 
-  svg <- svglite::xmlSVG({
+  xml <- svglite::xmlSVG({
    meta::forest(configured_data$freq$netmeta,
                 reference.group = configured_data$reference_treatment,
                 pooled = configured_data$effects,
@@ -43,12 +43,18 @@ freq_forest <- function(configured_data, xmin = NULL, xmax = NULL, title = "", l
   width = width,
   web_fonts = list(
     Arimo = "https://fonts.googleapis.com/css2?family=Arimo:wght@400;700&display=swap")
-  ) |> crop_svg()
+  )
 
   # consistent naming
   if (configured_data$effects == "fixed"){
-    svg <- gsub("Common Effects", "Fixed Effect", svg)
+    xml_doc <- xml2::as_xml_document(xml)
+    effect_node <- xml2::xml_find_all(xml_doc, ".//text()[contains(., 'Common Effects Model')]")
+    xml2::xml_text(effect_node) <- "Fixed Effect Model"
+    parent_node <- xml2::xml_parent(effect_node)
+    xml2::xml_attr(parent_node, "textLength") <- NULL
   }
+
+  svg <- xml |> crop_svg()
 
   return(svg)
 }
