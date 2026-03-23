@@ -172,7 +172,7 @@ rep_markdown_module_server <- function(id, common, parent_session, COMPONENT_MOD
 
       # add quarto header
       quarto_header <- readLines("Rmd/quarto_header.txt")
-      quarto_header <- append(quarto_header, glue::glue("title: MetaInsight v{packageVersion('metainsight')} Session {Sys.Date()}"), 1)
+      quarto_header <- gsub("MetaInsight placeholder", glue::glue("MetaInsight v{packageVersion('metainsight')} Session {Sys.Date()}"), quarto_header)
       combined_rmd <- c(quarto_header, combined_rmd)
 
       # convert chunk control lines
