@@ -103,8 +103,8 @@ baseline_model_module_server <- function(id, common, parent_session) {
           if (common$baseline_model$mtcResults$max.gelman > 1.05){
             common$logger |> writeLog(type = "warning", glue(
               "The Gelman-Rubin statistic is {round(common$baseline_model$mtcResults$max.gelman, 2)}.
-              A value greater than 1.05 may indicate lack of convergence. Please check the Gelman plot in the
-              Deviance report module"))
+              A value greater than 1.05 may indicate lack of convergence. Please check the diagnostic plots
+              in the Markov chain Monte Carlo module"))
           }
 
         } else {
