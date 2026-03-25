@@ -164,8 +164,8 @@ covariate_model_module_server <- function(id, common, parent_session) {
       if (length(common$configured_data$covariate) == 0){
         list()
       } else {
-        covariate_min <- min(common$common[[input$dataset]]$connected_data[[common[[input$dataset]]$covariate$column]])
-        covariate_max <- max(common$common[[input$dataset]]$connected_data[[common[[input$dataset]]$covariate$column]])
+        covariate_min <- min(common[[input$dataset]]$connected_data[[common[[input$dataset]]$covariate$column]])
+        covariate_max <- max(common[[input$dataset]]$connected_data[[common[[input$dataset]]$covariate$column]])
         log_val <- round(log10(covariate_max - covariate_min))
         step <- 10 ** (log_val - 2)
         list(
