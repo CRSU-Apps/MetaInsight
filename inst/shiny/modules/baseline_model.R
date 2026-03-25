@@ -25,6 +25,8 @@ baseline_model_module_server <- function(id, common, parent_session) {
     init("baseline_model_table")
     # used to trigger when model is fitted
     init("baseline_model_fit")
+    # used to trigger when exclusions change but only if using the subsetted data
+    init("baseline_model_sub")
 
     observeEvent(input$run, {
       if (is.null(common$configured_data)){
@@ -51,9 +53,15 @@ baseline_model_module_server <- function(id, common, parent_session) {
       function(...) base_model <<- mirai::mirai(run(...), run = baseline_model, .args = environment())
     ) |> bind_task_button("run")
 
+    # only trigger refitting when exclusions change if using the subset
+    observeEvent(list(input$dataset, watch("setup_exclude")), {
+      req(input$dataset == "subsetted_data")
+      trigger("baseline_model_sub")
+    })
+
     observeEvent(list(watch("baseline_model"),
                       watch("setup_configure"),
-                      watch("setup_exclude"),
+                      watch("baseline_model_sub"),
                       watch("effects"),
                       input$regressor,
                       input$dataset), {

@@ -56,6 +56,8 @@ covariate_model_module_server <- function(id, common, parent_session) {
     init("covariate_model_table")
     # used to trigger when model is fitted
     init("covariate_model_fit")
+    # used to trigger when exclusions change but only if using the subsetted data
+    init("covariate_model_sub")
 
     observeEvent(input$run, {
       if (is.null(common$configured_data)){
@@ -94,15 +96,14 @@ covariate_model_module_server <- function(id, common, parent_session) {
     ) |> bind_task_button("run")
 
     # only trigger refitting when exclusions change if using the subset
-    exclude_trigger <- reactive({
-      watch("setup_exclude")
+    observeEvent(list(input$dataset, watch("setup_exclude")), {
       req(input$dataset == "subsetted_data")
-      watch("setup_exclude") + 1
+      trigger("covariate_model_sub")
     })
 
     observeEvent(list(watch("covariate_model"),
                       watch("setup_configure"),
-                      exclude_trigger(),
+                      watch("covariate_model_sub"),
                       watch("effects"),
                       debounce(input$covariate_value, 1000),
                       input$regressor), {
