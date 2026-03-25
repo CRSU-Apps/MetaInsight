@@ -73,6 +73,7 @@ summary_study_module_server <- function(id, common, parent_session) {
       colourblind = input$colourblind,
       x_min = x_min,
       x_max = x_max,
+      interactive = FALSE,
       common$logger
     )
   })
