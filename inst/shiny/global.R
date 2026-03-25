@@ -1,13 +1,24 @@
 library(metainsight)
+library(bslib)
 library(glue)
 library(gargoyle)
+library(shiny)
 
 MB <- 1024^2
 UPLOAD_SIZE_MB <- 5000
 options(shiny.maxRequestSize = UPLOAD_SIZE_MB*MB)
 SAVE_SESSION_SIZE_MB_WARNING <- 100
 
-mirai::daemons(4) # add sync = TRUE for debugging
+# set daemons when not in testing
+if (isFALSE(getOption("shiny.testmode"))) {
+  # add sync = TRUE for debugging
+  mirai::daemons(4)
+}
+
+if (isTRUE(getOption("shiny.testmode"))) {
+  mirai::daemons(1, dispatcher = FALSE)
+}
+
 onStop(function() mirai::daemons(0))
 
 source("ui_helpers.R")
@@ -37,7 +48,7 @@ base_module_configs <- c(
   "modules/summary_network.yml",
   "modules/freq_forest.yml",
   "modules/freq_compare.yml",
-  "modules/freq_inconsistent.yml",
+  "modules/freq_inconsistency.yml",
   "modules/freq_summary.yml",
   "modules/bayes_model.yml",
   "modules/bayes_forest.yml",
@@ -52,7 +63,7 @@ base_module_configs <- c(
   "modules/baseline_model.yml",
   "modules/baseline_regression.yml",
   "modules/baseline_forest.yml",
-  "modules/baseline_comparison.yml",
+  "modules/baseline_compare.yml",
   "modules/baseline_ranking.yml",
   "modules/baseline_nodesplit.yml",
   "modules/baseline_results.yml",
@@ -63,7 +74,7 @@ base_module_configs <- c(
   "modules/covariate_model.yml",
   "modules/covariate_regression.yml",
   "modules/covariate_forest.yml",
-  "modules/covariate_comparison.yml",
+  "modules/covariate_compare.yml",
   "modules/covariate_ranking.yml",
   "modules/covariate_nodesplit.yml",
   "modules/covariate_results.yml",

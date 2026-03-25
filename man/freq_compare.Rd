@@ -2,8 +2,7 @@
 % Please edit documentation in R/freq_compare_f.R
 \name{freq_compare}
 \alias{freq_compare}
-\title{Produce a comparison table of treatments using
-\code{netmeta::netleague()}.}
+\title{Compare treatments for frequentist models}
 \usage{
 freq_compare(configured_data, logger = NULL)
 }
@@ -21,4 +20,11 @@ per treatment
 \description{
 Produce a comparison table of treatments using
 \code{netmeta::netleague()}.
+}
+\examples{
+configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
+configured_data <- readRDS(configured_data_path)
+
+freq_compare(configured_data = configured_data)
+
 }

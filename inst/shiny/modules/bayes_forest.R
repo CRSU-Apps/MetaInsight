@@ -7,7 +7,7 @@ bayes_forest_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
     # these need to be in the main module for saving and loading.
-    div(class = "bayes_forest_div",
+    div(class = "bayes_forest",
       layout_columns(
         col_widths = rep(6, 6),  # six items: 2 per row
         row_heights = c("auto", "auto", "auto"),  # three rows
@@ -20,7 +20,7 @@ bayes_forest_module_ui <- function(id) {
       )
     ),
     actionButton(ns("run"), "Generate plots", icon = icon("arrow-turn-down")),
-    div(class = "bayes_forest_div download_buttons",
+    div(class = "bayes_forest download_buttons",
       layout_columns(
         bayes_forest_submodule_ui(ns("all"), "All studies"),
         bayes_forest_submodule_ui(ns("sub"), "Selected studies excluded")
@@ -29,13 +29,13 @@ bayes_forest_module_ui <- function(id) {
   )
 }
 
-bayes_forest_submodule_server <- function(id, common, model, run, xmin, xmax, title){
+bayes_forest_submodule_server <- function(id, common, run, xmin, xmax, title){
   moduleServer(id, function(input, output, session) {
 
     svg <- reactive({
       common$meta$bayes_forest[[paste0("xmin_", id)]] <- xmin()
       common$meta$bayes_forest[[paste0("xmax_", id)]] <- xmax()
-      bayes_forest(common[[paste0("bayes_", id)]],
+      bayes_forest(common[[paste0("bayes_model_", id)]],
                    xmin(),
                    xmax(),
                    title)
@@ -53,10 +53,7 @@ bayes_forest_submodule_server <- function(id, common, model, run, xmin, xmax, ti
         glue("MetaInsight_bayesian_forest_plot_{id}.{common$download_format}")
       },
       content = function(file) {
-        write_plot(svg(),
-                   file,
-                   common$download_format
-                   )
+        write_plot(svg(), file)
 
       }
     )
@@ -74,10 +71,10 @@ bayes_forest_module_server <- function(id, common, parent_session) {
       watch("bayes_model_all")
       watch("bayes_model_sub")
 
-      req(common$bayes_all, common$bayes_sub)
+      req(common$bayes_model_all, common$bayes_model_sub)
 
-      all_limits <- bayes_forest_limits(common$bayes_all)
-      sub_limits <- bayes_forest_limits(common$bayes_sub)
+      all_limits <- bayes_forest_limits(common$bayes_model_all)
+      sub_limits <- bayes_forest_limits(common$bayes_model_sub)
 
       if (common$configured_data$outcome == "binary"){
         all_limits <- exp(all_limits)
@@ -93,7 +90,7 @@ bayes_forest_module_server <- function(id, common, parent_session) {
 
     # check that a fitted model exists and error if not
     observeEvent(input$run, {
-      if (is.null(common$bayes_all)){
+      if (is.null(common$bayes_model_all)){
         common$logger |> writeLog(type = "error", go_to = "bayes_model", "Please fit the Bayesian models first")
         return()
       } else {
@@ -102,11 +99,11 @@ bayes_forest_module_server <- function(id, common, parent_session) {
       }
     })
 
-    # convert values back to log when outcome is Binary
-    xmin_all <- reactive(ifelse(common$configured_data$outcome == "binary", log(as.numeric(input$xmin_all)), as.numeric(input$xmin_all)))
-    xmax_all <- reactive(ifelse(common$configured_data$outcome == "binary", log(as.numeric(input$xmax_all)), as.numeric(input$xmax_all)))
-    xmin_sub <- reactive(ifelse(common$configured_data$outcome == "binary", log(as.numeric(input$xmin_sub)), as.numeric(input$xmin_sub)))
-    xmax_sub <- reactive(ifelse(common$configured_data$outcome == "binary", log(as.numeric(input$xmax_sub)), as.numeric(input$xmax_sub)))
+    # make limits reactive
+    xmin_all <- reactive(as.numeric(input$xmin_all))
+    xmax_all <- reactive(as.numeric(input$xmax_all))
+    xmin_sub <- reactive(as.numeric(input$xmin_sub))
+    xmax_sub <- reactive(as.numeric(input$xmax_sub))
 
     # trigger for the main analysis - when run is clicked or x limits change, but only if there is a valid model
     all_trigger <- reactive({
@@ -122,8 +119,8 @@ bayes_forest_module_server <- function(id, common, parent_session) {
       }
     })
 
-    bayes_forest_submodule_server("all", common, "bayes_all", all_trigger, xmin_all, xmax_all, "All studies")
-    bayes_forest_submodule_server("sub", common, "bayes_sub", sub_trigger, xmin_sub, xmax_sub, "With selected studies excluded")
+    bayes_forest_submodule_server("all", common, all_trigger, xmin_all, xmax_all, "All studies")
+    bayes_forest_submodule_server("sub", common, sub_trigger, xmin_sub, xmax_sub, "With selected studies excluded")
 
     return(list(
       save = function() {list(

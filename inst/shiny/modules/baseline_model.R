@@ -10,7 +10,7 @@ baseline_model_module_ui <- function(id) {
                                     add_tooltip("Unrelated", "Coefficient is different for each treatment comparison")),
                  choiceValues = list("shared", "exchangeable", "unrelated")),
     input_task_button(ns("run"), "Fit model", type = "default", icon = icon("arrow-turn-down")),
-    div(class = "baseline_model_div download_buttons",
+    div(class = "baseline_model download_buttons",
         actionButton(ns("run_all"), "Run all modules", icon = icon("forward-fast"))
     )
   )
@@ -116,15 +116,13 @@ baseline_model_module_server <- function(id, common, parent_session) {
       }
     })
 
-    output$table <- renderTable({
+    output$table <- renderUI({
       watch("baseline_model") # required for reset
       watch("baseline_model_table")
       req(common$baseline_model)
-      shinyjs::show(selector = ".baseline_model_div")
-      common$baseline_model$dic
-      }, digits = 3, rownames = TRUE, colnames = FALSE)
-
-    outputOptions(output, "table", suspendWhenHidden = FALSE)
+      shinyjs::show(selector = ".baseline_model")
+      dic_table(common$baseline_model$dic)
+    })
 
     observeEvent(input$run_all, {
       run_all(COMPONENTS, COMPONENT_MODULES, "baseline", common$logger)
@@ -150,9 +148,8 @@ baseline_model_module_server <- function(id, common, parent_session) {
 
 baseline_model_module_result <- function(id) {
   ns <- NS(id)
-  div(align = "center", class = "baseline_model_div",
-    p("Model fit for all studies:"),
-    tableOutput(ns("table"))
+  div(align = "center",
+    uiOutput(ns("table"))
   )
 }
 

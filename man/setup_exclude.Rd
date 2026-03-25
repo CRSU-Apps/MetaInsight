@@ -26,7 +26,6 @@ else empty:}
 \item \code{circle_open}: Open circles
 \item \code{none}: No symbols in which case only the plot of direct evidence is
 }
-\item{bugsnet}{dataframe. Processed data for bugsnet analyses created by \code{bugsnetdata}}
 \item{freq}{list. Processed data for frequentist analyses created by \code{frequentist()}}
 \item{outcome}{character. Whether the data is \code{binary} or \code{continuous}}
 \item{outcome_measure}{character. Outcome measure of the dataset.}
@@ -37,4 +36,12 @@ else empty:}
 \description{
 Takes the configured data, removes any excluded studies and returns
 subsets of the data to be passed to other functions.
+}
+\examples{
+configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
+configured_data <- readRDS(configured_data_path)
+
+subsetted_data <- setup_exclude(configured_data = configured_data,
+                                exclusions = c("Leo", "Minerva"))
+
 }

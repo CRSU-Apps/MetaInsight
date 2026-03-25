@@ -12,15 +12,8 @@ test_that("freq_summary produces errors for incorrect data types and invalid val
 })
 
 test_that("freq_summary produces downloadable plots", {
-  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 30000)
-  app$set_inputs(tabs = "setup")
-  app$set_inputs(setupSel = "setup_load")
-  app$click("setup_load-run")
-  app$set_inputs(setupSel = "setup_configure")
-  app$click("setup_configure-run")
-  app$set_inputs(tabs = "summary")
-  app$set_inputs("setup_exclude-exclusions" = c("Study01", "Study25"))
-  app$wait_for_value(input = "setup_exclude-complete")
+  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_setup_load", timeout = 30000)
+  reload_app(app, config_path)
   app$set_inputs(tabs = "freq")
   app$set_inputs(freqSel = "freq_summary")
   app$click("freq_summary-run")
@@ -30,6 +23,7 @@ test_that("freq_summary produces downloadable plots", {
 
   expect_match(plot_all$html, "<svg")
   expect_match(plot_sub$html, "<svg")
+  expect_false(identical(plot_all$html, plot_sub$html))
 
   test_plot_downloads(app, "freq_summary")
 

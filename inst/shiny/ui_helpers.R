@@ -3,7 +3,7 @@ uiTop <- function(mod_INFO) {
   modName <- mod_INFO$modName
   pkgName <- mod_INFO$pkgName
 
-  ls <- list(span(div(paste("Module: ", modName), class = "mod"),
+  ls <- list(span(div(modName, class = "mod"),
                   actionLink(paste0(modID, "Help"),
                              label = "", icon = icon("circle-question"),
                              class = "modHelpButton")
@@ -157,4 +157,170 @@ flex_wrap <- function(content) {
                              xxl = c(-3, 6, -3)),
     content,
   )
+}
+
+####################### #
+# LOADING MODAL #
+####################### #
+
+#' @title show_loading_modal
+#' @description For internal use. Show a modal when something is loading
+#' @param message The message to be displayed to the user
+show_loading_modal <- function(message){
+  shinybusy::show_modal_spinner(
+    spin = "self-building-square",
+    color = "#446e9b",
+    text = message
+  )
+}
+#' @title close_loading_modal
+#' @description For internal use. Close the modal once loading is complete
+#' @param session The session object passed to function given to shinyServer.
+
+close_loading_modal <- function (session = getDefaultReactiveDomain())
+{
+  session$sendModal("remove", NULL)
+}
+
+####################### #
+# ADD TOOLTIP #
+####################### #
+#' Add a tooltip to the label of an input
+#'
+#' @param label character. The text to display initially
+#' @param message character. The text to display in the tooltip
+add_tooltip <- function(label, message){
+  span(label, tooltip(icon("circle-question"), message))
+}
+
+#' Create a pair of download buttons
+#'
+#' @param id The id of the module
+#' @return tagList of downloadButtons
+download_button_pair <- function(id){
+  ns <- NS(id)
+  div(class = "download_buttons",
+      bslib::layout_columns(
+        downloadButton(ns("download_all"), "All studies"),
+        downloadButton(ns("download_sub"), "Selected studies excluded")
+      )
+  )
+}
+
+#' Put an svg in a container with buttons for fullscreen
+#'
+#' @param svg character. Output from `crop_svg()`
+#' @param class character. Class of the container default `svg_container`
+#' @param style character. Styles to add to the container
+svg_container <- function(svg, class = "svg_container", style = ""){
+  div(class = class, style = style,
+      tags$button(
+        class = "height-toggle-btn",
+        onclick = "shinyjs.scrollingPlot(this)",
+        # left-right arrow unicode
+        "\u2194 Full width"
+      ),
+      tags$button(
+        class = "fullscreen-btn",
+        onclick = "shinyjs.fullscreenPlot(this.parentElement)",
+        # diagonal arrow unicode
+        "\u2922"
+      ),
+      svg)
+}
+
+
+####################### #
+# RESET DATA #
+####################### #
+
+#' @title reset_data
+#' @description For internal use. Clears the common structure of data and resets all plots etc.
+#' @keywords internal
+#' @param common The common data structure
+reset_data <- function(common, session){
+  modules <- names(common$meta)
+  # clear data
+  common$reset()
+  # blank outputs
+  for (module in modules){
+    gargoyle::trigger(module)
+    # reset triggers
+    session$userData[[module]](0)
+  }
+}
+
+#' @title run_all
+#' @description For internal use. Runs all modules for a given component, excluding the model and nodesplit modules.
+#' @keywords internal
+#' @param COMPONENTS character. named vector of all components
+#' @param COMPONENT_MODULES list. Containing details of all modules
+#' @param component character. The component to run all the modules of.
+#' @param logger common$logger
+run_all <- function(COMPONENTS, COMPONENT_MODULES, component, logger){
+
+  all_modules <- names(COMPONENT_MODULES[[component]])
+
+  # exclude model and nodesplit modules
+  if (component != "freq"){
+    modules <- all_modules[-which(all_modules %in% c(glue::glue("{component}_model"), glue::glue("{component}_nodesplit")))]
+  } else {
+    modules <- all_modules
+  }
+
+  # workaround for regression modules where the run id differs
+  # and append -run to module id to get run button ids
+  modules <- paste0(ifelse(
+    grepl("regression", modules),
+    paste0(modules, "-", gsub("_regression", "", modules)),
+    modules
+  ), "-run")
+
+  # click the run buttons
+  shinyjs::runjs(
+    paste(
+      sprintf("$('#%s').click();", modules),
+      collapse = "\n"
+    )
+  )
+
+  # message for logger
+  full_component <- names(COMPONENTS[COMPONENTS == component])
+
+  if (component %in% c("bayes", "baseline", "covariate")){
+    nodesplit_message <- " apart from the nodesplit module"
+  } else {
+    nodesplit_message <- ""
+  }
+
+  logger |> writeLog(type = "info",
+                     glue::glue("Running all {full_component} modules{nodesplit_message}. This might
+                                take several minutes and progress will appear in the logger."))
+
+  invisible()
+}
+
+
+#' @title hide_and_show
+#' @description For internal use. Hides content inside the <module_id>_div class
+#' when a module has not been run and shows it once `trigger(module_id)` has
+#' been called. The show option is `TRUE` by default but can be set to `FALSE`
+#' to manually control when the content is displayed e.g.  if it should
+#' be when an extendedtask completes instead of when the run button is
+#' pressed.
+#' @keywords internal
+#' @param module_id character. The module identifier.
+#' @param show logical. Whether to show the div when `trigger(module_id)` is
+#' called
+hide_and_show <- function(module_id, show = TRUE){
+  observe({
+    gargoyle::watch(module_id)
+    if (gargoyle::watch(module_id) == 0){
+      shinyjs::hide(selector = glue::glue(".{module_id}"))
+    } else {
+      if (show){
+        shinyjs::show(selector = glue::glue(".{module_id}"))
+      }
+    }
+  })
 }

@@ -1,4 +1,5 @@
-#' Fit a covariate regression model using \CRANpkg{gemtc}.
+#' @title Fit a covariate regression model
+#' @description Fit a covariate regression model using \CRANpkg{gemtc}.
 #'
 #' @param covariate_value numeric. The value at which to fit the model. Must be greater
 #' than or equal to the minimum value and less than or equal to the maximum
@@ -27,6 +28,21 @@
 #'  \item{mtcNetwork}{The network object from GEMTC}
 #'  \item{covariate_min}{Vector of minimum covariate values directly contributing to the regression}
 #'  \item{covariate_max}{Vector of maximum covariate values directly contributing to the regression}
+#' @examples
+#' configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
+#' configured_data <- readRDS(configured_data_path)
+#'
+#' # initial model
+#' fitted_covariate_model <- covariate_model(configured_data = configured_data,
+#'                                           covariate_value = 98,
+#'                                           regressor_type = "shared")
+#'
+#' # updated for new covariate value
+#' updated_covariate_model <- covariate_model(configured_data = configured_data,
+#'                                           covariate_value = 97,
+#'                                           regressor_type = "shared",
+#'                                           covariate_model_output = fitted_covariate_model)
+#'
 #' @export
 covariate_model <- function(configured_data,
                             covariate_value,
@@ -42,7 +58,8 @@ covariate_model <- function(configured_data,
   }
 
   if (!any(grepl("covar\\.", names(configured_data$connected_data)))){
-    return(async |> asyncLog(type = "error", "The data does not contain a covariate column"))
+    return(async |> asyncLog(type = "error", "No covariate data exists. To add covariate data, add a column titled
+                                              covar.* where the * is replaced by the covariate name. e.g. covar.age"))
   }
 
   if (!configured_data$outcome_measure %in% c("OR", "RR", "MD")){
@@ -119,6 +136,7 @@ covariate_model <- function(configured_data,
 #' @param covariate Chosen covariate name as per uploaded data
 #' @param cov_friendly Friendly name of chosen covariate
 #' @return list containing two dataframes: armData containing the core data; studyData containing covariate data
+#' @noRd
 PrepDataGemtc <- function(data, treatment_df, outcome, covariate, cov_friendly){
   # ensure data is in long format
   if (FindDataShape(data) == "wide") {
@@ -159,6 +177,7 @@ PrepDataGemtc <- function(data, treatment_df, outcome, covariate, cov_friendly){
 #' @param ref_choice The choice of reference treatment as selected by user
 #' @param seed Seed value to use when fitting model
 #' @return An object of class mtc.model
+#' @noRd
 CreateGemtcModel <- function(data, model_type, outcome_measure, regressor_type, ref_choice, seed) {
   # Create 'network' object
   network_object <- gemtc::mtc.network(data.ab = data$armData,
@@ -181,6 +200,11 @@ CreateGemtcModel <- function(data, model_type, outcome_measure, regressor_type, 
   } else {
     paste0("Outcome can only be OR, RR, or MD")
   }
+
+  # see https://github.com/gertvv/gemtc/issues/81
+  old_settings <- suppress_jags_output(meta::settings.meta())
+  meta::settings.meta(method.tau = "DL")
+  on.exit(meta::settings.meta(method.tau = old_settings$method.tau))
 
   # use same RNG inside and outside of mirai
   RNGkind("L'Ecuyer-CMRG")
@@ -232,6 +256,8 @@ CreateGemtcModel <- function(data, model_type, outcome_measure, regressor_type, 
 #'  model_type = The type of linear model, either "fixed" or "random"
 #'  covariate_min = Vector of minimum covariate values directly contributing to the regression.
 #'  covariate_max = Vector of maximum covariate values directly contributing to the regression.
+#'
+#' @noRd
 CovariateModelOutput <- function(connected_data, treatments, model, covariate_title, covariate_value, outcome, outcome_measure, covariate_type) {
 
   model_levels <- levels(model$model$data$reg.control)
@@ -344,7 +370,7 @@ CovariateModelOutput <- function(connected_data, treatments, model, covariate_ti
 #' @return The lowest and highest covariate values of relevant studies. This is structured as a list containing 2 items:
 #' - "min" a named vector of the lowest values, where the names are the treatment names.
 #' - "max" a named vector of the highest values, where the names are the treatment names.
-#' @export
+#' @noRd
 FindCovariateRanges <- function(connected_data, treatment_df, reference_treatment, covariate_title, baseline_risk = FALSE, outcome = NULL, model = NULL) {
 
   studies <- unique(connected_data$Study)
@@ -430,14 +456,15 @@ FindCovariateRanges <- function(connected_data, treatment_df, reference_treatmen
 #' @param connected_data Data in long format.
 #' @param treatment_df Data frame containing treatment IDs and names in columns named 'Number' and 'Label' respectively.
 #' @param outcome "binary" or "continuous".
-#' @param observed "Observed" or "Imputed". See @return.
-#' @param model Model created by bnma::network.run(). Only required when @param observed == "Imputed". Defaults to NULL.
+#' @param observed "Observed" or "Imputed". See return for details.
+#' @param model Model created by `bnma::network.run()`. Only required when `observed` = `Imputed`. Defaults to NULL.
 #'
 #' @return Vector of reference arm outcomes, named by study.
 #'   If a study contains the reference treatment then the value returned is the observed outcome in the reference arm.
 #'   If a study does not contain the reference treatment then the value returned is:
-#'     - NA if @param observed == "Observed";
-#'     - The median of the study-specific intercept parameter if @param observed == "Imputed".
+#'     - NA if `observed` = `Observed`;
+#'     - The median of the study-specific intercept parameter if `observed` = `Imputed`.
+#' @noRd
 GetReferenceOutcome <- function(connected_data, treatment_df, outcome, observed, model = NULL){
 
   if (!(observed %in% c("Observed", "Imputed"))) {

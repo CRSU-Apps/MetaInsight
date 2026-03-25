@@ -1,8 +1,16 @@
-#' Produce a frequentist forest plot and annotation using `meta::forest()`
+#' @title Produce a frequentist forest plot
+#' @description Produce an annotated frequentist forest plot using
+#' `meta::forest()`
 #'
 #' @param title character. Title for the plot.
 #' @inheritParams common_params
 #' @inherit return-svg return
+#' @examples
+#' configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
+#' configured_data <- readRDS(configured_data_path)
+#'
+#' freq_forest(configured_data = configured_data)
+#'
 #' @export
 freq_forest <- function(configured_data, xmin = NULL, xmax = NULL, title = "", logger = NULL) {
 
@@ -18,13 +26,13 @@ freq_forest <- function(configured_data, xmin = NULL, xmax = NULL, title = "", l
     check_param_classes(c("xmin", "xmax"), c("numeric", "numeric"), logger)
   }
 
-  n_treatments <- length(configured_data$freq$lstx)
+  n_treatments <- nrow(configured_data$treatments)
   annotation <- freq_forest_annotation(configured_data$freq, configured_data$effects, configured_data$outcome_measure)
   height <- forest_height(n_treatments, title = TRUE, annotation = TRUE)
-  width <- forest_width(max(nchar(configured_data$freq$lstx)))
+  width <- forest_width(max(nchar(configured_data$treatments$Label)))
 
-  svg <- svglite::xmlSVG({
-   meta::forest(configured_data$freq$net1,
+  xml <- svglite::xmlSVG({
+   meta::forest(configured_data$freq$netmeta,
                 reference.group = configured_data$reference_treatment,
                 pooled = configured_data$effects,
                 xlim = c(xmin, xmax))
@@ -35,12 +43,18 @@ freq_forest <- function(configured_data, xmin = NULL, xmax = NULL, title = "", l
   width = width,
   web_fonts = list(
     Arimo = "https://fonts.googleapis.com/css2?family=Arimo:wght@400;700&display=swap")
-  ) |> crop_svg()
+  )
 
   # consistent naming
   if (configured_data$effects == "fixed"){
-    svg <- gsub("Common Effects", "Fixed Effect", svg)
+    xml_doc <- xml2::as_xml_document(xml)
+    effect_node <- xml2::xml_find_all(xml_doc, ".//text()[contains(., 'Common Effects Model')]")
+    xml2::xml_text(effect_node) <- "Fixed Effect Model"
+    parent_node <- xml2::xml_parent(effect_node)
+    xml2::xml_attr(parent_node, "textLength") <- NULL
   }
+
+  svg <- xml |> crop_svg()
 
   return(svg)
 }
@@ -54,15 +68,17 @@ freq_forest <- function(configured_data, xmin = NULL, xmax = NULL, title = "", l
 #' @return List containing:
 #'  \item{xmin}{numeric. Minimum confidence interval}
 #'  \item{xmax}{numeric. Maximum confidence interval}
+#'
+#' @keywords internal
 #' @export
 freq_forest_limits <- function(freq, outcome){
 
-  # store the result of print(freq$net1) produced by netmeta
-  net1_summary <- utils::capture.output(freq$net1)
+  # store the result of print(freq$netmeta) produced by netmeta
+  net1_summary <- utils::capture.output(freq$netmeta)
 
   # extract the treatment estimate lines
   first_line <- grep("Treatment estimate", net1_summary ) + 2
-  last_line <- first_line + length(levels(freq$net1$data$treat1)) - 1
+  last_line <- first_line + length(levels(freq$netmeta$data$treat1)) - 1
   treatment_estimates <- net1_summary[first_line:last_line]
 
   # extract the square brackets and then the values inside
@@ -87,11 +103,12 @@ freq_forest_limits <- function(freq, outcome){
 #' @param effects "fixed" or "random".
 #' @param outcome_measure "MD", "SMD", "OR", "RR", or "RD".
 #' @return Text as described above.
+#' @noRd
 freq_forest_annotation <- function(freq, effects, outcome_measure) {
 
-  tau <- round(freq$net1$tau, 2)
-  k <- freq$net1$k
-  n <- freq$net1$n
+  tau <- round(freq$netmeta$tau, 2)
+  k <- freq$netmeta$k
+  n <- freq$netmeta$n
 
   if (effects == "random") {
     if (outcome_measure == "OR") {

@@ -78,7 +78,7 @@ metaregression_regression_module_ui <- function(id, parent_id){
       )
     ),
     input_task_button(ns("run"), "Generate plot", type = "default", icon = icon("arrow-turn-down")),
-    div(class = glue("{parent_id}_div download_buttons"),
+    div(class = glue("{parent_id} download_buttons"),
         downloadButton(ns("download"), "Download plot")
     )
   )
@@ -185,7 +185,7 @@ metaregression_regression_module_server <- function(id, common) {
       watch(module_id) # enable reset
       watch(glue("{module_id}_plot"))
       req(common[[module_id]])
-      on.exit(shinyjs::show(selector = glue(".{module_id}_div")))
+      on.exit(shinyjs::show(selector = glue(".{module_id}")))
 
       # METADATA ####
       common$meta[[module_id]]$used <- TRUE
@@ -227,7 +227,7 @@ metaregression_regression_module_server <- function(id, common) {
         return(glue("MetaInsight_{id}_regression_plot.{common$download_format}"))
       },
       content = function(file) {
-        write_plot(svg(), file, common$download_format)
+        write_plot(svg(), file)
       }
     )
 
@@ -278,7 +278,7 @@ metaregression_regression_module_result <- function(id) {
 
   div(align = "center",
       uiOutput(ns("plot")),
-      h5(class = glue("{module_id}_div"), style = "text-align:left",
+      h5(class = glue("{module_id}"), style = "text-align:left",
          "This graph was adapted from",
          tags$em("Graphs of study contributions and covariate distributions for network meta-regression"),
          ", Sarah Donegan, Sofia Dias, Catrin Tudur-Smith, Valeria Marinho, Nicky J Welton, ",

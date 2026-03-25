@@ -2,7 +2,7 @@
 % Please edit documentation in R/summary_char_f.R
 \name{summary_char}
 \alias{summary_char}
-\title{Produce a summary dataframe of the studies using \code{BUGSnet::net.tab()}}
+\title{Characterise the data}
 \usage{
 summary_char(configured_data, logger = NULL)
 }
@@ -14,8 +14,13 @@ Window. Insert the logger reactive list here for running in
 shiny, otherwise leave the default \code{NULL}}
 }
 \value{
-dataframe of characteristics
+List containing:
+\item{network}{network characteristics}
+\item{treatments}{treatment characteristics}
+\item{pairs}{treatment pair characteristics}
 }
 \description{
-Produce a summary dataframe of the studies using \code{BUGSnet::net.tab()}
+Produce summaries of network characteristics, treatments and
+treatment pairs such as the number of participants and and the mean outcome.
+Inspired by \code{BUGSnet::net.tab()}
 }

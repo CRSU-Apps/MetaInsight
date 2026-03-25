@@ -50,14 +50,9 @@ bayes_deviance_submodule_server <- function(id, common, trigger){
 
     output$scat <- plotly::renderPlotly({
       watch(trigger)
-      # req(common[[paste0("bayes_deviance_", id)]])
-      # this is a workaround for plotly creating problems in testing
-      if (is.null(common[[paste0("bayes_deviance_", id)]])){
-        plotly::plot_ly(cars, x = ~speed, type = "histogram")
-      } else {
-        on.exit(shinyjs::show(selector = ".bayes_deviance_div"))
-        common[[paste0("bayes_deviance_", id)]]$scat_plot
-      }
+      req(common[[paste0("bayes_deviance_", id)]])
+      on.exit(shinyjs::show(selector = ".bayes_deviance"))
+      common[[paste0("bayes_deviance_", id)]]$scat_plot
 
     })
 
@@ -65,24 +60,15 @@ bayes_deviance_submodule_server <- function(id, common, trigger){
 
     output$stem <- plotly::renderPlotly({
       watch(trigger)
-      # req(common[[paste0("bayes_deviance_", id)]])
-      if (is.null(common[[paste0("bayes_deviance_", id)]])){
-        plotly::plot_ly(cars, x = ~speed, type = "histogram")
-      } else {
-        # workaround for testing
-        on.exit(shinyjs::runjs(glue("Shiny.setInputValue('bayes_deviance-complete', 'complete');")))
-        common[[paste0("bayes_deviance_", id)]]$stem_plot
-      }
+      req(common[[paste0("bayes_deviance_", id)]])
+      on.exit(shinyjs::runjs(glue("Shiny.setInputValue('bayes_deviance-complete', 'complete');")))
+      common[[paste0("bayes_deviance_", id)]]$stem_plot
     })
 
     output$lev <- plotly::renderPlotly({
       watch(trigger)
-      # req(common[[paste0("bayes_deviance_", id)]])
-      if (is.null(common[[paste0("bayes_deviance_", id)]])){
-        plotly::plot_ly(cars, x = ~speed, type = "histogram")
-      } else {
-        common[[paste0("bayes_deviance_", id)]]$lev_plot
-      }
+      req(common[[paste0("bayes_deviance_", id)]])
+      common[[paste0("bayes_deviance_", id)]]$lev_plot
     })
 
   })
@@ -99,7 +85,7 @@ bayes_deviance_module_server <- function(id, common, parent_session) {
     observeEvent(input$run, {
       # add check for a running model
 
-      if (is.null(common$bayes_all)){
+      if (is.null(common$bayes_model_all)){
         common$logger |> writeLog(type = "error", go_to = "bayes_model", "Please fit the Bayesian models first")
         return()
       } else {
@@ -119,7 +105,7 @@ bayes_deviance_module_server <- function(id, common, parent_session) {
     observeEvent(list(watch("bayes_deviance"), watch("bayes_model_all")), {
       req(watch("bayes_deviance") > 0)
       common$logger |> writeLog(type = "starting", "Generating Bayesian deviance plots")
-      common$tasks$bayes_deviance_all$invoke(common$bayes_all, async = TRUE)
+      common$tasks$bayes_deviance_all$invoke(common$bayes_model_all, async = TRUE)
       result_all$resume()
     })
 
@@ -131,7 +117,7 @@ bayes_deviance_module_server <- function(id, common, parent_session) {
         common$logger |> writeLog(type = "starting", "Updating Bayesian deviance plots")
       }
 
-      common$tasks$bayes_deviance_sub$invoke(common$bayes_sub, async = TRUE)
+      common$tasks$bayes_deviance_sub$invoke(common$bayes_model_sub, async = TRUE)
       result_sub$resume()
     })
 
@@ -162,7 +148,7 @@ bayes_deviance_module_server <- function(id, common, parent_session) {
 bayes_deviance_module_result <- function(id) {
   ns <- NS(id)
   tagList(
-    div(class = "bayes_deviance_div",
+    div(class = "bayes_deviance",
       # this is a bit unusual as we are using the non-namespaced ids to allow the plot | plot, annotation layout
       layout_columns(
         div(

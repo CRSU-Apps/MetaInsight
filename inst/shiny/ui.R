@@ -7,7 +7,11 @@ tagList(
                      bootswatch = "spacelab",
                      primary = "#e4042c",
                      secondary = "#005c8a",
-                     info = "#005c8a"),
+                     info = "#005c8a",
+                     # modify nav_panel colours
+                     "nav-tabs-link-active-bg" = "#005c8a",
+                     "nav-tabs-link-active-color" = "white",
+                     "nav-link-color" = "white"),
     id = "tabs",
     header = tagList(
       rintrojs::introjsUI(),
@@ -92,22 +96,26 @@ tagList(
           id = 'main',
           nav_panel(
             'Results',
-            lapply(COMPONENTS, function(component) {
-              conditionalPanel(
-                glue("input.tabs == '{component}'"),
-                insert_modules_results(component)
-              )
-            }),
+            div(style = "margin: 20px",
+              lapply(COMPONENTS, function(component) {
+                conditionalPanel(
+                  glue("input.tabs == '{component}'"),
+                  insert_modules_results(component)
+                )
+              })
+            ),
             # invisible but contains download button
             core_save_module_ui("core_save")
           ),
           nav_panel(
             'Guidance', icon = icon("circle-info", class = "mod_icon"),
-            flex_wrap(uiOutput('gtext_module'))
+            flex_wrap(
+              div(style = "margin: 20px",
+                uiOutput('gtext_module'))
+            )
           )
         )
       ),
-      ## save module data END ##
       conditionalPanel(
         "input.tabs == 'rep' & input.repSel == null",
         flex_wrap(includeMarkdown("Rmd/gtext_rep.Rmd"))

@@ -2,19 +2,20 @@
 test_that("Check covariate_ranking function works as expected", {
   result <- covariate_ranking(fitted_covariate_model, configured_data_con)
 
-  expect_is(result, "list")
-  expect_true(all(c("SUCRA", "Colour", "Cumulative", "Probabilities", "BUGSnetData") %in% names(result)))
+  expect_is(result, "ranking_data")
+  expect_true(all(c("SUCRA", "Colour", "Cumulative", "Probabilities", "Network") %in% names(result)))
   expect_is(result$SUCRA, "data.frame")
   expect_is(result$Colour, "data.frame")
   expect_is(result$Cumulative, "data.frame")
   expect_is(result$Probabilities, "data.frame")
-  expect_is(result$BUGSnetData, "BUGSnetData")
+  expect_is(result$Network, "data.frame")
+  expect_equal(result$SUCRA$Treatment[which.max(result$SUCRA$SUCRA)], "the_Great")
 
   table_result <- ranking_table(result)
   expect_is(table_result, "data.frame")
-  expect_equal(table_result$Treatment[1], "Gabapentinoids")
-  expect_equal(nrow(table_result), 4)
-  expect_equal(ncol(table_result), 6)
+  expect_equal(table_result$Treatment[1], "the_Great")
+  expect_equal(nrow(table_result), n_trt_all)
+  expect_equal(ncol(table_result), n_trt_all + 2)
 
   litmus_result <- LitmusRankOGram(result)
   expect_match(litmus_result, "<svg")
@@ -48,20 +49,20 @@ test_that("{shinytest2} recording: e2e_covariate_ranking", {
   app$wait_for_value(output = "covariate_ranking-all-forest")
 
   common <- app$get_value(export = "common")
-  expect_is(common$covariate_ranking, "list")
-  expect_true(all(c("SUCRA", "Colour", "Cumulative", "Probabilities", "BUGSnetData") %in% names(common$covariate_ranking)))
+  expect_is(common$covariate_ranking, "ranking_data")
+  expect_true(all(c("SUCRA", "Colour", "Cumulative", "Probabilities", "Network") %in% names(common$covariate_ranking)))
 
-  forest_all <- app$get_value(output = "covariate_ranking-all-forest")
+  forest_all <- app$wait_for_value(output = "covariate_ranking-all-forest")
   expect_match(forest_all$html, "<svg")
 
-  ranking_all <- app$get_value(output = "covariate_ranking-all-ranking")
+  ranking_all <- app$wait_for_value(output = "covariate_ranking-all-ranking")
   expect_match(ranking_all$html, "<svg")
 
   app$click("covariate_ranking-all-dropdown")
-  ranking_table_all <- app$get_value(output = "covariate_ranking-all-ranking_table")
+  ranking_table_all <- app$wait_for_value(output = "covariate_ranking-all-ranking_table")
   expect_match(ranking_table_all, "<table")
 
-  network_all <- app$get_value(output = "covariate_ranking-all-network")
+  network_all <- app$wait_for_value(output = "covariate_ranking-all-network")
   expect_match(network_all$html, "<svg")
 
   test_bayes_plot_downloads(app, "covariate_ranking", "_forest", FALSE)
@@ -71,8 +72,8 @@ test_that("{shinytest2} recording: e2e_covariate_ranking", {
   ranking_table_dl_all <- app$get_download("covariate_ranking-all-download_ranking_table")
 
   df_all <- read.csv(ranking_table_dl_all)
-  expect_equal(nrow(df_all), 6)
-  expect_equal(ncol(df_all), 8)
+  expect_equal(nrow(df_all), n_trt_all)
+  expect_equal(ncol(df_all), n_trt_all + 2)
 
   app$stop()
 

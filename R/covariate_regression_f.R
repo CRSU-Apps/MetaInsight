@@ -1,4 +1,5 @@
-#' Generate data from a covariate model required to produce a
+#' @title Covariate regression data
+#' @description Generate data from a covariate model required to produce a
 #' metaregression plot
 #'
 #' @param model list. Output created by `covariate_model()`
@@ -6,6 +7,17 @@
 #' @return List containing:
 #'  \item{directness}{list. Output from `CalculateDirectness()`}
 #'  \item{credible_regions}{list. Output from `CalculateCredibleRegions()`}
+#'
+#' @examples
+#' configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
+#' configured_data <- readRDS(configured_data_path)
+#'
+#' fitted_covariate_model <- covariate_model(configured_data = configured_data,
+#'                                           covariate_value = 98,
+#'                                           regressor_type = "shared")
+#'
+#' regression_data <- covariate_regression(model = fitted_covariate_model,
+#'                                         configured_data = configured_data)
 #' @export
 covariate_regression <- function(model,
                                  configured_data,
@@ -57,6 +69,7 @@ covariate_regression <- function(model,
 #'   - Matrix of relative effects of treatments compared to the reference. Rows are studies, columns are treatments
 #' - "covariate_value"
 #'   - Vector of covariate values from the studies.
+#' @noRd
 CalculateDirectness <- function(
     data,
     covariate_title,
@@ -180,6 +193,7 @@ CalculateDirectness <- function(
 #' - upper: the 97.5% quantile.
 #' Each data frame in "regions" contains 11 rows creating a 10-polygon region.
 #' Each data frame in "intervals" contains a single row at the covariate value of that single contribution.
+#' @noRd
 CalculateCredibleRegions <- function(model_output) {
   mtc_results <- model_output$mtcResults
   reference_treatment <- model_output$reference_treatment
@@ -242,8 +256,6 @@ CalculateCredibleRegions <- function(model_output) {
     }
   }
 
-
-
   return(
     list(
       regions = credible_regions,
@@ -260,6 +272,7 @@ CalculateCredibleRegions <- function(model_output) {
 #' @param parameter_name Name of the parameter for which to get the credible interval.
 #'
 #' @return Named vector of "2.5%" and "97.5" quantiles.
+#' @noRd
 .FindCredibleInterval <- function(mtc_results, reference_treatment, cov_value, parameter_name) {
   rel_eff <- gemtc::relative.effect(mtc_results, reference_treatment, covariate = cov_value)
   rel_eff_summary <- summary(rel_eff)

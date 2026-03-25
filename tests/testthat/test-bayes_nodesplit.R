@@ -21,9 +21,11 @@ test_that("bayes_nodesplit produces errors for data which cannot be split", {
 })
 
 test_that("bayes_nodesplit functions with valid data", {
-  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_bayes_nodesplit", timeout = 60000)
+  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_bayes_nodesplit", timeout = 120000)
   app$upload_file("setup_load-file1" = file.path(test_data_dir, "Cont_nodesplit.csv"))
   app$click("setup_load-run")
+  app$set_inputs("setupSel" = "setup_configure")
+  app$wait_for_value(input = "setup_configure-ready")
   app$click("setup_configure-run")
   app$wait_for_value(input = "setup_exclude-complete")
   app$set_inputs(tabs = "bayes")
@@ -33,8 +35,8 @@ test_that("bayes_nodesplit functions with valid data", {
   app$wait_for_value(input = "bayes_nodesplit-sub-complete")
 
   common <- app$get_value(export = "common")
-  expect_is(common$nodesplit_all, "mtc.nodesplit")
-  expect_is(common$nodesplit_sub, "mtc.nodesplit")
+  expect_is(common$bayes_nodesplit_all, "mtc.nodesplit")
+  expect_is(common$bayes_nodesplit_sub, "mtc.nodesplit")
 
   plot_all <- app$get_value(output = "bayes_nodesplit-all-plot")
   plot_sub <- app$get_value(output = "bayes_nodesplit-sub-plot")

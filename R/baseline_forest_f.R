@@ -1,10 +1,21 @@
-#' Produce a forest plot for a baseline risk model using `gemtc::blobbogram()`
+#' @title Produce a forest plot for baseline risk models
+#' @description Produce a forest plot for a baseline risk model using `gemtc::blobbogram()`
 #'
 #' @param model Output produced by `baseline_model()`
 #' @param title character. Title for the plot. Defaults to `Baseline risk regression analysis`
 #' @param ranking logical. Whether the function is being used in `baseline_ranking`
 #' @inheritParams common_params
 #' @inherit return-svg return
+#' @examples
+#' \donttest{
+#' configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
+#' configured_data <- readRDS(configured_data_path)
+#'
+#' fitted_baseline_model <- baseline_model(configured_data = configured_data,
+#'                                         regressor_type = "shared")
+#'
+#' baseline_forest(model = fitted_baseline_model)
+#' }
 #' @export
 baseline_forest <- function(model, xmin = NULL, xmax = NULL, title = "Baseline risk regression analysis", ranking = FALSE, logger = NULL){
 
@@ -21,7 +32,7 @@ baseline_forest <- function(model, xmin = NULL, xmax = NULL, title = "Baseline r
   width <- forest_width(14)
 
   median_ci_table <- bnma::relative.effects.table(model$mtcResults, summary_stat = "ci")
-  forest_data <- format_baseline_forest(median_ci_table, model$reference_treatment)
+  forest_data <- baseline_forest_format(median_ci_table, model$reference_treatment)
 
   # set default x-axis limits if not supplied and check if they are provided
   if (any(is.null(xmin), is.null(xmax))){
@@ -76,8 +87,9 @@ baseline_forest <- function(model, xmin = NULL, xmax = NULL, title = "Baseline r
 #'
 #' @param median_ci_table matrix. Created by `bnma::relative.effects.table()`
 #' @inheritParams common_params
+#' @keywords internal
 #' @export
-format_baseline_forest <- function(median_ci_table, reference_treatment) {
+baseline_forest_format <- function(median_ci_table, reference_treatment) {
   result <- data.frame()
 
   for (i in 1:nrow(median_ci_table)) {
@@ -108,6 +120,7 @@ format_baseline_forest <- function(median_ci_table, reference_treatment) {
 #'  - 'sumresults' = List:
 #'    - 'summaries' = equivalent of summary(gemtc model)$summaries.
 #'    - 'a' = "fixed effect" or "random effect".
+#' @noRd
 FormatForCreateTauSentence <- function(model){
   #Rename "sd" (bnma name) to "sd.d" (gemtc name)
   br_summary <- model$sumresults
@@ -128,7 +141,8 @@ FormatForCreateTauSentence <- function(model){
 #' Extract the default x-axis limits using the same method internal to
 #' `gemtc::forest()`
 #'
-#' @param forest_data data.frame. Created by `format_baseline_forest()`
+#' @param forest_data data.frame. Created by `baseline_forest_format()`
+#' @keywords internal
 #' @export
 baseline_forest_limits <- function(forest_data){
 

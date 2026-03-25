@@ -1,17 +1,17 @@
 bayes_nodesplit_submodule_ui <- function(id, download_label) {
   ns <- NS(id)
-  div(class = "bayes_nodesplit_div",
-      downloadButton(ns("download"), download_label)
-  )
+  downloadButton(ns("download"), download_label)
 }
 
 bayes_nodesplit_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
-    input_task_button(ns("run"), "Run nodesplitting models", icon = icon("arrow-turn-down"), type = "default"),
-    layout_columns(
-      bayes_nodesplit_submodule_ui(ns("all"), "All studies"),
-      bayes_nodesplit_submodule_ui(ns("sub"), "With selected studies excluded")
+    input_task_button(ns("run"), "Fit nodesplitting models", icon = icon("arrow-turn-down"), type = "default"),
+    div(class = "bayes_nodesplit download_buttons",
+      layout_columns(
+        bayes_nodesplit_submodule_ui(ns("all"), "All studies"),
+        bayes_nodesplit_submodule_ui(ns("sub"), "With selected studies excluded")
+      )
     )
   )
 }
@@ -22,7 +22,7 @@ bayes_nodesplit_submodule_server <- function(id, common, nodesplit, run){
     svg <- reactive({
       watch(run)
       req(common[[nodesplit]])
-      shinyjs::show(selector = ".bayes_nodesplit_div")
+      shinyjs::show(selector = ".bayes_nodesplit")
       on.exit(shinyjs::runjs(paste0("Shiny.setInputValue('bayes_nodesplit-",id ,"-complete', 'complete');")))
       bayes_nodesplit_plot(common[[nodesplit]], id == "all")
     })
@@ -39,9 +39,7 @@ bayes_nodesplit_submodule_server <- function(id, common, nodesplit, run){
           glue("MetaInsight_nodesplit_{id}.{common$download_format}")
       },
       content = function(file) {
-        write_plot(svg(),
-                   file,
-                   common$download_format)
+        write_plot(svg(), file)
       }
     )
 
@@ -60,6 +58,7 @@ bayes_nodesplit_module_server <- function(id, common, parent_session) {
       if (is.null(common$configured_data)){
         common$logger |> writeLog(type = "error", go_to = "setup_configure",
                                   "Please configure the analysis in the Setup component first.")
+        return()
       }
       trigger("bayes_nodesplit")
     })
@@ -74,8 +73,15 @@ bayes_nodesplit_module_server <- function(id, common, parent_session) {
       function(...) sub_nodesplit <<- mirai::mirai(run(...), run = bayes_nodesplit, .args = environment())
     ) |> bind_task_button("run")
 
-    observeEvent(watch("bayes_nodesplit"), {
+    observeEvent(list(watch("bayes_nodesplit"), watch("setup_configure"), watch("effects")), {
       req(watch("bayes_nodesplit") > 0)
+
+      if (is.null(common$bayes_nodesplit_all)){
+        common$logger |> writeLog(type = "starting", "Attempting to fit nodesplitting models")
+      } else {
+        common$logger |> writeLog(type = "starting", "Updating nodesplitting model for main analysis")
+      }
+
       common$tasks$bayes_nodesplit_all$invoke(common$configured_data,
                                               async = TRUE)
 
@@ -90,6 +96,11 @@ bayes_nodesplit_module_server <- function(id, common, parent_session) {
         mirai::stop_mirai(sub_nodesplit)
       }
 
+      # prevent showing on first run
+      if (!is.null(common$bayes_nodesplit_sub)){
+        common$logger |> writeLog(type = "starting", "Attempting to update nodesplitting model for sensitivity analysis")
+      }
+
       common$tasks$bayes_nodesplit_sub$invoke(common$subsetted_data,
                                               async = TRUE)
       result_sub$resume()
@@ -99,12 +110,13 @@ bayes_nodesplit_module_server <- function(id, common, parent_session) {
       result <- common$tasks$bayes_nodesplit_all$result()
       result_all$suspend()
       if (inherits(result, "mtc.nodesplit")){
-        common$nodesplit_all <- result
+        common$logger |> writeLog(type = "complete", "Nodesplitting models have been fitted")
+        common$bayes_nodesplit_all <- result
         # METADATA ####
         common$meta$bayes_nodesplit$used <- TRUE
         trigger("bayes_nodesplit_all")
       } else {
-        common$logger |> writeLog(type = "error", result)
+        common$logger |> writeLog(type = "error", paste0(result, " in the main analysis."))
         shinyjs::runjs("Shiny.setInputValue('bayes_nodesplit-all-complete', 'complete');")
       }
 
@@ -116,17 +128,23 @@ bayes_nodesplit_module_server <- function(id, common, parent_session) {
         result <- common$tasks$bayes_nodesplit_sub$result()
         result_sub$suspend()
         if (inherits(result, "mtc.nodesplit")){
-          common$nodesplit_sub <- result
-          trigger("bayes_nodesplit_sub")
+          # prevent showing on first run
+          if (!is.null(common$bayes_nodesplit_sub)){
+            shinyjs::runjs("Shiny.setInputValue('bayes_nodesplit-sub-updated', 'updated');")
+            common$logger |> writeLog(type = "complete", "The nodesplitting model for the sensitivity analysis has been updated")
+          }
+          common$bayes_nodesplit_sub <- result
         } else {
-          common$logger |> writeLog(type = "error", result)
+          common$bayes_nodesplit_sub <- NULL
+          common$logger |> writeLog(type = "error", paste0(result, " in the sensitivity analysis."))
           shinyjs::runjs("Shiny.setInputValue('bayes_nodesplit-sub-complete', 'complete');")
         }
+        trigger("bayes_nodesplit_sub")
       }
     })
 
-    bayes_nodesplit_submodule_server("all", common, "nodesplit_all", "bayes_nodesplit_all")
-    bayes_nodesplit_submodule_server("sub", common, "nodesplit_sub", "bayes_nodesplit_sub")
+    bayes_nodesplit_submodule_server("all", common, "bayes_nodesplit_all", "bayes_nodesplit_all")
+    bayes_nodesplit_submodule_server("sub", common, "bayes_nodesplit_sub", "bayes_nodesplit_sub")
 
   })
 }
@@ -149,6 +167,7 @@ bayes_nodesplit_module_result <- function(id) {
 
 
 bayes_nodesplit_module_rmd <- function(common) {
-  list(bayes_nodesplit_knit = !is.null(common$nodesplit_all))
+  list(bayes_nodesplit_knit_all = !is.null(common$bayes_nodesplit_all),
+       bayes_nodesplit_knit_sub = !is.null(common$bayes_nodesplit_sub))
 }
 

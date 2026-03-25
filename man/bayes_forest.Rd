@@ -3,7 +3,7 @@
 \name{bayes_forest}
 \alias{bayes_forest}
 \alias{covariate_forest}
-\title{Produce a Bayesian forest plot with \code{gemtc::forest()}}
+\title{Bayesian forest plot}
 \usage{
 bayes_forest(
   model,
@@ -34,9 +34,18 @@ shiny, otherwise leave the default \code{NULL}}
 \item{...}{Parameters passed to \code{bayes_forest()}}
 }
 \value{
-html. Contains the svg string to generate the plot. This can be saved
+html. Contains the svg string to generate the plot. This will display
+the plot when at the end of a quarto or rmarkdown chunk. To view in the viewer
+panel of Rstudio, use \code{htmltools::browsable()}. The output can be saved
 using \code{write_plot()}.
 }
 \description{
 Produce a Bayesian forest plot with \code{gemtc::forest()}
+}
+\examples{
+configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
+configured_data <- readRDS(configured_data_path)
+
+fitted_bayes_model <- bayes_model(configured_data = configured_data)
+bayes_forest(model = fitted_bayes_model)
 }

@@ -2,9 +2,7 @@
 % Please edit documentation in R/bayes_nodesplit_f.R
 \name{bayes_nodesplit}
 \alias{bayes_nodesplit}
-\title{Fit a nodesplitting model with \code{gemtc::mtc.nodesplit()}. This is not possible
-for all networks and the function will return an error if the nodes cannot
-be split.}
+\title{Fit a Bayesian nodespliting model}
 \usage{
 bayes_nodesplit(configured_data, async = FALSE)
 }
@@ -17,7 +15,22 @@ bayes_nodesplit(configured_data, async = FALSE)
 \code{mtc.nodesplit} object containing an \code{mtc.result} object for each node
 }
 \description{
-Fit a nodesplitting model with \code{gemtc::mtc.nodesplit()}. This is not possible
-for all networks and the function will return an error if the nodes cannot
-be split.
+Fit a Bayesian nodesplitting model with \code{gemtc::mtc.nodesplit()}.
+This is not possible for all networks and the function will return an error
+if the nodes cannot be split.
+}
+\examples{
+\donttest{
+nodesplit_path <- system.file("extdata", "continuous_nodesplit.csv", package = "metainsight")
+loaded_data <- setup_load(data_path = nodesplit_path,
+                          outcome = "continuous")
+configured_data <- setup_configure(loaded_data = loaded_data,
+                                   reference_treatment = "Placebo",
+                                   effects = "random",
+                                   outcome_measure = "MD",
+                                   ranking_option = "good",
+                                   seed = 123)
+
+nodesplit_model <- bayes_nodesplit(configured_data)
+}
 }

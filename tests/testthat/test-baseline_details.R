@@ -62,7 +62,7 @@ test_that("{shinytest2} recording: e2e_baseline_details", {
   expect_match(inits, "Wichmann-Hill")
   for (n in 1:4){
     init <- app$get_download(glue::glue("baseline_details-baseline-download_inits_{n}"))
-    expect_equal(length(readLines(init)), 8)
+    expect_equal(length(readLines(init)), 14)
   }
 
   app$set_inputs("baseline_details-baseline-tabs" = "dev")

@@ -1,0 +1,77 @@
+metaregression_compare_module_ui <- function(id, parent_id){
+  ns <- NS(id)
+  div(class = glue("{parent_id} download_buttons"),
+    downloadButton(ns("download"), "Download table")
+  )
+}
+
+covariate_compare_module_ui <- function(id) {
+  ns <- NS(id)
+  tagList(
+    actionButton(ns("run"), "Generate table", icon = icon("arrow-turn-down")),
+    metaregression_compare_module_ui(ns("covariate"), id)
+  )
+}
+
+metaregression_compare_module_server <- function(id, common, run) {
+  moduleServer(id, function(input, output, session) {
+
+    module_id <- glue("{id}_compare")
+    model <- glue("{id}_model")
+    model_fit <- glue("{id}_model_fit")
+    class <- glue(".{module_id}")
+
+    hide_and_show(module_id)
+
+    observeEvent(run(), {
+      if (is.null(common[[model]])){
+        common$logger |> writeLog(type = "error", go_to = model, glue("Please fit the {id} model first"))
+        return()
+      } else {
+        common$meta[[module_id]]$used <- TRUE
+        trigger(module_id)
+      }
+    })
+
+    output$table <- renderTable({
+      watch(model_fit)
+      req(watch(module_id) > 0)
+      do.call(module_id, list(common[[model]]))
+    }, rownames = TRUE)
+
+    outputOptions(output, "table", suspendWhenHidden = FALSE)
+
+    output$download <- downloadHandler(
+      filename = function(){
+        glue("MetaInsight_{id}_compare.csv")
+      },
+      content = function(file) {
+        write.csv(do.call(module_id, list(common[[model]])), file)
+      }
+    )
+  })
+}
+
+covariate_compare_module_server <- function(id, common, parent_session) {
+  moduleServer(id, function(input, output, session) {
+    metaregression_compare_module_server("covariate", common, reactive(input$run))
+  })
+}
+
+metaregression_compare_module_result <- function(id, class) {
+  ns <- NS(id)
+  div(align = "center", class = class,
+      p(tags$strong("Treatment effects for all studies: comparison of all treatment pairs")),
+      tableOutput(ns("table"))
+  )
+}
+
+covariate_compare_module_result <- function(id) {
+  ns <- NS(id)
+  metaregression_compare_module_result(ns("covariate"), "covariate_compare")
+}
+
+covariate_compare_module_rmd <- function(common) {
+  list(covariate_compare_knit = !is.null(common$meta$covariate_compare$used))
+}
+

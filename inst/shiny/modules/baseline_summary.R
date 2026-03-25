@@ -2,7 +2,7 @@ baseline_summary_module_ui <- function(id) {
   ns <- NS(id)
   tagList(
     actionButton(ns("run"), "Generate plot", icon = icon("arrow-turn-down")),
-    div(class = "baseline_summary_div download_buttons",
+    div(class = "baseline_summary download_buttons",
       downloadButton(ns("download"), "Download plot")
     )
   )
@@ -42,7 +42,7 @@ baseline_summary_module_server <- function(id, common, parent_session) {
     filename = function(){
       paste0("MetaInsight_baseline_summary.", common$download_format)},
     content = function(file){
-      write_plot(common$baseline_summary_plot, file, common$download_format)
+      write_plot(common$baseline_summary_plot, file)
     }
   )
 

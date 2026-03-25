@@ -11,7 +11,7 @@ covariate_model_module_ui <- function(id) {
                                     add_tooltip("Unrelated", "Coefficient is different for each treatment comparison")),
                  choiceValues = list("shared", "exchangeable", "unrelated")),
     input_task_button(ns("run"), "Fit model", type = "default", icon = icon("arrow-turn-down")),
-    div(class = "covariate_model_div download_buttons",
+    div(class = "covariate_model download_buttons",
         actionButton(ns("run_all"), "Run all modules", icon = icon("forward-fast"))
     )
   )
@@ -67,8 +67,8 @@ covariate_model_module_server <- function(id, common, parent_session) {
       }
 
       if (length(common$configured_data$covariate) == 0){
-        common$logger |> writeLog(type = "error", paste("No covariate data exists. To add covariate data, add a column titled
-                                                         covar.* where the * is replaced by the covariate name. e.g. covar.age"))
+        common$logger |> writeLog(type = "error", "No covariate data exists. To add covariate data, add a column titled
+                                                         covar.* where the * is replaced by the covariate name. e.g. covar.age")
         return()
       }
 
@@ -146,15 +146,13 @@ covariate_model_module_server <- function(id, common, parent_session) {
       }
     })
 
-  output$table <- renderTable({
+  output$table <- renderUI({
     watch("covariate_model") # required for reset
     watch("covariate_model_table")
     req(common$covariate_model)
-    shinyjs::show(selector = ".covariate_model_div")
-    common$covariate_model$dic
-  }, digits = 3, rownames = TRUE, colnames = FALSE)
-
-  outputOptions(output, "table", suspendWhenHidden = FALSE)
+    shinyjs::show(selector = ".covariate_model")
+    dic_table(common$covariate_model$dic)
+  })
 
   observeEvent(input$run_all, {
     run_all(COMPONENTS, COMPONENT_MODULES, "covariate", common$logger)
@@ -163,7 +161,7 @@ covariate_model_module_server <- function(id, common, parent_session) {
   return(list(
     save = function() {
       # only save covariate info when it exists
-      if (is.null(common$covariate_column)){
+      if (length(common$configured_data$covariate) == 0){
         list()
       } else {
         covariate_min <- min(common$common[[input$dataset]]$connected_data[[common[[input$dataset]]$covariate$column]])
@@ -209,9 +207,8 @@ covariate_model_module_server <- function(id, common, parent_session) {
 
 covariate_model_module_result <- function(id) {
   ns <- NS(id)
-  div(align = "center", class = "covariate_model_div",
-      p("Model fit for all studies:"),
-      tableOutput(ns("table"))
+  div(align = "center",
+      uiOutput(ns("table"))
   )
 }
 

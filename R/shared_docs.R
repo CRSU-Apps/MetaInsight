@@ -24,6 +24,8 @@ NULL
 #' @title Return svg
 #' @name return-svg
 #' @keywords internal
-#' @return html. Contains the svg string to generate the plot. This can be saved
+#' @return html. Contains the svg string to generate the plot. This will display
+#' the plot when at the end of a quarto or rmarkdown chunk. To view in the viewer
+#' panel of Rstudio, use `htmltools::browsable()`. The output can be saved
 #' using `write_plot()`.
 NULL

@@ -5,10 +5,5 @@
 ```{r, echo = {{baseline_model_knit}}, include = {{baseline_model_knit}}}
 baseline_model <- baseline_model(get({{baseline_model_dataset}}), {{baseline_model_regressor}})
 
-baseline_model$dic |> 
-  gt::gt(rownames_to_stub = TRUE) |>
-  gt::tab_header(title = "Model fit for all studies") |>
-  gt::tab_options(column_labels.hidden = TRUE) |>
-  gt::fmt_number(rows = c(1:3), decimals = 3) |>
-  gt::fmt_number(rows = 4, decimals = 0)
+dic_table(baseline_model$dic)
 ```

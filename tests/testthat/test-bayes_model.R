@@ -41,12 +41,9 @@ test_that("bayes_model produces errors for incorrect data types", {
 
 })
 
-test_that("bayes_model works e2e - that models are initally identical, update after exclusions and are then different", {
+test_that("bayes_model works e2e - that models are initally different, update after exclusions and are then identical", {
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_bayes_model", timeout = 30000)
-  app$upload_file("setup_load-file1" = file.path(test_data_dir, "Cont_long.csv"))
-  app$click("setup_load-run")
-  app$click("setup_configure-run")
-  app$wait_for_value(input = "setup_exclude-complete")
+  reload_app(app, config_path)
   app$set_inputs(tabs = "bayes")
   app$set_inputs(bayesSel = "bayes_model")
   app$click("bayes_model-run")
@@ -57,23 +54,23 @@ test_that("bayes_model works e2e - that models are initally identical, update af
   table_all <- app$wait_for_value(output = "bayes_model-all-table")
   table_sub <- app$wait_for_value(output = "bayes_model-sub-table")
 
-  expect_match(table_all, "<table")
-  expect_match(table_sub, "<table")
+  expect_match(table_all$html, "<table")
+  expect_match(table_sub$html, "<table")
 
   common <- app$get_value(export = "common")
-  expect_is(common$bayes_all, "bayes_model")
-  expect_is(common$bayes_sub, "bayes_model")
+  expect_is(common$bayes_model_all, "bayes_model")
+  expect_is(common$bayes_model_sub, "bayes_model")
 
-  expect_true(identical(remove_igraph(common$bayes_all), remove_igraph(common$bayes_sub)))
+  expect_false(identical(remove_igraph(common$bayes_model_all), remove_igraph(common$bayes_model_sub)))
 
-  app$set_inputs("setup_exclude-exclusions" = "Leo")
+  app$set_inputs("setup_exclude-exclusions" = NULL)
   app$wait_for_value(input = "bayes_model-sub-updated")
 
   common <- app$get_value(export = "common")
-  expect_is(common$bayes_all, "bayes_model")
-  expect_is(common$bayes_sub, "bayes_model")
+  expect_is(common$bayes_model_all, "bayes_model")
+  expect_is(common$bayes_model_sub, "bayes_model")
 
-  expect_false(identical(remove_igraph(common$bayes_all), remove_igraph(common$bayes_sub)))
+  expect_true(identical(remove_igraph(common$bayes_model_all), remove_igraph(common$bayes_model_sub)))
 
   app$stop()
 })

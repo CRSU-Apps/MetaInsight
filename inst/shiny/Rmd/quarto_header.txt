@@ -1,4 +1,6 @@
 ---
+title: |
+ ![](https://raw.githubusercontent.com/CRSU-Apps/MetaInsight/main/www/images/MetaInsightLogo.png){width=100px} MetaInsight placeholder
 format:
   html:
     embed-resources: true

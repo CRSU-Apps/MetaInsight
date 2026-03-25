@@ -7,7 +7,7 @@ bayes_compare_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
     actionButton(ns("run"), "Generate tables", icon = icon("arrow-turn-down")),
-    div(class = "bayes_compare_div download_buttons",
+    div(class = "bayes_compare download_buttons",
       layout_columns(
         bayes_compare_submodule_ui(ns("all"), "All studies"),
         bayes_compare_submodule_ui(ns("sub"), "With selected studies excluded")
@@ -20,8 +20,8 @@ bayes_compare_submodule_server <- function(id, common, run){
   moduleServer(id, function(input, output, session) {
 
     output$table <- renderTable({
-      shinyjs::show(selector = ".bayes_compare_div")
-      bayes_compare(common[[paste0("bayes_", id)]])
+      shinyjs::show(selector = ".bayes_compare")
+      bayes_compare(common[[paste0("bayes_model_", id)]])
     }, rownames = TRUE) |> bindEvent(run())
 
     outputOptions(output, "table", suspendWhenHidden = FALSE)
@@ -31,7 +31,7 @@ bayes_compare_submodule_server <- function(id, common, run){
          glue("MetaInsight_bayesian_comparison_{id}.csv")
       },
       content = function(file) {
-        write.csv(bayes_compare(common[[paste0("bayes_", id)]]), file)
+        write.csv(bayes_compare(common[[paste0("bayes_model_", id)]]), file)
       }
     )
 
@@ -45,7 +45,7 @@ bayes_compare_module_server <- function(id, common, parent_session) {
 
     # check that a fitted model exists and error if not
     observeEvent(input$run, {
-      if (is.null(common$bayes_all)){
+      if (is.null(common$bayes_model_all)){
         common$logger |> writeLog(type = "error", go_to = "bayes_model", "Please fit the Bayesian models first")
         return()
       } else {
@@ -57,7 +57,7 @@ bayes_compare_module_server <- function(id, common, parent_session) {
     # trigger for the main analysis - when run is clicked, but only if there is a valid model
     all_trigger <- reactive({
       if (watch("bayes_compare") > 0){
-        shinyjs::show(selector = ".bayes_compare_div")
+        shinyjs::show(selector = ".bayes_compare")
         return(list(watch("bayes_compare"), watch("bayes_model_all")))
       }
     })
@@ -87,7 +87,7 @@ bayes_compare_submodule_result <- function(id, text) {
 bayes_compare_module_result <- function(id) {
   ns <- NS(id)
   tagList(
-    div(class = "bayes_compare_div",
+    div(class = "bayes_compare",
       h4(
         "In contrast to the 'comparison of all treatment pairs' tab in the frequentist NMA results,
         this table only contains the estimates from the network meta analysis,
