@@ -14,3 +14,4 @@ bayes_forest_limits(model)
 Extract the default x-axis limits using the same method internal to
 \code{gemtc::forest()}
 }
+\keyword{internal}

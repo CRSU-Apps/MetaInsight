@@ -1,0 +1,15 @@
+```{asis, echo = {{freq_inconsistency_knit}}, eval = {{freq_inconsistency_knit}}, include = {{freq_inconsistency_knit}}}
+### Produce tables of inconsistency
+```
+
+```{r, echo = {{freq_inconsistency_knit}}, include = {{freq_inconsistency_knit}}}
+frequentist_inconsistency_all <- freq_inconsistency(configured_data)
+
+knitr::kable(frequentist_inconsistency_all, row.names = TRUE, caption = "Assessment of inconsistency for all studies")
+```
+
+```{r, echo = {{freq_inconsistency_knit}}, include = {{freq_inconsistency_knit}}}
+frequentist_inconsistency_sub <- freq_inconsistency(subsetted_data)
+
+knitr::kable(frequentist_inconsistency_sub, row.names = TRUE, caption = "Assessment of inconsistency with selected studies excluded")
+```

@@ -2,14 +2,14 @@
 % Please edit documentation in R/setup_upgrade_f.R
 \name{setup_upgrade}
 \alias{setup_upgrade}
-\title{Assess the data for validity. this checks the column names for required columns, and balanced wide format numbered columns.}
+\title{Upgrade old data formats}
 \usage{
 setup_upgrade(data_path, treatments, logger = NULL)
 }
 \arguments{
 \item{data_path}{character. Path to the file to be upgraded}
 
-\item{treatments}{character. The treatments in the data seperated by commas.}
+\item{treatments}{character. The treatments in the data separated by commas.}
 
 \item{logger}{Stores all notification messages to be displayed in the Log
 Window. Insert the logger reactive list here for running in
@@ -19,5 +19,12 @@ shiny, otherwise leave the default \code{NULL}}
 Dataframe containing the upgraded data
 }
 \description{
-Assess the data for validity. this checks the column names for required columns, and balanced wide format numbered columns.
+Loads a \code{.csv} file and converts it into a suitable format
+for use by \code{setup_load}.
+}
+\examples{
+old_data_path <- system.file("extdata", "old_data.csv", package = "metainsight")
+upgraded_data <- setup_upgrade(data_path = old_data_path,
+                               treatments = "A,B,C,D,E")
+
 }

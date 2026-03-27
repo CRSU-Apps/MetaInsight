@@ -1,7 +1,7 @@
 baseline_forest_module_ui <- function(id) {
   ns <- NS(id)
   tagList(
-    div(class = "baseline_forest_div",
+    div(class = "baseline_forest",
       p("Limits of the x-axis:"),
       numericInput(ns("xmin"), "Minimum", 0),
       numericInput(ns("xmax"), "Maximum", 0)
@@ -20,7 +20,7 @@ baseline_forest_module_server <- function(id, common, parent_session) {
       req(common$baseline_model)
 
       median_ci_table <- bnma::relative.effects.table(common$baseline_model$mtcResults, summary_stat = "ci")
-      forest_data <- format_baseline_forest(median_ci_table, common$baseline_model$reference_treatment)
+      forest_data <- baseline_forest_format(median_ci_table, common$baseline_model$reference_treatment)
 
       limits <- baseline_forest_limits(forest_data)
 

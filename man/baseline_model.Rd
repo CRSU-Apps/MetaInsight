@@ -2,7 +2,7 @@
 % Please edit documentation in R/baseline_model_f.R
 \name{baseline_model}
 \alias{baseline_model}
-\title{Fit a baseline risk regression model using \code{bnma::network.run()}}
+\title{Fit a baseline risk regression model}
 \usage{
 baseline_model(configured_data, regressor_type, async = FALSE)
 }
@@ -33,5 +33,16 @@ List of bnma related output:
 \item{regressor}{Type of regression coefficient}
 }
 \description{
-Fit a baseline risk regression model using \code{bnma::network.run()}
+Fit a baseline risk regression model using \code{bnma::network.run()}.
+The output is consistent with outputs produced by \CRANpkg{gemtc}.
+}
+\examples{
+\donttest{
+configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
+configured_data <- readRDS(configured_data_path)
+
+fitted_baseline_model <- baseline_model(configured_data = configured_data,
+                                        regressor_type = "shared")
+}
+
 }

@@ -58,19 +58,19 @@ test_that("bayes_model works e2e - that models are initally different, update af
   expect_match(table_sub$html, "<table")
 
   common <- app$get_value(export = "common")
-  expect_is(common$bayes_all, "bayes_model")
-  expect_is(common$bayes_sub, "bayes_model")
+  expect_is(common$bayes_model_all, "bayes_model")
+  expect_is(common$bayes_model_sub, "bayes_model")
 
-  expect_false(identical(remove_igraph(common$bayes_all), remove_igraph(common$bayes_sub)))
+  expect_false(identical(remove_igraph(common$bayes_model_all), remove_igraph(common$bayes_model_sub)))
 
   app$set_inputs("setup_exclude-exclusions" = NULL)
   app$wait_for_value(input = "bayes_model-sub-updated")
 
   common <- app$get_value(export = "common")
-  expect_is(common$bayes_all, "bayes_model")
-  expect_is(common$bayes_sub, "bayes_model")
+  expect_is(common$bayes_model_all, "bayes_model")
+  expect_is(common$bayes_model_sub, "bayes_model")
 
-  expect_true(identical(remove_igraph(common$bayes_all), remove_igraph(common$bayes_sub)))
+  expect_true(identical(remove_igraph(common$bayes_model_all), remove_igraph(common$bayes_model_sub)))
 
   app$stop()
 })

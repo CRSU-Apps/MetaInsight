@@ -1,4 +1,5 @@
-#' Fit a Bayesian model using \CRANpkg{gemtc}
+#' @title Fit a Bayesian model
+#' @description Fit a Bayesian model using \CRANpkg{gemtc}
 #'
 #' @inheritParams common_params
 #' @return List containing:
@@ -13,6 +14,12 @@
 #'  \item{reference_treatment}{character. The `reference_treatment`from `configured_data`}
 #'  \item{effects}{character. The `effects` from `configured_data`}
 #'  \item{seed}{numeric. The `seed` from `configured_data`}
+#' @examples
+#' configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
+#' configured_data <- readRDS(configured_data_path)
+#'
+#' fitted_bayes_model <- bayes_model(configured_data = configured_data)
+#'
 #' @export
 
 bayes_model <- function(configured_data, async = FALSE){
@@ -26,6 +33,11 @@ bayes_model <- function(configured_data, async = FALSE){
   if (!configured_data$outcome_measure %in% c("OR", "RR", "MD")){
     return(async |> asyncLog(type = "error", "configured data must have an outcome_measure of 'OR', 'RR' or 'MD'"))
   }
+
+  # see https://github.com/gertvv/gemtc/issues/81
+  old_settings <- suppress_jags_output(meta::settings.meta())
+  meta::settings.meta(method.tau = "DL")
+  on.exit(meta::settings.meta(method.tau = old_settings$method.tau))
 
   # use same RNG inside and outside of mirai
   RNGkind("L'Ecuyer-CMRG")

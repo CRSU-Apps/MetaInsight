@@ -2,7 +2,7 @@
 % Please edit documentation in R/bayes_nodesplit_f.R
 \name{bayes_nodesplit_plot}
 \alias{bayes_nodesplit_plot}
-\title{Produce a forest plot from nodesplitting results}
+\title{Bayesian nodesplitting forest plot}
 \usage{
 bayes_nodesplit_plot(nodesplit, main_analysis = TRUE, logger = NULL)
 }
@@ -16,9 +16,27 @@ Window. Insert the logger reactive list here for running in
 shiny, otherwise leave the default \code{NULL}}
 }
 \value{
-html. Contains the svg string to generate the plot. This can be saved
+html. Contains the svg string to generate the plot. This will display
+the plot when at the end of a quarto or rmarkdown chunk. To view in the viewer
+panel of Rstudio, use \code{htmltools::browsable()}. The output can be saved
 using \code{write_plot()}.
 }
 \description{
 Produce a forest plot from nodesplitting results
+}
+\examples{
+\donttest{
+nodesplit_path <- system.file("extdata", "continuous_nodesplit.csv", package = "metainsight")
+loaded_data <- setup_load(data_path = nodesplit_path,
+                          outcome = "continuous")
+configured_data <- setup_configure(loaded_data = loaded_data,
+                                   reference_treatment = "Placebo",
+                                   effects = "random",
+                                   outcome_measure = "MD",
+                                   ranking_option = "good",
+                                   seed = 123)
+
+nodesplit_model <- bayes_nodesplit(configured_data)
+bayes_nodesplit_plot(nodesplit_model)
+}
 }

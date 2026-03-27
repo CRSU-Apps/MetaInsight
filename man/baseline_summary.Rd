@@ -2,7 +2,7 @@
 % Please edit documentation in R/baseline_summary_f.R
 \name{baseline_summary}
 \alias{baseline_summary}
-\title{Produce a plot summarising baselink risk for each study arm}
+\title{Summarise baseline risk}
 \usage{
 baseline_summary(configured_data, logger = NULL)
 }
@@ -15,4 +15,11 @@ shiny, otherwise leave the default \code{NULL}}
 }
 \description{
 Produce a plot summarising baselink risk for each study arm
+}
+\examples{
+configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
+configured_data <- readRDS(configured_data_path)
+
+baseline_summary(configured_data)
+
 }

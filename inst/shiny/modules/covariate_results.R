@@ -34,7 +34,7 @@ covariate_results_module_server <- function(id, common, parent_session) {
 
 covariate_results_module_result <- function(id) {
   ns <- NS(id)
-  bayes_results_submodule_result(ns("all"), "for covariate model", "covariate_results_div")
+  bayes_results_submodule_result(ns("all"), "for covariate model", "covariate_results")
 }
 
 

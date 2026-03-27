@@ -2,7 +2,7 @@
 % Please edit documentation in R/freq_analysis.R
 \name{frequentist}
 \alias{frequentist}
-\title{Converts long data to wide if necessary, then applies freq_wrap().}
+\title{Fit a frequentist model}
 \usage{
 frequentist(
   non_covariate_data,
@@ -31,12 +31,11 @@ frequentist(
 }
 \value{
 List containing:
-\item{net1}{list. NMA results from netmeta::netmeta()}
-\item{lstx}{character. Vector of treatment labels}
-\item{ntx}{numeric. Number of treatments}
-\item{d0}{dataframe.Data in contrast form}
-\item{d1}{dataframe.Same as 'd0' but with treatment labels}
+\item{netmeta}{list. NMA results from netmeta::netmeta()}
+\item{pairwise}{dataframe. Results from meta::pairwise() but with treatment labels}
+\item{pairwise_reversed}{dataframe. pairwise as if the treatments had been the other way round}
 }
 \description{
-Converts long data to wide if necessary, then applies freq_wrap().
+Fits a frequentist model with \code{netmeta::netmeta()}
 }
+\keyword{internal}

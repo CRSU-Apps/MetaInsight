@@ -4,7 +4,9 @@
 \alias{return-svg}
 \title{Return svg}
 \value{
-html. Contains the svg string to generate the plot. This can be saved
+html. Contains the svg string to generate the plot. This will display
+the plot when at the end of a quarto or rmarkdown chunk. To view in the viewer
+panel of Rstudio, use \code{htmltools::browsable()}. The output can be saved
 using \code{write_plot()}.
 }
 \description{

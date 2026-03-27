@@ -16,3 +16,4 @@ format_xlim(x, limit, log.scale)
 \description{
 Format xlimits to pretty values. Adapted from \code{gemtc::blobbogram()}
 }
+\keyword{internal}

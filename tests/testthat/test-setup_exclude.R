@@ -9,7 +9,7 @@ test_that("setup_exclude produces errors for incorrect data types", {
 test_that("setup_exclude produces data of the correct type", {
   result <- setup_exclude(configured_data_con, c("Leo"))
 
-  expected_items <- c("treatments", "connected_data", "covariate", "bugsnet", "freq", "outcome",
+  expected_items <- c("treatments", "connected_data", "covariate", "freq", "outcome",
                        "outcome_measure", "effects", "ranking_option", "seed")
 
   expect_type(result, "list")
@@ -21,7 +21,6 @@ test_that("setup_exclude produces data of the correct type", {
   expect_type(result$covariate$column, "character")
   expect_type(result$covariate$name, "character")
   expect_type(result$covariate$type, "character")
-  expect_s3_class(result$bugsnet, "data.frame")
   expect_type(result$freq, "list")
   expect_type(result$outcome, "character")
   expect_type(result$outcome_measure, "character")
@@ -66,12 +65,12 @@ test_that("setup_exclude_plot functions correctly with multiple lines per study"
 test_that("setup_exclude removes the correct studies", {
   result <- setup_exclude(configured_data_con, c("Leo", "Constantine"))
   n_studies_all <- length(unique(configured_data_con$connected_data$Study))
-  n_studies_freq <- length(unique(result$freq$d0$Study))
+  n_studies_freq <- length(unique(result$freq$pairwise$studlab))
   n_studies_sub <- length(unique(result$connected_data$Study))
 
-  expect_false("Leo" %in% result$freq$d0$Study)
-  expect_false("Constantine" %in% result$freq$d0$Study)
-  expect_true("Justinian" %in% result$freq$d0$Study)
+  expect_false("Leo" %in% result$freq$pairwise$studlab)
+  expect_false("Constantine" %in% result$freq$pairwise$studlab)
+  expect_true("Justinian" %in% result$freq$pairwise$studlab)
   expect_equal(n_studies_all - 2, n_studies_freq)
 
   expect_false("Leo" %in% result$connected_data$Study)
@@ -119,22 +118,20 @@ test_that("setup_exclude updates interface and loads data into common correctly"
 
   common <- app$get_value(export = "common")
 
-  expect_s3_class(common$subsetted_data$bugsnet, "data.frame")
   expect_type(common$subsetted_data$freq, "list")
   expect_type(common$subsetted_data$reference_treatment, "character")
 
-  n_studies_all <- length(unique(common$configured_data$freq$d0$Study))
+  n_studies_all <- length(unique(common$configured_data$freq$pairwise$studlab))
   n_studies_sub_con <- length(unique(common$subsetted_data$connected_data$Study))
-  n_studies_sub_freq <- length(unique(common$subsetted_data$freq$d0$Study))
+  n_studies_sub_freq <- length(unique(common$subsetted_data$freq$pairwise$studlab))
 
   expect_false("Leo" %in% common$subsetted_data$connected_data$Study)
   expect_false("Constantine" %in% common$subsetted_data$connected_data$Study)
   expect_true("Justinian" %in% common$subsetted_data$connected_data$Study)
-  expect_equal(n_studies_all - 2, n_studies_sub_con)
 
-  expect_false("Leo" %in% common$subsetted_data$freq$d0$Study)
-  expect_false("Constantine" %in% common$subsetted_data$freq$d0$Study)
-  expect_true("Justinian" %in% common$subsetted_data$freq$d0$Study)
+  expect_false("Leo" %in% common$subsetted_data$freq$pairwise$studlab)
+  expect_false("Constantine" %in% common$subsetted_data$freq$pairwise$studlab)
+  expect_true("Justinian" %in% common$subsetted_data$freq$pairwise$studlab)
   expect_equal(n_studies_all - 2, n_studies_sub_freq)
 
   app$stop()
