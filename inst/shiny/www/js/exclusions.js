@@ -58,7 +58,7 @@ var ExclusionHandler = (function() {
           selectedStudies.push(clickedStudy);
         }
 
-        // Update opacity for all study lines
+        // Update opacity of study lines with matching name
         $("#setup_exclude-interface g[data-study-name='" + clickedStudy + "']").each(function() {
           if (selectedStudies.includes(clickedStudy)) {
             $(this).css("opacity", "0.3");

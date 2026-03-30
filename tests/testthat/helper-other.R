@@ -11,14 +11,13 @@ reload_app <- function(app, path){
 
 # click on the exclusions forest plot
 click_setup_exclude <- function(app, study){
-  app$run_js(sprintf('
-  var elem = document.querySelector(\'[data-study-name="%s"]\');
-  if (elem) {
-    elem.dispatchEvent(new MouseEvent("click", {
+  app$run_js(glue::glue('
+  var elem = document.querySelector(\'[data-study-name="{study}"]\');
+  if (elem) {{
+    elem.dispatchEvent(new MouseEvent("click", {{
       bubbles: true,
       cancelable: true,
       view: window
-    }));
-  }
-  ', study))
+    }}));
+  }}'))
 }
