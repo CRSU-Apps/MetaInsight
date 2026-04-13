@@ -71,7 +71,6 @@ setup_exclude <- function(configured_data, exclusions, async = FALSE){
   output <- configured_data
   # delete unneeded and overwrite with new data
   output$non_covariate_data <- NULL
-  output$wrangled_data <- NULL
   output$disconnected_indices <- NULL
   output$freq <- freq
   output$reference_treatment <- reference_treatment

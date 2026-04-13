@@ -20,11 +20,8 @@ baseline_summary <- function(configured_data, logger = NULL){
     return()
   }
 
-  if (FindDataShape(configured_data$connected_data) == "wide") {
-    long_data <- as.data.frame(WideToLong(configured_data$connected_data, outcome = configured_data$outcome))
-  } else if (FindDataShape(configured_data$connected_data) == "long") {
-    long_data <- configured_data$connected_data
-  }
+long_data <- configured_data$connected_data
+
 
   if (configured_data$outcome_measure == "MD") {
 
