@@ -2,9 +2,7 @@
 % Please edit documentation in R/freq_summary_f.R
 \name{freq_summary}
 \alias{freq_summary}
-\title{Produce a summary forest plot matrix with treatments ranked by SUCRA score,
-determined by \code{netmeta::rankogram()}. This function can only be used when
-\code{configured_data} contains between 3 and 10 treatments.}
+\title{Summary forest plot matrix}
 \usage{
 freq_summary(configured_data, plot_title = "", logger = NULL)
 }
@@ -18,11 +16,20 @@ Window. Insert the logger reactive list here for running in
 shiny, otherwise leave the default \code{NULL}}
 }
 \value{
-html. Contains the svg string to generate the plot. This can be saved
+html. Contains the svg string to generate the plot. This will display
+the plot when at the end of a quarto or rmarkdown chunk. To view in the viewer
+panel of Rstudio, use \code{htmltools::browsable()}. The output can be saved
 using \code{write_plot()}.
 }
 \description{
 Produce a summary forest plot matrix with treatments ranked by SUCRA score,
 determined by \code{netmeta::rankogram()}. This function can only be used when
 \code{configured_data} contains between 3 and 10 treatments.
+}
+\examples{
+configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
+configured_data <- readRDS(configured_data_path)
+
+freq_summary(configured_data = configured_data)
+
 }

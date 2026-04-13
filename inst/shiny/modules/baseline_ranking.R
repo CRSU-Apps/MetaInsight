@@ -40,7 +40,7 @@ baseline_ranking_module_server <- function(id, common, parent_session) {
     })
 
     bayes_ranking_submodule_server("all", common, reactive(input$network_style), reactive(input$rank_style), reactive(input$colourblind), reactive(input$simple),
-                                   ".baseline_ranking_div", "baseline_model", "baseline_ranking", "configured_data", all_trigger, "baseline_ranking_plot")
+                                   ".baseline_ranking", "baseline_model", "baseline_ranking", "configured_data", all_trigger, "baseline_ranking_plot")
 
     return(list(
       save = function() {list(
@@ -69,8 +69,8 @@ baseline_ranking_module_result <- function(id) {
   fluidRow(
     p("If you export and include the Litmus Rank-O-Gram or the Radial SUCRA plot in your work, please cite it as:
         Nevill CR, Cooper NJ, Sutton AJ, A multifaceted graphical display, including treatment ranking, was developed
-        to aid interpretation of network meta-analysis, Journal of Clinical Epidemiology (2023)", class = "baseline_ranking_div"),
-    bayes_ranking_submodule_result(ns("all"), "Ranking panel for all studies", "baseline_ranking_div")
+        to aid interpretation of network meta-analysis, Journal of Clinical Epidemiology (2023)", class = "baseline_ranking"),
+    bayes_ranking_submodule_result(ns("all"), "Ranking panel for all studies", "baseline_ranking")
   )
 }
 

@@ -50,7 +50,7 @@ covariate_mcmc_module_server <- function(id, common, parent_session) {
 
 covariate_mcmc_module_result <- function(id) {
   ns <- NS(id)
-  bayes_mcmc_submodule_result(ns("all"), "covariate_mcmc_div", "for all studies")
+  bayes_mcmc_submodule_result(ns("all"), "covariate_mcmc", "for all studies")
 }
 
 covariate_mcmc_module_rmd <- function(common) {

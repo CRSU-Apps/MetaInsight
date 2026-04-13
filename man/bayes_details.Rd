@@ -4,7 +4,7 @@
 \alias{bayes_details}
 \alias{covariate_details}
 \alias{baseline_details}
-\title{Produce a summary of a Bayesian model}
+\title{Summarise a Bayesian model}
 \usage{
 bayes_details(model, logger = NULL)
 
@@ -26,4 +26,11 @@ HTML summary of the model
 }
 \description{
 Produce a summary of a Bayesian model
+}
+\examples{
+configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
+configured_data <- readRDS(configured_data_path)
+
+fitted_bayes_model <- bayes_model(configured_data = configured_data)
+bayes_details(model = fitted_bayes_model)
 }

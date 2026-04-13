@@ -22,11 +22,10 @@ bayes_forest(bayes_model_all, ranking = TRUE)
 {r, results = 'asis'}
 ```
 ```{r, echo = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}
-if ({{bayes_ranking_rank_style}} == "radial"){
-  RadialSUCRA(bayes_ranking_all, !{{bayes_ranking_simple}}, {{bayes_ranking_colourblind}})
-} else {
-  LitmusRankOGram(bayes_ranking_all, {{bayes_ranking_colourblind}})
-}
+ranking_plot(bayes_ranking_all,
+             {{bayes_ranking_rank_style}},
+             {{bayes_ranking_colourblind}},
+             {{bayes_ranking_simple}}) 
 ```
 
 ```{r, echo = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}
@@ -55,11 +54,10 @@ bayes_forest(bayes_model_sub, ranking = TRUE)
 {r, results = 'asis'}
 ```
 ```{r, echo = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}
-if ({{bayes_ranking_rank_style}} == "radial"){
-  RadialSUCRA(bayes_ranking_sub, !{{bayes_ranking_simple}}, {{bayes_ranking_colourblind}})
-} else {
-  LitmusRankOGram(bayes_ranking_sub, {{bayes_ranking_colourblind}})
-}
+ranking_plot(bayes_ranking_sub,
+             {{bayes_ranking_rank_style}},
+             {{bayes_ranking_colourblind}},
+             {{bayes_ranking_simple}}) 
 ```
 
 ```{r, echo = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}

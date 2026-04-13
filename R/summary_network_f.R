@@ -5,6 +5,13 @@
 #' @param title character. Title of plot. Default of no title.
 #' @inheritParams common_params
 #' @inherit return-svg return
+#' @examples
+#' configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
+#' configured_data <- readRDS(configured_data_path)
+#'
+#' summary_network(configured_data = configured_data,
+#'                 style = "netgraph")
+#'
 #' @export
 
 summary_network <- function(configured_data, style, label_size = 1, title = "", logger = NULL){
@@ -17,28 +24,42 @@ summary_network <- function(configured_data, style, label_size = 1, title = "", 
     return()
   }
 
-  n_trt <- configured_data$freq$ntx
-  if (n_trt < 8){
+  n_trt <- nrow(configured_data$treatments)
+  if (n_trt < 5){
     height <- 5
-    width <- 5
+    width <- height * 1.5
   } else {
-    width <- 5 + sqrt(n_trt-5)
-    height <- width
+    height  <- 5 + sqrt(n_trt-5)
+    width <- height * 1.5
   }
 
   svg <- svglite::xmlSVG({
     if (style == "netgraph"){
-      netmeta::netgraph(configured_data$freq$net1, lwd = 2, number.of.studies = TRUE, plastic = FALSE, points = TRUE,
+      netmeta::netgraph(configured_data$freq$netmeta, lwd = 2, number.of.studies = TRUE, plastic = FALSE, points = TRUE,
                                cex = label_size, cex.points = 2, col.points = 1, col = 8, pos.number.of.studies = 0.43,
                                col.number.of.studies = "forestgreen", col.multiarm = "white",
                                bg.number.of.studies = "white")
       title(title)
 
     } else if (style == "netplot"){
-      data.rh <- BUGSnet::data.prep(arm.data = configured_data$bugsnet, varname.t = "T", varname.s = "Study")
-      BUGSnet::net.plot(data.rh, node.scale = 3, edge.scale = 1.5, node.lab.cex = label_size,
-                               layout.params = NULL)
-      title(title)
+      netmeta::netgraph(configured_data$freq$netmeta,
+                        adj = 0.5,
+                        scale = 1,
+                        cex = 1,
+                        lwd.max = max(configured_data$freq$netmeta$k.trts) ,
+                        cex.points = configured_data$freq$netmeta$k.trts,
+                        number.of.studies = FALSE,
+                        col = "grey",
+                        points.max = 20,
+                        col.points = "#f69c54",
+                        thickness = "number.of.studies",
+                        rescale.thickness = I,  # avoid sqrt rescaling
+                        rescale.pointsize = I,
+                        plastic = FALSE,
+                        points = TRUE,
+                        multiarm = FALSE,
+                        start = "circle",
+                        rotate = 90)
     }
   },
   width = width,
@@ -57,7 +78,7 @@ summary_network <- function(configured_data, style, label_size = 1, title = "", 
 #' @return Vector summarising network connectivity created by netmeta::netconnection().
 #' @export
 make_netconnect <- function(freq) {
-  d1 <- freq$d1
+  d1 <- freq$pairwise
   nc <- netmeta::netconnection(treat1 = d1$treat1, treat2 = d1$treat2, studLab = d1$studlab, data = NULL)
   # keep only the parts we want, match ensures the order
   summary <- nc[match(c("k", "m", "n", "d", "n.subnets"), names(nc))]

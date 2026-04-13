@@ -1,4 +1,5 @@
-#' Generate data required to produce a metaregression plot
+#' @title Baseline regression data
+#' @description Generate data required to produce a metaregression plot
 #' for a baseline risk model.
 #'
 #' @param model Output produced by `baseline_model()`
@@ -6,6 +7,18 @@
 #' @return List containing:
 #'  \item{directness}{list. Output from `CalculateDirectness()`}
 #'  \item{credible_regions}{list. Output from `CalculateCredibleRegions()`}
+#'
+#' @examples
+#' \donttest{
+#' configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
+#' configured_data <- readRDS(configured_data_path)
+#'
+#' fitted_baseline_model <- baseline_model(configured_data = configured_data,
+#'                                         regressor_type = "shared")
+#'
+#' regression_data <- baseline_regression(model = fitted_baseline_model,
+#'                                        configured_data = configured_data)
+#' }
 #' @export
 baseline_regression <- function(model, configured_data, async = FALSE){
 
@@ -63,6 +76,7 @@ baseline_regression <- function(model, configured_data, async = FALSE){
 #' - upper: the 97.5% quantile.
 #' Each data frame in "regions" contains 11 rows creating a 10-polygon region.
 #' Each data frame in "intervals" contains a single row at the covariate value of that single contribution.
+#' @noRd
 CalculateCredibleRegionsBnma <- function(model_output) {
 
   mtc_results <- model_output$mtcResults
@@ -140,6 +154,7 @@ CalculateCredibleRegionsBnma <- function(model_output) {
 #' @param parameter_name Name of the parameter for which to get the credible interval.
 #'
 #' @return Named vector of "2.5%" and "97.5" quantiles.
+#' @noRd
 .FindCredibleIntervalBnma <- function(mtc_results, cov_value, parameter_name) {
   rel_eff <- BnmaRelativeEffects(
     model = mtc_results,

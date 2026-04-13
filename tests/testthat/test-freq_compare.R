@@ -3,9 +3,6 @@ test_that("freq_compare produces errors for incorrect data types and invalid val
 })
 
 test_that("freq_compare functions correctly", {
-  n_trt_all <- configured_data_con$freq$ntx
-  n_trt_sub <- excluded_data_con$freq$ntx
-
   result <- freq_compare(configured_data_con)
   expect_s3_class(result, "data.frame")
   expect_equal(ncol(result), n_trt_all)

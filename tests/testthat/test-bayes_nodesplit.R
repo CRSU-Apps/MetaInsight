@@ -35,8 +35,8 @@ test_that("bayes_nodesplit functions with valid data", {
   app$wait_for_value(input = "bayes_nodesplit-sub-complete")
 
   common <- app$get_value(export = "common")
-  expect_is(common$nodesplit_all, "mtc.nodesplit")
-  expect_is(common$nodesplit_sub, "mtc.nodesplit")
+  expect_is(common$bayes_nodesplit_all, "mtc.nodesplit")
+  expect_is(common$bayes_nodesplit_sub, "mtc.nodesplit")
 
   plot_all <- app$get_value(output = "bayes_nodesplit-all-plot")
   plot_sub <- app$get_value(output = "bayes_nodesplit-sub-plot")

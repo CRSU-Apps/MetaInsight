@@ -1,4 +1,5 @@
-#' Checks the connectivity of the loaded data and converts it into formats for
+#' @title Configure the analysis
+#' @description Checks the connectivity of the loaded data and converts it into formats for
 #' later analyses. Conducts a frequentist analysis using `netmeta::netmeta()`.
 #' The output can be passed to many other functions - all `summary_` and `freq_`
 #' functions and `bayes_model()`, `baseline_model()` and `covariate_model()`.
@@ -19,13 +20,24 @@
 #'      \item{type}{character. Whether the covariate is `binary` or `continuous`}
 #'    }
 #'  }
-#'  \item{bugsnet}{dataframe. Processed data for bugsnet analyses created by `bugsnetdata`}
 #'  \item{freq}{list. Processed data for frequentist analyses created by `frequentist()`}
 #'  \item{outcome}{character. Whether the data is `binary` or `continuous`}
 #'  \item{outcome_measure}{character. Outcome measure of the dataset.}
 #'  \item{effects}{character. Whether the models are `fixed` or `random` effects}
 #'  \item{ranking_option}{character. Whether higher values in the data are `good` or `bad`}
 #'  \item{seed}{numeric. A seed value to be passed to models}
+#' @examples
+#' minimal_data_path <- system.file("extdata", "continuous_minimal.csv", package = "metainsight")
+#' loaded_data <- setup_load(data_path = minimal_data_path,
+#'                           outcome = "continuous")
+#'
+#' configured_data <- setup_configure(loaded_data = loaded_data,
+#'                                    reference_treatment = "the Great",
+#'                                    effects = "random",
+#'                                    outcome_measure = "MD",
+#'                                    ranking_option = "good",
+#'                                    seed = 123)
+#'
 #' @export
 
 setup_configure <- function(loaded_data, reference_treatment, effects, outcome_measure, ranking_option, seed, logger = NULL){
@@ -113,8 +125,6 @@ setup_configure <- function(loaded_data, reference_treatment, effects, outcome_m
     covariate <- list()
   }
 
-  bugsnet <- bugsnetdata(non_covariate_data, loaded_data$outcome, treatments)
-
   # random is the default model type, this structure is updated in setup_exclude if the model type changes
   freq <- frequentist(non_covariate_data,
                       loaded_data$outcome,
@@ -129,7 +139,6 @@ setup_configure <- function(loaded_data, reference_treatment, effects, outcome_m
                  connected_data = connected_data,
                  non_covariate_data = non_covariate_data,
                  covariate = covariate,
-                 bugsnet = bugsnet,
                  freq = freq,
                  outcome = loaded_data$outcome,
                  outcome_measure = outcome_measure,
@@ -142,6 +151,56 @@ setup_configure <- function(loaded_data, reference_treatment, effects, outcome_m
   return(output)
 }
 
+
+#' @title Summarise the analysis configuration
+#' @description Create a table summarising how the analysis has been configured
+#' @inheritParams common_params
+#' @examples
+#' configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
+#' configured_data <- readRDS(configured_data_path)
+#'
+#' setup_configure_table(configured_data)
+#'
+#' @export
+
+setup_configure_table <- function(configured_data){
+
+  # choose elements to extract from configured_data
+  selection <- list(
+    "Outcome type:" = "outcome",
+    "Outcome measure:" = "outcome_measure",
+    "Model effects type:" = "effects",
+    "Reference treatment:" = "reference_treatment",
+    placeholder = "ranking_option",
+    "Seed value:" = "seed"
+  )
+
+  # adapt label depending on outcome
+  names(selection)[5] <- ifelse(configured_data$outcome == "continuous",
+                                "For treatment rankings, values lower than the mean are:",
+                                "For treatment rankings, ORs less than 1 are:")
+
+  # match elements with labels and convert to title case
+  df <- data.frame(
+    value = sapply(selection, function(x) stringr::str_to_title(configured_data[[x]])),
+    row.names = names(selection)
+  )
+
+  # format values
+  df$value[2] <- switch(df$value[2],
+                        "Md" = "Mean Difference",
+                        "Smd" = "Standarised Mean Difference",
+                        "Or" = "Odds Ratio",
+                        "Rr" = "Risk Ratio",
+                        "Rd" = "Risk Difference")
+
+  df$value[5] <- ifelse(df$value[5] == "Good",
+                        "Desirable",
+                        "Undesirable")
+
+  return(df)
+}
+
 #' Identify all of the disconnected subnetworks contained in the data.
 #'
 #' @param data Data frame containing all of the studies for binary or continuous outcomes, and wide or long format.
@@ -152,6 +211,7 @@ setup_configure <- function(loaded_data, reference_treatment, effects, outcome_m
 #' @return List of subnetworks, where each subnetwork is a list containing:
 #' - "treatments" = The IDs of the treatments included in the given network
 #' - "studies" = The names of the studies included in the given subnetwork
+#' @noRd
 IdentifySubNetworks <- function(data, treatments, reference_treatment_name = NULL, subnet_name_prefix = "subnet_") {
   if (is.null(reference_treatment_name)) {
     reference_treatment <- 1
@@ -212,7 +272,7 @@ IdentifySubNetworks <- function(data, treatments, reference_treatment_name = NUL
 #'
 #' @param treatments vector containing all treatment names
 #' @return Name of the expected reference treatment if one is found, else NULL
-#' @export
+#' @noRd
 FindExpectedReferenceTreatment <- function(treatments) {
   expected_reference_treatments <- match(.potential_reference_treatments, tolower(treatments))
   expected_reference_treatments <- expected_reference_treatments[!is.na(expected_reference_treatments)]
@@ -223,27 +283,11 @@ FindExpectedReferenceTreatment <- function(treatments) {
   }
 }
 
-#' Returns the default ranking order, for the example datasets.
-#'
-#' @param outcome "binary" or "continuous".
-#' @param data Input dataset.
-#' @return "good" or "bad".
-#' @export
-RankingOrder <- function(outcome, data) {
-  file1 <- data
-  if (outcome == "binary" & is.null(file1)) {
-    choice <- "bad"
-  } else {
-    choice <- "good"
-  }
-  return(choice)
-}
-
 #' Create a copy of a data from which does not contain any covariate columns.
 #'
 #' @param data Data from which to remove covariate columns
 #' @return Data without covariate columns
-#' @export
+#' @noRd
 RemoveCovariates <- function(data) {
   covariate_column_names <- FindCovariateNames(data)
 
@@ -255,7 +299,11 @@ RemoveCovariates <- function(data) {
   return(data[, -covariate_column_indices])
 }
 
-
+#' Infer whether the covariate data is binary or continuous
+#'
+#' @param covariate_data Data from which to remove covariate columns
+#' @return Data without covariate columns
+#' @noRd
 InferCovariateType <- function(covariate_data) {
   unique_items <- unique(covariate_data)
   if (length(unique_items) == 2 && all(sort(unique_items) == c(0, 1))) {
@@ -271,6 +319,7 @@ InferCovariateType <- function(covariate_data) {
 #' @param treat_list Data frame containing the treatment ID ('Number') and the treatment name ('Label').
 #' @param CONBI "continuous" or "binary".
 #' @return Input data set in long format with the variable 'se' for a continuous outcome.
+#' @noRd
 dataform.df <- function(newData1, treat_list, CONBI) {
   if (FindDataShape(newData1) == "long") {
     long <- newData1
@@ -288,17 +337,3 @@ dataform.df <- function(newData1, treat_list, CONBI) {
   return(long_sort)
 }
 
-#' Reformats the treatment labels then calls dataform.df().
-#'
-#' @param data Input dataset.
-#' @param metaoutcome "continuous" or "binary".
-#' @param treatment_list Data frame containing the treatment ID ('Number') and the treatment name ('Label').
-#' @return Output from dataform.df().
-bugsnetdata <- function(data, metaoutcome, treatment_list){
-  newData1 <- as.data.frame(data)
-  treatment_list$Label <- stringr::str_wrap(gsub("_", " ", treatment_list$Label), width = 10)  # better formatting (although does assume underscores have only been added due to the treatment label entry limitations) CRN
-  longsort2 <- dataform.df(newData1 = newData1,
-                           treat_list = treatment_list,
-                           CONBI = metaoutcome)
-  return(longsort2)
-}

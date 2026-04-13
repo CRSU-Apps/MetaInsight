@@ -7,12 +7,12 @@ common_class <- R6::R6Class(
    configured_data = NULL,
    excluded_studies = NULL,
    subsetted_data = NULL,
-   bayes_all = NULL,
-   bayes_sub = NULL,
+   bayes_model_all = NULL,
+   bayes_model_sub = NULL,
    bayes_rank_all = NULL,
    bayes_rank_sub = NULL,
-   nodesplit_all = NULL,
-   nodesplit_sub = NULL,
+   bayes_nodesplit_all = NULL,
+   bayes_nodesplit_sub = NULL,
    bayes_deviance_all = NULL,
    bayes_deviance_sub = NULL,
    bayes_mcmc_all = NULL,
@@ -42,12 +42,12 @@ common_class <- R6::R6Class(
      self$configured_data <- NULL
      self$excluded_studies <- NULL
      self$subsetted_data <- NULL
-     self$bayes_all <- NULL
-     self$bayes_sub <- NULL
+     self$bayes_model_all <- NULL
+     self$bayes_model_sub <- NULL
      self$bayes_rank_all <- NULL
      self$bayes_rank_sub <- NULL
-     self$nodesplit_all <- NULL
-     self$nodesplit_sub <- NULL
+     self$bayes_nodesplit_all <- NULL
+     self$bayes_nodesplit_sub <- NULL
      self$bayes_deviance_all <- NULL
      self$bayes_deviance_sub <- NULL
      self$bayes_mcmc_all <- NULL

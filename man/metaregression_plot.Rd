@@ -2,8 +2,7 @@
 % Please edit documentation in R/metaregression_plot_f.R
 \name{metaregression_plot}
 \alias{metaregression_plot}
-\title{Produce a composite meta-regression plot which comprises plots showing direct
-and indirect evidence.}
+\title{Produce a meta-regression plot}
 \usage{
 metaregression_plot(
   model,
@@ -74,10 +73,31 @@ Window. Insert the logger reactive list here for running in
 shiny, otherwise leave the default \code{NULL}}
 }
 \value{
-html. Contains the svg string to generate the plot. This can be saved
+html. Contains the svg string to generate the plot. This will display
+the plot when at the end of a quarto or rmarkdown chunk. To view in the viewer
+panel of Rstudio, use \code{htmltools::browsable()}. The output can be saved
 using \code{write_plot()}.
 }
 \description{
-Produce a composite meta-regression plot which comprises plots showing direct
-and indirect evidence.
+Produce a composite meta-regression plot which comprises plots
+showing direct and indirect evidence from baseline or covariate models.
+The design was adapted from Donegan et al. (2018)
+\url{https://onlinelibrary.wiley.com/doi/10.1002/jrsm.1292}
+}
+\examples{
+\donttest{
+configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
+configured_data <- readRDS(configured_data_path)
+
+fitted_baseline_model <- baseline_model(configured_data = configured_data,
+                                        regressor_type = "shared")
+
+regression_data <- baseline_regression(model = fitted_baseline_model,
+                                       configured_data = configured_data)
+
+metaregression_plot(model = fitted_baseline_model,
+                    configured_data = configured_data,
+                    regression_data = regression_data,
+                    comparators = c("the_Younger", "the_Little"))
+}
 }

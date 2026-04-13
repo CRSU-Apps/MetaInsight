@@ -14,7 +14,7 @@ baseline_deviance_module_server <- function(id, common, parent_session) {
 
 baseline_deviance_module_result <- function(id) {
   ns <- NS(id)
-  metaregression_deviance_module_result(ns("baseline"), "bnma", "baseline_deviance_div")
+  metaregression_deviance_module_result(ns("baseline"), "bnma", "baseline_deviance")
 }
 
 baseline_deviance_module_rmd <- function(common) {

@@ -50,7 +50,7 @@ baseline_mcmc_module_server <- function(id, common, parent_session) {
 
 baseline_mcmc_module_result <- function(id) {
   ns <- NS(id)
-  bayes_mcmc_submodule_result(ns("all"), "baseline_mcmc_div", "for all studies")
+  bayes_mcmc_submodule_result(ns("all"), "baseline_mcmc", "for all studies")
 }
 
 baseline_mcmc_module_rmd <- function(common) {

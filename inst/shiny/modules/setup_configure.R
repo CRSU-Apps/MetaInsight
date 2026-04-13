@@ -14,6 +14,8 @@ setup_configure_module_ui <- function(id) {
 setup_configure_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
+  hide_and_show(id)
+
   # Update UI depending on selections in previous module
   observe({
     watch("setup_load")
@@ -23,16 +25,19 @@ setup_configure_module_server <- function(id, common, parent_session) {
       outcome_label <- "Outcome for continuous data:"
       outcome_choices <- c("Mean Difference (MD)" = "MD", "Standardised Mean Difference (SMD)" = "SMD")
       rank_label <- "For treatment rankings, values lower than the mean are:"
+      ranking_option <- "good"
     } else {
       outcome_label <- "Outcome for binary data:"
       outcome_choices <- c("Odds Ratio (OR)" = "OR", "Risk Ratio (RR)" = "RR", "Risk Difference (RD)" = "RD")
       rank_label <- "For treatment rankings, ORs less than 1 are:"
+      # switch for default binary data
+      ranking_option <- ifelse(common$loaded_data$is_data_uploaded, "good", "bad")
     }
     updateSelectInput(session, "reference_treatment", choices = treatments,
-                      selected = FindExpectedReferenceTreatment(treatments))
+                      selected = metainsight:::FindExpectedReferenceTreatment(treatments))
     updateRadioButtons(session, "outcome_measure", outcome_label, outcome_choices)
     updateRadioButtons(session, "ranking_option", rank_label,
-                       selected = RankingOrder(common$loaded_data$outcome, !common$loaded_data$is_data_uploaded))
+                       selected = ranking_option)
     updateNumericInput(session, "seed", value = common$seed)
     shinyjs::runjs("Shiny.setInputValue('setup_configure-ready', 'complete');")
   })
@@ -84,6 +89,14 @@ setup_configure_module_server <- function(id, common, parent_session) {
 
   })
 
+  output$table <- renderTable({
+    watch("setup_configure")
+    watch("effects")
+    req(common$configured_data)
+    setup_configure_table(common$configured_data)
+  }, colnames = FALSE,
+     rownames = TRUE)
+
   return(list(
     save = function() {list(
       ### Manual save start
@@ -105,6 +118,13 @@ setup_configure_module_server <- function(id, common, parent_session) {
 })
 }
 
+setup_configure_module_result <- function(id) {
+  ns <- NS(id)
+  tagList(
+    h4(class = "setup_configure", "Analysis configuration"),
+    tableOutput(ns("table"))
+  )
+}
 
 setup_configure_module_rmd <- function(common){ list(
   setup_configure_knit = !is.null(common$meta$setup_configure$used),

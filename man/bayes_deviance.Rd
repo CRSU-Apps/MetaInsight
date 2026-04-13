@@ -3,7 +3,7 @@
 \name{bayes_deviance}
 \alias{bayes_deviance}
 \alias{covariate_deviance}
-\title{Produce deviance plots using the output of \code{gemtc::mtc.deviance()}}
+\title{Produce deviance plots}
 \usage{
 bayes_deviance(model, async = FALSE)
 
@@ -33,4 +33,16 @@ When \code{model} was created by \code{covariate_model()} containing:
 }
 \description{
 Produce deviance plots using the output of \code{gemtc::mtc.deviance()}
+for Bayesian and covariate models. Because these plots are interactive, it is
+not currently possible to download them, although they can be included in
+html reports.
+}
+\examples{
+\donttest{
+configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
+configured_data <- readRDS(configured_data_path)
+
+fitted_bayes_model <- bayes_model(configured_data = configured_data)
+bayes_deviance(model = fitted_bayes_model)
+}
 }

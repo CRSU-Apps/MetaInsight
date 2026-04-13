@@ -17,11 +17,10 @@ covariate_forest(covariate_model, ranking = TRUE)
 {r, results = 'asis'}
 ```
 ```{r, echo = {{covariate_ranking_knit}}, include = {{covariate_ranking_knit}}}
-if ({{covariate_ranking_rank_style}} == "radial"){
-  RadialSUCRA(covariate_ranking, !{{covariate_ranking_simple}}, {{covariate_ranking_colourblind}})
-} else {
-  LitmusRankOGram(covariate_ranking, {{covariate_ranking_colourblind}})
-}
+ranking_plot(covariate_ranking,
+             {{covariate_ranking_rank_style}},
+             {{covariate_ranking_colourblind}},
+             {{covariate_ranking_simple}}) 
 ```
 
 ```{r, echo = {{covariate_ranking_knit}}, include = {{covariate_ranking_knit}}}

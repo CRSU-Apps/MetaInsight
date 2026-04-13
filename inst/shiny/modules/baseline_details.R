@@ -14,7 +14,7 @@ baseline_details_module_server <- function(id, common, parent_session) {
 
 baseline_details_module_result <- function(id) {
   ns <- NS(id)
-  bayes_details_submodule_result(ns("baseline"), "baseline_details_div")
+  bayes_details_submodule_result(ns("baseline"), "baseline_details")
 }
 
 baseline_details_module_rmd <- function(common) {
