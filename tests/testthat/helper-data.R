@@ -6,7 +6,6 @@ loaded_data_bin <- setup_load(file.path(test_data_dir, "Binary_long_continuous_c
 configured_data_bin <- setup_configure(loaded_data_bin, "the Great", "random", "OR", "good", 123)
 
 options(shinytest2.load_timeout=60000)
-# Sys.setenv(QUARTO_LOG_LEVEL = "DEBUG")
 
 if (Sys.getenv("LOCAL") == "true"){
   rds_path <- normalizePath(testthat::test_path("saved_files"))
@@ -38,7 +37,10 @@ if (!on_cran){
     app$set_inputs("setup_configure-seed" = 123, wait_ = FALSE)
     app$click("setup_configure-run")
     app$wait_for_value(input = "setup_exclude-complete")
-    app$set_inputs("setup_exclude-exclusions" = "Minerva")
+    # open the accordion
+    app$click(selector = "#setup_exclude-collapse .accordion-button")
+    app$wait_for_idle()
+    click_setup_exclude(app, "Minerva")
     app$wait_for_value(input = "setup_exclude-complete", ignore = list(NULL, "", "initial"))
     app$set_inputs(tabs = "covariate")
     app$set_inputs(covariateSel = "covariate_model")

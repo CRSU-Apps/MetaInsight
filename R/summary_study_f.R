@@ -9,6 +9,8 @@
 #' values should be wrapped in `log()`
 #' @param x_max numeric. Maximum value for the x-axis. Defaults to `NULL`. For binary outcomes
 #' values should be wrapped in `log()`
+#' @param interactive logical. Whether the plot should be altered for preparation
+#' into an interactive interface. Defaults to `FALSE`
 #' @inherit return-svg return
 #' @import graphics
 #' @examples
@@ -18,7 +20,7 @@
 #' summary_study(configured_data = configured_data)
 #'
 #' @export
-summary_study <- function(configured_data, plot_area_width = 6, colourblind = FALSE, x_min = NULL, x_max = NULL, logger = NULL) {
+summary_study <- function(configured_data, plot_area_width = 6, colourblind = FALSE, x_min = NULL, x_max = NULL, interactive = FALSE, logger = NULL) {
 
   check_param_classes(c("configured_data","plot_area_width", "colourblind"),
                       c("configured_data", "numeric", "logical"), logger)
@@ -131,7 +133,9 @@ summary_study <- function(configured_data, plot_area_width = 6, colourblind = FA
       yaxs = "i" # remove internal padding
     )
 
-    title("Individual study results (with selected studies excluded)\n grouped by treatment comparison", line = 2)
+    if (!interactive){
+      title("Individual study results (with selected studies excluded)\n grouped by treatment comparison", line = 2)
+    }
 
     # define the ticks and labels for the x-axis
     if (is.element(configured_data$outcome_measure, c("OR", "RR"))) {
@@ -249,7 +253,8 @@ summary_study <- function(configured_data, plot_area_width = 6, colourblind = FA
         treatment1 = pairwise_treatments$treat1[row],
         treatment2 = pairwise_treatments$treat2[row],
         rob_variables = rob_variables,
-        palette = palette
+        palette = palette,
+        interactive = interactive
       )
     }
   },
@@ -387,8 +392,19 @@ summary_study <- function(configured_data, plot_area_width = 6, colourblind = FA
 #' @param treatment2 Second treatment in the comparison.
 #' @param rob_variables Vector of RoB and indirectness variable names from 'pairwise'.
 #' @param palette Vector of colours to use
+#' @param interactive Whether the plot will be interactive
 #' @noRd
-.AddTreatmentEffectBlock <- function(pairwise, label_x_position, outcome_x_position, rob_x_positions, y_header_position, y_positions, treatment1, treatment2, rob_variables, palette) {
+.AddTreatmentEffectBlock <- function(pairwise,
+                                     label_x_position,
+                                     outcome_x_position,
+                                     rob_x_positions,
+                                     y_header_position,
+                                     y_positions,
+                                     treatment1,
+                                     treatment2,
+                                     rob_variables,
+                                     palette,
+                                     interactive) {
 
   # header
   graphics::mtext(
@@ -420,6 +436,12 @@ summary_study <- function(configured_data, plot_area_width = 6, colourblind = FA
   include_rob <- length(rob_variables) > 0
 
   for (row in 1:length(pairwise_subset$studlab)) {
+
+    if (interactive){
+      # add rectangles for partitioning later
+      graphics::rect(-100, y_positions[row] - 0.5, 100, y_positions[row] + 0.5, col = "#00000000")
+    }
+
     .AddTreatmentEffect(
       pairwise = pairwise,
       y_position = y_positions[row],

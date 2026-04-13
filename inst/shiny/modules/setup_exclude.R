@@ -2,8 +2,7 @@ setup_exclude_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
     radioButtons(ns("effects"), label = "Model:",
-                  choices = c("Random effect (RE)" = "random", "Fixed effect (FE)" = "fixed"), inline = TRUE),
-    uiOutput(ns("exclusions_out"))
+                  choices = c("Random effect (RE)" = "random", "Fixed effect (FE)" = "fixed"), inline = TRUE)
   )
 }
 
@@ -12,25 +11,6 @@ setup_exclude_module_server <- function(id, common, parent_session) {
 
     init("effects")
     init("freq_all")
-
-    # can't get updatePickerInput to reblank on reset
-    output$exclusions_out <- renderUI({
-      watch("setup_configure")
-      watch("setup_reset")
-      if (is.null(common$configured_data)){
-        shinyWidgets::pickerInput(session$ns("exclusions"), label = "Studies to exclude:", multiple = TRUE,
-                                  choices = c(),
-                                  options = shinyWidgets::pickerOptions(liveSearch = TRUE))
-      } else {
-        wrangled <- unique(common$configured_data$wrangled_data$Study)
-        connected <- unique(common$configured_data$connected_data$Study)
-        shinyWidgets::pickerInput(session$ns("exclusions"), label = "Studies to exclude:", multiple = TRUE,
-                                  selected = isolate(input$exclusions),
-                                  choices = wrangled,
-                                  choicesOpt = list(disabled = !c(wrangled %in% connected)),
-                                  options = shinyWidgets::pickerOptions(liveSearch = TRUE))
-      }
-    })
 
     common$tasks$setup_exclude_all <- ExtendedTask$new(
       function(...) mirai::mirai(run(...), run = frequentist, .args = environment())
@@ -145,7 +125,6 @@ setup_exclude_module_server <- function(id, common, parent_session) {
             shinyjs::runjs("Shiny.setInputValue('setup_exclude-complete', 'complete');")
           }
 
-
           trigger("setup_exclude")
 
         } else {
@@ -171,32 +150,53 @@ setup_exclude_module_server <- function(id, common, parent_session) {
       trigger("effects")
     })
 
+    output$plot <- renderUI({
+      watch("setup_reset")
+      watch("setup_configure")
+      req(common$configured_data)
+      tagList(
+        svg_container(
+          setup_exclude_plot(common$configured_data, isolate(input$exclusions), hover = TRUE),
+          style = "max-width: 1200px; margin: 0 auto;"
+        ),
+        # import for interactivity
+        tags$script(src = "js/exclusions.js")
+      )
+    })
+
   return(list(
     save = function() {list(
       ### Manual save start
       ### Manual save end
-      choices = unique(common$configured_data$wrangled_data$Study),
       exclusions = input$exclusions,
-      disabled = !c(unique(common$configured_data$wrangled_data$Study) %in% unique(common$configured_data$connected_data$Study)),
       effects = input$effects)
     },
     load = function(state) {
       ### Manual load start
+      # format to JS array
+      exclusions <- paste0("['", paste(state$exclusions, collapse = "','"), "']")
+      shinyjs::runjs(glue::glue("Shiny.setInputValue('setup_exclude-exclusions', {exclusions});"))
       ### Manual load end
-      if (is.null(state$exclusions)){
-        shinyWidgets::updatePickerInput(session, "exclusions",
-                                        choices = state$choices,
-                                        choicesOpt = list(disabled = state$disabled))
-      } else {
-        shinyWidgets::updatePickerInput(session, "exclusions",
-                                        selected = state$exclusions,
-                                        choices = state$choices,
-                                        choicesOpt = list(disabled = state$disabled))
-      }
       updateRadioButtons(session, "effects", selected = state$effects)
     }
   ))
 })
+}
+
+setup_exclude_module_results <- function(id){
+  ns <- NS(id)
+  tagList(
+    accordion(
+      id = ns("collapse"),
+      open = FALSE,
+      accordion_panel(
+        title = "Exclude studies (Click to open / hide this panel)",
+        "Click on a study arm in the plot to exclude or replace studies in the sensitivity analysis.
+        Clicking on one arm will exclude or replace all the arms from the analysis.",
+        uiOutput(ns("plot"))
+      )
+    )
+  )
 }
 
 setup_exclude_module_rmd <- function(common){ list(
