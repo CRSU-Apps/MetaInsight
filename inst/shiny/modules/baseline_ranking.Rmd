@@ -3,7 +3,7 @@
 ```
 
 ```{r, echo = {{baseline_ranking_knit}}, include = {{baseline_ranking_knit}}}
-baseline_ranking <- baseline_ranking(baseline_model, configured_data)
+baseline_ranking <- baseline_ranking(baseline_model, get({{baseline_ranking_dataset}}))
 ```
 
 ```{asis, echo = {{baseline_ranking_knit}}, eval = {{baseline_ranking_knit}}, include = {{baseline_ranking_knit}}}
@@ -31,5 +31,5 @@ knitr::kable(ranking_table(baseline_ranking), digits = 2)
 {r, results = 'asis'}
 ```
 ```{r, echo = {{baseline_ranking_knit}}, include = {{baseline_ranking_knit}}}
-summary_network(configured_data, {{baseline_ranking_network_style}})
+summary_network(get({{baseline_ranking_dataset}}), {{baseline_ranking_network_style}})
 ```

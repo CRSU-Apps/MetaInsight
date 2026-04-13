@@ -4,10 +4,10 @@
 ```
 
 ```{r, echo = {{baseline_regression_knit}}, include = {{baseline_regression_knit}}}
-baseline_regression_data <- baseline_regression(baseline_model, configured_data)
+baseline_regression_data <- baseline_regression(baseline_model, get({{baseline_regression_dataset}}))
 
 metaregression_plot(baseline_model, 
-                    configured_data,
+                    get({{baseline_regression_dataset}}),
                     baseline_regression_data,
                     {{baseline_regression_comparators}},
                     {{baseline_regression_covariate}},

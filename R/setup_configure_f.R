@@ -144,7 +144,8 @@ setup_configure <- function(loaded_data, reference_treatment, effects, outcome_m
                  outcome_measure = outcome_measure,
                  effects = effects,
                  ranking_option = ranking_option,
-                 seed = seed)
+                 seed = seed,
+                 dataset = "all")
 
   class(output) <- "configured_data"
 

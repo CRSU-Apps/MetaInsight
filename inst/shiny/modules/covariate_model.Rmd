@@ -5,7 +5,7 @@
 ```{r, echo = {{covariate_model_knit}}, include = {{covariate_model_knit}}}
 covariate_value <- {{covariate_model_covariate_value}}
 covariate_regressor <- {{covariate_model_regressor}}
-covariate_model <- covariate_model(configured_data, 
+covariate_model <- covariate_model(get({{covariate_model_dataset}}), 
                                    covariate_value, 
                                    covariate_regressor)
 
