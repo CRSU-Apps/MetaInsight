@@ -5,8 +5,9 @@ test_that("PrepDataGemtc() gives correct data for wide binary", {
   treatment_ids <- CreateTreatmentIds(FindAllTreatments(data))
   data <- WrangleUploadData(data, treatment_ids, "binary")
   wrangled_treatment_list <- CleanTreatmentIds(treatment_ids)
+  long_data <- WideToLong(data, "binary")
 
-  gemtc_data <- PrepDataGemtc(data, wrangled_treatment_list, "binary", "covar.age", "age")
+  gemtc_data <- PrepDataGemtc(long_data, wrangled_treatment_list, "binary", "covar.age", "age")
 
   expected_armData <- data.frame(
     study = c(rep("Constantine", 3), rep("Leo", 3), rep("Justinian", 2)),
@@ -49,8 +50,9 @@ test_that("PrepDataGemtc() gives correct data for wide continuous", {
   treatment_ids <- CreateTreatmentIds(FindAllTreatments(data))
   data <- WrangleUploadData(data, treatment_ids, "continuous")
   wrangled_treatment_list <- CleanTreatmentIds(treatment_ids)
+  long_data <- WideToLong(data, "continuous")
 
-  gemtc_data <- PrepDataGemtc(data, wrangled_treatment_list, "continuous", "covar.age", "age")
+  gemtc_data <- PrepDataGemtc(long_data, wrangled_treatment_list, "continuous", "covar.age", "age")
 
   expected_armData <- data.frame(
     study = c(rep("Constantine", 3), rep("Leo", 3), rep("Justinian", 2)),

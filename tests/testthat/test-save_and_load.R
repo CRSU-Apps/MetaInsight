@@ -6,7 +6,15 @@ test_that("The app can be saved after an analysis and the data restored", {
   app$wait_for_value(input = "setup_configure-ready")
   app$click("setup_configure-run")
   app$wait_for_value(input = "setup_exclude-complete")
-  app$set_inputs("setup_exclude-exclusions" = c("Study01", "Study25"))
+
+  # open the accordion
+  app$click(selector = "#setup_exclude-collapse .accordion-button")
+  app$wait_for_idle()
+  # click on study lines
+  click_setup_exclude(app, "Study01")
+  click_setup_exclude(app, "Study25")
+  app$wait_for_idle()
+
   app$wait_for_value(input = "setup_exclude-complete", ignore = list(NULL, "", "initial"))
 
   app$get_download("core_save-save_session", filename = save_file)

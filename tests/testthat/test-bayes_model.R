@@ -63,7 +63,9 @@ test_that("bayes_model works e2e - that models are initally different, update af
 
   expect_false(identical(remove_igraph(common$bayes_model_all), remove_igraph(common$bayes_model_sub)))
 
-  app$set_inputs("setup_exclude-exclusions" = NULL)
+  app$click(selector = "#setup_exclude-collapse .accordion-button")
+  app$wait_for_idle()
+  click_setup_exclude(app, "Minerva")
   app$wait_for_value(input = "bayes_model-sub-updated")
 
   common <- app$get_value(export = "common")

@@ -5,8 +5,9 @@ test_that("FormatForBnma() gives correct data for wide binary", {
   treatment_ids <- CreateTreatmentIds(FindAllTreatments(data))
   data <- WrangleUploadData(data, treatment_ids, "binary")
   wrangled_treatment_list <- CleanTreatmentIds(treatment_ids)
+  long_data <- WideToLong(data, "binary")
 
-  bnma_data <- FormatForBnma(connected_data=data,
+  bnma_data <- FormatForBnma(connected_data=long_data,
                              treatment_df=wrangled_treatment_list,
                              outcome="binary",
                              reference_treatment="the_Little")
@@ -52,16 +53,15 @@ test_that("FormatForBnma() gives correct data for long binary", {
   expect_equal(bnma_data$Treat.order, expected_Treat.order)
 })
 
-
-
 test_that("FormatForBnma() gives correct data for wide continuous", {
 
   data <- read.csv(file.path(test_data_dir, "Cont_wide_continuous_cov.csv"))
   treatment_ids <- CreateTreatmentIds(FindAllTreatments(data))
   data <- WrangleUploadData(data, treatment_ids, "continuous")
   wrangled_treatment_list <- CleanTreatmentIds(treatment_ids)
+  long_data <- WideToLong(data, "continuous")
 
-  bnma_data <- FormatForBnma(connected_data=data,
+  bnma_data <- FormatForBnma(connected_data=long_data,
                              treatment_df=wrangled_treatment_list,
                              outcome="continuous",
                              reference_treatment="the_Little")

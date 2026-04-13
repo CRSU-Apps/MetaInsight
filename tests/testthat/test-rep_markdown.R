@@ -49,7 +49,15 @@ test_that("rep_markdown produces a renderable .Rmd file after a frequentist anal
   expected_chunks <- expected_chunks + 2
 
   app$set_inputs(tabs = "summary")
-  app$set_inputs("setup_exclude-exclusions" = c("Study01", "Study25"))
+
+  # open the accordion
+  app$click(selector = "#setup_exclude-collapse .accordion-button")
+  app$wait_for_idle()
+  # click on study lines
+  click_setup_exclude(app, "Study01")
+  click_setup_exclude(app, "Study25")
+  app$wait_for_idle()
+
   app$wait_for_value(input = "setup_exclude-complete")
   expected_chunks <- expected_chunks + 1
 

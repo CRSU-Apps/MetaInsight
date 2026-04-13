@@ -228,9 +228,9 @@ bayes_ranking_module_server <- function(id, common, parent_session) {
     })
 
     bayes_ranking_submodule_server("all", common, reactive(input$network_style), reactive(input$rank_style), reactive(input$colourblind), reactive(input$simple),
-                                   ".bayes_ranking", "bayes_all", "bayes_rank_all", reactive("configured_data"), all_trigger, "bayes_ranking_all")
+                                   ".bayes_ranking", "bayes_model_all", "bayes_rank_all", reactive("configured_data"), all_trigger, "bayes_ranking_all")
     bayes_ranking_submodule_server("sub", common, reactive(input$network_style), reactive(input$rank_style), reactive(input$colourblind), reactive(input$simple),
-                                   ".bayes_ranking", "bayes_sub", "bayes_rank_sub", reactive("subsetted_data"), sub_trigger, "bayes_ranking_sub")
+                                   ".bayes_ranking", "bayes_model_sub", "bayes_rank_sub", reactive("subsetted_data"), sub_trigger, "bayes_ranking_sub")
 
     return(list(
     save = function() {list(

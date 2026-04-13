@@ -35,7 +35,6 @@ shiny, otherwise leave the default \code{NULL}}
 }
 \value{
 \code{configured_data} containing:
-\item{wrangled_data}{dataframe. To be presented in the data table}
 \item{treatments}{dataframe. Treatment names and IDs}
 \item{reference_treatment}{character. The selected reference treatment}
 \item{disconnected_indices}{vector. Indices of studies that are not connected to the main network}
