@@ -32,9 +32,6 @@ covariate_regression <- function(model,
   # need to look this up
   # cov_parameters <- model_output$mtcResults$model$regressor$coefficient
 
-  if (FindDataShape(configured_data$connected_data) == "wide") {
-    connected_data <- WideToLong(configured_data$connected_data, outcome = configured_data$outcome)
-  }
   directness <- CalculateDirectness(
     data = configured_data$connected_data,
     covariate_title = configured_data$covariate$column,

@@ -47,7 +47,7 @@ setup_exclude <- function(configured_data, exclusions, async = FALSE){
     return(async |> asyncLog(type = "error", "error", "exclusions must in the present in the loaded data"))
   }
 
-  subsetted_data <- configured_data$non_covariate_data[!configured_data$non_covariate_data$Study %in% exclusions,]
+  subsetted_data <- configured_data$connected_data[!configured_data$connected_data$Study %in% exclusions,]
 
   if (nrow(subsetted_data) == 0){
     return(async |> asyncLog(type = "error", "You have excluded all the studies"))
@@ -56,6 +56,7 @@ setup_exclude <- function(configured_data, exclusions, async = FALSE){
   dewrangled_data <- ReinstateTreatmentIds(subsetted_data, configured_data$treatments)
   treatment_list <- FindAllTreatments(dewrangled_data)
   treatments <- CreateTreatmentIds(treatment_list, configured_data$reference_treatment)
+  treatments <- CleanTreatmentIds(treatments)
   connected_data <- ReplaceTreatmentIds(dewrangled_data, treatments)
   non_covariate_data <- RemoveCovariates(connected_data)
 
@@ -71,12 +72,12 @@ setup_exclude <- function(configured_data, exclusions, async = FALSE){
   output <- configured_data
   # delete unneeded and overwrite with new data
   output$non_covariate_data <- NULL
-  output$wrangled_data <- NULL
   output$disconnected_indices <- NULL
   output$freq <- freq
   output$reference_treatment <- reference_treatment
   output$connected_data <- connected_data
   output$treatments <- treatments
+  output$dataset <- "sub"
 
   class(output) <- "configured_data"
   output

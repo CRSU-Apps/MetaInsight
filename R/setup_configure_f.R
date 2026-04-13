@@ -7,7 +7,6 @@
 #' @param loaded_data list. Output from `setup_load()`
 #' @inheritParams common_params
 #' @return `configured_data` containing:
-#'  \item{wrangled_data}{dataframe. To be presented in the data table}
 #'  \item{treatments}{dataframe. Treatment names and IDs}
 #'  \item{reference_treatment}{character. The selected reference treatment}
 #'  \item{disconnected_indices}{vector. Indices of studies that are not connected to the main network}
@@ -79,6 +78,10 @@ setup_configure <- function(loaded_data, reference_treatment, effects, outcome_m
   # update using the selected reference treatment
   treatments <- CreateTreatmentIds(loaded_data$treatments$Label, reference_treatment)
 
+  if (FindDataShape(loaded_data$data) == "wide"){
+    loaded_data$data <- WideToLong(loaded_data$data, loaded_data$outcome)
+  }
+
   data <- WrangleUploadData(loaded_data$data, treatments, loaded_data$outcome)
   treatments <- CleanTreatmentIds(treatments)
   reference_treatment <- CleanStrings(reference_treatment)
@@ -130,8 +133,7 @@ setup_configure <- function(loaded_data, reference_treatment, effects, outcome_m
                       effects,
                       treatments$Label[treatments$Number == 1])
 
-  output <- list(wrangled_data = data,
-                 treatments = treatments,
+  output <- list(treatments = treatments,
                  reference_treatment = reference_treatment,
                  disconnected_indices = disconnected_indices,
                  connected_data = connected_data,
@@ -142,7 +144,8 @@ setup_configure <- function(loaded_data, reference_treatment, effects, outcome_m
                  outcome_measure = outcome_measure,
                  effects = effects,
                  ranking_option = ranking_option,
-                 seed = seed)
+                 seed = seed,
+                 dataset = "all")
 
   class(output) <- "configured_data"
 

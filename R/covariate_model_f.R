@@ -82,8 +82,11 @@ covariate_model <- function(configured_data,
 
   cov_friendly <- GetFriendlyCovariateName(covariate)
 
-  # only run these parts if it hasn't run before, or if the regressor_type has changed
-  if (is.null(covariate_model_output) || covariate_model_output$mtcResults$model$regressor$coefficient != regressor_type){
+  # only run these parts if it hasn't run before or if the regressor_type, dataset or exclusions have changed
+  if (is.null(covariate_model_output) ||
+      covariate_model_output$mtcResults$model$regressor$coefficient != regressor_type ||
+      covariate_model_output$dataset != configured_data$dataset ||
+      !setequal(configured_data$connected_data$Study, covariate_model_output$mtcNetwork$studies$study)){
     prepped_data <- PrepDataGemtc(configured_data$connected_data,
                                   configured_data$treatments,
                                   configured_data$outcome,
@@ -118,6 +121,8 @@ covariate_model <- function(configured_data,
                                        configured_data$covariate$type)
   }
 
+  model_info$dataset <- configured_data$dataset
+
   class(model_info) <- c("bayes_model", "covariate_model")
 
   return(model_info)
@@ -133,12 +138,7 @@ covariate_model <- function(configured_data,
 #' @return list containing two dataframes: armData containing the core data; studyData containing covariate data
 #' @noRd
 PrepDataGemtc <- function(data, treatment_df, outcome, covariate, cov_friendly){
-  # ensure data is in long format
-  if (FindDataShape(data) == "wide") {
-    long_data <- WideToLong(data, outcome)
-  } else {
-    long_data <- data
-  }
+  long_data <- data
   # specify arm level data
   if (outcome == "continuous") {
     armData <- data.frame(study = long_data$Study,
