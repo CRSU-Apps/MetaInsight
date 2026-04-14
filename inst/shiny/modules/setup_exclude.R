@@ -174,8 +174,10 @@ setup_exclude_module_server <- function(id, common, parent_session) {
     load = function(state) {
       ### Manual load start
       # format to JS array
-      exclusions <- paste0("['", paste(state$exclusions, collapse = "','"), "']")
-      shinyjs::runjs(glue::glue("Shiny.setInputValue('setup_exclude-exclusions', {exclusions});"))
+      if (!is.null(state$exclusions)){
+        exclusions <- paste0("['", paste(state$exclusions, collapse = "','"), "']")
+        shinyjs::runjs(glue::glue("Shiny.setInputValue('setup_exclude-exclusions', {exclusions});"))
+      }
       ### Manual load end
       updateRadioButtons(session, "effects", selected = state$effects)
     }
