@@ -198,8 +198,8 @@ test_that("rep_markdown produces a renderable .Rmd file after a bayesian analysi
   html_text <- extract_svg_text_from_html(html_file)
   forest_all_text <- extract_svg_text_from_svg(forest_all_app$html)
   forest_sub_text <- extract_svg_text_from_svg(forest_sub_app$html)
-  expect_true(identical(html_text[[1]], forest_all_text))
-  expect_true(identical(html_text[[2]], forest_sub_text))
+  expect_true(identical(html_text[[2]], forest_all_text))
+  expect_true(identical(html_text[[3]], forest_sub_text))
 
 })
 
@@ -287,8 +287,8 @@ test_that("rep_markdown produces a renderable .Rmd file after a covariate analys
   # test that results are reproducible by comparing forest plots
   html_text <- extract_svg_text_from_html(html_file)
   forest_text <- extract_svg_text_from_svg(forest_app$html)
-  # 3rd svg plot, following module order in global.R
-  expect_true(identical(html_text[[3]], forest_text))
+  # 4th svg plot, following module order in global.R
+  expect_true(identical(html_text[[4]], forest_text))
 
   app$stop()
 
@@ -377,7 +377,7 @@ test_that("rep_markdown produces a renderable .Rmd file after a baseline analysi
   # test that results are reproducible by comparing forest plots
   html_text <- extract_svg_text_from_html(html_file)
   forest_text <- extract_svg_text_from_svg(forest_app$html)
-  # 3rd svg plot, following module order in global.R
-  expect_true(identical(html_text[[3]], forest_text))
+  # 4th svg plot, following module order in global.R
+  expect_true(identical(html_text[[4]], forest_text))
 
 })
