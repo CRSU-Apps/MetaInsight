@@ -767,7 +767,7 @@ LongToWide <- function(long_data, outcome) {
 #' @return Either "wide" or "long"
 #' @noRd
 FindDataShape <- function(data) {
-  if ('T' %in% colnames(data)) {
+  if ('t' %in% tolower(colnames(data))) {
     # Regular expression explanation:
     return("long")
   } else {
