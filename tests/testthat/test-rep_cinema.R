@@ -54,12 +54,19 @@ recreated_project <- RecreateAnalysisFromCinemaProject()
 imported_project <- recreated_project$imported_project
 exported_project <- recreated_project$exported_project
 
+valid_schema <- file.path(test_data_dir, "cinema_data", "cinema_schema.json")
 
 test_that("Should produce valid JSON", {
   json <- rep_cinema(cinema_con)
-  result <- jsonvalidate::json_validate(json, file.path(test_data_dir, "cinema_data", "cinema_schema.json"), verbose = TRUE)
+  result <- jsonvalidate::json_validate(json, valid_schema, verbose = TRUE)
 
   expect_true(result, label = result)
+})
+
+test_that("rep_cinema produces errors when given incorrect data or whwn rob data does not exist", {
+  expect_error(rep_cinema("not data"), "configured_data must be of class configured_data")
+  expect_error(rep_cinema(configured_data_bin), "uploaded data must contain")
+  expect_error(rep_cinema(configured_data_con, "not gemtc"), "gemtc_results must be of class mtc.result")
 })
 
 test_that("Should export analysis settings", {
@@ -131,9 +138,6 @@ test_that("Should export NMA results", {
     "NMA results",
     equality_expectation = expect_data_frames_equal
   )
-
-  expect_equal(imported_project$project$CM$contributionMatrices$hatmatrix$NMAresults[[1]],
-               exported_project$project$CM$contributionMatrices$hatmatrix$NMAresults[[1]], tolerance = 0.0002)
 })
 
 test_that("Should export H matrix", {
@@ -153,24 +157,57 @@ test_that("Should export H matrix", {
 })
 
 test_that("Should export study contributions", {
-  # Test skipped because CINeMA uses an old version of {netmeta}
-  # expect_equal_and_not_na(
-  #   jsonlite::flatten(imported_project$project$CM$contributionMatrices$studycontributions),
-  #   jsonlite::flatten(exported_project$project$CM$contributionMatrices$studycontributions),
-  #   "study contributions",
-  #   equality_expectation = function(actual, expected) {
-  #     expect_data_frames_equal(actual, expected, numerical_tolerance = 0.1)
-  #   }
-  # )
+  testthat::skip("because CINeMA uses an old version of {netmeta}")
+  expect_equal_and_not_na(
+    jsonlite::flatten(imported_project$project$CM$contributionMatrices$studycontributions),
+    jsonlite::flatten(exported_project$project$CM$contributionMatrices$studycontributions),
+    "study contributions",
+    equality_expectation = function(actual, expected) {
+      expect_data_frames_equal(actual, expected, numerical_tolerance = 0.1)
+    }
+  )
 })
 
 
-test_that("{shinytest2} recording: e2e_rep_cinema", {
+test_that("rep_cinema exports frequentist results", {
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_rep_cinema")
+  reload_app(app, config_path)
   app$set_inputs(tabs = "rep")
   app$set_inputs(repSel = "rep_cinema")
-  app$click("rep_cinema-run")
-  common <- app$get_value(export = "common")
-  expect_true(is.null(common$upgraded_data))
+
+  json_all <- app$get_download("rep_cinema-download")
+  result_all <- jsonvalidate::json_validate(json_all, valid_schema, verbose = TRUE)
+  expect_true(result_all)
+
+  app$set_inputs("rep_cinema-data" = "subsetted_data")
+  json_sub <- app$get_download("rep_cinema-download")
+  result_sub <- jsonvalidate::json_validate(json_sub, valid_schema, verbose = TRUE)
+  expect_true(result_sub)
+  expect_false(identical(jsonlite::read_json(json_all), jsonlite::read_json(json_sub)))
+
+  sub_lines <- jsonlite::read_json(json_sub)
+  sub_data <- dplyr::bind_rows(sub_lines$project$studies$long)
+  expect_false("Minerva" %in% sub_data$study)
 })
 
+test_that("rep_cinema exports Bayesian results", {
+  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_rep_cinema")
+  reload_app(app, bayes_model_path)
+  app$set_inputs(tabs = "rep")
+  app$set_inputs(repSel = "rep_cinema")
+  app$set_inputs("rep_cinema-model" = "bayes")
+
+  json_all <- app$get_download("rep_cinema-download")
+  result_all <- jsonvalidate::json_validate(json_all, valid_schema, verbose = TRUE)
+  expect_true(result_all)
+
+  app$set_inputs("rep_cinema-data" = "subsetted_data")
+  json_sub <- app$get_download("rep_cinema-download")
+  result_sub <- jsonvalidate::json_validate(json_sub, valid_schema, verbose = TRUE)
+  expect_true(result_sub)
+  expect_false(identical(jsonlite::read_json(json_all), jsonlite::read_json(json_sub)))
+
+  sub_lines <- jsonlite::read_json(json_sub)
+  sub_data <- dplyr::bind_rows(sub_lines$project$studies$long)
+  expect_false("Minerva" %in% sub_data$study)
+})
