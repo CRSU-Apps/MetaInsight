@@ -293,8 +293,8 @@ rep_cinema <- function(configured_data, gemtc_results = NULL, logger = NULL) {
       se_treat_effect <- freq_results$seTE.common[row, col]
       lower_ci <- freq_results$lower.common[row, col]
       upper_ci <- freq_results$upper.common[row, col]
-      lower_pi <- lower_ci
-      upper_pi <- upper_ci
+      lower_pi <- freq_results$lower.predict[row, col]
+      upper_pi <- freq_results$upper.predict[row, col]
     }
   }
 
