@@ -15,4 +15,9 @@ configured_data <- setup_configure(loaded_data,
                                    outcome_measure,
                                    ranking_option,
                                    seed)
+
+knitr::kable(setup_configure_table(configured_data),
+             row.names = TRUE,
+             col.names = NULL,
+             caption = "Analysis configuration")
 ```

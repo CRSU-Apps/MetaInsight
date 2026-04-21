@@ -47,7 +47,7 @@ metaregression_deviance_module_server <- function(id, common, run) {
       if (is.null(common[[module_id]])){
         plotly::plot_ly(cars, x = ~speed, type = "histogram")
       } else {
-        on.exit(shinyjs::show(selector = glue(".{module_id}_div")))
+        on.exit(shinyjs::show(selector = glue(".{module_id}")))
         # workaround for testing
         on.exit(shinyjs::runjs(glue("Shiny.setInputValue('{module_id}-complete', 'complete');")), add = TRUE)
         common[[module_id]]$stem_plot
@@ -94,7 +94,7 @@ metaregression_deviance_module_result <- function(id, package, class) {
 
 covariate_deviance_module_result <- function(id) {
   ns <- NS(id)
-  metaregression_deviance_module_result(ns("covariate"), "gemtc", "covariate_deviance_div")
+  metaregression_deviance_module_result(ns("covariate"), "gemtc", "covariate_deviance")
 }
 
 covariate_deviance_module_rmd <- function(common) {

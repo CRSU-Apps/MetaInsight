@@ -21,7 +21,7 @@ bayes_ranking_module_ui <- function(id) {
   ns <- NS(id)
 
   download_buttons <- function(id){
-    class <- paste0(id, "_div")
+    class <- id
     if (id == "bayes_ranking"){
       fixedRow(
         column(
@@ -51,7 +51,7 @@ bayes_ranking_module_ui <- function(id) {
     radioButtons(ns("rank_style"),
                  label = "Ranking plot style",
                  choices = c(
-                   "Litmus Rank-O-Gram" = "litmus",
+                   "Litmus Rank-O-Gram" = "rankogram",
                    "Radial SUCRA" = "radial"
                  ),
                  inline = TRUE
@@ -74,7 +74,7 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
 
     observeEvent(run(),{
       req(common[[model]])
-      common[[ranking]] <- bayes_ranking(common[[model]], common[[configured_data]])
+      common[[ranking]] <- bayes_ranking(common[[model]], common[[configured_data()]])
       trigger(trigger)
     })
 
@@ -102,18 +102,11 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
 
     ranking_svg <- reactive({
       req(watch(trigger) > 0)
-
-      if (rank_style() == "litmus"){
-        return(LitmusRankOGram(common[[ranking]], colourblind = colourblind()))
-      }
-      if (rank_style() == "radial"){
-        return(RadialSUCRA(common[[ranking]], original = !simple(), colourblind = colourblind()))
-      }
-
+      ranking_plot(common[[ranking]], rank_style(), colourblind(), simple())
     })
 
     output$ranking_text <- renderText({
-      if (rank_style() == "litmus"){
+      if (rank_style() == "rankogram"){
         return("Litmus Rank-O-Gram: Higher SUCRA (Surface Under the Cumulative Ranking Curve) values and cumulative ranking curves nearer the top left indicate better performance")
       }
       if (rank_style() == "radial"){
@@ -150,7 +143,7 @@ bayes_ranking_submodule_server <- function(id, common, network_style, rank_style
 
     network_svg <- reactive({
       req(watch(trigger) > 0)
-      summary_network(common[[configured_data]], network_style(), 1, "")
+      summary_network(common[[configured_data()]], network_style(), 1, "")
     })
 
     output$network <- renderUI({
@@ -199,7 +192,7 @@ bayes_ranking_module_server <- function(id, common, parent_session) {
 
     # check that a fitted model exists and error if not
     observeEvent(input$run, {
-      if (is.null(common$bayes_all)){
+      if (is.null(common$bayes_model_all)){
         common$logger |> writeLog(type = "error", go_to = "bayes_model", "Please fit the Bayesian models first")
         return()
       } else {
@@ -235,9 +228,9 @@ bayes_ranking_module_server <- function(id, common, parent_session) {
     })
 
     bayes_ranking_submodule_server("all", common, reactive(input$network_style), reactive(input$rank_style), reactive(input$colourblind), reactive(input$simple),
-                                   ".bayes_ranking_div", "bayes_all", "bayes_rank_all", "configured_data", all_trigger, "bayes_ranking_all")
+                                   ".bayes_ranking", "bayes_model_all", "bayes_rank_all", reactive("configured_data"), all_trigger, "bayes_ranking_all")
     bayes_ranking_submodule_server("sub", common, reactive(input$network_style), reactive(input$rank_style), reactive(input$colourblind), reactive(input$simple),
-                                   ".bayes_ranking_div", "bayes_sub", "bayes_rank_sub", "subsetted_data", sub_trigger, "bayes_ranking_sub")
+                                   ".bayes_ranking", "bayes_model_sub", "bayes_rank_sub", reactive("subsetted_data"), sub_trigger, "bayes_ranking_sub")
 
     return(list(
     save = function() {list(
@@ -270,15 +263,15 @@ bayes_ranking_submodule_result <- function(id, title, class) {
         open = TRUE,
         accordion_panel(
           title = title,
-          div(style = "display: flex; gap: 16px;",
-            div(style = "flex: 0 0 30%; padding: 16px; border: 2px solid #005c8a; white-space: normal;",
+          div(style = "display: flex;",
+            div(style = "flex: 0 0 30%; padding: 16px; border: 2px solid #005c8a; margin-right: -2px;",
               fluidRow(
                 align = "center",
                   h4("Relative effects"),
                   uiOutput(ns("forest"))
               )
             ),
-            div(style = "flex: 0 0 40%; padding: 16px; border: 2px solid #005c8a; white-space: normal;",
+            div(style = "flex: 0 0 40%; padding: 16px; border: 2px solid #005c8a; margin-right: -2px;",
               fluidRow(
                 align = "center",
                   h4("Ranking results"),
@@ -295,7 +288,7 @@ bayes_ranking_submodule_result <- function(id, title, class) {
                 )
               )
             ),
-            div(style = "flex: 0 0 30%; padding: 16px; border: 2px solid #005c8a; white-space: normal;",
+            div(style = "flex: 0 0 30%; padding: 16px; border: 2px solid #005c8a;",
               fluidRow(
                 align = "center",
                   h4("Summary of evidence"),
@@ -314,12 +307,12 @@ bayes_ranking_module_result <- function(id) {
   tagList(
     p("If you export and include the Litmus Rank-O-Gram or the Radial SUCRA plot in your work, please cite it as:
         Nevill CR, Cooper NJ, Sutton AJ, A multifaceted graphical display, including treatment ranking, was developed
-        to aid interpretation of network meta-analysis, Journal of Clinical Epidemiology (2023)", class = "bayes_ranking_div"),
+        to aid interpretation of network meta-analysis, Journal of Clinical Epidemiology (2023)", class = "bayes_ranking"),
     fluidRow(
-      bayes_ranking_submodule_result(ns("all"), "Ranking panel for all studies", "bayes_ranking_div")
+      bayes_ranking_submodule_result(ns("all"), "Ranking panel for all studies", "bayes_ranking")
     ),
     fluidRow(
-      bayes_ranking_submodule_result(ns("sub"), "Ranking panel with selected studies excluded", "bayes_ranking_div")
+      bayes_ranking_submodule_result(ns("sub"), "Ranking panel with selected studies excluded", "bayes_ranking")
     )
   )
 }

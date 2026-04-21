@@ -42,23 +42,13 @@ hr {
     color: #333; /* old IE */
     background-color: #333; /* Modern Browsers */
 }
-.shiny-progress .bar {
-  background-color:#FF0000;
-  opacity:0.8;
-}
-.shiny-progress .progress {
-  height:7px;
-}
+
 .componentName {
   display:inline-block;
   font-size:15pt;
   font-weight:bold;
 }
-.compHelpButton {
-  display:inline-block;
-  margin:0px;
-  font-size:14pt;
-}
+
 .rpkg {
   font-size:10pt;
   font-weight:bold;
@@ -104,22 +94,7 @@ hr {
   font-style:italic;
   font-size:14pt;
 }
-.butReset {
-  background-color: #C51E10;
-  color: white;
-  padding: 5px 5px;
-  border: none;
-}
-.butReset:hover {
-  background-color: #830D03;
-  color: white;
-}
-.butResXf {
-  background-color: #C51E10;
-  color: white;
-  padding: 1px 1px;
-  border: none;
-}
+
 .hrDashed {
   border: 0;
   border-bottom: 1px dashed #606060;
@@ -139,7 +114,7 @@ hr {
   margin:0px;
 }
 .mod_icon {
-  color:#699FA1;
+  color:white;
   margin:0px;
 }
 
@@ -158,6 +133,17 @@ hr {
   font-size: clamp(40px, 8vw, 100px);
   color: #FF5733;
   text-align: center;
+}
+
+/* change colour of inactive nav panel tabs */
+/* active colours are defined in the theme in ui.R */
+.nav-tabs .nav-link:not(.active) {
+  background-color: #4c8cad;
+}
+
+/* add gap between tabs */
+.nav-tabs .nav-link {
+  margin-right: 2px;
 }
 
 /* hide empty panels created by bslib::nav_panel */
@@ -206,7 +192,7 @@ hr {
 }
 
 .accordion {
-  --bs-accordion-active-bg: #85bad4;
+  --bs-accordion-active-bg: #4c8cad;
   --bs-accordion-btn-focus-box-shadow: #005c8a;
 }
 

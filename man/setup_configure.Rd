@@ -2,10 +2,7 @@
 % Please edit documentation in R/setup_configure_f.R
 \name{setup_configure}
 \alias{setup_configure}
-\title{Checks the connectivity of the loaded data and converts it into formats for
-later analyses. Conducts a frequentist analysis using \code{netmeta::netmeta()}.
-The output can be passed to many other functions - all \code{summary_} and \code{freq_}
-functions and \code{bayes_model()}, \code{baseline_model()} and \code{covariate_model()}.}
+\title{Configure the analysis}
 \usage{
 setup_configure(
   loaded_data,
@@ -38,7 +35,6 @@ shiny, otherwise leave the default \code{NULL}}
 }
 \value{
 \code{configured_data} containing:
-\item{wrangled_data}{dataframe. To be presented in the data table}
 \item{treatments}{dataframe. Treatment names and IDs}
 \item{reference_treatment}{character. The selected reference treatment}
 \item{disconnected_indices}{vector. Indices of studies that are not connected to the main network}
@@ -52,7 +48,6 @@ else empty:
 \item{type}{character. Whether the covariate is \code{binary} or \code{continuous}}
 }
 }
-\item{bugsnet}{dataframe. Processed data for bugsnet analyses created by \code{bugsnetdata}}
 \item{freq}{list. Processed data for frequentist analyses created by \code{frequentist()}}
 \item{outcome}{character. Whether the data is \code{binary} or \code{continuous}}
 \item{outcome_measure}{character. Outcome measure of the dataset.}
@@ -65,4 +60,17 @@ Checks the connectivity of the loaded data and converts it into formats for
 later analyses. Conducts a frequentist analysis using \code{netmeta::netmeta()}.
 The output can be passed to many other functions - all \code{summary_} and \code{freq_}
 functions and \code{bayes_model()}, \code{baseline_model()} and \code{covariate_model()}.
+}
+\examples{
+minimal_data_path <- system.file("extdata", "continuous_minimal.csv", package = "metainsight")
+loaded_data <- setup_load(data_path = minimal_data_path,
+                          outcome = "continuous")
+
+configured_data <- setup_configure(loaded_data = loaded_data,
+                                   reference_treatment = "the Great",
+                                   effects = "random",
+                                   outcome_measure = "MD",
+                                   ranking_option = "good",
+                                   seed = 123)
+
 }

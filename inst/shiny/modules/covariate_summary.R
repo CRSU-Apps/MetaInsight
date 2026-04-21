@@ -2,7 +2,7 @@ covariate_summary_module_ui <- function(id) {
   ns <- NS(id)
   tagList(
     actionButton(ns("run"), "Generate plot", icon = icon("arrow-turn-down")),
-    div(class = "covariate_summary_div download_buttons",
+    div(class = "covariate_summary download_buttons",
         downloadButton(ns("download"), "Download plot")
     )
   )
@@ -35,7 +35,7 @@ covariate_summary_module_server <- function(id, common, parent_session) {
     output$plot <- renderUI({
       watch("covariate_summary")
       req(common$covariate_summary_plot)
-      on.exit(shinyjs::show(selector = ".covariate_summary_div"))
+      on.exit(shinyjs::show(selector = ".covariate_summary"))
       svg_container( style = "max-width: 800px;",
           common$covariate_summary_plot
       )

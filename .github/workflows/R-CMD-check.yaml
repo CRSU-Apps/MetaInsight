@@ -45,26 +45,30 @@ jobs:
       - name: Install JAGS and rjags (Windows)
         if: runner.os == 'Windows'
         run: |
-          # 1. Install JAGS
-          $jagsUrl = "https://sourceforge.net/projects/mcmc-jags/files/JAGS/4.x/Windows/JAGS-4.3.1.exe/download"
+          # Install JAGS
+          $jagsUrl = "https://sourceforge.net/projects/mcmc-jags/files/JAGS/4.x/Windows/JAGS-4.3.2.exe/download"
           $installerPath = "$env:TEMP\JAGS.exe"
           Invoke-WebRequest -UserAgent "Wget" -Uri $jagsUrl -OutFile $installerPath
           Start-Process -FilePath $installerPath -ArgumentList "/S" -Wait
 
-          # 2. Install rjags using the short paths
+          # Add JAGS to PATH for all subsequent steps
+          echo "C:\Program Files\JAGS\JAGS-4.3.2\x64\bin" >> $env:GITHUB_PATH
+
+          # Install rjags using the short paths
           Rscript -e "install.packages('rjags')"
 
       - name: Install JAGS and rjags (macOS)
         if: runner.os == 'macOS'
         run: |
-
           # Install JAGS using PKG
-
           curl -L https://sourceforge.net/projects/mcmc-jags/files/JAGS/4.x/Mac%20OS%20X/JAGS-4.3.2.pkg/download -o ${{ runner.temp }}/jags.pkg
           /usr/bin/sudo installer -allowUntrusted -dumplog -pkg ${{ runner.temp }}/jags.pkg -target /
 
           # Install rjags with correct paths
           Rscript -e "install.packages('rjags')"
+
+          RLIB=$(Rscript -e "cat(R.home('lib'))")
+          sudo ln -sf /usr/local/lib/libjags.4.dylib ${RLIB}/libjags.4.dylib
 
       - name: Install Chrome
         uses: browser-actions/setup-chrome@latest
@@ -75,7 +79,7 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: rcmdcheck, any::XML
+          extra-packages: rcmdcheck, any::XML, local::.
           pak-version: devel # See https://github.com/r-lib/actions/issues/559
 
       - uses: r-lib/actions/check-r-package@v2

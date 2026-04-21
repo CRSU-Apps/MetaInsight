@@ -18,14 +18,13 @@ test_that("setup_configure returns errors for faulty inputs", {
 
 test_that("setup_configure returns correctly structured objects", {
 
-  expected_items <- c("wrangled_data", "treatments", "disconnected_indices", "connected_data",
-    "non_covariate_data", "covariate", "bugsnet", "freq", "outcome", "outcome_measure", "effects", "ranking_option", "seed")
+  expected_items <- c("treatments", "disconnected_indices", "connected_data",
+    "non_covariate_data", "covariate", "freq", "outcome", "outcome_measure", "effects", "ranking_option", "seed")
 
   result <- setup_configure(mock_data, "the Great", "fixed", "MD", "good", 999)
   expect_type(result, "list")
   expect_true(all(expected_items %in% names(result)))
 
-  expect_s3_class(result$wrangled_data, "data.frame")
   expect_s3_class(result$treatments, "data.frame")
   expect_type(result$reference_treatment, "character")
   expect_length(result$disconnected_indices, 0)
@@ -35,7 +34,6 @@ test_that("setup_configure returns correctly structured objects", {
   expect_type(result$covariate$column, "character")
   expect_type(result$covariate$name, "character")
   expect_type(result$covariate$type, "character")
-  expect_s3_class(result$bugsnet, "data.frame")
   expect_type(result$freq, "list")
   expect_type(result$outcome, "character")
   expect_type(result$outcome_measure, "character")
@@ -54,7 +52,6 @@ test_that("setup_configure loads data into common correctly for continuous long 
   common <- app$get_value(export = "common")
 
   result <- common$configured_data
-  expect_s3_class(result$wrangled_data, "data.frame")
   expect_s3_class(result$treatments, "data.frame")
   expect_type(result$reference_treatment, "character")
   expect_length(result$disconnected_indices, 0)
@@ -64,7 +61,6 @@ test_that("setup_configure loads data into common correctly for continuous long 
   expect_type(result$covariate$column, "character")
   expect_type(result$covariate$name, "character")
   expect_type(result$covariate$type, "character")
-  expect_s3_class(result$bugsnet, "data.frame")
   expect_type(result$freq, "list")
   expect_type(result$outcome, "character")
   expect_type(result$outcome_measure, "character")
@@ -75,6 +71,9 @@ test_that("setup_configure loads data into common correctly for continuous long 
   expect_equal(result$reference_treatment, "the_Great")
   expect_equal(result$outcome, "continuous")
   expect_equal(result$outcome_measure, "MD")
+
+  table <- app$wait_for_value(output = "setup_configure-table")
+  expect_match(table, "<table")
 
   app$stop()
 })
@@ -90,7 +89,6 @@ test_that("setup_configure loads data into common correctly for wide binary data
   common <- app$get_value(export = "common")
 
   result <- common$configured_data
-  expect_s3_class(result$wrangled_data, "data.frame")
   expect_s3_class(result$treatments, "data.frame")
   expect_type(result$reference_treatment, "character")
   expect_length(result$disconnected_indices, 0)
@@ -100,7 +98,6 @@ test_that("setup_configure loads data into common correctly for wide binary data
   expect_type(result$covariate$column, "character")
   expect_type(result$covariate$name, "character")
   expect_type(result$covariate$type, "character")
-  expect_s3_class(result$bugsnet, "data.frame")
   expect_type(result$freq, "list")
   expect_type(result$outcome, "character")
   expect_type(result$outcome_measure, "character")
@@ -125,14 +122,12 @@ test_that("setup_configure logs errors when disconnected data is uploaded", {
   common <- app$get_value(export = "common")
 
   result <- common$configured_data
-  expect_s3_class(result$wrangled_data, "data.frame")
   expect_s3_class(result$treatments, "data.frame")
   expect_type(result$reference_treatment, "character")
   expect_length(result$disconnected_indices, 3)
   expect_s3_class(result$connected_data, "data.frame")
   expect_s3_class(result$non_covariate_data, "data.frame")
   expect_type(result$covariate, "list")
-  expect_s3_class(result$bugsnet, "data.frame")
   expect_type(result$freq, "list")
   expect_equal(result$reference_treatment, "A")
   expect_equal(result$outcome_measure, "MD")
@@ -149,67 +144,57 @@ test_that("Data wrangled from default continuous long file", {
   load <- setup_load(outcome = "continuous")
   config <- setup_configure(load, "Placebo", "random", "MD", "good", 999)
 
-  expect_equal(colnames(config$wrangled_data), c("StudyID", colnames(load$data)[c(1, 2, 5, 3, 4, 7:15, 6)]),
-               label = format_vector_to_string(colnames(config$wrangled_data)))
+  expect_equal(colnames(config$connected_data), c("StudyID", colnames(load$data)[c(1, 2, 5, 3, 4, 7:15, 6)]),
+               label = format_vector_to_string(colnames(config$connected_data)))
 
-  expect_equal(config$wrangled_data$StudyID, rep(1:45, each = 2),
-               label = format_vector_to_string(config$wrangled_data$StudyID))
-  expect_equal(config$wrangled_data$T, c(rep(c(1, 2), times = 4), rep(c(1, 3), times = 18), rep(c(1, 4), times = 23)),
-               label = format_vector_to_string(config$wrangled_data$T))
+  expect_equal(config$connected_data$StudyID, rep(1:45, each = 2),
+               label = format_vector_to_string(config$connected_data$StudyID))
+  expect_equal(config$connected_data$T, c(rep(c(1, 2), times = 4), rep(c(1, 3), times = 18), rep(c(1, 4), times = 23)),
+               label = format_vector_to_string(config$connected_data$T))
 
-  expect_equal(nrow(config$wrangled_data), nrow(load$data),
-               label = nrow(config$wrangled_data),
+  expect_equal(nrow(config$connected_data), nrow(load$data),
+               label = nrow(config$connected_data),
                expected.label = nrow(load$data))
-  expect_equal(config$wrangled_data$Study, load$data$Study,
-               label = format_vector_to_string(config$wrangled_data$Study),
+  expect_equal(config$connected_data$Study, load$data$Study,
+               label = format_vector_to_string(config$connected_data$Study),
                expected.label = format_vector_to_string(load$data$Study))
-  expect_equal(config$wrangled_data$N, load$data$N,
-               label = format_vector_to_string(config$wrangled_data$N),
+  expect_equal(config$connected_data$N, load$data$N,
+               label = format_vector_to_string(config$connected_data$N),
                expected.label = format_vector_to_string(load$data$N))
-  expect_equal(config$wrangled_data$Mean, load$data$Mean,
-               label = format_vector_to_string(config$wrangled_data$Mean),
+  expect_equal(config$connected_data$Mean, load$data$Mean,
+               label = format_vector_to_string(config$connected_data$Mean),
                expected.label = format_vector_to_string(load$data$Mean))
-  expect_equal(config$wrangled_data$SD, load$data$SD,
-               label = format_vector_to_string(config$wrangled_data$SD),
+  expect_equal(config$connected_data$SD, load$data$SD,
+               label = format_vector_to_string(config$connected_data$SD),
                expected.label = format_vector_to_string(load$data$SD))
 })
 
 test_that("Continuous wide data wrangled with treatment IDs", {
 
+  load_long <- setup_load(outcome = "continuous")
   load <- setup_load(file.path(test_data_dir, "Non_opioids_wide.csv"), outcome = "continuous")
   config <- setup_configure(load, "Placebo", "random", "MD", "good", 999)
 
-  expect_equal(config$wrangled_data$StudyID, 1:45,
-               label = format_vector_to_string(config$wrangled_data$StudyID))
-  expect_equal(config$wrangled_data$T.1, c(rep(1, times = 45)),
-               label = format_vector_to_string(config$wrangled_data$T.1))
-  expect_equal(config$wrangled_data$T.2, c(rep(2, times = 4), rep(3, times = 18), rep(4, times = 23)),
-               label = format_vector_to_string(config$wrangled_data$T.2))
+  expect_equal(config$connected_data$StudyID, rep(1:45, each = 2),
+               label = format_vector_to_string(config$connected_data$StudyID))
+  expect_equal(config$connected_data$T, c(rep(c(1, 2), times = 4), rep(c(1, 3), times = 18), rep(c(1, 4), times = 23)),
+               label = format_vector_to_string(config$connected_data$T))
 
-  expect_equal(nrow(config$wrangled_data), nrow(load$data),
-               label = nrow(config$wrangled_data),
-               expected.label = nrow(load$data))
-  expect_equal(config$wrangled_data$Study, load$data$Study,
-               label = format_vector_to_string(config$wrangled_data$Study),
-               expected.label = format_vector_to_string(load$data$Study))
-  expect_equal(config$wrangled_data$N.1, load$data$N.1,
-               label = format_vector_to_string(config$wrangled_data$N.1),
-               expected.label = format_vector_to_string(load$data$N.1))
-  expect_equal(config$wrangled_data$Mean.1, load$data$Mean.1,
-               label = format_vector_to_string(config$wrangled_data$Mean.1),
-               expected.label = format_vector_to_string(load$data$Mean.1))
-  expect_equal(config$wrangled_data$SD.1, load$data$SD.1,
-               label = format_vector_to_string(config$wrangled_data$SD.1),
-               expected.label = format_vector_to_string(load$data$SD.1))
-  expect_equal(config$wrangled_data$N.2, load$data$N.2,
-               label = format_vector_to_string(config$wrangled_data$N.2),
-               expected.label = format_vector_to_string(load$data$N.2))
-  expect_equal(config$wrangled_data$Mean.2, load$data$Mean.2,
-               label = format_vector_to_string(config$wrangled_data$Mean.2),
-               expected.label = format_vector_to_string(load$data$Mean.2))
-  expect_equal(config$wrangled_data$SD.2, load$data$SD.2,
-               label = format_vector_to_string(config$wrangled_data$SD.2),
-               expected.label = format_vector_to_string(load$data$SD.2))
+  expect_equal(nrow(config$connected_data), nrow(load_long$data),
+               label = nrow(config$connected_data),
+               expected.label = nrow(load_long$data))
+  expect_equal(config$connected_data$Study, load_long$data$Study,
+               label = format_vector_to_string(config$connected_data$Study),
+               expected.label = format_vector_to_string(load_long$data$Study))
+  expect_equal(config$connected_data$N, load_long$data$N,
+               label = format_vector_to_string(config$connected_data$N),
+               expected.label = format_vector_to_string(load_long$data$N))
+  expect_equal(config$connected_data$Mean, load_long$data$Mean,
+               label = format_vector_to_string(config$connected_data$Mean),
+               expected.label = format_vector_to_string(load_long$data$Mean))
+  expect_equal(config$connected_data$SD, load_long$data$SD,
+               label = format_vector_to_string(config$connected_data$SD),
+               expected.label = format_vector_to_string(load_long$data$SD))
 })
 
 test_that("Data wrangled from default binary long file", {
@@ -217,58 +202,55 @@ test_that("Data wrangled from default binary long file", {
   load <- setup_load(outcome = "binary")
   config <- setup_configure(load, "Placebo", "random", "OR", "good", 999)
 
-  expect_equal(colnames(config$wrangled_data), c("StudyID", colnames(load$data)[c(1, 2, 4, 3, 5)]),
-               label = format_vector_to_string(colnames(config$wrangled_data)))
+  expect_equal(colnames(config$connected_data), c("StudyID", colnames(load$data)[c(1, 2, 4, 3, 5)]),
+               label = format_vector_to_string(colnames(config$connected_data)))
 
-  expect_equal(config$wrangled_data$StudyID, rep(1:12, each = 2),
-               label = format_vector_to_string(config$wrangled_data$StudyID))
-  expect_equal(config$wrangled_data$T, c(1, 2, 1, 3, 1, 2, 1, 4, 1, 3, 1, 3, 1, 4, 1, 5, 1, 5, 1, 2, 1, 6, 1, 7),
-               label = format_vector_to_string(config$wrangled_data$T))
+  expect_equal(config$connected_data$StudyID, rep(1:12, each = 2),
+               label = format_vector_to_string(config$connected_data$StudyID))
+  expect_equal(config$connected_data$T, c(1, 2, 1, 3, 1, 2, 1, 4, 1, 3, 1, 3, 1, 4, 1, 5, 1, 5, 1, 2, 1, 6, 1, 7),
+               label = format_vector_to_string(config$connected_data$T))
 
-  expect_equal(nrow(config$wrangled_data), nrow(load$data),
-               label = nrow(config$wrangled_data),
+  expect_equal(nrow(config$connected_data), nrow(load$data),
+               label = nrow(config$connected_data),
                expected.label = nrow(load$data))
-  expect_equal(config$wrangled_data$Study, load$data$Study,
-               label = format_vector_to_string(config$wrangled_data$Study),
+  expect_equal(config$connected_data$Study, load$data$Study,
+               label = format_vector_to_string(config$connected_data$Study),
                expected.label = format_vector_to_string(load$data$Study))
-  expect_equal(config$wrangled_data$R, load$data$R,
-               label = format_vector_to_string(config$wrangled_data$R),
+  expect_equal(config$connected_data$R, load$data$R,
+               label = format_vector_to_string(config$connected_data$R),
                expected.label = format_vector_to_string(load$data$R))
-  expect_equal(config$wrangled_data$N, load$data$N,
-               label = format_vector_to_string(config$wrangled_data$N),
+  expect_equal(config$connected_data$N, load$data$N,
+               label = format_vector_to_string(config$connected_data$N),
                expected.label = format_vector_to_string(load$data$N))
 })
 
 test_that("Binary wide data wrangled with treatment IDs", {
 
+  load_long <- setup_load(outcome = "binary")
+
   load <- setup_load(file.path(test_data_dir, "Certolizumab_wide.csv"), outcome = "binary")
   config <- setup_configure(load, "Placebo", "random", "OR", "good", 999)
 
-  expect_equal(config$wrangled_data$StudyID, 1:12,
-               label = format_vector_to_string(config$wrangled_data$StudyID))
-  expect_equal(config$wrangled_data$T.1, rep(1, times = 12),
-               label = format_vector_to_string(config$wrangled_data$T.1))
-  expect_equal(config$wrangled_data$T.2, c(2, 3, 2, 4, 3, 3, 4, 5, 5, 2, 6, 7),
-               label = format_vector_to_string(config$wrangled_data$T.2))
+  expect_equal(colnames(config$connected_data), c("StudyID", colnames(load_long$data)[c(1, 2, 4, 3, 5)]),
+               label = format_vector_to_string(colnames(config$connected_data)))
 
-  expect_equal(nrow(config$wrangled_data), nrow(load$data),
-               label = nrow(config$wrangled_data),
-               expected.label = nrow(load$data))
-  expect_equal(config$wrangled_data$Study, load$data$Study,
-               label = format_vector_to_string(config$wrangled_data$Study),
-               expected.label = format_vector_to_string(load$data$Study))
-  expect_equal(config$wrangled_data$R.1, load$data$R.1,
-               label = format_vector_to_string(config$wrangled_data$R.1),
-               expected.label = format_vector_to_string(load$data$R.1))
-  expect_equal(config$wrangled_data$N.1, load$data$N.1,
-               label = format_vector_to_string(config$wrangled_data$N.1),
-               expected.label = format_vector_to_string(load$data$N.1))
-  expect_equal(config$wrangled_data$R.2, load$data$R.2,
-               label = format_vector_to_string(config$wrangled_data$R.2),
-               expected.label = format_vector_to_string(load$data$R.2))
-  expect_equal(config$wrangled_data$N.2, load$data$N.2,
-               label = format_vector_to_string(config$wrangled_data$N.2),
-               expected.label = format_vector_to_string(load$data$N.2))
+  expect_equal(config$connected_data$StudyID, rep(1:12, each = 2),
+               label = format_vector_to_string(config$connected_data$StudyID))
+  expect_equal(config$connected_data$T, c(1, 2, 1, 3, 1, 2, 1, 4, 1, 3, 1, 3, 1, 4, 1, 5, 1, 5, 1, 2, 1, 6, 1, 7),
+               label = format_vector_to_string(config$connected_data$T))
+
+  expect_equal(nrow(config$connected_data), nrow(load_long$data),
+               label = nrow(config$connected_data),
+               expected.label = nrow(load_long$data))
+  expect_equal(config$connected_data$Study, load_long$data$Study,
+               label = format_vector_to_string(config$connected_data$Study),
+               expected.label = format_vector_to_string(load_long$data$Study))
+  expect_equal(config$connected_data$R, load_long$data$R,
+               label = format_vector_to_string(config$connected_data$R),
+               expected.label = format_vector_to_string(load_long$data$R))
+  expect_equal(config$connected_data$N, load_long$data$N,
+               label = format_vector_to_string(config$connected_data$N),
+               expected.label = format_vector_to_string(load_long$data$N))
 })
 
 
@@ -291,3 +273,46 @@ test_that("Covariate info is extracted when available", {
   expect_equal(config$covariate$type, "continuous")
 
 })
+
+
+test_that("Summary table is produced correctly", {
+
+  expected_rows <- c(
+    "Outcome type:",
+    "Outcome measure:",
+    "Model effects type:",
+    "Reference treatment:",
+    "For treatment rankings, ORs less than 1 are:",
+    "Seed value:"
+  )
+
+  expected_values <- c(
+    "Binary",
+    "Odds Ratio",
+    "Random",
+    "The_great",
+    "Desirable",
+    123
+  )
+
+
+  table <- setup_configure_table(configured_data_bin)
+
+  expect_equal(rownames(table), expected_rows)
+  expect_equal(table$value, expected_values)
+  expect_equal(nrow(table), 6)
+  expect_equal(ncol(table), 1)
+
+  expected_rows[5] <- "For treatment rankings, values lower than the mean are:"
+  expected_values[1] <- "Continuous"
+  expected_values[2] <- "Mean Difference"
+
+  table <- setup_configure_table(configured_data_con)
+  expect_equal(rownames(table), expected_rows)
+  expect_equal(table$value, expected_values)
+  expect_equal(nrow(table), 6)
+  expect_equal(ncol(table), 1)
+
+})
+
+

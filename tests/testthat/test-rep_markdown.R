@@ -1,6 +1,6 @@
 test_that("rep_markdown produces a renderable .qmd when no analysis has been conducted", {
 
-  skip_on_os(c("windows", "mac"))
+  skip_on_os("mac")
 
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 60000)
   app$set_inputs(tabs = "rep")
@@ -10,8 +10,6 @@ test_that("rep_markdown produces a renderable .qmd when no analysis has been con
   app$wait_for_value(input = "rep_markdown-complete")
   sess_file <- app$get_download("rep_markdown-dlRMD")
   expect_false(is.null(sess_file))
-  lines <- readLines(sess_file)
-  writeLines(lines, sess_file)
   quarto::quarto_render(sess_file)
   html_file <- gsub("qmd","html", sess_file)
   expect_gt(file.info(html_file)$size, 1000)
@@ -20,7 +18,7 @@ test_that("rep_markdown produces a renderable .qmd when no analysis has been con
 
 test_that("rep_markdown produces can render a qmd to html when no analysis has been conducted", {
 
-  skip_on_os(c("windows", "mac"))
+  skip_on_os("mac")
 
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 60000)
   app$set_inputs(tabs = "rep")
@@ -35,7 +33,7 @@ test_that("rep_markdown produces can render a qmd to html when no analysis has b
 
 test_that("rep_markdown produces a renderable .Rmd file after a frequentist analysis", {
 
-  skip_on_os(c("windows", "mac"))
+  skip_on_os("mac")
 
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 60000)
 
@@ -48,10 +46,18 @@ test_that("rep_markdown produces a renderable .Rmd file after a frequentist anal
   app$set_inputs(setupSel = "setup_configure")
   app$wait_for_value(input = "setup_configure-ready")
   app$click("setup_configure-run")
-  expected_chunks <- expected_chunks + 1
+  expected_chunks <- expected_chunks + 2
 
   app$set_inputs(tabs = "summary")
-  app$set_inputs("setup_exclude-exclusions" = c("Study01", "Study25"))
+
+  # open the accordion
+  app$click(selector = "#setup_exclude-collapse .accordion-button")
+  app$wait_for_idle()
+  # click on study lines
+  click_setup_exclude(app, "Study01")
+  click_setup_exclude(app, "Study25")
+  app$wait_for_idle()
+
   app$wait_for_value(input = "setup_exclude-complete")
   expected_chunks <- expected_chunks + 1
 
@@ -59,8 +65,8 @@ test_that("rep_markdown produces a renderable .Rmd file after a frequentist anal
 
   app$set_inputs(summarySel = "summary_char", wait_ = FALSE)
   app$click("summary_char-run")
-  app$wait_for_value(output = "summary_char-table")
-  expected_chunks <- expected_chunks + 1
+  app$wait_for_value(output = "summary_char-network")
+  expected_chunks <- expected_chunks + 5
 
   app$set_inputs(summarySel = "summary_study")
   app$click("summary_study-run")
@@ -86,9 +92,9 @@ test_that("rep_markdown produces a renderable .Rmd file after a frequentist anal
   app$wait_for_value(output = "freq_compare-table_sub")
   expected_chunks <- expected_chunks + 2
 
-  app$set_inputs(freqSel = "freq_inconsistent")
-  app$click("freq_inconsistent-run")
-  app$wait_for_value(output = "freq_inconsistent-table_all")
+  app$set_inputs(freqSel = "freq_inconsistency")
+  app$click("freq_inconsistency-run")
+  app$wait_for_value(output = "freq_inconsistency-table_all")
   expected_chunks <- expected_chunks + 2
 
   app$set_inputs(freqSel = "freq_summary")
@@ -117,7 +123,7 @@ test_that("rep_markdown produces a renderable .Rmd file after a frequentist anal
 
 test_that("rep_markdown produces a renderable .Rmd file after a bayesian analysis", {
 
-  skip_on_os(c("windows", "mac"))
+  skip_on_os("mac")
 
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 60000)
 
@@ -127,8 +133,8 @@ test_that("rep_markdown produces a renderable .Rmd file after a bayesian analysi
   app$click("setup_reload-goLoad_session")
   app$set_inputs(tabs = "bayes")
 
-  #intro + setup_load + setup_configure + setup_exclude + bayes_model (3)
-  expected_chunks <- 7
+  #intro + setup_load + setup_configure (2) + setup_exclude + bayes_model (3)
+  expected_chunks <- 8
 
   app$set_inputs(bayesSel = "bayes_forest")
   app$click("bayes_forest-run")
@@ -192,14 +198,14 @@ test_that("rep_markdown produces a renderable .Rmd file after a bayesian analysi
   html_text <- extract_svg_text_from_html(html_file)
   forest_all_text <- extract_svg_text_from_svg(forest_all_app$html)
   forest_sub_text <- extract_svg_text_from_svg(forest_sub_app$html)
-  expect_true(identical(html_text[[1]], forest_all_text))
-  expect_true(identical(html_text[[2]], forest_sub_text))
+  expect_true(identical(html_text[[2]], forest_all_text))
+  expect_true(identical(html_text[[3]], forest_sub_text))
 
 })
 
 test_that("rep_markdown produces a renderable .Rmd file after a covariate analysis", {
 
-  skip_on_os(c("windows", "mac"))
+  skip_on_os("mac")
 
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 60000)
 
@@ -212,8 +218,8 @@ test_that("rep_markdown produces a renderable .Rmd file after a covariate analys
   # ensure inputs update
   app$set_inputs(covariateSel = "covariate_model")
 
-  # intro + setup_load + setup_configure + setup_exclude + covariate_model
-  expected_chunks <- 5
+  # intro + setup_load + setup_configure (2) + setup_exclude + covariate_model
+  expected_chunks <- 6
 
   app$set_inputs(covariateSel = "covariate_summary")
   app$click("covariate_summary-run")
@@ -232,9 +238,9 @@ test_that("rep_markdown produces a renderable .Rmd file after a covariate analys
   forest_app <- app$wait_for_value(output = "covariate_forest-covariate-plot")
   expected_chunks <- expected_chunks + 1
 
-  app$set_inputs(covariateSel = "covariate_comparison")
-  app$click("covariate_comparison-run")
-  app$wait_for_value(output = "covariate_comparison-covariate-table")
+  app$set_inputs(covariateSel = "covariate_compare")
+  app$click("covariate_compare-run")
+  app$wait_for_value(output = "covariate_compare-covariate-table")
   expected_chunks <- expected_chunks + 1
 
   app$set_inputs(covariateSel = "covariate_deviance")
@@ -281,8 +287,8 @@ test_that("rep_markdown produces a renderable .Rmd file after a covariate analys
   # test that results are reproducible by comparing forest plots
   html_text <- extract_svg_text_from_html(html_file)
   forest_text <- extract_svg_text_from_svg(forest_app$html)
-  # 3rd svg plot, following module order in global.R
-  expect_true(identical(html_text[[3]], forest_text))
+  # 4th svg plot, following module order in global.R
+  expect_true(identical(html_text[[4]], forest_text))
 
   app$stop()
 
@@ -290,7 +296,7 @@ test_that("rep_markdown produces a renderable .Rmd file after a covariate analys
 
 test_that("rep_markdown produces a renderable .Rmd file after a baseline analysis", {
 
-  skip_on_os(c("windows", "mac"))
+  skip_on_os("mac")
 
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 60000)
 
@@ -300,8 +306,8 @@ test_that("rep_markdown produces a renderable .Rmd file after a baseline analysi
   app$click("setup_reload-goLoad_session")
   app$set_inputs(tabs = "baseline")
 
-  #intro + setup_load + setup_configure + setup_exclude + baseline_model
-  expected_chunks <- 5
+  #intro + setup_load + setup_configure (2) + setup_exclude + baseline_model
+  expected_chunks <- 6
 
   app$set_inputs(baselineSel = "baseline_summary")
   app$click("baseline_summary-run")
@@ -320,9 +326,9 @@ test_that("rep_markdown produces a renderable .Rmd file after a baseline analysi
   forest_app <- app$wait_for_value(output = "baseline_forest-baseline-plot")
   expected_chunks <- expected_chunks + 1
 
-  app$set_inputs(baselineSel = "baseline_comparison")
-  app$click("baseline_comparison-run")
-  app$wait_for_value(output = "baseline_comparison-baseline-table")
+  app$set_inputs(baselineSel = "baseline_compare")
+  app$click("baseline_compare-run")
+  app$wait_for_value(output = "baseline_compare-baseline-table")
   expected_chunks <- expected_chunks + 1
 
   app$set_inputs(baselineSel = "baseline_deviance")
@@ -371,8 +377,7 @@ test_that("rep_markdown produces a renderable .Rmd file after a baseline analysi
   # test that results are reproducible by comparing forest plots
   html_text <- extract_svg_text_from_html(html_file)
   forest_text <- extract_svg_text_from_svg(forest_app$html)
-  # 3rd svg plot, following module order in global.R
-  expect_true(identical(html_text[[3]], forest_text))
+  # 4th svg plot, following module order in global.R
+  expect_true(identical(html_text[[4]], forest_text))
 
 })
-

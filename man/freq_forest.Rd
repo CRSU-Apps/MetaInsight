@@ -2,7 +2,7 @@
 % Please edit documentation in R/freq_forest_f.R
 \name{freq_forest}
 \alias{freq_forest}
-\title{Produce a frequentist forest plot and annotation using \code{meta::forest()}}
+\title{Produce a frequentist forest plot}
 \usage{
 freq_forest(
   configured_data,
@@ -26,9 +26,19 @@ Window. Insert the logger reactive list here for running in
 shiny, otherwise leave the default \code{NULL}}
 }
 \value{
-html. Contains the svg string to generate the plot. This can be saved
+html. Contains the svg string to generate the plot. This will display
+the plot when at the end of a quarto or rmarkdown chunk. To view in the viewer
+panel of Rstudio, use \code{htmltools::browsable()}. The output can be saved
 using \code{write_plot()}.
 }
 \description{
-Produce a frequentist forest plot and annotation using \code{meta::forest()}
+Produce an annotated frequentist forest plot using
+\code{meta::forest()}
+}
+\examples{
+configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
+configured_data <- readRDS(configured_data_path)
+
+freq_forest(configured_data = configured_data)
+
 }

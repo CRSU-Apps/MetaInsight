@@ -9,7 +9,7 @@ summary_network_module_ui <- function(id) {
                  ),
                  selected = "netplot"),
     actionButton(ns("run"), "Generate plots", icon = icon("arrow-turn-down")),
-    div(class = "summary_network_div",
+    div(class = "summary_network",
       fluidRow(
         tags$label("Label size"),
         column(width = 6,
@@ -38,15 +38,16 @@ summary_network_module_server <- function(id, common, parent_session) {
       }
       # TRIGGER
       trigger("summary_network")
-      common$meta$summary_network$used <- TRUE
-      common$meta$summary_network$label_all <- as.numeric(input$label_all)
-      common$meta$summary_network$label_sub <- as.numeric(input$label_sub)
-      common$meta$summary_network$style <- input$style
     })
 
 
     plot_all <- reactive({
       req(watch("summary_network") > 0)
+
+      common$meta$summary_network$used <- TRUE
+      common$meta$summary_network$label_all <- as.numeric(input$label_all)
+      common$meta$summary_network$style <- input$style
+
       summary_network(common$configured_data,
                       input$style,
                       as.numeric(input$label_all),
@@ -57,6 +58,9 @@ summary_network_module_server <- function(id, common, parent_session) {
     plot_sub <- reactive({
       watch("setup_exclude")
       req(watch("summary_network") > 0)
+
+      common$meta$summary_network$label_sub <- as.numeric(input$label_sub)
+
       summary_network(common$subsetted_data,
                       input$style,
                       as.numeric(input$label_sub),
@@ -148,7 +152,7 @@ summary_network_module_server <- function(id, common, parent_session) {
 
 summary_network_module_result <- function(id) {
   ns <- NS(id)
-  div(class = "summary_network_div",
+  div(class = "summary_network",
     fluidRow(
       conditionalPanel(
         condition = "input.style == 'netgraph'",

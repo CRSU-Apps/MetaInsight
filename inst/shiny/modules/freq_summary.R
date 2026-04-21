@@ -2,7 +2,7 @@ freq_summary_module_ui <- function(id) {
   ns <- NS(id)
   tagList(
     actionButton(ns("run"), "Generate plots", icon = icon("arrow-turn-down")),
-    div(class = "freq_summary_div",
+    div(class = "freq_summary",
       download_button_pair(id)
     )
   )

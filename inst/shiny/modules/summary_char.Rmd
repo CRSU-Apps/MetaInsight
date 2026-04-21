@@ -1,14 +1,36 @@
 ```{asis, echo = {{summary_char_knit}}, eval = {{summary_char_knit}}, include = {{summary_char_knit}}}
-### Summarise the characteristics of the original data and data with excluded studies.
+### Summarise the characteristics of data
+#### Network
 ```
 
 ```{r, echo = {{summary_char_knit}}, include = {{summary_char_knit}}}
-summary_df_all <- summary_char(configured_data)
-summary_df_sub <- summary_char(subsetted_data)
-summary_df_compare <- data.frame(summary_df_all$Value, summary_df_sub$Value)
-colnames(summary_df_compare) <- c("All studies", "With selected studies excluded")
-rownames(summary_df_compare) <- summary_df_all$Characteristic
+characteristics_all <- summary_char(configured_data)
+characteristics_sub <- summary_char(subsetted_data)
+characteristics_network <- data.frame(characteristics_all$network$Value, characteristics_sub$network$Value)
+colnames(characteristics_network) <- c("All studies", "With selected studies excluded")
+rownames(characteristics_network) <- characteristics_all$network$Characteristic
 
-knitr::kable(summary_df_compare, row.names = TRUE, caption = "Comparison of study characteristics")
+knitr::kable(characteristics_network, row.names = TRUE)
 ```
 
+```{asis, echo = {{summary_char_knit}}, eval = {{summary_char_knit}}, include = {{summary_char_knit}}}
+#### Treatments
+```
+
+```{r, echo = {{summary_char_knit}}, include = {{summary_char_knit}}}
+knitr::kable(characteristics_all$treatments, caption = "All studies")
+```
+```{r, echo = {{summary_char_knit}}, include = {{summary_char_knit}}}
+knitr::kable(characteristics_sub$treatments, caption = "With selected studies excluded")
+```
+
+```{asis, echo = {{summary_char_knit}}, eval = {{summary_char_knit}}, include = {{summary_char_knit}}}
+#### Treatment pairs
+```
+
+```{r, echo = {{summary_char_knit}}, include = {{summary_char_knit}}}
+knitr::kable(characteristics_all$pairs, caption = "All studies")
+```
+```{r, echo = {{summary_char_knit}}, include = {{summary_char_knit}}}
+knitr::kable(characteristics_sub$pairs, caption = "With selected studies excluded")
+```

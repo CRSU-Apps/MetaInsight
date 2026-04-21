@@ -1,10 +1,25 @@
-#' Fit a nodesplitting model with `gemtc::mtc.nodesplit()`. This is not possible
-#' for all networks and the function will return an error if the nodes cannot
-#' be split.
+#' @title Fit a Bayesian nodespliting model
+#' @description Fit a Bayesian nodesplitting model with `gemtc::mtc.nodesplit()`.
+#' This is not possible for all networks and the function will return an error
+#' if the nodes cannot be split.
 #'
 #' @inheritParams common_params
 #'
 #' @return `mtc.nodesplit` object containing an `mtc.result` object for each node
+#' @examples
+#' \donttest{
+#' nodesplit_path <- system.file("extdata", "continuous_nodesplit.csv", package = "metainsight")
+#' loaded_data <- setup_load(data_path = nodesplit_path,
+#'                           outcome = "continuous")
+#' configured_data <- setup_configure(loaded_data = loaded_data,
+#'                                    reference_treatment = "Placebo",
+#'                                    effects = "random",
+#'                                    outcome_measure = "MD",
+#'                                    ranking_option = "good",
+#'                                    seed = 123)
+#'
+#' nodesplit_model <- bayes_nodesplit(configured_data)
+#' }
 #' @export
 bayes_nodesplit <- function(configured_data, async = FALSE) {
 
@@ -83,12 +98,28 @@ bayes_nodesplit <- function(configured_data, async = FALSE) {
   }
 }
 
-#' Produce a forest plot from nodesplitting results
+#' @title Bayesian nodesplitting forest plot
+#' @description Produce a forest plot from nodesplitting results
 #'
 #' @param nodesplit `mtc.nodesplit` object produced by `bayes_nodesplit()`
 #' @param main_analysis logical. Whether the analysis is the main or sensitivity analysis. Default `TRUE`.
 #' @inheritParams common_params
 #' @inherit return-svg return
+#' @examples
+#' \donttest{
+#' nodesplit_path <- system.file("extdata", "continuous_nodesplit.csv", package = "metainsight")
+#' loaded_data <- setup_load(data_path = nodesplit_path,
+#'                           outcome = "continuous")
+#' configured_data <- setup_configure(loaded_data = loaded_data,
+#'                                    reference_treatment = "Placebo",
+#'                                    effects = "random",
+#'                                    outcome_measure = "MD",
+#'                                    ranking_option = "good",
+#'                                    seed = 123)
+#'
+#' nodesplit_model <- bayes_nodesplit(configured_data)
+#' bayes_nodesplit_plot(nodesplit_model)
+#' }
 #' @export
 bayes_nodesplit_plot <- function(nodesplit, main_analysis = TRUE, logger = NULL){
 
@@ -113,4 +144,3 @@ bayes_nodesplit_plot <- function(nodesplit, main_analysis = TRUE, logger = NULL)
   ) |> crop_svg()
 
 }
-

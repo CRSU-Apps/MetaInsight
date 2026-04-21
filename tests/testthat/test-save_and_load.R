@@ -6,7 +6,15 @@ test_that("The app can be saved after an analysis and the data restored", {
   app$wait_for_value(input = "setup_configure-ready")
   app$click("setup_configure-run")
   app$wait_for_value(input = "setup_exclude-complete")
-  app$set_inputs("setup_exclude-exclusions" = c("Study01", "Study25"))
+
+  # open the accordion
+  app$click(selector = "#setup_exclude-collapse .accordion-button")
+  app$wait_for_idle()
+  # click on study lines
+  click_setup_exclude(app, "Study01")
+  click_setup_exclude(app, "Study25")
+  app$wait_for_idle()
+
   app$wait_for_value(input = "setup_exclude-complete", ignore = list(NULL, "", "initial"))
 
   app$get_download("core_save-save_session", filename = save_file)
@@ -15,8 +23,6 @@ test_that("The app can be saved after an analysis and the data restored", {
   expect_equal(common_saved$state$setup_exclude$exclusions, c("Study01", "Study25"))
 
   # check data is in the save file (non-exhaustive)
-  expect_s3_class(common_saved$configured_data$bugsnet, "data.frame")
-  expect_s3_class(common_saved$subsetted_data$bugsnet, "data.frame")
   expect_type(common_saved$configured_data$freq, "list")
   expect_type(common_saved$subsetted_data$freq, "list")
 
@@ -35,13 +41,9 @@ test_that("The app can be saved after an analysis and the data restored", {
 
   # check that data has been reloaded into common and is the same as before
   common_restored <- app_load$get_value(export = "common")
-  expect_s3_class(common_restored$configured_data$bugsnet, "data.frame")
-  expect_s3_class(common_restored$subsetted_data$bugsnet, "data.frame")
   expect_type(common_restored$configured_data$freq, "list")
   expect_type(common_restored$subsetted_data$freq, "list")
-  expect_equal(common_saved$configured_data$bugsnet, common_restored$configured_data$bugsnet)
   expect_equal(common_saved$configured_data$freq, common_restored$configured_data$freq)
-  expect_equal(common_saved$subsetted_data$bugsnet, common_restored$subsetted_data$bugsnet)
   expect_equal(common_saved$subsetted_data$freq, common_restored$subsetted_data$freq)
 
   # check that input values have been restored

@@ -3,4 +3,5 @@
 developer_resources
 LICENSE
 CITATION.cff
-
+.github
+tests/testthat/saved_files

@@ -12,7 +12,7 @@ covariate_details_module_server <- function(id, common, parent_session) {
 
 covariate_details_module_result <- function(id) {
   ns <- NS(id)
-  bayes_details_submodule_result(ns("covariate"), "covariate_details_div")
+  bayes_details_submodule_result(ns("covariate"), "covariate_details")
 }
 
 covariate_details_module_rmd <- function(common) {

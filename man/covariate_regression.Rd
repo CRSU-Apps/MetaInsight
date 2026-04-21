@@ -2,8 +2,7 @@
 % Please edit documentation in R/covariate_regression_f.R
 \name{covariate_regression}
 \alias{covariate_regression}
-\title{Generate data from a covariate model required to produce a
-metaregression plot}
+\title{Covariate regression data}
 \usage{
 covariate_regression(model, configured_data, async = FALSE)
 }
@@ -22,4 +21,15 @@ List containing:
 \description{
 Generate data from a covariate model required to produce a
 metaregression plot
+}
+\examples{
+configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
+configured_data <- readRDS(configured_data_path)
+
+fitted_covariate_model <- covariate_model(configured_data = configured_data,
+                                          covariate_value = 98,
+                                          regressor_type = "shared")
+
+regression_data <- covariate_regression(model = fitted_covariate_model,
+                                        configured_data = configured_data)
 }

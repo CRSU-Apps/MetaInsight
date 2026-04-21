@@ -1,6 +1,9 @@
 covariate_model_module_ui <- function(id) {
   ns <- NS(id)
   tagList(
+    radioButtons(ns("dataset"), "Dataset",
+                 choiceNames = list("All studies", "With selected studies excluded"),
+                 choiceValues = list("configured_data", "subsetted_data")),
     sliderInput(ns("covariate_value"), "Covariate value", min = 0, max = 100, step = 1, value = 50),
     radioButtons(ns("regressor"), "Regression coefficient",
                  choiceNames = list(add_tooltip("Shared", "Coefficient is the same for all treatment comparisons"),
@@ -8,7 +11,7 @@ covariate_model_module_ui <- function(id) {
                                     add_tooltip("Unrelated", "Coefficient is different for each treatment comparison")),
                  choiceValues = list("shared", "exchangeable", "unrelated")),
     input_task_button(ns("run"), "Fit model", type = "default", icon = icon("arrow-turn-down")),
-    div(class = "covariate_model_div download_buttons",
+    div(class = "covariate_model download_buttons",
         actionButton(ns("run_all"), "Run all modules", icon = icon("forward-fast"))
     )
   )
@@ -23,7 +26,7 @@ covariate_model_module_server <- function(id, common, parent_session) {
     observe({
       watch("setup_configure")
       req(common$configured_data$covariate$column)
-      covariate_data <- common$configured_data$connected_data[[common$configured_data$covariate$column]]
+      covariate_data <- common[[input$dataset]]$connected_data[[common[[input$dataset]]$covariate$column]]
       min <- min(covariate_data)
       mean <- mean(covariate_data)
       max <- max(covariate_data)
@@ -53,6 +56,8 @@ covariate_model_module_server <- function(id, common, parent_session) {
     init("covariate_model_table")
     # used to trigger when model is fitted
     init("covariate_model_fit")
+    # used to trigger when exclusions change but only if using the subsetted data
+    init("covariate_model_sub")
 
     observeEvent(input$run, {
       if (is.null(common$configured_data)){
@@ -79,6 +84,7 @@ covariate_model_module_server <- function(id, common, parent_session) {
       common$meta$covariate_model$used <- TRUE
       common$meta$covariate_model$covariate_value <- as.numeric(input$covariate_value)
       common$meta$covariate_model$regressor <- input$regressor
+      common$meta$covariate_model$dataset <- input$dataset
 
       trigger("covariate_model")
     })
@@ -89,7 +95,18 @@ covariate_model_module_server <- function(id, common, parent_session) {
       function(...) cov_model <<- mirai::mirai(run(...), run = covariate_model, .args = environment())
     ) |> bind_task_button("run")
 
-    observeEvent(list(watch("covariate_model"), watch("setup_configure"), watch("effects"), debounce(input$covariate_value, 1000), input$regressor), {
+    # only trigger refitting when exclusions change if using the subset
+    observeEvent(list(input$dataset, watch("setup_exclude")), {
+      req(input$dataset == "subsetted_data")
+      trigger("covariate_model_sub")
+    })
+
+    observeEvent(list(watch("covariate_model"),
+                      watch("setup_configure"),
+                      watch("covariate_model_sub"),
+                      watch("effects"),
+                      debounce(input$covariate_value, 1000),
+                      input$regressor), {
       # trigger if run is pressed or if model is changed, but only if a model exists
       req((watch("covariate_model") > 0 || all(!is.null(common$covariate_model), watch("effects") > 0)))
 
@@ -103,7 +120,7 @@ covariate_model_module_server <- function(id, common, parent_session) {
       } else {
         common$logger |> writeLog(type = "starting", "Updating covariate model")
       }
-      common$tasks$covariate_model$invoke(common$configured_data,
+      common$tasks$covariate_model$invoke(common[[input$dataset]],
                                           input$covariate_value,
                                           input$regressor,
                                           common$covariate_model,
@@ -133,7 +150,7 @@ covariate_model_module_server <- function(id, common, parent_session) {
     watch("covariate_model") # required for reset
     watch("covariate_model_table")
     req(common$covariate_model)
-    shinyjs::show(selector = ".covariate_model_div")
+    shinyjs::show(selector = ".covariate_model")
     dic_table(common$covariate_model$dic)
   })
 
@@ -147,8 +164,8 @@ covariate_model_module_server <- function(id, common, parent_session) {
       if (length(common$configured_data$covariate) == 0){
         list()
       } else {
-        covariate_min <- min(common$configured_data$connected_data[[common$configured_data$covariate$column]])
-        covariate_max <- max(common$configured_data$connected_data[[common$configured_data$covariate$column]])
+        covariate_min <- min(common[[input$dataset]]$connected_data[[common[[input$dataset]]$covariate$column]])
+        covariate_max <- max(common[[input$dataset]]$connected_data[[common[[input$dataset]]$covariate$column]])
         log_val <- round(log10(covariate_max - covariate_min))
         step <- 10 ** (log_val - 2)
         list(
@@ -160,7 +177,8 @@ covariate_model_module_server <- function(id, common, parent_session) {
           covariate_tick = ifelse(common$configured_data$covariate$type == "continuous", TRUE, FALSE),
           ### Manual save end
           covariate_value = as.numeric(input$covariate_value),
-          regressor = input$regressor)
+          regressor = input$regressor,
+          dataset = input$dataset)
       }
     },
     load = function(state) {
@@ -179,6 +197,7 @@ covariate_model_module_server <- function(id, common, parent_session) {
         }
         ### Manual load end
         updateRadioButtons(session, "regressor", selected = state$regressor)
+        updateRadioButtons(session, "dataset", selected = state$dataset)
       }
     }
   ))
@@ -195,7 +214,7 @@ covariate_model_module_result <- function(id) {
 
 covariate_model_module_rmd <- function(common){ list(
   covariate_model_knit = !is.null(common$meta$covariate_model$used),
-  # covariate_model_dataset = common$meta$covariate_model$dataset,
+  covariate_model_dataset = common$meta$covariate_model$dataset,
   covariate_model_covariate_value = common$meta$covariate_model$covariate_value,
   covariate_model_regressor = common$meta$covariate_model$regressor)
 }

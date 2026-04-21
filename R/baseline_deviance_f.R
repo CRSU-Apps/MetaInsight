@@ -1,4 +1,6 @@
-#' Produce deviance plots for baseline models
+#' @title Produce deviance plots for baseline risk models
+#' @description Produce deviance plotly plots for baseline risk models. Unlike for
+#' `bayes_model` output, only stem and leverage plots are produced.
 #' @param model Output model produced by `baseline_model()`
 #' @inheritParams common_params
 #' @return list containing:
@@ -6,6 +8,16 @@
 #'  \item{stem_plot}{plotly object}
 #'  \item{lev_plot}{plotly object}
 #'
+#' @examples
+#' \donttest{
+#' configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
+#' configured_data <- readRDS(configured_data_path)
+#'
+#' fitted_baseline_model <- baseline_model(configured_data = configured_data,
+#'                                         regressor_type = "shared")
+#'
+#' baseline_deviance(model = fitted_baseline_model)
+#' }
 #' @export
 baseline_deviance <- function(model, async = FALSE){
 
