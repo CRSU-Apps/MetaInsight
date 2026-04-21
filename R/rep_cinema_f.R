@@ -21,6 +21,11 @@ rep_cinema <- function(configured_data, gemtc_results = NULL, logger = NULL) {
     check_param_classes("gemtc_results", "mtc.result", logger)
   }
 
+  if (!all(c("rob", "indirectness") %in% names(configured_data$connected_data))) {
+    logger |> writeLog(type = "error", "The uploaded data must contain 'rob' and 'indirectness' columns")
+    return()
+  }
+
   contributions <- netmeta::netcontrib(
     x = configured_data$freq$netmeta,
     method = "shortestpath",
@@ -120,7 +125,7 @@ rep_cinema <- function(configured_data, gemtc_results = NULL, logger = NULL) {
 #' @param outcome_type Type of outcome for which to reorder, either 'continuous' or 'binary'.
 #' @return A List with the described structure.
 .PrepareDataForCinema <- function(data, treatment_ids, outcome_type) {
-  # browser()
+
   if (FindDataShape(data) == "wide") {
     long_data <- WideToLong(data, outcome_type)
   } else {

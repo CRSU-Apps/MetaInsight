@@ -1,15 +1,12 @@
 rep_cinema_module_ui <- function(id) {
-  ns <- shiny::NS(id)
+  ns <- NS(id)
   tagList(
-    # UI
-
     radioButtons(ns("model"), "Select model to export", choices = list("Frequentist" = "freq", "Bayesian" = "bayes")),
     radioButtons(ns("data"), "Select dataset", choices = list("All studies" = "configured_data", "With selected studies excluded" = "subsetted_data")),
     actionButton(ns("run"), "Create CINeMA export file", icon = icon("arrow-turn-down")),
     div(style = "visibility: hidden;",
       downloadButton(ns("download"), "")
     )
-
   )
 }
 
@@ -20,6 +17,11 @@ rep_cinema_module_server <- function(id, common, parent_session) {
 
     if (is.null(common$configured_data$freq)) {
       common$logger |> writeLog(type = "error", go_to = "setup_configure", "Please configure the analysis first")
+      return()
+    }
+
+    if (!all(c("rob", "indirectness") %in% names(common$configured_data$connected_data))){
+      common$logger |> writeLog(type = "error", "The uploaded data must contain 'rob' and 'indirectness' columns")
       return()
     }
 
@@ -48,7 +50,8 @@ rep_cinema_module_server <- function(id, common, parent_session) {
 
   output$download <- downloadHandler(
     filename = function() {
-      paste0("cinema_", input$model, ".json")
+      dataset <- ifelse(input$data == "configured_data", "_all", "_sub")
+      paste0("cinema_", input$model, dataset, ".json")
     },
     content = function(file) {
       writeLines(
