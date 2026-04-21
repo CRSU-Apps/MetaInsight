@@ -22,7 +22,7 @@ rep_cinema <- function(configured_data, gemtc_results = NULL, logger = NULL) {
   }
 
   contributions <- netmeta::netcontrib(
-    x = configured_data$freq$net1,
+    x = configured_data$freq$netmeta,
     method = "shortestpath",
     study = TRUE
   )

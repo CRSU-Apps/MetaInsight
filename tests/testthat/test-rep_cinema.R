@@ -1,6 +1,6 @@
 GenerateCinemaAnalysis <- function(cinema_data) {
   contributions <- netmeta::netcontrib(
-    x = cinema_data$freq$net1,
+    x = cinema_data$freq$netmeta,
     method = "shortestpath",
     study = TRUE
   )
@@ -17,13 +17,14 @@ RecreateAnalysisFromCinemaProject <- function() {
   cinema_outcome <- tolower(unlist(stringr::str_to_sentence(cinema_project$project$type)))
   cinema_outcome_measure <- unlist(cinema_project$project$CM$contributionMatrices$hatmatrix$sm)
 
+
   cinema_long_data <- cinema_project$project$studies$long
   treatment_ids <- cinema_long_data |>
     FindAllTreatments() |>
     CreateTreatmentIds() |>
     CleanTreatmentIds()
   cinema_long_data <- WrangleUploadData(cinema_long_data, treatment_ids, cinema_outcome)
-  cinema_long_data <- metainsight:::ReinstateTreatmentIds(cinema_long_data, treatment_ids)
+  cinema_long_data <- ReinstateTreatmentIds(cinema_long_data, treatment_ids)
 
   data <- list(
     is_data_valid = TRUE,
@@ -33,7 +34,7 @@ RecreateAnalysisFromCinemaProject <- function() {
   )
   class(data) <- "loaded_data"
 
-  config <- setup_configure(data, data$treatments$Label[1], cinema_effects, cinema_outcome_measure, "good", 123)
+  config <- setup_configure(data, "Placebo", cinema_effects, cinema_outcome_measure, "good", 123)
 
   calculated_analysis <- GenerateCinemaAnalysis(config)
 
@@ -162,12 +163,6 @@ test_that("Should export study contributions", {
   #   }
   # )
 })
-
-
-
-
-
-
 
 
 test_that("{shinytest2} recording: e2e_rep_cinema", {

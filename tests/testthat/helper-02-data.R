@@ -5,6 +5,9 @@ minimal_data_path <- system.file("extdata", "continuous_minimal.csv", package = 
 loaded_data_bin <- setup_load(file.path(test_data_dir, "Binary_long_continuous_cov.csv"), outcome = "binary")
 configured_data_bin <- setup_configure(loaded_data_bin, "the Great", "random", "OR", "good", 123)
 
+cinema_load <- setup_load(file.path(test_data_dir, "cinema_data", "NMA_data_binary_FE_two_arm_CINeMA.csv"), outcome = "binary")
+cinema_con <- setup_configure(cinema_load, cinema_load$treatments$Label[1], "fixed", "OR", "good", 123)
+
 options(shinytest2.load_timeout=60000)
 
 if (Sys.getenv("LOCAL") == "true"){
