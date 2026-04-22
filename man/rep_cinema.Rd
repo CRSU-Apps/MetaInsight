@@ -9,7 +9,9 @@ rep_cinema(configured_data, gemtc_results = NULL, logger = NULL)
 \arguments{
 \item{configured_data}{list. Input dataset created by \code{setup_configure()} or \code{setup_exclude()}}
 
-\item{gemtc_results}{Output from gemtc::mtc.run, as returned in the 'mtcResults' list element from baye(). If this parameter is NULL then the frequentist analysis results found in 'contributions' are used. If it is not NULL then the Bayesian analysis results contained in this parameter are used. Defaults to NULL.}
+\item{gemtc_results}{Output from \code{gemtc::mtc.run()}, as returned in the \code{mtcResults} list element from \code{bayes_model()}.
+If this parameter is \code{NULL} then the frequentist analysis results found in 'contributions' are used.
+If it is not \code{NULL} then the Bayesian analysis results contained in this parameter are used. Defaults to \code{NULL}.}
 
 \item{logger}{Stores all notification messages to be displayed in the Log
 Window. Insert the logger reactive list here for running in
@@ -36,4 +38,13 @@ A named list of lists. The top level list contains items:
 }
 \description{
 Prepare project into a JSON format that CINeMA can read.
+}
+\examples{
+configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
+configured_data <- readRDS(configured_data_path)
+
+cinema_project <- rep_cinema(configured_data = configured_data)
+
+writeLines(cinema_project, tempfile(fileext = ".json"))
+
 }

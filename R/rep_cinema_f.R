@@ -1,8 +1,9 @@
-
 #' @title rep_cinema
 #' @description Prepare project into a JSON format that CINeMA can read.
 #' @inheritParams common_params
-#' @param gemtc_results Output from gemtc::mtc.run, as returned in the 'mtcResults' list element from baye(). If this parameter is NULL then the frequentist analysis results found in 'contributions' are used. If it is not NULL then the Bayesian analysis results contained in this parameter are used. Defaults to NULL.
+#' @param gemtc_results Output from `gemtc::mtc.run()`, as returned in the `mtcResults` list element from `bayes_model()`.
+#' If this parameter is `NULL` then the frequentist analysis results found in 'contributions' are used.
+#' If it is not `NULL` then the Bayesian analysis results contained in this parameter are used. Defaults to `NULL`.
 #' @return JSON string with the following structure:
 #' A named list of lists. The top level list contains items:
 #' - "project" Information for CINeMA project
@@ -13,12 +14,25 @@
 #'   - "Studies" Study data
 #'     - "long" Output from `.PrepareDataForCinema()`
 #'
+#' @examples
+#' configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
+#' configured_data <- readRDS(configured_data_path)
+#'
+#' cinema_project <- rep_cinema(configured_data = configured_data)
+#'
+#' writeLines(cinema_project, tempfile(fileext = ".json"))
+#'
 #' @export
 rep_cinema <- function(configured_data, gemtc_results = NULL, logger = NULL) {
 
   check_param_classes("configured_data", "configured_data", logger)
   if (!is.null(gemtc_results)) {
     check_param_classes("gemtc_results", "mtc.result", logger)
+  }
+
+  if (!is.null(gemtc_results) && gemtc_results$model$type == "regression") {
+    logger |> writeLog(type = "error", "Meta-regression models cannot currently be exported to CINeMA")
+    return()
   }
 
   if (!all(c("rob", "indirectness") %in% names(configured_data$connected_data))) {
@@ -68,8 +82,10 @@ rep_cinema <- function(configured_data, gemtc_results = NULL, logger = NULL) {
 #' study towards the comparison. The name of each item is the name of the relevant study, and
 #' every study is included in the list. The values sum to 1.
 #'
-#' @param study_contributions The contribution matrix calculated by {netmeta}.
+#' @param study_contributions The contribution matrix calculated by \CRANpkg{gemtc}.
+#' @param data The connected dataset
 #' @return A List with the described structure.
+#' @noRd
 .PrepareStudyContibutionsForCinema <- function(study_contributions, data) {
   prepared_contributions <- sapply(
     simplify = FALSE,
@@ -124,15 +140,10 @@ rep_cinema <- function(configured_data, gemtc_results = NULL, logger = NULL) {
 #' @param treatment_ids  Data frame containing treatment names (Label), original tratment names (RawLabel) and IDs (Number).
 #' @param outcome_type Type of outcome for which to reorder, either 'continuous' or 'binary'.
 #' @return A List with the described structure.
+#' @noRd
 .PrepareDataForCinema <- function(data, treatment_ids, outcome_type) {
 
-  if (FindDataShape(data) == "wide") {
-    long_data <- WideToLong(data, outcome_type)
-  } else {
-    long_data <- data
-  }
-
-  long_data <- ReinstateTreatmentIds(long_data, treatment_ids)
+  long_data <- ReinstateTreatmentIds(data, treatment_ids)
 
   prepared_data <- lapply(
     1:nrow(long_data),
@@ -175,8 +186,11 @@ rep_cinema <- function(configured_data, gemtc_results = NULL, logger = NULL) {
 #' @param contributions Contributions from {netmeta}.
 #' @param model_type Type of model: "fixed" or "random".
 #' @param outcome_measure Outcome measure, one of: "OR", "RR", "RD", "MD", "SMD".
-#' @param gemtc_results Output from gemtc::mtc.run, as returned in the 'mtcResults' list element from baye(). If this parameter is NULL then the frequentist analysis results found in 'contributions' are used. If it is not NULL then the Bayesian analysis results contained in this parameter are used. Defaults to NULL.
+#' @param gemtc_results Output from gemtc::mtc.run, as returned in the 'mtcResults' list element from bayes_model().
+#' If this parameter is NULL then the frequentist analysis results found in 'contributions' are used.
+#' If it is not NULL then the Bayesian analysis results contained in this parameter are used. Defaults to NULL.
 #' @return A List with the described structure.
+#' @noRd
 .PrepareAnalysisForCinema <- function(contributions, model_type, outcome_measure, gemtc_results = NULL) {
   hat_matrix = netmeta::hatmatrix(x = contributions$x, method = "Davies", type = "long")
   if (model_type == "fixed") {
@@ -235,13 +249,20 @@ rep_cinema <- function(configured_data, gemtc_results = NULL, logger = NULL) {
   return(prepared_analysis)
 }
 
-#' Creates a list, each element of which is a named list containing the results of a comparison. In the outer list there is one element per comparison. Each inner list contains results including treatment effects, standard errors, confidence intervals, predictions intervals, and p-values, for NMA effects, direct and indirect effects, and SIDE inconsistency factors. If there is no such data (e.g. if there is no indirect evidence) then the list element does not appear.
+#' Creates a list, each element of which is a named list containing the results of a comparison.
+#' In the outer list there is one element per comparison. Each inner list contains results including
+#' treatment effects, standard errors, confidence intervals, predictions intervals, and p-values,
+#' for NMA effects, direct and indirect effects, and SIDE inconsistency factors. If there is no such
+#' data (e.g. if there is no indirect evidence) then the list element does not appear.
 #'
 #' @param contributions Contributions from {netmeta}.
 #' @param model_type Type of model: "fixed" or "random".
 #' @param outcome_measure Outcome measure, one of: "OR", "RR", "RD", "MD", "SMD".
-#' @param gemtc_results Output from gemtc::mtc.run, as returned in the 'mtcResults' list element from baye(). If this parameter is NULL then the frequentist analysis results found in 'contributions' are used. If it is not NULL then the Bayesian analysis results contained in this parameter are used. Defaults to NULL.
+#' @param gemtc_results Output from gemtc::mtc.run, as returned in the 'mtcResults' list element from baye().
+#' If this parameter is NULL then the frequentist analysis results found in 'contributions' are used.
+#' If it is not NULL then the Bayesian analysis results contained in this parameter are used. Defaults to NULL.
 #' @return List of results with the described structure.
+#' @noRd
 .PrepareComparisonsForCinema <- function(contributions, model_type, outcome_measure, gemtc_results = NULL) {
   if (model_type == "random") {
     comparisons <- names(contributions$x$prop.direct.random)
@@ -263,13 +284,19 @@ rep_cinema <- function(configured_data, gemtc_results = NULL, logger = NULL) {
 }
 
 
-#' Creates a list containing the results of a comparison. The elements are analysis  results including treatment effects, standard errors, confidence intervals, predictions intervals, and p-values, for NMA effects, direct and indirect effects, and SIDE inconsistency factors. If there is no such data (e.g. if there is no indirect evidence) then the list element does not appear.
+#' Creates a list containing the results of a comparison. The elements are analysis results including
+#' treatment effects, standard errors, confidence intervals, predictions intervals, and p-values, for
+#' NMA effects, direct and indirect effects, and SIDE inconsistency factors. If there is no such data
+#' (e.g. if there is no indirect evidence) then the list element does not appear.
 #'
-#' @param freq_results Results from a frequentist model as contained in contribution output from {netmeta}.
+#' @param freq_results Results from a frequentist model as contained in contribution output from \CRANpkg{netmeta}.
 #' @param model_type Type of model: "fixed" or "random".
 #' @param comparison A comparison of the form <treatment1>:<treatment2>.
-#' @param gemtc_results Output from gemtc::mtc.run, as returned in the 'mtcResults' list element from baye(). If this parameter is NULL then the frequentist analysis results found in 'contributions' are used. If it is not NULL then the Bayesian analysis results contained in this parameter are used. Defaults to NULL.
+#' @param gemtc_results Output from gemtc::mtc.run, as returned in the 'mtcResults' list element from baye().
+#' If this parameter is NULL then the frequentist analysis results found in 'contributions' are used.
+#' If it is not NULL then the Bayesian analysis results contained in this parameter are used. Defaults to NULL.
 #' @return List of analysis results with the described structure.
+#' @noRd
 .PrepareComparisonForCinema <- function(freq_results, model_type, comparison, gemtc_results = NULL) {
   if (model_type != "random" && model_type != "fixed") {
     stop(glue::glue("Model type '{model_type}' is not supported. Please use 'random' or 'fixed'"))
@@ -375,7 +402,8 @@ rep_cinema <- function(configured_data, gemtc_results = NULL, logger = NULL) {
 }
 
 
-#' Creates a named list containing SIDE inconsistency factor results for a comparison. The results are point estimate, confidence interval limits, Z-value and p-value.
+#' Creates a named list containing SIDE inconsistency factor results for a comparison.
+#' The results are point estimate, confidence interval limits, Z-value and p-value.
 #'
 #' @param direct Direct treatment effect estimate.
 #' @param indirect Indirect treatment effect estimate.
@@ -384,6 +412,7 @@ rep_cinema <- function(configured_data, gemtc_results = NULL, logger = NULL) {
 #' @param indirect_lower Lower 95% CI limit of indirect treatment effect.
 #' @param indirect_upper Upper 95% CI limit of indirect treatment effect.
 #' @return List of SIDE IF results with the described structure.
+#' @noRd
 .CalculateSideif <- function(direct, indirect, direct_lower, direct_upper, indirect_lower, indirect_upper) {
   direct_se <- (direct_upper - direct_lower) / (2 * 1.96)
   indirect_se <- (indirect_upper - indirect_lower) / (2 * 1.96)
@@ -394,7 +423,7 @@ rep_cinema <- function(configured_data, gemtc_results = NULL, logger = NULL) {
   sideif_upper <- sideif + sideif_se * 1.96
 
   sideif_z <- sideif / sideif_se
-  sideif_pval <- 2 * pnorm(q = -abs(sideif), mean = 0, sd = sideif_se)
+  sideif_pval <- 2 * stats::pnorm(q = -abs(sideif), mean = 0, sd = sideif_se)
 
   return(
     list(
@@ -408,11 +437,13 @@ rep_cinema <- function(configured_data, gemtc_results = NULL, logger = NULL) {
 }
 
 
-#' Extract the analysis statistics required for CINeMA from GEMTC output. This includes simulating a predictive distribution in order to get a prediction interval, which is not done in GEMTC.
+#' Extract the analysis statistics required for CINeMA from GEMTC output.
+#' This includes simulating a predictive distribution in order to get a prediction interval, which is not done in GEMTC.
 #'
 #' @param gemtc_results Model results from gemtc::mtc.run().
 #' @param treatments Vector of two treatments
 #' @return Named vector with names 'median', 'se', 'ci_lower', 'ci_upper', 'pi_lower', and 'pi_upper'.
+#' @noRd
 ExtractGemtcStats <- function(gemtc_results, treatments) {
   #Put the treatment names in gemtc format
   gemtc_treatments <- glue::glue("d.{treatments[1]}.{treatments[2]}")
@@ -447,13 +478,15 @@ ExtractGemtcStats <- function(gemtc_results, treatments) {
     pi_lower <- ci_lower
     pi_upper <- ci_upper
   } else if (effects == "random") {
-    #Simulate a predictive distribution manually, using the treatment effect and heterogeneity standard deviation at each iteration. Do this once for each chain (of which there are always 4).
+    # Simulate a predictive distribution manually, using the treatment effect and
+    # heterogeneity standard deviation at each iteration. Do this once for each
+    # chain (of which there are always 4).
     n_iterations <- length(mcmc_rel_eff$samples[[1]][, 1])
     prediction_samples <- lapply(
       X = 1:4,
       FUN = function(chain) {
         matrix(
-          rnorm(
+          stats::rnorm(
             n = n_iterations,
             mean = mcmc_rel_eff$samples[[chain]][, gemtc_treatments],
             sd = mcmc_rel_eff$samples[[chain]][, "sd.d"]

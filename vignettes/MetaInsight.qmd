@@ -338,6 +338,16 @@ fitted_baseline_model <- baseline_model(configured_data,
                                         regressor_type = "shared")
 ```
 
+### Exporting to CINeMA
+
+Models fitted in metainsight can be exported into a format that can be uploaded to <a href="https://cinema.med.auth.gr/" target="_blank">CINeMA</a> (Confidence in Network Meta-Analysis). 
+Currently, only the frequentist and Bayesian NMA models are supported.
+
+```{r rep_cinema}
+cinema_project <- rep_cinema(configured_data)
+writeLines(cinema_project, tempfile(fileext = ".json"))
+```
+
 ### App data
 
 All the data can be downloaded from the app and advanced users may wish to conduct further analyses. 
