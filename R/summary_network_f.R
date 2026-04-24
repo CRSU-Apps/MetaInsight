@@ -35,11 +35,19 @@ summary_network <- function(configured_data, style, label_size = 1, title = "", 
 
   svg <- svglite::xmlSVG({
     if (style == "netgraph"){
-      netmeta::netgraph(configured_data$freq$netmeta, lwd = 2, number.of.studies = TRUE, plastic = FALSE, points = TRUE,
-                               cex = label_size, cex.points = 2, col.points = 1, col = 8, pos.number.of.studies = 0.43,
-                               col.number.of.studies = "forestgreen", col.multiarm = "white",
-                               bg.number.of.studies = "white")
-      title(title)
+      netmeta::netgraph(configured_data$freq$netmeta,
+                        lwd = 2,
+                        number.of.studies = TRUE,
+                        plastic = FALSE,
+                        points = TRUE,
+                        cex = label_size,
+                        cex.points = 2,
+                        col.points = 1,
+                        col = 8,
+                        pos.number.of.studies = 0.43,
+                        col.number.of.studies = "forestgreen",
+                        col.multiarm = "white",
+                        bg.number.of.studies = "white")
 
     } else if (style == "netplot"){
       netmeta::netgraph(configured_data$freq$netmeta,
@@ -61,6 +69,7 @@ summary_network <- function(configured_data, style, label_size = 1, title = "", 
                         start = "circle",
                         rotate = 90)
     }
+    title(title)
   },
   width = width,
   height = height,
