@@ -6,6 +6,15 @@ knit_engines$set(asis = function(options) {
 knitr::opts_chunk$set(message = FALSE, warning = FALSE, eval = FALSE)
 ```
 
+<!-- set width of svg images -->
+<style>
+svg {
+  width: 600px;
+  display: block;
+  margin: 0 auto;
+}
+</style>
+
 Please find below the R code history from your *metainsight* v7.0.0 session. 
 
 You can reproduce your session results by running this quarto file in RStudio. 
@@ -27,4 +36,5 @@ library(metainsight)
 The *metainsight* session code .qmd file is composed of a chain of module functions that are internal to *metainsight*. Each of these functions corresponds to a single module that the user ran during the session. Users are encouraged to write custom code in the .qmd directly to modify their analysis, and even modify the module function code to further customize. To see the source code for any module function, just type its name into the R console and press Return.
 
 Your analyses can be found in the tabs above. 
+
 
