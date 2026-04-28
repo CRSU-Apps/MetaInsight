@@ -51,7 +51,7 @@ rep_cinema_module_server <- function(id, common, parent_session) {
   output$download <- downloadHandler(
     filename = function() {
       dataset <- ifelse(input$data == "configured_data", "_all", "_sub")
-      paste0("cinema_", input$model, dataset, ".json")
+      paste0("cinema_", input$model, dataset, ".cnm")
     },
     content = function(file) {
       writeLines(
