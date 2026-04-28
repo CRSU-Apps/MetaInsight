@@ -510,6 +510,9 @@ ExtractGemtcStats <- function(gemtc_results, treatments) {
 
     pi_lower <- -MCMCvis::MCMCsummary(prediction_samples)[, "97.5%"]
     pi_upper <- -MCMCvis::MCMCsummary(prediction_samples)[, "2.5%"]
+    #Make sure the PIs are not smaller than the CIs
+    pi_lower <- min(pi_lower, ci_lower)
+    pi_upper <- max(pi_upper, ci_upper)
   }
 
   return(c(median = median, se = se, ci_lower =  ci_lower, ci_upper = ci_upper, pi_lower = pi_lower, pi_upper = pi_upper))
