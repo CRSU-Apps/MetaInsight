@@ -310,8 +310,18 @@ rep_cinema <- function(configured_data, gemtc_results = NULL, logger = NULL) {
     se_treat_effect <- gemtc_stats["se"]
     lower_ci <- gemtc_stats["ci_lower"]
     upper_ci <- gemtc_stats["ci_upper"]
-    lower_pi <- gemtc_stats["pi_lower"]
-    upper_pi <- gemtc_stats["pi_upper"]
+    if (model_type == "random") {
+      lower_pi <- gemtc_stats["pi_lower"]
+      upper_pi <- gemtc_stats["pi_upper"]
+    } else if (model_type == "fixed") {
+      #The PI is centred on the frequentist FE point estimate and has length given by the frequentist RE model
+      pi_adjustment <- nma_treatment_effect - freq_results$TE.random[row, col]
+      lower_pi <- freq_results$lower.predict[row, col] + pi_adjustment
+      upper_pi <- freq_results$upper.predict[row, col] + pi_adjustment
+      #Make sure the PI is not smaller than the CI
+      lower_pi <- min(lower_pi, lower_ci)
+      upper_pi <- max(upper_pi, upper_ci)
+    }
   } else {
     if (model_type == "random") {
       nma_treatment_effect <- freq_results$TE.random[row, col]
@@ -325,8 +335,10 @@ rep_cinema <- function(configured_data, gemtc_results = NULL, logger = NULL) {
       se_treat_effect <- freq_results$seTE.common[row, col]
       lower_ci <- freq_results$lower.common[row, col]
       upper_ci <- freq_results$upper.common[row, col]
-      lower_pi <- freq_results$lower.predict[row, col]
-      upper_pi <- freq_results$upper.predict[row, col]
+      #The PI is centred on the FE point estimate but has length given by the RE model
+      pi_adjustment <- nma_treatment_effect - freq_results$TE.random[row, col]
+      lower_pi <- freq_results$lower.predict[row, col] + pi_adjustment
+      upper_pi <- freq_results$upper.predict[row, col] + pi_adjustment
     }
   }
 
