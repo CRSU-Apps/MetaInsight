@@ -30,7 +30,6 @@ rep_refPackages_module_server <- function(id, common, parent_session) {
         knitcitations::citep(citation("bayesplot"))
         knitcitations::citep(citation("bnma"))
         knitcitations::citep(citation("cookies"))
-        knitcitations::citep(citation("cowplot"))
         knitcitations::citep(citation("DT"))
         knitcitations::citep(citation("data.table"))
         knitcitations::citep(citation("dplyr"))

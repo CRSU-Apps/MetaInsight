@@ -29,7 +29,6 @@ Imports:
     bslib,
     coda,
     cookies,
-    cowplot,
     DT (>= 0.5),
     dplyr,
     gargoyle,
@@ -38,7 +37,6 @@ Imports:
     ggplot2,
     ggrepel,
     glue,
-    grid,
     gt,
     igraph,
     knitcitations,
@@ -65,7 +63,6 @@ Imports:
     shinyWidgets (>= 0.6.0),
     svglite,
     tidyr,
-    tools,
     xml2
 Suggests:
     jsonlite,

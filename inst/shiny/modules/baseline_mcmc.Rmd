@@ -11,8 +11,8 @@ baseline_mcmc <- baseline_mcmc(baseline_model)
 {r, fig.align='center', fig.width = 9, fig.height = {{baseline_mcmc_height_250}}}
 ```
 ```{r, echo = {{baseline_mcmc_knit}}, include = {{baseline_mcmc_knit}}}
-cowplot::plot_grid(
-  plotlist = gelman_plots(baseline_mcmc$gelman_data, baseline_mcmc$parameters),
+patchwork::wrap_plots(
+  gelman_plots(baseline_mcmc$gelman_data, baseline_mcmc$parameters),
   ncol = 2
 )
 ```
@@ -21,8 +21,8 @@ cowplot::plot_grid(
 {r, fig.align='center', fig.width = 9, fig.height = {{baseline_mcmc_height_200}}}
 ```
 ```{r, echo = {{baseline_mcmc_knit}}, include = {{baseline_mcmc_knit}}}
-cowplot::plot_grid(
-  plotlist = trace_plots(baseline_model$mtcResults, baseline_mcmc$parameters),
+patchwork::wrap_plots(
+  trace_plots(baseline_model$mtcResults, baseline_mcmc$parameters),
   ncol = 2
 )
 ```
@@ -31,8 +31,8 @@ cowplot::plot_grid(
 {r, fig.align='center', fig.width = 9, fig.height = {{baseline_mcmc_height_200}}}
 ```
 ```{r, echo = {{baseline_mcmc_knit}}, include = {{baseline_mcmc_knit}}}
-cowplot::plot_grid(
-  plotlist = density_plots(baseline_model$mtcResults, baseline_mcmc$parameters),
+patchwork::wrap_plots(
+  density_plots(baseline_model$mtcResults, baseline_mcmc$parameters),
   ncol = 2
 )
 ```

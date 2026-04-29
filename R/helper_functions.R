@@ -21,7 +21,6 @@ printVecAsis <- function(x) {
 #' @noRd
 spurious <- function(x) {
   cookies::add_cookie_handlers(x)
-  cowplot::add_sub(x)
   DT::renderDataTable(x)
   gargoyle::watch(x)
   knitr::all_labels(x)
