@@ -90,6 +90,7 @@ setup_load_module_server <- function(id, common, parent_session) {
       if(input$reset_confirm){
         reset_data(common, session)
         updateActionButton(session, "run", label = "Load example data")
+        shinyjs::runjs("Shiny.setInputValue('setup_exclude-exclusions', null);")
         file_id$value <- file_id$value + 1
         file_id$id <- paste0("file", file_id$value)
         trigger("setup_reset")
