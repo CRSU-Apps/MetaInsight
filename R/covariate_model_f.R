@@ -312,19 +312,32 @@ CovariateModelOutput <- function(connected_data, treatments, model, covariate_ti
   beta_indices <- grep("^B$|^beta\\[[0-9]+\\]$",
                        model$model$monitors$enabled,
                        value = TRUE)
-  # Add betas to relative effect summary
+  # Add both scaled and unscaled betas to relative effect summary
   beta_statistics <- model_summary$summaries$statistics[beta_indices, ]
   beta_quantiles <- model_summary$summaries$quantiles[beta_indices, ]
-  rel_eff_summary$summaries$statistics <- rbind(rel_eff_summary$summaries$statistics, beta_statistics)
-  rel_eff_summary$summaries$quantiles <- rbind(rel_eff_summary$summaries$quantiles, beta_quantiles)
-  # Correct parameter name in shared case, when only one row has been appended
+  beta_stats_unscaled <- beta_statistics
+  beta_quant_unscaled <- beta_quantiles
+  if (model$model$regressor$coefficient == "exchangeable") {
+    beta_stats_unscaled <- rbind(beta_stats_unscaled, model_summary$summaries$statistics["reg.sd", ])
+    beta_quant_unscaled <- rbind(beta_quant_unscaled, model_summary$summaries$quantiles["reg.sd", ])
+    rownames(beta_stats_unscaled)[nrow(beta_stats_unscaled)] <- "reg.sd"
+    rownames(beta_quant_unscaled)[nrow(beta_quant_unscaled)] <- "reg.sd"
+  }
+  beta_stats_unscaled <- beta_stats_unscaled / model$model$regressor$scale
+  beta_quant_unscaled <- beta_quant_unscaled / model$model$regressor$scale
+  if (model$model$regressor$coefficient != "shared") {
+    rownames(beta_stats_unscaled) <- paste0(rownames(beta_stats_unscaled), "_unscaled")
+    rownames(beta_quant_unscaled) <- paste0(rownames(beta_quant_unscaled), "_unscaled")
+  }
+  rel_eff_summary$summaries$statistics <- rbind(rel_eff_summary$summaries$statistics, beta_statistics, beta_stats_unscaled)
+  rel_eff_summary$summaries$quantiles <- rbind(rel_eff_summary$summaries$quantiles, beta_quantiles, beta_quant_unscaled)
+  # Correct parameter names in shared case, when only one row has been appended
   if (model$model$regressor$coefficient == "shared") {
     rownames(rel_eff_summary$summaries$statistics)[rownames(rel_eff_summary$summaries$statistics) == "beta_statistics"] <- "B"
     rownames(rel_eff_summary$summaries$quantiles)[rownames(rel_eff_summary$summaries$quantiles) == "beta_quantiles"] <- "B"
+    rownames(rel_eff_summary$summaries$statistics)[rownames(rel_eff_summary$summaries$statistics) == "beta_stats_unscaled"] <- "B_unscaled"
+    rownames(rel_eff_summary$summaries$quantiles)[rownames(rel_eff_summary$summaries$quantiles) == "beta_quant_unscaled"] <- "B_unscaled"
   }
-
-  # Add text about the scaling of covariate values
-  rel_eff_summary$covariate <- paste0(rel_eff_summary$covariate, "\nThe covariate values have been scaled (divided by ", round(model$model$regressor$scale, digits = 2), ") in order to have standard deviation 0.5. \n - The interpretation of covariate parameters should change accordingly.")
 
   # naming conventions to match current Bayesian functions
   return(
