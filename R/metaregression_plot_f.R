@@ -40,6 +40,7 @@
 #'  }
 #' @inheritParams common_params
 #' @inherit return-svg return
+#' @import patchwork
 #' @examples
 #' \donttest{
 #' configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
@@ -166,12 +167,8 @@ metaregression_plot <- function(
   indirect_plot <- indirect_plot + coord_cartesian(xlim = c(x_min, x_max))
 
   # Create composite plot by placing the indirect plot atop the direct plot
-  plot <- ggpubr::ggarrange(
-    indirect_plot, direct_plot,
-    heights = c(1, 4),
-    align = "v",
-    ncol = 1
-  )
+  plot <- indirect_plot / direct_plot +
+    patchwork::plot_layout(heights = c(1, 4))
 
   svglite::xmlSVG({
     print(plot)
