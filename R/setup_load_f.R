@@ -819,7 +819,7 @@ FindAllTreatments <- function(data, treatment_ids = NULL, study = NULL) {
   }
 }
 
-#' Find all of the studies which include the given treatments, both for long and wide formats.
+#' Find all of the studies which include the given treatments, both for long formats.
 #'
 #' @param data Data frame in which to search for study names.
 #' @param treatments Vector of matching treatments.
@@ -827,30 +827,13 @@ FindAllTreatments <- function(data, treatment_ids = NULL, study = NULL) {
 #' @return Vector of all matching study names.
 #' @noRd
 FindStudiesIncludingTreatments <- function(data, treatments, all_or_any) {
-  if ("T" %in% colnames(data)) {
-    # Long format
-    table <- table(data[, c("Study", "T")])
-    table <- table[, colnames(table) %in% treatments]
-    n_treatments_in_study <- rowSums(table)
-    if (all_or_any == "any") {
-      return(names(n_treatments_in_study[n_treatments_in_study > 0]))
-    } else if (all_or_any == "all") {
-      return(names(n_treatments_in_study[n_treatments_in_study == length(treatments)]))
-    }
-  } else {
-    # Wide format
-    T_columns <- grep(pattern = "^T\\.", x = names(data), value = TRUE)
-    data <- data[, c("Study", T_columns)]
-    long_data <- reshape2::melt(data, id.vars = "Study")
-    long_data <- long_data[, c("Study", "value")]
-    names(long_data)[names(long_data) == "value"] <- "T"
-    return(
-      FindStudiesIncludingTreatments(
-        data = long_data,
-        treatments = treatments,
-        all_or_any = all_or_any
-      )
-    )
+  table <- table(data[, c("Study", "T")])
+  table <- table[, colnames(table) %in% treatments]
+  n_treatments_in_study <- rowSums(table)
+  if (all_or_any == "any") {
+    return(names(n_treatments_in_study[n_treatments_in_study > 0]))
+  } else if (all_or_any == "all") {
+    return(names(n_treatments_in_study[n_treatments_in_study == length(treatments)]))
   }
 }
 

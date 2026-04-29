@@ -54,7 +54,6 @@ Imports:
     plotly,
     quarto,
     R6,
-    reshape2,
     rio,
     rintrojs,
     rmarkdown,
