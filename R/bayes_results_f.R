@@ -11,7 +11,22 @@ bayes_results <- function(model, logger = NULL){
     logger |> writeLog(type = "error", "model must be an object created by baseline_model(), bayes_model() or covariate_model()")
   }
 
-  title <- glue::glue("Results on the {model$sumresults$measure} scale")
+  if (inherits(model, "bayes_model")) {
+    if (model$mtcResults$model$type == "consistency") {
+      title <- glue::glue("The results are on the {model$sumresults$measure} scale.")  
+    }
+    if (model$mtcResults$model$type == "regression") {
+      covariate_parameter_text <- switch(
+        model$mtcResults$model$regressor$coefficient,
+        "shared" = "B and B_unscaled",
+        "exchangeable" = "B/beta/reg.sd and B_unscaled/beta_unscaled/reg.sd_unscaled",
+        "unrelated" = "beta and beta_unscaled"
+      )
+      title <- glue::glue("The results are on the {model$sumresults$measure} scale. The relative treatment effect (d) parameters are the relative treatment effects at the selected covariate value ({model$mtcRelEffects$covariate |> round(digits = 3)}). The two sets of covariate parameters ({covariate_parameter_text}) correspond to scaled and unscaled covariate values respectively. The scaled values are the values used when the model is fit. They are divided by a scaling factor, in this case {round(model$mtcResults$model$regressor$scale, digits = 3)}, so that they have standard deviation 0.5.")
+    }
+  } else if (inherits(model, "baseline_model")) {
+    title <- glue::glue("The results are on the {model$sumresults$measure} scale. The covariate values are centred to aid with model fit. The relative treatment effect (d) parameters are the relative treatment effects at the centring value ({model$mtcResults$network$mx_bl |> round(digits = 3)}).")
+  }
   iterations <- glue::glue("Iterations = {model$sumresults$summaries$start}:{model$sumresults$summaries$end}")
   thinning <- glue::glue("Thinning interval = {model$sumresults$summaries$thin}")
   chains <- glue::glue("Number of chains = {model$sumresults$summaries$nchain}")
