@@ -1,0 +1,19 @@
+---
+title: MetaInsight placeholder
+format: typst
+---
+
+```{r eval = TRUE, echo = FALSE}
+knit_print.svg_plot <- function(x, ...) {
+  if (knitr::is_latex_output() || knitr::pandoc_to() == "typst") {
+    tmp <- tempfile(fileext = ".svg", tmpdir = ".")
+    writeLines(x, tmp)
+    knitr::knit_print(knitr::include_graphics(tmp))
+  } else {
+    knitr::asis_output(as.character(x))
+  }
+}
+```
+
+## Introduction
+

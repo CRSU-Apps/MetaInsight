@@ -392,9 +392,11 @@ crop_svg <- function(svg, margin = 10){
   xml2::xml_set_attr(root, "xmlns", "http://www.w3.org/2000/svg")
   xml2::xml_set_attr(root, "xmlns:xlink", "http://www.w3.org/1999/xlink")
 
-  svg_string <- paste(svg, collapse = "\n")
+  svg_string <- paste(svg, collapse = "\n") |> shiny::HTML()
 
-  shiny::HTML(svg_string)
+  class(svg_string) <- "svg_plot"
+
+  svg_string
 }
 
 ####################### #

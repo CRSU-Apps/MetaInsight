@@ -4,7 +4,7 @@ rep_markdown_module_ui <- function(id) {
     actionButton(ns("exclude"), "Exclude modules?"),
     uiOutput(ns("modules_out")),
     selectInput(ns("file_type"), label = "Select download file type",
-                choices = c("HTML" = ".html", "Quarto" = ".qmd")),
+                choices = c("HTML" = ".html", "Quarto" = ".qmd", "PDF" = ".pdf")),
     conditionalPanel("input.file_type == '.html'",
                      bslib::input_switch(ns("render"), "Include outputs?", value = TRUE), ns = ns),
     bslib::input_task_button(ns("download"), "Download report", icon = shiny::icon("download"), type = "default"),
@@ -171,7 +171,12 @@ rep_markdown_module_server <- function(id, common, parent_session, COMPONENT_MOD
       combined_rmd <- combined_rmd[lines_to_keep]
 
       # add quarto header
-      quarto_header <- readLines("Rmd/quarto_header.txt")
+      if (rep_markdown_file_type != ".pdf"){
+        quarto_header <- readLines("Rmd/html_header.txt")
+      } else {
+        quarto_header <- readLines("Rmd/pdf_header.txt")
+      }
+
       quarto_header <- gsub("MetaInsight placeholder", glue::glue("MetaInsight v{packageVersion('metainsight')} Session {Sys.Date()}"), quarto_header)
       combined_rmd <- c(quarto_header, combined_rmd)
 
@@ -204,7 +209,7 @@ rep_markdown_module_server <- function(id, common, parent_session, COMPONENT_MOD
       result_file <- paste0("combined", rep_markdown_file_type)
       if (rep_markdown_file_type == ".qmd") {
         writeLines(combined_rmd, result_file, useBytes = TRUE)
-      } else {
+      } else if (rep_markdown_file_type == ".html"){
         if (render_html){
           writeLines(combined_rmd, "combined.qmd")
           on.exit(unlink("combined.qmd"))
@@ -220,7 +225,12 @@ rep_markdown_module_server <- function(id, common, parent_session, COMPONENT_MOD
             output_format = "html"
           )
         }
-
+      } else if (rep_markdown_file_type == ".pdf"){
+        writeLines(combined_rmd, "combined.qmd")
+        on.exit(unlink("combined.qmd"))
+        quarto::quarto_render(
+          input = "combined.qmd",
+          output_format = "pdf")
       }
       result_file
     }

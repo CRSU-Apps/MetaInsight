@@ -96,6 +96,7 @@ setup_exclude <- function(configured_data, exclusions, async = FALSE){
 setup_exclude_plot <- function(configured_data, exclusions = NULL, hover = FALSE){
 
   initial <- summary_study(configured_data, interactive = TRUE)
+  class(initial) <- "character"
   svg_doc <- xml2::read_xml(initial)
 
   # Get viewBox dimensions
@@ -283,6 +284,8 @@ setup_exclude_plot <- function(configured_data, exclusions = NULL, hover = FALSE
   )
   xml2::xml_remove(empty_groups)
 
-  paste(svg_doc, collapse = "\n") |> HTML()
+  out <- paste(svg_doc, collapse = "\n") |> HTML()
+  class(out) <- "svg_plot"
+  out
 
 }
