@@ -271,8 +271,8 @@ BaselineRiskModelOutput <- function(connected_data, treatment_df, model, outcome
   # for consistency with gemtc
   names(model_summary)[1] <- "summaries"
   model_summary$measure <- switch(outcome_measure,
-                                  "OR" = "Odds Ratio",
-                                  "RR" = "Risk Ratio",
+                                  "OR" = "Log odds Ratio",
+                                  "RR" = "Log risk Ratio",
                                   "MD" = "Mean Difference")
 
   return(list(mtcResults = model,
