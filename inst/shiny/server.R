@@ -114,9 +114,7 @@ function(input, output, session) {
   ############################################# #
   ### RUN MODULE ON ENTER ####
   ############################################# #
-  observe({
-    shinyjs::js$runOnEnter(module())
-  })
+  observe(shinyjs::js$runOnEnter(module()))
 
   ############################################# #
   ### PLOT DOWNLOAD FORMAT ####
