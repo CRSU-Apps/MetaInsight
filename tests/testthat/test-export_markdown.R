@@ -1,14 +1,14 @@
-test_that("rep_markdown produces a renderable .qmd when no analysis has been conducted", {
+test_that("export_markdown produces a renderable .qmd when no analysis has been conducted", {
 
   skip_on_os("mac")
 
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 60000)
-  app$set_inputs(tabs = "rep")
-  app$set_inputs(repSel = "rep_markdown")
-  app$set_inputs("rep_markdown-file_type" = ".qmd")
-  app$click("rep_markdown-download")
-  app$wait_for_value(input = "rep_markdown-complete")
-  sess_file <- app$get_download("rep_markdown-dlRMD")
+  app$set_inputs(tabs = "export")
+  app$set_inputs(exportSel = "export_markdown")
+  app$set_inputs("export_markdown-file_type" = ".qmd")
+  app$click("export_markdown-download")
+  app$wait_for_value(input = "export_markdown-complete")
+  sess_file <- app$get_download("export_markdown-dlRMD")
   expect_false(is.null(sess_file))
   quarto::quarto_render(sess_file)
   html_file <- gsub("qmd","html", sess_file)
@@ -16,22 +16,22 @@ test_that("rep_markdown produces a renderable .qmd when no analysis has been con
   app$stop()
 })
 
-test_that("rep_markdown produces can render a qmd to html when no analysis has been conducted", {
+test_that("export_markdown produces can render a qmd to html when no analysis has been conducted", {
 
   skip_on_os("mac")
 
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 60000)
-  app$set_inputs(tabs = "rep")
-  app$set_inputs(repSel = "rep_markdown")
-  app$click("rep_markdown-download")
-  app$wait_for_value(input = "rep_markdown-complete")
-  html_file <- app$get_download("rep_markdown-dlRMD")
+  app$set_inputs(tabs = "export")
+  app$set_inputs(exportSel = "export_markdown")
+  app$click("export_markdown-download")
+  app$wait_for_value(input = "export_markdown-complete")
+  html_file <- app$get_download("export_markdown-dlRMD")
   expect_false(is.null(html_file))
   expect_gt(file.info(html_file)$size, 1000)
   app$stop()
 })
 
-test_that("rep_markdown produces a renderable .Rmd file after a frequentist analysis", {
+test_that("export_markdown produces a renderable .Rmd file after a frequentist analysis", {
 
   skip_on_os("mac")
 
@@ -102,12 +102,12 @@ test_that("rep_markdown produces a renderable .Rmd file after a frequentist anal
   app$wait_for_value(output = "freq_summary-plot_all")
   expected_chunks <- expected_chunks + 2
 
-  app$set_inputs(tabs = "rep")
-  app$set_inputs(repSel = "rep_markdown")
-  app$set_inputs("rep_markdown-file_type" = ".qmd")
-  app$click("rep_markdown-download")
-  app$wait_for_value(input = "rep_markdown-complete")
-  sess_file <- app$get_download("rep_markdown-dlRMD")
+  app$set_inputs(tabs = "export")
+  app$set_inputs(exportSel = "export_markdown")
+  app$set_inputs("export_markdown-file_type" = ".qmd")
+  app$click("export_markdown-download")
+  app$wait_for_value(input = "export_markdown-complete")
+  sess_file <- app$get_download("export_markdown-dlRMD")
 
   app$stop()
 
@@ -121,7 +121,7 @@ test_that("rep_markdown produces a renderable .Rmd file after a frequentist anal
 
 })
 
-test_that("rep_markdown produces a renderable .Rmd file after a bayesian analysis", {
+test_that("export_markdown produces a renderable .Rmd file after a bayesian analysis", {
 
   skip_on_os("mac")
 
@@ -177,12 +177,12 @@ test_that("rep_markdown produces a renderable .Rmd file after a bayesian analysi
   app$wait_for_value(output = "bayes_results-all-statistics")
   expected_chunks <- expected_chunks + 6
 
-  app$set_inputs(tabs = "rep")
-  app$set_inputs(repSel = "rep_markdown")
-  app$set_inputs("rep_markdown-file_type" = ".qmd")
-  app$click("rep_markdown-download")
-  app$wait_for_value(input = "rep_markdown-complete")
-  sess_file <- app$get_download("rep_markdown-dlRMD")
+  app$set_inputs(tabs = "export")
+  app$set_inputs(exportSel = "export_markdown")
+  app$set_inputs("export_markdown-file_type" = ".qmd")
+  app$click("export_markdown-download")
+  app$wait_for_value(input = "export_markdown-complete")
+  sess_file <- app$get_download("export_markdown-dlRMD")
 
   app$stop()
 
@@ -203,7 +203,7 @@ test_that("rep_markdown produces a renderable .Rmd file after a bayesian analysi
 
 })
 
-test_that("rep_markdown produces a renderable .Rmd file after a covariate analysis", {
+test_that("export_markdown produces a renderable .Rmd file after a covariate analysis", {
 
   skip_on_os("mac")
 
@@ -269,12 +269,12 @@ test_that("rep_markdown produces a renderable .Rmd file after a covariate analys
   app$wait_for_value(output = "covariate_results-all-statistics")
   expected_chunks <- expected_chunks + 3
 
-  app$set_inputs(tabs = "rep")
-  app$set_inputs(repSel = "rep_markdown")
-  app$set_inputs("rep_markdown-file_type" = ".qmd")
-  app$click("rep_markdown-download")
-  app$wait_for_value(input = "rep_markdown-complete")
-  sess_file <- app$get_download("rep_markdown-dlRMD")
+  app$set_inputs(tabs = "export")
+  app$set_inputs(exportSel = "export_markdown")
+  app$set_inputs("export_markdown-file_type" = ".qmd")
+  app$click("export_markdown-download")
+  app$wait_for_value(input = "export_markdown-complete")
+  sess_file <- app$get_download("export_markdown-dlRMD")
 
   expect_false(is.null(sess_file))
   lines <- readLines(sess_file)
@@ -294,7 +294,7 @@ test_that("rep_markdown produces a renderable .Rmd file after a covariate analys
 
 })
 
-test_that("rep_markdown produces a renderable .Rmd file after a baseline analysis", {
+test_that("export_markdown produces a renderable .Rmd file after a baseline analysis", {
 
   skip_on_os("mac")
 
@@ -357,12 +357,12 @@ test_that("rep_markdown produces a renderable .Rmd file after a baseline analysi
   app$wait_for_value(output = "baseline_results-all-statistics")
   expected_chunks <- expected_chunks + 3
 
-  app$set_inputs(tabs = "rep")
-  app$set_inputs(repSel = "rep_markdown")
-  app$set_inputs("rep_markdown-file_type" = ".qmd")
-  app$click("rep_markdown-download")
-  app$wait_for_value(input = "rep_markdown-complete")
-  sess_file <- app$get_download("rep_markdown-dlRMD")
+  app$set_inputs(tabs = "export")
+  app$set_inputs(exportSel = "export_markdown")
+  app$set_inputs("export_markdown-file_type" = ".qmd")
+  app$click("export_markdown-download")
+  app$wait_for_value(input = "export_markdown-complete")
+  sess_file <- app$get_download("export_markdown-dlRMD")
 
   app$stop()
 

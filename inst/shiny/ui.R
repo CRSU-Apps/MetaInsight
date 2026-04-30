@@ -39,7 +39,7 @@ tagList(
     nav_panel("Bayesian", value = "bayes"),
     nav_panel("Baseline risk", value = "baseline"),
     nav_panel("Covariate", value = "covariate"),
-    nav_panel("Reproduce", value = "rep"),
+    nav_panel("Export", value = "export"),
     nav_menu("Save", icon = icon("floppy-disk"),
                HTML('<a href="#" id="save-button" class="action-button btn" onclick="Shiny.setInputValue(\'core_save-save\', Math.random())">Save session</a>')),
     nav_menu("Support", icon = icon("life-ring"),
@@ -61,11 +61,11 @@ tagList(
       insert_modules_ui("bayes", "Bayesian network meta-analysis"),
       insert_modules_ui("baseline", "Baseline risk analysis"),
       insert_modules_ui("covariate", "Covariate analysis"),
-      insert_modules_ui("rep", "Reproduce the analysis")
+      insert_modules_ui("export", "Export the analysis")
       ),
       # --- RESULTS WINDOW ---
       conditionalPanel(
-        "input.tabs != 'intro' & input.tabs != 'rep'",
+        "input.tabs != 'intro' & input.tabs != 'export'",
           layout_columns(
             col_widths = c(4, 2, 6),
             div(id = "global_options",
@@ -90,7 +90,7 @@ tagList(
       ),
       br(),
       conditionalPanel(
-        "input.tabs != 'intro' & input.tabs != 'rep'",
+        "input.tabs != 'intro' & input.tabs != 'export'",
         setup_exclude_module_results("setup_exclude"),
         navset_tab(
           id = 'main',
@@ -117,20 +117,20 @@ tagList(
         )
       ),
       conditionalPanel(
-        "input.tabs == 'rep' & input.repSel == null",
-        flex_wrap(includeMarkdown("Rmd/gtext_rep.Rmd"))
+        "input.tabs == 'export' & input.exportSel == null",
+        flex_wrap(includeMarkdown("Rmd/gtext_export.Rmd"))
       ),
       conditionalPanel(
-        "input.tabs == 'rep' & input.repSel == 'rep_markdown'",
-        flex_wrap(includeMarkdown("modules/rep_markdown.md"))
+        "input.tabs == 'export' & input.exportSel == 'export_markdown'",
+        flex_wrap(includeMarkdown("modules/export_markdown.md"))
       ),
       conditionalPanel(
-        "input.tabs == 'rep' & input.repSel == 'rep_renv'",
-        flex_wrap(includeMarkdown("modules/rep_renv.md"))
+        "input.tabs == 'export' & input.exportSel == 'export_renv'",
+        flex_wrap(includeMarkdown("modules/export_renv.md"))
       ),
       conditionalPanel(
-        "input.tabs == 'rep' & input.repSel == 'rep_refPackages'",
-        flex_wrap(includeMarkdown("modules/rep_refPackages.md"))
+        "input.tabs == 'export' & input.exportSel == 'export_refPackages'",
+        flex_wrap(includeMarkdown("modules/export_refPackages.md"))
       ),
       conditionalPanel(
         "input.tabs == 'intro'",

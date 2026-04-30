@@ -27,8 +27,8 @@ core_intro_module_server <- function(id, common, parent_session) {
                                                                                                                                                       $(Shiny.setInputValue('processing_intro', 'true'));"),
                       c("#processing_icon", "Some computation occurs in the background and this icon appears when it is processing", "bottom", NA),
                       c("div[id=\"messageLog\"]", "Messages will appear in the log window", "bottom", "$(Shiny.setInputValue('processing_intro', null));"),
-                      c("a[data-value=\"rep\"]", "You can download code to reproduce your analysis in the Session Code module", "bottom","$('a[data-value=\"rep\"]').trigger('click');
-                                                                                                                                          $('input[value=\"rep_markdown\"]').trigger('click');"),
+                      c("a[data-value=\"export\"]", "You can download code to reproduce your analysis in the Session Code module", "bottom","$('a[data-value=\"export\"]').trigger('click');
+                                                                                                                                          $('input[value=\"export_markdown\"]').trigger('click');"),
                       c("a[data-value=\"Save\"]", "You can download a file which saves the state of the app", "left", "$('a[data-value=\"Save\"]').trigger('click');"),
                       c("a[data-value=\"setup\"]", "Next time you visit...", "bottom", "$('a[data-value=\"setup\"]').trigger('click');
                                                                                         $('input[value=\"setup_reload\"]').trigger('click');"),
@@ -75,9 +75,9 @@ core_intro_module_server <- function(id, common, parent_session) {
                                                                                                                                     $(Shiny.setInputValue('processing_intro', 'true'));"),
     c("#processing_icon", "Some computation occurs in the background and this icon appears when it is processing. This includes Bayesian models which now update automatically when studies are excluded.", "bottom", NA),
     c("div[id=\"messageLog\"]", "Messages will appear in the log window to update you on background jobs and any errors", "bottom", "$(Shiny.setInputValue('processing_intro', null));"),
-    c("a[data-value=\"rep\"]", "At any point you can download code to reproduce your analysis in the Session Code module.
-                                You can rerun this in R on your own computer and produce the same results", "bottom","$('a[data-value=\"rep\"]').trigger('click');
-                                                                                                                      $('input[value=\"rep_markdown\"]').trigger('click');"),
+    c("a[data-value=\"export\"]", "At any point you can download code to reproduce your analysis in the Session Code module.
+                                You can rerun this in R on your own computer and produce the same results", "bottom","$('a[data-value=\"export\"]').trigger('click');
+                                                                                                                      $('input[value=\"export_markdown\"]').trigger('click');"),
 
     c("a[data-value=\"Save\"]", "You can also download a file which saves the state of the app and then ...", "left", "$('a[data-value=\"Save\"]').trigger('click');"),
     c("a[data-value=\"setup\"]", "... next time you visit ...", "bottom", "$('a[data-value=\"setup\"]').trigger('click');
