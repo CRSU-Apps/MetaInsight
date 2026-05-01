@@ -24,7 +24,7 @@ jobs:
       R_KEEP_PKG_SOURCE: yes
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v5
       - uses: r-lib/actions/setup-pandoc@v2
       - uses: quarto-dev/quarto-actions/setup@v2
 
@@ -46,5 +46,5 @@ jobs:
 
       - uses: r-lib/actions/check-r-package@v2
         env:
-          SHINYTEST2_APP_DRIVER_TEST_ON_CRAN: "false"
+          NOT_CRAN: "false"
 
