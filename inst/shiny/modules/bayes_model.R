@@ -35,6 +35,15 @@ bayes_model_module_server <- function(id, common, parent_session) {
 
     hide_and_show(id, show = FALSE)
 
+    # reduce iterations in tests
+    if (isTRUE(getOption("shiny.testmode"))) {
+      n_adapt <- 100
+      n_iter <- 100
+    } else {
+      n_adapt <- 5000
+      n_iter <- 20000
+    }
+
     observeEvent(input$run, {
       if (is.null(common$configured_data)){
         common$logger |> writeLog(type = "error", go_to = "setup_configure",
@@ -79,7 +88,11 @@ bayes_model_module_server <- function(id, common, parent_session) {
       } else {
         common$logger |> writeLog(type = "starting", "Updating Bayesian model for main analysis")
       }
-      common$tasks$bayes_model_all$invoke(common$configured_data, async = TRUE)
+
+      common$tasks$bayes_model_all$invoke(common$configured_data,
+                                          n_adapt,
+                                          n_iter,
+                                          async = TRUE)
 
       result_all$resume()
     })
@@ -101,7 +114,10 @@ bayes_model_module_server <- function(id, common, parent_session) {
         common$logger |> writeLog(type = "starting", "Updating Bayesian model for sensitivity analysis")
       }
 
-      common$tasks$bayes_model_sub$invoke(common$subsetted_data, async = TRUE)
+      common$tasks$bayes_model_sub$invoke(common$subsetted_data,
+                                          n_adapt,
+                                          n_iter,
+                                          async = TRUE)
       result_sub$resume()
     })
 

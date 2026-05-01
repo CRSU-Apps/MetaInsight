@@ -4,10 +4,16 @@
 \alias{bayes_model}
 \title{Fit a Bayesian model}
 \usage{
-bayes_model(configured_data, async = FALSE)
+bayes_model(configured_data, n_adapt = 5000, n_iter = 20000, async = FALSE)
 }
 \arguments{
 \item{configured_data}{list. Input dataset created by \code{setup_configure()} or \code{setup_exclude()}}
+
+\item{n_adapt}{numeric. Number of adaptation iterations.
+Defaults to \code{5000} and can normally be left unchanged}
+
+\item{n_iter}{numeric. Number of simulation iterations.
+Defaults to \code{20000} and can normally be left unchanged}
 
 \item{async}{Whether or not the function is being used asynchronously. Default \code{FALSE}}
 }
@@ -32,6 +38,11 @@ Fit a Bayesian model using \CRANpkg{gemtc}
 configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
 configured_data <- readRDS(configured_data_path)
 
-fitted_bayes_model <- bayes_model(configured_data = configured_data)
+# n_adapt and n_iter are set low to run quickly, but should be left as the
+# default values in real use
+
+fitted_bayes_model <- bayes_model(configured_data = configured_data
+                                  n_adapt = 100,
+                                  n_iter = 100)
 
 }

@@ -29,6 +29,12 @@
 
 \item{xmax}{numeric. Maximum x-axis value. Default \code{NULL} in which case it is calculated internally}
 
+\item{n_adapt}{numeric. Number of adaptation iterations.
+Defaults to \code{5000} and can normally be left unchanged}
+
+\item{n_iter}{numeric. Number of simulation iterations.
+Defaults to \code{20000} and can normally be left unchanged}
+
 \item{logger}{Stores all notification messages to be displayed in the Log
 Window. Insert the logger reactive list here for running in
 shiny, otherwise leave the default \code{NULL}}

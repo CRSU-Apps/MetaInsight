@@ -28,6 +28,17 @@ baseline_model_module_server <- function(id, common, parent_session) {
     # used to trigger when exclusions change but only if using the subsetted data
     init("baseline_model_sub")
 
+    # reduce iterations in tests
+    if (isTRUE(getOption("shiny.testmode"))) {
+      n_iter <- 100
+      max_iter <- 100
+      check_iter <- 10
+    } else {
+      n_iter <- 20000
+      max_iter <- 60000
+      check_iter <- 10000
+    }
+
     observeEvent(input$run, {
       if (is.null(common$configured_data)){
         common$logger |> writeLog(type = "error", go_to = "setup_configure",
@@ -86,6 +97,9 @@ baseline_model_module_server <- function(id, common, parent_session) {
 
       common$tasks$baseline_model$invoke(common[[input$dataset]],
                                          input$regressor,
+                                         n_iter,
+                                         max_iter,
+                                         check_iter,
                                          async = TRUE)
       model_result$resume()
     })

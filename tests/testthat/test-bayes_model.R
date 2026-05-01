@@ -1,6 +1,6 @@
 
 test_that("Check bayes_model function works as expected", {
-  result <- bayes_model(configured_data_con)
+  result <- bayes_model(configured_data_con, 100, 100)
 
   expect_is(result, "bayes_model")
   expect_true(all(c("mtcResults",
@@ -27,7 +27,7 @@ test_that("Check bayes_model function works as expected", {
   expect_is(result$seed, "numeric")
 
   # check results are reproducible
-  result_2 <- bayes_model(configured_data_con)
+  result_2 <- bayes_model(configured_data_con, 100, 100)
   expect_true(identical(remove_igraph(result), remove_igraph(result_2)))
 
 })

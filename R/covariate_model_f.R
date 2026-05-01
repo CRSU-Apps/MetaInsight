@@ -32,27 +32,36 @@
 #' configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
 #' configured_data <- readRDS(configured_data_path)
 #'
+#' # n_adapt and n_iter are set low to run quickly, but should be left as the
+#' # default values in real use
+#'
 #' # initial model
 #' fitted_covariate_model <- covariate_model(configured_data = configured_data,
 #'                                           covariate_value = 98,
-#'                                           regressor_type = "shared")
+#'                                           regressor_type = "shared",
+#'                                           n_adapt = 100,
+#'                                           n_iter = 100)
 #'
 #' # updated for new covariate value
 #' updated_covariate_model <- covariate_model(configured_data = configured_data,
 #'                                           covariate_value = 97,
 #'                                           regressor_type = "shared",
-#'                                           covariate_model_output = fitted_covariate_model)
+#'                                           covariate_model_output = fitted_covariate_model,
+#'                                           n_adapt = 100,
+#'                                           n_iter = 100)
 #'
 #' @export
 covariate_model <- function(configured_data,
                             covariate_value,
                             regressor_type,
                             covariate_model_output = NULL,
+                            n_adapt = 5000,
+                            n_iter = 20000,
                             async = FALSE){
 
   if (!async){ # only an issue if run outside the app
-    if (check_param_classes(c("configured_data", "covariate_value", "regressor_type"),
-                            c("configured_data", "numeric", "character"), NULL)){
+    if (check_param_classes(c("configured_data", "covariate_value", "regressor_type", "n_adapt", "n_iter"),
+                            c("configured_data", "numeric", "character", "numeric", "numeric"), NULL)){
       return()
     }
   }
@@ -100,7 +109,9 @@ covariate_model <- function(configured_data,
                                     configured_data$reference_treatment,
                                     configured_data$seed)
 
-    model_output <- suppress_jags_output(gemtc::mtc.run(gemtc_model))
+    model_output <- suppress_jags_output(gemtc::mtc.run(gemtc_model,
+                                                        n.adapt = n_adapt,
+                                                        n.iter = n_iter))
 
     model_info <- CovariateModelOutput(configured_data$connected_data,
                                        configured_data$treatments,

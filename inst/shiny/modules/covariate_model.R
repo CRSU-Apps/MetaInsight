@@ -22,6 +22,15 @@ covariate_model_module_server <- function(id, common, parent_session) {
 
     hide_and_show(id, show = FALSE)
 
+    # reduce iterations in tests
+    if (isTRUE(getOption("shiny.testmode"))) {
+      n_adapt <- 100
+      n_iter <- 100
+    } else {
+      n_adapt <- 5000
+      n_iter <- 20000
+    }
+
     # update slider with relevant values
     observe({
       watch("setup_configure")
@@ -124,6 +133,8 @@ covariate_model_module_server <- function(id, common, parent_session) {
                                           input$covariate_value,
                                           input$regressor,
                                           common$covariate_model,
+                                          n_adapt,
+                                          n_iter,
                                           async = TRUE)
       model_result$resume()
     })

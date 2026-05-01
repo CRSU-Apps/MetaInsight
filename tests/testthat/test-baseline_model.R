@@ -1,6 +1,6 @@
 
 test_that("Check baseline_model function works as expected", {
-  result <- baseline_model(configured_data_con, "shared")
+  result <- baseline_model(configured_data_con, "shared", 100, 100)
 
   expect_is(result, "baseline_model")
 
@@ -40,11 +40,11 @@ test_that("Check baseline_model function works as expected", {
   expect_is(result$regressor, "character")
 
   # check results are reproducible
-  result_2 <- baseline_model(configured_data_con, "shared")
+  result_2 <- baseline_model(configured_data_con, "shared", 100, 100)
   expect_true(identical(result, result_2))
 
   # check for binary data
-  result_3 <- baseline_model(configured_data_bin, "shared")
+  result_3 <- baseline_model(configured_data_bin, "shared", 100, 100)
   expect_true(all(c(expected_items) %in% names(result_3)))
 })
 

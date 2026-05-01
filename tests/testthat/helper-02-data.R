@@ -98,9 +98,9 @@ if (on_cran){
   configured_data_con <- setup_configure(loaded_data_con, "the Great", "random", "MD", "good", 123)
   excluded_data_con <- setup_exclude(configured_data_con, c("Minerva"))
 
-  fitted_bayes_model <- bayes_model(configured_data_con)
-  fitted_baseline_model <- baseline_model(configured_data_con, "shared")
-  fitted_covariate_model <- covariate_model(configured_data_con, 97, "shared")
+  fitted_bayes_model <- bayes_model(configured_data_con, 100, 100)
+  fitted_baseline_model <- baseline_model(configured_data_con, "shared", 100, 100, 10)
+  fitted_covariate_model <- covariate_model(configured_data_con, 97, "shared", NULL, 100, 100)
 }
 
 n_trt_all <- nrow(configured_data_con$treatments)

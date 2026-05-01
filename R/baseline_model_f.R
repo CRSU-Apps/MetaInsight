@@ -3,6 +3,10 @@
 #' The output is consistent with outputs produced by \CRANpkg{gemtc}.
 #'
 #' @param regressor_type character. Type of regression coefficient, either `shared`, `unrelated`, or `exchangeable`
+#' @param max_iter numeric. The maximum number of iterations.
+#' Defaults to `60000` and can normally be left unchanged.
+#' @param check_iter numeric. The number of iterations after which convergence
+#' is checked for. Defaults to `10000` and can normally be left unchanged.
 #' @inheritParams common_params
 #' @return List of bnma related output:
 #'  \item{mtcResults}{model object itself carried through (needed to match existing code)}
@@ -26,16 +30,22 @@
 #' configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
 #' configured_data <- readRDS(configured_data_path)
 #'
+#' # n_iter, max_iter and check_iter are set low to run quickly, but should
+#' # be left as the default values in real use
+#'
 #' fitted_baseline_model <- baseline_model(configured_data = configured_data,
-#'                                         regressor_type = "shared")
+#'                                         regressor_type = "shared",
+#'                                         n_iter = 100,
+#'                                         max_iter = 100,
+#'                                         check_iter = 10)
 #' }
 #'
 #' @export
-baseline_model <- function(configured_data, regressor_type, async = FALSE){
+baseline_model <- function(configured_data, regressor_type, n_iter = 20000, max_iter = 60000, check_iter = 10000, async = FALSE){
 
   if (!async){ # only an issue if run outside the app
-    if (check_param_classes(c("configured_data", "regressor_type"),
-                            c("configured_data", "character"), NULL)){
+    if (check_param_classes(c("configured_data", "regressor_type", "n_iter", "max_iter", "check_iter"),
+                            c("configured_data", "character", "numeric", "numeric", "numeric"), NULL)){
       return()
     }
   }
@@ -56,6 +66,9 @@ baseline_model <- function(configured_data, regressor_type, async = FALSE){
                            configured_data$reference_treatment,
                            configured_data$effects,
                            regressor_type,
+                           n_iter,
+                           max_iter,
+                           check_iter,
                            configured_data$seed)
   )
 
@@ -158,10 +171,14 @@ BaselineRiskNetwork <- function(br_data, outcome, model_type, cov_parameters) {
 #' @param reference_treatment treatment An element of treatment_df$Label, the .
 #' @param model_type "fixed" or "random".
 #' @param cov_parameters "shared", "exchangeable", or "unrelated".
+#' @param n_iter number of iterations (passed to `bnma::network.run()`)
+#' @param max_iter maximum number of iterations (passed to `bnma::network.run()`)
+#' @param check_iter number of iterations after which convergence is checked (passed to `bnma::network.run()`)
 #' @param seed Seed. Defaults to 123.
 #' @return Output from `bnma::network.run()`.
 #' @noRd
-BaselineRiskRegression <- function(connected_data, treatment_df, outcome, reference_treatment, model_type, cov_parameters, seed = 123) {
+BaselineRiskRegression <- function(connected_data, treatment_df, outcome, reference_treatment, model_type,
+                                   cov_parameters, n_iter, max_iter, check_iter, seed = 123) {
   formatted_data <- FormatForBnma(connected_data = connected_data, treatment_df = treatment_df,
                                   outcome = outcome, reference_treatment = reference_treatment)
   network <- BaselineRiskNetwork(br_data = formatted_data, outcome = outcome,
@@ -181,8 +198,9 @@ BaselineRiskRegression <- function(connected_data, treatment_df, outcome, refere
   rng_inits[[4]] <- list(.RNG.name = "base::Mersenne-Twister", .RNG.seed = seeds[4])
 
   return(bnma::network.run(network,
-                           n.run = 20000,
-                           max.run = 60000,
+                           n.run = n_iter,
+                           max.run = max_iter,
+                           setsize = check_iter,
                            conv.limit = 1.5,
                            RNG.inits = rng_inits,
                            n.chains = length(seeds)))
@@ -499,8 +517,8 @@ BnmaRelativeEffects <- function(model, covariate_value) {
   centred_covariate_value <- covariate_value - model$network$mx_bl
 
   samples <- list()
-  #The number of chains is always left at the default 3
-  for (chain in 1:3) {
+  #The number of chains is always left at the default 4
+  for (chain in 1:4) {
     samples[[chain]] <- model$samples[[chain]][, treatment_parameters] + centred_covariate_value * model$samples[[chain]][, covariate_parameters]
   }
 
