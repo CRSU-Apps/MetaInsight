@@ -21,7 +21,10 @@ baseline_model(
 \item{n_iter}{numeric. Number of simulation iterations.
 Defaults to \code{20000} and can normally be left unchanged}
 
-\item{max_iter}{numeric. The number of iterations after which convergence
+\item{max_iter}{numeric. The maximum number of iterations.
+Defaults to \code{60000} and can normally be left unchanged.}
+
+\item{check_iter}{numeric. The number of iterations after which convergence
 is checked for. Defaults to \code{10000} and can normally be left unchanged.}
 
 \item{async}{Whether or not the function is being used asynchronously. Default \code{FALSE}}
@@ -54,13 +57,14 @@ The output is consistent with outputs produced by \CRANpkg{gemtc}.
 configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
 configured_data <- readRDS(configured_data_path)
 
-# n_iter and max_iter are set low to run quickly, but should be left as the
-# default values in real use
+# n_iter, max_iter and check_iter are set low to run quickly, but should
+# be left as the default values in real use
 
 fitted_baseline_model <- baseline_model(configured_data = configured_data,
                                         regressor_type = "shared",
                                         n_iter = 100,
-                                        max_iter = 100)
+                                        max_iter = 100,
+                                        check_iter = 10)
 }
 
 }
