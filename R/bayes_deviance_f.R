@@ -88,11 +88,6 @@ scat_plot <- function(model, deviance, model_type, outcome_measure, seed) {
   c <- data.frame(deviance$dev.ab)
   c$names <- rownames(c)
 
-  # see https://github.com/gertvv/gemtc/issues/81
-  old_settings <- suppress_jags_output(meta::settings.meta())
-  meta::settings.meta(method.tau = "DL")
-  on.exit(meta::settings.meta(method.tau = old_settings$method.tau))
-
   # use same RNG inside and outside of mirai
   RNGkind("L'Ecuyer-CMRG")
   set.seed(seed)

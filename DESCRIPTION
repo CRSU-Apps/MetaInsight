@@ -32,7 +32,7 @@ Imports:
     DT (>= 0.5),
     dplyr,
     gargoyle,
-    gemtc (>= 1.0.2),
+    gemtc (>= 1.1.1),
     ggiraphExtra,
     ggplot2,
     ggrepel,

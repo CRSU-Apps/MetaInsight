@@ -34,11 +34,6 @@ bayes_model <- function(configured_data, async = FALSE){
     return(async |> asyncLog(type = "error", "configured data must have an outcome_measure of 'OR', 'RR' or 'MD'"))
   }
 
-  # see https://github.com/gertvv/gemtc/issues/81
-  old_settings <- suppress_jags_output(meta::settings.meta())
-  meta::settings.meta(method.tau = "DL")
-  on.exit(meta::settings.meta(method.tau = old_settings$method.tau))
-
   # use same RNG inside and outside of mirai
   RNGkind("L'Ecuyer-CMRG")
   set.seed(configured_data$seed)
