@@ -27,3 +27,16 @@ HTML summary of the model
 \description{
 Produce a table summarising Bayesian models
 }
+\examples{
+configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
+configured_data <- readRDS(configured_data_path)
+
+# n_adapt and n_iter are set low to run quickly, but should be left as the
+# default values in real use
+
+fitted_bayes_model <- bayes_model(configured_data = configured_data,
+                                  n_adapt = 100,
+                                  n_iter = 100)
+
+bayes_results(fitted_bayes_model)
+}

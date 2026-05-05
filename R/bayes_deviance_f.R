@@ -26,11 +26,19 @@
 #' configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
 #' configured_data <- readRDS(configured_data_path)
 #'
-#' fitted_bayes_model <- bayes_model(configured_data = configured_data)
-#' bayes_deviance(model = fitted_bayes_model)
+#' # n_adapt and n_iter are set low to run quickly, but should be left as the
+#' # default values in real use
+#'
+#' fitted_bayes_model <- bayes_model(configured_data = configured_data,
+#'                                   n_adapt = 100,
+#'                                   n_iter = 100)
+#'
+#' bayes_deviance(model = fitted_bayes_model,
+#'                n_adapt = 100,
+#'                n_iter = 100)
 #' }
 #' @export
-bayes_deviance <- function(model, async = FALSE){
+bayes_deviance <- function(model, n_adapt = 5000, n_iter = 20000, async = FALSE){
 
   if (!inherits(model, "bayes_model")){
     return(async |> asyncLog(type = "error", "model must be an object created by bayes_model() or covariate_model()"))
@@ -49,7 +57,7 @@ bayes_deviance <- function(model, async = FALSE){
     )
   }
 
-  scat <- scat_plot(model, deviance, model$effects, model$outcome_measure, model$seed)
+  scat <- scat_plot(model, deviance, model$effects, model$outcome_measure, model$seed, n_adapt, n_iter)
 
   list(
     deviance_mtc = deviance,
@@ -73,8 +81,10 @@ covariate_deviance <- function(...){
 #' @param model_type Model effects type. "random" or "fixed".
 #' @param outcome_measure Outcome measure being analysed: one of "OR". "RR", "MD".
 #' @param seed numeric. Seed value to use for calculating UME model.
+#' @param n_adapt numeric. Number of adaptation iterations. Defaults to `5000`
+#' @param n_iter numeric. Number of simulation iterations. Defaults to `20000`
 #' @noRd
-scat_plot <- function(model, deviance, model_type, outcome_measure, seed) {
+scat_plot <- function(model, deviance, model_type, outcome_measure, seed, n_adapt, n_iter) {
   if (outcome_measure == "MD") {
     like <- "normal"
     link <- "identity"
@@ -110,7 +120,7 @@ scat_plot <- function(model, deviance, model_type, outcome_measure, seed) {
     list(.RNG.name = "base::Mersenne-Twister", .RNG.seed = seeds[4])),
     SIMPLIFY = FALSE)
 
-  ume_results <- suppress_jags_output(gemtc::mtc.run(ume))
+  ume_results <- suppress_jags_output(gemtc::mtc.run(ume, n.iter = n_iter, n.adapt = n_adapt))
   y <- suppress_jags_output(gemtc::mtc.deviance(ume_results))
   inc <- data.frame(y$dev.ab)
   inc$names <- rownames(inc)

@@ -62,8 +62,8 @@ configured_data <- readRDS(configured_data_path)
 
 fitted_baseline_model <- baseline_model(configured_data = configured_data,
                                         regressor_type = "shared",
-                                        n_iter = 100,
-                                        max_iter = 100,
+                                        n_iter = 120,
+                                        max_iter = 120,
                                         check_iter = 10)
 }
 

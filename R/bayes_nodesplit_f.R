@@ -11,6 +11,7 @@
 #' nodesplit_path <- system.file("extdata", "continuous_nodesplit.csv", package = "metainsight")
 #' loaded_data <- setup_load(data_path = nodesplit_path,
 #'                           outcome = "continuous")
+#'
 #' configured_data <- setup_configure(loaded_data = loaded_data,
 #'                                    reference_treatment = "Placebo",
 #'                                    effects = "random",
@@ -18,10 +19,15 @@
 #'                                    ranking_option = "good",
 #'                                    seed = 123)
 #'
-#' nodesplit_model <- bayes_nodesplit(configured_data)
+#' # n_adapt and n_iter are set low to run quickly, but should be left as the
+#' # default values in real use
+#'
+#' nodesplit_model <- bayes_nodesplit(configured_data,
+#'                                    n_adapt = 100,
+#'                                    n_iter = 100)
 #' }
 #' @export
-bayes_nodesplit <- function(configured_data, async = FALSE) {
+bayes_nodesplit <- function(configured_data, n_adapt = 5000, n_iter = 20000, async = FALSE) {
 
   if (!async){ # only an issue if run outside the app
     if (check_param_classes(c("configured_data"), c("configured_data"), NULL)){
@@ -91,7 +97,9 @@ bayes_nodesplit <- function(configured_data, async = FALSE) {
           network = mtcNetwork,
           linearModel = configured_data$effects,
           likelihood = like,
-          link = link
+          link = link,
+          n.adapt = n_adapt,
+          n.iter = n_iter
         )
       )
     )
@@ -110,6 +118,7 @@ bayes_nodesplit <- function(configured_data, async = FALSE) {
 #' nodesplit_path <- system.file("extdata", "continuous_nodesplit.csv", package = "metainsight")
 #' loaded_data <- setup_load(data_path = nodesplit_path,
 #'                           outcome = "continuous")
+#'
 #' configured_data <- setup_configure(loaded_data = loaded_data,
 #'                                    reference_treatment = "Placebo",
 #'                                    effects = "random",
@@ -117,7 +126,10 @@ bayes_nodesplit <- function(configured_data, async = FALSE) {
 #'                                    ranking_option = "good",
 #'                                    seed = 123)
 #'
-#' nodesplit_model <- bayes_nodesplit(configured_data)
+#' nodesplit_model <- bayes_nodesplit(configured_data,
+#'                                    n_adapt = 100,
+#'                                    n_iter = 100)
+#'
 #' bayes_nodesplit_plot(nodesplit_model)
 #' }
 #' @export

@@ -4,6 +4,18 @@
 #' @param model list. Output produced by `baseline_model()`, `bayes_model()` or `covariate_model()`.
 #' @inheritParams common_params
 #' @return HTML summary of the model
+#' @examples
+#' configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
+#' configured_data <- readRDS(configured_data_path)
+#'
+#' # n_adapt and n_iter are set low to run quickly, but should be left as the
+#' # default values in real use
+#'
+#' fitted_bayes_model <- bayes_model(configured_data = configured_data,
+#'                                   n_adapt = 100,
+#'                                   n_iter = 100)
+#'
+#' bayes_results(fitted_bayes_model)
 #' @export
 bayes_results <- function(model, logger = NULL){
 
@@ -13,7 +25,7 @@ bayes_results <- function(model, logger = NULL){
 
   if (inherits(model, "bayes_model")) {
     if (model$mtcResults$model$type == "consistency") {
-      title <- glue::glue("The results are on the {model$sumresults$measure} scale.")  
+      title <- glue::glue("The results are on the {model$sumresults$measure} scale.")
     }
     if (model$mtcResults$model$type == "regression") {
       covariate_parameter_text <- switch(

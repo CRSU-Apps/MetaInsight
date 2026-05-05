@@ -99,7 +99,7 @@ if (on_cran){
   excluded_data_con <- setup_exclude(configured_data_con, c("Minerva"))
 
   fitted_bayes_model <- bayes_model(configured_data_con, 100, 100)
-  fitted_baseline_model <- baseline_model(configured_data_con, "shared", 100, 100, 10)
+  fitted_baseline_model <- baseline_model(configured_data_con, "shared", 120, 120, 12)
   fitted_covariate_model <- covariate_model(configured_data_con, 97, "shared", NULL, 100, 100)
 }
 

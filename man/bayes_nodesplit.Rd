@@ -4,10 +4,16 @@
 \alias{bayes_nodesplit}
 \title{Fit a Bayesian nodespliting model}
 \usage{
-bayes_nodesplit(configured_data, async = FALSE)
+bayes_nodesplit(configured_data, n_adapt = 5000, n_iter = 20000, async = FALSE)
 }
 \arguments{
 \item{configured_data}{list. Input dataset created by \code{setup_configure()} or \code{setup_exclude()}}
+
+\item{n_adapt}{numeric. Number of adaptation iterations.
+Defaults to \code{5000} and can normally be left unchanged}
+
+\item{n_iter}{numeric. Number of simulation iterations.
+Defaults to \code{20000} and can normally be left unchanged}
 
 \item{async}{Whether or not the function is being used asynchronously. Default \code{FALSE}}
 }
@@ -24,6 +30,7 @@ if the nodes cannot be split.
 nodesplit_path <- system.file("extdata", "continuous_nodesplit.csv", package = "metainsight")
 loaded_data <- setup_load(data_path = nodesplit_path,
                           outcome = "continuous")
+
 configured_data <- setup_configure(loaded_data = loaded_data,
                                    reference_treatment = "Placebo",
                                    effects = "random",
@@ -31,6 +38,11 @@ configured_data <- setup_configure(loaded_data = loaded_data,
                                    ranking_option = "good",
                                    seed = 123)
 
-nodesplit_model <- bayes_nodesplit(configured_data)
+# n_adapt and n_iter are set low to run quickly, but should be left as the
+# default values in real use
+
+nodesplit_model <- bayes_nodesplit(configured_data,
+                                   n_adapt = 100,
+                                   n_iter = 100)
 }
 }

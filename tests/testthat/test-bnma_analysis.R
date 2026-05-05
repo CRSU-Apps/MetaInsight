@@ -235,6 +235,9 @@ test_that("1. BaselineRiskRegression() sets RNGs correctly;
                                      reference_treatment = "the_Great",
                                      model_type = "random",
                                      cov_parameters = "exchangeable",
+                                     n_iter = 120,
+                                     max_iter = 120,
+                                     check_iter = 12,
                                      seed = 97531) |> suppress_jags_output()
 
   result_2 <- BaselineRiskRegression(connected_data = data$ArmLevel,
@@ -243,6 +246,9 @@ test_that("1. BaselineRiskRegression() sets RNGs correctly;
                                      reference_treatment = "the_Great",
                                      model_type = "random",
                                      cov_parameters = "exchangeable",
+                                     n_iter = 120,
+                                     max_iter = 120,
+                                     check_iter = 12,
                                      seed = 97531) |> suppress_jags_output()
 
   #Unit test 1
@@ -284,7 +290,7 @@ test_that("1. BaselineRiskRegression() sets RNGs correctly;
   names(expected_covariate_min) <- expected_comparator_names
   expected_covariate_max <- c(-1, -1, -1.4, -1.4, NA)
   names(expected_covariate_max) <- expected_comparator_names
-  expected_dic <- c(8.32853662393266, 7.32662097581611, 15.6551575997488, 9) |> as.data.frame()
+  expected_dic <- c(7.97638239251862, 7.00163084315098, 14.9780132356696, 9) |> as.data.frame()
   rownames(expected_dic) <- c("Dbar", "pD", "DIC", "Data points")
   colnames(expected_dic) <- "BaselineRiskDicTable(model)"
   expected_summary <- summary_1

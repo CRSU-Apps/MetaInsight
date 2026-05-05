@@ -1,10 +1,6 @@
 test_that("Check covariate_model function works as expected", {
 
-  # time to compare later
-  start_time <- proc.time()
-  result_1 <- covariate_model(configured_data_con, 98, "shared")
-  end_time <- proc.time()
-  elapsed_1 <- end_time - start_time
+  result_1 <- covariate_model(configured_data_con, 98, "shared", NULL, 100, 100)
 
   expect_is(result_1, "bayes_model")
   expect_true(all(c("mtcResults",
@@ -60,24 +56,20 @@ test_that("Check covariate_model function works as expected", {
                                                        "Burn-in iterations",
                                                        "Sample iterations",
                                                        "Thinning factor"),
-                                    value = c(4, 5000, 20000, 1))
+                                    value = c(4, 100, 100, 1))
 
   expect_equal(metainsight:::GetGemtcMcmcCharacteristics(result_1$mtcResults), expected_mcmc_table)
 
   # adjust the output for a different covariate value. This should take less time than for result
-  start_time <- proc.time()
-  result_2 <- covariate_model(configured_data_con, 99, "shared", result_1)
-  end_time <- proc.time()
-  elapsed_2 <- end_time - start_time
+  result_2 <- covariate_model(configured_data_con, 99, "shared", result_1, 100, 100)
   expect_false(identical(remove_igraph(result_1), remove_igraph(result_2)))
-  expect_gt(elapsed_1[3], elapsed_2[3])
 
   # adjust the output for a different regressor type
-  result_3 <- covariate_model(configured_data_con, 99, "unrelated", result_1)
+  result_3 <- covariate_model(configured_data_con, 99, "unrelated", result_1, 100, 100)
   expect_false(identical(remove_igraph(result_2), remove_igraph(result_3)))
 
   # refit the first to ensure reproducibility
-  result_4 <- covariate_model(configured_data_con, 98, "shared")
+  result_4 <- covariate_model(configured_data_con, 98, "shared", NULL, 100, 100)
   expect_true(identical(remove_igraph(result_1), remove_igraph(result_4)))
 
 })

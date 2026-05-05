@@ -82,9 +82,16 @@ bayes_deviance_module_server <- function(id, common, parent_session) {
     init("bayes_deviance_sub")
     hide_and_show(id)
 
-    observeEvent(input$run, {
-      # add check for a running model
+    # reduce iterations in tests
+    if (isTRUE(getOption("shiny.testmode"))) {
+      n_adapt <- 100
+      n_iter <- 100
+    } else {
+      n_adapt <- 5000
+      n_iter <- 20000
+    }
 
+    observeEvent(input$run, {
       if (is.null(common$bayes_model_all)){
         common$logger |> writeLog(type = "error", go_to = "bayes_model", "Please fit the Bayesian models first")
         return()
@@ -105,7 +112,10 @@ bayes_deviance_module_server <- function(id, common, parent_session) {
     observeEvent(list(watch("bayes_deviance"), watch("bayes_model_all")), {
       req(watch("bayes_deviance") > 0)
       common$logger |> writeLog(type = "starting", "Generating Bayesian deviance plots")
-      common$tasks$bayes_deviance_all$invoke(common$bayes_model_all, async = TRUE)
+      common$tasks$bayes_deviance_all$invoke(common$bayes_model_all,
+                                             n_adapt,
+                                             n_iter,
+                                             async = TRUE)
       result_all$resume()
     })
 
@@ -117,7 +127,10 @@ bayes_deviance_module_server <- function(id, common, parent_session) {
         common$logger |> writeLog(type = "starting", "Updating Bayesian deviance plots")
       }
 
-      common$tasks$bayes_deviance_sub$invoke(common$bayes_model_sub, async = TRUE)
+      common$tasks$bayes_deviance_sub$invoke(common$bayes_model_sub,
+                                             n_adapt,
+                                             n_iter,
+                                             async = TRUE)
       result_sub$resume()
     })
 

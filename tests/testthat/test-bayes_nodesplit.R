@@ -2,7 +2,7 @@ loaded_ns <- setup_load(data_path = file.path(test_data_dir, "Cont_nodesplit.csv
 configured_ns <- setup_configure(loaded_ns, "Placebo", "random", "MD", "good", 123)
 
 test_that("Check bayes_nodesplit function works as expected", {
-  result <- bayes_nodesplit(configured_ns)
+  result <- bayes_nodesplit(configured_ns, 100, 100)
   expect_is(result, "mtc.nodesplit")
   expect_length(result, 9)
   expect_true(all(unlist(lapply(result, class)) == "mtc.result"))

@@ -5,12 +5,18 @@
 \alias{covariate_deviance}
 \title{Produce deviance plots}
 \usage{
-bayes_deviance(model, async = FALSE)
+bayes_deviance(model, n_adapt = 5000, n_iter = 20000, async = FALSE)
 
 covariate_deviance(...)
 }
 \arguments{
 \item{model}{Bayesian model produced by \code{bayes_model()} or \code{covariate_model()}}
+
+\item{n_adapt}{numeric. Number of adaptation iterations.
+Defaults to \code{5000} and can normally be left unchanged}
+
+\item{n_iter}{numeric. Number of simulation iterations.
+Defaults to \code{20000} and can normally be left unchanged}
 
 \item{async}{Whether or not the function is being used asynchronously. Default \code{FALSE}}
 
@@ -42,7 +48,15 @@ html reports.
 configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
 configured_data <- readRDS(configured_data_path)
 
-fitted_bayes_model <- bayes_model(configured_data = configured_data)
-bayes_deviance(model = fitted_bayes_model)
+# n_adapt and n_iter are set low to run quickly, but should be left as the
+# default values in real use
+
+fitted_bayes_model <- bayes_model(configured_data = configured_data,
+                                  n_adapt = 100,
+                                  n_iter = 100)
+
+bayes_deviance(model = fitted_bayes_model,
+               n_adapt = 100,
+               n_iter = 100)
 }
 }

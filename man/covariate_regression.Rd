@@ -26,9 +26,14 @@ metaregression plot
 configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
 configured_data <- readRDS(configured_data_path)
 
+# n_adapt and n_iter are set low to run quickly, but should be left as the
+# default values in real use
+
 fitted_covariate_model <- covariate_model(configured_data = configured_data,
                                           covariate_value = 98,
-                                          regressor_type = "shared")
+                                          regressor_type = "shared",
+                                          n_adapt = 100,
+                                          n_iter = 100)
 
 regression_data <- covariate_regression(model = fitted_covariate_model,
                                         configured_data = configured_data)
