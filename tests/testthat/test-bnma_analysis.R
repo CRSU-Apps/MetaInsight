@@ -326,10 +326,12 @@ test_that("1. BaselineRiskRegression() sets RNGs correctly;
   for (i in 2:6) {
     combined_samples[[paste0("d", i)]] <- c(result_1$samples[[1]][, paste0("d[", i, "]")],
                                             result_1$samples[[2]][, paste0("d[", i, "]")],
-                                            result_1$samples[[3]][, paste0("d[", i, "]")])
+                                            result_1$samples[[3]][, paste0("d[", i, "]")],
+                                            result_1$samples[[4]][, paste0("d[", i, "]")])
     combined_samples[[paste0("b_bl", i)]] <- c(result_1$samples[[1]][, paste0("b_bl[", i, "]")],
                                                result_1$samples[[2]][, paste0("b_bl[", i, "]")],
-                                               result_1$samples[[3]][, paste0("b_bl[", i, "]")])
+                                               result_1$samples[[3]][, paste0("b_bl[", i, "]")],
+                                               result_1$samples[[4]][, paste0("b_bl[", i, "]")])
   }
 
   centred_covariate_value <- 5 - result_1$network$mx_bl
@@ -367,7 +369,7 @@ test_that("1. BaselineRiskRegression() sets RNGs correctly;
                                                        "Burn-in iterations",
                                                        "Sample iterations",
                                                        "Thinning factor"),
-                                    value = c(4, 5000, 20000, 1))
+                                    value = c(4, 36, 120, 1))
 
   #Unit test 6
   expect_equal(GetBnmaMcmcCharacteristics(result_1), expected_mcmc_table)
