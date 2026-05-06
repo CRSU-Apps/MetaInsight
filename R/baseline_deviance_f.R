@@ -9,7 +9,6 @@
 #'  \item{lev_plot}{plotly object}
 #'
 #' @examples
-#' \donttest{
 #' configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
 #' configured_data <- readRDS(configured_data_path)
 #'
@@ -23,7 +22,6 @@
 #'                                         check_iter = 10)
 #'
 #' baseline_deviance(model = fitted_baseline_model)
-#' }
 #' @export
 baseline_deviance <- function(model, async = FALSE){
 

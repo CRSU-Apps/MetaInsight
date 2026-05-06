@@ -6,7 +6,6 @@
 #' @inheritParams common_params
 #' @return Relative effects table
 #' @examples
-#' \donttest{
 #' configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
 #' configured_data <- readRDS(configured_data_path)
 #'
@@ -20,7 +19,6 @@
 #'                                         check_iter = 10)
 #'
 #' baseline_compare(model = fitted_baseline_model)
-#' }
 #' @export
 baseline_compare <- function(model, logger = NULL){
 

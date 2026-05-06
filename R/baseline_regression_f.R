@@ -9,7 +9,6 @@
 #'  \item{credible_regions}{list. Output from `CalculateCredibleRegions()`}
 #'
 #' @examples
-#' \donttest{
 #' configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
 #' configured_data <- readRDS(configured_data_path)
 #'
@@ -24,7 +23,6 @@
 #'
 #' regression_data <- baseline_regression(model = fitted_baseline_model,
 #'                                        configured_data = configured_data)
-#' }
 #' @export
 baseline_regression <- function(model, configured_data, async = FALSE){
 

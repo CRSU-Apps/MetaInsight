@@ -85,7 +85,6 @@ The design was adapted from Donegan et al. (2018)
 \url{https://onlinelibrary.wiley.com/doi/10.1002/jrsm.1292}
 }
 \examples{
-\donttest{
 configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
 configured_data <- readRDS(configured_data_path)
 
@@ -105,5 +104,4 @@ metaregression_plot(model = fitted_baseline_model,
                     configured_data = configured_data,
                     regression_data = regression_data,
                     comparators = c("the_Younger", "the_Little"))
-}
 }

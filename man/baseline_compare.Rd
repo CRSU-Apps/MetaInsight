@@ -21,7 +21,6 @@ Produce a table of comparisons of all treatment pairs for baseline risk
 models using \code{bnma::relative.effects.table()}
 }
 \examples{
-\donttest{
 configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
 configured_data <- readRDS(configured_data_path)
 
@@ -35,5 +34,4 @@ fitted_baseline_model <- baseline_model(configured_data = configured_data,
                                         check_iter = 10)
 
 baseline_compare(model = fitted_baseline_model)
-}
 }

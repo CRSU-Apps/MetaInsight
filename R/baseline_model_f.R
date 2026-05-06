@@ -26,7 +26,6 @@
 #'  \item{sumresults}{Output of summary(model)}
 #'  \item{regressor}{Type of regression coefficient}
 #' @examples
-#' \donttest{
 #' configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
 #' configured_data <- readRDS(configured_data_path)
 #'
@@ -38,7 +37,6 @@
 #'                                         n_iter = 120,
 #'                                         max_iter = 120,
 #'                                         check_iter = 10)
-#' }
 #'
 #' @export
 baseline_model <- function(configured_data, regressor_type, n_iter = 20000, max_iter = 60000, check_iter = 10000, async = FALSE){

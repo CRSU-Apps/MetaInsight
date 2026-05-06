@@ -22,7 +22,6 @@ Produce deviance plotly plots for baseline risk models. Unlike for
 \code{bayes_model} output, only stem and leverage plots are produced.
 }
 \examples{
-\donttest{
 configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
 configured_data <- readRDS(configured_data_path)
 
@@ -36,5 +35,4 @@ fitted_baseline_model <- baseline_model(configured_data = configured_data,
                                         check_iter = 10)
 
 baseline_deviance(model = fitted_baseline_model)
-}
 }

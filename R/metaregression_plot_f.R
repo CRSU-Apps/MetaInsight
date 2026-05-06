@@ -42,7 +42,6 @@
 #' @inherit return-svg return
 #' @import patchwork
 #' @examples
-#' \donttest{
 #' configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
 #' configured_data <- readRDS(configured_data_path)
 #'
@@ -62,7 +61,6 @@
 #'                     configured_data = configured_data,
 #'                     regression_data = regression_data,
 #'                     comparators = c("the_Younger", "the_Little"))
-#' }
 #' @export
 metaregression_plot <- function(
     model,

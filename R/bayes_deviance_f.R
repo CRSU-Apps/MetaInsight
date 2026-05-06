@@ -22,7 +22,6 @@
 #' \item{lev_plot}{plotly object}
 #'
 #' @examples
-#' \donttest{
 #' configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
 #' configured_data <- readRDS(configured_data_path)
 #'
@@ -36,7 +35,6 @@
 #' bayes_deviance(model = fitted_bayes_model,
 #'                n_adapt = 100,
 #'                n_iter = 100)
-#' }
 #' @export
 bayes_deviance <- function(model, n_adapt = 5000, n_iter = 20000, async = FALSE){
 

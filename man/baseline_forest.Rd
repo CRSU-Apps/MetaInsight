@@ -38,7 +38,6 @@ using \code{write_plot()}.
 Produce a forest plot for a baseline risk model using \code{gemtc::blobbogram()}
 }
 \examples{
-\donttest{
 configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
 configured_data <- readRDS(configured_data_path)
 
@@ -52,5 +51,4 @@ fitted_baseline_model <- baseline_model(configured_data = configured_data,
                                         check_iter = 10)
 
 baseline_forest(model = fitted_baseline_model)
-}
 }

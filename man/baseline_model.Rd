@@ -53,7 +53,6 @@ Fit a baseline risk regression model using \code{bnma::network.run()}.
 The output is consistent with outputs produced by \CRANpkg{gemtc}.
 }
 \examples{
-\donttest{
 configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
 configured_data <- readRDS(configured_data_path)
 
@@ -65,6 +64,5 @@ fitted_baseline_model <- baseline_model(configured_data = configured_data,
                                         n_iter = 120,
                                         max_iter = 120,
                                         check_iter = 10)
-}
 
 }
