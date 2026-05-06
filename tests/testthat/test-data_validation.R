@@ -442,3 +442,36 @@ test_that(".ValidateCovariate() generates error message when long data has all i
 
 })
 
+test_that(".ValidateBinaryData() generates error message when R is greater than N for long data", {
+  df <- data.frame(
+    Study = c("Jeff et al", "Jeff et al", "Steve and Al", "Steve and Al", "Frank", "Frank"),
+    N = c(11, 11, 11, 11, 11, 11),
+    R = c(11, 11, 11, 11, 11, 12)
+  )
+
+  validation_result <- .ValidateBinaryData(df)
+
+  expect_false(validation_result$valid)
+
+  expect_match(validation_result$message, "Some studies have R values that are greater than N values: Frank")
+
+})
+
+test_that(".ValidateBinaryData() generates error message when R is greater than N for wide data", {
+  df <- data.frame(
+    Study = c("Jeff et al", "Steve and Al", "Frank"),
+    N.1 = c(11, 11, 11),
+    R.1 = c(11, 11, 11),
+    N.2 = c(11, 11, 11),
+    R.2 = c(11, 11, 11),
+    N.3 = c(11, 11, 11),
+    R.3 = c(11, 11, 12)
+  )
+
+  validation_result <- .ValidateBinaryData(df)
+
+  expect_false(validation_result$valid)
+
+  expect_match(validation_result$message, "Some studies have R values that are greater than N values: Frank")
+
+})

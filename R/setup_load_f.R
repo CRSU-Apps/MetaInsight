@@ -196,6 +196,13 @@ ValidateUploadedData <- function(data, outcome) {
     }
   }
 
+  if (outcome == "binary") {
+    result <- .ValidateBinaryData(data)
+    if (!result$valid) {
+      return(result)
+    }
+  }
+
   return(.valid_result)
 }
 
@@ -507,6 +514,42 @@ ValidateUploadedData <- function(data, outcome) {
         )
       )
     }
+  }
+
+  return(.valid_result)
+}
+
+
+#' Validate that the R values are less than or equal to N values for binary data
+#'
+#' @param data Data frame to validate.
+#'
+#' @return Validation result in the form of a list:
+#' - "valid" = TRUE or FALSE defining whether data is valid
+#' - "message" = String describing any issues causing the data to be invalid
+#' @noRd
+.ValidateBinaryData <- function(data) {
+  study_column <- grep("^study$", names(data), value = TRUE, ignore.case = TRUE)
+  r_columns <- grep("^r\\.?\\d*$", names(data), value = TRUE, ignore.case = TRUE)
+  n_columns <- grep("^n\\.?\\d*$", names(data), value = TRUE, ignore.case = TRUE)
+
+  studies_with_r_greater_than_n <- c()
+
+  for (i in seq_along(r_columns)) {
+    r_col <- r_columns[i]
+    n_col <- n_columns[i]
+
+    studies_with_r_greater_than_n <- append(studies_with_r_greater_than_n,
+                                            data[[study_column]][which(data[[r_col]] > data[[n_col]])])
+  }
+
+  if (length(studies_with_r_greater_than_n) > 0) {
+    return(
+      list(
+        valid = FALSE,
+        message = glue::glue("Some studies have R values that are greater than N values: {paste0(studies_with_r_greater_than_n, collapse = ', ')}")
+      )
+    )
   }
 
   return(.valid_result)
