@@ -227,10 +227,12 @@ freq_summary(configured_data) |> show_plot()
 
 ### Bayesian network meta-analysis
 
-Bayesian analyses use gemtc and all the functions have the `bayes_*` prefix. To fit the model pass the configured data to `bayes_model`:
+Bayesian analyses use gemtc and all the functions have the `bayes_*` prefix. To fit the model pass the configured data to `bayes_model`. To make the model fit more quickly, `n_adapt` and `n_iter` are set very low but in actual usage can be unspecified so that the default values are used:
 
 ```{r bayes_model}
-fitted_bayes_model <- bayes_model(configured_data)
+fitted_bayes_model <- bayes_model(configured_data,
+                                  n_adapt = 100,
+                                  n_iter = 100)
 ```
 
 Some outputs are directly equivalent to the frequentist outputs, for example `bayes_forest` and `bayes_compare`. 
@@ -284,7 +286,9 @@ nodesplit_configured_data <- setup_configure(loaded_data = nodesplit_loaded_data
                                              ranking_option = "good",
                                              seed = 123)
 
-nodesplit_model <- bayes_nodesplit(nodesplit_configured_data)
+nodesplit_model <- bayes_nodesplit(nodesplit_configured_data, 
+                                   n_adapt = 100,
+                                   n_iter = 100)
 
 bayes_nodesplit_plot(nodesplit_model) |> show_plot()
 ```
@@ -299,7 +303,9 @@ The `regressor_type` specifies how slopes are fitted for each treatment. When `s
 ```{r covariate_model}
 fitted_covariate_model <- covariate_model(configured_data,
                                           covariate_value = 50,
-                                          regressor_type = "shared")
+                                          regressor_type = "shared",
+                                          n_adapt = 100,
+                                          n_iter = 100)
 ```
 
 The results can be summarised using `metaregression_plot` which first requires that the data is processed further with `covariate_regression`. The `comparators` are the treatments to compare against the reference treatment.
@@ -331,11 +337,14 @@ The data can be summarised with `baseline_summary`:
 baseline_summary(configured_data) |> show_plot()
 ```
 
-Fitting the model with `baseline_model` uses the same syntax as `covariate_model` but no covariate value is specified as this is a property of the dataset.
+Fitting the model with `baseline_model` uses the same syntax as `covariate_model` but no covariate value is specified as this is a property of the dataset. `n_iter`, `max_iter` and `check_iter` are set very low but in actual use should be unspecified so as to use the default values.
 
 ```{r baseline_model}
 fitted_baseline_model <- baseline_model(configured_data,
-                                        regressor_type = "shared")
+                                        regressor_type = "shared",
+                                        n_iter = 120,
+                                        max_iter = 120,
+                                        check_iter = 12)
 ```
 
 ### App data
