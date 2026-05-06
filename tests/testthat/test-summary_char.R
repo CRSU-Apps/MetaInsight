@@ -58,6 +58,8 @@ test_that("summary_char functions correctly", {
 })
 
 test_that("summary_char produces tables that can be downloaded", {
+  skip_if(skip_shinytest2)
+
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_setup_load")
   reload_app(app, config_path)
   app$set_inputs(tabs = "summary")

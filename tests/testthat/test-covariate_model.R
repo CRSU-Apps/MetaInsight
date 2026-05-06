@@ -155,6 +155,8 @@ test_that("covariate_model produces errors for incorrect data types", {
 })
 
 test_that("{shinytest2} recording: e2e_covariate_model", {
+  skip_if(skip_shinytest2)
+
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_bayes_model", timeout = 30000)
   reload_app(app, config_path)
 
@@ -226,6 +228,8 @@ test_that("{shinytest2} recording: e2e_covariate_model", {
 })
 
 test_that("sliderinput updates for binary covariate", {
+  skip_if(skip_shinytest2)
+
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_covariate_model", timeout = 30000)
   app$set_inputs(tabs = "setup")
   app$upload_file("setup_load-file1" = file.path(test_data_dir, "Cont_wide_binary_cov.csv"))
