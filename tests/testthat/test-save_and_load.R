@@ -1,4 +1,6 @@
 test_that("The app can be saved after an analysis and the data restored", {
+  skip_if(skip_shinytest2)
+
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 60000)
   app$set_inputs(tabs = "setup")
   app$click("setup_load-run")

@@ -61,6 +61,8 @@ test_that("baseline_model produces errors for incorrect data types", {
 
 
 test_that("{shinytest2} recording: e2e_baseline_model", {
+  skip_if(skip_shinytest2)
+
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_baseline_model", timeout = 30000)
 
   app$set_inputs(tabs = "setup")

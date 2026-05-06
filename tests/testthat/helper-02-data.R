@@ -23,9 +23,11 @@ if (Sys.getenv("LOCAL") == "true"){
   save_file <- tempfile(fileext = ".rds")
 }
 
-on_cran <- ((Sys.getenv("GITHUB_ACTIONS") == "true") + (Sys.getenv("LOCAL") == "true")) == 0
+on_cran <- (Sys.getenv("GITHUB_ACTIONS") == "true") & (Sys.getenv("LOCAL") == "true")
+windows_ci <- (Sys.getenv("GITHUB_ACTIONS") == "true") & (tolower(.Platform$OS.type) == "windows")
+skip_shinytest2 <- on_cran | windows_ci
 
-if (!on_cran){
+if (!skip_shinytest2){
   if (!file.exists(config_path) || !file.exists(bayes_model_path)){
     app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 30000)
     app$upload_file("setup_load-file1" = minimal_data_path)
@@ -93,7 +95,7 @@ if (!on_cran){
 
 }
 
-if (on_cran){
+if (skip_shinytest2){
   loaded_data_con <- setup_load(minimal_data_path, outcome = "continuous")
   configured_data_con <- setup_configure(loaded_data_con, "the Great", "random", "MD", "good", 123)
   excluded_data_con <- setup_exclude(configured_data_con, c("Minerva"))

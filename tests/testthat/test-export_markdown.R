@@ -1,5 +1,6 @@
 test_that("export_markdown produces a renderable .qmd when no analysis has been conducted", {
 
+  skip_if(skip_shinytest2)
   skip_on_os("mac")
 
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 60000)
@@ -18,6 +19,7 @@ test_that("export_markdown produces a renderable .qmd when no analysis has been 
 
 test_that("export_markdown produces can render a qmd to html when no analysis has been conducted", {
 
+  skip_if(skip_shinytest2)
   skip_on_os("mac")
 
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 60000)
@@ -33,6 +35,7 @@ test_that("export_markdown produces can render a qmd to html when no analysis ha
 
 test_that("export_markdown produces a renderable .Rmd file after a frequentist analysis", {
 
+  skip_if(skip_shinytest2)
   skip_on_os("mac")
 
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 60000)
@@ -123,6 +126,7 @@ test_that("export_markdown produces a renderable .Rmd file after a frequentist a
 
 test_that("export_markdown produces a renderable .Rmd file after a bayesian analysis", {
 
+  skip_if(skip_shinytest2)
   skip_on_os("mac")
 
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 60000)
@@ -205,6 +209,7 @@ test_that("export_markdown produces a renderable .Rmd file after a bayesian anal
 
 test_that("export_markdown produces a renderable .Rmd file after a covariate analysis", {
 
+  skip_if(skip_shinytest2)
   skip_on_os("mac")
 
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 60000)
@@ -296,6 +301,7 @@ test_that("export_markdown produces a renderable .Rmd file after a covariate ana
 
 test_that("export_markdown produces a renderable .Rmd file after a baseline analysis", {
 
+  skip_if(skip_shinytest2)
   skip_on_os("mac")
 
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 60000)

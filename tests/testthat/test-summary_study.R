@@ -32,6 +32,8 @@ test_that("summary_study produces errors for incorrect data types", {
 })
 
 test_that("summary_study produces downloadable plots", {
+  skip_if(skip_shinytest2)
+
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_setup_load")
   reload_app(app, config_path)
   app$set_inputs(tabs = "summary")

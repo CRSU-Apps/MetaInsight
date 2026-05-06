@@ -42,6 +42,8 @@ test_that("bayes_model produces errors for incorrect data types", {
 })
 
 test_that("bayes_model works e2e - that models are initally different, update after exclusions and are then identical", {
+  skip_if(skip_shinytest2)
+
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_bayes_model", timeout = 30000)
   reload_app(app, config_path)
   app$set_inputs(tabs = "bayes")

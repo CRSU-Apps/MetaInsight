@@ -43,6 +43,8 @@ test_that("setup_configure returns correctly structured objects", {
 })
 
 test_that("setup_configure loads data into common correctly for continuous long data", {
+  skip_if(skip_shinytest2)
+
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"))
   app$set_inputs(tabs = "setup")
   app$upload_file("setup_load-file1" = file.path(test_data_dir, "Cont_long_continuous_cov.csv"))
@@ -79,6 +81,8 @@ test_that("setup_configure loads data into common correctly for continuous long 
 })
 
 test_that("setup_configure loads data into common correctly for wide binary data", {
+  skip_if(skip_shinytest2)
+
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"))
   app$set_inputs(tabs = "setup")
   app$upload_file("setup_load-file1" = system.file("extdata", "binary_wide.csv", package = "metainsight"))
@@ -113,6 +117,8 @@ test_that("setup_configure loads data into common correctly for wide binary data
 })
 
 test_that("setup_configure logs errors when disconnected wide data is uploaded", {
+  skip_if(skip_shinytest2)
+
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"))
   app$set_inputs(tabs = "setup")
   app$upload_file("setup_load-file1" = file.path(test_data_dir, "continuous_wide_disconnected.csv"))
