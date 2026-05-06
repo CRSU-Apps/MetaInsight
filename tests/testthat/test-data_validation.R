@@ -453,7 +453,7 @@ test_that(".ValidateBinaryData() generates error message when R is greater than 
 
   expect_false(validation_result$valid)
 
-  expect_match(validation_result$message, "Some studies have values for have R values that are greater than N values: Frank")
+  expect_match(validation_result$message, "Some studies have R values that are greater than N values: Frank")
 
 })
 
@@ -472,6 +472,6 @@ test_that(".ValidateBinaryData() generates error message when R is greater than 
 
   expect_false(validation_result$valid)
 
-  expect_match(validation_result$message, "Some studies have values for have R values that are greater than N values: Frank")
+  expect_match(validation_result$message, "Some studies have R values that are greater than N values: Frank")
 
 })

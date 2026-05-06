@@ -520,7 +520,7 @@ ValidateUploadedData <- function(data, outcome) {
 }
 
 
-#' Validate that the R values are less than N values for binary data
+#' Validate that the R values are less than or equal to N values for binary data
 #'
 #' @param data Data frame to validate.
 #'
@@ -547,7 +547,7 @@ ValidateUploadedData <- function(data, outcome) {
     return(
       list(
         valid = FALSE,
-        message = glue::glue("Some studies have values for have R values that are greater than N values: {paste0(studies_with_r_greater_than_n, collapse = ', ')}")
+        message = glue::glue("Some studies have R values that are greater than N values: {paste0(studies_with_r_greater_than_n, collapse = ', ')}")
       )
     )
   }
