@@ -243,7 +243,6 @@ test_that("CalculateCredibleRegions() gives region for non-zero-width evidence r
   mtc_results <- list()
   mtc_results$model <- list()
   mtc_results$model$regressor <- list(type="continuous")
-
   model_output <- list(
     mtcResults = mtc_results,
     reference_treatment = "Placebo",

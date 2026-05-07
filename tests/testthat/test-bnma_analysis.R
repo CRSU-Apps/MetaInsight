@@ -217,7 +217,6 @@ test_that("1. BaselineRiskRegression() sets RNGs correctly;
            5. GetReferenceOutcome() obtains imputed outcomes;
            6. GetBnmaMcmcCharacteristics() returns correct MCMC data;
            7. GetBnmaPriors() returns correct prior distributions.", {
-
   data <- list(ArmLevel = data.frame(
     Study = c(rep("Constantine", 3), rep("Leo", 3), rep("Justinian", 2)),
     T = c(1, 2, 3, 4, 1, 5, 2, 6),
