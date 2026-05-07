@@ -217,7 +217,6 @@ test_that("1. BaselineRiskRegression() sets RNGs correctly;
            5. GetReferenceOutcome() obtains imputed outcomes;
            6. GetBnmaMcmcCharacteristics() returns correct MCMC data;
            7. GetBnmaPriors() returns correct prior distributions.", {
-
   data <- list(ArmLevel = data.frame(
     Study = c(rep("Constantine", 3), rep("Leo", 3), rep("Justinian", 2)),
     T = c(1, 2, 3, 4, 1, 5, 2, 6),
@@ -235,6 +234,9 @@ test_that("1. BaselineRiskRegression() sets RNGs correctly;
                                      reference_treatment = "the_Great",
                                      model_type = "random",
                                      cov_parameters = "exchangeable",
+                                     n_iter = 120,
+                                     max_iter = 120,
+                                     check_iter = 12,
                                      seed = 97531) |> suppress_jags_output()
 
   result_2 <- BaselineRiskRegression(connected_data = data$ArmLevel,
@@ -243,6 +245,9 @@ test_that("1. BaselineRiskRegression() sets RNGs correctly;
                                      reference_treatment = "the_Great",
                                      model_type = "random",
                                      cov_parameters = "exchangeable",
+                                     n_iter = 120,
+                                     max_iter = 120,
+                                     check_iter = 12,
                                      seed = 97531) |> suppress_jags_output()
 
   #Unit test 1
@@ -284,7 +289,7 @@ test_that("1. BaselineRiskRegression() sets RNGs correctly;
   names(expected_covariate_min) <- expected_comparator_names
   expected_covariate_max <- c(-1, -1, -1.4, -1.4, NA)
   names(expected_covariate_max) <- expected_comparator_names
-  expected_dic <- c(8.32853662393266, 7.32662097581611, 15.6551575997488, 9) |> as.data.frame()
+  expected_dic <- c(7.97638239251862, 7.00163084315098, 14.9780132356696, 9) |> as.data.frame()
   rownames(expected_dic) <- c("Dbar", "pD", "DIC", "Data points")
   colnames(expected_dic) <- "BaselineRiskDicTable(model)"
   expected_summary <- summary_1
@@ -320,10 +325,12 @@ test_that("1. BaselineRiskRegression() sets RNGs correctly;
   for (i in 2:6) {
     combined_samples[[paste0("d", i)]] <- c(result_1$samples[[1]][, paste0("d[", i, "]")],
                                             result_1$samples[[2]][, paste0("d[", i, "]")],
-                                            result_1$samples[[3]][, paste0("d[", i, "]")])
+                                            result_1$samples[[3]][, paste0("d[", i, "]")],
+                                            result_1$samples[[4]][, paste0("d[", i, "]")])
     combined_samples[[paste0("b_bl", i)]] <- c(result_1$samples[[1]][, paste0("b_bl[", i, "]")],
                                                result_1$samples[[2]][, paste0("b_bl[", i, "]")],
-                                               result_1$samples[[3]][, paste0("b_bl[", i, "]")])
+                                               result_1$samples[[3]][, paste0("b_bl[", i, "]")],
+                                               result_1$samples[[4]][, paste0("b_bl[", i, "]")])
   }
 
   centred_covariate_value <- 5 - result_1$network$mx_bl
@@ -361,7 +368,7 @@ test_that("1. BaselineRiskRegression() sets RNGs correctly;
                                                        "Burn-in iterations",
                                                        "Sample iterations",
                                                        "Thinning factor"),
-                                    value = c(4, 5000, 20000, 1))
+                                    value = c(4, 36, 120, 1))
 
   #Unit test 6
   expect_equal(GetBnmaMcmcCharacteristics(result_1), expected_mcmc_table)

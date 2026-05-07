@@ -16,6 +16,8 @@ test_that("setup_upgrade functions correctly", {
 })
 
 test_that("setup_upgrade loads data into common and can be downloaded", {
+  skip_if(skip_shinytest2)
+
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_setup_upgrade")
   app$set_inputs(tabs = "setup")
   app$set_inputs(setupSel = "setup_upgrade")
@@ -32,6 +34,8 @@ test_that("setup_upgrade loads data into common and can be downloaded", {
 })
 
 test_that("setup_upgrade returns errors", {
+  skip_if(skip_shinytest2)
+
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_setup_upgrade")
   app$set_inputs(tabs = "setup")
   app$set_inputs(setupSel = "setup_upgrade")

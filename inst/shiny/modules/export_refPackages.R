@@ -1,7 +1,6 @@
-rep_refPackages_module_ui <- function(id) {
+export_refPackages_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
-    # UI
     strong("Download List of References"), br(), br(),
     strong("Select download file type"),
     selectInput(ns('refFileType'), label = "",
@@ -10,7 +9,7 @@ rep_refPackages_module_ui <- function(id) {
   )
 }
 
-rep_refPackages_module_server <- function(id, common, parent_session) {
+export_refPackages_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
     output$dlrefPackages <- downloadHandler(
@@ -30,7 +29,6 @@ rep_refPackages_module_server <- function(id, common, parent_session) {
         knitcitations::citep(citation("bayesplot"))
         knitcitations::citep(citation("bnma"))
         knitcitations::citep(citation("cookies"))
-        knitcitations::citep(citation("cowplot"))
         knitcitations::citep(citation("DT"))
         knitcitations::citep(citation("data.table"))
         knitcitations::citep(citation("dplyr"))

@@ -28,6 +28,17 @@ baseline_model_module_server <- function(id, common, parent_session) {
     # used to trigger when exclusions change but only if using the subsetted data
     init("baseline_model_sub")
 
+    # reduce iterations in tests
+    if (isTRUE(getOption("shiny.testmode"))) {
+      n_iter <- 120
+      max_iter <- 120
+      check_iter <- 12
+    } else {
+      n_iter <- 20000
+      max_iter <- 60000
+      check_iter <- 10000
+    }
+
     observeEvent(input$run, {
       if (is.null(common$configured_data)){
         common$logger |> writeLog(type = "error", go_to = "setup_configure",
@@ -83,9 +94,15 @@ baseline_model_module_server <- function(id, common, parent_session) {
       common$meta$baseline_model$used <- TRUE
       common$meta$baseline_model$regressor <- input$regressor
       common$meta$baseline_model$dataset <- input$dataset
+      common$meta$baseline_model$n_iter <- n_iter
+      common$meta$baseline_model$max_iter <- max_iter
+      common$meta$baseline_model$check_iter <- check_iter
 
       common$tasks$baseline_model$invoke(common[[input$dataset]],
                                          input$regressor,
+                                         n_iter,
+                                         max_iter,
+                                         check_iter,
                                          async = TRUE)
       model_result$resume()
     })
@@ -156,6 +173,9 @@ baseline_model_module_result <- function(id) {
 baseline_model_module_rmd <- function(common) {list(
   baseline_model_knit = !is.null(common$meta$baseline_model$used),
   baseline_model_regressor = common$meta$baseline_model$regressor,
-  baseline_model_dataset = common$meta$baseline_model$dataset)
+  baseline_model_dataset = common$meta$baseline_model$dataset,
+  baseline_model_n_iter = common$meta$baseline_model$n_iter,
+  baseline_model_max_iter = common$meta$baseline_model$max_iter,
+  baseline_model_check_iter = common$meta$baseline_model$check_iter)
 }
 

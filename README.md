@@ -204,6 +204,15 @@ called `test-<identifier>.R`. It is probably easiest to use tests for an existin
 
 ### Testing
 
-After making changes, you should run the tests for the module you have worked on locally and then run the full test suite on Github. To run 
-the tests, open the relevant file in `tests/testthat/` and either load `{testthat}` with `library(testthat)` and then select all the tests you 
+After making changes, you should run the tests for the module you have worked on locally and then run the full test suite on GitHub. To run 
+the tests, open the relevant file in `tests/testthat/`, run `devtools::load_all(".")` and then select all the tests you 
 want to run and hit Ctrl+Enter, or just click the Run Tests button in the top right of the window pane.
+
+On GitHub, the end-to-end tests do not run reliably on Windows so are skipped. To run these locally, create a `.Renviron` file in the project
+root (you can use `usethis::edit_r_environ()` to do this) and then add `LOCAL=true` to this file, save and restart the R session. 
+
+Similarly, the `export_markdown` tests are skipped on Mac due to a problem linking JAGS and Quarto. 
+
+
+
+

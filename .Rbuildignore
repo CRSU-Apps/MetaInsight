@@ -5,3 +5,4 @@ LICENSE
 CITATION.cff
 .github
 tests/testthat/saved_files
+^cran-comments\.md$

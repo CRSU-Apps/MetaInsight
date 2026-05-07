@@ -62,7 +62,7 @@ output: html_document
 - Markov chain Monte Carlo
 - Model details
 
-**7.** *Reproduce*
+**7.** *Export*
 - Download session code
 - Reproduce environment
 - Download package references

@@ -1,6 +1,6 @@
 
 test_that("Check baseline_model function works as expected", {
-  result <- baseline_model(configured_data_con, "shared")
+  result <- baseline_model(configured_data_con, "shared", 120, 120, 12)
 
   expect_is(result, "baseline_model")
 
@@ -40,11 +40,11 @@ test_that("Check baseline_model function works as expected", {
   expect_is(result$regressor, "character")
 
   # check results are reproducible
-  result_2 <- baseline_model(configured_data_con, "shared")
+  result_2 <- baseline_model(configured_data_con, "shared", 120, 120, 12)
   expect_true(identical(result, result_2))
 
   # check for binary data
-  result_3 <- baseline_model(configured_data_bin, "shared")
+  result_3 <- baseline_model(configured_data_bin, "shared", 120, 120, 12)
   expect_true(all(c(expected_items) %in% names(result_3)))
 })
 
@@ -61,6 +61,8 @@ test_that("baseline_model produces errors for incorrect data types", {
 
 
 test_that("{shinytest2} recording: e2e_baseline_model", {
+  skip_if(skip_shinytest2)
+
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_baseline_model", timeout = 30000)
 
   app$set_inputs(tabs = "setup")

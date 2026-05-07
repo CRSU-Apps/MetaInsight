@@ -3,6 +3,10 @@
 #' The output is consistent with outputs produced by \CRANpkg{gemtc}.
 #'
 #' @param regressor_type character. Type of regression coefficient, either `shared`, `unrelated`, or `exchangeable`
+#' @param max_iter numeric. The maximum number of iterations.
+#' Defaults to `60000` and can normally be left unchanged.
+#' @param check_iter numeric. The number of iterations after which convergence
+#' is checked for. Defaults to `10000` and can normally be left unchanged.
 #' @inheritParams common_params
 #' @return List of bnma related output:
 #'  \item{mtcResults}{model object itself carried through (needed to match existing code)}
@@ -22,20 +26,24 @@
 #'  \item{sumresults}{Output of summary(model)}
 #'  \item{regressor}{Type of regression coefficient}
 #' @examples
-#' \donttest{
 #' configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
 #' configured_data <- readRDS(configured_data_path)
 #'
+#' # n_iter, max_iter and check_iter are set low to run quickly, but should
+#' # be left as the default values in real use
+#'
 #' fitted_baseline_model <- baseline_model(configured_data = configured_data,
-#'                                         regressor_type = "shared")
-#' }
+#'                                         regressor_type = "shared",
+#'                                         n_iter = 120,
+#'                                         max_iter = 120,
+#'                                         check_iter = 10)
 #'
 #' @export
-baseline_model <- function(configured_data, regressor_type, async = FALSE){
+baseline_model <- function(configured_data, regressor_type, n_iter = 20000, max_iter = 60000, check_iter = 10000, async = FALSE){
 
   if (!async){ # only an issue if run outside the app
-    if (check_param_classes(c("configured_data", "regressor_type"),
-                            c("configured_data", "character"), NULL)){
+    if (check_param_classes(c("configured_data", "regressor_type", "n_iter", "max_iter", "check_iter"),
+                            c("configured_data", "character", "numeric", "numeric", "numeric"), NULL)){
       return()
     }
   }
@@ -56,6 +64,9 @@ baseline_model <- function(configured_data, regressor_type, async = FALSE){
                            configured_data$reference_treatment,
                            configured_data$effects,
                            regressor_type,
+                           n_iter,
+                           max_iter,
+                           check_iter,
                            configured_data$seed)
   )
 
@@ -158,10 +169,14 @@ BaselineRiskNetwork <- function(br_data, outcome, model_type, cov_parameters) {
 #' @param reference_treatment treatment An element of treatment_df$Label, the .
 #' @param model_type "fixed" or "random".
 #' @param cov_parameters "shared", "exchangeable", or "unrelated".
+#' @param n_iter number of iterations (passed to `bnma::network.run()`)
+#' @param max_iter maximum number of iterations (passed to `bnma::network.run()`)
+#' @param check_iter number of iterations after which convergence is checked (passed to `bnma::network.run()`)
 #' @param seed Seed. Defaults to 123.
 #' @return Output from `bnma::network.run()`.
 #' @noRd
-BaselineRiskRegression <- function(connected_data, treatment_df, outcome, reference_treatment, model_type, cov_parameters, seed = 123) {
+BaselineRiskRegression <- function(connected_data, treatment_df, outcome, reference_treatment, model_type,
+                                   cov_parameters, n_iter, max_iter, check_iter, seed = 123) {
   formatted_data <- FormatForBnma(connected_data = connected_data, treatment_df = treatment_df,
                                   outcome = outcome, reference_treatment = reference_treatment)
   network <- BaselineRiskNetwork(br_data = formatted_data, outcome = outcome,
@@ -181,8 +196,9 @@ BaselineRiskRegression <- function(connected_data, treatment_df, outcome, refere
   rng_inits[[4]] <- list(.RNG.name = "base::Mersenne-Twister", .RNG.seed = seeds[4])
 
   return(bnma::network.run(network,
-                           n.run = 20000,
-                           max.run = 60000,
+                           n.run = n_iter,
+                           max.run = max_iter,
+                           setsize = check_iter,
                            conv.limit = 1.5,
                            RNG.inits = rng_inits,
                            n.chains = length(seeds)))
@@ -271,8 +287,8 @@ BaselineRiskModelOutput <- function(connected_data, treatment_df, model, outcome
   # for consistency with gemtc
   names(model_summary)[1] <- "summaries"
   model_summary$measure <- switch(outcome_measure,
-                                  "OR" = "Odds Ratio",
-                                  "RR" = "Risk Ratio",
+                                  "OR" = "Log odds Ratio",
+                                  "RR" = "Log risk Ratio",
                                   "MD" = "Mean Difference")
 
   return(list(mtcResults = model,
@@ -299,12 +315,12 @@ BaselineRiskModelOutput <- function(connected_data, treatment_df, model, outcome
 #'
 #' @param model_output Return from `BaselineRiskModelOutput()`.
 #'
-#' @return list of confidence region objects and confidence interval objects.
+#' @return list of credible region objects and credible interval objects.
 #' Regions cover treatments with a non-zero covariate range of direct contributions,
 #' intervals cover treatments with a single covariate value from direct contributions.
 #' Any treatment with no direct contributions will not be present in either list.
 #' Each is a list of data frames for each treatment name. Each data frame contains 3 columns:
-#' - cov_value: The covariate value at which the confidence region is calculated.
+#' - cov_value: The covariate value at which the credible region is calculated.
 #' - lower: the 2.5% quantile.
 #' - upper: the 97.5% quantile.
 #' Each data frame in "regions" contains 11 rows creating a 10-polygon region.
@@ -324,8 +340,8 @@ CalculateConfidenceRegionsBnma <- function(model_output) {
     cov_max <- model_output$covariate_max[treatment_name]
 
     if (is.na(cov_min)) {
-      confidence_intervals[[treatment_name]] <- data.frame(cov_value = NA, lower = NA, upper = NA)
-      confidence_regions[[treatment_name]] <- data.frame(cov_value = NA, lower = NA, upper = NA)
+      credible_intervals[[treatment_name]] <- data.frame(cov_value = NA, lower = NA, upper = NA)
+      credible_regions[[treatment_name]] <- data.frame(cov_value = NA, lower = NA, upper = NA)
     } else if (cov_min == cov_max) {
       interval <- .FindConfidenceIntervalBnma(mtc_results, cov_min, parameter_name)
       df <- data.frame(cov_value = cov_min, lower = interval["2.5%"], upper = interval["97.5%"])
@@ -334,15 +350,23 @@ CalculateConfidenceRegionsBnma <- function(model_output) {
       rownames(df) <- NULL
 
       # Add to regions list
-      confidence_intervals[[treatment_name]] <- df
-      confidence_regions[[treatment_name]] <- data.frame(cov_value = NA, lower = NA, upper = NA)
+      credible_intervals[[treatment_name]] <- df
+      credible_regions[[treatment_name]] <- data.frame(cov_value = NA, lower = NA, upper = NA)
     } else {
       df <- data.frame()
       for (cov_value in seq(from = cov_min, to = cov_max, length.out = 11)) {
-        interval <- .FindConfidenceIntervalBnma(mtc_results, cov_value, parameter_name)
+        interval <- .FindCredibleIntervalBnma(
+          mtc_results = mtc_results,
+          cov_value = cov_value,
+          parameter_name = parameter_name
+        )
         df <- rbind(
           df,
-          data.frame(cov_value = cov_value, lower = interval["2.5%"], upper = interval["97.5%"])
+          data.frame(
+            cov_value = cov_value,
+            lower = interval["2.5%"],
+            upper = interval["97.5%"]
+          )
         )
       }
 
@@ -350,22 +374,22 @@ CalculateConfidenceRegionsBnma <- function(model_output) {
       rownames(df) <- NULL
 
       # Add to regions list
-      confidence_regions[[treatment_name]] <- df
-      confidence_intervals[[treatment_name]] <- data.frame(cov_value = NA, lower = NA, upper = NA)
+      credible_regions[[treatment_name]] <- df
+      credible_intervals[[treatment_name]] <- data.frame(cov_value = NA, lower = NA, upper = NA)
     }
   }
 
   return(
     list(
-      regions = confidence_regions,
-      intervals = confidence_intervals
+      regions = credible_regions,
+      intervals = credible_intervals
     )
   )
 }
 
 
 
-#' Find the confidence interval at a given covariate value.
+#' Find the credible interval at a given covariate value.
 #'
 #' @param mtc_results Meta-analysis object from which to find confidence interval.
 #' @param cov_value Covariate value at which to find the confidence interval.
@@ -441,10 +465,17 @@ BaselineRiskRelativeEffectsTable <- function(median_ci_table) {
 #' @return A relative effects table in the same format as from gemtc.
 #' @noRd
 BnmaSwitchRanking <- function(ranking_table) {
-  ranking_table <- cbind(ranking_table, data.frame(new_ranks = nrow(ranking_table):1))
+  ranking_table <- cbind(
+    ranking_table,
+    data.frame(new_ranks = nrow(ranking_table):1)
+  )
   new_table <- dplyr::arrange(ranking_table, ranking_table$new_ranks)
   rownames(new_table) <- rownames(ranking_table)
-  return(as.matrix(dplyr::select(new_table, !"new_ranks")))
+  return(
+    as.matrix(
+      dplyr::select(new_table, !"new_ranks")
+    )
+  )
 }
 
 
@@ -458,9 +489,11 @@ BnmaSwitchRanking <- function(ranking_table) {
 #' @noRd
 GetBnmaParameters <- function(all_parameters, effects_type, cov_parameters) {
   #Extract parameters which begin with "d[" or "b_bl[", except d[1] and b_bl[1]
-  parameters <- grep("(d|b_bl)\\[([0-9][0-9]+|[2-9])\\]",
-                     all_parameters,
-                     value = TRUE)
+  parameters <- grep(
+    "(d|b_bl)\\[([0-9][0-9]+|[2-9])\\]",
+    all_parameters,
+    value = TRUE
+  )
   if (effects_type == "random") {
     parameters <- c(parameters, "sd")
   } else if (effects_type != "fixed") {
@@ -489,23 +522,31 @@ BnmaRelativeEffects <- function(model, covariate_value) {
 
   parameters <- colnames(model$samples[[1]])
   #Extract parameters that begin with "d[", except d[1]
-  treatment_parameters <- grep("d\\[([0-9][0-9]+|[2-9])\\]",
-                               parameters,
-                               value = TRUE)
+  treatment_parameters <- grep(
+    "d\\[([0-9][0-9]+|[2-9])\\]",
+    parameters,
+    value = TRUE
+  )
   #Extract parameters that begin with "b_bl[", except b_bl[1]
-  covariate_parameters <- grep("b_bl\\[([0-9][0-9]+|[2-9])\\]",
-                               parameters,
-                               value = TRUE)
+  covariate_parameters <- grep(
+    "b_bl\\[([0-9][0-9]+|[2-9])\\]",
+    parameters,
+    value = TRUE
+  )
   centred_covariate_value <- covariate_value - model$network$mx_bl
 
   samples <- list()
-  #The number of chains is always left at the default 3
-  for (chain in 1:3) {
+  #The number of chains is always left at the default 4
+  for (chain in 1:4) {
     samples[[chain]] <- model$samples[[chain]][, treatment_parameters] + centred_covariate_value * model$samples[[chain]][, covariate_parameters]
   }
 
   relative_effects <- MCMCvis::MCMCsummary(samples)
-  return(as.matrix(relative_effects[, c("50%", "2.5%", "97.5%")]))
+  return(
+    as.matrix(
+      relative_effects[, c("50%", "2.5%", "97.5%")]
+    )
+  )
 }
 
 

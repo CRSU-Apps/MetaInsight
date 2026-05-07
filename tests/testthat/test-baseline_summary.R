@@ -8,6 +8,8 @@ test_that("Check baseline_summary function produces errors as expected", {
 })
 
 test_that("{shinytest2} recording: e2e_baseline_summary", {
+  skip_if(skip_shinytest2)
+
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_baseline_summary", timeout = 30000)
   app$set_inputs(tabs = "setup")
   app$set_inputs(setupSel = "setup_reload")

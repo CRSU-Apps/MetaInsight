@@ -12,6 +12,8 @@ test_that("Check baseline_results function produces errors as expected", {
 })
 
 test_that("{shinytest2} recording: e2e_covariate_results", {
+  skip_if(skip_shinytest2)
+
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_covariate_results")
   app$set_inputs(tabs = "setup")
   app$set_inputs(setupSel = "setup_reload")
@@ -26,14 +28,14 @@ test_that("{shinytest2} recording: e2e_covariate_results", {
   stats_all <- app$get_value(output = "covariate_results-all-statistics")
   expect_match(stats_all, "<table")
   # Test number of rows (including header)
-  expect_equal(stringr::str_count(stats_all, "<tr"), n_trt_all + 2)
+  expect_equal(stringr::str_count(stats_all, "<tr"), n_trt_all + 3)
   # Test number of columns
   expect_equal(stringr::str_count(stringr::str_extract(stats_all, "<tr>.+?</tr>"), "<th"), 5)
 
   quant_all <- app$get_value(output = "covariate_results-all-quantiles")
   expect_match(quant_all, "<table")
   # Test number of rows (including header)
-  expect_equal(stringr::str_count(quant_all, "<tr"), n_trt_all + 2)
+  expect_equal(stringr::str_count(quant_all, "<tr"), n_trt_all + 3)
   # Test number of columns
   expect_equal(stringr::str_count(stringr::str_extract(quant_all, "<tr>.+?</tr>"), "<th"), 6)
 

@@ -37,6 +37,8 @@ test_that("covariate_ranking produces errors for incorrect data types", {
 })
 
 test_that("{shinytest2} recording: e2e_covariate_ranking", {
+  skip_if(skip_shinytest2)
+
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_bayes_ranking")
   app$set_inputs(tabs = "setup")
   app$set_inputs(setupSel = "setup_reload")

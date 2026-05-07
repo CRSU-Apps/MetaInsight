@@ -14,6 +14,10 @@
 #' @param seed numeric. Seed used to fit the models.
 #' @param xmin numeric. Minimum x-axis value. Default `NULL` in which case it is calculated internally
 #' @param xmax numeric. Maximum x-axis value. Default `NULL` in which case it is calculated internally
+#' @param n_adapt numeric. Number of adaptation iterations.
+#' Defaults to `5000` and can normally be left unchanged
+#' @param n_iter numeric. Number of simulation iterations.
+#' Defaults to `20000` and can normally be left unchanged
 #' @param logger Stores all notification messages to be displayed in the Log
 #'   Window. Insert the logger reactive list here for running in
 #'   shiny, otherwise leave the default `NULL`

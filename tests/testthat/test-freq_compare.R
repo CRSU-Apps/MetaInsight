@@ -15,6 +15,8 @@ test_that("freq_compare functions correctly", {
 })
 
 test_that("freq_compare produces downloadable tables", {
+  skip_if(skip_shinytest2)
+
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_setup_load", timeout = 30000)
   reload_app(app, config_path)
 

@@ -13,8 +13,8 @@ mcmc_sub <- bayes_mcmc(bayes_model_sub)
 {r, fig.align='center', fig.width = 9, fig.height = {{bayes_mcmc_height_250}}}
 ```
 ```{r, echo = {{bayes_mcmc_knit}}, include = {{bayes_mcmc_knit}}}
-cowplot::plot_grid(
-  plotlist = gelman_plots(mcmc_all$gelman_data, mcmc_all$parameters),
+patchwork::wrap_plots(
+  gelman_plots(mcmc_all$gelman_data, mcmc_all$parameters),
   ncol = 2
 )
 ```
@@ -23,8 +23,8 @@ cowplot::plot_grid(
 {r, fig.align='center', fig.width = 9, fig.height = {{bayes_mcmc_height_200}}}
 ```
 ```{r, echo = {{bayes_mcmc_knit}}, include = {{bayes_mcmc_knit}}}
-cowplot::plot_grid(
-  plotlist = trace_plots(bayes_model_all$mtcResults, mcmc_all$parameters),
+patchwork::wrap_plots(
+  trace_plots(bayes_model_all$mtcResults, mcmc_all$parameters),
   ncol = 2
 )
 ```
@@ -33,8 +33,8 @@ cowplot::plot_grid(
 {r, fig.align='center', fig.width = 9, fig.height = {{bayes_mcmc_height_200}}}
 ```
 ```{r, echo = {{bayes_mcmc_knit}}, include = {{bayes_mcmc_knit}}}
-cowplot::plot_grid(
-  plotlist = density_plots(bayes_model_all$mtcResults, mcmc_all$parameters),
+patchwork::wrap_plots(
+  density_plots(bayes_model_all$mtcResults, mcmc_all$parameters),
   ncol = 2
 )
 ```
@@ -45,8 +45,8 @@ cowplot::plot_grid(
 {r, fig.align='center', fig.width = 9, fig.height = {{bayes_mcmc_height_250}}}
 ```
 ```{r, echo = {{bayes_mcmc_knit}}, include = {{bayes_mcmc_knit}}}
-cowplot::plot_grid(
-  plotlist = gelman_plots(mcmc_sub$gelman_data, mcmc_sub$parameters),
+patchwork::wrap_plots(
+  gelman_plots(mcmc_sub$gelman_data, mcmc_sub$parameters),
   ncol = 2
 )
 ```
@@ -55,8 +55,8 @@ cowplot::plot_grid(
 {r, fig.align='center', fig.width = 9, fig.height = {{bayes_mcmc_height_200}}}
 ```
 ```{r, echo = {{bayes_mcmc_knit}}, include = {{bayes_mcmc_knit}}}
-cowplot::plot_grid(
-  plotlist = trace_plots(bayes_model_sub$mtcResults, mcmc_sub$parameters),
+patchwork::wrap_plots(
+  trace_plots(bayes_model_sub$mtcResults, mcmc_sub$parameters),
   ncol = 2
 )
 ```
@@ -65,8 +65,8 @@ cowplot::plot_grid(
 {r, fig.align='center', fig.width = 9, fig.height = {{bayes_mcmc_height_200}}}
 ```
 ```{r, echo = {{bayes_mcmc_knit}}, include = {{bayes_mcmc_knit}}}
-cowplot::plot_grid(
-  plotlist = density_plots(bayes_model_sub$mtcResults, mcmc_sub$parameters),
+patchwork::wrap_plots(
+  density_plots(bayes_model_sub$mtcResults, mcmc_sub$parameters),
   ncol = 2
 )
 ```

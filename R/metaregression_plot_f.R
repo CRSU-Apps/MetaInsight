@@ -40,13 +40,19 @@
 #'  }
 #' @inheritParams common_params
 #' @inherit return-svg return
+#' @import patchwork
 #' @examples
-#' \donttest{
 #' configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
 #' configured_data <- readRDS(configured_data_path)
 #'
+#' # n_iter, max_iter and check_iter are set low to run quickly, but should
+#' # be left as the default values in real use
+#'
 #' fitted_baseline_model <- baseline_model(configured_data = configured_data,
-#'                                         regressor_type = "shared")
+#'                                         regressor_type = "shared",
+#'                                         n_iter = 120,
+#'                                         max_iter = 120,
+#'                                         check_iter = 10)
 #'
 #' regression_data <- baseline_regression(model = fitted_baseline_model,
 #'                                        configured_data = configured_data)
@@ -55,7 +61,6 @@
 #'                     configured_data = configured_data,
 #'                     regression_data = regression_data,
 #'                     comparators = c("the_Younger", "the_Little"))
-#' }
 #' @export
 metaregression_plot <- function(
     model,
@@ -166,12 +171,8 @@ metaregression_plot <- function(
   indirect_plot <- indirect_plot + coord_cartesian(xlim = c(x_min, x_max))
 
   # Create composite plot by placing the indirect plot atop the direct plot
-  plot <- ggpubr::ggarrange(
-    indirect_plot, direct_plot,
-    heights = c(1, 4),
-    align = "v",
-    ncol = 1
-  )
+  plot <- indirect_plot / direct_plot +
+    patchwork::plot_layout(heights = c(1, 4))
 
   svglite::xmlSVG({
     print(plot)

@@ -3,7 +3,11 @@
 ```
 
 ```{r, echo = {{baseline_model_knit}}, include = {{baseline_model_knit}}}
-baseline_model <- baseline_model(get({{baseline_model_dataset}}), {{baseline_model_regressor}})
+baseline_model <- baseline_model(get({{baseline_model_dataset}}), 
+                                 regressor = {{baseline_model_regressor}},
+                                 n_iter = {{baseline_model_n_iter}},
+                                 max_iter = {{baseline_model_max_iter}},
+                                 check_iter = {{baseline_model_check_iter}})
 
 dic_table(baseline_model$dic)
 ```

@@ -78,7 +78,7 @@ function(input, output, session) {
   })
 
   # Help Module
-  help_components <- COMPONENTS[!COMPONENTS == "rep"]
+  help_components <- COMPONENTS[!COMPONENTS == "export"]
   lapply(help_components, function(component) {
     lapply(COMPONENT_MODULES[[component]], function(module) {
       btn_id <- paste0(module$id, "Help")
@@ -96,7 +96,7 @@ function(input, output, session) {
     lapply(COMPONENT_MODULES[[component]], function(module) {
       # Initialize event triggers for each module
       init(module$id)
-      if (module$id == "rep_markdown"){
+      if (module$id == "export_markdown"){
        return <- do.call(get(module$server_function), args = list(id = module$id, common = common, parent_session = session, COMPONENT_MODULES))
       } else if (module$id == "setup_reload"){
         # do nothing (loaded below once modules list is complete)
@@ -114,9 +114,7 @@ function(input, output, session) {
   ############################################# #
   ### RUN MODULE ON ENTER ####
   ############################################# #
-  observe({
-    shinyjs::js$runOnEnter(module())
-  })
+  observe(shinyjs::js$runOnEnter(module()))
 
   ############################################# #
   ### PLOT DOWNLOAD FORMAT ####
