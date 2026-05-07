@@ -133,8 +133,8 @@ tagList(
         flex_wrap(includeMarkdown("modules/export_refPackages.md"))
       ),
       conditionalPanel(
-        "input.tabs == 'rep' & input.repSel == 'rep_cinema'",
-        flex_wrap(includeMarkdown("modules/rep_cinema.md"))
+        "input.tabs == 'export' & input.repSel == 'export_cinema'",
+        flex_wrap(includeMarkdown("modules/export_cinema.md"))
       ),
       conditionalPanel(
         "input.tabs == 'intro'",

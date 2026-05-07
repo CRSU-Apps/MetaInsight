@@ -1,4 +1,4 @@
-#' @title rep_cinema
+#' @title export_cinema
 #' @description Prepare project into a JSON format that CINeMA can read.
 #' @inheritParams common_params
 #' @param gemtc_results Output from `gemtc::mtc.run()`, as returned in the `mtcResults` list element from `bayes_model()`.
@@ -18,12 +18,12 @@
 #' configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
 #' configured_data <- readRDS(configured_data_path)
 #'
-#' cinema_project <- rep_cinema(configured_data = configured_data)
+#' cinema_project <- export_cinema(configured_data = configured_data)
 #'
 #' writeLines(cinema_project, tempfile(fileext = ".json"))
 #'
 #' @export
-rep_cinema <- function(configured_data, gemtc_results = NULL, logger = NULL) {
+export_cinema <- function(configured_data, gemtc_results = NULL, logger = NULL) {
 
   check_param_classes("configured_data", "configured_data", logger)
   if (!is.null(gemtc_results)) {

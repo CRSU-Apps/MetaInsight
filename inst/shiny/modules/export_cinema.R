@@ -1,4 +1,4 @@
-rep_cinema_module_ui <- function(id) {
+export_cinema_module_ui <- function(id) {
   ns <- NS(id)
   tagList(
     radioButtons(ns("model"), "Select model to export", choices = list("Frequentist" = "freq", "Bayesian" = "bayes")),
@@ -10,7 +10,7 @@ rep_cinema_module_ui <- function(id) {
   )
 }
 
-rep_cinema_module_server <- function(id, common, parent_session) {
+export_cinema_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
   observeEvent(input$run, {
@@ -55,7 +55,7 @@ rep_cinema_module_server <- function(id, common, parent_session) {
     },
     content = function(file) {
       writeLines(
-        rep_cinema(
+        export_cinema(
           configured_data = common[[input$data]],
           gemtc_results = common[[gemtc_results()]]$mtcResults
         ),

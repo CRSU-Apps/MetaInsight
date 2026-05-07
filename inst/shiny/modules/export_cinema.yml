@@ -1,4 +1,4 @@
-component: "rep"
+component: "export"
 short_name: "CINeMA export"
 long_name: "Export CINeMA file"
 authors: "Tom Morris, Janion Nevill"
