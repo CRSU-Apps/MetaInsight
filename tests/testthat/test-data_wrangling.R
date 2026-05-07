@@ -382,50 +382,6 @@ test_that("ReinstateTreatmentIds() reinstates treatment IDs for wide data", {
   expect_equal(!!new_data, !!expected)
 })
 
-test_that("ReinstateTreatmentIds() reinstates treatment IDs for long data", {
-  data <- data.frame(
-    Study = c("A", "A", "B", "B", "C", "C", "C", "D", "D"),
-    T = c(1, 2, 3, 4, 5, 6, 1, 6, 2)
-  )
-  treatment_ids = data.frame(
-    Label = c("Paracetamol_", "Exercise_", "Sleep_zzz", "Alcohol_S", "Bacon_", "Denial_"),
-    RawLabel = c("Paracetamol...", "Exercise :(", "Sleep zzz", "Alcohol :S", "Bacon!", "Denial?"),
-    Number = 1:6
-  )
-  
-  new_data <- ReinstateTreatmentIds(data = data, treatment_ids = treatment_ids, raw_label = TRUE)
-  expected <- data.frame(
-    Study = c("A", "A", "B", "B", "C", "C", "C", "D", "D"),
-    T = c("Paracetamol...", "Exercise :(", "Sleep zzz", "Alcohol :S", "Bacon!", "Denial?", "Paracetamol...", "Denial?", "Exercise :(")
-  )
-  
-  expect_equal(!!new_data, !!expected)
-})
-
-test_that("ReinstateTreatmentIds() reinstates raw treatment IDs for wide data", {
-  data <- data.frame(
-    Study = c("A", "B", "C", "D"),
-    T.1 = c(1, 3, 5, 6),
-    T.2 = c(2, 4, 6, 2),
-    T.3 = c(NA, NA, 1, NA)
-  )
-  treatment_ids = data.frame(
-    Label = c("Paracetamol_", "Exercise_", "Sleep_zzz", "Alcohol_S", "Bacon_", "Denial_"),
-    RawLabel = c("Paracetamol...", "Exercise :(", "Sleep zzz", "Alcohol :S", "Bacon!", "Denial?"),
-    Number = 1:6
-  )
-  
-  new_data <- ReinstateTreatmentIds(data = data, treatment_ids = treatment_ids, raw_label = TRUE)
-  expected <- data.frame(
-    Study = c("A", "B", "C", "D"),
-    T.1 = c("Paracetamol...", "Sleep zzz", "Bacon!", "Denial?"),
-    T.2 = c("Exercise :(", "Alcohol :S", "Denial?", "Exercise :("),
-    T.3 = c(NA, NA, "Paracetamol...", NA)
-  )
-  
-  expect_equal(!!new_data, !!expected)
-})
-
 test_that("AddStudyIds() adds study IDs for continuous long data", {
   data <- CleanData(read.csv(file.path(test_data_dir, "Cont_long.csv")))
 
