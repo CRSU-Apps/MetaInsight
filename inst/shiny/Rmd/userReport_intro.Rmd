@@ -28,7 +28,7 @@ For more detailed information see <https://quarto.org/>.
 metainsight is an R package and it must be installed and loaded before running any code. This can take a considerable time depending on your computing environment. Some analyses use JAGS and you should install this before installing the package: <https://mcmc-jags.sourceforge.io/> 
  
 ```{r}
-if(!require("metainsight")) remotes::install_github("CRSU-Apps/MetaInsight", ref = "shinyscholar")
+if(!require("metainsight")) install.packages("metainsight")
 library(metainsight)
 
 ```

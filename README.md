@@ -34,7 +34,13 @@ rather than an R package and you should install JAGS first prior to installing M
 You can install MetaInsight in R using:
 
 ```r
-remotes::install_github("CRSU-Apps/MetaInsight", ref = "shinyscholar")
+install.packages("metainsight")
+```
+
+Or install from GitHub using:
+
+```r
+remotes::install_github("CRSU-Apps/MetaInsight")
 ```
 
 Once that is complete, you can run the application with:
