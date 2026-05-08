@@ -1,0 +1,23 @@
+```{asis, echo = {{freq_forest_knit}}, eval = {{freq_forest_knit}}, include = {{freq_forest_knit}}}
+### Generate forest plots
+```
+
+```{asis, echo = {{freq_forest_knit}}, eval = {{freq_forest_knit}}, include = {{freq_forest_knit}}}
+{r, results = 'asis'}
+```
+```{r, echo = {{freq_forest_knit}}, include = {{freq_forest_knit}}}
+freq_forest(configured_data,
+            {{freq_forest_xmin_all}},
+            {{freq_forest_xmax_all}},
+            "Results for all studies") 
+```
+
+```{asis, echo = {{freq_forest_knit}}, eval = {{freq_forest_knit}}, include = {{freq_forest_knit}}}
+{r, results = 'asis'}
+```
+```{r, echo = {{freq_forest_knit}}, include = {{freq_forest_knit}}}
+freq_forest(subsetted_data,
+            {{freq_forest_xmin_sub}},
+            {{freq_forest_xmax_sub}},
+            "Results with selected studies excluded") 
+```

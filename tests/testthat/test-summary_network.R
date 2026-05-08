@@ -1,0 +1,40 @@
+test_that("summary_network produces svg plot", {
+  result <- summary_network(configured_data_con, "netgraph", 1, "title")
+  expect_match(result, "<svg")
+
+  result <- summary_network(configured_data_con, "netplot", 1, "title")
+  expect_match(result, "<svg")
+})
+
+test_that("summary_network produces errors for incorrect data types", {
+  expect_error(summary_network("not_data", "netgraph", 1, "title"), "configured_data must be of class configured_data")
+  expect_error(summary_network(configured_data_con, 123, 1, "title"), "style must be of class character")
+  expect_error(summary_network(configured_data_con, "netgraph", "not_a_number", "title"), "label_size must be of class numeric")
+  expect_error(summary_network(configured_data_con, "invalid_style", 1, "title"), "style must be either netgraph or netplot")
+  expect_error(summary_network(configured_data_con, "netgraph", 1, 123), "title must be of class character")
+})
+
+test_that("summary_network produces downloadable plots", {
+  skip_if(skip_shinytest2)
+
+  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_setup_load")
+  reload_app(app, config_path)
+  app$set_inputs(tabs = "summary")
+  app$set_inputs(summarySel = "summary_network")
+  app$set_inputs(main = "Results")
+  app$click("summary_network-run")
+
+  app$wait_for_value(output = "summary_network-plot_all")
+  app$wait_for_value(output = "summary_network-plot_sub")
+
+  plot_all <- app$get_value(output = "summary_network-plot_all")
+  plot_sub <- app$get_value(output = "summary_network-plot_sub")
+
+  expect_match(plot_all$html, "<svg")
+  expect_match(plot_sub$html, "<svg")
+
+  test_plot_downloads(app, "summary_network")
+
+  app$stop()
+})
+

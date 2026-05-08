@@ -1,19 +1,20 @@
 test_that("PrepDataGemtc() gives correct data for wide binary", {
 
   # process data as would be in app
-  data <- read.csv("data/Binary_wide_continuous_cov.csv")
+  data <- read.csv(file.path(test_data_dir, "Binary_wide_continuous_cov.csv"))
   treatment_ids <- CreateTreatmentIds(FindAllTreatments(data))
-  data <- WrangleUploadData(data, treatment_ids, "Binary")
+  data <- WrangleUploadData(data, treatment_ids, "binary")
   wrangled_treatment_list <- CleanTreatmentIds(treatment_ids)
+  long_data <- WideToLong(data, "binary")
 
-  gemtc_data <- PrepDataGemtc(data, wrangled_treatment_list, "Binary", "covar.age", "age")
+  gemtc_data <- PrepDataGemtc(long_data, wrangled_treatment_list, "binary", "covar.age", "age")
 
-  expected_armData = data.frame(
+  expected_armData <- data.frame(
     study = c(rep("Constantine", 3), rep("Leo", 3), rep("Justinian", 2)),
     treatment = c("the_Great", "the_Younger", "the_Dung_named", "the_Great", "the_Little", "the_Butcher", "the_Great", "the_Slit_nosed"),
     responders = c(30, 31, 32, 34, 33, 35, 36, 37),
     sampleSize = c(100, 101, 102, 104, 103, 105, 106, 107))
-  expected_studyData = data.frame(
+  expected_studyData <- data.frame(
       study = c("Constantine", "Leo", "Justinian"),
       age = c(99, 98, 97))
 
@@ -23,19 +24,19 @@ test_that("PrepDataGemtc() gives correct data for wide binary", {
 
 test_that("PrepDataGemtc() gives correct data for long binary", {
 
-  data <- read.csv("data/Binary_long_continuous_cov.csv")
+  data <- read.csv(file.path(test_data_dir, "Binary_long_continuous_cov.csv"))
   treatment_ids <- CreateTreatmentIds(FindAllTreatments(data))
-  data <- WrangleUploadData(data, treatment_ids, "Binary")
+  data <- WrangleUploadData(data, treatment_ids, "binary")
   wrangled_treatment_list <- CleanTreatmentIds(treatment_ids)
 
-  gemtc_data <- PrepDataGemtc(data, wrangled_treatment_list, "Binary", "covar.age", "age")
+  gemtc_data <- PrepDataGemtc(data, wrangled_treatment_list, "binary", "covar.age", "age")
 
   expected_armData <- data.frame(
     study = c(rep("Constantine", 3), rep("Leo", 3), rep("Justinian", 2)),
     treatment = c("the_Great", "the_Younger", "the_Dung_named", "the_Great", "the_Little", "the_Butcher", "the_Great", "the_Slit_nosed"),
     responders = c(30, 31, 32, 34, 33, 35, 36, 37),
     sampleSize = c(100, 101, 102, 104, 103, 105, 106, 107))
-  expected_studyData = data.frame(
+  expected_studyData <- data.frame(
       study = c("Constantine", "Leo", "Justinian"),
       age = c(99, 98, 97))
 
@@ -45,12 +46,13 @@ test_that("PrepDataGemtc() gives correct data for long binary", {
 
 test_that("PrepDataGemtc() gives correct data for wide continuous", {
 
-  data <- read.csv("data/Cont_wide_continuous_cov.csv")
+  data <- read.csv(file.path(test_data_dir, "Cont_wide_continuous_cov.csv"))
   treatment_ids <- CreateTreatmentIds(FindAllTreatments(data))
-  data <- WrangleUploadData(data, treatment_ids, "Continuous")
+  data <- WrangleUploadData(data, treatment_ids, "continuous")
   wrangled_treatment_list <- CleanTreatmentIds(treatment_ids)
+  long_data <- WideToLong(data, "continuous")
 
-  gemtc_data <- PrepDataGemtc(data, wrangled_treatment_list, "Continuous", "covar.age", "age")
+  gemtc_data <- PrepDataGemtc(long_data, wrangled_treatment_list, "continuous", "covar.age", "age")
 
   expected_armData <- data.frame(
     study = c(rep("Constantine", 3), rep("Leo", 3), rep("Justinian", 2)),
@@ -58,7 +60,7 @@ test_that("PrepDataGemtc() gives correct data for wide continuous", {
     mean = c(-1, -1.1, -1.2, -1.4, -1.3, -1.5, -1.6, -1.7),
     std.dev = c(11.1, 12.2, 13.3, 15.5, 14.4, 16.6, 17.7, 18.8),
     sampleSize = c(30, 31, 32, 34, 33, 35, 36, 37))
-  expected_studyData = data.frame(
+  expected_studyData <- data.frame(
       study = c("Constantine", "Leo", "Justinian"),
       age = c(99, 98, 97))
 
@@ -68,12 +70,12 @@ test_that("PrepDataGemtc() gives correct data for wide continuous", {
 
 test_that("PrepDataGemtc() gives correct data for long continuous", {
 
-  data <- read.csv("data/Cont_long_continuous_cov.csv")
+  data <- read.csv(file.path(test_data_dir, "Cont_long_continuous_cov.csv"))
   treatment_ids <- CreateTreatmentIds(FindAllTreatments(data))
-  data <- WrangleUploadData(data, treatment_ids, "Continuous")
+  data <- WrangleUploadData(data, treatment_ids, "continuous")
   wrangled_treatment_list <- CleanTreatmentIds(treatment_ids)
 
-  gemtc_data <- PrepDataGemtc(data, wrangled_treatment_list, "Continuous", "covar.age", "age")
+  gemtc_data <- PrepDataGemtc(data, wrangled_treatment_list, "continuous", "covar.age", "age")
 
   expected_armData <- data.frame(
     study = c(rep("Constantine", 3), rep("Leo", 3), rep("Justinian", 2)),
@@ -81,7 +83,7 @@ test_that("PrepDataGemtc() gives correct data for long continuous", {
     mean = c(-1, -1.1, -1.2, -1.4, -1.3, -1.5, -1.6, -1.7),
     std.dev = c(11.1, 12.2, 13.3, 15.5, 14.4, 16.6, 17.7, 18.8),
     sampleSize = c(30, 31, 32, 34, 33, 35, 36, 37))
-  expected_studyData = data.frame(
+  expected_studyData <- data.frame(
       study = c("Constantine", "Leo", "Justinian"),
       age = c(99, 98, 97))
 
@@ -100,7 +102,7 @@ test_that("CreateGemtcModel() assigns model type, covariate type, reference trea
       study = c("Constantine", "Leo", "Justinian"),
       age = c(99, 98, 97))
   )
-  gemtc_model <- CreateGemtcModel(data, 'random', 'OR', 'unrelated', 'the_Great')
+  gemtc_model <- CreateGemtcModel(data, 'random', 'OR', 'unrelated', 'the_Great', 123)
 
   expect_equal(gemtc_model$linearModel, "random")
   expect_equal(gemtc_model$regressor$coefficient, "unrelated")
@@ -123,7 +125,7 @@ test_that("CreateGemtcModel() has correct model settings for OR outcome", {
       study = c("Constantine", "Leo", "Justinian"),
       age = c(99, 98, 97))
   )
-  gemtc_model <- CreateGemtcModel(data, 'random', 'OR', 'shared', 'the_Great')
+  gemtc_model <- CreateGemtcModel(data, 'random', 'OR', 'shared', 'the_Great', 123)
 
   expect_equal(gemtc_model$likelihood, "binom")
   expect_equal(gemtc_model$link, "logit")
@@ -141,7 +143,7 @@ test_that("CreateGemtcModel() has correct model settings for RR outcome", {
       study = c("Constantine", "Leo", "Justinian"),
       age = c(99, 98, 97))
   )
-  gemtc_model <- CreateGemtcModel(data, 'random', 'RR', 'shared', 'the_Great')
+  gemtc_model <- CreateGemtcModel(data, 'random', 'RR', 'shared', 'the_Great', 123)
 
   expect_equal(gemtc_model$likelihood, "binom")
   expect_equal(gemtc_model$link, "log")
@@ -160,84 +162,29 @@ test_that("CreateGemtcModel() has correct model settings for MD outcome", {
       study = c("Constantine", "Leo", "Justinian"),
       age = c(99, 98, 97))
   )
-  gemtc_model <- CreateGemtcModel(data, 'random', 'MD', 'shared', 'the_Great')
+  gemtc_model <- CreateGemtcModel(data, 'random', 'MD', 'shared', 'the_Great', 123)
 
   expect_equal(gemtc_model$likelihood, "normal")
   expect_equal(gemtc_model$link, "identity")
 
 })
 
-test_that("RunCovariateModel() gives reproducible output.
-          FindCovariateDefault() gives correct output.
-          CovariateModelOutput() gives correct output.
-          GetGemtcMcmcCharacteristics() returns correct MCMC data.", {
-  reference = "the_Little"
-
-  data <- read.csv("data/Binary_wide_continuous_cov.csv")
-  treatment_ids <- CreateTreatmentIds(FindAllTreatments(data), reference_treatment = reference)
-  data <- WrangleUploadData(data, treatment_ids, "Binary")
-  wrangled_treatment_list <- CleanTreatmentIds(treatment_ids)
-  outcome_measure = "OR"
-
-  result_1 <- RunCovariateModel(data, wrangled_treatment_list, "Binary", outcome_measure, "covar.age", "age", 'random', 'unrelated', reference)
-  result_2 <- RunCovariateModel(data, wrangled_treatment_list, "Binary", outcome_measure, "covar.age", "age", 'random', 'unrelated', reference)
-
-  expect_equal(result_1$samples[1], result_2$samples[1])
-  expect_equal(result_1$samples[2], result_2$samples[2])
-  expect_equal(result_1$samples[3], result_2$samples[3])
-  expect_equal(result_1$samples[4], result_2$samples[4])
-
-  default <- FindCovariateDefault(result_1)
-
-  covariate_value = 98
-
-  expect_equal(default, covariate_value)
-
-  output_1 <- CovariateModelOutput(
-    data = data,
-    treatment_ids = wrangled_treatment_list,
-    model = result_1,
-    covariate_title = "covar.age",
-    cov_value = default,
-    outcome_measure = outcome_measure,
-    covariate_type = "Continuous"
-  )
-
-  expect_equal(length(output_1), 17)
-
-  expect_equal(output_1$a, "random effect")
-  expect_equal(output_1$cov_value_sentence, "Value for covariate age set at 98")
-  expect_equal(output_1$outcome, outcome_measure)
-  expect_equal(output_1$model, "random")
-  expect_equal(output_1$covariate_value, covariate_value)
-  expect_equal(output_1$reference_name, reference)
-  expect_equal(output_1$comparator_names, c("the_Butcher", "the_Dung_named", "the_Great", "the_Slit_nosed", "the_Younger"))
-  
-  expected_mcmc_table <- data.frame(characteristic = c("Chains",
-                                                       "Burn-in iterations",
-                                                       "Sample iterations",
-                                                       "Thinning factor"),
-                                    value = c(4, 5000, 20000, 1))
-  
-  expect_equal(GetGemtcMcmcCharacteristics(result_1), expected_mcmc_table)
-})
-
 test_that("CalculateCredibleRegions() gives nothing for NA evidence range", {
   mtc_results <- list()
-  
+
   model_output <- list(
     mtcResults = mtc_results,
-    reference_name = "Placebo",
+    reference_treatment = "Placebo",
     comparator_names = c("Ibuprofen"),
     covariate_min = c(Ibuprofen = NA),
     covariate_max = c(Ibuprofen = NA)
   )
-  
+
   result <- CalculateCredibleRegions(model_output)
-  
+
   expect_equal(names(result$intervals), c("Ibuprofen"))
   expect_equal(names(result$regions), c("Ibuprofen"))
-  
+
   expect_equal(
     result$intervals["Ibuprofen"],
     list(
@@ -254,30 +201,30 @@ test_that("CalculateCredibleRegions() gives nothing for NA evidence range", {
 
 test_that("CalculateCredibleRegions() gives interval for zero-width evidence range", {
   mtc_results <- list()
-  
+
   model_output <- list(
     mtcResults = mtc_results,
-    reference_name = "Placebo",
+    reference_treatment = "Placebo",
     comparator_names = c("Ibuprofen"),
     covariate_min = c(Ibuprofen = 7),
     covariate_max = c(Ibuprofen = 7)
   )
-  
+
   interval <- c("2.5%" = 11, "97.5%" = 11)
-  
+
   rel_eff_summary <- list(
     summaries = list(
       quantiles = interval
     )
   )
-  
+
   mockery::stub(CalculateCredibleRegions, ".FindCredibleInterval", interval)
-  
+
   result <- CalculateCredibleRegions(model_output)
-  
+
   expect_equal(names(result$regions), c("Ibuprofen"))
   expect_equal(names(result$intervals), c("Ibuprofen"))
-  
+
   expect_equal(
     result$intervals["Ibuprofen"],
     list(
@@ -296,15 +243,14 @@ test_that("CalculateCredibleRegions() gives region for non-zero-width evidence r
   mtc_results <- list()
   mtc_results$model <- list()
   mtc_results$model$regressor <- list(type="continuous")
-  
   model_output <- list(
     mtcResults = mtc_results,
-    reference_name = "Placebo",
+    reference_treatment = "Placebo",
     comparator_names = c("Ibuprofen"),
     covariate_min = c(Ibuprofen = 7),
     covariate_max = c(Ibuprofen = 17)
   )
-  
+
   interval <- matrix(
     data = c(
       11, 12,
@@ -327,13 +273,13 @@ test_that("CalculateCredibleRegions() gives region for non-zero-width evidence r
     ),
     byrow = TRUE
   )
-  
+
   rel_eff_summary <- list(
     summaries = list(
       quantiles = interval
     )
   )
-  
+
   n <- 1
   mockery::stub(
     CalculateCredibleRegions,
@@ -344,12 +290,12 @@ test_that("CalculateCredibleRegions() gives region for non-zero-width evidence r
       return(this_interval)
     }
   )
-  
+
   result <- CalculateCredibleRegions(model_output)
-  
+
   expect_equal(names(result$intervals), c("Ibuprofen"))
   expect_equal(names(result$regions), c("Ibuprofen"))
-  
+
   expect_equal(
     result$regions["Ibuprofen"],
     list(

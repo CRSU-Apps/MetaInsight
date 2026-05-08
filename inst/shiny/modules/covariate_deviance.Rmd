@@ -1,0 +1,20 @@
+```{asis, echo = {{covariate_deviance_knit}}, eval = {{covariate_deviance_knit}}, include = {{covariate_deviance_knit}}}
+### Deviance report
+```
+
+```{r, echo = {{covariate_deviance_knit}}, include = {{covariate_deviance_knit}}}
+covariate_deviance <- covariate_deviance(covariate_model)
+```
+
+```{asis, echo = {{covariate_deviance_knit}}, eval = {{covariate_deviance_knit}}, include = {{covariate_deviance_knit}}}
+#### Per-arm residual deviance 
+```
+```{r, echo = {{covariate_deviance_knit}}, include = {{covariate_deviance_knit}}}
+covariate_deviance$stem_plot
+```
+```{asis, echo = {{covariate_deviance_knit}}, eval = {{covariate_deviance_knit}}, include = {{covariate_deviance_knit}}}
+#### Leverage plot
+```
+```{r, echo = {{covariate_deviance_knit}}, include = {{covariate_deviance_knit}}}
+covariate_deviance$lev_plot
+```

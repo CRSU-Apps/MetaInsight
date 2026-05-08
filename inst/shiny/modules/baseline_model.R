@@ -1,0 +1,181 @@
+baseline_model_module_ui <- function(id) {
+  ns <- shiny::NS(id)
+  tagList(
+    radioButtons(ns("dataset"), "Dataset",
+                 choiceNames = list("All studies", "With selected studies excluded"),
+                 choiceValues = list("configured_data", "subsetted_data")),
+    radioButtons(ns("regressor"), "Regression coefficient",
+                 choiceNames = list(add_tooltip("Shared", "Coefficient is the same for all treatment comparisons"),
+                                    add_tooltip("Exchangable", "Coefficient is different for each treatment comparison but all come from a shared distribution"),
+                                    add_tooltip("Unrelated", "Coefficient is different for each treatment comparison")),
+                 choiceValues = list("shared", "exchangeable", "unrelated")),
+    input_task_button(ns("run"), "Fit model", type = "default", icon = icon("arrow-turn-down")),
+    div(class = "baseline_model download_buttons",
+        actionButton(ns("run_all"), "Run all modules", icon = icon("forward-fast"))
+    )
+  )
+}
+
+baseline_model_module_server <- function(id, common, parent_session) {
+  moduleServer(id, function(input, output, session) {
+
+    hide_and_show(id, show = FALSE)
+
+    # used to trigger summary table - needs to be separate to reload
+    init("baseline_model_table")
+    # used to trigger when model is fitted
+    init("baseline_model_fit")
+    # used to trigger when exclusions change but only if using the subsetted data
+    init("baseline_model_sub")
+
+    # reduce iterations in tests
+    if (isTRUE(getOption("shiny.testmode"))) {
+      n_iter <- 120
+      max_iter <- 120
+      check_iter <- 12
+    } else {
+      n_iter <- 20000
+      max_iter <- 60000
+      check_iter <- 10000
+    }
+
+    observeEvent(input$run, {
+      if (is.null(common$configured_data)){
+        common$logger |> writeLog(type = "error", go_to = "setup_configure",
+                                  "Please configure the analysis in the Setup section first")
+        return()
+      }
+
+      if (common$configured_data$outcome_measure == "SMD") {
+        common$logger |> writeLog(type = "error", "Standardised mean difference currently cannot be analysed within Bayesian analysis in MetaInsight")
+        return()
+      }
+      else if (common$configured_data$outcome_measure == "RD") {
+        common$logger |> writeLog(type = "error", "Risk difference currently cannot be analysed within Bayesian analysis in MetaInsight")
+        return()
+      }
+
+      trigger("baseline_model")
+    })
+
+    # needed to cancel in progress
+    base_model <- NULL
+    common$tasks$baseline_model <- ExtendedTask$new(
+      function(...) base_model <<- mirai::mirai(run(...), run = baseline_model, .args = environment())
+    ) |> bind_task_button("run")
+
+    # only trigger refitting when exclusions change if using the subset
+    observeEvent(list(input$dataset, watch("setup_exclude")), {
+      req(input$dataset == "subsetted_data")
+      trigger("baseline_model_sub")
+    })
+
+    observeEvent(list(watch("baseline_model"),
+                      watch("setup_configure"),
+                      watch("baseline_model_sub"),
+                      watch("effects"),
+                      input$regressor,
+                      input$dataset), {
+      # trigger if run is pressed or if model is changed, but only if a model exists
+      req((watch("baseline_model") > 0 || all(!is.null(common$baseline_model), watch("effects") > 0)))
+
+      # cancel if the model is already updating
+      if (common$tasks$baseline_model$status() == "running"){
+        mirai::stop_mirai(base_model)
+      }
+
+      if (is.null(common$baseline_model)){
+        common$logger |> writeLog(type = "starting", "Fitting baseline risk model")
+      } else {
+        common$logger |> writeLog(type = "starting", "Updating baseline risk model")
+      }
+
+      # METADATA ####
+      common$meta$baseline_model$used <- TRUE
+      common$meta$baseline_model$regressor <- input$regressor
+      common$meta$baseline_model$dataset <- input$dataset
+      common$meta$baseline_model$n_iter <- n_iter
+      common$meta$baseline_model$max_iter <- max_iter
+      common$meta$baseline_model$check_iter <- check_iter
+
+      common$tasks$baseline_model$invoke(common[[input$dataset]],
+                                         input$regressor,
+                                         n_iter,
+                                         max_iter,
+                                         check_iter,
+                                         async = TRUE)
+      model_result$resume()
+    })
+
+    model_result <- observe({
+      # prevent loading when the task is cancelled
+      if (common$tasks$baseline_model$status() == "success"){
+        result <- common$tasks$baseline_model$result()
+        model_result$suspend()
+        if (inherits(result, "baseline_model")){
+          common$baseline_model <- result
+          shinyjs::runjs("Shiny.setInputValue('baseline_model-complete', 'complete');")
+          common$logger |> writeLog(type = "complete", "Baseline model has been fitted")
+
+          if (common$baseline_model$mtcResults$max.gelman > 1.05){
+            common$logger |> writeLog(type = "warning", glue(
+              "The Gelman-Rubin statistic is {round(common$baseline_model$mtcResults$max.gelman, 2)}.
+              A value greater than 1.05 may indicate lack of convergence. Please check the diagnostic plots
+              in the Markov chain Monte Carlo module"))
+          }
+
+        } else {
+          common$logger |> writeLog(type = "error", result)
+        }
+
+        trigger("baseline_model_table")
+        trigger("baseline_model_fit")
+      }
+    })
+
+    output$table <- renderUI({
+      watch("baseline_model") # required for reset
+      watch("baseline_model_table")
+      req(common$baseline_model)
+      shinyjs::show(selector = ".baseline_model")
+      dic_table(common$baseline_model$dic)
+    })
+
+    observeEvent(input$run_all, {
+      run_all(COMPONENTS, COMPONENT_MODULES, "baseline", common$logger)
+    })
+
+    return(list(
+      save = function() {list(
+        ### Manual save start
+        ### Manual save end
+        regressor = input$regressor,
+        dataset = input$dataset)
+      },
+      load = function(state) {
+        ### Manual load start
+        ### Manual load end
+        updateRadioButtons(session, "regressor", selected = state$regressor)
+        updateRadioButtons(session, "dataset", selected = state$dataset)
+      }
+    ))
+})
+}
+
+
+baseline_model_module_result <- function(id) {
+  ns <- NS(id)
+  div(align = "center",
+    uiOutput(ns("table"))
+  )
+}
+
+baseline_model_module_rmd <- function(common) {list(
+  baseline_model_knit = !is.null(common$meta$baseline_model$used),
+  baseline_model_regressor = common$meta$baseline_model$regressor,
+  baseline_model_dataset = common$meta$baseline_model$dataset,
+  baseline_model_n_iter = common$meta$baseline_model$n_iter,
+  baseline_model_max_iter = common$meta$baseline_model$max_iter,
+  baseline_model_check_iter = common$meta$baseline_model$check_iter)
+}
+

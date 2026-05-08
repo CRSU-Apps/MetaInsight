@@ -1,0 +1,148 @@
+#' @title Produce a frequentist forest plot
+#' @description Produce an annotated frequentist forest plot using
+#' `meta::forest()`
+#'
+#' @param title character. Title for the plot.
+#' @inheritParams common_params
+#' @inherit return-svg return
+#' @examples
+#' configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
+#' configured_data <- readRDS(configured_data_path)
+#'
+#' freq_forest(configured_data = configured_data)
+#'
+#' @export
+freq_forest <- function(configured_data, xmin = NULL, xmax = NULL, title = "", logger = NULL) {
+
+  check_param_classes(c("configured_data", "title"),
+                      c("configured_data", "character"), logger)
+
+  # set default x-axis limits if not supplied and check if they are provided
+  if (any(is.null(xmin), is.null(xmax))){
+    xlim <- freq_forest_limits(configured_data$freq, configured_data$outcome)
+    xmin <- ifelse(is.null(xmin), xlim[1], xmin)
+    xmax <- ifelse(is.null(xmax), xlim[2], xmax)
+  } else {
+    check_param_classes(c("xmin", "xmax"), c("numeric", "numeric"), logger)
+  }
+
+  n_treatments <- nrow(configured_data$treatments)
+  annotation <- freq_forest_annotation(configured_data$freq, configured_data$effects, configured_data$outcome_measure)
+  height <- forest_height(n_treatments, title = TRUE, annotation = TRUE)
+  width <- forest_width(max(nchar(configured_data$treatments$Label)))
+
+  xml <- svglite::xmlSVG({
+   meta::forest(configured_data$freq$netmeta,
+                reference.group = configured_data$reference_treatment,
+                pooled = configured_data$effects,
+                xlim = c(xmin, xmax))
+   grid::grid.text(title, 0.5, grid::unit(height - 0.25, "inches"), gp=grid::gpar(cex=1.2, fontface = "bold"))
+   grid::grid.text(annotation, 0.5, grid::unit(height - 0.65, "inches"), gp=grid::gpar(cex=1))
+  },
+  height = height,
+  width = width,
+  web_fonts = list(
+    Arimo = "https://fonts.googleapis.com/css2?family=Arimo:wght@400;700&display=swap")
+  )
+
+  # consistent naming
+  if (configured_data$effects == "fixed"){
+    xml_doc <- xml2::as_xml_document(xml)
+    effect_node <- xml2::xml_find_all(xml_doc, ".//text()[contains(., 'Common Effects Model')]")
+    xml2::xml_text(effect_node) <- "Fixed Effect Model"
+    parent_node <- xml2::xml_parent(effect_node)
+    xml2::xml_attr(parent_node, "textLength") <- NULL
+  }
+
+  svg <- xml |> crop_svg()
+
+  return(svg)
+}
+
+
+#' Extract the minimum and maximum confidence intervals from the summary produced by netmeta
+#'
+#' @param freq list. NMA results created by freq_wrap().
+#' @param outcome character. `binary` or `continuous`
+#'
+#' @return List containing:
+#'  \item{xmin}{numeric. Minimum confidence interval}
+#'  \item{xmax}{numeric. Maximum confidence interval}
+#'
+#' @keywords internal
+#' @export
+freq_forest_limits <- function(freq, outcome){
+
+  # store the result of print(freq$netmeta) produced by netmeta
+  net1_summary <- utils::capture.output(freq$netmeta)
+
+  # extract the treatment estimate lines
+  first_line <- grep("Treatment estimate", net1_summary ) + 2
+  last_line <- first_line + length(levels(freq$netmeta$data$treat1)) - 1
+  treatment_estimates <- net1_summary[first_line:last_line]
+
+  # extract the square brackets and then the values inside
+  square_brackets <- unlist(regmatches(treatment_estimates, gregexpr("\\[([-0-9.; ]+)\\]", treatment_estimates)))
+  ci_values <- as.numeric(unlist(strsplit(gsub("\\[|\\]", "", square_brackets), ";")))
+
+  # add a 20% buffer to the CIs and round to 0.1
+  xmin <- format_xlim(min(ci_values), "min", FALSE)
+  xmax <- format_xlim(max(ci_values), "max", FALSE)
+
+  # prevent errors
+  if (outcome == "binary" && xmin == 0){
+      xmin <- 0.01
+  }
+
+  return(c(xmin, xmax))
+}
+
+#' Creates the text to be displayed underneath the forest plots, with between-study SD, number of studies and number of treatments.
+#'
+#' @param freq list. NMA results created by freq_wrap().
+#' @param effects "fixed" or "random".
+#' @param outcome_measure "MD", "SMD", "OR", "RR", or "RD".
+#' @return Text as described above.
+#' @noRd
+freq_forest_annotation <- function(freq, effects, outcome_measure) {
+
+  tau <- round(freq$netmeta$tau, 2)
+  k <- freq$netmeta$k
+  n <- freq$netmeta$n
+
+  if (effects == "random") {
+    if (outcome_measure == "OR") {
+      output_text <- paste0("Between-study standard deviation (log-odds scale): ", tau,
+                           "\n Number of studies: ", k,
+                           ", Number of treatments: ", n)
+    } else if (outcome_measure == "RR") {
+      output_text <- paste0("Between-study standard deviation (log probability scale): ", tau,
+                           "\n Number of studies: ", k,
+                           ", Number of treatments: ", n)
+    } else if(outcome_measure %in% c("MD", "SMD", "RD")) {
+      output_text <- paste0("Between-study standard deviation: ", tau,
+                           "\n Number of studies: ", k,
+                           ", Number of treatments: ", n)
+    } else {
+      stop("outcome_measure must be one of 'MD', 'SMD', 'OR', 'RR', 'RD'")
+    }
+  } else if (effects == "fixed") {
+    if (outcome_measure == "OR") {
+      output_text <- paste0("Between-study standard deviation (log-odds scale) set at 0. \n Number of studies: ", k,
+                           ", Number of treatments:", n)
+    }
+    else if (outcome_measure == "RR") {
+      output_text <- paste0("Between-study standard deviation (log probability scale) set at 0. \n Number of studies: ", k,
+                           ", Number of treatments: ", n)}
+    else if(outcome_measure %in% c("MD", "SMD", "RD")) {
+      output_text <- paste0("Between-study standard deviation set at 0. \n Number of studies: ", k,
+                           ", Number of treatments: ", n)
+    } else {
+      stop("outcome_measure must be one of 'MD', 'SMD', 'OR', 'RR', 'RD'")
+    }
+  } else {
+    stop("effects must be 'fixed' or 'random'")
+  }
+
+  return(output_text)
+}

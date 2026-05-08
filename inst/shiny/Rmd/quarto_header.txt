@@ -1,0 +1,22 @@
+---
+title: |
+ ![](https://raw.githubusercontent.com/CRSU-Apps/MetaInsight/main/www/images/MetaInsightLogo.png){width=100px} MetaInsight placeholder
+format:
+  html:
+    embed-resources: true
+    code-overflow: wrap
+    code-fold: true
+    code-summary: "View code chunk"
+    page-layout: article
+    grid:
+      body-width: 1200px
+fig-format: svg
+execute:
+  warning: false
+  message: false
+theme: spacelab
+---
+
+::: {.panel-tabset}
+
+## Introduction

@@ -1,0 +1,35 @@
+```{asis, echo = {{covariate_ranking_knit}}, eval = {{covariate_ranking_knit}}, include = {{covariate_ranking_knit}}}
+### Generate ranking plots
+```
+
+```{r, echo = {{covariate_ranking_knit}}, include = {{covariate_ranking_knit}}}
+covariate_ranking <- covariate_ranking(covariate_model, get({{covariate_ranking_dataset}}))
+```
+
+```{asis, echo = {{covariate_ranking_knit}}, eval = {{covariate_ranking_knit}}, include = {{covariate_ranking_knit}}}
+{r, results = 'asis'}
+```
+```{r, echo = {{covariate_ranking_knit}}, include = {{covariate_ranking_knit}}}
+covariate_forest(covariate_model, ranking = TRUE)
+```
+
+```{asis, echo = {{covariate_ranking_knit}}, eval = {{covariate_ranking_knit}}, include = {{covariate_ranking_knit}}}
+{r, results = 'asis'}
+```
+```{r, echo = {{covariate_ranking_knit}}, include = {{covariate_ranking_knit}}}
+ranking_plot(covariate_ranking,
+             {{covariate_ranking_rank_style}},
+             {{covariate_ranking_colourblind}},
+             {{covariate_ranking_simple}}) 
+```
+
+```{r, echo = {{covariate_ranking_knit}}, include = {{covariate_ranking_knit}}}
+knitr::kable(ranking_table(covariate_ranking), digits = 2)
+```
+
+```{asis, echo = {{covariate_ranking_knit}}, eval = {{covariate_ranking_knit}}, include = {{covariate_ranking_knit}}}
+{r, results = 'asis'}
+```
+```{r, echo = {{covariate_ranking_knit}}, include = {{covariate_ranking_knit}}}
+summary_network(get({{covariate_ranking_dataset}}), {{covariate_ranking_network_style}})
+```

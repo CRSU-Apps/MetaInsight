@@ -1,0 +1,58 @@
+---
+title: "intro"
+output: html_document
+---
+<br/>
+
+### **What is *MetaInsight*?**  
+
+<img src="logo.png" alt="logo" style="width: 300px; float:right; padding:10px;"/>
+
+Network meta-analysis (NMA) has been increasingly adopted in evidence-based medicine to compare multiple interventions and address the questions such as ‘which intervention is the ‘best’ overall?’. Currently, NMA is primarily conducted in statistical packages such as WinBUGs, R and STATA, and the software coding can be difficult for non-statisticians and hinders the progress of carrying out systematic reviews containing NMA.
+
+MetaInsight is a tool that conducts NMA via the web requiring no specialist software for the user to install but leveraging established analysis routines (specifically the <a href = "https://cran.r-project.org/package=bnma" target="_blank">bnma</a>, <a href = "https://cran.r-project.org/package=gemtc" target="_blank">gemtc</a> and <a href = "https://cran.r-project.org/package=netmeta" target="_blank">netmeta</a> packages in R). The tool is interactive and uses an intuitive ‘point and click’ interface and presents results in visually intuitive and appealing ways. It is hoped that this tool will assist those in conducting NMA who do not have expert statistical programming skills, and, in turn, increase the relevance of published meta-analyses, and in the long term contribute to improved healthcare decision making as a result.
+
+Users wishing to analyse large treatment networks or fit complex network meta-analysis models should seek advice from technical experts.
+
+If you use the app please cite it as:
+
+Owen, RK, Bradbury, N, Xin, Y, Cooper, N, Sutton, A. <a href = "https://doi.org/10.1002/jrsm.1373" target="_blank">MetaInsight: An interactive web-based tool for analyzing, interrogating, and visualizing network meta-analyses using R-shiny and netmeta.</a> Res Syn Meth. 2019; 10: 569-581.
+
+### **Attributes of _MetaInsight_**
+
+This version of *MetaInsight* was built using *<a href = "https://cran.r-project.org/package=shinyscholar" target="_blank">shinyscholar</a>* and has these attributes:
+
+* **accessible**: lowers barriers to conducting complex meta-analysis by providing an intuitive graphical user interface
+* **open**: the code is free to use and modify (GPL 3.0) and <a href="https://github.com/CRSU-Apps/MetaInsight" target="_blank">available on GitHub</a>
+* **expandable**: users can author and contribute modules that enable new methodological options
+* **flexible**: options for user uploads and downloads of results
+* **interactive**: includes an embedded sortable `{DF}` data tables, and visualizations of results
+* **instructive**: features guidance text that educates users about theoretical and analytical aspects of each step in the workflow
+* **reproducible**: users can download a `{quarto}` .qmd file that when run reproduces the analysis, and also save sessions and load them later
+* **reliable**: modules and their underlying functions are tested using `{testthat}` and `{shinytest2}`
+
+### **Contact us**
+
+Please <a href="mailto:apps@crsu.org.uk" target="_blank">email us</a> with any other questions. If you encounter any errors with using the app, please check the <a href = "https://github.com/CRSU-Apps/MetaInsight/wiki/Troubleshooting" target="_blank">troubleshooting page</a> first before contacting us.
+
+### **Disclaimer**
+
+THE SOFTWARE IS PROVIDED AS IS, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+### **Funding and Support Acknowledgement**
+
+<div style="display: inline;">
+  <img src="funded-by-nihr-logo.png" width="55%">
+</div>
+<div style="display: inline;">
+  <img src="CRSU_logo.png" width="40%">
+</div>
+
+MetaInsight is part of the Complex Reviews Synthesis Unit (CRSU) suite of evidence synthesis apps.
+The development of these apps was (majority) funded and overseen by the Evidence Synthesis Group @ CRSU (NIHR153934). Further details of other funders and support, current and past, can be found 
+<a href="https://github.com/CRSU-Apps/.github/wiki/Detailed-Funding-Statement" target="_blank">on our GitHub page</a>. The views expressed are those of the author(s) and not necessarily those of the NIHR or the Department of Health and Social Care.
+
+More information about the UK NIHR Complex Reviews Synthesis Unit (CRSU) can be found 
+<a href="https://www.gla.ac.uk/research/az/crsu/" target="_blank">on our website</a>
+          
+

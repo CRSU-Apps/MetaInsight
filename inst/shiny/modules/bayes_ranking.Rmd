@@ -1,0 +1,72 @@
+```{asis, echo = {{bayes_ranking_knit}}, eval = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}
+### Generate ranking plots
+```
+
+```{r, echo = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}
+bayes_ranking_all <- bayes_ranking(bayes_model_all, configured_data)
+bayes_ranking_sub <- bayes_ranking(bayes_model_sub, subsetted_data)
+```
+
+```{asis, echo = {{bayes_ranking_knit}}, eval = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}
+#### For all studies
+```
+
+```{asis, echo = {{bayes_ranking_knit}}, eval = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}
+{r, results = 'asis'}
+```
+```{r, echo = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}
+bayes_forest(bayes_model_all, ranking = TRUE)
+```
+
+```{asis, echo = {{bayes_ranking_knit}}, eval = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}
+{r, results = 'asis'}
+```
+```{r, echo = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}
+ranking_plot(bayes_ranking_all,
+             {{bayes_ranking_rank_style}},
+             {{bayes_ranking_colourblind}},
+             {{bayes_ranking_simple}}) 
+```
+
+```{r, echo = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}
+knitr::kable(ranking_table(bayes_ranking_all), digits = 2)
+```
+
+```{asis, echo = {{bayes_ranking_knit}}, eval = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}
+{r, results = 'asis'}
+```
+```{r, echo = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}
+summary_network(configured_data, {{bayes_ranking_network_style}}) 
+```
+
+```{asis, echo = {{bayes_ranking_knit}}, eval = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}
+#### Excluding selected studies
+```
+
+```{asis, echo = {{bayes_ranking_knit}}, eval = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}
+{r, results = 'asis'}
+```
+```{r, echo = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}
+bayes_forest(bayes_model_sub, ranking = TRUE)
+```
+
+```{asis, echo = {{bayes_ranking_knit}}, eval = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}
+{r, results = 'asis'}
+```
+```{r, echo = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}
+ranking_plot(bayes_ranking_sub,
+             {{bayes_ranking_rank_style}},
+             {{bayes_ranking_colourblind}},
+             {{bayes_ranking_simple}}) 
+```
+
+```{r, echo = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}
+knitr::kable(ranking_table(bayes_ranking_sub), digits = 2)
+```
+
+```{asis, echo = {{bayes_ranking_knit}}, eval = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}
+{r, results = 'asis'}
+```
+```{r, echo = {{bayes_ranking_knit}}, include = {{bayes_ranking_knit}}}
+summary_network(subsetted_data, {{bayes_ranking_network_style}}) 
+```

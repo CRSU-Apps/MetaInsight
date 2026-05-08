@@ -1,0 +1,5 @@
+component: "summary"
+short_name: "Characterise the data"
+long_name: "Characterise the data"
+authors: "Naomi Bradbury, Ryan Field, Tom Morris, Clareece Nevill, Janion Nevill, Rhiannon Owen, Simon Smart, Yiqiao Xin"
+package: [dplyr, netmeta]

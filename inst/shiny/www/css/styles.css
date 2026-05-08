@@ -1,0 +1,308 @@
+#logHeader {
+	position:relative;
+	min-height:90px;
+	background: inherit;
+	z-index:10;
+}
+#logContent {
+  position:absolute;
+  z-index: 5;
+}
+#messageLog {
+  height:150px;
+  width:450px;
+  padding:5px;
+  overflow:auto;
+  border:1px solid grey;
+}
+
+.log_start{
+  color:CornflowerBlue;
+}
+
+.log_end{
+  color:green;
+}
+
+.log_info{
+  color:blue;
+}
+
+.log_warn{
+  color:orange;
+}
+
+.log_error{
+  color:red;
+}
+
+hr {
+    border: none;
+    height: 5px;
+    color: #333; /* old IE */
+    background-color: #333; /* Modern Browsers */
+}
+
+.componentName {
+  display:inline-block;
+  font-size:15pt;
+  font-weight:bold;
+}
+
+.rpkg {
+  font-size:10pt;
+  font-weight:bold;
+}
+.mod {
+  display:inline;
+  color:#699FA1;
+  font-size:14pt;
+  font-weight:bold;
+}
+.modHelpButton {
+  color:#699FA1;
+  margin:0px;
+  font-size:12pt;
+}
+.modHelpButton:hover {
+  color:#A5D6D9;
+}
+.modHelpButton:focus {
+  color:#699FA1;
+}
+.pkgTitl {
+  font-size:10pt;
+  font-weight:bold;
+  font-style:italic;
+}
+.pkgDes {
+  font-size:10pt;
+  font-style:italic;
+}
+.package_info {
+  gap: 0.01rem;
+}
+.package_spacer {
+  padding-top: 0.8rem;
+}
+.step {
+  color: #DD8627;
+  font-weight:bold;
+  font-size:14pt;
+}
+.stepText {
+  font-style:italic;
+  font-size:14pt;
+}
+
+.hrDashed {
+  border: 0;
+  border-bottom: 1px dashed #606060;
+  background: transparent;
+}
+.hrDotted {
+  border: 0;
+  border-bottom: 1px dotted #606060;
+  background: transparent;
+}
+
+#save_warning {
+  color: red;
+}
+.save_icon {
+  color:#606060;
+  margin:0px;
+}
+.mod_icon {
+  color:white;
+  margin:0px;
+}
+
+.download_buttons .bslib-grid-item {
+  display: flex;
+}
+
+.download_buttons .btn {
+  flex: 1;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.loading-icon {
+  width: 100%;
+  font-size: clamp(40px, 8vw, 100px);
+  color: #FF5733;
+  text-align: center;
+}
+
+/* change colour of inactive nav panel tabs */
+/* active colours are defined in the theme in ui.R */
+.nav-tabs .nav-link:not(.active) {
+  background-color: #4c8cad;
+}
+
+/* add gap between tabs */
+.nav-tabs .nav-link {
+  margin-right: 2px;
+}
+
+/* hide empty panels created by bslib::nav_panel */
+.container-fluid.html-fill-item.html-fill-container {
+  display: none !important;
+}
+
+.bslib-sidebar-layout>.sidebar>.sidebar-content {
+  gap: 0.5rem !important;
+}
+
+.fa-arrow-turn-down {
+  transform: rotate(90deg) translate(2px, 2px);
+  display: inline-block;
+}
+
+.radio-group-buttons {
+  padding-bottom: 15px;
+}
+
+/* Allow selectinput dropdowns to escape cards */
+.card, .card-body {
+  overflow: visible !important;
+}
+
+/* Ensure footer is displayed below the sidebar */
+
+.sidebar_container {
+  display: flex;
+  flex-direction: column;
+  min-height: 91.5vh;
+}
+
+.ss_footer {
+  margin-top: auto;
+  font-size: 0.8rem
+}
+
+
+.sidebar_card {
+  background-color: var(--bs-light-bg-subtle);
+}
+/* colour of radio buttons for module selection*/
+.btn.btn-outline-secondary{
+  background-color: var(--bs-light-bg-subtle);
+}
+
+.accordion {
+  --bs-accordion-active-bg: #4c8cad;
+  --bs-accordion-btn-focus-box-shadow: #005c8a;
+}
+
+
+/* SVG plotting containers and fullscreen buttons */
+
+.svg_container {
+  width: 100%;
+  height: auto;
+  display: block;
+  overflow: hidden;
+  position: relative;
+}
+.svg_container svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.svg_container_ranking {
+  display: flex;
+  justify-content: center;
+  position: relative;
+  height: 100%;
+  width: 100%;
+  overflow: hidden; /* Prevents any potential overflow */
+}
+
+.svg_container_ranking svg {
+  max-width: 100%;
+  max-height: 90vh;
+  width: auto;
+  height: auto;
+  object-fit: contain; /* This is key for maintaining aspect ratio */
+}
+
+/* catch ranking containers too */
+[class^="svg_container"]:fullscreen svg {
+  max-height: 100%;
+  object-fit: contain;
+}
+[class^="svg_container"].allow-scroll:fullscreen {
+  overflow: auto;
+}
+[class^="svg_container"].allow-scroll:fullscreen svg {
+  max-height: none;
+}
+.fullscreen-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 8px 12px;
+  background: #005c8a;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  z-index: 10;
+  transition: opacity 0.2s, background 0.2s;
+  opacity: 0;
+  pointer-events: none;
+}
+[class^="svg_container"]:hover .fullscreen-btn,
+[class^="svg_container"]:fullscreen .fullscreen-btn {
+  opacity: 1;
+  pointer-events: auto;
+}
+.fullscreen-btn:hover {
+  background: #005c8a;
+}
+.height-toggle-btn {
+  position: absolute;
+  top: 8px;
+  right: 120px;
+  padding: 8px 12px;
+  background: #005c8a;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  z-index: 10;
+  transition: background 0.2s;
+  display: none;
+}
+.height-toggle-btn:hover {
+  background: #005c8a;
+}
+[class^="svg_container"]:fullscreen .height-toggle-btn {
+  display: block;
+}
+/* Display labels and input boxes inline */
+
+.inline_labels .form-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.inline_labels .form-group label {
+  flex: 0 0 55%;
+  margin-bottom: 0;
+}
+
+.inline_labels .form-group .form-control,
+.inline_labels .form-group select {
+  flex: 0 0 45%;
+}
+
+.inline_labels .form-group > div {
+  flex: 0 0 45%;
+}

@@ -1,0 +1,11 @@
+```{asis, echo = {{baseline_forest_knit}}, eval = {{baseline_forest_knit}}, include = {{baseline_forest_knit}}}
+### Produce forest plot of the baseline risk model
+{r, results = 'asis'}
+```
+
+```{r, echo = {{baseline_forest_knit}}, include = {{baseline_forest_knit}}}
+baseline_forest(baseline_model, 
+                xmin = {{baseline_forest_xmin}},
+                xmax = {{baseline_forest_xmax}},
+                title = "Baseline risk regression analysis")
+```

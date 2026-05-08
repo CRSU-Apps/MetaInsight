@@ -1,0 +1,25 @@
+```{asis, echo = {{bayes_nodesplit_knit_all}}, eval = {{bayes_nodesplit_knit_all}}, include = {{bayes_nodesplit_knit_all}}}
+### Fit Bayesian nodesplitting models
+```
+
+```{r, echo = {{bayes_nodesplit_knit_all}}, include = {{bayes_nodesplit_knit_all}}}
+bayes_nodesplit_all <- bayes_nodesplit(configured_data)
+```
+
+```{r, echo = {{bayes_nodesplit_knit_sub}}, include = {{bayes_nodesplit_knit_sub}}}
+bayes_nodesplit_sub <- bayes_nodesplit(subsetted_data)
+```
+
+```{asis, echo = {{bayes_nodesplit_knit_all}}, eval = {{bayes_nodesplit_knit_all}}, include = {{bayes_nodesplit_knit_all}}}
+{r, results = 'asis'}
+```
+```{r, echo = {{bayes_nodesplit_knit_all}}, include = {{bayes_nodesplit_knit_all}}}
+bayes_nodesplit_plot(bayes_nodesplit_all, main_analysis = TRUE)
+```
+
+```{asis, echo = {{bayes_nodesplit_knit_sub}}, eval = {{bayes_nodesplit_knit_sub}}, include = {{bayes_nodesplit_knit_sub}}}
+{r, results = 'asis'}
+```
+```{r, echo = {{bayes_nodesplit_knit_sub}}, include = {{bayes_nodesplit_knit_sub}}}
+bayes_nodesplit_plot(bayes_nodesplit_sub, main_analysis = FALSE)
+```

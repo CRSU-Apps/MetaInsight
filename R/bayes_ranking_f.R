@@ -1,0 +1,423 @@
+#' @title Treatment rankings
+#' @description Generate treatment ranking data required to produce SUCRA plots from Bayesian models
+#'
+#' @param model list. Output produced by `baseline_model()`, `bayes_model()` or `covariate_model()`.
+#' @inheritParams common_params
+#'
+#' @return List of output created by `rankdata()`
+#' \item{SUCRA}{Dataframe of SUCRA data}
+#' \item{Colour}{Dataframe of colours}
+#' \item{Cumulative}{Dataframe of cumulative ranking probabilities}
+#' \item{Probabilities}{Dataframe of ranking probabilities}
+#' \item{Network}{Dataframe of network characteristics}
+#' @examples
+#' configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
+#' configured_data <- readRDS(configured_data_path)
+#'
+#' # n_adapt and n_iter are set low to run quickly, but should be left as the
+#' # default values in real use
+#'
+#' fitted_bayes_model <- bayes_model(configured_data = configured_data,
+#'                                   n_adapt = 100,
+#'                                   n_iter = 100)
+#'
+#' ranking_data <- bayes_ranking(fitted_bayes_model, configured_data)
+#' @export
+bayes_ranking <- function(model, configured_data, logger = NULL) {
+
+  check_param_classes(c("configured_data"),
+                      c("configured_data"), logger)
+
+  if (!inherits(model, "bayes_model") && !inherits(model, "baseline_model")){
+    logger |> writeLog(type = "error", "model must be an object created by baseline_model(), bayes_model() or covariate_model()")
+    return()
+  }
+
+  if (inherits(model, "covariate_model")){
+    cov_value <- model$covariate_value
+  } else {
+    cov_value <- NA
+  }
+
+  longdata  <- dataform.df(configured_data$connected_data, configured_data$treatments, model$outcome)
+  NMAdata <-  model$mtcResults
+  rankdirection <-  configured_data$ranking_option
+  package <-  ifelse(inherits(model, "baseline_model"), "bnma", "gemtc")
+
+  # data frame of colours
+  colour_dat <- data.frame(SUCRA = seq(0, 100, by = 0.1))
+  colour_dat <- dplyr::mutate(colour_dat, colour = seq(0, 100, length.out = 1001))
+
+  direction <- ifelse(rankdirection == "good", -1, 1)
+  # probability rankings
+  if (package == "gemtc"){
+    prob <- as.data.frame(
+      unclass( # required to convert
+        gemtc::rank.probability(
+          NMAdata,
+          preferredDirection = direction,
+          covariate = cov_value
+        )
+      )
+    ) # rows treatments, columns ranks
+  } else if (package == "bnma"){
+    if (rankdirection == "good"){
+      prob <- as.data.frame(t(BnmaSwitchRanking(NMAdata$rank.tx)))
+    } else{
+      prob <- as.data.frame(t(NMAdata$rank.tx))
+    }
+    #Remove "treatment " from the start of the treatment names
+    rownames(prob) <- substr(rownames(prob), start = 11, stop = nchar(rownames(prob)))
+  } else{
+    stop("package must be 'gemtc' or 'bnma'")
+  }
+  names(prob)[1:ncol(prob)] <- paste("Rank ", 1:(ncol(prob)), sep="")
+  sucra <- gemtc::sucra(prob)  # 1 row of SUCRA values for each treatment column
+  treatments <- row.names(prob)
+
+  # SUCRA
+  SUCRA <- data.frame(
+    Treatment = treatments,
+    SUCRA = as.numeric(sucra) * 100
+  )
+
+  # Cumulative Probabilities
+  cumprob <- prob              # obtain copy of probabilities
+  for (i in 2:ncol(prob)) {    # for each rank (column)
+    for (j in 1:ncol(prob)) {  # for each treatment (row)
+      cumprob[j, i] <- cumprob[j, i-1] + cumprob[j, i]
+    }
+  }
+  Cumulative_Data <- data.frame(
+    Treatment = rep(treatments, each = ncol(prob)),
+    Rank = rep(1:ncol(prob), times = ncol(prob)),
+    Cumulative_Probability = as.numeric(t(cumprob))
+  )
+  Cumulative_Data <- Cumulative_Data |> dplyr::left_join(SUCRA, by = "Treatment")
+  # Number of people in each node #
+  Patients <- data.frame(
+    Treatment = longdata$T,
+    Sample = longdata$N
+  )
+  Patients <- stats::aggregate(
+    Patients$Sample,
+    by = list(Category = Patients$Treatment),
+    FUN = sum
+  )
+  Patients <- dplyr::rename(Patients, c(Treatment = "Category", N = "x"))  # previously using plyr::rename where old/new names are other way round
+  SUCRA <- SUCRA |> dplyr::right_join(Patients, by = "Treatment")
+
+  # Node size #
+  size.maxO <- 15
+  size.maxA <- 10
+  size.min <- 1
+  n <- ncol(prob)
+  for (i in 1:n) {
+    SUCRA$SizeO[i] <- size.maxO * SUCRA$N[i] / max(SUCRA$N)
+    SUCRA$SizeA[i] <- size.maxA * SUCRA$N[i] / max(SUCRA$N)
+    if (SUCRA$SizeO[i] < size.min) {
+      SUCRA$SizeO[i] <- size.min
+    }
+    if (SUCRA$SizeA[i] < size.min) {
+      SUCRA$SizeA[i] <- size.min
+    }
+  }
+
+
+  # treatment as a column rather than rownames (useful for exporting)
+  prob$Treatment <- rownames(prob)
+  # move to first column
+  prob <- prob[, c(ncol(prob), 1:(ncol(prob)-1))]
+
+  network <- network_structure(configured_data$freq, order = SUCRA$Treatment)
+
+  output <- list(
+    SUCRA = SUCRA,
+    Colour = colour_dat,
+    Cumulative = Cumulative_Data,
+    Probabilities = prob,
+    Network = network
+  )
+
+  class(output) <- "ranking_data"
+
+  return(output)
+
+}
+
+#' @rdname bayes_ranking
+#' @param ... Parameters passed to `bayes_ranking()`
+#' @export
+baseline_ranking <- function(...){
+  bayes_ranking(...)
+}
+
+#' @rdname bayes_ranking
+#' @param ... Parameters passed to `bayes_ranking()`
+#' @export
+covariate_ranking <- function(...){
+  bayes_ranking(...)
+}
+
+#' @title Treatment ranking plots
+#' @description Produce either a rankogram or radial SUCRA plot ranking the treatments
+#'
+#' @param ranking_data list created by `baseline_ranking()`, `bayes_ranking()` or
+#' `covariate_ranking()`.
+#' @param style character. The style of plot to produce. Either `rankogram` or `radial`
+#' @param simple logical. Whether to display a simplified version of the radial plot. Does
+#' not affect the rankogram plot. Defaults to `FALSE`
+#' @param colourblind logical. Whether to use a colourblind-friendly palette. Defaults to `FALSE`.
+#' @param regression_text Text to show for regression. Defaults to no text.
+#' @inheritParams common_params
+#' @inherit return-svg return
+#' @export
+ranking_plot <- function(ranking_data, style, colourblind = FALSE, simple = FALSE, regression_text = "", logger = NULL){
+
+  check_param_classes(c("ranking_data", "style", "colourblind", "simple", "regression_text"),
+                      c("ranking_data", "character", "logical", "logical", "character"), logger)
+
+  if (!(style %in% c("rankogram", "radial"))){
+    logger |> writeLog(type = "error", "style must be either rankogram or radial")
+    return()
+  }
+
+  if (style == "rankogram"){
+    return(LitmusRankOGram(ranking_data, colourblind, regression_text))
+  }
+
+  if (style == "radial"){
+    # invert simple to original
+    return(RadialSUCRA(ranking_data, !simple, colourblind, regression_text))
+  }
+
+}
+
+#' Litmus Rank-O-Gram
+#'
+#' @param ranking_data list created by bayes_ranking().
+#' @param colourblind TRUE for colourblind friendly colours (default = FALSE).
+#' @param regression_text Text to show for regression (default = "").
+#' @inherit return-svg return
+#' @import patchwork
+#' @import ggplot2
+#' @noRd
+LitmusRankOGram <- function(ranking_data, colourblind=FALSE, regression_text="") {    #CumData needs Treatment, Rank, Cumulative_Probability and SUCRA; SUCRAData needs Treatment & SUCRA; COlourData needs SUCRA & colour; colourblind friendly option; regression annotation text
+  # Basic Rankogram #
+  Rankogram <- ggplot(ranking_data$Cumulative, aes(x = .data$Rank, y = .data$Cumulative_Probability, group = .data$Treatment)) +
+    geom_line(aes(colour = .data$SUCRA)) + theme_classic() + theme(legend.position = "none", aspect.ratio = 1) +
+    labs(x = "Rank", y = "Cumulative Probability") + scale_x_continuous(expand = c(0, 0), breaks = seq(1, nrow(ranking_data$SUCRA)))
+  if (colourblind == FALSE) {
+    A <- Rankogram + scale_colour_gradient2(low = "red",
+                                                     mid = "yellow",
+                                                     high = "green", midpoint = 50, limits = c(0,100))
+  } else {
+    A <- Rankogram + scale_colour_gradientn(colours = c("#7b3294","#c2a5cf","#a6dba0", "#008837"),
+                                                     values = c(0, 0.33, 0.66, 1), limits = c(0,100))
+  }
+  # Litmus SUCRA Scale #
+  Litmus_SUCRA <- ggplot(ranking_data$SUCRA, aes(x = rep(0.45, times = nrow(ranking_data$SUCRA)), y = .data$SUCRA)) +
+    geom_segment(data = ranking_data$Colour,
+                          aes(x = -Inf, xend = 0.5,
+                          y = .data$SUCRA, yend = .data$SUCRA, colour = .data$colour),
+                          show.legend = FALSE) +
+    geom_point() + labs(y = "SUCRA (%)") +
+    ggrepel::geom_text_repel(aes(label = stringr::str_wrap(gsub("_", " ", .data$Treatment), width = 10)), box.padding = 0, direction="y", hjust = 0, nudge_x = 0.05, size = 3) + scale_x_continuous(limits = c(0.4,0.8)) +
+    theme_classic() + theme(axis.title.x = element_blank(), axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.line.x = element_blank(), aspect.ratio = 4)
+  if (colourblind == FALSE) {
+    B <- Litmus_SUCRA + scale_colour_gradient2(low = "red",
+                                                        mid = "yellow",
+                                                        high = "green", midpoint = 50, limits = c(0,100))
+  } else {
+    B <- Litmus_SUCRA + scale_colour_gradientn(colours = c("#7b3294", "#c2a5cf", "#a6dba0", "#008837"),
+                                                        values = c(0, 0.33, 0.66, 1), limits = c(0,100))
+  }
+  # Combo! #
+  if (regression_text != "") {
+    Combo <- A + B + patchwork::plot_annotation(caption = regression_text)
+  } else {
+    Combo <- A + B    # '+' functionality from {patchwork}
+  }
+  Finalplot <- Combo + theme(plot.margin = margin(t = 0, r = 0, b = 0, l = 0))
+  svglite::xmlSVG(print(Finalplot)) |> crop_svg()
+}
+
+#' Radial SUCRA Plot
+#'
+#' @param ranking_data list created by bayes_ranking().
+#' @param original logical. Whether to display the original or simplified version (default = `TRUE`)
+#' @param colourblind logical. `TRUE` for colourblind friendly colours (default = `FALSE`).
+#' @param regression_text Text to show for regression (default = "").
+#' @inherit return-svg return
+#' @import ggplot2
+#' @import patchwork
+#' @noRd
+RadialSUCRA <- function(ranking_data, original = TRUE, colourblind = FALSE, regression_text = "") {      # SUCRAData needs Treatment & Rank; ColourData needs SUCRA & colour; colourblind friendly option; regression annotation text
+  n <- nrow(ranking_data$SUCRA) # number of treatments
+
+  # Add values to angle and adjust radial treatment labels
+  SUCRAData <- ranking_data$SUCRA[order(-ranking_data$SUCRA$SUCRA), ]
+  SUCRAData$Angle <- rev(90 + seq(180 / n, 360 - 180 / n, len = n)) - c(rep(360, ceiling(n / 2)), rep(180, floor(n / 2)))
+  SUCRAData$Adjust <- c(rep(0, ceiling(n / 2)), rep(1, floor(n / 2)))
+
+  # Background #
+  Background <- ggplot(SUCRAData, aes(x = stats::reorder(.data$Treatment, -.data$SUCRA), y = .data$SUCRA, group = 1)) +
+    geom_segment(data = ranking_data$Colour, aes(x = -Inf, xend = Inf, y = .data$SUCRA, yend = .data$SUCRA, colour = .data$colour), show.legend = FALSE, alpha=0.05) +
+    theme_classic() +
+    theme(panel.grid.major.y = element_line(colour = c(rep("black", 6), "white")),
+          axis.title = element_blank(), axis.text.y = element_blank(),
+          axis.ticks = element_blank(), axis.line = element_blank(),
+          aspect.ratio = 1, axis.text.x = element_blank()) +
+    coord_polar() +
+    geom_text(aes(label=stats::reorder(stringr::str_wrap(gsub("_", " ", .data$Treatment), width = 10), -.data$SUCRA),
+                  y = 110, angle = .data$Angle, hjust = .data$Adjust),
+              size = 3, family = "sans")
+
+  if (colourblind) {
+    Background <- Background +
+      scale_colour_gradientn(colours = c("#7b3294", "#c2a5cf", "#a6dba0", "#008837"), values = c(0, 0.33, 0.66, 1), limits = c(0, 100)) +
+      scale_fill_gradientn(colours = c("#7b3294", "#c2a5cf", "#a6dba0", "#008837"), values = c(0, 0.33, 0.66, 1), limits = c(0, 100))
+  } else {
+    Background <- Background +
+      scale_colour_gradient2(low = "red", mid = "yellow", high = "green", midpoint=50, limits=c(0,100)) +
+      scale_fill_gradient2(low = "red", mid = "yellow", high = "green", midpoint = 50, limits = c(0, 100))
+  }
+
+  if (original){
+    Background <- Background +
+      geom_point(aes(fill = .data$SUCRA), size = 1, shape = 21, show.legend = FALSE) +
+      scale_y_continuous(breaks = c(0, 20, 40, 60, 80, 100), limits = c(-40, 115)) +
+      annotate("text", x = rep(0.5, 7), y = c(-3, 17, 37, 57, 77, 97, 115),
+               label = c("0", "20", "40", "60", "80", "100", "SUCRA (%)"), size = 2.5, family = "sans")
+  } else {
+    Background <- Background +
+      geom_segment(aes(xend = .data$Treatment, y = -20, yend = 110), linetype = "dashed") +
+      geom_point(aes(fill = .data$SUCRA), size = 3, shape = 21, show.legend = FALSE) +
+      scale_y_continuous(breaks = c(0, 20, 40, 60, 80, 100), limits = c(-80, 115)) +
+      annotate("text", x = rep(0.5, 7), y = c(-3, 17, 37, 57, 77, 97, 115),
+               label = c("0", "20", "40", "60", "80", "100", "SUCRA (%)"), size = 2.5, family = "sans")
+  }
+
+  # Create network data #
+  SUCRA <- SUCRAData |> dplyr::arrange(-SUCRA)
+  edges <- ranking_data$Network
+  dat.edges <- data.frame(pairwiseID = rep(NA, nrow(edges) * 2),
+                          treatment = "",
+                          n.stud = NA,
+                          SUCRA = NA,
+                          adj = NA,
+                          col = "",
+                          lwd = NA)
+
+  lwd.maxO <- 4
+  lwd.maxA <- 3
+  lwd.minO <- 0.5
+  lwd.minA <- 0.25
+  lwd_rangeO <- lwd.maxO - lwd.minO
+  lwd_rangeA <- lwd.maxA - lwd.minA
+  study_min <- min(edges$edge.weight)
+  study_range <- max(max(edges$edge.weight) - study_min, 1)
+  comp.i <- 1
+  ID <- 1
+  for (i in 1:nrow(edges)) {
+    dat.edges$pairwiseID[comp.i] <- ID
+    dat.edges$pairwiseID[comp.i+1] <- ID
+    dat.edges$treatment[comp.i] <- edges$from[i]
+    dat.edges$treatment[comp.i+1] <- edges$to[i]
+    dat.edges$n.stud[comp.i] <- edges$edge.weight[i]
+    dat.edges$n.stud[comp.i+1] <- edges$edge.weight[i]
+    dat.edges$SUCRA[comp.i] <- SUCRA$SUCRA[SUCRA$Treatment == edges$from[i]]
+    dat.edges$SUCRA[comp.i+1] <- SUCRA$SUCRA[SUCRA$Treatment == edges$to[i]]
+    dat.edges$lwdO[comp.i] <- lwd.minO + (edges$edge.weight[i] - study_min) * (lwd_rangeO / study_range)
+    dat.edges$lwdA[comp.i] <- lwd.minA + (edges$edge.weight[i] - study_min) * (lwd_rangeA / study_range)
+    dat.edges$lwdO[comp.i+1] <- lwd.minO + (edges$edge.weight[i] - study_min) * (lwd_rangeO / study_range)
+    dat.edges$lwdA[comp.i+1] <- lwd.minA + (edges$edge.weight[i] - study_min) * (lwd_rangeA / study_range)
+    comp.i <- comp.i + 2
+    ID <- ID + 1
+  }
+
+  # Network overlay (using coord_radar) #
+  if (original){
+    Network <- ggplot(dat.edges, aes(x = stats::reorder(.data$treatment, -.data$SUCRA), y = .data$SUCRA, group = .data$pairwiseID)) +
+      geom_line(linewidth = dat.edges$lwdO, show.legend = FALSE) +
+      scale_y_continuous(limits = c(-40, 115))
+  } else {
+    Network <- ggplot(dat.edges, aes(x = stats::reorder(.data$treatment, -.data$SUCRA), y = -20, group = .data$pairwiseID)) +
+      geom_line(linewidth = dat.edges$lwdA, show.legend = FALSE) +
+      scale_y_continuous(limits = c(-80, 115))
+  }
+
+  Network <- Network +
+    ggiraphExtra::coord_radar() +
+    theme_void() +
+    theme(panel.background = element_rect(fill = "transparent", color = NA),
+          plot.background = element_rect(fill = "transparent", color = NA),
+          aspect.ratio = 1)
+
+  # Points overlay (using coord_polar) #
+  if (colourblind == FALSE) {
+    fill_scale <- scale_fill_gradient2(low = "red", mid = "yellow", high = "green", midpoint = 50, limits = c(0, 100))
+  } else {
+    fill_scale <- scale_fill_gradientn(colours = c("#7b3294", "#c2a5cf", "#a6dba0", "#008837"),
+                                       values = c(0, 0.33, 0.66, 1), limits = c(0, 100))
+  }
+
+  if (original){
+    Points <- ggplot(SUCRAData, aes(x = stats::reorder(.data$Treatment, -SUCRA), y = SUCRA, group = 1)) +
+      geom_point(aes(fill = SUCRA), size = SUCRAData$SizeO, shape = 21, show.legend = FALSE) +
+      scale_y_continuous(limits = c(-40, 115))
+
+  } else {
+    Points <- ggplot(SUCRAData, aes(x = stats::reorder(.data$Treatment, -SUCRA), y = -20, group = 1)) +
+      geom_point(aes(fill = SUCRA), size = SUCRAData$SizeA, shape = 21, show.legend = FALSE) +
+      scale_y_continuous(limits = c(-80, 115))
+  }
+
+  Points <- Points +
+    fill_scale +
+    coord_polar() +
+    theme_void() +
+    theme(panel.background = element_rect(fill = "transparent", color = NA),
+          plot.background = element_rect(fill = "transparent", color = NA),
+          aspect.ratio = 1)
+
+  # Combine using patchwork insets #
+  Finalplot <- Background +
+    inset_element(Network, left = 0, bottom = 0, right = 1, top = 1) +
+    inset_element(Points, left = 0, bottom = 0, right = 1, top = 1)
+
+  if (regression_text != "") {
+    Finalplot <- Finalplot +
+      plot_annotation(caption = regression_text,
+                      theme = theme(plot.caption = element_text(hjust = 1, size = 10)))
+  }
+
+  svglite::xmlSVG(print(Finalplot)) |> crop_svg()
+
+}
+
+#' Ranking probability table
+#'
+#' @param ranking_data list created by bayes_ranking().
+#' @return dataframe
+#' @export
+ranking_table <- function(ranking_data) {
+  df <- ranking_data$Probabilities |> dplyr::right_join(ranking_data$SUCRA[,1:2], by="Treatment")
+  df <- df[order(-df$SUCRA),]
+  return(df)
+}
+
+#' Calculate edge.weights for network
+#' @param freq list. Output from `frequentist()`
+#' @param order character. Vector of treatments names in rank order.
+#' @return data.frame containing the number of studies that compare each treatment against the reference treatment.
+network_structure <- function(freq, order = NA) {
+  ng <- netmeta::netgraph(freq$netmeta, figure = FALSE)  # suppress plot
+  edges <- ng$edges[, c("treat1", "treat2", "n.stud")]
+  names(edges) <- c("from", "to", "edge.weight")
+  edges |>
+    dplyr::arrange(factor(.data$from, levels = order))
+
+  return(edges)
+}
+

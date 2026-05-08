@@ -1,0 +1,19 @@
+```{asis, echo = {{freq_summary_knit}}, eval = {{freq_summary_knit}}, include = {{freq_summary_knit}}}
+### Generate a summary forest plot matrix
+```
+
+```{asis, echo = {{freq_summary_knit}}, eval = {{freq_summary_knit}}, include = {{freq_summary_knit}}}
+{r, results = 'asis'}
+```
+```{r, echo = {{freq_summary_knit}}, include = {{freq_summary_knit}}}
+freq_summary(configured_data, 
+             "Summary forest plot for all studies")
+```
+
+```{asis, echo = {{freq_summary_knit}}, eval = {{freq_summary_knit}}, include = {{freq_summary_knit}}}
+{r, results = 'asis'}
+```
+```{r, echo = {{freq_summary_knit}}, include = {{freq_summary_knit}}}
+freq_summary(subsetted_data, 
+             "Summary forest plot with selected studies excluded")
+```

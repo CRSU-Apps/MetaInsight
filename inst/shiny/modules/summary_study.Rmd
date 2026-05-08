@@ -1,0 +1,12 @@
+```{asis, echo = {{summary_study_knit}}, eval = {{summary_study_knit}}, include = {{summary_study_knit}}}
+### Show a summary of the effects in the included studies
+```
+
+```{asis, echo = {{summary_study_knit}}, eval = {{summary_study_knit}}, include = {{summary_study_knit}}}
+{r, results = 'asis'}
+```
+```{r, echo = {{summary_study_knit}}, include = {{summary_study_knit}}}
+summary_study(subsetted_data, {{summary_study_width}}, {{summary_study_colourblind}}, {{summary_study_x_min}}, {{summary_study_x_max}})
+```
+
+

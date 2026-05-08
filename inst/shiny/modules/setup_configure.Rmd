@@ -1,0 +1,23 @@
+```{asis, echo = {{setup_configure_knit}}, eval = {{setup_configure_knit}}, include = {{setup_configure_knit}}}
+### Configure the analysis and process the data into suitable formats for analysis
+```
+
+```{r, echo = {{setup_configure_knit}}, include = {{setup_configure_knit}}}
+uncleaned_reference_treatment <- {{setup_configure_reference_treatment}}
+ranking_option <- {{setup_configure_ranking_option}}
+outcome_measure <- {{setup_configure_outcome_measure}}
+model_effects <- {{setup_configure_effects}}
+seed <- {{setup_configure_seed}}
+
+configured_data <- setup_configure(loaded_data, 
+                                   uncleaned_reference_treatment, 
+                                   model_effects,
+                                   outcome_measure,
+                                   ranking_option,
+                                   seed)
+
+knitr::kable(setup_configure_table(configured_data),
+             row.names = TRUE,
+             col.names = NULL,
+             caption = "Analysis configuration")
+```

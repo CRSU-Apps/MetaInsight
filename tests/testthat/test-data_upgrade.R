@@ -1,9 +1,9 @@
 
 test_that("CreateTreatmentsDataFrame() parses perfect treatment string", {
   treatments_string <- "Egg,Flour,Sugar,Butter,Cinnamon"
-  
+
   treatment_df <- CreateTreatmentsDataFrame(treatments_string)
-  
+
   expect_equal(colnames(treatment_df), c("Number", "Label"),
                label = format_vector_to_string(colnames(treatment_df)))
   expect_equal(nrow(treatment_df), 5,
@@ -16,9 +16,9 @@ test_that("CreateTreatmentsDataFrame() parses perfect treatment string", {
 
 test_that("CreateTreatmentsDataFrame() parses string with internal, leading and trailing spaces", {
   treatments_string <- " Egg , Flour , Sugar ,  Butter , Cinnamon  "
-  
+
   treatment_df <- CreateTreatmentsDataFrame(treatments_string)
-  
+
   expect_equal(colnames(treatment_df), c("Number", "Label"),
                label = format_vector_to_string(colnames(treatment_df)))
   expect_equal(nrow(treatment_df), 5,
@@ -31,9 +31,9 @@ test_that("CreateTreatmentsDataFrame() parses string with internal, leading and 
 
 test_that("CreateTreatmentsDataFrame() parses string with duplicated and trailing commas", {
   treatments_string <- "Egg,,Flour,Sugar,Butter,Cinnamon,"
-  
+
   treatment_df <- CreateTreatmentsDataFrame(treatments_string)
-  
+
   expect_equal(colnames(treatment_df), c("Number", "Label"),
                label = format_vector_to_string(colnames(treatment_df)))
   expect_equal(nrow(treatment_df), 5,
@@ -46,9 +46,9 @@ test_that("CreateTreatmentsDataFrame() parses string with duplicated and trailin
 
 test_that("CreateTreatmentsDataFrame() replaces spaces with underscores", {
   treatments_string <- "Egg,Flour,Sugar,Butter,Cinnamon, Baking Powder "
-  
+
   treatment_df <- CreateTreatmentsDataFrame(treatments_string)
-  
+
   expect_equal(colnames(treatment_df), c("Number", "Label"),
                label = format_vector_to_string(colnames(treatment_df)))
   expect_equal(nrow(treatment_df), 6,
@@ -68,9 +68,9 @@ test_that("UpgradeData() upgrades long-format data", {
   )
   treatments_string <- "Egg,Flour,Sugar,Butter,Cinnamon"
   treatment_df <- CreateTreatmentsDataFrame(treatments_string)
-  
+
   upgraded_data <- UpgradeData(old_data, treatment_df)
-  
+
   expect_equal(colnames(upgraded_data), c("Study", "T", "OtherText"),
                label = format_vector_to_string(colnames(upgraded_data)))
   expect_equal(nrow(upgraded_data), 7,
@@ -92,9 +92,9 @@ test_that("UpgradeData() upgrades long-format data with unnecessary spaces", {
   )
   treatments_string <- "Egg,Flour,Sugar,Butter,Cinnamon"
   treatment_df <- CreateTreatmentsDataFrame(treatments_string)
-  
+
   upgraded_data <- UpgradeData(old_data, treatment_df)
-  
+
   expect_equal(colnames(upgraded_data), c("Study", "T", "OtherText"),
                label = format_vector_to_string(colnames(upgraded_data)))
   expect_equal(nrow(upgraded_data), 7,
@@ -120,9 +120,9 @@ test_that("UpgradeData() upgrades wide-format data", {
   )
   treatments_string <- "Egg,Flour,Sugar,Butter,Cinnamon"
   treatment_df <- CreateTreatmentsDataFrame(treatments_string)
-  
+
   upgraded_data <- UpgradeData(old_data, treatment_df)
-  
+
   expect_equal(colnames(upgraded_data), c("Study", "T.1", "OtherText.1", "T.2", "OtherText.2", "T.3", "OtherText.3"),
                label = format_vector_to_string(colnames(upgraded_data)))
   expect_equal(nrow(upgraded_data), 3,
@@ -156,9 +156,9 @@ test_that("UpgradeData() upgrades wide-format data with unnecessary spaces", {
   )
   treatments_string <- "Egg,Flour,Sugar,Butter,Cinnamon"
   treatment_df <- CreateTreatmentsDataFrame(treatments_string)
-  
+
   upgraded_data <- UpgradeData(old_data, treatment_df)
-  
+
   expect_equal(colnames(upgraded_data), c("Study", "T.1", "OtherText.1", "T.2", "OtherText.2", "T.3", "OtherText.3"),
                label = format_vector_to_string(colnames(upgraded_data)))
   expect_equal(nrow(upgraded_data), 3,

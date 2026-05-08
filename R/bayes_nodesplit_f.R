@@ -1,0 +1,158 @@
+#' @title Fit a Bayesian nodespliting model
+#' @description Fit a Bayesian nodesplitting model with `gemtc::mtc.nodesplit()`.
+#' This is not possible for all networks and the function will return an error
+#' if the nodes cannot be split.
+#'
+#' @inheritParams common_params
+#'
+#' @return `mtc.nodesplit` object containing an `mtc.result` object for each node
+#' @examples
+#' \donttest{
+#' nodesplit_path <- system.file("extdata", "continuous_nodesplit.csv", package = "metainsight")
+#' loaded_data <- setup_load(data_path = nodesplit_path,
+#'                           outcome = "continuous")
+#'
+#' configured_data <- setup_configure(loaded_data = loaded_data,
+#'                                    reference_treatment = "Placebo",
+#'                                    effects = "random",
+#'                                    outcome_measure = "MD",
+#'                                    ranking_option = "good",
+#'                                    seed = 123)
+#'
+#' # n_adapt and n_iter are set low to run quickly, but should be left as the
+#' # default values in real use
+#'
+#' nodesplit_model <- bayes_nodesplit(configured_data,
+#'                                    n_adapt = 100,
+#'                                    n_iter = 100)
+#' }
+#' @export
+bayes_nodesplit <- function(configured_data, n_adapt = 5000, n_iter = 20000, async = FALSE) {
+
+  if (!async){ # only an issue if run outside the app
+    if (check_param_classes(c("configured_data"), c("configured_data"), NULL)){
+      return()
+    }
+  }
+
+  if (configured_data$outcome_measure == "SMD" ) {
+    return(async |> asyncLog(type = "error", "Standardised mean difference currently cannot be analysed in Bayesian analysis"))
+  }
+  else if (configured_data$outcome_measure == "RD") {
+    return(async |> asyncLog(type = "error", "Bayesian analysis of risk differences is not currently implemented in MetaInsight"))
+  }
+
+  data <- dataform.df(configured_data$connected_data, configured_data$treatments, configured_data$outcome)
+
+  if (configured_data$outcome == "continuous") {
+    armData <- data.frame(
+      study = data$Study,
+      treatment = data$T,
+      mean = data$Mean,
+      std.err = data$se
+    )
+  } else {
+    armData <- data.frame(
+      study = data$Study,
+      treatment = data$T,
+      responders = data$R,
+      sampleSize = data$N
+    )
+  }
+  mtcNetwork <- suppress_jags_output(
+    gemtc::mtc.network(
+      data.ab = armData,
+      description = "Network",
+      treatments = data.frame(
+        id = configured_data$treatments$Label,
+        description = configured_data$treatments$Label
+        )
+      )
+    )
+
+  if (configured_data$outcome_measure == "MD") {
+    like <- "normal"
+    link <- "identity"
+  } else  {
+    like <- "binom"
+    link <- ifelse (configured_data$outcome_measure == "OR", "logit", "log")
+  }
+
+  check_nodesplit <- IsNodesplittable(
+    data = data,
+    treatments = configured_data$treatments$Label
+  )
+
+  if (!check_nodesplit$is_nodesplittable) {
+    return(
+      async |> asyncLog(
+        type = "error",
+        check_nodesplit$reason
+      )
+    )
+  } else {
+    return(
+      suppress_jags_output(
+        gemtc::mtc.nodesplit(
+          network = mtcNetwork,
+          linearModel = configured_data$effects,
+          likelihood = like,
+          link = link,
+          n.adapt = n_adapt,
+          n.iter = n_iter
+        )
+      )
+    )
+  }
+}
+
+#' @title Bayesian nodesplitting forest plot
+#' @description Produce a forest plot from nodesplitting results
+#'
+#' @param nodesplit `mtc.nodesplit` object produced by `bayes_nodesplit()`
+#' @param main_analysis logical. Whether the analysis is the main or sensitivity analysis. Default `TRUE`.
+#' @inheritParams common_params
+#' @inherit return-svg return
+#' @examples
+#' \donttest{
+#' nodesplit_path <- system.file("extdata", "continuous_nodesplit.csv", package = "metainsight")
+#' loaded_data <- setup_load(data_path = nodesplit_path,
+#'                           outcome = "continuous")
+#'
+#' configured_data <- setup_configure(loaded_data = loaded_data,
+#'                                    reference_treatment = "Placebo",
+#'                                    effects = "random",
+#'                                    outcome_measure = "MD",
+#'                                    ranking_option = "good",
+#'                                    seed = 123)
+#'
+#' nodesplit_model <- bayes_nodesplit(configured_data,
+#'                                    n_adapt = 100,
+#'                                    n_iter = 100)
+#'
+#' bayes_nodesplit_plot(nodesplit_model)
+#' }
+#' @export
+bayes_nodesplit_plot <- function(nodesplit, main_analysis = TRUE, logger = NULL){
+
+  if (!inherits(nodesplit, "mtc.nodesplit")){
+    logger |> writeLog(type = "error", "nodesplit must be a 'mtc.nodesplit' object")
+  }
+
+  if (!inherits(main_analysis, "logical")){
+    logger |> writeLog(type = "error", "main_analysis must be either 'TRUE' or 'FALSE'")
+  }
+
+  plot_height <- max(400, length(nodesplit) * 80) / 72
+  plot_title <- paste0("Inconsistency test with nodesplitting \nmodel",
+                      ifelse(main_analysis, " for all studies", " with selected studies excluded"))
+
+  svglite::xmlSVG({
+    plot(summary(nodesplit), digits = 3)
+    title(main = plot_title)
+  },
+  width = 8,
+  height = plot_height
+  ) |> crop_svg()
+
+}

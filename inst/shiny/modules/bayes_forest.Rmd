@@ -1,0 +1,24 @@
+```{asis, echo = {{bayes_forest_knit}}, eval = {{bayes_forest_knit}}, include = {{bayes_forest_knit}}}
+### Produce forest plots of the Bayesian models
+```
+
+```{asis, echo = {{bayes_forest_knit}}, eval = {{bayes_forest_knit}}, include = {{bayes_forest_knit}}}
+{r, results = 'asis'}
+```
+```{r, echo = {{bayes_forest_knit}}, include = {{bayes_forest_knit}}}
+bayes_forest(bayes_model_all, 
+             "All studies",
+             xmin = {{bayes_forest_xmin_all}},
+             xmax = {{bayes_forest_xmax_all}})
+```
+
+```{asis, echo = {{bayes_forest_knit}}, eval = {{bayes_forest_knit}}, include = {{bayes_forest_knit}}}
+{r, results = 'asis'}
+```
+```{r, echo = {{bayes_forest_knit}}, include = {{bayes_forest_knit}}}
+bayes_forest(bayes_model_sub, 
+             "With selected studies excluded",
+             xmin = {{bayes_forest_xmin_sub}},
+             xmax = {{bayes_forest_xmax_sub}})
+```
+

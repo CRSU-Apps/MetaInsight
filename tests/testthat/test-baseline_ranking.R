@@ -1,0 +1,83 @@
+
+test_that("Check baseline_ranking function works as expected", {
+  result <- baseline_ranking(fitted_baseline_model, configured_data_con)
+
+  expect_is(result, "ranking_data")
+  expect_true(all(c("SUCRA", "Colour", "Cumulative", "Probabilities", "Network") %in% names(result)))
+  expect_is(result$SUCRA, "data.frame")
+  expect_is(result$Colour, "data.frame")
+  expect_is(result$Cumulative, "data.frame")
+  expect_is(result$Probabilities, "data.frame")
+  expect_is(result$Network, "data.frame")
+  expect_equal(result$SUCRA$Treatment[which.max(result$SUCRA$SUCRA)], "the_Great")
+
+  table_result <- ranking_table(result)
+  expect_is(table_result, "data.frame")
+  expect_equal(table_result$Treatment[1], "the_Great")
+  expect_equal(nrow(table_result), n_trt_all)
+  expect_equal(ncol(table_result), n_trt_all + 2)
+
+  litmus_result <- LitmusRankOGram(result)
+  expect_match(litmus_result, "<svg")
+
+  sucra_result <- RadialSUCRA(result)
+  expect_match(sucra_result, "<svg")
+
+})
+
+test_that("baseline_ranking produces errors for incorrect data types", {
+
+  faulty_model <- list(mtcRelEffects = 1:4)
+
+  expect_error(baseline_ranking(faulty_model, configured_data_con), "model must be an object created by baseline_model")
+  expect_error(baseline_ranking("faulty_model", configured_data_con), "model must be an object created by baseline_model")
+  expect_error(baseline_ranking(list(a = 1), configured_data_con), "model must be an object created by baseline_model")
+  expect_error(baseline_ranking("not_data", fitted_baseline_model), "configured_data must be of class configured_data")
+
+})
+
+test_that("{shinytest2} recording: e2e_baseline_ranking", {
+  skip_if(skip_shinytest2)
+
+  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_bayes_ranking")
+  app$set_inputs(tabs = "setup")
+  app$set_inputs(setupSel = "setup_reload")
+  app$upload_file("setup_reload-load_session" = baseline_model_path)
+  app$click("setup_reload-goLoad_session")
+  app$set_inputs(tabs = "baseline")
+  app$set_inputs(baselineSel = "baseline_ranking")
+  app$click("baseline_ranking-run")
+
+  app$wait_for_value(output = "baseline_ranking-all-forest")
+
+  common <- app$get_value(export = "common")
+  expect_is(common$baseline_ranking, "ranking_data")
+  expect_true(all(c("SUCRA", "Colour", "Cumulative", "Probabilities", "Network") %in% names(common$baseline_ranking)))
+
+  forest_all <- app$wait_for_value(output = "baseline_ranking-all-forest")
+  expect_match(forest_all$html, "<svg")
+
+  ranking_all <- app$wait_for_value(output = "baseline_ranking-all-ranking")
+  expect_match(ranking_all$html, "<svg")
+
+  app$click("baseline_ranking-all-dropdown")
+  ranking_table_all <- app$wait_for_value(output = "baseline_ranking-all-ranking_table")
+  expect_match(ranking_table_all, "<table")
+
+  network_all <- app$wait_for_value(output = "baseline_ranking-all-network")
+  expect_match(network_all$html, "<svg")
+
+  test_bayes_plot_downloads(app, "baseline_ranking", "_forest", FALSE)
+  test_bayes_plot_downloads(app, "baseline_ranking", "_ranking_plot", FALSE)
+  test_bayes_plot_downloads(app, "baseline_ranking", "_network", FALSE)
+
+  ranking_table_dl_all <- app$get_download("baseline_ranking-all-download_ranking_table")
+
+  df_all <- read.csv(ranking_table_dl_all)
+  expect_equal(nrow(df_all), n_trt_all)
+  expect_equal(ncol(df_all), n_trt_all + 2)
+
+  app$stop()
+
+})
+

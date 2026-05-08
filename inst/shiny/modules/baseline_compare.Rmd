@@ -1,0 +1,8 @@
+```{asis, echo = {{baseline_compare_knit}}, eval = {{baseline_compare_knit}}, include = {{baseline_compare_knit}}}
+### Produce tables comparing treatment pairs
+```
+
+```{r, echo = {{baseline_compare_knit}}, include = {{baseline_compare_knit}}}
+knitr::kable(baseline_compare(baseline_model), 
+             caption = "Treatment effects for all studies: comparison of all treatment pairs.")
+```

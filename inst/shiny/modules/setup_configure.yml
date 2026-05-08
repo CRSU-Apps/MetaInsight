@@ -1,0 +1,5 @@
+component: "setup"
+short_name: "Configure analysis"
+long_name: "Configure analysis"
+authors: "Rhiannon K. Owen, Naomi Bradbury, Ryan Field, Yiqiao Xin, Tom Morris, Janion Nevill, Simon Smart"
+package: [dplyr, igraph, netmeta]

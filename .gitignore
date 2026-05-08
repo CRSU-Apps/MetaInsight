@@ -5,6 +5,9 @@
 *.Rproj
 codes.txt
 www.zip
-inst/
-tests/testthat/temprds
+.DS_Store
+debug*
+_modules
+inst/shiny/rsconnect
 .Renviron
+tests/testthat/saved_files

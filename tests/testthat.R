@@ -1,1 +1,3 @@
-shinytest2::test_app()
+library(metainsight)
+library(testthat)
+test_check("metainsight")

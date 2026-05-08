@@ -1,0 +1,236 @@
+covariate_model_module_ui <- function(id) {
+  ns <- NS(id)
+  tagList(
+    radioButtons(ns("dataset"), "Dataset",
+                 choiceNames = list("All studies", "With selected studies excluded"),
+                 choiceValues = list("configured_data", "subsetted_data")),
+    sliderInput(ns("covariate_value"), "Covariate value", min = 0, max = 100, step = 1, value = 50),
+    radioButtons(ns("regressor"), "Regression coefficient",
+                 choiceNames = list(add_tooltip("Shared", "Coefficient is the same for all treatment comparisons"),
+                                    add_tooltip("Exchangeable", "Coefficient is different for each treatment comparison but all come from a shared distribution"),
+                                    add_tooltip("Unrelated", "Coefficient is different for each treatment comparison")),
+                 choiceValues = list("shared", "exchangeable", "unrelated")),
+    input_task_button(ns("run"), "Fit model", type = "default", icon = icon("arrow-turn-down")),
+    div(class = "covariate_model download_buttons",
+        actionButton(ns("run_all"), "Run all modules", icon = icon("forward-fast"))
+    )
+  )
+}
+
+covariate_model_module_server <- function(id, common, parent_session) {
+  moduleServer(id, function(input, output, session) {
+
+    hide_and_show(id, show = FALSE)
+
+    # reduce iterations in tests
+    if (isTRUE(getOption("shiny.testmode"))) {
+      n_adapt <- 100
+      n_iter <- 100
+    } else {
+      n_adapt <- 5000
+      n_iter <- 20000
+    }
+
+    # update slider with relevant values
+    observe({
+      watch("setup_configure")
+      req(common$configured_data$covariate$column)
+      covariate_data <- common[[input$dataset]]$connected_data[[common[[input$dataset]]$covariate$column]]
+      min <- min(covariate_data)
+      mean <- mean(covariate_data)
+      max <- max(covariate_data)
+      log_val <- round(log10(max - min))
+      label <- glue("Covariate value ({common$configured_data$covariate$name})")
+      if (common$configured_data$covariate$type == "continuous"){
+        step <- 10 ** (log_val - 2)
+        rounding <- 2 - log_val
+        updateSliderInput(session, "covariate_value", min = min, max = max, value = round(mean, rounding), step = step, label = label)
+      }
+      if (common$configured_data$covariate$type == "binary"){
+        step <- 1
+        # hide ticks
+        on.exit(shinyjs::delay(100, shinyjs::runjs("$('#covariate_model-covariate_value').siblings('.irs').find('.irs-grid').hide();")))
+        updateSliderInput(session, "covariate_value", min = min, max = max, value = 0, step = step, label = label)
+      }
+    })
+
+    observe({
+      watch("setup_reset")
+      # show ticks
+      on.exit(shinyjs::delay(100, shinyjs::runjs("$('#covariate_model-covariate_value').siblings('.irs').find('.irs-grid').show();")))
+      updateSliderInput(session, "covariate_value", label = "Covariate value", min = 0, max = 100, step = 1, value = 50)
+    })
+
+    # used to trigger summary table - needs to be separate to reload
+    init("covariate_model_table")
+    # used to trigger when model is fitted
+    init("covariate_model_fit")
+    # used to trigger when exclusions change but only if using the subsetted data
+    init("covariate_model_sub")
+
+    observeEvent(input$run, {
+      if (is.null(common$configured_data)){
+        common$logger |> writeLog(type = "error", go_to = "setup_configure",
+                                  "Please configure the analysis in the Setup section first.")
+        return()
+      }
+
+      if (length(common$configured_data$covariate) == 0){
+        common$logger |> writeLog(type = "error", "No covariate data exists. To add covariate data, add a column titled
+                                                         covar.* where the * is replaced by the covariate name. e.g. covar.age")
+        return()
+      }
+
+      if (common$configured_data$outcome_measure == "SMD") {
+        common$logger |> writeLog(type = "error", "Standardised mean difference currently cannot be analysed within Bayesian analysis in MetaInsight")
+        return()
+      }
+      else if (common$configured_data$outcome_measure == "RD") {
+        common$logger |> writeLog(type = "error", "Risk difference currently cannot be analysed within Bayesian analysis in MetaInsight")
+        return()
+      }
+      # METADATA ####
+      common$meta$covariate_model$used <- TRUE
+      common$meta$covariate_model$covariate_value <- as.numeric(input$covariate_value)
+      common$meta$covariate_model$regressor <- input$regressor
+      common$meta$covariate_model$dataset <- input$dataset
+      common$meta$covariate_model$n_adapt <- n_adapt
+      common$meta$covariate_model$n_iter <- n_iter
+
+      trigger("covariate_model")
+    })
+
+    # needed to cancel in progress
+    cov_model <- NULL
+    common$tasks$covariate_model <- ExtendedTask$new(
+      function(...) cov_model <<- mirai::mirai(run(...), run = covariate_model, .args = environment())
+    ) |> bind_task_button("run")
+
+    # only trigger refitting when exclusions change if using the subset
+    observeEvent(list(input$dataset, watch("setup_exclude")), {
+      req(input$dataset == "subsetted_data")
+      trigger("covariate_model_sub")
+    })
+
+    observeEvent(list(watch("covariate_model"),
+                      watch("setup_configure"),
+                      watch("covariate_model_sub"),
+                      watch("effects"),
+                      debounce(input$covariate_value, 1000),
+                      input$regressor), {
+      # trigger if run is pressed or if model is changed, but only if a model exists
+      req((watch("covariate_model") > 0 || all(!is.null(common$covariate_model), watch("effects") > 0)))
+
+      # cancel if the model is already updating
+      if (common$tasks$covariate_model$status() == "running"){
+        mirai::stop_mirai(cov_model)
+      }
+
+      if (is.null(common$covariate_model)){
+        common$logger |> writeLog(type = "starting", "Fitting covariate model")
+      } else {
+        common$logger |> writeLog(type = "starting", "Updating covariate model")
+      }
+      common$tasks$covariate_model$invoke(common[[input$dataset]],
+                                          input$covariate_value,
+                                          input$regressor,
+                                          common$covariate_model,
+                                          n_adapt,
+                                          n_iter,
+                                          async = TRUE)
+      model_result$resume()
+    })
+
+    model_result <- observe({
+      # prevent loading when the task is cancelled
+      if (common$tasks$covariate_model$status() == "success"){
+        result <- common$tasks$covariate_model$result()
+        model_result$suspend()
+        if (inherits(result, "bayes_model")){
+          common$covariate_model <- result
+          shinyjs::runjs("Shiny.setInputValue('covariate_model-complete', 'complete');")
+          common$logger |> writeLog(type = "complete", "Covariate model has been fitted")
+        } else {
+          common$logger |> writeLog(type = "error", result)
+        }
+
+        trigger("covariate_model_table")
+        trigger("covariate_model_fit")
+      }
+    })
+
+  output$table <- renderUI({
+    watch("covariate_model") # required for reset
+    watch("covariate_model_table")
+    req(common$covariate_model)
+    shinyjs::show(selector = ".covariate_model")
+    dic_table(common$covariate_model$dic)
+  })
+
+  observeEvent(input$run_all, {
+    run_all(COMPONENTS, COMPONENT_MODULES, "covariate", common$logger)
+  })
+
+  return(list(
+    save = function() {
+      # only save covariate info when it exists
+      if (length(common$configured_data$covariate) == 0){
+        list()
+      } else {
+        covariate_min <- min(common[[input$dataset]]$connected_data[[common[[input$dataset]]$covariate$column]])
+        covariate_max <- max(common[[input$dataset]]$connected_data[[common[[input$dataset]]$covariate$column]])
+        log_val <- round(log10(covariate_max - covariate_min))
+        step <- 10 ** (log_val - 2)
+        list(
+          ### Manual save start
+          covariate_min = covariate_min,
+          covariate_max = covariate_max,
+          covariate_step = ifelse(common$configured_data$covariate$type == "continuous", step, 1),
+          covariate_label = glue("Covariate value ({common$configured_data$covariate$name})"),
+          covariate_tick = ifelse(common$configured_data$covariate$type == "continuous", TRUE, FALSE),
+          ### Manual save end
+          covariate_value = as.numeric(input$covariate_value),
+          regressor = input$regressor,
+          dataset = input$dataset)
+      }
+    },
+    load = function(state) {
+      if (!is.null(state$covariate_min)){
+        ### Manual load start
+        updateSliderInput(session, "covariate_value",
+                          min = state$covariate_min,
+                          max = state$covariate_max,
+                          value = state$covariate_value,
+                          step = state$covariate_step,
+                          label = state$covariate_label
+                          )
+        if (!state$covariate_tick){
+          # hide ticks
+          on.exit(shinyjs::delay(100, shinyjs::runjs("$('#covariate_model-covariate_value').siblings('.irs').find('.irs-grid').hide();")))
+        }
+        ### Manual load end
+        updateRadioButtons(session, "regressor", selected = state$regressor)
+        updateRadioButtons(session, "dataset", selected = state$dataset)
+      }
+    }
+  ))
+})
+}
+
+
+covariate_model_module_result <- function(id) {
+  ns <- NS(id)
+  div(align = "center",
+      uiOutput(ns("table"))
+  )
+}
+
+covariate_model_module_rmd <- function(common){ list(
+  covariate_model_knit = !is.null(common$meta$covariate_model$used),
+  covariate_model_dataset = common$meta$covariate_model$dataset,
+  covariate_model_covariate_value = common$meta$covariate_model$covariate_value,
+  covariate_model_regressor = common$meta$covariate_model$regressor,
+  covariate_model_n_adapt = common$meta$covariate_model$n_adapt,
+  covariate_model_n_iter = common$meta$covariate_model$n_iter)
+}
+

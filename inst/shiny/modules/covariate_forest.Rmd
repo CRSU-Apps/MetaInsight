@@ -1,0 +1,13 @@
+```{asis, echo = {{covariate_forest_knit}}, eval = {{covariate_forest_knit}}, include = {{covariate_forest_knit}}}
+### Produce forest plot of the covariate model
+```
+
+```{asis, echo = {{covariate_forest_knit}}, eval = {{covariate_forest_knit}}, include = {{covariate_forest_knit}}}
+{r, results = 'asis'}
+```
+```{r, echo = {{covariate_forest_knit}}, include = {{covariate_forest_knit}}}
+covariate_forest(covariate_model, 
+                 xmin = {{covariate_forest_xmin}},
+                 xmax = {{covariate_forest_xmax}},
+                 title = "Covariate regression analysis")
+```

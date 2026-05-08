@@ -1,0 +1,8 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+developer_resources
+LICENSE
+CITATION.cff
+.github
+tests/testthat/saved_files
+^cran-comments\.md$

@@ -1,0 +1,85 @@
+shinyjs.scrollLogger = function(params) {
+  var $logger = $('#messageLog');
+  $logger.scrollTop($logger[0].scrollHeight);
+}
+
+shinyjs.disableModule = function(params) {
+  var defaultParams = {
+    component : null,
+    module : null
+  }
+  params = shinyjs.getParams(params, defaultParams);
+  params.shinymod = params.component;
+  params.component = params.component + "Sel";
+  var $radio = $("input[type='radio'][name='" + params.component + "']" +
+    "[value='" + params.shinymod + "_" + params.module + "']");
+  var checked = $radio.prop('checked');
+  $radio.attr("disabled", true);
+  $radio.closest(".radio").addClass("disabled");
+
+  // If disabling a selected radio button, select the next enabled one
+  if (checked) {
+    var $parent = $radio.closest(".shiny-input-radiogroup");
+    $parent.find(".radio input[type='radio']:enabled").first().prop('checked', true);
+    $parent.trigger("change");
+  }
+}
+
+shinyjs.enableModule = function(params) {
+  var defaultParams = {
+    component : null,
+    module : null
+  }
+  params = shinyjs.getParams(params, defaultParams);
+  params.shinymod = params.component;
+  params.component = params.component + "Sel";
+  var $radio = $("input[type='radio'][name='" + params.component + "']" +
+    "[value='" + params.shinymod + "_" + params.module + "']");
+  $radio.attr("disabled", false);
+  $radio.closest(".radio").removeClass("disabled");
+}
+
+shinyjs.runOnEnter = function(params) {
+  $(document).off('keydown.runOnEnter');
+  $(document).on('keydown.runOnEnter', function(e) {
+    if (e.key === 'Enter' || e.keyCode === 13) {
+      // Check if a shinyalert modal is open
+      const isModalOpen = $('.sweet-alert:visible').length > 0;
+      if (!isModalOpen) {
+        let buttonId = params[0];
+        // workaround for regression modules where run is in a submodule
+        if (params[0].includes('regression')) {
+          // e.g. covariate_regression-covariate
+          const baseName = params[0].replace('_regression', '');
+          buttonId = `${params[0]}-${baseName}`;
+        }
+
+        const button = document.getElementById(`${buttonId}-run`);
+        if (button) {
+          button.click();
+        }
+      }
+    }
+  });
+}
+
+shinyjs.fullscreenPlot = function(element) {
+  if (!document.fullscreenElement) {
+    element.requestFullscreen().catch(err => {
+      console.error('Error attempting to enable fullscreen:', err);
+    });
+  } else {
+    document.exitFullscreen();
+  }
+}
+
+shinyjs.scrollingPlot = function(button) {
+  const container = button.parentElement;
+  container.classList.toggle('allow-scroll');
+
+  if (container.classList.contains('allow-scroll')) {
+    button.textContent = '↕ Fit height';
+  } else {
+    button.textContent = '↔ Full width';
+  }
+}

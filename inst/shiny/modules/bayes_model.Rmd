@@ -1,0 +1,20 @@
+```{asis, echo = {{bayes_model_knit}}, eval = {{bayes_model_knit}}, include = {{bayes_model_knit}}}
+### Fit the Bayesian models
+```
+
+```{r, echo = {{bayes_model_knit}}, include = {{bayes_model_knit}}}
+bayes_model_all <- bayes_model(configured_data,
+                               n_adapt = {{bayes_model_n_adapt}},
+                               n_iter = {{bayes_model_n_iter}})
+
+bayes_model_sub <- bayes_model(subsetted_data,
+                               n_adapt = {{bayes_model_n_adapt}},
+                               n_iter = {{bayes_model_n_iter}})
+```
+
+```{r, echo = {{bayes_model_knit}}, include = {{bayes_model_knit}}}
+dic_table(bayes_model_all$dic, "all")
+```
+```{r, echo = {{bayes_model_knit}}, include = {{bayes_model_knit}}}
+dic_table(bayes_model_sub$dic, "sub")
+```

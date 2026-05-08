@@ -1,0 +1,68 @@
+---
+title: "intro_tab"
+output: html_document
+---
+
+#### WORKFLOW
+
+*metainsight* (v7.0.0) includes seven sections, or steps of a possible workflow. Each section includes two or more modules, which are possible analyses for that step.
+
+**Sections:**  
+**1.** *Setup*
+- Load data
+- Configure analysis
+- Load a previous session
+- Upgrade old file formats
+
+**2.** *Summary*
+- Data characteristics
+- Study results
+- Network plot
+
+**3.** *Frequentist*
+- Forest plot
+- Comparisons
+- Inconsistency
+- Summary matrix
+
+**4.** *Bayesian*
+- Fit models
+- Forest plot
+- Comparison
+- Ranking
+- Nodesplit model
+- Result details
+- Deviance report
+- Markov chain Monte Carlo
+- Model details
+
+**5.** *Baseline risk*
+- Summary plot
+- Fit model
+- Regression plot
+- Forest plot
+- Comparison
+- Ranking
+- Nodesplit model
+- Result details
+- Deviance report
+- Markov chain Monte Carlo
+- Model details
+
+**6.** *Covariate*
+- Summary plot
+- Fit model
+- Regression plot
+- Forest plot
+- Comparison
+- Ranking
+- Nodesplit model
+- Result details
+- Deviance report
+- Markov chain Monte Carlo
+- Model details
+
+**7.** *Export*
+- Download session code
+- Reproduce environment
+- Download package references
