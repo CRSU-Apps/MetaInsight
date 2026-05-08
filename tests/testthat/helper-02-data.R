@@ -1,14 +1,16 @@
-# The aim here is to process the data once at the start so it can be used downstream
-test_data_dir <- normalizePath(testthat::test_path("data"))
+on_cran <- !identical(Sys.getenv("NOT_CRAN"), "true")
+windows_ci <- (Sys.getenv("GITHUB_ACTIONS") == "true") & (tolower(.Platform$OS.type) == "windows")
+local <- !on_cran & !Sys.getenv("GITHUB_ACTIONS") == "true"
+skip_shinytest2 <- on_cran | windows_ci
+
+test_data_dir <- "data"
 minimal_data_path <- system.file("extdata", "continuous_minimal.csv", package = "metainsight")
 
 loaded_data_bin <- setup_load(file.path(test_data_dir, "Binary_long_continuous_cov.csv"), outcome = "binary")
 configured_data_bin <- setup_configure(loaded_data_bin, "the Great", "random", "OR", "good", 123)
 
-options(shinytest2.load_timeout=60000)
-
-if (Sys.getenv("LOCAL") == "true"){
-  rds_path <- normalizePath(testthat::test_path("saved_files"))
+if (local){
+  rds_path <- "saved_files"
   if (!file.exists(rds_path)) dir.create(rds_path)
   config_path <- file.path(rds_path, "config.rds")
   bayes_model_path <- file.path(rds_path, "bayes.rds")
@@ -23,11 +25,9 @@ if (Sys.getenv("LOCAL") == "true"){
   save_file <- tempfile(fileext = ".rds")
 }
 
-on_cran <- (Sys.getenv("GITHUB_ACTIONS") == "true") & (Sys.getenv("LOCAL") == "true")
-windows_ci <- (Sys.getenv("GITHUB_ACTIONS") == "true") & (tolower(.Platform$OS.type) == "windows")
-skip_shinytest2 <- on_cran | windows_ci
-
 if (!skip_shinytest2){
+  options(shinytest2.load_timeout=60000)
+
   if (!file.exists(config_path) || !file.exists(bayes_model_path)){
     app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 30000)
     app$upload_file("setup_load-file1" = minimal_data_path)
