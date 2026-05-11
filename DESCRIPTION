@@ -22,7 +22,7 @@ Authors@R:
       person("Suzanne", "Freeman", role = c("ctb"))
       )
 Depends:
-    R (>= 4.1.0),
+    R (>= 4.1.0)
 Imports:
     bayesplot,
     bnma (>= 1.4.0),
