@@ -46,9 +46,8 @@ jobs:
         run: |
           git config --local user.name "$GITHUB_ACTOR"
           git config --local user.email "$GITHUB_ACTOR@users.noreply.github.com"
-          git submodule update --init --recursive
           cd docs
-          git pull
+          git pull --rebase
           cd ..
           git add docs
           git commit -m "Update submodule"
