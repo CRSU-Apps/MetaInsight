@@ -48,6 +48,7 @@ jobs:
           git config --global user.email "$GITHUB_ACTOR@users.noreply.github.com"
           git pull --recurse-submodules
           cd docs
+          git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
           git fetch
           git checkout remotes/origin/docs
           cd ..
