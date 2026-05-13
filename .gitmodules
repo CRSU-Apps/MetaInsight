@@ -2,3 +2,4 @@
 	path = docs
 	url = https://github.com/CRSU-Apps/MetaInsight.git
 	branch = docs
+	update = rebase
