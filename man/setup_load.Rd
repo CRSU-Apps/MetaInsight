@@ -43,7 +43,7 @@ contain: \code{Study}, \code{T}, \code{N} (as for continuous data) and \code{R} 
 participants with the outcome of interest. Wide data for binary outcomes
 should follow the same convention: \code{Study}, \code{T.1}, \code{T.2}, \code{R.1}, \code{R.2},
 \code{N.1}, \code{N.2}. Additionally, a \verb{covar.<name>} column can be added to all
-formats containing covariate data where \if{html}{\out{<name>}} should be replaced with
+formats containing covariate data where \verb{<name>} should be replaced with
 the name of the covariate. For long data, covariate values must be equal
 for every study arm. Risk of bias data can also be included with all columns
 containing values ranging from 1 (low risk) to 3 (high risk): \code{rob} for the

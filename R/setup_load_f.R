@@ -14,7 +14,7 @@
 #' participants with the outcome of interest. Wide data for binary outcomes
 #' should follow the same convention: `Study`, `T.1`, `T.2`, `R.1`, `R.2`,
 #' `N.1`, `N.2`. Additionally, a `covar.<name>` column can be added to all
-#' formats containing covariate data where <name> should be replaced with
+#' formats containing covariate data where `<name>` should be replaced with
 #' the name of the covariate. For long data, covariate values must be equal
 #' for every study arm. Risk of bias data can also be included with all columns
 #' containing values ranging from 1 (low risk) to 3 (high risk): `rob` for the
