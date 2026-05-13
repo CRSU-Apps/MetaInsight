@@ -9,3 +9,6 @@ tests/testthat/saved_files
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
+.Renviron
+.Rhistory
+inst/shiny/rsconnect
