@@ -2,7 +2,7 @@
 # Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
 on:
   push:
-    branches: [main, master, pkgdown]
+    branches: [main]
   release:
     types: [published]
   workflow_dispatch:
@@ -44,14 +44,22 @@ jobs:
 
       - name: update submodule
         run: |
+          # Set up git user for committing changes to the submodule
           git config --global user.name "$GITHUB_ACTOR"
           git config --global user.email "$GITHUB_ACTOR@users.noreply.github.com"
-          git pull --recurse-submodules
+          # Enter the submodule directory to update it NB. submodule update does not work
           cd docs
+          # Ensure fetch gets all branches
           git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
+          # Fetch the latest changes from the remote repository
           git fetch
+          # Checkout the latest changes from the 'docs' branch
           git checkout remotes/origin/docs
+          # Return to the parent repository
           cd ..
+          # Add the changes
           git add *
+          # Commit the changes
           git commit -m "Update submodule"
+          # Push the changes
           git push
