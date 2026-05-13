@@ -6,6 +6,9 @@ CITATION.cff
 .github
 tests/testthat/saved_files
 ^cran-comments\.md$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
 .Renviron
 .Rhistory
 inst/shiny/rsconnect
