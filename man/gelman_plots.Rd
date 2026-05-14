@@ -7,7 +7,7 @@
 gelman_plots(gelman_data, parameters)
 }
 \arguments{
-\item{gelman_data}{List of outputs from \code{coda:::gelman.preplot}}
+\item{gelman_data}{List of outputs from \code{gelman_preplot}}
 
 \item{parameters}{Vector of parameters mentioned in the previous argument.}
 }
@@ -16,4 +16,19 @@ List of ggplot Gelman plots
 }
 \description{
 Creates Gelman plots for a gemtc or bnma model.
+}
+\examples{
+configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
+configured_data <- readRDS(configured_data_path)
+
+# n_adapt and n_iter are set low to run quickly, but should be left as the
+# default values in real use
+
+fitted_bayes_model <- bayes_model(configured_data = configured_data,
+                                  n_adapt = 100,
+                                  n_iter = 100)
+
+mcmc <- bayes_mcmc(model = fitted_bayes_model)
+
+gelman_plots(mcmc$gelman_data, mcmc$parameters)
 }

@@ -41,10 +41,9 @@ bayes_mcmc <- function(model, async = FALSE){
     n_cols <- 2
   }
 
-  # this uses the internal function from coda with :::
   gelman_data <- lapply(parameters,
                         function(parameter) {
-                          coda:::gelman.preplot(
+                          gelman_preplot(
                             coda::as.mcmc.list(model$mtcResults$samples[, parameter]), 10, 50, 0.95, FALSE, TRUE)
                         })
 
@@ -100,10 +99,61 @@ GetBnmaParameters <- function(all_parameters, effects_type, cov_parameters) {
   return(parameters)
 }
 
+#' Prepare the data for the gelman plot. Adapted from coda here:
+#' https://github.com/cran/coda/blob/d0c2354522fbc3ce22b4efe1b396ea8d8385f250/R/gelman.R#L200
+#'
+#' @param x mcmc.list. Samples to plot
+#' @param bin.width numeric. The width of bins
+#' @param max.bins numeric. The maximum number of bins
+#' @param confidence numeric. The confidence interval to use
+#' @param transform logical. Whether to transform
+#' @param autoburnin logical. Whether to use autoburnin
+#' @noRd
+gelman_preplot <- function(x, bin.width = bin.width, max.bins = max.bins,
+            confidence = confidence, transform = transform,
+            autoburnin = autoburnin){
+
+  ###############################################################################
+  ## R code from the 'coda' package for MCMC diagnostics, specifically the ##
+  ## Gelman-Rubin diagnostic. used under the terms of the GNU General Public ##
+  ## License version 2.0 or later (GNU GPL-2+) #
+  ## See https://github.com/cran/coda/blob/d0c2354522fbc3ce22b4efe1b396ea8d8385f250/README#L1
+  ##############################################################################
+
+  x <- coda::as.mcmc.list(x)
+  nbin <- min(floor((coda::niter(x) - 50)/coda::thin(x)), max.bins)
+  if (nbin < 1) {
+    stop("Insufficient iterations to produce Gelman-Rubin plot")
+  }
+  binw <- floor((coda::niter(x) - 50)/nbin)
+  last.iter <- c(seq(from = stats::start(x) + 50 * coda::thin(x), by = binw *
+                       coda::thin(x), length = nbin), stats::end(x))
+  shrink <- array(dim = c(nbin + 1, coda::nvar(x), 2))
+  dimnames(shrink) <- list(last.iter, coda::varnames(x),
+                           c("median", paste(50 * (confidence + 1), "%",
+                                             sep = ""))
+  )
+  for (i in 1:(nbin + 1)) {
+    shrink[i, , ] <- coda::gelman.diag(stats::window(x, end = last.iter[i]),
+                                 confidence = confidence,
+                                 transform = transform,
+                                 autoburnin = autoburnin,
+                                 multivariate = FALSE)$psrf
+  }
+  all.na <- apply(is.na(shrink[, , 1, drop = FALSE]), 2, all)
+  if (any(all.na)) {
+    cat("\n******* Error: *******\n")
+    cat("Cannot compute Gelman & Rubin's diagnostic for any chain \n")
+    cat("segments for variables", coda::varnames(x)[all.na], "\n")
+    cat("This indicates convergence failure\n")
+  }
+  return(list(shrink = shrink, last.iter = last.iter))
+}
+
 
 #' Creates a Gelman plot for a gemtc or bnma model.
 #'
-#' @param gelman_data Output from `coda:::gelman.preplot()`
+#' @param gelman_data Output from `gelman_preplot`
 #' @param parameter The parameter from the previous argument, used as the title.
 #' @return A function that reproduces the Gelman plot mentioned in @param gelman_plot as a plot that can be put in a grid.
 #' @import ggplot2
@@ -143,9 +193,23 @@ GelmanPlot <- function(gelman_data, parameter) {
 
 #' Creates Gelman plots for a gemtc or bnma model.
 #'
-#' @param gelman_data List of outputs from `coda:::gelman.preplot`
+#' @param gelman_data List of outputs from `gelman_preplot`
 #' @param parameters Vector of parameters mentioned in the previous argument.
 #' @return List of ggplot Gelman plots
+#' @examples
+#' configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
+#' configured_data <- readRDS(configured_data_path)
+#'
+#' # n_adapt and n_iter are set low to run quickly, but should be left as the
+#' # default values in real use
+#'
+#' fitted_bayes_model <- bayes_model(configured_data = configured_data,
+#'                                   n_adapt = 100,
+#'                                   n_iter = 100)
+#'
+#' mcmc <- bayes_mcmc(model = fitted_bayes_model)
+#'
+#' gelman_plots(mcmc$gelman_data, mcmc$parameters)
 #' @export
 gelman_plots <- function(gelman_data, parameters) {
   lapply(seq_along(parameters), function(i) {
@@ -161,6 +225,21 @@ gelman_plots <- function(gelman_data, parameters) {
 #' @param model Model output.
 #' @param parameters Vector of parameters to create trace plots for.
 #' @return List of ggplot trace plots.
+#' @examples
+#' configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
+#' configured_data <- readRDS(configured_data_path)
+#'
+#' # n_adapt and n_iter are set low to run quickly, but should be left as the
+#' # default values in real use
+#'
+#' fitted_bayes_model <- bayes_model(configured_data = configured_data,
+#'                                   n_adapt = 100,
+#'                                   n_iter = 100)
+#'
+#' mcmc <- bayes_mcmc(model = fitted_bayes_model)
+#'
+#' trace_plots(fitted_bayes_model$mtcResults, mcmc$parameters)
+#'
 #' @export
 trace_plots <- function(model, parameters) {
   lapply(seq_along(parameters), function(i) {
@@ -175,6 +254,21 @@ trace_plots <- function(model, parameters) {
 #' @param model Model output.
 #' @param parameters Vector of parameters to create density plots for.
 #' @return List of ggplot density plots.
+#' @examples
+#' configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
+#' configured_data <- readRDS(configured_data_path)
+#'
+#' # n_adapt and n_iter are set low to run quickly, but should be left as the
+#' # default values in real use
+#'
+#' fitted_bayes_model <- bayes_model(configured_data = configured_data,
+#'                                   n_adapt = 100,
+#'                                   n_iter = 100)
+#'
+#' mcmc <- bayes_mcmc(model = fitted_bayes_model)
+#'
+#' density_plots(fitted_bayes_model$mtcResults, mcmc$parameters)
+#'
 #' @export
 density_plots <- function(model, parameters) {
   lapply(seq_along(parameters), function(i) {
