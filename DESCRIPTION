@@ -1,5 +1,5 @@
 Package: metainsight
-Version: 7.0.0
+Version: 7.0.1
 Title: A 'shiny' Application for Network Meta-Analysis
 Description: Conduct network meta-analyses through a graphical user interface using 'bnma', 
     'gemtc' and 'netmeta' with additional analysis provided by 'meta' and 'metafor'.
