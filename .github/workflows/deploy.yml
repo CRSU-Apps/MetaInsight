@@ -68,6 +68,8 @@ jobs:
           install.packages("remotes")
           remotes::install_github("CRSU-Apps/MetaInsight", ref = Sys.getenv("current_sha"))
         shell: Rscript {0}
+        env: 
+          GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       # Deploy using rsconnect
       - name: Deploy
         run: |
