@@ -51,16 +51,23 @@ jobs:
       # Setup R (latest version)
       - uses: r-lib/actions/setup-r@v2
       # Get the branch name
-      - name: Get branch name
-        id: branch-names
-        uses: tj-actions/branch-names@v9.0.2
+      - name: Get sha
+        env:
+          PR_SHA: ${{ github.event.pull_request.head.sha }}
+          GITHUB_SHA: ${{ github.sha }}
+        run: |
+          # If the workflow was triggered by a pull request, use the head sha of the pull request, otherwise use the sha of the commit that triggered the workflow
+          COMMIT_SHA="${PR_SHA:-$GITHUB_SHA}"
+          # Get the short sha (first 7 characters) and store it in environment variables
+          SHORT_SHA=$(echo $COMMIT_SHA | cut -c1-7)
+          echo "current_sha=$SHORT_SHA" >> $GITHUB_ENV
       # Install MetaInsight
       - name: Install MetaInsight
         run: |
-          cat("Installing MetaInsight from branch: ", "${{ steps.branch-names.outputs.current_branch }}", "\n")
+          cat("Installing MetaInsight from sha: ", Sys.getenv("current_sha"), "\n")
           install.packages("remotes")
-          remotes::install_github("crsu/MetaInsight", ref = "${{ steps.branch-names.outputs.current_branch }}")
-        shell : Rscript {0}
+          remotes::install_github("CRSU-Apps/MetaInsight", ref = "Sys.getenv('current_sha')")
+        shell: Rscript {0}
       # Deploy using rsconnect
       - name: Deploy
         run: |
