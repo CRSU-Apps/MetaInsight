@@ -59,7 +59,7 @@ jobs:
         run: |
           cat("Installing MetaInsight from branch: ", "${{ steps.branch-names.outputs.current_branch }}", "\n")
           install.packages("remotes")
-          remotes::install_github("crsu/MetaInsight", ref = ${{ steps.branch-names.outputs.current_branch }})
+          remotes::install_github("crsu/MetaInsight", ref = "${{ steps.branch-names.outputs.current_branch }}")
         shell : Rscript {0}
       # Deploy using rsconnect
       - name: Deploy
