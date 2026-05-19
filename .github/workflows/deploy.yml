@@ -66,7 +66,7 @@ jobs:
         run: |
           cat("Installing MetaInsight from sha: ", Sys.getenv("current_sha"), "\n")
           install.packages("remotes")
-          remotes::install_github("CRSU-Apps/MetaInsight", ref = "Sys.getenv('current_sha')")
+          remotes::install_github("CRSU-Apps/MetaInsight", ref = Sys.getenv("current_sha"))
         shell: Rscript {0}
       # Deploy using rsconnect
       - name: Deploy
