@@ -1,11 +1,11 @@
 Package: metainsight
-Version: 7.0.0
+Version: 7.0.1
 Title: A 'shiny' Application for Network Meta-Analysis
-Description: Conduct network meta-analyses through a graphical user interface using 'bnma', 
+Description: Conduct network meta-analyses through a graphical user interface using 'bnma',
     'gemtc' and 'netmeta' with additional analysis provided by 'meta' and 'metafor'.
-    Frequentist, Bayesian, meta-regression and baseline risk meta-regression analyses 
-    can all be conducted using a consistent data structure and terminology. Many options are 
-    provided for downloading publication-ready outputs and analyses can be reproduced 
+    Frequentist, Bayesian, meta-regression and baseline risk meta-regression analyses
+    can all be conducted using a consistent data structure and terminology. Many options are
+    provided for downloading publication-ready outputs and analyses can be reproduced
     outside of the application by downloading a 'quarto' file. The interface was generated
     using 'shinyscholar'.
 Authors@R: 
