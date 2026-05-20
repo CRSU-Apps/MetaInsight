@@ -29,7 +29,7 @@ or from GitHub using:
 
 ``` r
 
-devtools::install_github("CRSU-Apps/metainsight")
+remotes::install_github("CRSU-Apps/metainsight")
 ```
 
 ## Running the app
