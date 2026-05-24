@@ -142,10 +142,10 @@ gelman_preplot <- function(x, bin.width = bin.width, max.bins = max.bins,
   }
   all.na <- apply(is.na(shrink[, , 1, drop = FALSE]), 2, all)
   if (any(all.na)) {
-    cat("\n******* Error: *******\n")
-    cat("Cannot compute Gelman & Rubin's diagnostic for any chain \n")
-    cat("segments for variables", coda::varnames(x)[all.na], "\n")
-    cat("This indicates convergence failure\n")
+    message("\n******* Error: *******\n")
+    message("Cannot compute Gelman & Rubin's diagnostic for any chain \n")
+    message("segments for variables", coda::varnames(x)[all.na], "\n")
+    message("This indicates convergence failure\n")
   }
   return(list(shrink = shrink, last.iter = last.iter))
 }
