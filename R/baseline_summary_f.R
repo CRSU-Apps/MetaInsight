@@ -130,6 +130,10 @@ long_data <- configured_data$connected_data
     (2 * inches_to_lines) +
     plot_area_width
 
+  # reset par on exit
+  old_par <- par(no.readonly = TRUE)
+  on.exit(par(old_par), add = TRUE)
+
   svg <- svglite::xmlSVG({
     par(family = "Arimo")
     par(mar = c(bottom_margin, left_margin, top_margin, right_margin))

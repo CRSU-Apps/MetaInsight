@@ -65,6 +65,10 @@ covariate_summary <- function(configured_data, logger = NULL){
   # get nice values for axis
   pretty_axis <- pretty(df[[covariate_column]])
 
+  # reset par on exit
+  old_par <- par(no.readonly = TRUE)
+  on.exit(par(old_par), add = TRUE)
+
   svglite::xmlSVG({
     par(family = "Arimo")
     par(mar = c(bottom_margin, left_margin, top_margin, right_margin))

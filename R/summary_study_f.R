@@ -116,6 +116,10 @@ summary_study <- function(configured_data, plot_area_width = 6, colourblind = FA
                 plot_area_width +
                 (n_rob_variables * inches_to_lines)
 
+  # reset par on exit
+  old_par <- par(no.readonly = TRUE)
+  on.exit(par(old_par), add = TRUE)
+
   svg <- svglite::xmlSVG({
     par(family = "Arimo")
     par(mar = c(bottom_margin, left_margin, top_margin, right_margin))
