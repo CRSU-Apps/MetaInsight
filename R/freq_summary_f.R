@@ -287,6 +287,7 @@ rankogram <- function(ntx, rkgram, cumu = FALSE) {
 
   # reset par on exit
   old_par <- par(no.readonly = TRUE)
+  old_par <- old_par[!names(old_par) %in% "new"]
   on.exit(par(old_par), add = TRUE)
 
   ori.ntx <- length(rkgram) / ntx
@@ -356,6 +357,7 @@ multiplot <- function(stytitle, ntx, lstx, mtc, ma, bpredd = TRUE, plt.adj, ucex
 
   # reset par on exit
   old_par <- par(no.readonly = TRUE)
+  old_par <- old_par[!names(old_par) %in% "new"]
   on.exit(par(old_par), add = TRUE)
 
   #Start a matrix plot - define number of elements "squares" in Matrix

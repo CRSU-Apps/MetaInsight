@@ -118,6 +118,7 @@ summary_study <- function(configured_data, plot_area_width = 6, colourblind = FA
 
   # reset par on exit
   old_par <- par(no.readonly = TRUE)
+  old_par <- old_par[!names(old_par) %in% "new"]
   on.exit(par(old_par), add = TRUE)
 
   svg <- svglite::xmlSVG({

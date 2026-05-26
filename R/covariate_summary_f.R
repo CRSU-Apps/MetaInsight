@@ -67,6 +67,7 @@ covariate_summary <- function(configured_data, logger = NULL){
 
   # reset par on exit
   old_par <- par(no.readonly = TRUE)
+  old_par <- old_par[!names(old_par) %in% "new"]
   on.exit(par(old_par), add = TRUE)
 
   svglite::xmlSVG({
