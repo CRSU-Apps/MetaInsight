@@ -1,6 +1,5 @@
 on_cran <- !identical(Sys.getenv("NOT_CRAN"), "true")
 windows_ci <- (Sys.getenv("GITHUB_ACTIONS") == "true") & (tolower(.Platform$OS.type) == "windows")
-local <- !on_cran & !Sys.getenv("GITHUB_ACTIONS") == "true"
 skip_shinytest2 <- on_cran | windows_ci
 
 test_data_dir <- "data"
@@ -9,23 +8,14 @@ minimal_data_path <- system.file("extdata", "continuous_minimal.csv", package = 
 loaded_data_bin <- setup_load(file.path(test_data_dir, "Binary_long_continuous_cov.csv"), outcome = "binary")
 configured_data_bin <- setup_configure(loaded_data_bin, "the Great", "random", "OR", "good", 123)
 
-if (local){
-  rds_path <- "saved_files"
-  if (!file.exists(rds_path)) dir.create(rds_path)
-  config_path <- file.path(rds_path, "config.rds")
-  bayes_model_path <- file.path(rds_path, "bayes.rds")
-  baseline_model_path <- file.path(rds_path, "baseline.rds")
-  covariate_model_path <- file.path(rds_path, "covariate.rds")
-  save_file <- file.path(rds_path, "save_file.rds")
-} else {
+if (!skip_shinytest2){
+
   config_path <- tempfile(fileext = ".rds")
   bayes_model_path <- tempfile(fileext = ".rds")
   baseline_model_path <-tempfile(fileext = ".rds")
   covariate_model_path <- tempfile(fileext = ".rds")
   save_file <- tempfile(fileext = ".rds")
-}
 
-if (!skip_shinytest2){
   options(shinytest2.load_timeout=60000)
 
   if (!file.exists(config_path) || !file.exists(bayes_model_path)){
