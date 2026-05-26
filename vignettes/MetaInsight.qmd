@@ -20,6 +20,8 @@ knitr::opts_chunk$set(
 
 ```{r eval = TRUE, echo = FALSE}
 show_plot <- function(svg){
+  old_mar <- par()["mar"]
+  on.exit(par(old_mar))
   par(mar=rep(0,4))
   charToRaw(svg) |> 
   rsvg::rsvg_png(width = 300) |> 
