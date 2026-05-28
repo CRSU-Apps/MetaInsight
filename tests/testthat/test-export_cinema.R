@@ -133,14 +133,14 @@ test_that("Should export expected row and column names", {
   )
 })
 
-# test_that("Should export NMA results", {
-#   expect_equal_and_not_na(
-#     imported_project$project$CM$contributionMatrices$hatmatrix$NMAresults[[1]],
-#     exported_project$project$CM$contributionMatrices$hatmatrix$NMAresults[[1]],
-#     "NMA results",
-#     equality_expectation = expect_data_frames_equal
-#   )
-# })
+test_that("Should export NMA results", {
+  expect_equal_and_not_na(
+    imported_project$project$CM$contributionMatrices$hatmatrix$NMAresults[[1]],
+    exported_project$project$CM$contributionMatrices$hatmatrix$NMAresults[[1]],
+    "NMA results",
+    equality_expectation = expect_data_frames_equal
+  )
+})
 
 test_that("Should export H matrix", {
   expect_equal_and_not_na(
