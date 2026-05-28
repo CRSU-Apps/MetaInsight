@@ -1,6 +1,6 @@
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7852691.svg)](https://doi.org/10.5281/zenodo.7852691)
 
-# MetaInsight v7.0.0
+# MetaInsight v7.0.2
 Network meta-analysis (NMA) has been increasingly adopted in evidence-based medicine to compare multiple interventions
 and address the questions such as ‘which intervention is the ‘best’ overall?’. Currently, NMA is primarily conducted 
 in statistical packages such as WinBUGs, R and STATA, and the software coding can be difficult for non- statisticians 
@@ -34,7 +34,13 @@ rather than an R package and you should install JAGS first prior to installing M
 You can install MetaInsight in R using:
 
 ```r
-remotes::install_github("CRSU-Apps/MetaInsight", ref = "shinyscholar")
+install.packages("metainsight")
+```
+
+Or install from GitHub using:
+
+```r
+remotes::install_github("CRSU-Apps/MetaInsight")
 ```
 
 Once that is complete, you can run the application with:
@@ -83,7 +89,7 @@ Then run the application with `shiny::runApp("inst/shiny")`
 ### Application structure
 
 v7 was built using {shinyscholar} and the app is structured as an R package and divided into components 
-(Setup, Summary, Frequentist, Bayesian, Baseline risk, Covariate and Reproduce) each containing multiple modules. 
+(Setup, Summary, Frequentist, Bayesian, Baseline risk, Covariate and Export) each containing multiple modules. 
 Each module has an identifier made up of the component identifier and the module name, for example `freq_forest` 
 refers to the module that produces a forest plot in the Frequentist component. Each module is made up four files 
 present in `inst/shiny/modules` named using the module identifier: `<identifier>.R` contains the shiny module, 
@@ -208,10 +214,8 @@ After making changes, you should run the tests for the module you have worked on
 the tests, open the relevant file in `tests/testthat/`, run `devtools::load_all(".")` and then select all the tests you 
 want to run and hit Ctrl+Enter, or just click the Run Tests button in the top right of the window pane.
 
-On GitHub, the end-to-end tests do not run reliably on Windows so are skipped. To run these locally, create a `.Renviron` file in the project
-root (you can use `usethis::edit_r_environ()` to do this) and then add `LOCAL=true` to this file, save and restart the R session. 
-
-Similarly, the `export_markdown` tests are skipped on Mac due to a problem linking JAGS and Quarto. 
+On GitHub, the end-to-end tests do not run reliably on Windows so are skipped which conveniently matches the tests that CRAN run. 
+Similarly, the `export_markdown` tests are skipped on Mac due to a problem linking JAGS and Quarto.
 
 
 

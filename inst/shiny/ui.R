@@ -27,7 +27,7 @@ tagList(
       tags$meta(name="keywords", content="MetaInsight, NMA, Network, Meta, Analysis, App"),
       tags$meta(property="og:title", content="MetaInsight: v7.0.0"),
       tags$meta(property="og:description", content="An interactive web tool for network meta-analysis (NMA) that leverages established analysis routines"),
-      tags$meta(property="og:image", content="https://raw.githubusercontent.com/CRSU-Apps/MetaInsight/main/www/images/MetaInsightLogo.png"),
+      tags$meta(property="og:image", content="https://raw.githubusercontent.com/CRSU-Apps/MetaInsight/main/inst/shiny/www/logo.png"),
       core_analytics_module_ui("core_analytics")
       ),
     title = img(src = "logo.png", height = "40"),
@@ -43,6 +43,7 @@ tagList(
     nav_menu("Save", icon = icon("floppy-disk"),
                HTML('<a href="#" id="save-button" class="action-button btn" onclick="Shiny.setInputValue(\'core_save-save\', Math.random())">Save session</a>')),
     nav_menu("Support", icon = icon("life-ring"),
+               HTML('<a href="https://github.com/CRSU-Apps/MetaInsight/wiki/Troubleshooting" target="_blank">Troubleshooting</a>'),
                HTML('<a href="https://github.com/CRSU-Apps/MetaInsight/issues" target="_blank">GitHub Issues</a>'),
                HTML('<a href="mailto: apps@crsu.org.uk" target="_blank">Send Email</a>'))
   ),

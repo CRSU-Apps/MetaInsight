@@ -3,7 +3,9 @@
 on:
   push:
     branches:
-      'shinyscholar'
+      '**'
+  pull_request:
+    branches: [main]
 
 name: R-CMD-check
 
