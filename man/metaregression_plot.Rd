@@ -85,12 +85,17 @@ The design was adapted from Donegan et al. (2018)
 \url{https://onlinelibrary.wiley.com/doi/10.1002/jrsm.1292}
 }
 \examples{
-\donttest{
 configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
 configured_data <- readRDS(configured_data_path)
 
+# n_iter, max_iter and check_iter are set low to run quickly, but should
+# be left as the default values in real use
+
 fitted_baseline_model <- baseline_model(configured_data = configured_data,
-                                        regressor_type = "shared")
+                                        regressor_type = "shared",
+                                        n_iter = 120,
+                                        max_iter = 120,
+                                        check_iter = 10)
 
 regression_data <- baseline_regression(model = fitted_baseline_model,
                                        configured_data = configured_data)
@@ -99,5 +104,4 @@ metaregression_plot(model = fitted_baseline_model,
                     configured_data = configured_data,
                     regression_data = regression_data,
                     comparators = c("the_Younger", "the_Little"))
-}
 }

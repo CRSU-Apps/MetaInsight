@@ -27,8 +27,8 @@ core_intro_module_server <- function(id, common, parent_session) {
                                                                                                                                                       $(Shiny.setInputValue('processing_intro', 'true'));"),
                       c("#processing_icon", "Some computation occurs in the background and this icon appears when it is processing", "bottom", NA),
                       c("div[id=\"messageLog\"]", "Messages will appear in the log window", "bottom", "$(Shiny.setInputValue('processing_intro', null));"),
-                      c("a[data-value=\"rep\"]", "You can download code to reproduce your analysis in the Session Code module", "bottom","$('a[data-value=\"rep\"]').trigger('click');
-                                                                                                                                          $('input[value=\"rep_markdown\"]').trigger('click');"),
+                      c("a[data-value=\"export\"]", "You can download code to reproduce your analysis in the Session Code module", "bottom","$('a[data-value=\"export\"]').trigger('click');
+                                                                                                                                          $('input[value=\"export_markdown\"]').trigger('click');"),
                       c("a[data-value=\"Save\"]", "You can download a file which saves the state of the app", "left", "$('a[data-value=\"Save\"]').trigger('click');"),
                       c("a[data-value=\"setup\"]", "Next time you visit...", "bottom", "$('a[data-value=\"setup\"]').trigger('click');
                                                                                         $('input[value=\"setup_reload\"]').trigger('click');"),
@@ -62,7 +62,7 @@ core_intro_module_server <- function(id, common, parent_session) {
 
 
   existing_steps <- data.frame(
-    c(NA, "Welcome to MetaInsight v7.0.0! This tour will explain what has changed from earlier versions. Nothing has been removed but the interface has been redesigned and analyses are now reproducible.", NA, NA),
+    c(NA, "Welcome to MetaInsight! This tour will explain what has changed from earlier versions. Nothing has been removed but the interface has been redesigned and analyses are now reproducible.", NA, NA),
     c("a[data-value=\"setup\"]", "The tabs at the top move between sections of the app which combines the previous 'Load data' tab and all of the sub-tabs found in the 'Data analysis' tab.", "bottom", "$('a[data-value=\"setup\"]').trigger('click');"),
     c("#setupSel", "Inside each section this panel shows the available 'modules' which correspond to the second layer of tabs in the previous 'Data analysis' tab.", "bottom", "$('input[value=\"setup_load\"]').trigger('click');"),
     c("#setup_input_panel", "All the possible options for the module are shown in this panel, including downloading any outputs.", "bottom", NA),
@@ -75,9 +75,9 @@ core_intro_module_server <- function(id, common, parent_session) {
                                                                                                                                     $(Shiny.setInputValue('processing_intro', 'true'));"),
     c("#processing_icon", "Some computation occurs in the background and this icon appears when it is processing. This includes Bayesian models which now update automatically when studies are excluded.", "bottom", NA),
     c("div[id=\"messageLog\"]", "Messages will appear in the log window to update you on background jobs and any errors", "bottom", "$(Shiny.setInputValue('processing_intro', null));"),
-    c("a[data-value=\"rep\"]", "At any point you can download code to reproduce your analysis in the Session Code module.
-                                You can rerun this in R on your own computer and produce the same results", "bottom","$('a[data-value=\"rep\"]').trigger('click');
-                                                                                                                      $('input[value=\"rep_markdown\"]').trigger('click');"),
+    c("a[data-value=\"export\"]", "At any point you can download code to reproduce your analysis in the Session Code module.
+                                You can rerun this in R on your own computer and produce the same results", "bottom","$('a[data-value=\"export\"]').trigger('click');
+                                                                                                                      $('input[value=\"export_markdown\"]').trigger('click');"),
 
     c("a[data-value=\"Save\"]", "You can also download a file which saves the state of the app and then ...", "left", "$('a[data-value=\"Save\"]').trigger('click');"),
     c("a[data-value=\"setup\"]", "... next time you visit ...", "bottom", "$('a[data-value=\"setup\"]').trigger('click');

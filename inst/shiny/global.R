@@ -31,7 +31,7 @@ COMPONENTS <- c("Setup" = "setup",
                 "Bayesian" = "bayes",
                 "Baseline risk" = "baseline",
                 "Covariate" = "covariate",
-                "Reproduce" = "rep")
+                "Export" = "export")
 
 # Information about modules that various parts of the app need access to
 COMPONENT_MODULES <- list()
@@ -81,9 +81,9 @@ base_module_configs <- c(
   "modules/covariate_mcmc.yml",
   "modules/covariate_deviance.yml",
   "modules/covariate_details.yml",
-  "modules/rep_markdown.yml",
-  "modules/rep_renv.yml",
-  "modules/rep_refPackages.yml"
+  "modules/export_markdown.yml",
+  "modules/export_renv.yml",
+  "modules/export_refPackages.yml"
 )
 
 # Load user-defined modules

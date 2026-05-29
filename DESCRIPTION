@@ -1,11 +1,11 @@
 Package: metainsight
-Version: 7.0.0
-Title: A 'shiny' Application for Network Meta-analysis
-Description: Conduct network meta-analyses through a graphical user interface using 'bnma', 
+Version: 7.0.1
+Title: A 'shiny' Application for Network Meta-Analysis
+Description: Conduct network meta-analyses through a graphical user interface using 'bnma',
     'gemtc' and 'netmeta' with additional analysis provided by 'meta' and 'metafor'.
-    Frequentist, Bayesian, meta-regression and baseline risk meta-regression analyses 
-    can all be conducted using a consistent data structure and terminology. Many options are 
-    provided for downloading publication-ready outputs and analyses can be reproduced 
+    Frequentist, Bayesian, meta-regression and baseline risk meta-regression analyses
+    can all be conducted using a consistent data structure and terminology. Many options are
+    provided for downloading publication-ready outputs and analyses can be reproduced
     outside of the application by downloading a 'quarto' file. The interface was generated
     using 'shinyscholar'.
 Authors@R: 
@@ -22,24 +22,21 @@ Authors@R:
       person("Suzanne", "Freeman", role = c("ctb"))
       )
 Depends:
-    R (>= 4.1.0),
+    R (>= 4.1.0)
 Imports:
     bayesplot,
     bnma (>= 1.4.0),
     bslib,
     coda,
     cookies,
-    cowplot,
     DT (>= 0.5),
     dplyr,
     gargoyle,
-    gemtc (>= 1.0.2),
-    ggpubr,
+    gemtc (>= 1.1.1),
     ggiraphExtra,
     ggplot2,
     ggrepel,
     glue,
-    grid,
     gt,
     igraph,
     knitcitations,
@@ -54,7 +51,6 @@ Imports:
     plotly,
     quarto,
     R6,
-    reshape2,
     rio,
     rintrojs,
     rmarkdown,
@@ -67,7 +63,6 @@ Imports:
     shinyWidgets (>= 0.6.0),
     svglite,
     tidyr,
-    tools,
     xml2
 Suggests:
     jsonlite,

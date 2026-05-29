@@ -11,3 +11,4 @@ _modules
 inst/shiny/rsconnect
 .Renviron
 tests/testthat/saved_files
+docs

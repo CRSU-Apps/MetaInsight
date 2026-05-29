@@ -1,4 +1,4 @@
-rep_markdown_module_ui <- function(id) {
+export_markdown_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
     actionButton(ns("exclude"), "Exclude modules?"),
@@ -14,7 +14,7 @@ rep_markdown_module_ui <- function(id) {
   )
 }
 
-rep_markdown_module_server <- function(id, common, parent_session, COMPONENT_MODULES) {
+export_markdown_module_server <- function(id, common, parent_session, COMPONENT_MODULES) {
   moduleServer(id, function(input, output, session) {
 
     # create a nicely formatted list of used modules
@@ -79,7 +79,7 @@ rep_markdown_module_server <- function(id, common, parent_session, COMPONENT_MOD
 
     # function to create report
     # GlobalEnv ensures that rmd_functions can be found
-    .GlobalEnv$make_report <- function(rep_markdown_file_type){
+    .GlobalEnv$make_report <- function(export_markdown_file_type){
 
       md_files <- c()
 
@@ -98,12 +98,12 @@ rep_markdown_module_server <- function(id, common, parent_session, COMPONENT_MOD
 
       module_rmds <- NULL
 
-      # force rep_renv to beginning in qmd or remove in html as that will try to run renv::restore()
+      # force export_renv to beginning in qmd or remove in html as that will try to run renv::restore()
       components <- names(COMPONENT_MODULES)
-      if (rep_markdown_file_type == ".qmd"){
-        components <- c("rep", components[components != c("rep")])
+      if (export_markdown_file_type == ".qmd"){
+        components <- c("export", components[components != c("export")])
       } else {
-        components <- components[components != c("rep")]
+        components <- components[components != c("export")]
       }
 
       for (component in components) {
@@ -206,8 +206,8 @@ rep_markdown_module_server <- function(id, common, parent_session, COMPONENT_MOD
       idx <- with(rle(combined_rmd == ""), rep(seq_along(lengths), lengths))
       combined_rmd <- combined_rmd[!duplicated(idx) | combined_rmd != ""]
 
-      result_file <- paste0("combined", rep_markdown_file_type)
-      if (rep_markdown_file_type == ".qmd") {
+      result_file <- paste0("combined", export_markdown_file_type)
+      if (export_markdown_file_type == ".qmd") {
         writeLines(combined_rmd, result_file, useBytes = TRUE)
       } else if (rep_markdown_file_type == ".html"){
         if (render_html){
@@ -237,7 +237,7 @@ rep_markdown_module_server <- function(id, common, parent_session, COMPONENT_MOD
 
     # not ideal, but can't find a method to pass to the function
     observe({
-      rep_markdown_file_type <<- input$file_type
+      export_markdown_file_type <<- input$file_type
       render_html <<- input$render
       if (is.null(input$selected_modules)){
         selected_modules <<- c()
@@ -249,7 +249,7 @@ rep_markdown_module_server <- function(id, common, parent_session, COMPONENT_MOD
 
     # task that calls the function
     task <- ExtendedTask$new(function(){
-      mirai::mirai(make_report(rep_markdown_file_type), globalenv())
+      mirai::mirai(make_report(export_markdown_file_type), globalenv())
     }) |> bslib::bind_task_button("download")
 
     # start the task
@@ -265,7 +265,7 @@ rep_markdown_module_server <- function(id, common, parent_session, COMPONENT_MOD
       if (task$status() == "success") {
         results$suspend()
         if (isTRUE(getOption("shiny.testmode"))) {
-          shinyjs::runjs("Shiny.setInputValue('rep_markdown-complete', 'complete');")
+          shinyjs::runjs("Shiny.setInputValue('export_markdown-complete', 'complete');")
         } else {
           shinyjs::click("dlRMD")
         }

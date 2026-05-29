@@ -22,6 +22,15 @@ covariate_model_module_server <- function(id, common, parent_session) {
 
     hide_and_show(id, show = FALSE)
 
+    # reduce iterations in tests
+    if (isTRUE(getOption("shiny.testmode"))) {
+      n_adapt <- 100
+      n_iter <- 100
+    } else {
+      n_adapt <- 5000
+      n_iter <- 20000
+    }
+
     # update slider with relevant values
     observe({
       watch("setup_configure")
@@ -85,6 +94,8 @@ covariate_model_module_server <- function(id, common, parent_session) {
       common$meta$covariate_model$covariate_value <- as.numeric(input$covariate_value)
       common$meta$covariate_model$regressor <- input$regressor
       common$meta$covariate_model$dataset <- input$dataset
+      common$meta$covariate_model$n_adapt <- n_adapt
+      common$meta$covariate_model$n_iter <- n_iter
 
       trigger("covariate_model")
     })
@@ -124,6 +135,8 @@ covariate_model_module_server <- function(id, common, parent_session) {
                                           input$covariate_value,
                                           input$regressor,
                                           common$covariate_model,
+                                          n_adapt,
+                                          n_iter,
                                           async = TRUE)
       model_result$resume()
     })
@@ -216,6 +229,8 @@ covariate_model_module_rmd <- function(common){ list(
   covariate_model_knit = !is.null(common$meta$covariate_model$used),
   covariate_model_dataset = common$meta$covariate_model$dataset,
   covariate_model_covariate_value = common$meta$covariate_model$covariate_value,
-  covariate_model_regressor = common$meta$covariate_model$regressor)
+  covariate_model_regressor = common$meta$covariate_model$regressor,
+  covariate_model_n_adapt = common$meta$covariate_model$n_adapt,
+  covariate_model_n_iter = common$meta$covariate_model$n_iter)
 }
 

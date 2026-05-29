@@ -32,27 +32,36 @@
 #' configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
 #' configured_data <- readRDS(configured_data_path)
 #'
+#' # n_adapt and n_iter are set low to run quickly, but should be left as the
+#' # default values in real use
+#'
 #' # initial model
 #' fitted_covariate_model <- covariate_model(configured_data = configured_data,
 #'                                           covariate_value = 98,
-#'                                           regressor_type = "shared")
+#'                                           regressor_type = "shared",
+#'                                           n_adapt = 100,
+#'                                           n_iter = 100)
 #'
 #' # updated for new covariate value
 #' updated_covariate_model <- covariate_model(configured_data = configured_data,
 #'                                           covariate_value = 97,
 #'                                           regressor_type = "shared",
-#'                                           covariate_model_output = fitted_covariate_model)
+#'                                           covariate_model_output = fitted_covariate_model,
+#'                                           n_adapt = 100,
+#'                                           n_iter = 100)
 #'
 #' @export
 covariate_model <- function(configured_data,
                             covariate_value,
                             regressor_type,
                             covariate_model_output = NULL,
+                            n_adapt = 5000,
+                            n_iter = 20000,
                             async = FALSE){
 
   if (!async){ # only an issue if run outside the app
-    if (check_param_classes(c("configured_data", "covariate_value", "regressor_type"),
-                            c("configured_data", "numeric", "character"), NULL)){
+    if (check_param_classes(c("configured_data", "covariate_value", "regressor_type", "n_adapt", "n_iter"),
+                            c("configured_data", "numeric", "character", "numeric", "numeric"), NULL)){
       return()
     }
   }
@@ -100,7 +109,9 @@ covariate_model <- function(configured_data,
                                     configured_data$reference_treatment,
                                     configured_data$seed)
 
-    model_output <- suppress_jags_output(gemtc::mtc.run(gemtc_model))
+    model_output <- suppress_jags_output(gemtc::mtc.run(gemtc_model,
+                                                        n.adapt = n_adapt,
+                                                        n.iter = n_iter))
 
     model_info <- CovariateModelOutput(configured_data$connected_data,
                                        configured_data$treatments,
@@ -195,11 +206,6 @@ CreateGemtcModel <- function(data, model_type, outcome_measure, regressor_type, 
   } else {
     paste0("Outcome can only be OR, RR, or MD")
   }
-
-  # see https://github.com/gertvv/gemtc/issues/81
-  old_settings <- suppress_jags_output(meta::settings.meta())
-  meta::settings.meta(method.tau = "DL")
-  on.exit(meta::settings.meta(method.tau = old_settings$method.tau))
 
   # use same RNG inside and outside of mirai
   RNGkind("L'Ecuyer-CMRG")
@@ -312,19 +318,32 @@ CovariateModelOutput <- function(connected_data, treatments, model, covariate_ti
   beta_indices <- grep("^B$|^beta\\[[0-9]+\\]$",
                        model$model$monitors$enabled,
                        value = TRUE)
-  # Add betas to relative effect summary
+  # Add both scaled and unscaled betas to relative effect summary
   beta_statistics <- model_summary$summaries$statistics[beta_indices, ]
   beta_quantiles <- model_summary$summaries$quantiles[beta_indices, ]
-  rel_eff_summary$summaries$statistics <- rbind(rel_eff_summary$summaries$statistics, beta_statistics)
-  rel_eff_summary$summaries$quantiles <- rbind(rel_eff_summary$summaries$quantiles, beta_quantiles)
-  # Correct parameter name in shared case, when only one row has been appended
+  beta_stats_unscaled <- beta_statistics
+  beta_quant_unscaled <- beta_quantiles
+  if (model$model$regressor$coefficient == "exchangeable") {
+    beta_stats_unscaled <- rbind(beta_stats_unscaled, model_summary$summaries$statistics["reg.sd", ])
+    beta_quant_unscaled <- rbind(beta_quant_unscaled, model_summary$summaries$quantiles["reg.sd", ])
+    rownames(beta_stats_unscaled)[nrow(beta_stats_unscaled)] <- "reg.sd"
+    rownames(beta_quant_unscaled)[nrow(beta_quant_unscaled)] <- "reg.sd"
+  }
+  beta_stats_unscaled <- beta_stats_unscaled / model$model$regressor$scale
+  beta_quant_unscaled <- beta_quant_unscaled / model$model$regressor$scale
+  if (model$model$regressor$coefficient != "shared") {
+    rownames(beta_stats_unscaled) <- paste0(rownames(beta_stats_unscaled), "_unscaled")
+    rownames(beta_quant_unscaled) <- paste0(rownames(beta_quant_unscaled), "_unscaled")
+  }
+  rel_eff_summary$summaries$statistics <- rbind(rel_eff_summary$summaries$statistics, beta_statistics, beta_stats_unscaled)
+  rel_eff_summary$summaries$quantiles <- rbind(rel_eff_summary$summaries$quantiles, beta_quantiles, beta_quant_unscaled)
+  # Correct parameter names in shared case, when only one row has been appended
   if (model$model$regressor$coefficient == "shared") {
     rownames(rel_eff_summary$summaries$statistics)[rownames(rel_eff_summary$summaries$statistics) == "beta_statistics"] <- "B"
     rownames(rel_eff_summary$summaries$quantiles)[rownames(rel_eff_summary$summaries$quantiles) == "beta_quantiles"] <- "B"
+    rownames(rel_eff_summary$summaries$statistics)[rownames(rel_eff_summary$summaries$statistics) == "beta_stats_unscaled"] <- "B_unscaled"
+    rownames(rel_eff_summary$summaries$quantiles)[rownames(rel_eff_summary$summaries$quantiles) == "beta_quant_unscaled"] <- "B_unscaled"
   }
-
-  # Add text about the scaling of covariate values
-  rel_eff_summary$covariate <- paste0(rel_eff_summary$covariate, "\nThe covariate values have been scaled (divided by ", round(model$model$regressor$scale, digits = 2), ") in order to have standard deviation 0.5. \n - The interpretation of covariate parameters should change accordingly.")
 
   # naming conventions to match current Bayesian functions
   return(

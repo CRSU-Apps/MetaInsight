@@ -1,4 +1,4 @@
-rep_renv_module_ui <- function(id) {
+export_renv_module_ui <- function(id) {
   ns <- shiny::NS(id)
   tagList(
     # UI
@@ -6,7 +6,7 @@ rep_renv_module_ui <- function(id) {
   )
 }
 
-rep_renv_module_server <- function(id, common, parent_session) {
+export_renv_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
 
     output$run <- downloadHandler(
@@ -14,7 +14,7 @@ rep_renv_module_server <- function(id, common, parent_session) {
         paste0("metainsight-dependencies.lock")
       },
       content = function(file) {
-      common$meta$rep_renv$used <- TRUE
+      common$meta$export_renv$used <- TRUE
       renv::snapshot(prompt = FALSE, type = "implicit",
                      lockfile = file, force = TRUE)
       }
@@ -23,6 +23,6 @@ rep_renv_module_server <- function(id, common, parent_session) {
 })
 }
 
-rep_renv_module_rmd <- function(common) {
-  list(rep_renv_knit = !is.null(common$meta$rep_renv$used))
+export_renv_module_rmd <- function(common) {
+  list(export_renv_knit = !is.null(common$meta$export_renv$used))
 }

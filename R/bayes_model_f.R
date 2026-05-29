@@ -18,14 +18,20 @@
 #' configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
 #' configured_data <- readRDS(configured_data_path)
 #'
-#' fitted_bayes_model <- bayes_model(configured_data = configured_data)
+#' # n_adapt and n_iter are set low to run quickly, but should be left as the
+#' # default values in real use
+#'
+#' fitted_bayes_model <- bayes_model(configured_data = configured_data,
+#'                                   n_adapt = 100,
+#'                                   n_iter = 100)
 #'
 #' @export
 
-bayes_model <- function(configured_data, async = FALSE){
+bayes_model <- function(configured_data, n_adapt = 5000, n_iter = 20000, async = FALSE){
 
   if (!async){ # only an issue if run outside the app
-    if (check_param_classes(c("configured_data"), c("configured_data"), NULL)){
+    if (check_param_classes(c("configured_data", "n_adapt", "n_iter"),
+                            c("configured_data", "numeric", "numeric"), NULL)){
       return()
     }
   }
@@ -33,11 +39,6 @@ bayes_model <- function(configured_data, async = FALSE){
   if (!configured_data$outcome_measure %in% c("OR", "RR", "MD")){
     return(async |> asyncLog(type = "error", "configured data must have an outcome_measure of 'OR', 'RR' or 'MD'"))
   }
-
-  # see https://github.com/gertvv/gemtc/issues/81
-  old_settings <- suppress_jags_output(meta::settings.meta())
-  meta::settings.meta(method.tau = "DL")
-  on.exit(meta::settings.meta(method.tau = old_settings$method.tau))
 
   # use same RNG inside and outside of mirai
   RNGkind("L'Ecuyer-CMRG")
@@ -87,7 +88,7 @@ bayes_model <- function(configured_data, async = FALSE){
     SIMPLIFY = FALSE)
 
   # Run gemtc model object for analysis
-  mtcResults <- suppress_jags_output(gemtc::mtc.run(mtcModel))
+  mtcResults <- suppress_jags_output(gemtc::mtc.run(mtcModel, n.adapt = n_adapt, n.iter = n_iter))
 
   mtcRelEffects <- gemtc::relative.effect(mtcResults, t1 = configured_data$reference_treatment)  #Set reference treatment
   rel_eff_tbl <- gemtc::relative.effect.table(mtcResults)

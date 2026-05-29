@@ -9,6 +9,8 @@ covariate_model(
   covariate_value,
   regressor_type,
   covariate_model_output = NULL,
+  n_adapt = 5000,
+  n_iter = 20000,
   async = FALSE
 )
 }
@@ -24,6 +26,12 @@ value in \code{configured_data}}
 \item{covariate_model_output}{list. The output of the function. Default \code{NULL}.
 When supplied, only the output is recalculated for a given covariate value,
 rather than refitting the model.}
+
+\item{n_adapt}{numeric. Number of adaptation iterations.
+Defaults to \code{5000} and can normally be left unchanged}
+
+\item{n_iter}{numeric. Number of simulation iterations.
+Defaults to \code{20000} and can normally be left unchanged}
 
 \item{async}{Whether or not the function is being used asynchronously. Default \code{FALSE}}
 }
@@ -55,15 +63,22 @@ Fit a covariate regression model using \CRANpkg{gemtc}.
 configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
 configured_data <- readRDS(configured_data_path)
 
+# n_adapt and n_iter are set low to run quickly, but should be left as the
+# default values in real use
+
 # initial model
 fitted_covariate_model <- covariate_model(configured_data = configured_data,
                                           covariate_value = 98,
-                                          regressor_type = "shared")
+                                          regressor_type = "shared",
+                                          n_adapt = 100,
+                                          n_iter = 100)
 
 # updated for new covariate value
 updated_covariate_model <- covariate_model(configured_data = configured_data,
                                           covariate_value = 97,
                                           regressor_type = "shared",
-                                          covariate_model_output = fitted_covariate_model)
+                                          covariate_model_output = fitted_covariate_model,
+                                          n_adapt = 100,
+                                          n_iter = 100)
 
 }

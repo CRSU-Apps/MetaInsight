@@ -7,7 +7,10 @@ covariate_value <- {{covariate_model_covariate_value}}
 covariate_regressor <- {{covariate_model_regressor}}
 covariate_model <- covariate_model(get({{covariate_model_dataset}}), 
                                    covariate_value, 
-                                   covariate_regressor)
+                                   covariate_regressor,
+                                   covariate_model_output = NULL,
+                                   n_adapt = {{covariate_model_n_adapt}},
+                                   n_iter = {{covariate_model_n_iter}})
 
 dic_table(covariate_model$dic)
 ```

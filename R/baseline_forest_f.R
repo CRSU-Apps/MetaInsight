@@ -7,15 +7,19 @@
 #' @inheritParams common_params
 #' @inherit return-svg return
 #' @examples
-#' \donttest{
 #' configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
 #' configured_data <- readRDS(configured_data_path)
 #'
+#' # n_iter, max_iter and check_iter are set low to run quickly, but should
+#' # be left as the default values in real use
+#'
 #' fitted_baseline_model <- baseline_model(configured_data = configured_data,
-#'                                         regressor_type = "shared")
+#'                                         regressor_type = "shared",
+#'                                         n_iter = 120,
+#'                                         max_iter = 120,
+#'                                         check_iter = 10)
 #'
 #' baseline_forest(model = fitted_baseline_model)
-#' }
 #' @export
 baseline_forest <- function(model, xmin = NULL, xmax = NULL, title = "Baseline risk regression analysis", ranking = FALSE, logger = NULL){
 

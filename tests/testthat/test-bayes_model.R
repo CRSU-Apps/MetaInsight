@@ -1,6 +1,6 @@
 
 test_that("Check bayes_model function works as expected", {
-  result <- bayes_model(configured_data_con)
+  result <- bayes_model(configured_data_con, 100, 100)
 
   expect_is(result, "bayes_model")
   expect_true(all(c("mtcResults",
@@ -27,7 +27,7 @@ test_that("Check bayes_model function works as expected", {
   expect_is(result$seed, "numeric")
 
   # check results are reproducible
-  result_2 <- bayes_model(configured_data_con)
+  result_2 <- bayes_model(configured_data_con, 100, 100)
   expect_true(identical(remove_igraph(result), remove_igraph(result_2)))
 
 })
@@ -42,6 +42,8 @@ test_that("bayes_model produces errors for incorrect data types", {
 })
 
 test_that("bayes_model works e2e - that models are initally different, update after exclusions and are then identical", {
+  skip_if(skip_shinytest2)
+
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_bayes_model", timeout = 30000)
   reload_app(app, config_path)
   app$set_inputs(tabs = "bayes")

@@ -14,7 +14,7 @@
 #' participants with the outcome of interest. Wide data for binary outcomes
 #' should follow the same convention: `Study`, `T.1`, `T.2`, `R.1`, `R.2`,
 #' `N.1`, `N.2`. Additionally, a `covar.<name>` column can be added to all
-#' formats containing covariate data where <name> should be replaced with
+#' formats containing covariate data where `<name>` should be replaced with
 #' the name of the covariate. For long data, covariate values must be equal
 #' for every study arm. Risk of bias data can also be included with all columns
 #' containing values ranging from 1 (low risk) to 3 (high risk): `rob` for the
@@ -191,6 +191,13 @@ ValidateUploadedData <- function(data, outcome) {
   covariate_name <- FindCovariateNames(data)
   if (length(covariate_name) > 0){
     result <- .ValidateCovariate(data, covariate_name)
+    if (!result$valid) {
+      return(result)
+    }
+  }
+
+  if (outcome == "binary") {
+    result <- .ValidateBinaryData(data)
     if (!result$valid) {
       return(result)
     }
@@ -513,6 +520,42 @@ ValidateUploadedData <- function(data, outcome) {
 }
 
 
+#' Validate that the R values are less than or equal to N values for binary data
+#'
+#' @param data Data frame to validate.
+#'
+#' @return Validation result in the form of a list:
+#' - "valid" = TRUE or FALSE defining whether data is valid
+#' - "message" = String describing any issues causing the data to be invalid
+#' @noRd
+.ValidateBinaryData <- function(data) {
+  study_column <- grep("^study$", names(data), value = TRUE, ignore.case = TRUE)
+  r_columns <- grep("^r\\.?\\d*$", names(data), value = TRUE, ignore.case = TRUE)
+  n_columns <- grep("^n\\.?\\d*$", names(data), value = TRUE, ignore.case = TRUE)
+
+  studies_with_r_greater_than_n <- c()
+
+  for (i in seq_along(r_columns)) {
+    r_col <- r_columns[i]
+    n_col <- n_columns[i]
+
+    studies_with_r_greater_than_n <- append(studies_with_r_greater_than_n,
+                                            data[[study_column]][which(data[[r_col]] > data[[n_col]])])
+  }
+
+  if (length(studies_with_r_greater_than_n) > 0) {
+    return(
+      list(
+        valid = FALSE,
+        message = glue::glue("Some studies have R values that are greater than N values: {paste0(studies_with_r_greater_than_n, collapse = ', ')}")
+      )
+    )
+  }
+
+  return(.valid_result)
+}
+
+
 # Regular expression explanation:
 # ^ = Start of string
 # (?i) = Ignore case for matching
@@ -819,7 +862,7 @@ FindAllTreatments <- function(data, treatment_ids = NULL, study = NULL) {
   }
 }
 
-#' Find all of the studies which include the given treatments, both for long and wide formats.
+#' Find all of the studies which include the given treatments, both for long formats.
 #'
 #' @param data Data frame in which to search for study names.
 #' @param treatments Vector of matching treatments.
@@ -827,30 +870,13 @@ FindAllTreatments <- function(data, treatment_ids = NULL, study = NULL) {
 #' @return Vector of all matching study names.
 #' @noRd
 FindStudiesIncludingTreatments <- function(data, treatments, all_or_any) {
-  if ("T" %in% colnames(data)) {
-    # Long format
-    table <- table(data[, c("Study", "T")])
-    table <- table[, colnames(table) %in% treatments]
-    n_treatments_in_study <- rowSums(table)
-    if (all_or_any == "any") {
-      return(names(n_treatments_in_study[n_treatments_in_study > 0]))
-    } else if (all_or_any == "all") {
-      return(names(n_treatments_in_study[n_treatments_in_study == length(treatments)]))
-    }
-  } else {
-    # Wide format
-    T_columns <- grep(pattern = "^T\\.", x = names(data), value = TRUE)
-    data <- data[, c("Study", T_columns)]
-    long_data <- reshape2::melt(data, id.vars = "Study")
-    long_data <- long_data[, c("Study", "value")]
-    names(long_data)[names(long_data) == "value"] <- "T"
-    return(
-      FindStudiesIncludingTreatments(
-        data = long_data,
-        treatments = treatments,
-        all_or_any = all_or_any
-      )
-    )
+  table <- table(data[, c("Study", "T")])
+  table <- table[, colnames(table) %in% treatments]
+  n_treatments_in_study <- rowSums(table)
+  if (all_or_any == "any") {
+    return(names(n_treatments_in_study[n_treatments_in_study > 0]))
+  } else if (all_or_any == "all") {
+    return(names(n_treatments_in_study[n_treatments_in_study == length(treatments)]))
   }
 }
 

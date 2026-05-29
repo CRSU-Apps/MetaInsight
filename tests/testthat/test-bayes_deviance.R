@@ -1,5 +1,5 @@
 test_that("Check bayes_deviance function works as expected", {
-  result <- bayes_deviance(fitted_bayes_model)
+  result <- bayes_deviance(fitted_bayes_model, 100, 100)
   expect_type(result, "list")
   expect_true(all(c("deviance_mtc", "deviance_ume", "scat_plot", "stem_plot", "lev_plot") %in% names(result)))
   expect_is(result$deviance_mtc, "mtc.deviance")
@@ -9,7 +9,7 @@ test_that("Check bayes_deviance function works as expected", {
   expect_is(result$lev_plot, "plotly")
 
   # check ume results are reproducible
-  result_1 <- bayes_deviance(fitted_bayes_model)
+  result_1 <- bayes_deviance(fitted_bayes_model, 100, 100)
   expect_true(identical(result$deviance_ume, result_1$deviance_ume))
 
 })
@@ -22,6 +22,8 @@ test_that("Check bayes_mcmc function produces errors as expected", {
 })
 
 test_that("{shinytest2} recording: e2e_bayes_deviance", {
+  skip_if(skip_shinytest2)
+
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_bayes_deviance", timeout = 30000)
   app$set_inputs(tabs = "setup")
   app$set_inputs(setupSel = "setup_reload")

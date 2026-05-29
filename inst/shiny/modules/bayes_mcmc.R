@@ -20,8 +20,8 @@ bayes_mcmc_submodule_server <- function(id, common, module_id, model, mcmc, trig
       watch(trigger)
       req(common[[mcmc]])
       shinyjs::show(selector = glue(".{module_id}"))
-      cowplot::plot_grid(
-        plotlist = gelman_plots(common[[mcmc]]$gelman_data, common[[mcmc]]$parameters),
+      patchwork::wrap_plots(
+        gelman_plots(common[[mcmc]]$gelman_data, common[[mcmc]]$parameters),
         ncol = common[[mcmc]]$n_cols
       )
     }, height = function() {
@@ -33,8 +33,8 @@ bayes_mcmc_submodule_server <- function(id, common, module_id, model, mcmc, trig
     output$trace <- renderPlot({
       watch(trigger)
       req(common[[mcmc]])
-      cowplot::plot_grid(
-        plotlist = trace_plots(common[[model]]$mtcResults, common[[mcmc]]$parameters),
+      patchwork::wrap_plots(
+        trace_plots(common[[model]]$mtcResults, common[[mcmc]]$parameters),
         ncol = common[[mcmc]]$n_cols
       )
     }, height = function() {
@@ -45,8 +45,8 @@ bayes_mcmc_submodule_server <- function(id, common, module_id, model, mcmc, trig
       watch(trigger)
       req(common[[mcmc]])
       on.exit(shinyjs::runjs(paste0("Shiny.setInputValue('", mcmc, "-complete', 'complete');")))
-      cowplot::plot_grid(
-        plotlist = density_plots(common[[model]]$mtcResults, common[[mcmc]]$parameters),
+      patchwork::wrap_plots(
+        density_plots(common[[model]]$mtcResults, common[[mcmc]]$parameters),
         ncol = common[[mcmc]]$n_cols
       )
     }, height = function() {

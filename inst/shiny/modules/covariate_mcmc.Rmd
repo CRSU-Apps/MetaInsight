@@ -11,8 +11,8 @@ covariate_mcmc <- covariate_mcmc(covariate_model)
 {r, fig.align='center', fig.width = 9, fig.height = {{covariate_mcmc_height_250}}}
 ```
 ```{r, echo = {{covariate_mcmc_knit}}, include = {{covariate_mcmc_knit}}}
-cowplot::plot_grid(
-  plotlist = gelman_plots(covariate_mcmc$gelman_data, covariate_mcmc$parameters),
+patchwork::wrap_plots(
+  gelman_plots(covariate_mcmc$gelman_data, covariate_mcmc$parameters),
   ncol = 2
 )
 ```
@@ -21,8 +21,8 @@ cowplot::plot_grid(
 {r, fig.align='center', fig.width = 9, fig.height = {{covariate_mcmc_height_200}}}
 ```
 ```{r, echo = {{covariate_mcmc_knit}}, include = {{covariate_mcmc_knit}}}
-cowplot::plot_grid(
-  plotlist = trace_plots(covariate_model$mtcResults, covariate_mcmc$parameters),
+patchwork::wrap_plots(
+  trace_plots(covariate_model$mtcResults, covariate_mcmc$parameters),
   ncol = 2
 )
 ```
@@ -31,8 +31,8 @@ cowplot::plot_grid(
 {r, fig.align='center', fig.width = 9, fig.height = {{covariate_mcmc_height_200}}}
 ```
 ```{r, echo = {{covariate_mcmc_knit}}, include = {{covariate_mcmc_knit}}}
-cowplot::plot_grid(
-  plotlist = density_plots(covariate_model$mtcResults, covariate_mcmc$parameters),
+patchwork::wrap_plots(
+  density_plots(covariate_model$mtcResults, covariate_mcmc$parameters),
   ncol = 2
 )
 ```

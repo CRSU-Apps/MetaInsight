@@ -25,9 +25,9 @@ tagList(
       includeHTML(file.path(resourcePath, "favicon", "favicon.html")),
       tags$meta(name="description", content="A interactive web tool for network meta-analysis (NMA) that leverages established analysis routines"),
       tags$meta(name="keywords", content="MetaInsight, NMA, Network, Meta, Analysis, App"),
-      tags$meta(property="og:title", content="Meta Insight: v7.0.0"),
+      tags$meta(property="og:title", content="MetaInsight: v7.0.0"),
       tags$meta(property="og:description", content="An interactive web tool for network meta-analysis (NMA) that leverages established analysis routines"),
-      tags$meta(property="og:image", content="https://raw.githubusercontent.com/CRSU-Apps/MetaInsight/main/www/images/MetaInsightLogo.png"),
+      tags$meta(property="og:image", content="https://raw.githubusercontent.com/CRSU-Apps/MetaInsight/main/inst/shiny/www/logo.png"),
       core_analytics_module_ui("core_analytics")
       ),
     title = img(src = "logo.png", height = "40"),
@@ -39,10 +39,11 @@ tagList(
     nav_panel("Bayesian", value = "bayes"),
     nav_panel("Baseline risk", value = "baseline"),
     nav_panel("Covariate", value = "covariate"),
-    nav_panel("Reproduce", value = "rep"),
+    nav_panel("Export", value = "export"),
     nav_menu("Save", icon = icon("floppy-disk"),
                HTML('<a href="#" id="save-button" class="action-button btn" onclick="Shiny.setInputValue(\'core_save-save\', Math.random())">Save session</a>')),
     nav_menu("Support", icon = icon("life-ring"),
+               HTML('<a href="https://github.com/CRSU-Apps/MetaInsight/wiki/Troubleshooting" target="_blank">Troubleshooting</a>'),
                HTML('<a href="https://github.com/CRSU-Apps/MetaInsight/issues" target="_blank">GitHub Issues</a>'),
                HTML('<a href="mailto: apps@crsu.org.uk" target="_blank">Send Email</a>'))
   ),
@@ -61,11 +62,11 @@ tagList(
       insert_modules_ui("bayes", "Bayesian network meta-analysis"),
       insert_modules_ui("baseline", "Baseline risk analysis"),
       insert_modules_ui("covariate", "Covariate analysis"),
-      insert_modules_ui("rep", "Reproduce the analysis")
+      insert_modules_ui("export", "Export the analysis")
       ),
       # --- RESULTS WINDOW ---
       conditionalPanel(
-        "input.tabs != 'intro' & input.tabs != 'rep'",
+        "input.tabs != 'intro' & input.tabs != 'export'",
           layout_columns(
             col_widths = c(4, 2, 6),
             div(id = "global_options",
@@ -90,7 +91,7 @@ tagList(
       ),
       br(),
       conditionalPanel(
-        "input.tabs != 'intro' & input.tabs != 'rep'",
+        "input.tabs != 'intro' & input.tabs != 'export'",
         setup_exclude_module_results("setup_exclude"),
         navset_tab(
           id = 'main',
@@ -117,20 +118,20 @@ tagList(
         )
       ),
       conditionalPanel(
-        "input.tabs == 'rep' & input.repSel == null",
-        flex_wrap(includeMarkdown("Rmd/gtext_rep.Rmd"))
+        "input.tabs == 'export' & input.exportSel == null",
+        flex_wrap(includeMarkdown("Rmd/gtext_export.Rmd"))
       ),
       conditionalPanel(
-        "input.tabs == 'rep' & input.repSel == 'rep_markdown'",
-        flex_wrap(includeMarkdown("modules/rep_markdown.md"))
+        "input.tabs == 'export' & input.exportSel == 'export_markdown'",
+        flex_wrap(includeMarkdown("modules/export_markdown.md"))
       ),
       conditionalPanel(
-        "input.tabs == 'rep' & input.repSel == 'rep_renv'",
-        flex_wrap(includeMarkdown("modules/rep_renv.md"))
+        "input.tabs == 'export' & input.exportSel == 'export_renv'",
+        flex_wrap(includeMarkdown("modules/export_renv.md"))
       ),
       conditionalPanel(
-        "input.tabs == 'rep' & input.repSel == 'rep_refPackages'",
-        flex_wrap(includeMarkdown("modules/rep_refPackages.md"))
+        "input.tabs == 'export' & input.exportSel == 'export_refPackages'",
+        flex_wrap(includeMarkdown("modules/export_refPackages.md"))
       ),
       conditionalPanel(
         "input.tabs == 'intro'",

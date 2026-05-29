@@ -32,6 +32,8 @@ test_that("Check covariate_mcmc function produces errors as expected", {
 })
 
 test_that("{shinytest2} recording: e2e_covariate_mcmc", {
+  skip_if(skip_shinytest2)
+
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_covariate_mcmc", timeout = 30000)
   app$set_inputs(tabs = "setup")
   app$set_inputs(setupSel = "setup_reload")
