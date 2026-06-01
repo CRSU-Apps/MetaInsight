@@ -304,6 +304,7 @@ export_cinema <- function(configured_data, gemtc_results = NULL, logger = NULL) 
   treatments <- stringr::str_extract(comparison, "^(.*?):(.*)$", c(1, 2))
   row <- treatments[1]
   col <- treatments[2]
+  #Bayesian
   if (!is.null(gemtc_results)) {
     gemtc_stats <- ExtractGemtcStats(gemtc_results = gemtc_results, treatments = treatments)
     nma_treatment_effect <- gemtc_stats["median"]
@@ -314,32 +315,29 @@ export_cinema <- function(configured_data, gemtc_results = NULL, logger = NULL) 
       lower_pi <- gemtc_stats["pi_lower"]
       upper_pi <- gemtc_stats["pi_upper"]
     } else if (model_type == "fixed") {
-      #The PI is centred on the frequentist FE point estimate and has length given by the frequentist RE model
-      pi_adjustment <- nma_treatment_effect - freq_results$TE.random[row, col]
-      lower_pi <- freq_results$lower.predict[row, col] + pi_adjustment
-      upper_pi <- freq_results$upper.predict[row, col] + pi_adjustment
-      #Make sure the PI is not smaller than the CI
-      lower_pi <- min(lower_pi, lower_ci)
-      upper_pi <- max(upper_pi, upper_ci)
+      #Use the frequentist random effects prediction interval
+      lower_pi <- freq_results$lower.predict[row, col]
+      upper_pi <- freq_results$upper.predict[row, col]
     }
+    #Make sure the PI is not smaller than the CI
+    lower_pi <- min(lower_pi, lower_ci)
+    upper_pi <- max(upper_pi, upper_ci)
+  #Frequentist
   } else {
     if (model_type == "random") {
       nma_treatment_effect <- freq_results$TE.random[row, col]
       se_treat_effect <- freq_results$seTE.random[row, col]
       lower_ci <- freq_results$lower.random[row, col]
       upper_ci <- freq_results$upper.random[row, col]
-      lower_pi <- freq_results$lower.predict[row, col]
-      upper_pi <- freq_results$upper.predict[row, col]
     } else if (model_type == "fixed") {
       nma_treatment_effect <- freq_results$TE.common[row, col]
       se_treat_effect <- freq_results$seTE.common[row, col]
       lower_ci <- freq_results$lower.common[row, col]
       upper_ci <- freq_results$upper.common[row, col]
-      #The PI is centred on the FE point estimate but has length given by the RE model
-      pi_adjustment <- nma_treatment_effect - freq_results$TE.random[row, col]
-      lower_pi <- freq_results$lower.predict[row, col] + pi_adjustment
-      upper_pi <- freq_results$upper.predict[row, col] + pi_adjustment
     }
+    #Use the random effects PI for the fixed effect model, as is done in CINeMA
+    lower_pi <- freq_results$lower.predict[row, col]
+    upper_pi <- freq_results$upper.predict[row, col]
   }
 
   if (model_type == "random") {
