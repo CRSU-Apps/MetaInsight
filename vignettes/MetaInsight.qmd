@@ -20,6 +20,8 @@ knitr::opts_chunk$set(
 
 ```{r eval = TRUE, echo = FALSE}
 show_plot <- function(svg){
+  old_mar <- par()["mar"]
+  on.exit(par(old_mar))
   par(mar=rep(0,4))
   charToRaw(svg) |> 
   rsvg::rsvg_png(width = 300) |> 
@@ -44,7 +46,7 @@ install.packages('metainsight')
 or from GitHub using:
   
 ```r
-devtools::install_github("CRSU-Apps/metainsight")
+remotes::install_github("CRSU-Apps/metainsight")
 ```
 
 ## Running the app
@@ -345,6 +347,16 @@ fitted_baseline_model <- baseline_model(configured_data,
                                         n_iter = 120,
                                         max_iter = 120,
                                         check_iter = 12)
+```
+
+### Exporting to CINeMA
+
+Models fitted in metainsight can be exported into a format that can be uploaded to <a href="https://cinema.med.auth.gr/" target="_blank">CINeMA</a> (Confidence in Network Meta-Analysis). 
+Currently, only the frequentist and Bayesian NMA models are supported.
+
+```{r export_cinema}
+cinema_project <- export_cinema(configured_data)
+writeLines(cinema_project, tempfile(fileext = ".json"))
 ```
 
 ### App data

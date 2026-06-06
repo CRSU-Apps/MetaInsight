@@ -83,7 +83,8 @@ base_module_configs <- c(
   "modules/covariate_details.yml",
   "modules/export_markdown.yml",
   "modules/export_renv.yml",
-  "modules/export_refPackages.yml"
+  "modules/export_refPackages.yml",
+  "modules/export_cinema.yml"
 )
 
 # Load user-defined modules

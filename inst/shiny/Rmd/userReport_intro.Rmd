@@ -15,7 +15,7 @@ svg {
 }
 </style>
 
-Please find below the R code history from your *metainsight* v7.0.0 session. 
+Please find below the R code history from your *metainsight* v7.0.2 session. 
 
 You can reproduce your session results by running this quarto file in RStudio. 
 
