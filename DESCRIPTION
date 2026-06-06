@@ -8,7 +8,7 @@ Description: Conduct network meta-analyses through a graphical user interface us
     provided for downloading publication-ready outputs and analyses can be reproduced
     outside of the application by downloading a 'quarto' file. The interface was generated
     using 'shinyscholar'. The initial version of the app was described by Owen et al. (2018)
-    <doi:10.1002/jrsm.1373>, Bayesian ranking visulations were described by Nevill et al.
+    <doi:10.1002/jrsm.1373>, Bayesian ranking visualisations were described by Nevill et al.
     (2023) <doi:10.1016/j.jclinepi.2023.02.016> and metaregression was described by Morris
     et al. (2025) <doi:10.1016/j.jclinepi.2025.111839>.
 Authors@R: 
