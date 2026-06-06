@@ -6,6 +6,9 @@ output: html_document
 
 The full update history for MetaInsight is available on <a href="https://github.com/CRSU-Apps/MetaInsight/wiki/Full-Update-History" target="_blank">GitHub</a>
 
+### Major update (6 June 2026 v7.1.0)
+- Add ability to export results to CINeMA
+
 ### Minor update (26 May 2026 v7.0.2)
 - Various minor adjustments to meet CRAN guidelines
 
