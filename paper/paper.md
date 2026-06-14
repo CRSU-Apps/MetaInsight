@@ -1,21 +1,20 @@
+title: "MetaInsight v7: Making a comprehensive application for network meta-analysis reproducible" 
 authors:
   - name: Simon Smart
-    affiliation: "1"
+    affiliation: 1
   - name: Janion Nevill
-    affiliation: "1"    
+    affiliation: 1    
   - name: Tom Morris
-    affiliation: "1"  
+    affiliation: 1  
   - name: Ryan Field
-    affiliation: "2"
+    affiliation: 2
   - name: Alex Sutton
-    affiliation: "1"
-
+    affiliation: 1
 affiliations:
   - index: 1
     name: University of Leicester, United Kingdom
   - index: 2
     name: University of Glasgow, United Kingdom
-
 date: 14 June 2026
 
 # Summary
