@@ -1,3 +1,4 @@
+---
 title: "MetaInsight v7: Making a comprehensive application for network meta-analysis reproducible" 
 authors:
   - name: Simon Smart
@@ -16,6 +17,7 @@ affiliations:
   - number: 2
     name: University of Glasgow, United Kingdom
 date: 14 June 2026
+---
 
 # Summary
 
