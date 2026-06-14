@@ -17,6 +17,7 @@ affiliations:
   - number: 2
     name: University of Glasgow, United Kingdom
 date: 14 June 2026
+bibliography: paper.bib
 ---
 
 # Summary
