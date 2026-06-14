@@ -11,9 +11,9 @@ authors:
   - name: Alex Sutton
     affiliation: 1
 affiliations:
-  - index: 1
+  - number: 1
     name: University of Leicester, United Kingdom
-  - index: 2
+  - number: 2
     name: University of Glasgow, United Kingdom
 date: 14 June 2026
 
