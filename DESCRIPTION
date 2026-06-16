@@ -1,5 +1,5 @@
 Package: metainsight
-Version: 7.0.1
+Version: 7.1.0
 Title: A 'shiny' Application for Network Meta-Analysis
 Description: Conduct network meta-analyses through a graphical user interface using 'bnma',
     'gemtc' and 'netmeta' with additional analysis provided by 'meta' and 'metafor'.
@@ -7,7 +7,10 @@ Description: Conduct network meta-analyses through a graphical user interface us
     can all be conducted using a consistent data structure and terminology. Many options are
     provided for downloading publication-ready outputs and analyses can be reproduced
     outside of the application by downloading a 'quarto' file. The interface was generated
-    using 'shinyscholar'.
+    using 'shinyscholar'. The initial version of the app was described by Owen et al. (2018)
+    <doi:10.1002/jrsm.1373>, Bayesian ranking visualisations were described by Nevill et al.
+    (2023) <doi:10.1016/j.jclinepi.2023.02.016> and metaregression was described by Morris
+    et al. (2025) <doi:10.1016/j.jclinepi.2025.111839>.
 Authors@R: 
     c(person("Alex", "Sutton", email = "ajs22@leicester.ac.uk", role = c("aut","cre")),
       person("Naomi", "Bradbury", role = c("aut")),
@@ -39,6 +42,7 @@ Imports:
     glue,
     gt,
     igraph,
+    jsonlite,
     knitcitations,
     knitr,
     MCMCvis,
@@ -65,7 +69,7 @@ Imports:
     tidyr,
     xml2
 Suggests:
-    jsonlite,
+    jsonvalidate,
     mockery,
     pdftools,
     shinytest2,

@@ -134,6 +134,10 @@ tagList(
         flex_wrap(includeMarkdown("modules/export_refPackages.md"))
       ),
       conditionalPanel(
+        "input.tabs == 'export' & input.repSel == 'export_cinema'",
+        flex_wrap(includeMarkdown("modules/export_cinema.md"))
+      ),
+      conditionalPanel(
         "input.tabs == 'intro'",
         flex_wrap(
           navset_tab(

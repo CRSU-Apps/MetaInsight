@@ -1,4 +1,4 @@
-#' @title Fit a Bayesian nodespliting model
+#' @title Fit a Bayesian nodesplitting model
 #' @description Fit a Bayesian nodesplitting model with `gemtc::mtc.nodesplit()`.
 #' This is not possible for all networks and the function will return an error
 #' if the nodes cannot be split.
