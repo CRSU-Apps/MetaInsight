@@ -15,7 +15,7 @@ Once data is loaded successfully, it will be displayed in the Data table tab.
 <p style = "color:red">
 Files used before version 5.0 are no longer compatible. To use an older file, use the <i>Data upgrade</i> module, or remove the "StudyID" column and replace the 
 numeric treatment IDs in the "T" column(s) with the treatment names.
-<p/>
+</p>
 
 <div class="long_guidance">
 <h2><strong>Instructions for uploading long format data</strong></h2>
