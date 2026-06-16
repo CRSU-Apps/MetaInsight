@@ -1,6 +1,17 @@
 ---
 title: MetaInsight placeholder
-format: typst
+format:
+  typst:
+    papersize: a4
+    margin:
+      x: 1cm
+      y: 1cm
+    tbl-colwidths: auto
+fig-format: svg
+execute:
+  warning: false
+  message: false
+theme: spacelab
 ---
 
 ```{r eval = TRUE, echo = FALSE}
@@ -14,6 +25,8 @@ knit_print.svg_plot <- function(x, ...) {
   }
 }
 ```
+
+`#show figure: set block(breakable: true)`{=typst}
 
 ## Introduction
 

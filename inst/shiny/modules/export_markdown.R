@@ -121,9 +121,22 @@ export_markdown_module_server <- function(id, common, parent_session, COMPONENT_
           } else {
             rmd_vars <- do.call(rmd_function, list(common))
           }
+          rmd_vars <- lapply(rmd_vars, metainsight::printVecAsis)
+          # Set the default table functions to DT
+          rmd_vars[["table_function"]] <- "DT::datatable"
+          rmd_vars[["table_options"]] <- "options = list(
+              scrollX = TRUE,
+              autoWidth = FALSE
+            )"
+          # Override the table function and options for PDF output
+          # to use knitr::kable
+          if (export_markdown_file_type == ".pdf") {
+            rmd_vars[["table_function"]] <- "knitr::kable"
+            rmd_vars[["table_options"]] <- 'format = "pipe", booktabs = TRUE'
+          }
           knit_params <- c(
             file = rmd_file,
-            lapply(rmd_vars, metainsight::printVecAsis)
+            rmd_vars
           )
           module_rmd <- do.call(knitr::knit_expand, knit_params)
 
@@ -171,7 +184,7 @@ export_markdown_module_server <- function(id, common, parent_session, COMPONENT_
       combined_rmd <- combined_rmd[lines_to_keep]
 
       # add quarto header
-      if (rep_markdown_file_type != ".pdf"){
+      if (export_markdown_file_type != ".pdf"){
         quarto_header <- readLines("Rmd/html_header.txt")
       } else {
         quarto_header <- readLines("Rmd/pdf_header.txt")
@@ -209,7 +222,7 @@ export_markdown_module_server <- function(id, common, parent_session, COMPONENT_
       result_file <- paste0("combined", export_markdown_file_type)
       if (export_markdown_file_type == ".qmd") {
         writeLines(combined_rmd, result_file, useBytes = TRUE)
-      } else if (rep_markdown_file_type == ".html"){
+      } else if (export_markdown_file_type == ".html"){
         if (render_html){
           writeLines(combined_rmd, "combined.qmd")
           on.exit(unlink("combined.qmd"))
@@ -225,12 +238,12 @@ export_markdown_module_server <- function(id, common, parent_session, COMPONENT_
             output_format = "html"
           )
         }
-      } else if (rep_markdown_file_type == ".pdf"){
+      } else if (export_markdown_file_type == ".pdf"){
         writeLines(combined_rmd, "combined.qmd")
         on.exit(unlink("combined.qmd"))
         quarto::quarto_render(
           input = "combined.qmd",
-          output_format = "pdf")
+          output_format = "typst")
       }
       result_file
     }
