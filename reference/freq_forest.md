@@ -129,7 +129,7 @@ freq_forest(configured_data = configured_data)
 #>       <text x="319.61" y="146.63" text-anchor="end" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="30.02px" lengthAdjust="spacingAndGlyphs">12.20</text>
 #>       <text x="319.61" y="161.03" text-anchor="end" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="30.02px" lengthAdjust="spacingAndGlyphs">12.20</text>
 #>       <text x="319.61" y="175.43" text-anchor="end" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="29.12px" lengthAdjust="spacingAndGlyphs">11.66</text>
-#>       <text x="398.63" y="117.83" text-anchor="end" style="font-size: 12.00px; font-weight: bold; font-family: &quot;Liberation Sans&quot;;" textLength="40.02px" lengthAdjust="spacingAndGlyphs">95%-CI</text>
+#>       <text x="398.63" y="117.83" text-anchor="end" style="font-size: 12.00px; font-weight: bold; font-family: &quot;Liberation Sans&quot;;" textLength="39.34px" lengthAdjust="spacingAndGlyphs">95% CI</text>
 #>       <text x="398.63" y="146.63" text-anchor="end" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="72.45px" lengthAdjust="spacingAndGlyphs">[11.47; 12.93]</text>
 #>       <text x="398.63" y="161.03" text-anchor="end" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="72.45px" lengthAdjust="spacingAndGlyphs">[11.18; 13.22]</text>
 #>       <text x="398.63" y="175.43" text-anchor="end" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="73.34px" lengthAdjust="spacingAndGlyphs">[10.92; 12.39]</text>

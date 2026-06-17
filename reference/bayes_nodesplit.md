@@ -1,4 +1,4 @@
-# Fit a Bayesian nodespliting model
+# Fit a Bayesian nodesplitting model
 
 Fit a Bayesian nodesplitting model with
 [`gemtc::mtc.nodesplit()`](https://rdrr.io/pkg/gemtc/man/mtc.nodesplit.html).

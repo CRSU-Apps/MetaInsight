@@ -46,7 +46,7 @@
   : Fit a Bayesian model
 
 - [`bayes_nodesplit()`](https://apps.crsu.org.uk/MetaInsight/docs/reference/bayes_nodesplit.md)
-  : Fit a Bayesian nodespliting model
+  : Fit a Bayesian nodesplitting model
 
 - [`bayes_nodesplit_plot()`](https://apps.crsu.org.uk/MetaInsight/docs/reference/bayes_nodesplit_plot.md)
   : Bayesian nodesplitting forest plot
@@ -76,6 +76,9 @@
 - [`dic_table()`](https://apps.crsu.org.uk/MetaInsight/docs/reference/dic_table.md)
   : Create a summary table of deviance information criterion stats for
   Bayesian models
+
+- [`export_cinema()`](https://apps.crsu.org.uk/MetaInsight/docs/reference/export_cinema.md)
+  : export_cinema
 
 - [`freq_compare()`](https://apps.crsu.org.uk/MetaInsight/docs/reference/freq_compare.md)
   : Compare treatments for frequentist models

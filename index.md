@@ -1,4 +1,4 @@
-# MetaInsight v7.0.1
+# MetaInsight v7.1.1
 
 Network meta-analysis (NMA) has been increasingly adopted in
 evidence-based medicine to compare multiple interventions and address

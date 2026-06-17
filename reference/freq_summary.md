@@ -485,7 +485,7 @@ freq_summary(configured_data = configured_data)
 #> </g>
 #>     <g clip-path="url(#cpNTQyLjM4fDcxNy42MnwzNDcuNjR8NTA2LjI2)">
 #>       <rect x="542.38" y="347.64" width="175.25" height="158.62" style="stroke-width: 0.75; fill: #FFFFFF;"/>
-#>       <text x="630.00" y="382.83" text-anchor="middle" style="font-size: 14.03px; font-family: &quot;Liberation Sans&quot;;" textLength="31.95px" lengthAdjust="spacingAndGlyphs">-0.00</text>
+#>       <text x="630.00" y="382.83" text-anchor="middle" style="font-size: 14.03px; font-family: &quot;Liberation Sans&quot;;" textLength="27.28px" lengthAdjust="spacingAndGlyphs">0.00</text>
 #>       <text x="630.00" y="406.10" text-anchor="middle" style="font-size: 14.03px; font-family: &quot;Liberation Sans&quot;;" textLength="88.05px" lengthAdjust="spacingAndGlyphs">(-1.25 to 1.25)</text>
 #>       <text x="630.00" y="456.26" text-anchor="middle" style="font-size: 14.03px;fill: #8C8C8C; font-family: &quot;Liberation Sans&quot;;" textLength="19.50px" lengthAdjust="spacingAndGlyphs">NA</text>
 #>     </g>
@@ -638,10 +638,21 @@ freq_summary(configured_data = configured_data)
 #>       <text x="546.04" y="660.13" style="font-size: 5.54px;fill: #B3B3B3; font-family: &quot;Liberation Sans&quot;;" textLength="3.08px" lengthAdjust="spacingAndGlyphs">0</text>
 #>       <text x="545.12" y="624.57" style="font-size: 5.54px;fill: #B3B3B3; font-family: &quot;Liberation Sans&quot;;" textLength="7.69px" lengthAdjust="spacingAndGlyphs">0.5</text>
 #>       <text x="546.04" y="589.01" style="font-size: 5.54px;fill: #B3B3B3; font-family: &quot;Liberation Sans&quot;;" textLength="3.08px" lengthAdjust="spacingAndGlyphs">1</text>
+#>     </g>
+#>     <g clip-path="url(#cpNTQyLjM4fDcxNy42Mnw1MTEuMDF8NjY5LjYz)">
+#> </g>
+#>     <g clip-path="url(#cpMC4wMHw3MjAuMDB8MC4wMHw3MjAuMDA=)">
 #>       <text x="360.00" y="694.34" text-anchor="middle" style="font-size: 9.00px; font-family: &quot;Liberation Sans&quot;;" textLength="284.34px" lengthAdjust="spacingAndGlyphs">Mean Difference with 95% confidence interval &amp; 95% prediction interval</text>
 #>       <text x="0.00" y="708.60" style="font-size: 9.00px; font-family: &quot;Liberation Sans&quot;;" textLength="413.33px" lengthAdjust="spacingAndGlyphs">Key: NMA results in black; Pairwise MA results in grey. 95% confidence interval presented as error bars.</text>
 #>       <text x="0.00" y="718.10" style="font-size: 9.00px; font-family: &quot;Liberation Sans&quot;;" textLength="214.00px" lengthAdjust="spacingAndGlyphs">Interventions are ranked and sorted by SUCRA value.</text>
 #>     </g>
+#>     <defs>
+#>       <clipPath id="cpNTkuMDR8Njg5Ljc2fDc4LjA1fDU5OS4wNA==">
+#>         <rect x="59.04" y="78.05" width="630.72" height="520.99"/>
+#>       </clipPath>
+#>     </defs>
+#>     <g clip-path="url(#cpNTkuMDR8Njg5Ljc2fDc4LjA1fDU5OS4wNA==)">
+#> </g>
 #>   </g>
 #> </svg>
 #> 

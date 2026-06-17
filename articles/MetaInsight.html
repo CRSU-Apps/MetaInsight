@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">metainsight</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">7.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">7.1.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -632,11 +632,19 @@
 <span>                                        max_iter <span class="op">=</span> <span class="fl">120</span>,</span>
 <span>                                        check_iter <span class="op">=</span> <span class="fl">12</span><span class="op">)</span></span></code></pre></div>
 </div>
+</section><section class="level3"><h3 id="exporting-to-cinema">Exporting to CINeMA<a class="anchor" aria-label="anchor" href="#exporting-to-cinema"></a>
+</h3>
+<p>Models fitted in metainsight can be exported into a format that can be uploaded to <a href="https://cinema.med.auth.gr/" target="_blank" class="external-link">CINeMA</a> (Confidence in Network Meta-Analysis). Currently, only the frequentist and Bayesian NMA models are supported.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb25"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">cinema_project</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/export_cinema.html">export_cinema</a></span><span class="op">(</span><span class="va">configured_data</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/writeLines.html" class="external-link">writeLines</a></span><span class="op">(</span><span class="va">cinema_project</span>, <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".json"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+</div>
 </section><section class="level3"><h3 id="app-data">App data<a class="anchor" aria-label="anchor" href="#app-data"></a>
 </h3>
 <p>All the data can be downloaded from the app and advanced users may wish to conduct further analyses. This section describes the structure and where important objects can be found. The data are saved as an rds file which can be read with <code>readRDS</code> and following the convention internal to the app, we name this object <code>common</code>:</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">common</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="st">"&lt;path to file&gt;"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <p>Within this object, data is structured as follows:</p>

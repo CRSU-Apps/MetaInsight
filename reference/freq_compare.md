@@ -44,5 +44,5 @@ freq_compare(configured_data = configured_data)
 #> the_Great   -12.20 [-13.22; -11.18] -12.20 [-12.93; -11.47]
 #> the_Younger                       .                       .
 #> the_Little               the_Little                       .
-#> the_Butcher  -0.00 [ -1.25;   1.25]             the_Butcher
+#> the_Butcher   0.00 [ -1.25;   1.25]             the_Butcher
 ```

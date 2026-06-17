@@ -76,7 +76,7 @@ configured_data <- readRDS(configured_data_path)
 
 summary_study(configured_data = configured_data)
 #> <?xml version="1.0" encoding="UTF-8"?>
-#> <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="49 -8 687 289">
+#> <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="49 -8 701 301">
 #>   <g class="svglite">
 #>     <defs>
 #>       <style type="text/css"><![CDATA[
@@ -97,13 +97,13 @@ summary_study(configured_data = configured_data)
 #>     }
 #>   ]]></style>
 #>     </defs>
-#>     <rect width="750.24" height="316.80" style="stroke: none; fill: #FFFFFF;"/>
+#>     <rect width="779.04" height="316.80" style="stroke: none; fill: #FFFFFF;"/>
 #>     <defs>
-#>       <clipPath id="cpMC4wMHw3NTAuMjR8MC4wMHwzMTYuODA=">
-#>         <rect x="0.00" y="0.00" width="750.24" height="316.80"/>
+#>       <clipPath id="cpMC4wMHw3NzkuMDR8MC4wMHwzMTYuODA=">
+#>         <rect x="0.00" y="0.00" width="779.04" height="316.80"/>
 #>       </clipPath>
 #>     </defs>
-#>     <g clip-path="url(#cpMC4wMHw3NTAuMjR8MC4wMHwzMTYuODA=)">
+#>     <g clip-path="url(#cpMC4wMHw3NzkuMDR8MC4wMHwzMTYuODA=)">
 #>       <text x="534.24" y="270.72" text-anchor="middle" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="85.81px" lengthAdjust="spacingAndGlyphs">Mean difference</text>
 #>       <text x="534.24" y="11.52" text-anchor="middle" style="font-size: 14.40px; font-weight: bold; font-family: &quot;Liberation Sans&quot;;" textLength="385.52px" lengthAdjust="spacingAndGlyphs">Individual study results (with selected studies excluded)</text>
 #>       <text x="534.24" y="28.80" text-anchor="middle" style="font-size: 14.40px; font-weight: bold; font-family: &quot;Liberation Sans&quot;;" textLength="237.53px" lengthAdjust="spacingAndGlyphs"> grouped by treatment comparison</text>
@@ -123,9 +123,19 @@ summary_study(configured_data = configured_data)
 #>     <g clip-path="url(#cpMzc1Ljg0fDY5Mi42NHw1Ny42MHwyMTYuMDA=)">
 #>       <polyline points="94.24,216.00 94.24,81.97 " style="stroke-width: 0.75; stroke-dasharray: 4.00,4.00;"/>
 #>     </g>
-#>     <g clip-path="url(#cpMC4wMHw3NTAuMjR8MC4wMHwzMTYuODA=)">
+#>     <g clip-path="url(#cpMC4wMHw3NzkuMDR8MC4wMHwzMTYuODA=)">
 #>       <text x="299.47" y="59.29" text-anchor="middle" style="font-size: 12.00px; font-weight: bold; font-family: &quot;Liberation Sans&quot;;" textLength="91.34px" lengthAdjust="spacingAndGlyphs">Mean difference</text>
 #>       <text x="299.47" y="73.91" text-anchor="middle" style="font-size: 12.00px; font-weight: bold; font-family: &quot;Liberation Sans&quot;;" textLength="47.34px" lengthAdjust="spacingAndGlyphs">(95% CI)</text>
+#>       <text x="721.44" y="73.91" text-anchor="middle" style="font-size: 12.00px; font-weight: bold; font-family: &quot;Liberation Sans&quot;;" textLength="8.67px" lengthAdjust="spacingAndGlyphs">A</text>
+#>       <text x="735.84" y="73.91" text-anchor="middle" style="font-size: 12.00px; font-weight: bold; font-family: &quot;Liberation Sans&quot;;" textLength="8.67px" lengthAdjust="spacingAndGlyphs">B</text>
+#>       <text x="57.60" y="256.68" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="36.67px" lengthAdjust="spacingAndGlyphs">A: Rob</text>
+#>       <text x="57.60" y="268.87" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="79.34px" lengthAdjust="spacingAndGlyphs">B: Indirectness</text>
+#>       <text x="151.34" y="264.94" style="font-size: 36.00px;fill: #66CD00; font-family: &quot;Liberation Sans&quot;;" textLength="12.61px" lengthAdjust="spacingAndGlyphs">•</text>
+#>       <text x="151.34" y="277.12" style="font-size: 36.00px;fill: #FFB90F; font-family: &quot;Liberation Sans&quot;;" textLength="12.61px" lengthAdjust="spacingAndGlyphs">•</text>
+#>       <text x="151.34" y="289.31" style="font-size: 36.00px;fill: #FF0000; font-family: &quot;Liberation Sans&quot;;" textLength="12.61px" lengthAdjust="spacingAndGlyphs">•</text>
+#>       <text x="165.74" y="256.68" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="82.69px" lengthAdjust="spacingAndGlyphs">Low risk of bias</text>
+#>       <text x="165.74" y="268.87" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="83.36px" lengthAdjust="spacingAndGlyphs">Some concerns</text>
+#>       <text x="165.74" y="281.05" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="85.36px" lengthAdjust="spacingAndGlyphs">High risk of bias</text>
 #>       <text x="57.60" y="181.14" style="font-size: 12.00px; font-weight: bold; font-family: &quot;Liberation Sans&quot;;" textLength="132.67px" lengthAdjust="spacingAndGlyphs">the_Little vs. the_Great</text>
 #>       <text x="72.00" y="195.76" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="42.69px" lengthAdjust="spacingAndGlyphs">Minerva</text>
 #>     </g>
@@ -135,8 +145,10 @@ summary_study(configured_data = configured_data)
 #>       <polyline points="439.33,195.29 439.33,187.98 " style="stroke-width: 0.75;"/>
 #>       <polyline points="464.88,195.29 464.88,187.98 " style="stroke-width: 0.75;"/>
 #>     </g>
-#>     <g clip-path="url(#cpMC4wMHw3NTAuMjR8MC4wMHwzMTYuODA=)">
+#>     <g clip-path="url(#cpMC4wMHw3NzkuMDR8MC4wMHwzMTYuODA=)">
 #>       <text x="237.50" y="195.76" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="107.14px" lengthAdjust="spacingAndGlyphs">12.20 (11.76, 12.64)</text>
+#>       <text x="721.44" y="204.01" text-anchor="middle" style="font-size: 36.00px;fill: #FFB90F; font-family: &quot;Liberation Sans&quot;;" textLength="12.61px" lengthAdjust="spacingAndGlyphs">•</text>
+#>       <text x="735.84" y="204.01" text-anchor="middle" style="font-size: 36.00px;fill: #FFB90F; font-family: &quot;Liberation Sans&quot;;" textLength="12.61px" lengthAdjust="spacingAndGlyphs">•</text>
 #>       <text x="57.60" y="132.40" style="font-size: 12.00px; font-weight: bold; font-family: &quot;Liberation Sans&quot;;" textLength="149.36px" lengthAdjust="spacingAndGlyphs">the_Butcher vs. the_Great</text>
 #>       <text x="72.00" y="147.02" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="47.36px" lengthAdjust="spacingAndGlyphs">Justinian</text>
 #>       <text x="72.00" y="159.21" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="26.02px" lengthAdjust="spacingAndGlyphs">Nero</text>
@@ -147,8 +159,10 @@ summary_study(configured_data = configured_data)
 #>       <polyline points="438.64,146.55 438.64,139.24 " style="stroke-width: 0.75;"/>
 #>       <polyline points="465.56,146.55 465.56,139.24 " style="stroke-width: 0.75;"/>
 #>     </g>
-#>     <g clip-path="url(#cpMC4wMHw3NTAuMjR8MC4wMHwzMTYuODA=)">
+#>     <g clip-path="url(#cpMC4wMHw3NzkuMDR8MC4wMHwzMTYuODA=)">
 #>       <text x="237.50" y="147.02" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="107.14px" lengthAdjust="spacingAndGlyphs">12.20 (11.74, 12.66)</text>
+#>       <text x="721.44" y="155.28" text-anchor="middle" style="font-size: 36.00px;fill: #FF0000; font-family: &quot;Liberation Sans&quot;;" textLength="12.61px" lengthAdjust="spacingAndGlyphs">•</text>
+#>       <text x="735.84" y="155.28" text-anchor="middle" style="font-size: 36.00px;fill: #FF0000; font-family: &quot;Liberation Sans&quot;;" textLength="12.61px" lengthAdjust="spacingAndGlyphs">•</text>
 #>     </g>
 #>     <g clip-path="url(#cpMzc1Ljg0fDY5Mi42NHw1Ny42MHwyMTYuMDA=)">
 #>       <polygon points="449.40,155.08 452.10,152.38 454.80,155.08 452.10,157.78 " style="stroke-width: 0.75; stroke: none; fill: #000000;"/>
@@ -156,8 +170,10 @@ summary_study(configured_data = configured_data)
 #>       <polyline points="439.00,158.73 439.00,151.42 " style="stroke-width: 0.75;"/>
 #>       <polyline points="465.21,158.73 465.21,151.42 " style="stroke-width: 0.75;"/>
 #>     </g>
-#>     <g clip-path="url(#cpMC4wMHw3NTAuMjR8MC4wMHwzMTYuODA=)">
+#>     <g clip-path="url(#cpMC4wMHw3NzkuMDR8MC4wMHwzMTYuODA=)">
 #>       <text x="237.50" y="159.21" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="107.14px" lengthAdjust="spacingAndGlyphs">12.20 (11.75, 12.65)</text>
+#>       <text x="721.44" y="167.46" text-anchor="middle" style="font-size: 36.00px;fill: #66CD00; font-family: &quot;Liberation Sans&quot;;" textLength="12.61px" lengthAdjust="spacingAndGlyphs">•</text>
+#>       <text x="735.84" y="167.46" text-anchor="middle" style="font-size: 36.00px;fill: #66CD00; font-family: &quot;Liberation Sans&quot;;" textLength="12.61px" lengthAdjust="spacingAndGlyphs">•</text>
 #>       <text x="57.60" y="83.66" style="font-size: 12.00px; font-weight: bold; font-family: &quot;Liberation Sans&quot;;" textLength="151.78px" lengthAdjust="spacingAndGlyphs">the_Younger vs. the_Great</text>
 #>       <text x="72.00" y="98.28" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="64.03px" lengthAdjust="spacingAndGlyphs">Constantine</text>
 #>       <text x="72.00" y="110.47" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="20.02px" lengthAdjust="spacingAndGlyphs">Leo</text>
@@ -168,8 +184,10 @@ summary_study(configured_data = configured_data)
 #>       <polyline points="405.11,97.81 405.11,90.50 " style="stroke-width: 0.75;"/>
 #>       <polyline points="434.56,97.81 434.56,90.50 " style="stroke-width: 0.75;"/>
 #>     </g>
-#>     <g clip-path="url(#cpMC4wMHw3NTAuMjR8MC4wMHwzMTYuODA=)">
+#>     <g clip-path="url(#cpMC4wMHw3NzkuMDR8MC4wMHwzMTYuODA=)">
 #>       <text x="237.50" y="98.28" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="106.25px" lengthAdjust="spacingAndGlyphs">11.10 (10.60, 11.60)</text>
+#>       <text x="721.44" y="106.54" text-anchor="middle" style="font-size: 36.00px;fill: #66CD00; font-family: &quot;Liberation Sans&quot;;" textLength="12.61px" lengthAdjust="spacingAndGlyphs">•</text>
+#>       <text x="735.84" y="106.54" text-anchor="middle" style="font-size: 36.00px;fill: #66CD00; font-family: &quot;Liberation Sans&quot;;" textLength="12.61px" lengthAdjust="spacingAndGlyphs">•</text>
 #>     </g>
 #>     <g clip-path="url(#cpMzc1Ljg0fDY5Mi42NHw1Ny42MHwyMTYuMDA=)">
 #>       <polygon points="449.40,106.34 452.10,103.64 454.80,106.34 452.10,109.04 " style="stroke-width: 0.75; stroke: none; fill: #000000;"/>
@@ -177,8 +195,10 @@ summary_study(configured_data = configured_data)
 #>       <polyline points="438.05,109.99 438.05,102.68 " style="stroke-width: 0.75;"/>
 #>       <polyline points="466.15,109.99 466.15,102.68 " style="stroke-width: 0.75;"/>
 #>     </g>
-#>     <g clip-path="url(#cpMC4wMHw3NTAuMjR8MC4wMHwzMTYuODA=)">
+#>     <g clip-path="url(#cpMC4wMHw3NzkuMDR8MC4wMHwzMTYuODA=)">
 #>       <text x="237.50" y="110.47" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="107.14px" lengthAdjust="spacingAndGlyphs">12.20 (11.72, 12.68)</text>
+#>       <text x="721.44" y="118.72" text-anchor="middle" style="font-size: 36.00px;fill: #FFB90F; font-family: &quot;Liberation Sans&quot;;" textLength="12.61px" lengthAdjust="spacingAndGlyphs">•</text>
+#>       <text x="735.84" y="118.72" text-anchor="middle" style="font-size: 36.00px;fill: #FFB90F; font-family: &quot;Liberation Sans&quot;;" textLength="12.61px" lengthAdjust="spacingAndGlyphs">•</text>
 #>     </g>
 #>   </g>
 #> </svg>
