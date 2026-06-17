@@ -2,7 +2,7 @@
 % Please edit documentation in R/bayes_nodesplit_f.R
 \name{bayes_nodesplit}
 \alias{bayes_nodesplit}
-\title{Fit a Bayesian nodespliting model}
+\title{Fit a Bayesian nodesplitting model}
 \usage{
 bayes_nodesplit(configured_data, n_adapt = 5000, n_iter = 20000, async = FALSE)
 }

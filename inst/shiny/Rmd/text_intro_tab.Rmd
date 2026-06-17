@@ -5,7 +5,7 @@ output: html_document
 
 #### WORKFLOW
 
-*metainsight* (v7.1.0) includes seven sections, or steps of a possible workflow. Each section includes two or more modules, which are possible analyses for that step.
+*metainsight* (v7.1.1) includes seven sections, or steps of a possible workflow. Each section includes two or more modules, which are possible analyses for that step.
 
 **Sections:**  
 **1.** *Setup*
