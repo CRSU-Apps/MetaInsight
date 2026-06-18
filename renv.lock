@@ -5377,7 +5377,6 @@
       "VignetteBuilder": "knitr",
       "RoxygenNote": "6.0.1",
       "NeedsCompilation": "no",
-/home/runner/work/_temp/023ff59a-af85-44d6-b9ee-05ff2e87976d.sh: line 2: syntax error near unexpected token `1'
       "Author": "Keon-Woong Moon [aut, cre]",
       "Maintainer": "Keon-Woong Moon <cardiomoon@gmail.com>",
       "Repository": "CRAN",
