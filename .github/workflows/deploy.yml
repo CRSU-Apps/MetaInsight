@@ -54,6 +54,10 @@ jobs:
           r-version: '4.4.2'
       # Setup and install dependencies using renv
       - uses: r-lib/actions/setup-renv@v2
+      - name: Snapshot renv.lock
+        run: |
+          renv::snapshot()
+        shell: Rscript {0}
       # Deploy using rsconnect
       - name: Deploy
         run: |
