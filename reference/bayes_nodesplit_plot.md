@@ -56,7 +56,7 @@ nodesplit_model <- bayes_nodesplit(configured_data,
 
 bayes_nodesplit_plot(nodesplit_model)
 #> <?xml version="1.0" encoding="UTF-8"?>
-#> <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="60 6 466 630">
+#> <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="58 6 468 630">
 #>   <g class="svglite">
 #>     <defs>
 #>       <style type="text/css"><![CDATA[
@@ -83,128 +83,128 @@ bayes_nodesplit_plot(nodesplit_model)
 #>       </clipPath>
 #>     </defs>
 #>     <g clip-path="url(#cpMC4wMHw1NzYuMDB8MC4wMHw3MjAuMDA=)">
-#>       <text x="69.36" y="85.49" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="30.67px" lengthAdjust="spacingAndGlyphs">Study</text>
-#>       <text x="151.53" y="85.49" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="40.69px" lengthAdjust="spacingAndGlyphs">P-value</text>
+#>       <text x="67.36" y="85.49" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="30.67px" lengthAdjust="spacingAndGlyphs">Study</text>
+#>       <text x="149.53" y="85.49" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="40.69px" lengthAdjust="spacingAndGlyphs">P-value</text>
 #>       <text x="445.29" y="85.49" text-anchor="middle" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="142.48px" lengthAdjust="spacingAndGlyphs">Mean Difference (95% CrI)</text>
-#>       <text x="69.36" y="103.49" style="font-size: 12.00px; font-weight: bold; font-family: &quot;Liberation Sans&quot;;" textLength="135.33px" lengthAdjust="spacingAndGlyphs">Sibutramine vs Placebo</text>
-#>       <text x="69.36" y="121.49" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="29.34px" lengthAdjust="spacingAndGlyphs">direct</text>
-#>       <polyline points="269.20,117.36 281.27,117.36 " style="stroke-width: 0.75;"/>
-#>       <circle cx="274.81" cy="117.36" r="2.88" style="stroke-width: 0.75; fill: #FFFFFF;"/>
-#>       <text x="383.93" y="121.49" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="100.02px" lengthAdjust="spacingAndGlyphs">-1.68 (-2.00, -1.31)</text>
-#>       <text x="69.36" y="135.89" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="38.69px" lengthAdjust="spacingAndGlyphs">indirect</text>
-#>       <text x="151.53" y="135.89" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="30.02px" lengthAdjust="spacingAndGlyphs">0.135</text>
-#>       <polyline points="269.57,131.76 319.87,131.76 " style="stroke-width: 0.75;"/>
-#>       <circle cx="295.06" cy="131.76" r="2.88" style="stroke-width: 0.75; fill: #FFFFFF;"/>
-#>       <text x="383.93" y="135.89" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="109.36px" lengthAdjust="spacingAndGlyphs">-0.536 (-1.98, 0.864)</text>
-#>       <text x="69.36" y="150.29" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="42.02px" lengthAdjust="spacingAndGlyphs">network</text>
-#>       <polyline points="269.71,146.16 280.55,146.16 " style="stroke-width: 0.75;"/>
-#>       <circle cx="275.30" cy="146.16" r="2.88" style="stroke-width: 0.75; fill: #FFFFFF;"/>
-#>       <text x="383.93" y="150.29" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="100.02px" lengthAdjust="spacingAndGlyphs">-1.65 (-1.97, -1.36)</text>
-#>       <text x="69.36" y="168.29" style="font-size: 12.00px; font-weight: bold; font-family: &quot;Liberation Sans&quot;;" textLength="108.00px" lengthAdjust="spacingAndGlyphs">Orlistat vs Placebo</text>
-#>       <text x="69.36" y="186.29" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="29.34px" lengthAdjust="spacingAndGlyphs">direct</text>
-#>       <polyline points="274.61,182.16 294.06,182.16 " style="stroke-width: 0.75;"/>
-#>       <circle cx="284.18" cy="182.16" r="2.88" style="stroke-width: 0.75; fill: #FFFFFF;"/>
-#>       <text x="383.93" y="186.29" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="106.69px" lengthAdjust="spacingAndGlyphs">-1.15 (-1.69, -0.593)</text>
-#>       <text x="69.36" y="200.69" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="38.69px" lengthAdjust="spacingAndGlyphs">indirect</text>
-#>       <text x="151.53" y="200.69" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="30.02px" lengthAdjust="spacingAndGlyphs">0.655</text>
-#>       <polyline points="272.07,196.56 307.23,196.56 " style="stroke-width: 0.75;"/>
-#>       <circle cx="287.86" cy="196.56" r="2.88" style="stroke-width: 0.75; fill: #FFFFFF;"/>
-#>       <text x="383.93" y="200.69" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="109.36px" lengthAdjust="spacingAndGlyphs">-0.943 (-1.83, 0.150)</text>
-#>       <text x="69.36" y="215.09" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="42.02px" lengthAdjust="spacingAndGlyphs">network</text>
-#>       <polyline points="279.36,210.96 292.36,210.96 " style="stroke-width: 0.75;"/>
-#>       <circle cx="285.15" cy="210.96" r="2.88" style="stroke-width: 0.75; fill: #FFFFFF;"/>
-#>       <text x="383.93" y="215.09" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="106.69px" lengthAdjust="spacingAndGlyphs">-1.10 (-1.42, -0.689)</text>
-#>       <text x="69.36" y="233.09" style="font-size: 12.00px; font-weight: bold; font-family: &quot;Liberation Sans&quot;;" textLength="131.33px" lengthAdjust="spacingAndGlyphs">Sibutramine vs Orlistat</text>
-#>       <text x="69.36" y="251.09" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="29.34px" lengthAdjust="spacingAndGlyphs">direct</text>
-#>       <polyline points="285.28,246.96 308.03,246.96 " style="stroke-width: 0.75;"/>
-#>       <circle cx="297.69" cy="246.96" r="2.88" style="stroke-width: 0.75; fill: #FFFFFF;"/>
-#>       <text x="383.93" y="251.09" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="109.36px" lengthAdjust="spacingAndGlyphs">-0.388 (-1.09, 0.196)</text>
-#>       <text x="69.36" y="265.49" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="38.69px" lengthAdjust="spacingAndGlyphs">indirect</text>
-#>       <text x="151.53" y="265.49" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="30.02px" lengthAdjust="spacingAndGlyphs">0.445</text>
-#>       <polyline points="277.03,261.36 302.89,261.36 " style="stroke-width: 0.75;"/>
-#>       <circle cx="290.84" cy="261.36" r="2.88" style="stroke-width: 0.75; fill: #FFFFFF;"/>
-#>       <text x="383.93" y="265.49" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="120.03px" lengthAdjust="spacingAndGlyphs">-0.774 (-1.55, -0.0945)</text>
-#>       <text x="69.36" y="279.89" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="42.02px" lengthAdjust="spacingAndGlyphs">network</text>
-#>       <polyline points="286.37,275.76 302.17,275.76 " style="stroke-width: 0.75;"/>
-#>       <circle cx="294.67" cy="275.76" r="2.88" style="stroke-width: 0.75; fill: #FFFFFF;"/>
-#>       <text x="383.93" y="279.89" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="113.36px" lengthAdjust="spacingAndGlyphs">-0.559 (-1.03, -0.135)</text>
-#>       <text x="69.36" y="297.89" style="font-size: 12.00px; font-weight: bold; font-family: &quot;Liberation Sans&quot;;" textLength="119.31px" lengthAdjust="spacingAndGlyphs">Orli_Sibut vs Orlistat</text>
-#>       <text x="69.36" y="315.89" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="29.34px" lengthAdjust="spacingAndGlyphs">direct</text>
-#>       <polyline points="261.12,311.76 296.46,311.76 " style="stroke-width: 0.75;"/>
-#>       <circle cx="278.12" cy="311.76" r="2.88" style="stroke-width: 0.75; fill: #FFFFFF;"/>
-#>       <text x="383.93" y="315.89" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="106.69px" lengthAdjust="spacingAndGlyphs">-1.49 (-2.45, -0.458)</text>
-#>       <text x="69.36" y="330.29" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="38.69px" lengthAdjust="spacingAndGlyphs">indirect</text>
-#>       <text x="151.53" y="330.29" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="23.34px" lengthAdjust="spacingAndGlyphs">0.01</text>
-#>       <polyline points="287.75,326.16 370.96,326.16 " style="stroke-width: 0.75;"/>
-#>       <circle cx="332.02" cy="326.16" r="2.88" style="stroke-width: 0.75; fill: #FFFFFF;"/>
-#>       <text x="383.93" y="330.29" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="98.69px" lengthAdjust="spacingAndGlyphs">1.55 (-0.949, 3.75)</text>
-#>       <text x="69.36" y="344.69" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="42.02px" lengthAdjust="spacingAndGlyphs">network</text>
-#>       <polyline points="274.35,340.56 304.59,340.56 " style="stroke-width: 0.75;"/>
-#>       <circle cx="289.52" cy="340.56" r="2.88" style="stroke-width: 0.75; fill: #FFFFFF;"/>
-#>       <text x="383.93" y="344.69" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="122.70px" lengthAdjust="spacingAndGlyphs">-0.849 (-1.71, 0.00161)</text>
-#>       <text x="69.36" y="362.69" style="font-size: 12.00px; font-weight: bold; font-family: &quot;Liberation Sans&quot;;" textLength="146.64px" lengthAdjust="spacingAndGlyphs">Orli_Sibut vs Sibutramine</text>
-#>       <text x="69.36" y="380.69" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="29.34px" lengthAdjust="spacingAndGlyphs">direct</text>
-#>       <polyline points="273.64,376.56 314.66,376.56 " style="stroke-width: 0.75;"/>
-#>       <circle cx="292.54" cy="376.56" r="2.88" style="stroke-width: 0.75; fill: #FFFFFF;"/>
-#>       <text x="383.93" y="380.69" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="109.36px" lengthAdjust="spacingAndGlyphs">-0.678 (-1.75, 0.570)</text>
-#>       <text x="69.36" y="395.09" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="38.69px" lengthAdjust="spacingAndGlyphs">indirect</text>
-#>       <text x="151.53" y="395.09" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="23.34px" lengthAdjust="spacingAndGlyphs">0.02</text>
-#>       <polyline points="308.71,390.96 374.26,390.96 " style="stroke-width: 0.75;"/>
-#>       <circle cx="337.15" cy="390.96" r="2.88" style="stroke-width: 0.75; fill: #FFFFFF;"/>
-#>       <text x="383.93" y="395.09" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="94.69px" lengthAdjust="spacingAndGlyphs">1.84 (0.234, 3.93)</text>
-#>       <text x="69.36" y="409.49" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="42.02px" lengthAdjust="spacingAndGlyphs">network</text>
-#>       <polyline points="284.67,405.36 313.93,405.36 " style="stroke-width: 0.75;"/>
-#>       <circle cx="299.85" cy="405.36" r="2.88" style="stroke-width: 0.75; fill: #FFFFFF;"/>
-#>       <text x="383.93" y="409.49" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="109.36px" lengthAdjust="spacingAndGlyphs">-0.266 (-1.12, 0.528)</text>
-#>       <text x="69.36" y="427.49" style="font-size: 12.00px; font-weight: bold; font-family: &quot;Liberation Sans&quot;;" textLength="124.00px" lengthAdjust="spacingAndGlyphs">Metformin vs Placebo</text>
-#>       <text x="69.36" y="445.49" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="29.34px" lengthAdjust="spacingAndGlyphs">direct</text>
-#>       <polyline points="258.98,441.36 317.46,441.36 " style="stroke-width: 0.75;"/>
-#>       <circle cx="287.00" cy="441.36" r="2.88" style="stroke-width: 0.75; fill: #FFFFFF;"/>
-#>       <text x="383.93" y="445.49" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="109.36px" lengthAdjust="spacingAndGlyphs">-0.991 (-2.57, 0.728)</text>
-#>       <text x="69.36" y="459.89" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="38.69px" lengthAdjust="spacingAndGlyphs">indirect</text>
-#>       <text x="151.53" y="459.89" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="30.02px" lengthAdjust="spacingAndGlyphs">0.095</text>
-#>       <polyline points="240.23,455.76 277.57,455.76 " style="stroke-width: 0.75;"/>
-#>       <circle cx="258.58" cy="455.76" r="2.88" style="stroke-width: 0.75; fill: #FFFFFF;"/>
-#>       <text x="383.93" y="459.89" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="100.02px" lengthAdjust="spacingAndGlyphs">-2.60 (-3.63, -1.52)</text>
-#>       <text x="69.36" y="474.29" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="42.02px" lengthAdjust="spacingAndGlyphs">network</text>
-#>       <polyline points="253.06,470.16 287.17,470.16 " style="stroke-width: 0.75;"/>
-#>       <circle cx="267.92" cy="470.16" r="2.88" style="stroke-width: 0.75; fill: #FFFFFF;"/>
-#>       <text x="383.93" y="474.29" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="106.69px" lengthAdjust="spacingAndGlyphs">-2.07 (-2.91, -0.982)</text>
-#>       <text x="69.36" y="492.29" style="font-size: 12.00px; font-weight: bold; font-family: &quot;Liberation Sans&quot;;" textLength="120.00px" lengthAdjust="spacingAndGlyphs">Metformin vs Orlistat</text>
-#>       <text x="69.36" y="510.29" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="29.34px" lengthAdjust="spacingAndGlyphs">direct</text>
-#>       <polyline points="262.40,506.16 294.16,506.16 " style="stroke-width: 0.75;"/>
-#>       <circle cx="278.56" cy="506.16" r="2.88" style="stroke-width: 0.75; fill: #FFFFFF;"/>
-#>       <text x="383.93" y="510.29" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="106.69px" lengthAdjust="spacingAndGlyphs">-1.47 (-2.38, -0.587)</text>
-#>       <text x="69.36" y="524.69" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="38.69px" lengthAdjust="spacingAndGlyphs">indirect</text>
-#>       <text x="151.53" y="524.69" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="16.67px" lengthAdjust="spacingAndGlyphs">0.1</text>
-#>       <polyline points="277.63,520.56 329.68,520.56 " style="stroke-width: 0.75;"/>
-#>       <circle cx="303.30" cy="520.56" r="2.88" style="stroke-width: 0.75; fill: #FFFFFF;"/>
-#>       <text x="383.93" y="524.69" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="109.36px" lengthAdjust="spacingAndGlyphs">-0.0712 (-1.52, 1.42)</text>
-#>       <text x="69.36" y="539.09" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="42.02px" lengthAdjust="spacingAndGlyphs">network</text>
-#>       <polyline points="275.04,534.96 305.21,534.96 " style="stroke-width: 0.75;"/>
-#>       <circle cx="287.47" cy="534.96" r="2.88" style="stroke-width: 0.75; fill: #FFFFFF;"/>
-#>       <text x="383.93" y="539.09" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="116.03px" lengthAdjust="spacingAndGlyphs">-0.965 (-1.67, 0.0363)</text>
-#>       <text x="69.36" y="557.09" style="font-size: 12.00px; font-weight: bold; font-family: &quot;Liberation Sans&quot;;" textLength="147.33px" lengthAdjust="spacingAndGlyphs">Metformin vs Sibutramine</text>
-#>       <text x="69.36" y="575.09" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="29.34px" lengthAdjust="spacingAndGlyphs">direct</text>
-#>       <polyline points="288.38,570.96 345.60,570.96 " style="stroke-width: 0.75;"/>
-#>       <circle cx="314.20" cy="570.96" r="2.88" style="stroke-width: 0.75; fill: #FFFFFF;"/>
-#>       <text x="383.93" y="575.09" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="105.36px" lengthAdjust="spacingAndGlyphs">0.544 (-0.913, 2.32)</text>
-#>       <text x="69.36" y="589.49" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="38.69px" lengthAdjust="spacingAndGlyphs">indirect</text>
-#>       <text x="151.53" y="589.49" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="23.34px" lengthAdjust="spacingAndGlyphs">0.07</text>
-#>       <polyline points="266.49,585.36 306.60,585.36 " style="stroke-width: 0.75;"/>
-#>       <circle cx="286.89" cy="585.36" r="2.88" style="stroke-width: 0.75; fill: #FFFFFF;"/>
-#>       <text x="383.93" y="589.49" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="108.47px" lengthAdjust="spacingAndGlyphs">-0.998 (-2.15, 0.115)</text>
-#>       <text x="69.36" y="603.89" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="42.02px" lengthAdjust="spacingAndGlyphs">network</text>
-#>       <polyline points="283.42,599.76 316.75,599.76 " style="stroke-width: 0.75;"/>
-#>       <circle cx="297.50" cy="599.76" r="2.88" style="stroke-width: 0.75; fill: #FFFFFF;"/>
-#>       <text x="383.93" y="603.89" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="109.36px" lengthAdjust="spacingAndGlyphs">-0.399 (-1.19, 0.688)</text>
-#>       <polyline points="304.56,614.16 304.56,88.56 " style="stroke-width: 0.75;"/>
-#>       <polyline points="233.70,606.96 375.43,606.96 " style="stroke-width: 0.75;"/>
-#>       <polyline points="233.70,614.16 233.70,606.96 " style="stroke-width: 0.75;"/>
-#>       <polyline points="375.43,614.16 375.43,606.96 " style="stroke-width: 0.75;"/>
-#>       <text x="304.56" y="625.49" text-anchor="middle" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="6.67px" lengthAdjust="spacingAndGlyphs">0</text>
-#>       <text x="233.70" y="625.49" text-anchor="middle" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="10.67px" lengthAdjust="spacingAndGlyphs">-4</text>
-#>       <text x="375.43" y="625.49" text-anchor="middle" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="6.67px" lengthAdjust="spacingAndGlyphs">4</text>
+#>       <text x="67.36" y="103.49" style="font-size: 12.00px; font-weight: bold; font-family: &quot;Liberation Sans&quot;;" textLength="135.33px" lengthAdjust="spacingAndGlyphs">Sibutramine vs Placebo</text>
+#>       <text x="67.36" y="121.49" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="29.34px" lengthAdjust="spacingAndGlyphs">direct</text>
+#>       <polyline points="266.15,117.36 278.82,117.36 " style="stroke-width: 0.75;"/>
+#>       <circle cx="272.28" cy="117.36" r="2.88" style="stroke-width: 0.75; fill: #FFFFFF;"/>
+#>       <text x="381.93" y="121.49" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="100.02px" lengthAdjust="spacingAndGlyphs">-1.71 (-2.06, -1.34)</text>
+#>       <text x="67.36" y="135.89" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="38.69px" lengthAdjust="spacingAndGlyphs">indirect</text>
+#>       <text x="149.53" y="135.89" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="23.34px" lengthAdjust="spacingAndGlyphs">0.27</text>
+#>       <polyline points="263.10,131.76 313.75,131.76 " style="stroke-width: 0.75;"/>
+#>       <circle cx="287.36" cy="131.76" r="2.88" style="stroke-width: 0.75; fill: #FFFFFF;"/>
+#>       <text x="381.93" y="135.89" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="109.36px" lengthAdjust="spacingAndGlyphs">-0.858 (-2.23, 0.631)</text>
+#>       <text x="67.36" y="150.29" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="42.02px" lengthAdjust="spacingAndGlyphs">network</text>
+#>       <polyline points="268.02,146.16 279.94,146.16 " style="stroke-width: 0.75;"/>
+#>       <circle cx="273.47" cy="146.16" r="2.88" style="stroke-width: 0.75; fill: #FFFFFF;"/>
+#>       <text x="381.93" y="150.29" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="100.02px" lengthAdjust="spacingAndGlyphs">-1.64 (-1.95, -1.28)</text>
+#>       <text x="67.36" y="168.29" style="font-size: 12.00px; font-weight: bold; font-family: &quot;Liberation Sans&quot;;" textLength="108.00px" lengthAdjust="spacingAndGlyphs">Orlistat vs Placebo</text>
+#>       <text x="67.36" y="186.29" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="29.34px" lengthAdjust="spacingAndGlyphs">direct</text>
+#>       <polyline points="274.44,182.16 291.36,182.16 " style="stroke-width: 0.75;"/>
+#>       <circle cx="282.89" cy="182.16" r="2.88" style="stroke-width: 0.75; fill: #FFFFFF;"/>
+#>       <text x="381.93" y="186.29" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="105.80px" lengthAdjust="spacingAndGlyphs">-1.11 (-1.59, -0.632)</text>
+#>       <text x="67.36" y="200.69" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="38.69px" lengthAdjust="spacingAndGlyphs">indirect</text>
+#>       <text x="149.53" y="200.69" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="30.02px" lengthAdjust="spacingAndGlyphs">0.615</text>
+#>       <polyline points="265.84,196.56 305.06,196.56 " style="stroke-width: 0.75;"/>
+#>       <circle cx="287.98" cy="196.56" r="2.88" style="stroke-width: 0.75; fill: #FFFFFF;"/>
+#>       <text x="381.93" y="200.69" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="109.36px" lengthAdjust="spacingAndGlyphs">-0.823 (-2.07, 0.141)</text>
+#>       <text x="67.36" y="215.09" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="42.02px" lengthAdjust="spacingAndGlyphs">network</text>
+#>       <polyline points="276.25,210.96 290.60,210.96 " style="stroke-width: 0.75;"/>
+#>       <circle cx="282.77" cy="210.96" r="2.88" style="stroke-width: 0.75; fill: #FFFFFF;"/>
+#>       <text x="381.93" y="215.09" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="106.69px" lengthAdjust="spacingAndGlyphs">-1.12 (-1.49, -0.676)</text>
+#>       <text x="67.36" y="233.09" style="font-size: 12.00px; font-weight: bold; font-family: &quot;Liberation Sans&quot;;" textLength="131.33px" lengthAdjust="spacingAndGlyphs">Sibutramine vs Orlistat</text>
+#>       <text x="67.36" y="251.09" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="29.34px" lengthAdjust="spacingAndGlyphs">direct</text>
+#>       <polyline points="282.89,246.96 305.63,246.96 " style="stroke-width: 0.75;"/>
+#>       <circle cx="294.14" cy="246.96" r="2.88" style="stroke-width: 0.75; fill: #FFFFFF;"/>
+#>       <text x="381.93" y="251.09" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="108.47px" lengthAdjust="spacingAndGlyphs">-0.475 (-1.11, 0.173)</text>
+#>       <text x="67.36" y="265.49" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="38.69px" lengthAdjust="spacingAndGlyphs">indirect</text>
+#>       <text x="149.53" y="265.49" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="23.34px" lengthAdjust="spacingAndGlyphs">0.59</text>
+#>       <polyline points="278.47,261.36 301.28,261.36 " style="stroke-width: 0.75;"/>
+#>       <circle cx="290.26" cy="261.36" r="2.88" style="stroke-width: 0.75; fill: #FFFFFF;"/>
+#>       <text x="381.93" y="265.49" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="120.03px" lengthAdjust="spacingAndGlyphs">-0.695 (-1.36, -0.0726)</text>
+#>       <text x="67.36" y="279.89" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="42.02px" lengthAdjust="spacingAndGlyphs">network</text>
+#>       <polyline points="285.67,275.76 301.53,275.76 " style="stroke-width: 0.75;"/>
+#>       <circle cx="293.36" cy="275.76" r="2.88" style="stroke-width: 0.75; fill: #FFFFFF;"/>
+#>       <text x="381.93" y="279.89" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="126.70px" lengthAdjust="spacingAndGlyphs">-0.520 (-0.954, -0.0584)</text>
+#>       <text x="67.36" y="297.89" style="font-size: 12.00px; font-weight: bold; font-family: &quot;Liberation Sans&quot;;" textLength="119.31px" lengthAdjust="spacingAndGlyphs">Orli_Sibut vs Orlistat</text>
+#>       <text x="67.36" y="315.89" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="29.34px" lengthAdjust="spacingAndGlyphs">direct</text>
+#>       <polyline points="254.57,311.76 299.11,311.76 " style="stroke-width: 0.75;"/>
+#>       <circle cx="275.26" cy="311.76" r="2.88" style="stroke-width: 0.75; fill: #FFFFFF;"/>
+#>       <text x="381.93" y="315.89" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="106.69px" lengthAdjust="spacingAndGlyphs">-1.54 (-2.71, -0.195)</text>
+#>       <text x="67.36" y="330.29" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="38.69px" lengthAdjust="spacingAndGlyphs">indirect</text>
+#>       <text x="149.53" y="330.29" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="10.00px" lengthAdjust="spacingAndGlyphs"> 0</text>
+#>       <polyline points="294.06,326.16 364.80,326.16 " style="stroke-width: 0.75;"/>
+#>       <circle cx="328.07" cy="326.16" r="2.88" style="stroke-width: 0.75; fill: #FFFFFF;"/>
+#>       <text x="381.93" y="330.29" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="98.69px" lengthAdjust="spacingAndGlyphs">1.44 (-0.480, 3.51)</text>
+#>       <text x="67.36" y="344.69" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="42.02px" lengthAdjust="spacingAndGlyphs">network</text>
+#>       <polyline points="269.99,340.56 303.42,340.56 " style="stroke-width: 0.75;"/>
+#>       <circle cx="286.84" cy="340.56" r="2.88" style="stroke-width: 0.75; fill: #FFFFFF;"/>
+#>       <text x="381.93" y="344.69" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="116.03px" lengthAdjust="spacingAndGlyphs">-0.888 (-1.84, 0.0484)</text>
+#>       <text x="67.36" y="362.69" style="font-size: 12.00px; font-weight: bold; font-family: &quot;Liberation Sans&quot;;" textLength="146.64px" lengthAdjust="spacingAndGlyphs">Orli_Sibut vs Sibutramine</text>
+#>       <text x="67.36" y="380.69" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="29.34px" lengthAdjust="spacingAndGlyphs">direct</text>
+#>       <polyline points="269.97,376.56 309.74,376.56 " style="stroke-width: 0.75;"/>
+#>       <circle cx="291.20" cy="376.56" r="2.88" style="stroke-width: 0.75; fill: #FFFFFF;"/>
+#>       <text x="381.93" y="380.69" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="109.36px" lengthAdjust="spacingAndGlyphs">-0.641 (-1.84, 0.405)</text>
+#>       <text x="67.36" y="395.09" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="38.69px" lengthAdjust="spacingAndGlyphs">indirect</text>
+#>       <text x="149.53" y="395.09" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="23.34px" lengthAdjust="spacingAndGlyphs">0.01</text>
+#>       <polyline points="303.38,390.96 365.71,390.96 " style="stroke-width: 0.75;"/>
+#>       <circle cx="331.45" cy="390.96" r="2.88" style="stroke-width: 0.75; fill: #FFFFFF;"/>
+#>       <text x="381.93" y="395.09" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="101.36px" lengthAdjust="spacingAndGlyphs">1.63 (0.0461, 3.56)</text>
+#>       <text x="67.36" y="409.49" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="42.02px" lengthAdjust="spacingAndGlyphs">network</text>
+#>       <polyline points="278.87,405.36 314.67,405.36 " style="stroke-width: 0.75;"/>
+#>       <circle cx="295.79" cy="405.36" r="2.88" style="stroke-width: 0.75; fill: #FFFFFF;"/>
+#>       <text x="381.93" y="409.49" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="109.36px" lengthAdjust="spacingAndGlyphs">-0.383 (-1.34, 0.683)</text>
+#>       <text x="67.36" y="427.49" style="font-size: 12.00px; font-weight: bold; font-family: &quot;Liberation Sans&quot;;" textLength="124.00px" lengthAdjust="spacingAndGlyphs">Metformin vs Placebo</text>
+#>       <text x="67.36" y="445.49" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="29.34px" lengthAdjust="spacingAndGlyphs">direct</text>
+#>       <polyline points="253.68,441.36 315.63,441.36 " style="stroke-width: 0.75;"/>
+#>       <circle cx="282.66" cy="441.36" r="2.88" style="stroke-width: 0.75; fill: #FFFFFF;"/>
+#>       <text x="381.93" y="445.49" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="102.69px" lengthAdjust="spacingAndGlyphs">-1.12 (-2.76, 0.737)</text>
+#>       <text x="67.36" y="459.89" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="38.69px" lengthAdjust="spacingAndGlyphs">indirect</text>
+#>       <text x="149.53" y="459.89" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="30.02px" lengthAdjust="spacingAndGlyphs">0.145</text>
+#>       <polyline points="232.56,455.76 278.96,455.76 " style="stroke-width: 0.75;"/>
+#>       <circle cx="257.41" cy="455.76" r="2.88" style="stroke-width: 0.75; fill: #FFFFFF;"/>
+#>       <text x="381.93" y="459.89" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="100.02px" lengthAdjust="spacingAndGlyphs">-2.55 (-3.95, -1.33)</text>
+#>       <text x="67.36" y="474.29" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="42.02px" lengthAdjust="spacingAndGlyphs">network</text>
+#>       <polyline points="248.26,470.16 284.81,470.16 " style="stroke-width: 0.75;"/>
+#>       <circle cx="264.06" cy="470.16" r="2.88" style="stroke-width: 0.75; fill: #FFFFFF;"/>
+#>       <text x="381.93" y="474.29" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="100.02px" lengthAdjust="spacingAndGlyphs">-2.17 (-3.07, -1.00)</text>
+#>       <text x="67.36" y="492.29" style="font-size: 12.00px; font-weight: bold; font-family: &quot;Liberation Sans&quot;;" textLength="120.00px" lengthAdjust="spacingAndGlyphs">Metformin vs Orlistat</text>
+#>       <text x="67.36" y="510.29" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="29.34px" lengthAdjust="spacingAndGlyphs">direct</text>
+#>       <polyline points="258.17,506.16 294.72,506.16 " style="stroke-width: 0.75;"/>
+#>       <circle cx="275.96" cy="506.16" r="2.88" style="stroke-width: 0.75; fill: #FFFFFF;"/>
+#>       <text x="381.93" y="510.29" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="106.69px" lengthAdjust="spacingAndGlyphs">-1.50 (-2.51, -0.443)</text>
+#>       <text x="67.36" y="524.69" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="38.69px" lengthAdjust="spacingAndGlyphs">indirect</text>
+#>       <text x="149.53" y="524.69" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="29.12px" lengthAdjust="spacingAndGlyphs">0.115</text>
+#>       <polyline points="273.39,520.56 333.15,520.56 " style="stroke-width: 0.75;"/>
+#>       <circle cx="302.05" cy="520.56" r="2.88" style="stroke-width: 0.75; fill: #FFFFFF;"/>
+#>       <text x="381.93" y="524.69" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="109.36px" lengthAdjust="spacingAndGlyphs">-0.0291 (-1.65, 1.73)</text>
+#>       <text x="67.36" y="539.09" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="42.02px" lengthAdjust="spacingAndGlyphs">network</text>
+#>       <polyline points="269.35,534.96 303.29,534.96 " style="stroke-width: 0.75;"/>
+#>       <circle cx="284.08" cy="534.96" r="2.88" style="stroke-width: 0.75; fill: #FFFFFF;"/>
+#>       <text x="381.93" y="539.09" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="109.36px" lengthAdjust="spacingAndGlyphs">-1.04 (-1.87, 0.0409)</text>
+#>       <text x="67.36" y="557.09" style="font-size: 12.00px; font-weight: bold; font-family: &quot;Liberation Sans&quot;;" textLength="147.33px" lengthAdjust="spacingAndGlyphs">Metformin vs Sibutramine</text>
+#>       <text x="67.36" y="575.09" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="29.34px" lengthAdjust="spacingAndGlyphs">direct</text>
+#>       <polyline points="286.94,570.96 341.00,570.96 " style="stroke-width: 0.75;"/>
+#>       <circle cx="312.58" cy="570.96" r="2.88" style="stroke-width: 0.75; fill: #FFFFFF;"/>
+#>       <text x="381.93" y="575.09" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="105.36px" lengthAdjust="spacingAndGlyphs">0.565 (-0.882, 2.17)</text>
+#>       <text x="67.36" y="589.49" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="38.69px" lengthAdjust="spacingAndGlyphs">indirect</text>
+#>       <text x="149.53" y="589.49" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="16.67px" lengthAdjust="spacingAndGlyphs">0.1</text>
+#>       <polyline points="266.03,585.36 303.68,585.36 " style="stroke-width: 0.75;"/>
+#>       <circle cx="285.59" cy="585.36" r="2.88" style="stroke-width: 0.75; fill: #FFFFFF;"/>
+#>       <text x="381.93" y="589.49" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="116.03px" lengthAdjust="spacingAndGlyphs">-0.958 (-2.06, 0.0630)</text>
+#>       <text x="67.36" y="603.89" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="42.02px" lengthAdjust="spacingAndGlyphs">network</text>
+#>       <polyline points="276.69,599.76 313.16,599.76 " style="stroke-width: 0.75;"/>
+#>       <circle cx="293.32" cy="599.76" r="2.88" style="stroke-width: 0.75; fill: #FFFFFF;"/>
+#>       <text x="381.93" y="603.89" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="109.36px" lengthAdjust="spacingAndGlyphs">-0.522 (-1.46, 0.598)</text>
+#>       <polyline points="302.56,614.16 302.56,88.56 " style="stroke-width: 0.75;"/>
+#>       <polyline points="231.70,606.96 373.43,606.96 " style="stroke-width: 0.75;"/>
+#>       <polyline points="231.70,614.16 231.70,606.96 " style="stroke-width: 0.75;"/>
+#>       <polyline points="373.43,614.16 373.43,606.96 " style="stroke-width: 0.75;"/>
+#>       <text x="302.56" y="625.49" text-anchor="middle" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="6.67px" lengthAdjust="spacingAndGlyphs">0</text>
+#>       <text x="231.70" y="625.49" text-anchor="middle" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="10.67px" lengthAdjust="spacingAndGlyphs">-4</text>
+#>       <text x="373.43" y="625.49" text-anchor="middle" style="font-size: 12.00px; font-family: &quot;Liberation Sans&quot;;" textLength="6.67px" lengthAdjust="spacingAndGlyphs">4</text>
 #>       <text x="302.40" y="25.83" text-anchor="middle" style="font-size: 14.40px; font-weight: bold; font-family: &quot;Liberation Sans&quot;;" textLength="256.73px" lengthAdjust="spacingAndGlyphs">Inconsistency test with nodesplitting </text>
 #>       <text x="302.40" y="43.11" text-anchor="middle" style="font-size: 14.40px; font-weight: bold; font-family: &quot;Liberation Sans&quot;;" textLength="139.97px" lengthAdjust="spacingAndGlyphs">model for all studies</text>
 #>     </g>
