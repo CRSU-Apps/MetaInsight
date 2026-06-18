@@ -35,9 +35,9 @@ jobs:
           fi
           # Store the appName in environment variables based on deployment type
           if [[ $DEPLOY_TYPE = "test" ]]; then
-            echo "appName=MetaInsight_v6_test" >> $GITHUB_ENV
+            echo "appName=MetaInsight_V6_test" >> $GITHUB_ENV
           else
-            echo "appName=MetaInsight_v6" >> $GITHUB_ENV
+            echo "appName=MetaInsight_V6" >> $GITHUB_ENV
           fi
       - name: Print deployment type
         run: |
