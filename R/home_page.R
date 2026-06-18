@@ -23,17 +23,16 @@ home_page_ui <- function(id) {
     ),
     fluidRow(
       div(
-        h4("A Beta version of MetaInsight v7 featuring improved plots, automatically updating models and other new features is available at: ",
-           a("https://crsu.shinyapps.io/MetaInsight_Scholar/",
-             href= "https://crsu.shinyapps.io/MetaInsight_Scholar/",
+        h4("MetaInsight v7 featuring improved plots, automatically updating models and other new features is available at: ",
+           a("https://crsu.shinyapps.io/MetaInsight",
+             href= "https://crsu.shinyapps.io/MetaInsight",
              target = "_blank", style="color: white; text-decoration: underline"),
-           ". Please send any feedback to apps@crsu.org.uk.",
         style="color: white; margin: 0; padding: 0;"),
         style="background-color: #e4042c; padding: 20px; width: 100%; text-align: center;"
       ),
       style="margin: 0; padding: 0;"
     ),
-    h2("MetaInsight v6.4.2", align = "left"),
+    h2("MetaInsight v6.4.3", align = "left"),
     fluidRow(
       column(
         width = 3,
@@ -47,6 +46,10 @@ home_page_ui <- function(id) {
       column(
         width = 5,
         p(tags$strong("Latest Updates:")),
+        p(tags$strong("Minor update (12 Mar 2026 v6.4.3):")),
+        tags$ul(
+          tags$li("Updated Banner to highlight MetaInsight v7."),
+        ),
         p(tags$strong("Minor update (12 Mar 2026 v6.4.2):")),
         tags$ul(
           tags$li("Fixed rare bug where initial values were not being produced for the Bayesian model."),
