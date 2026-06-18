@@ -21,7 +21,7 @@ jobs:
     name: Deploy to shinyapps
     # allow skipping deployment for commits containing '[automated]' or '[no-deploy]' in the commit message
     if: "!contains(github.event.head_commit.message, '[automated]') && !contains(github.event.head_commit.message, '[no-deploy]')"
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Set deployment type
         run: |
@@ -46,7 +46,6 @@ jobs:
         run: |
           sudo apt update
           sudo apt install libcurl4-openssl-dev jags libharfbuzz-dev libfribidi-dev libfreetype6-dev libpng-dev libtiff5-dev libjpeg-dev libglpk-dev libmagick++-dev -y
-          sudo apt install chromium-browser cmake gsfonts libnode-dev pandoc pandoc-citeproc -y
       # Checkout the repo
       - uses: actions/checkout@v4
       # Setup R (4.3.2)
@@ -55,6 +54,14 @@ jobs:
           r-version: '4.4.2'
       # Setup and install dependencies using renv
       - uses: r-lib/actions/setup-renv@v2
+      - name: Snapshot renv.lock
+        run: |
+          renv::snapshot()
+        shell: Rscript {0}
+      - name: Print Lock File
+        run: |
+          cat renv.lock
+          exit(1)
       # Deploy using rsconnect
       - name: Deploy
         run: |
