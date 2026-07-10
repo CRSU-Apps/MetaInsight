@@ -333,9 +333,12 @@ format_step <- function(x){
 #' @noRd
 crop_svg <- function(svg, margin = 10){
 
-  pixel_data <- paste(svg, collapse = "\n") |>
-    magick::image_read_svg() |>
-    magick::image_data()
+  svg_node <- shiny::HTML(paste(svg, collapse = "\n")) |>
+    xml2::read_html() |>
+    xml2::xml_find_first("//svg")
+  pixel_data <- paste(svg_node, collapse = "\n") |>
+    charToRaw() |>
+    rsvg::rsvg_raw()
 
   # Create a matrix of pixels containing content
   is_content <- !(
