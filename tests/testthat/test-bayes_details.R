@@ -54,6 +54,7 @@ test_that("{shinytest2} recording: e2e_bayes_details", {
   expect_gt(length(readLines(code_dl)), 10)
 
   app$set_inputs("bayes_details-bayes-tabs" = "sims")
+  app$wait_for_idle(1000)
   for (n in 1:4){
     sim <- app$get_download(glue::glue("bayes_details-bayes-download_data_{n}"))
     expect_gt(nrow(read.csv(sim)), 10)
