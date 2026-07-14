@@ -47,6 +47,7 @@ test_that("{shinytest2} recording: e2e_covariate_details", {
   expect_equal(nrow(read.csv(priors_dl)), 4)
 
   app$set_inputs("covariate_details-covariate-tabs" = "sims")
+  app$wait_for_idle(1000)
   for (n in 1:4){
     sim <- app$get_download(glue::glue("covariate_details-covariate-download_data_{n}"))
     expect_gt(nrow(read.csv(sim)), 10)
@@ -61,6 +62,7 @@ test_that("{shinytest2} recording: e2e_covariate_details", {
   app$set_inputs("covariate_details-covariate-tabs" = "inits")
   inits <- app$wait_for_value(output = "covariate_details-covariate-inits")
   expect_match(inits, "Wichmann-Hill")
+  app$wait_for_idle(1000)
   for (n in 1:4){
     init <- app$get_download(glue::glue("covariate_details-covariate-download_inits_{n}"))
     expect_gt(length(readLines(init)), 10)
