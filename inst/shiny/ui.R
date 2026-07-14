@@ -134,7 +134,7 @@ tagList(
         flex_wrap(includeMarkdown("modules/export_refPackages.md"))
       ),
       conditionalPanel(
-        "input.tabs == 'export' & input.repSel == 'export_cinema'",
+        "input.tabs == 'export' & input.exportSel == 'export_cinema'",
         flex_wrap(includeMarkdown("modules/export_cinema.md"))
       ),
       conditionalPanel(

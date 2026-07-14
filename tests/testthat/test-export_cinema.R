@@ -176,14 +176,16 @@ test_that("export_cinema exports frequentist results", {
 
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_export_cinema")
   reload_app(app, config_path)
-  app$set_inputs(tabs = "rep")
-  app$set_inputs(repSel = "export_cinema")
-
+  app$set_inputs(tabs = "export")
+  app$wait_for_idle(1000)
+  app$set_inputs(exportSel = "export_cinema")
+  app$wait_for_idle(1000)
   json_all <- app$get_download("export_cinema-download")
   result_all <- jsonvalidate::json_validate(json_all, valid_schema, verbose = TRUE)
   expect_true(result_all)
 
   app$set_inputs("export_cinema-data" = "subsetted_data")
+  app$wait_for_idle(1000)
   json_sub <- app$get_download("export_cinema-download")
   result_sub <- jsonvalidate::json_validate(json_sub, valid_schema, verbose = TRUE)
   expect_true(result_sub)
@@ -199,8 +201,9 @@ test_that("export_cinema exports Bayesian results", {
 
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_export_cinema")
   reload_app(app, bayes_model_path)
-  app$set_inputs(tabs = "rep")
-  app$set_inputs(repSel = "export_cinema")
+  app$set_inputs(tabs = "export")
+  app$wait_for_idle(1000)
+  app$set_inputs(exportSel = "export_cinema")
   app$set_inputs("export_cinema-model" = "bayes")
 
   json_all <- app$get_download("export_cinema-download")
