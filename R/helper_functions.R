@@ -333,10 +333,10 @@ format_step <- function(x){
 #' @noRd
 crop_svg <- function(svg, margin = 10){
 
-  svg <- shiny::HTML(paste(svg, collapse = "\n")) |>
+  svg_node <- shiny::HTML(paste(svg, collapse = "\n")) |>
     xml2::read_html() |>
     xml2::xml_find_first("//svg")
-  pixel_data <- paste(svg, collapse = "\n") |>
+  pixel_data <- paste(svg_node, collapse = "\n") |>
     charToRaw() |>
     rsvg::rsvg_raw()
 
@@ -375,7 +375,6 @@ crop_svg <- function(svg, margin = 10){
   )
 
   # update viewBox
-  svg_node <- xml2::xml_find_first(svg, "//svg")
   xml2::xml_attr(svg_node, "viewBox") <- paste(bbox$x, bbox$y, bbox$width, bbox$height)
 
   # fix the background element
