@@ -79,8 +79,11 @@ export_markdown_module_server <- function(id, common, parent_session, COMPONENT_
 
     # function to create report
     # GlobalEnv ensures that rmd_functions can be found
-    .GlobalEnv$make_report <- function(export_markdown_file_type){
-
+    .GlobalEnv$make_report <- function(
+      export_markdown_file_type,
+      export_file_path = NULL
+    ) {
+      int_dir <- tempdir()
       md_files <- c()
 
       rmd_intro_file <- tempfile(pattern = "intro_", fileext = ".Rmd")
@@ -93,7 +96,8 @@ export_markdown_module_server <- function(id, common, parent_session, COMPONENT_
                         output_format = rmarkdown::github_document(html_preview = FALSE),
                         output_file = md_intro_file,
                         clean = TRUE,
-                        encoding = "UTF-8")
+                        encoding = "UTF-8",
+                        intermediates_dir = int_dir)
       md_files <- c(md_files, md_intro_file)
 
       module_rmds <- NULL
@@ -146,7 +150,8 @@ export_markdown_module_server <- function(id, common, parent_session, COMPONENT_
                         output_format = rmarkdown::github_document(html_preview = FALSE),
                         output_file = module_md_file,
                         clean = TRUE,
-                        encoding = "UTF-8")
+                        encoding = "UTF-8",
+                        intermediates_dir = int_dir)
       md_files <- c(md_files, module_md_file)
 
       combined_md <-
@@ -201,26 +206,35 @@ export_markdown_module_server <- function(id, common, parent_session, COMPONENT_
       idx <- with(rle(combined_rmd == ""), rep(seq_along(lengths), lengths))
       combined_rmd <- combined_rmd[!duplicated(idx) | combined_rmd != ""]
 
-      result_file <- paste0("combined", export_markdown_file_type)
+      result_file <- export_file_path
+      
       if (export_markdown_file_type == ".qmd") {
         writeLines(combined_rmd, result_file, useBytes = TRUE)
       } else {
         if (render_html){
-          writeLines(combined_rmd, "combined.qmd")
-          on.exit(unlink("combined.qmd"))
+          combined_file_path <- tempfile(pattern = paste0("combined_"),
+                                 fileext = ".qmd")
+          writeLines(combined_rmd, combined_file_path)
+          on.exit(unlink(combined_file_path))
             quarto::quarto_render(
-              input = "combined.qmd",
-              output_format = "html")
+              input = combined_file_path,
+              output_format = "html"
+            )
+          output_file <- gsub("\\.qmd$", ".html", combined_file_path)
+          file.copy(output_file, result_file)
         } else {
+          combined_file_path <- tempfile(pattern = paste0("combined_"),
+                                 fileext = ".md")
           combined_rmd[grep("\\{r", combined_rmd)] <- "``` r"
-          writeLines(combined_rmd, "combined.md")
-          on.exit(unlink("combined.md"))
+          writeLines(combined_rmd, combined_file_path)
+          on.exit(unlink(combined_file_path))
           quarto::quarto_render(
-            input = "combined.md",
+            input = combined_file_path,
             output_format = "html"
           )
+          output_file <- gsub("\\.md$", ".html", combined_file_path)
+          file.copy(output_file, result_file)
         }
-
       }
       result_file
     }
@@ -239,7 +253,12 @@ export_markdown_module_server <- function(id, common, parent_session, COMPONENT_
 
     # task that calls the function
     task <- ExtendedTask$new(function(){
-      mirai::mirai(make_report(export_markdown_file_type), globalenv())
+      export_file_path <<- tempfile(pattern = paste0("combined_"),
+                                 fileext = export_markdown_file_type)
+      mirai::mirai(make_report(
+        export_markdown_file_type,
+        export_file_path
+      ), globalenv())
     }) |> bslib::bind_task_button("download")
 
     # start the task
@@ -261,7 +280,6 @@ export_markdown_module_server <- function(id, common, parent_session, COMPONENT_
         }
         close_loading_modal()
       }
-
       if (task$status() == "error"){
         results$suspend()
         common$logger |> writeLog(type = "error", "An error occurred trying to produce the download")
@@ -269,7 +287,7 @@ export_markdown_module_server <- function(id, common, parent_session, COMPONENT_
       }
     })
 
-    # handler for R Markdown download
+    ## handler for R Markdown download
     output$dlRMD <- downloadHandler(
       filename = function() {
         paste0("metainsight-session-", Sys.Date(), input$file_type)
