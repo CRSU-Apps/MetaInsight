@@ -39,8 +39,8 @@ frequentist <- function(non_covariate_data, outcome, treatments, outcome_measure
                           all.treatments = NULL,
                           seq = NULL,
                           tau.preset = NULL,
-                          tol.multiarm = 0.05,
-                          tol.multiarm.se = 0.2,
+                          tol.multiarm = 0.5,
+                          tol.multiarm.se = 0.8,
                           warn = TRUE)
 
   return(list(
