@@ -13,10 +13,14 @@ It is hoped that this tool will assist those in conducting NMA who do not have e
 and, in turn, increase the relevance of published meta-analyses, and in the long term contribute to improved healthcare 
 decision making as a result.
 
-If you use the app please cite it as:
+If you use the app for network meta-analysis please cite it as:
 
 Owen, RK, Bradbury, N, Xin, Y, Cooper, N, Sutton, A. MetaInsight: An interactive web-based tool for analyzing, 
 interrogating, and visualizing network meta-analyses using R-shiny and netmeta. Res Syn Meth. 2019; 10: 569-581.
+
+If you use the app for network meta-regression please cite it as:
+
+Morris, T, Nevill, J, Nevill, C, Bradbury, N, Freeman, S, Cooper, N, Sutton, A. Network meta-regression including baseline risk analysis and interactive visualizations as implemented by the MetaInsight web application. Journal of Clinical Epidemiology 184 (2025) 111839.
 
 Please consult our [Wiki](https://github.com/CRSU-Apps/MetaInsight/wiki) for further information on using MetaInsight.
 
