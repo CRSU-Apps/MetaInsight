@@ -46,6 +46,7 @@ test_that("{shinytest2} recording: e2e_baseline_details", {
   expect_equal(nrow(read.csv(priors_dl)), 4)
 
   app$set_inputs("baseline_details-baseline-tabs" = "sims")
+  app$wait_for_idle(1000)
   for (n in 1:4){
     sim <- app$get_download(glue::glue("baseline_details-baseline-download_data_{n}"))
     expect_gt(nrow(read.csv(sim)), 10)

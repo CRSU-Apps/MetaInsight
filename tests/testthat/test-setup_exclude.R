@@ -84,6 +84,8 @@ test_that("setup_exclude updates interface and loads data into common correctly"
   skip_if(skip_shinytest2)
 
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 30000)
+  app$set_inputs(tabs = "setup")
+  app$wait_for_idle(1000)
   app$upload_file("setup_load-file1" = minimal_data_path)
   app$set_inputs(tabs = "setup")
   app$click("setup_load-run")
@@ -143,8 +145,9 @@ test_that("setup_exclude launches a note when reference_treatment_sub changes", 
   skip_if(skip_shinytest2)
 
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 30000)
-  app$upload_file("setup_load-file1" = file.path(test_data_dir, "Cont_long_continuous_cov.csv"))
   app$set_inputs(tabs = "setup")
+  app$wait_for_idle(1000)
+  app$upload_file("setup_load-file1" = file.path(test_data_dir, "Cont_long_continuous_cov.csv"))
   app$click("setup_load-run")
   app$set_inputs("setupSel" = "setup_configure")
   app$wait_for_value(input = "setup_configure-ready")
