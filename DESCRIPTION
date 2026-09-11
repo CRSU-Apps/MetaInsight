@@ -46,7 +46,6 @@ Imports:
     knitcitations,
     knitr,
     MCMCvis,
-    magick,
     meta (>= 8.1.0),
     metafor,
     mirai (>= 2.0.0),
@@ -70,6 +69,7 @@ Imports:
     xml2
 Suggests:
     jsonvalidate,
+    magick,
     mockery,
     pdftools,
     shinytest2,
