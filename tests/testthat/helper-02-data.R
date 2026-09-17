@@ -30,8 +30,10 @@ if (!skip_shinytest2){
 
   if (!file.exists(config_path) || !file.exists(bayes_model_path)){
     app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 30000)
-    app$upload_file("setup_load-file1" = minimal_data_path)
+    decline_gdpr(app)
     app$set_inputs(tabs = "setup")
+    app$wait_for_idle()
+    app$upload_file("setup_load-file1" = minimal_data_path)
     app$click("setup_load-run")
     app$set_inputs("setupSel" = "setup_configure")
     app$wait_for_value(input = "setup_configure-ready")
@@ -57,6 +59,9 @@ if (!skip_shinytest2){
 
   if (!file.exists(baseline_model_path)){
     app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 30000)
+    decline_gdpr(app)
+    app$set_inputs(tabs = "setup")
+    app$wait_for_idle()
     app$upload_file("setup_load-file1" = minimal_data_path)
     app$click("setup_load-run")
     app$set_inputs("setupSel" = "setup_configure")
@@ -71,6 +76,9 @@ if (!skip_shinytest2){
 
   if (!file.exists(covariate_model_path)){
     app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 30000)
+    decline_gdpr(app)
+    app$set_inputs(tabs = "setup")
+    app$wait_for_idle()
     app$upload_file("setup_load-file1" = minimal_data_path)
     app$click("setup_load-run")
     app$set_inputs("setupSel" = "setup_configure")

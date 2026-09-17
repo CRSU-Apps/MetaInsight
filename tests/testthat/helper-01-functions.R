@@ -104,6 +104,12 @@ test_bayes_plot_downloads <- function(app, module, plot_id, dual = TRUE) {
 
 ### SHINYTEST2 #
 
+# decline the GDPR cookie popup shown on app load
+decline_gdpr <- function(app){
+  app$wait_for_js("$('.sweet-alert.visible').length > 0")
+  app$click(selector = ".cancel")
+}
+
 # reload from a save file and close alert
 reload_app <- function(app, path){
   app$set_inputs(tabs = "setup")
