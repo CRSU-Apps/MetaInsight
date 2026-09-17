@@ -104,18 +104,6 @@ test_bayes_plot_downloads <- function(app, module, plot_id, dual = TRUE) {
 
 ### SHINYTEST2 #
 
-# decline the GDPR cookie popup shown on app load
-# skipped if the accept_analytics cookie is already set, since AppDriver
-# instances created in the same R session share a browser/cookie jar, so
-# the popup only appears the first time in a given test run
-decline_gdpr <- function(app){
-  has_cookie <- app$get_js("document.cookie.indexOf('accept_analytics') !== -1")
-  if (!isTRUE(has_cookie)) {
-    app$wait_for_js("$('.sweet-alert.visible').length > 0")
-    app$click(selector = ".cancel")
-  }
-}
-
 # reload from a save file and close alert
 reload_app <- function(app, path){
   app$set_inputs(tabs = "setup")

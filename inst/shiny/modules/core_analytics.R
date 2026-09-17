@@ -190,8 +190,12 @@ core_analytics_module_server <- function(
 
       # Run once when cookies.js has been loaded
       observe({
-        # If the accept_analytics cookie is null show the GDPR notice
-        if (is.null(cookies()$accept_analytics)) {
+        # Never show the GDPR notice when running under shinytest2/testthat,
+        # so e2e tests don't need to interact with it
+        if (isTRUE(getOption("shiny.testmode"))) {
+          is_analytics(FALSE)
+          # If the accept_analytics cookie is null show the GDPR notice
+        } else if (is.null(cookies()$accept_analytics)) {
           GdprAlert()
           # Else if the user has previously accepted the GDPR notice
         } else if (as.logical(cookies()$accept_analytics)) {
