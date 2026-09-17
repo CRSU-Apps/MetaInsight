@@ -27,6 +27,8 @@ if (local){
 
 if (!skip_shinytest2){
   options(shinytest2.load_timeout=60000)
+  chromote_browser <- chromote::default_chromote_object()
+  chromote_browser$default_timeout <- 60
 
   if (!file.exists(config_path) || !file.exists(bayes_model_path)){
     app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 30000)
