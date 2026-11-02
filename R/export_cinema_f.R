@@ -1,9 +1,10 @@
 #' @title export_cinema
 #' @description Prepare project into a JSON format that CINeMA can read.
 #' @inheritParams common_params
-#' @param gemtc_results Output from `gemtc::mtc.run()`, as returned in the `mtcResults` list element from `bayes_model()`.
+#' @param gemtc_results Output from gemtc, including `mtcResults` and `mtcNetwork` from the list `bayes_model()`.
 #' If this parameter is `NULL` then the frequentist analysis results found in 'contributions' are used.
 #' If it is not `NULL` then the Bayesian analysis results contained in this parameter are used. Defaults to `NULL`.
+#' @param anohe Data frame of pairwise and global heterogeneity statistics, created by `bayes_anohe()`.
 #' @return JSON string with the following structure:
 #' A named list of lists. The top level list contains items:
 #' - "project" Information for CINeMA project
@@ -23,14 +24,11 @@
 #' writeLines(cinema_project, tempfile(fileext = ".json"))
 #'
 #' @export
-export_cinema <- function(configured_data, gemtc_results = NULL, logger = NULL) {
+export_cinema <- function(configured_data, gemtc_results = NULL, anohe, logger = NULL) {
 
   check_param_classes("configured_data", "configured_data", logger)
-  if (!is.null(gemtc_results)) {
-    check_param_classes("gemtc_results", "mtc.result", logger)
-  }
 
-  if (!is.null(gemtc_results) && gemtc_results$model$type == "regression") {
+  if (!is.null(gemtc_results) && gemtc_results$mtcResults$model$type == "regression") {
     logger |> writeLog(type = "error", "Meta-regression models cannot currently be exported to CINeMA")
     return()
   }
@@ -51,12 +49,14 @@ export_cinema <- function(configured_data, gemtc_results = NULL, logger = NULL) 
     configured_data$treatments,
     configured_data$outcome
   )
-
+  
   prepared_analysis <- .PrepareAnalysisForCinema(
     contributions,
     configured_data$effects,
     configured_data$outcome_measure,
-    gemtc_results
+    gemtc_results,
+    configured_data$ranking_option,
+    anohe
   )
 
   prepared_project <- list(
@@ -186,13 +186,15 @@ export_cinema <- function(configured_data, gemtc_results = NULL, logger = NULL) 
 #' @param contributions Contributions from {netmeta}.
 #' @param model_type Type of model: "fixed" or "random".
 #' @param outcome_measure Outcome measure, one of: "OR", "RR", "RD", "MD", "SMD".
-#' @param gemtc_results Output from gemtc::mtc.run, as returned in the 'mtcResults' list element from bayes_model().
+#' @param gemtc_results Output from gemtc, including `mtcResults` and `mtcNetwork` from the list `bayes_model()`.
+#' @param ranking_option "desirable" or "undesirable", referring to smaller treatment effects.
+#' @param anohe Data frame of pairwise and global heterogeneity statistics, created by `bayes_anohe()`.
 #' If this parameter is NULL then the frequentist analysis results found in 'contributions' are used.
 #' If it is not NULL then the Bayesian analysis results contained in this parameter are used. Defaults to NULL.
 #' @return A List with the described structure.
 #' @noRd
-.PrepareAnalysisForCinema <- function(contributions, model_type, outcome_measure, gemtc_results = NULL) {
-  hat_matrix = netmeta::hatmatrix(x = contributions$x, method = "Davies", type = "long")
+.PrepareAnalysisForCinema <- function(contributions, model_type, outcome_measure, gemtc_results = NULL, ranking_option, anohe) {
+  hat_matrix <- netmeta::hatmatrix(x = contributions$x, method = "Davies", type = "long")
   if (model_type == "fixed") {
     h <- hat_matrix$common
     study_contributions <- contributions$study.common
@@ -203,6 +205,26 @@ export_cinema <- function(configured_data, gemtc_results = NULL, logger = NULL) 
     stop(glue::glue("Model type'{model_type}' not supported"))
   }
 
+  if (is.null(gemtc_results)) {
+    tau2 <- contributions$x$tau2
+    i_squared <- contributions$x$I2
+    q_overall <- contributions$x$Q
+    q_heterogeneity <- contributions$x$Q.heterogeneity
+    q_inconsistency <- contributions$x$Q.inconsistency
+  } else {
+    tau2 <- summary(gemtc_results$mtcResults)$summaries$quantiles["sd.d", "50%"] ^ 2
+    if (is.null(anohe)) {
+      i_squared <- NULL
+      q_overall <- NULL
+    } else {
+      i_squared <- anohe[anohe$t1 == "Global", "i2.cons"]
+      degrees_of_freedom <- contributions$x$m - (contributions$x$n - 1)
+      q_overall <- degrees_of_freedom / (1 - i_squared / 100)
+    }
+    q_heterogeneity <- NULL
+    q_inconsistency <- NULL
+  }
+  
   nma_col_names = c(
     "Direct",
     "DirectL",
@@ -231,13 +253,25 @@ export_cinema <- function(configured_data, gemtc_results = NULL, logger = NULL) 
     colNamesNMAresults = nma_col_names,
     H = h,
     model = jsonlite::unbox(model_type),
-    NMAresults = .PrepareComparisonsForCinema(contributions, model_type, outcome_measure, gemtc_results),
+    NMAresults = .PrepareComparisonsForCinema(contributions, model_type, outcome_measure, gemtc_results$mtcResults),
     rowNames = rownames(h),
     rowNamesNMAresults = rownames(h),
     sm = jsonlite::unbox(outcome_measure)
   )
 
   prepared_analysis <- list(
+    active = list(
+      pairwise = .PreparePairwiseForCinema(contributions, gemtc_results, anohe),
+      networkHeterogeneity = list(
+        tau2 = jsonlite::unbox(tau2),
+        Qoverall = jsonlite::unbox(q_overall),
+        Qheterogeneity = jsonlite::unbox(q_heterogeneity),
+        Qinconsistency = jsonlite::unbox(q_inconsistency),
+        I2 = jsonlite::unbox(i_squared)
+      )
+    ),
+    inactive = list(),
+    leagueTable = .PrepareLeagueTableForCinema(contributions, model_type, ranking_option),
     contributionMatrices = list(
       list(
         hatmatrix = prepared_hat_matrix,
@@ -246,8 +280,70 @@ export_cinema <- function(configured_data, gemtc_results = NULL, logger = NULL) 
     )
   )
 
+  # Rename 'active' and 'inactive' according to which analysis was done
+  names(prepared_analysis)[names(prepared_analysis) == "active"] <- ifelse(
+    is.null(gemtc_results), "frequentist", "bayesian"
+  )
+  names(prepared_analysis)[names(prepared_analysis) == "inactive"] <- ifelse(
+    is.null(gemtc_results), "bayesian", "frequentist"
+  )
+  
   return(prepared_analysis)
 }
+
+#' Creates a data frame containing tau^2 and I^2 for pairwise comparisons.
+#'
+#' @param contributions Contributions from {netmeta}.
+#' @param gemtc_results Output from gemtc, including `mtcResults` and `mtcNetwork` from the list `bayes_model()`.
+#' @param anohe Data frame of pairwise and global heterogeneity statistics, created by `bayes_anohe()`.
+#' @return Data frame with the columns `comparison`, `tau2` and `i2`.
+#' @noRd
+.PreparePairwiseForCinema <- function(contributions, gemtc_results, anohe) {
+  if (is.null(gemtc_results)) {
+    pairwise <- netmeta::netpairwise(contributions$x)
+    return(
+      data.frame(
+        comparison = names(pairwise$tau2.w),
+        tau2 = pairwise$tau2.w,
+        i2 = pairwise$I2.w,
+        row.names = NULL
+      )
+    )
+  } else if (!is.null(anohe)) {
+    pairwise_table <- data.frame(
+      comparison = paste(anohe$t1, anohe$t2, sep = ":"),
+      tau2 = NA,
+      i2 = anohe$i2.cons
+    )
+    return(pairwise_table[pairwise_table$comparison != "Global:-", ])
+  } else {
+    return(NULL)
+  }
+}
+
+#' Creates a data frame containing pairwise relative treatment effects.
+#'
+#' @param contributions Contributions from {netmeta}.
+#' @param model_type Type of model: "fixed" or "random".
+#' @param ranking_option "desirable" or "undesirable", referring to smaller treatment effects.
+#' @return Data frame with the columns `comparison`, `tau2` and `i2`.
+#' @noRd
+.PrepareLeagueTableForCinema <- function(contributions, model_type, ranking_option) {
+  league <- netmeta::netleague(
+    contributions$x,
+    random = (model_type == "random"),
+    common = (model_type == "fixed"),
+    digits = 2,
+    seq = netmeta::netrank(
+      contributions$x,
+      small.values = ranking_option
+    )
+  )
+  
+  return(as.data.frame(league[[model_type]]))
+}
+
+
 
 #' Creates a list, each element of which is a named list containing the results of a comparison.
 #' In the outer list there is one element per comparison. Each inner list contains results including
@@ -258,12 +354,12 @@ export_cinema <- function(configured_data, gemtc_results = NULL, logger = NULL) 
 #' @param contributions Contributions from {netmeta}.
 #' @param model_type Type of model: "fixed" or "random".
 #' @param outcome_measure Outcome measure, one of: "OR", "RR", "RD", "MD", "SMD".
-#' @param gemtc_results Output from gemtc::mtc.run, as returned in the 'mtcResults' list element from baye().
+#' @param mtc_results Output from gemtc::mtc.run, as returned in the 'mtcResults' list element from baye().
 #' If this parameter is NULL then the frequentist analysis results found in 'contributions' are used.
 #' If it is not NULL then the Bayesian analysis results contained in this parameter are used. Defaults to NULL.
 #' @return List of results with the described structure.
 #' @noRd
-.PrepareComparisonsForCinema <- function(contributions, model_type, outcome_measure, gemtc_results = NULL) {
+.PrepareComparisonsForCinema <- function(contributions, model_type, outcome_measure, mtc_results = NULL) {
   if (model_type == "random") {
     comparisons <- names(contributions$x$prop.direct.random)
   } else if (model_type == "fixed") {
@@ -276,7 +372,7 @@ export_cinema <- function(configured_data, gemtc_results = NULL, logger = NULL) 
   prepared_analysis <- lapply(
     comparisons,
     function(comparison) {
-      return(.PrepareComparisonForCinema(contributions$x, model_type, comparison, gemtc_results))
+      return(.PrepareComparisonForCinema(contributions$x, model_type, comparison, mtc_results))
     }
   )
 
@@ -292,12 +388,12 @@ export_cinema <- function(configured_data, gemtc_results = NULL, logger = NULL) 
 #' @param freq_results Results from a frequentist model as contained in contribution output from \CRANpkg{netmeta}.
 #' @param model_type Type of model: "fixed" or "random".
 #' @param comparison A comparison of the form <treatment1>:<treatment2>.
-#' @param gemtc_results Output from gemtc::mtc.run, as returned in the 'mtcResults' list element from baye().
+#' @param mtc_results Output from gemtc::mtc.run, as returned in the 'mtcResults' list element from baye().
 #' If this parameter is NULL then the frequentist analysis results found in 'contributions' are used.
 #' If it is not NULL then the Bayesian analysis results contained in this parameter are used. Defaults to NULL.
 #' @return List of analysis results with the described structure.
 #' @noRd
-.PrepareComparisonForCinema <- function(freq_results, model_type, comparison, gemtc_results = NULL) {
+.PrepareComparisonForCinema <- function(freq_results, model_type, comparison, mtc_results = NULL) {
   if (model_type != "random" && model_type != "fixed") {
     stop(glue::glue("Model type '{model_type}' is not supported. Please use 'random' or 'fixed'"))
   }
@@ -305,8 +401,8 @@ export_cinema <- function(configured_data, gemtc_results = NULL, logger = NULL) 
   row <- treatments[1]
   col <- treatments[2]
   #Bayesian
-  if (!is.null(gemtc_results)) {
-    gemtc_stats <- ExtractGemtcStats(gemtc_results = gemtc_results, treatments = treatments)
+  if (!is.null(mtc_results)) {
+    gemtc_stats <- ExtractGemtcStats(mtc_results = mtc_results, treatments = treatments)
     nma_treatment_effect <- gemtc_stats["median"]
     se_treat_effect <- gemtc_stats["se"]
     lower_ci <- gemtc_stats["ci_lower"]
@@ -450,22 +546,22 @@ export_cinema <- function(configured_data, gemtc_results = NULL, logger = NULL) 
 #' Extract the analysis statistics required for CINeMA from GEMTC output.
 #' This includes simulating a predictive distribution in order to get a prediction interval, which is not done in GEMTC.
 #'
-#' @param gemtc_results Model results from gemtc::mtc.run().
+#' @param mtc_results Model results from gemtc::mtc.run().
 #' @param treatments Vector of two treatments
 #' @return Named vector with names 'median', 'se', 'ci_lower', 'ci_upper', 'pi_lower', and 'pi_upper'.
 #' @noRd
-ExtractGemtcStats <- function(gemtc_results, treatments) {
+ExtractGemtcStats <- function(mtc_results, treatments) {
   #Put the treatment names in gemtc format
   gemtc_treatments <- glue::glue("d.{treatments[1]}.{treatments[2]}")
   mcmc_rel_eff <- gemtc::relative.effect(
-    gemtc_results,
+    mtc_results,
     t1 = treatments[1],
     t2 = treatments[2]
   )
   mcmc_summary <- summary(mcmc_rel_eff)
   quantiles <- mcmc_summary$summaries$quantiles
 
-  if (is.element("sd.d", colnames(gemtc_results[[1]][[1]]))) {
+  if (is.element("sd.d", colnames(mtc_results[[1]][[1]]))) {
     effects <- "random"
   } else {
     effects <- "fixed"

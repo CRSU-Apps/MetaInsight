@@ -77,6 +77,6 @@ Suggests:
 License: GPL-3
 URL: 
 Encoding: UTF-8
-RoxygenNote: 7.3.3
 Roxygen: list(markdown = TRUE)
 VignetteBuilder: quarto
+Config/roxygen2/version: 8.0.0

@@ -9,6 +9,8 @@ common_class <- R6::R6Class(
    subsetted_data = NULL,
    bayes_model_all = NULL,
    bayes_model_sub = NULL,
+   bayes_anohe_all = NULL,
+   bayes_anohe_sub = NULL,
    bayes_rank_all = NULL,
    bayes_rank_sub = NULL,
    bayes_nodesplit_all = NULL,
@@ -44,6 +46,8 @@ common_class <- R6::R6Class(
      self$subsetted_data <- NULL
      self$bayes_model_all <- NULL
      self$bayes_model_sub <- NULL
+     self$bayes_anohe_all <- NULL
+     self$bayes_anohe_sub <- NULL
      self$bayes_rank_all <- NULL
      self$bayes_rank_sub <- NULL
      self$bayes_nodesplit_all <- NULL

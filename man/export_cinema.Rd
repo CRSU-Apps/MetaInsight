@@ -9,7 +9,7 @@ export_cinema(configured_data, gemtc_results = NULL, logger = NULL)
 \arguments{
 \item{configured_data}{list. Input dataset created by \code{setup_configure()} or \code{setup_exclude()}}
 
-\item{gemtc_results}{Output from \code{gemtc::mtc.run()}, as returned in the \code{mtcResults} list element from \code{bayes_model()}.
+\item{gemtc_results}{Output from gemtc, including \code{mtcResults} and \code{mtcNetwork} from the list \code{bayes_model()}.
 If this parameter is \code{NULL} then the frequentist analysis results found in 'contributions' are used.
 If it is not \code{NULL} then the Bayesian analysis results contained in this parameter are used. Defaults to \code{NULL}.}
 
