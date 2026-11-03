@@ -2,6 +2,13 @@ on_cran <- !identical(Sys.getenv("NOT_CRAN"), "true")
 windows_ci <- (Sys.getenv("GITHUB_ACTIONS") == "true") & (tolower(.Platform$OS.type) == "windows")
 skip_shinytest2 <- on_cran | windows_ci
 
+if (!skip_shinytest2) {
+  # chromote.timeout only covers Chrome launch; CDP commands (e.g. Page.navigate)
+  # use the Chromote object's default_timeout, which defaults to 10s
+  chromote_object <- chromote::default_chromote_object()
+  chromote_object$default_timeout <- 60
+}
+
 test_data_dir <- "data"
 minimal_data_path <- system.file("extdata", "continuous_minimal.csv", package = "metainsight")
 
