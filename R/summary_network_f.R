@@ -87,8 +87,7 @@ summary_network <- function(configured_data, style, label_size = 1, title = "", 
 #' @return Vector summarising network connectivity created by netmeta::netconnection().
 #' @export
 make_netconnect <- function(freq) {
-  d1 <- freq$pairwise
-  nc <- netmeta::netconnection(treat1 = d1$treat1, treat2 = d1$treat2, studLab = d1$studlab, data = NULL)
+  nc <- netmeta::netconnection(freq$pairwise)
   # keep only the parts we want, match ensures the order
   summary <- nc[match(c("k", "m", "n", "d", "n.subnets"), names(nc))]
   return(unlist(summary))

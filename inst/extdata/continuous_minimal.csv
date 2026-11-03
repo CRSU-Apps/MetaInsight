@@ -1,11 +1,11 @@
-Study,T,N,Mean,SD,covar.age
-Constantine,the Great,30,1.1,1,99
-Constantine,the Younger,31,12.2,1,99
-Leo,the Great,33,2.2,1,98
-Leo,the Younger,34,14.4,1,98
-Justinian,the Great,36,3.3,1,97
-Justinian,the Butcher,37,15.5,1,97
-Nero,the Great,38,4.4,1,96
-Nero,the Butcher,39,16.6,1,96
-Minerva,the Great,40,5.5,1,95
-Minerva,the Little,41,17.7,1,95
+Study,T,N,Mean,SD,covar.age,rob,indirectness
+Constantine,the Great,30,1.1,1,99,1,1
+Constantine,the Younger,31,12.2,1,99,1,1
+Leo,the Great,33,2.2,1,98,2,2
+Leo,the Younger,34,14.4,1,98,2,2
+Justinian,the Great,36,3.3,1,97,3,3
+Justinian,the Butcher,37,15.5,1,97,3,3
+Nero,the Great,38,4.4,1,96,1,1
+Nero,the Butcher,39,16.6,1,96,1,1
+Minerva,the Great,40,5.5,1,95,2,2
+Minerva,the Little,41,17.7,1,95,2,2

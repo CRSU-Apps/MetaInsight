@@ -22,10 +22,7 @@ test_that("{shinytest2} recording: e2e_bayes_details", {
 
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_bayes_details", timeout = 30000)
 
-  app$set_inputs(tabs = "setup")
-  app$set_inputs(setupSel = "setup_reload")
-  app$upload_file("setup_reload-load_session" = bayes_model_path)
-  app$click("setup_reload-goLoad_session")
+  reload_app(app, bayes_model_path)
 
   app$set_inputs(tabs = "bayes")
 
@@ -54,6 +51,7 @@ test_that("{shinytest2} recording: e2e_bayes_details", {
   expect_gt(length(readLines(code_dl)), 10)
 
   app$set_inputs("bayes_details-bayes-tabs" = "sims")
+  app$wait_for_idle(1000)
   for (n in 1:4){
     sim <- app$get_download(glue::glue("bayes_details-bayes-download_data_{n}"))
     expect_gt(nrow(read.csv(sim)), 10)

@@ -36,10 +36,7 @@ test_that("The app can be saved after an analysis and the data restored", {
 
   app_load <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"))
   expect_true(file.exists(save_file))
-  app_load$set_inputs(tabs = "setup")
-  app_load$set_inputs(setupSel = "setup_load")
-  app_load$upload_file("setup_reload-load_session" = save_file)
-  app_load$click("setup_reload-goLoad_session")
+  reload_app(app_load, save_file)
 
   # check that data has been reloaded into common and is the same as before
   common_restored <- app_load$get_value(export = "common")

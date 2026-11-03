@@ -232,6 +232,7 @@ test_that("sliderinput updates for binary covariate", {
 
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_covariate_model", timeout = 30000)
   app$set_inputs(tabs = "setup")
+  app$wait_for_idle(1000)
   app$upload_file("setup_load-file1" = file.path(test_data_dir, "Cont_wide_binary_cov.csv"))
   app$click("setup_load-run")
   app$set_inputs(setupSel = "setup_configure")

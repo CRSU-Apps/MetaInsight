@@ -284,6 +284,12 @@ singleSFP <- function(mtc, pw, bpredd = TRUE, baxis = TRUE, scaletype) {
 #' @param cumu True if to draw cumulative rankogram. Defaults to False
 #' @noRd
 rankogram <- function(ntx, rkgram, cumu = FALSE) {
+
+  # reset par on exit
+  old_par <- par(no.readonly = TRUE)
+  old_par <- old_par[!names(old_par) %in% "new"]
+  on.exit(par(old_par), add = TRUE)
+
   ori.ntx <- length(rkgram) / ntx
   xseq <- seq(0, 1, length.out = (2 * ntx + 1))
   rankmat <- array(rkgram, c(ori.ntx, ntx))
@@ -348,6 +354,11 @@ shading.vec <- function(ntx) {
 #' @param key_text Vector of length 3 containing strings for the key underneath the plot.
 #' @noRd
 multiplot <- function(stytitle, ntx, lstx, mtc, ma, bpredd = TRUE, plt.adj, ucex, key_text = NULL) {
+
+  # reset par on exit
+  old_par <- par(no.readonly = TRUE)
+  old_par <- old_par[!names(old_par) %in% "new"]
+  on.exit(par(old_par), add = TRUE)
 
   #Start a matrix plot - define number of elements "squares" in Matrix
   tplot <- ntx * ntx

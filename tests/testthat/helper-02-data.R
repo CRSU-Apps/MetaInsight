@@ -1,7 +1,15 @@
 on_cran <- !identical(Sys.getenv("NOT_CRAN"), "true")
 windows_ci <- (Sys.getenv("GITHUB_ACTIONS") == "true") & (tolower(.Platform$OS.type) == "windows")
-local <- !on_cran & !Sys.getenv("GITHUB_ACTIONS") == "true"
 skip_shinytest2 <- on_cran | windows_ci
+
+if (!skip_shinytest2) {
+  # chromote.timeout only covers Chrome launch; CDP commands (e.g. Page.navigate)
+  # use the Chromote object's default_timeout, which defaults to 10s
+  chromote_object <- chromote::default_chromote_object()
+  chromote_object$default_timeout <- 60
+  # shinytest2 waits (wait_for_idle, wait_for_value etc.) default to 4s, which is too short on CI runners
+  options(shinytest2.timeout = 30000)
+}
 
 test_data_dir <- "data"
 minimal_data_path <- system.file("extdata", "continuous_minimal.csv", package = "metainsight")
@@ -9,29 +17,24 @@ minimal_data_path <- system.file("extdata", "continuous_minimal.csv", package = 
 loaded_data_bin <- setup_load(file.path(test_data_dir, "Binary_long_continuous_cov.csv"), outcome = "binary")
 configured_data_bin <- setup_configure(loaded_data_bin, "the Great", "random", "OR", "good", 123)
 
-if (local){
-  rds_path <- "saved_files"
-  if (!file.exists(rds_path)) dir.create(rds_path)
-  config_path <- file.path(rds_path, "config.rds")
-  bayes_model_path <- file.path(rds_path, "bayes.rds")
-  baseline_model_path <- file.path(rds_path, "baseline.rds")
-  covariate_model_path <- file.path(rds_path, "covariate.rds")
-  save_file <- file.path(rds_path, "save_file.rds")
-} else {
+cinema_load <- setup_load(file.path(test_data_dir, "cinema_data", "NMA_data_binary_FE_two_arm_CINeMA.csv"), outcome = "binary")
+cinema_con <- setup_configure(cinema_load, cinema_load$treatments$Label[1], "fixed", "OR", "good", 123)
+
+if (!skip_shinytest2){
+
   config_path <- tempfile(fileext = ".rds")
   bayes_model_path <- tempfile(fileext = ".rds")
   baseline_model_path <-tempfile(fileext = ".rds")
   covariate_model_path <- tempfile(fileext = ".rds")
   save_file <- tempfile(fileext = ".rds")
-}
 
-if (!skip_shinytest2){
   options(shinytest2.load_timeout=60000)
 
   if (!file.exists(config_path) || !file.exists(bayes_model_path)){
     app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 30000)
-    app$upload_file("setup_load-file1" = minimal_data_path)
     app$set_inputs(tabs = "setup")
+    app$wait_for_idle(1000)
+    app$upload_file("setup_load-file1" = minimal_data_path)
     app$click("setup_load-run")
     app$set_inputs("setupSel" = "setup_configure")
     app$wait_for_value(input = "setup_configure-ready")
@@ -57,6 +60,8 @@ if (!skip_shinytest2){
 
   if (!file.exists(baseline_model_path)){
     app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 30000)
+    app$set_inputs(tabs = "setup")
+    app$wait_for_idle(1000)
     app$upload_file("setup_load-file1" = minimal_data_path)
     app$click("setup_load-run")
     app$set_inputs("setupSel" = "setup_configure")
@@ -71,6 +76,8 @@ if (!skip_shinytest2){
 
   if (!file.exists(covariate_model_path)){
     app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 30000)
+    app$set_inputs(tabs = "setup")
+    app$wait_for_idle(1000)
     app$upload_file("setup_load-file1" = minimal_data_path)
     app$click("setup_load-run")
     app$set_inputs("setupSel" = "setup_configure")

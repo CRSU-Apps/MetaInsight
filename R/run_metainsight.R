@@ -21,6 +21,11 @@ run_metainsight <- function(launch.browser = TRUE, port = getOption("shiny.port"
     stop("The specified load_file does not exist")
   }
 
+  app_path <- system.file("shiny", package = "metainsight")
+  knitcitations::cleanbib()
+  options("citation_format" = "pandoc")
+  preexisting_objects <- ls(envir = .GlobalEnv)
+  on.exit(rm(list = setdiff(ls(envir = .GlobalEnv), preexisting_objects), envir = .GlobalEnv))
   # Store the load_file path to make it accessible inside the app
   .GlobalEnv$load_file_path <- if (!is.null(load_file) && file.exists(load_file)) {
     load_file
@@ -28,11 +33,6 @@ run_metainsight <- function(launch.browser = TRUE, port = getOption("shiny.port"
     NULL
   }
 
-  app_path <- system.file("shiny", package = "metainsight")
-  knitcitations::cleanbib()
-  options("citation_format" = "pandoc")
-  preexisting_objects <- ls(envir = .GlobalEnv)
-  on.exit(rm(list = setdiff(ls(envir = .GlobalEnv), preexisting_objects), envir = .GlobalEnv))
   return(shiny::runApp(app_path, launch.browser = launch.browser, port = port))
 }
 
