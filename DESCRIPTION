@@ -68,6 +68,7 @@ Imports:
     tidyr,
     xml2
 Suggests:
+    chromote,
     jsonvalidate,
     magick,
     mockery,

@@ -7,6 +7,8 @@ if (!skip_shinytest2) {
   # use the Chromote object's default_timeout, which defaults to 10s
   chromote_object <- chromote::default_chromote_object()
   chromote_object$default_timeout <- 60
+  # shinytest2 waits (wait_for_idle, wait_for_value etc.) default to 4s, which is too short on CI runners
+  options(shinytest2.timeout = 30000)
 }
 
 test_data_dir <- "data"
