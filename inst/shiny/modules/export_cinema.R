@@ -44,20 +44,19 @@ export_cinema_module_server <- function(id, common, parent_session) {
     )
   })
     
-  export <- reactive({
-    export_cinema(
-      configured_data = common[[input$data]],
-      gemtc_results = common[[gemtc_results()]],
-      anohe = common[[paste0("bayes_anohe", dataset())]]
-    )
-  }) |> bindEvent(input$run)
-
   output$download <- downloadHandler(
     filename = function() {
       paste0("cinema_", input$model, dataset(), ".cnm")
     },
     content = function(file) {
-      writeLines(export(), file)
+      writeLines(
+        export_cinema(
+          configured_data = common[[input$data]],
+          gemtc_results = common[[gemtc_results()]],
+          anohe = common[[paste0("bayes_anohe", dataset())]]
+        ),
+        file
+      )
     })
 
   return(list(

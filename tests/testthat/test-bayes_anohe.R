@@ -24,8 +24,8 @@ test_that("{shinytest2} recording: e2e_bayes_anohe", {
   app$set_inputs(tabs = "bayes")
   app$set_inputs(bayesSel = "bayes_anohe")
   app$click("bayes_anohe-run")
-  app$wait_for_value(output = "bayes_anohe-all-table")
-  app$wait_for_value(output = "bayes_anohe-sub-table")
+  app$wait_for_value(input = "bayes_anohe-all-complete")
+  app$wait_for_value(input = "bayes_anohe-sub-complete")
   
   table_all <- app$get_value(output = "bayes_anohe-all-table")
   table_sub <- app$get_value(output = "bayes_anohe-sub-table")

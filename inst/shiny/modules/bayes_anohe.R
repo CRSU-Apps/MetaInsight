@@ -25,6 +25,7 @@ bayes_anohe_submodule_server <- function(id, common, module_id, model, anohe, tr
       watch(trigger)
       req(common[[anohe]])
       shinyjs::show(selector = ".bayes_anohe")
+      on.exit(shinyjs::runjs(glue("Shiny.setInputValue('{session$ns(\"complete\")}', 'complete');")))
       common[[paste0("bayes_anohe_", id)]]
     }, rownames = TRUE)
 

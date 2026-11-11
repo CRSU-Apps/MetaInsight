@@ -1,10 +1,11 @@
 #' @title export_cinema
 #' @description Prepare project into a JSON format that CINeMA can read.
 #' @inheritParams common_params
-#' @param gemtc_results Output from gemtc, including `mtcResults` and `mtcNetwork` from the list `bayes_model()`.
+#' @param gemtc_results Output from `bayes_model()`, including `mtcResults` and `mtcNetwork`.
 #' If this parameter is `NULL` then the frequentist analysis results found in 'contributions' are used.
 #' If it is not `NULL` then the Bayesian analysis results contained in this parameter are used. Defaults to `NULL`.
 #' @param anohe Data frame of pairwise and global heterogeneity statistics, created by `bayes_anohe()`.
+#' Only used when `gemtc_results` is supplied. Defaults to `NULL`.
 #' @return JSON string with the following structure:
 #' A named list of lists. The top level list contains items:
 #' - "project" Information for CINeMA project
@@ -24,9 +25,17 @@
 #' writeLines(cinema_project, tempfile(fileext = ".json"))
 #'
 #' @export
-export_cinema <- function(configured_data, gemtc_results = NULL, anohe, logger = NULL) {
+export_cinema <- function(configured_data, gemtc_results = NULL, anohe = NULL, logger = NULL) {
 
-  check_param_classes("configured_data", "configured_data", logger)
+  # check_param_classes() logs its own error message before returning TRUE, so no
+  # further logging is needed here. Without a logger, writeLog() calls stop().
+  if (check_param_classes("configured_data", "configured_data", logger)) {
+    return()
+  }
+
+  if (!is.null(gemtc_results) && check_param_classes("gemtc_results", "bayes_model", logger)) {
+    return()
+  }
 
   if (!is.null(gemtc_results) && gemtc_results$mtcResults$model$type == "regression") {
     logger |> writeLog(type = "error", "Meta-regression models cannot currently be exported to CINeMA")

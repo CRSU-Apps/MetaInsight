@@ -14,24 +14,19 @@ Window. Insert the logger reactive list here for running in
 shiny, otherwise leave the default \code{NULL}}
 }
 \value{
-Table of heterogeneity statistics
+Data frame of pairwise and global heterogeneity statistics, with columns \code{t1}, \code{t2}, \code{i2.pair}, \code{i2.cons}, and \code{incons.p}.
 }
 \description{
 Produce a table containing heterogeneity statistics for Bayesian models using \code{gemtc::mtc.anohe()}
 }
 \examples{
-
-####################UPDATE####################
 configured_data_path <- system.file("extdata", "configured_data.Rds", package = "metainsight")
 configured_data <- readRDS(configured_data_path)
-
-# n_adapt and n_iter are set low to run quickly, but should be left as the
-# default values in real use
 
 fitted_bayes_model <- bayes_model(configured_data = configured_data,
                                   n_adapt = 100,
                                   n_iter = 100)
 
-bayes_compare(model = fitted_bayes_model)
-####################UPDATE####################
+bayes_anohe(model = fitted_bayes_model)
+
 }

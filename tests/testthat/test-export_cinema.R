@@ -66,9 +66,9 @@ test_that("Should produce valid JSON", {
 test_that("export_cinema produces errors when given incorrect data or whwn rob data does not exist", {
   expect_error(export_cinema("not data"), "configured_data must be of class configured_data")
   expect_error(export_cinema(configured_data_bin), "uploaded data must contain")
-  expect_error(export_cinema(configured_data_con, "not gemtc"), "gemtc_results must be of class mtc.result")
-  expect_error(export_cinema(configured_data_con, fitted_baseline_model$mtcResults), "gemtc_results must be of class mtc.result")
-  expect_error(export_cinema(configured_data_con, fitted_covariate_model$mtcResults), "regression models cannot currently be exported")
+  expect_error(export_cinema(configured_data_con, "not gemtc"), "gemtc_results must be of class bayes_model")
+  expect_error(export_cinema(configured_data_con, fitted_baseline_model), "gemtc_results must be of class bayes_model")
+  expect_error(export_cinema(configured_data_con, fitted_covariate_model), "regression models cannot currently be exported")
 })
 
 test_that("Should export analysis settings", {
