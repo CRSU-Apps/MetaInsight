@@ -305,7 +305,7 @@ export_cinema <- function(configured_data, gemtc_results = NULL, anohe, logger =
       data.frame(
         comparison = names(pairwise$tau2.w),
         tau2 = pairwise$tau2.w,
-        i2 = pairwise$I2.w,
+        I2 = pairwise$I2.w,
         row.names = NULL
       )
     )
@@ -313,7 +313,7 @@ export_cinema <- function(configured_data, gemtc_results = NULL, anohe, logger =
     pairwise_table <- data.frame(
       comparison = paste(anohe$t1, anohe$t2, sep = ":"),
       tau2 = NA,
-      i2 = anohe$i2.cons
+      I2 = anohe$i2.cons
     )
     return(pairwise_table[pairwise_table$comparison != "Global:-", ])
   } else {
