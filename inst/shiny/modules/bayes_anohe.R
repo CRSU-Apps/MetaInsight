@@ -123,7 +123,6 @@ bayes_anohe_module_result <- function(id) {
   tagList(
     div(
       class = "bayes_anohe",
-      h4("Three models are required to generate the heterogeneity statistics, therefore expect it to take three times as long to run as the NMA model."),
       layout_columns(
         bayes_anohe_submodule_result(ns("all"), "Heterogeneity statistics for all studies."),
         bayes_anohe_submodule_result(ns("sub"), "Heterogeneity statistics with selected studies excluded.")
