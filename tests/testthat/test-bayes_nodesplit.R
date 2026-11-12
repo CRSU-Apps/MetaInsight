@@ -23,7 +23,7 @@ test_that("bayes_nodesplit produces errors for data which cannot be split", {
 test_that("bayes_nodesplit functions with valid data", {
   skip_if(skip_shinytest2)
 
-  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_bayes_nodesplit", timeout = 120000)
+  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_bayes_nodesplit", timeout = e2e_timeout)
   app$set_inputs(tabs = "setup")
   app$wait_for_idle(1000)
   app$upload_file("setup_load-file1" = file.path(test_data_dir, "Cont_nodesplit.csv"))
@@ -56,7 +56,7 @@ test_that("bayes_nodesplit functions with valid data", {
 test_that("bayes_nodesplit returns an error with invalid data", {
   skip_if(skip_shinytest2)
 
-  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_bayes_nodesplit", timeout = 60000)
+  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_bayes_nodesplit", timeout = e2e_timeout)
   app$click("setup_load-run")
   app$click("setup_configure-run")
   app$wait_for_value(input = "setup_exclude-complete")

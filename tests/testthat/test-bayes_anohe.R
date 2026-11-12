@@ -15,7 +15,7 @@ test_that("Check bayes_anohe function produces errors as expected", {
 test_that("{shinytest2} recording: e2e_bayes_anohe", {
   skip_if(skip_shinytest2)
   
-  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_bayes_anohe", timeout = 30000)
+  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_bayes_anohe", timeout = e2e_timeout)
   app$set_inputs(tabs = "setup")
   app$set_inputs(setupSel = "setup_reload")
   app$upload_file("setup_reload-load_session" = bayes_model_path)

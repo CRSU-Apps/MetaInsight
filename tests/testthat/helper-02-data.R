@@ -2,6 +2,10 @@ on_cran <- !identical(Sys.getenv("NOT_CRAN"), "true")
 windows_ci <- (Sys.getenv("GITHUB_ACTIONS") == "true") & (tolower(.Platform$OS.type) == "windows")
 skip_shinytest2 <- on_cran | windows_ci
 
+# Timeout (ms) for shinytest2 AppDrivers. Generous because model fitting is slow
+# on CI runners (particularly macOS); it only matters when something is slow.
+e2e_timeout <- 120000
+
 test_data_dir <- "data"
 minimal_data_path <- system.file("extdata", "continuous_minimal.csv", package = "metainsight")
 
@@ -21,8 +25,14 @@ if (!skip_shinytest2){
 
   options(shinytest2.load_timeout=60000)
 
+  # options(chromote.timeout) only covers Chrome start-up; each browser command
+  # (e.g. Page.navigate) has its own timeout, which defaults to 10s. Raise it for
+  # slow (macOS) CI runners. Must run before the first AppDriver is created.
+  chromote_object <- chromote::default_chromote_object()
+  chromote_object$default_timeout <- 60
+
   if (!file.exists(config_path) || !file.exists(bayes_model_path)){
-    app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 120000)
+    app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = e2e_timeout)
     app$set_inputs(tabs = "setup")
     app$wait_for_idle(1000)
     app$upload_file("setup_load-file1" = minimal_data_path)
@@ -50,7 +60,7 @@ if (!skip_shinytest2){
   }
 
   if (!file.exists(baseline_model_path)){
-    app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 120000)
+    app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = e2e_timeout)
     app$set_inputs(tabs = "setup")
     app$wait_for_idle(1000)
     app$upload_file("setup_load-file1" = minimal_data_path)
@@ -66,7 +76,7 @@ if (!skip_shinytest2){
   }
 
   if (!file.exists(covariate_model_path)){
-    app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 120000)
+    app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = e2e_timeout)
     app$set_inputs(tabs = "setup")
     app$wait_for_idle(1000)
     app$upload_file("setup_load-file1" = minimal_data_path)
