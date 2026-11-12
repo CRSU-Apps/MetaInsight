@@ -6,6 +6,15 @@ skip_shinytest2 <- on_cran | windows_ci
 # on CI runners (particularly macOS); it only matters when something is slow.
 e2e_timeout <- 120000
 
+if (!skip_shinytest2) {
+  # chromote.timeout only covers Chrome launch; CDP commands (e.g. Page.navigate)
+  # use the Chromote object's default_timeout, which defaults to 10s
+  chromote_object <- chromote::default_chromote_object()
+  chromote_object$default_timeout <- 60
+  # shinytest2 waits (wait_for_idle, wait_for_value etc.) default to 4s, which is too short on CI runners
+  options(shinytest2.timeout = 30000)
+}
+
 test_data_dir <- "data"
 minimal_data_path <- system.file("extdata", "continuous_minimal.csv", package = "metainsight")
 
@@ -24,12 +33,6 @@ if (!skip_shinytest2){
   save_file <- tempfile(fileext = ".rds")
 
   options(shinytest2.load_timeout=60000)
-
-  # options(chromote.timeout) only covers Chrome start-up; each browser command
-  # (e.g. Page.navigate) has its own timeout, which defaults to 10s. Raise it for
-  # slow (macOS) CI runners. Must run before the first AppDriver is created.
-  chromote_object <- chromote::default_chromote_object()
-  chromote_object$default_timeout <- 60
 
   if (!file.exists(config_path) || !file.exists(bayes_model_path)){
     app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = e2e_timeout)
