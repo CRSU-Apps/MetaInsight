@@ -3,7 +3,7 @@ test_that("export_markdown produces a renderable .qmd when no analysis has been 
   skip_if(skip_shinytest2)
   skip_on_os("mac")
 
-  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 60000)
+  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = e2e_timeout)
   app$set_inputs(tabs = "export")
   app$set_inputs(exportSel = "export_markdown")
   app$set_inputs("export_markdown-file_type" = ".qmd")
@@ -22,7 +22,7 @@ test_that("export_markdown produces can render a qmd to html when no analysis ha
   skip_if(skip_shinytest2)
   skip_on_os("mac")
 
-  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 60000)
+  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = e2e_timeout)
   app$set_inputs(tabs = "export")
   app$set_inputs(exportSel = "export_markdown")
   app$click("export_markdown-download")
@@ -38,7 +38,7 @@ test_that("export_markdown produces a renderable .Rmd file after a frequentist a
   skip_if(skip_shinytest2)
   skip_on_os("mac")
 
-  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 60000)
+  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = e2e_timeout)
 
   expected_chunks <- 1 #intro
 
@@ -129,12 +129,9 @@ test_that("export_markdown produces a renderable .Rmd file after a bayesian anal
   skip_if(skip_shinytest2)
   skip_on_os("mac")
 
-  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 60000)
+  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = e2e_timeout)
 
-  app$set_inputs(tabs = "setup")
-  app$set_inputs(setupSel = "setup_reload")
-  app$upload_file("setup_reload-load_session" = bayes_model_path)
-  app$click("setup_reload-goLoad_session")
+  reload_app(app, bayes_model_path)
   app$set_inputs(tabs = "bayes")
 
   #intro + setup_load + setup_configure (2) + setup_exclude + bayes_model (3)
@@ -212,12 +209,9 @@ test_that("export_markdown produces a renderable .Rmd file after a covariate ana
   skip_if(skip_shinytest2)
   skip_on_os("mac")
 
-  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 60000)
+  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = e2e_timeout)
 
-  app$set_inputs(tabs = "setup")
-  app$set_inputs(setupSel = "setup_reload")
-  app$upload_file("setup_reload-load_session" = covariate_model_path)
-  app$click("setup_reload-goLoad_session")
+  reload_app(app, covariate_model_path)
   app$set_inputs(tabs = "covariate")
 
   # ensure inputs update
@@ -304,12 +298,9 @@ test_that("export_markdown produces a renderable .Rmd file after a baseline anal
   skip_if(skip_shinytest2)
   skip_on_os("mac")
 
-  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 60000)
+  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = e2e_timeout)
 
-  app$set_inputs(tabs = "setup")
-  app$set_inputs(setupSel = "setup_reload")
-  app$upload_file("setup_reload-load_session" = baseline_model_path)
-  app$click("setup_reload-goLoad_session")
+  reload_app(app, baseline_model_path)
   app$set_inputs(tabs = "baseline")
 
   #intro + setup_load + setup_configure (2) + setup_exclude + baseline_model

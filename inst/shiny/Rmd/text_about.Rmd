@@ -12,11 +12,18 @@ Network meta-analysis (NMA) has been increasingly adopted in evidence-based medi
 
 MetaInsight is a tool that conducts NMA via the web requiring no specialist software for the user to install but leveraging established analysis routines (specifically the <a href = "https://cran.r-project.org/package=bnma" target="_blank">bnma</a>, <a href = "https://cran.r-project.org/package=gemtc" target="_blank">gemtc</a> and <a href = "https://cran.r-project.org/package=netmeta" target="_blank">netmeta</a> packages in R). The tool is interactive and uses an intuitive ‘point and click’ interface and presents results in visually intuitive and appealing ways. It is hoped that this tool will assist those in conducting NMA who do not have expert statistical programming skills, and, in turn, increase the relevance of published meta-analyses, and in the long term contribute to improved healthcare decision making as a result.
 
+Once an NMA has been carried out in MetaInsight, the results can be used in a quality assessment, by exporting and uploading them into <a href = "https://cinema.med.auth.gr/" target="_blank">CINeMA</a>.
+
 Users wishing to analyse large treatment networks or fit complex network meta-analysis models should seek advice from technical experts.
 
-If you use the app please cite it as:
+If you use the app for network meta-analysis please cite it as:
 
-Owen, RK, Bradbury, N, Xin, Y, Cooper, N, Sutton, A. <a href = "https://doi.org/10.1002/jrsm.1373" target="_blank">MetaInsight: An interactive web-based tool for analyzing, interrogating, and visualizing network meta-analyses using R-shiny and netmeta.</a> Res Syn Meth. 2019; 10: 569-581.
+Owen, RK, Bradbury, N, Xin, Y, Cooper, N, Sutton, A. MetaInsight: An interactive web-based tool for analyzing, 
+interrogating, and visualizing network meta-analyses using R-shiny and netmeta. Res Syn Meth. 2019; 10: 569-581.
+
+If you use the app for network meta-regression please cite it as:
+
+Morris, T, Nevill, J, Nevill, C, Bradbury, N, Freeman, S, Cooper, N, Sutton, A. Network meta-regression including baseline risk analysis and interactive visualizations as implemented by the MetaInsight web application. Journal of Clinical Epidemiology 184 (2025) 111839.
 
 ### **Attributes of _MetaInsight_**
 

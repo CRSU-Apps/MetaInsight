@@ -66,9 +66,9 @@ test_that("Should produce valid JSON", {
 test_that("export_cinema produces errors when given incorrect data or whwn rob data does not exist", {
   expect_error(export_cinema("not data"), "configured_data must be of class configured_data")
   expect_error(export_cinema(configured_data_bin), "uploaded data must contain")
-  expect_error(export_cinema(configured_data_con, "not gemtc"), "gemtc_results must be of class mtc.result")
-  expect_error(export_cinema(configured_data_con, fitted_baseline_model$mtcResults), "gemtc_results must be of class mtc.result")
-  expect_error(export_cinema(configured_data_con, fitted_covariate_model$mtcResults), "regression models cannot currently be exported")
+  expect_error(export_cinema(configured_data_con, "not gemtc"), "gemtc_results must be of class bayes_model")
+  expect_error(export_cinema(configured_data_con, fitted_baseline_model), "gemtc_results must be of class bayes_model")
+  expect_error(export_cinema(configured_data_con, fitted_covariate_model), "regression models cannot currently be exported")
 })
 
 test_that("Should export analysis settings", {
@@ -176,14 +176,16 @@ test_that("export_cinema exports frequentist results", {
 
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_export_cinema")
   reload_app(app, config_path)
-  app$set_inputs(tabs = "rep")
-  app$set_inputs(repSel = "export_cinema")
-
+  app$set_inputs(tabs = "export")
+  app$wait_for_idle(1000)
+  app$set_inputs(exportSel = "export_cinema")
+  app$wait_for_idle(1000)
   json_all <- app$get_download("export_cinema-download")
   result_all <- jsonvalidate::json_validate(json_all, valid_schema, verbose = TRUE)
   expect_true(result_all)
 
   app$set_inputs("export_cinema-data" = "subsetted_data")
+  app$wait_for_idle(1000)
   json_sub <- app$get_download("export_cinema-download")
   result_sub <- jsonvalidate::json_validate(json_sub, valid_schema, verbose = TRUE)
   expect_true(result_sub)
@@ -199,8 +201,9 @@ test_that("export_cinema exports Bayesian results", {
 
   app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_export_cinema")
   reload_app(app, bayes_model_path)
-  app$set_inputs(tabs = "rep")
-  app$set_inputs(repSel = "export_cinema")
+  app$set_inputs(tabs = "export")
+  app$wait_for_idle(1000)
+  app$set_inputs(exportSel = "export_cinema")
   app$set_inputs("export_cinema-model" = "bayes")
 
   json_all <- app$get_download("export_cinema-download")

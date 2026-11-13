@@ -1,0 +1,16 @@
+```{asis, echo = {{bayes_anohe_knit}}, eval = {{bayes_anohe_knit}}, include = {{bayes_anohe_knit}}}
+### Produce tables of hetereogeneity statistics
+
+Three models are required to generate the heterogeneity statistics, therefore expect it to take three times as long to run as the NMA model.
+
+```
+
+```{r, echo = {{bayes_anohe_knit}}, include = {{bayes_anohe_knit}}}
+knitr::kable(bayes_anohe(bayes_model_all), 
+             caption = "Treatment effects for all studies: comparison of all treatment pairs.")
+```
+
+```{r, echo = {{bayes_anohe_knit}}, include = {{bayes_anohe_knit}}}
+knitr::kable(bayes_anohe(bayes_model_sub), 
+             caption = "Treatment effects with selected studies excluded: comparison of all treatment pairs.")
+```

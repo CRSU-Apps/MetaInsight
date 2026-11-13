@@ -4,14 +4,22 @@
 \alias{export_cinema}
 \title{export_cinema}
 \usage{
-export_cinema(configured_data, gemtc_results = NULL, logger = NULL)
+export_cinema(
+  configured_data,
+  gemtc_results = NULL,
+  anohe = NULL,
+  logger = NULL
+)
 }
 \arguments{
 \item{configured_data}{list. Input dataset created by \code{setup_configure()} or \code{setup_exclude()}}
 
-\item{gemtc_results}{Output from \code{gemtc::mtc.run()}, as returned in the \code{mtcResults} list element from \code{bayes_model()}.
+\item{gemtc_results}{Output from \code{bayes_model()}, including \code{mtcResults} and \code{mtcNetwork}.
 If this parameter is \code{NULL} then the frequentist analysis results found in 'contributions' are used.
 If it is not \code{NULL} then the Bayesian analysis results contained in this parameter are used. Defaults to \code{NULL}.}
+
+\item{anohe}{Data frame of pairwise and global heterogeneity statistics, created by \code{bayes_anohe()}.
+Only used when \code{gemtc_results} is supplied. Defaults to \code{NULL}.}
 
 \item{logger}{Stores all notification messages to be displayed in the Log
 Window. Insert the logger reactive list here for running in

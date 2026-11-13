@@ -20,12 +20,9 @@ test_that("Check baseline_details function produces errors as expected", {
 test_that("{shinytest2} recording: e2e_baseline_details", {
   skip_if(skip_shinytest2)
 
-  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_baseline_details", timeout = 30000)
+  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_baseline_details", timeout = e2e_timeout)
 
-  app$set_inputs(tabs = "setup")
-  app$set_inputs(setupSel = "setup_reload")
-  app$upload_file("setup_reload-load_session" = baseline_model_path)
-  app$click("setup_reload-goLoad_session")
+  reload_app(app, baseline_model_path)
 
   app$set_inputs(tabs = "baseline")
   app$set_inputs(baselineSel = "baseline_deviance")
@@ -46,6 +43,7 @@ test_that("{shinytest2} recording: e2e_baseline_details", {
   expect_equal(nrow(read.csv(priors_dl)), 4)
 
   app$set_inputs("baseline_details-baseline-tabs" = "sims")
+  app$wait_for_idle(1000)
   for (n in 1:4){
     sim <- app$get_download(glue::glue("baseline_details-baseline-download_data_{n}"))
     expect_gt(nrow(read.csv(sim)), 10)
