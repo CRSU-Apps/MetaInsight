@@ -218,7 +218,7 @@ test_that("Invalid data is loaded into common correctly and errors are passed to
 test_that("Data can be reloaded after loading", {
   skip_if(skip_shinytest2)
 
-  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_setup_load", timeout = 30000)
+  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_setup_load", timeout = e2e_timeout)
   app$set_inputs(tabs = "setup")
   app$click("setup_load-run")
   common <- app$get_value(export = "common")
@@ -245,7 +245,7 @@ test_that("Data can be reloaded after loading", {
 
 test_that("Data can't be loaded after configuring", {
   skip("Consistently flakey despite definitely working")
-  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_setup_load", timeout = 30000)
+  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_setup_load", timeout = e2e_timeout)
   app$set_inputs(tabs = "setup")
   app$click("setup_load-run")
   app$wait_for_value(input = "setup_configure-ready")

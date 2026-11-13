@@ -2,6 +2,10 @@ on_cran <- !identical(Sys.getenv("NOT_CRAN"), "true")
 windows_ci <- (Sys.getenv("GITHUB_ACTIONS") == "true") & (tolower(.Platform$OS.type) == "windows")
 skip_shinytest2 <- on_cran | windows_ci
 
+# Timeout (ms) for shinytest2 AppDrivers. Generous because model fitting is slow
+# on CI runners (particularly macOS); it only matters when something is slow.
+e2e_timeout <- 120000
+
 if (!skip_shinytest2) {
   # chromote.timeout only covers Chrome launch; CDP commands (e.g. Page.navigate)
   # use the Chromote object's default_timeout, which defaults to 10s
@@ -31,7 +35,7 @@ if (!skip_shinytest2){
   options(shinytest2.load_timeout=60000)
 
   if (!file.exists(config_path) || !file.exists(bayes_model_path)){
-    app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 30000)
+    app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = e2e_timeout)
     app$set_inputs(tabs = "setup")
     app$wait_for_idle(1000)
     app$upload_file("setup_load-file1" = minimal_data_path)
@@ -59,7 +63,7 @@ if (!skip_shinytest2){
   }
 
   if (!file.exists(baseline_model_path)){
-    app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 30000)
+    app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = e2e_timeout)
     app$set_inputs(tabs = "setup")
     app$wait_for_idle(1000)
     app$upload_file("setup_load-file1" = minimal_data_path)
@@ -75,7 +79,7 @@ if (!skip_shinytest2){
   }
 
   if (!file.exists(covariate_model_path)){
-    app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = 30000)
+    app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), timeout = e2e_timeout)
     app$set_inputs(tabs = "setup")
     app$wait_for_idle(1000)
     app$upload_file("setup_load-file1" = minimal_data_path)

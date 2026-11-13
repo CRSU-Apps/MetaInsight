@@ -17,7 +17,7 @@ test_that("Check covariate_deviance function produces errors as expected", {
 test_that("{shinytest2} recording: e2e_covariate_deviance", {
   skip_if(skip_shinytest2)
 
-  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_bayes_deviance", timeout = 30000)
+  app <- shinytest2::AppDriver$new(app_dir = system.file("shiny", package = "metainsight"), name = "e2e_bayes_deviance", timeout = e2e_timeout)
   reload_app(app, covariate_model_path)
 
   app$set_inputs(tabs = "covariate")

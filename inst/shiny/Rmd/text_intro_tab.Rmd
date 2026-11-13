@@ -29,6 +29,7 @@ output: html_document
 - Fit models
 - Forest plot
 - Comparison
+- Heterogeneity
 - Ranking
 - Nodesplit model
 - Result details

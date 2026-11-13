@@ -13,6 +13,8 @@ It is hoped that this tool will assist those in conducting NMA who do not have e
 and, in turn, increase the relevance of published meta-analyses, and in the long term contribute to improved healthcare 
 decision making as a result.
 
+Once an NMA has been carried out in MetaInsight, the results can be used in a quality assessment, by exporting and uploading them into [CINeMA](https://cinema.med.auth.gr/).
+
 If you use the app for network meta-analysis please cite it as:
 
 Owen, RK, Bradbury, N, Xin, Y, Cooper, N, Sutton, A. MetaInsight: An interactive web-based tool for analyzing, 
