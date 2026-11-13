@@ -1,6 +1,7 @@
 export_cinema_module_ui <- function(id) {
   ns <- NS(id)
   tagList(
+    p("When exporting Bayesian NMA results, please run the models in the Heterogeneity tab to get the full range of statistics used by CINeMA."),
     radioButtons(ns("model"), "Select model to export", choices = list("Frequentist" = "freq", "Bayesian" = "bayes")),
     radioButtons(ns("data"), "Select dataset", choices = list("All studies" = "configured_data", "With selected studies excluded" = "subsetted_data")),
     actionButton(ns("run"), "Create CINeMA export file", icon = icon("arrow-turn-down")),
