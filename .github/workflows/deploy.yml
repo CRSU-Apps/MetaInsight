@@ -11,6 +11,7 @@ on:
       deploy_type:
         description: Deploy to release or test
         required: true
+        type: choice
         options:
           - 'test'
           - 'release'
@@ -65,7 +66,12 @@ jobs:
       - name: Install MetaInsight
         run: |
           cat("Installing MetaInsight from sha: ", Sys.getenv("current_sha"), "\n")
-          install.packages("remotes")
+          install.packages(c("remotes", "BiocManager"))
+          # netmeta (>= 3.9-0) needs BigDataStatMeth, which links to the Bioconductor package Rhdf5lib,
+          # so include the Bioconductor repositories (rsconnect then records them for shinyapps.io)
+          options(repos = BiocManager::repositories())
+          # renv (used by rsconnect) needs BiocVersion to record which Bioconductor release to use
+          BiocManager::install("BiocVersion", update = FALSE, ask = FALSE)
           # rjags >= 5-0 requires JAGS 5, but this runner (apt) and shinyapps.io provide JAGS 4,
           # so install the last rjags 4 release and stop remotes from upgrading it.
           # rsconnect records this version, so shinyapps.io installs it too.

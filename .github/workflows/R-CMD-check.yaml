@@ -65,7 +65,7 @@ jobs:
           Start-Process -FilePath $installerPath -ArgumentList "/S" -Wait
 
           # Add JAGS to PATH for all subsequent steps (located rather than hard-coded in case the install folder changes)
-          $jagsBin = Get-ChildItem -Path "C:\Program Files\JAGS" -Recurse -Filter "jags*.dll" -ErrorAction SilentlyContinue |
+          $jagsBin = Get-ChildItem -Path "C:\Program Files\JAGS" -Recurse -Filter "libjags*.dll" -ErrorAction SilentlyContinue |
             Where-Object { $_.DirectoryName -like "*x64\bin" } | Select-Object -First 1 -ExpandProperty DirectoryName
           if (-not $jagsBin) { Get-ChildItem -Recurse "C:\Program Files\JAGS"; throw "Could not find the JAGS bin folder" }
           echo "$jagsBin" >> $env:GITHUB_PATH
