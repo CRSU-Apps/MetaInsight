@@ -134,11 +134,22 @@ tagList(
         flex_wrap(includeMarkdown("modules/export_refPackages.md"))
       ),
       conditionalPanel(
-        "input.tabs == 'export' & input.repSel == 'export_cinema'",
+        "input.tabs == 'export' & input.exportSel == 'export_cinema'",
         flex_wrap(includeMarkdown("modules/export_cinema.md"))
       ),
       conditionalPanel(
         "input.tabs == 'intro'",
+          div(
+            h5("Welcome to v7 of MetaInsight featuring a redesigned interface, improved plots, automatically updating models and downloadable reports.
+               If you are a returning user, click 'See what has changed' in the sidebar for a guided tour.
+               For a limited time, v6 is available at:",
+               a("https://crsu.shinyapps.io/MetaInsight_V6/",
+                 href= "https://crsu.shinyapps.io/MetaInsight_V6/",
+                 target = "_blank", style="color: white; text-decoration: underline"),
+               ". Please send any feedback to apps@crsu.org.uk.",
+               style="color: white; margin: 0; padding: 0;"),
+            style="background-color: #e4042c; padding: 20px; width: 100%; text-align: center;"
+          ),
         flex_wrap(
           navset_tab(
             id = 'introTabs',

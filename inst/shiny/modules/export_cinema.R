@@ -12,7 +12,7 @@ export_cinema_module_ui <- function(id) {
 
 export_cinema_module_server <- function(id, common, parent_session) {
   moduleServer(id, function(input, output, session) {
-
+    
   observeEvent(input$run, {
 
     if (is.null(common$configured_data$freq)) {
@@ -29,35 +29,31 @@ export_cinema_module_server <- function(id, common, parent_session) {
       common$logger |> writeLog(type = "error", go_to = "bayes_model", "Please fit the Bayesian model first")
       return()
     }
-
+    
     shinyjs::click("download")
 
   })
-
+  
+  dataset <- reactive(ifelse(input$data == "configured_data", "_all", "_sub"))
+  
   gemtc_results <- reactive({
-    if (input$model == "freq") {
-      return("NULL")
-    } else if (input$model == "bayes") {
-      return(
-        switch(
-          input$data,
-          "configured_data" = "bayes_model_all",
-          "subsetted_data" = "bayes_model_sub"
-        )
-      )
-    }
+    switch(
+      input$model,
+      "freq" = "NULL",
+      "bayes" = paste0("bayes_model", dataset())
+    )
   })
-
+    
   output$download <- downloadHandler(
     filename = function() {
-      dataset <- ifelse(input$data == "configured_data", "_all", "_sub")
-      paste0("cinema_", input$model, dataset, ".cnm")
+      paste0("cinema_", input$model, dataset(), ".cnm")
     },
     content = function(file) {
       writeLines(
         export_cinema(
           configured_data = common[[input$data]],
-          gemtc_results = common[[gemtc_results()]]$mtcResults
+          gemtc_results = common[[gemtc_results()]],
+          anohe = common[[paste0("bayes_anohe", dataset())]]
         ),
         file
       )

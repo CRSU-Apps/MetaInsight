@@ -1,5 +1,5 @@
 Package: metainsight
-Version: 7.1.1
+Version: 7.2.0
 Title: A 'shiny' Application for Network Meta-Analysis
 Description: Conduct network meta-analyses through a graphical user interface using 'bnma',
     'gemtc' and 'netmeta' with additional analysis provided by 'meta' and 'metafor'.
@@ -46,7 +46,6 @@ Imports:
     knitcitations,
     knitr,
     MCMCvis,
-    magick,
     meta (>= 8.1.0),
     metafor,
     mirai (>= 2.0.0),
@@ -69,7 +68,9 @@ Imports:
     tidyr,
     xml2
 Suggests:
+    chromote,
     jsonvalidate,
+    magick,
     mockery,
     pdftools,
     shinytest2,
@@ -77,6 +78,6 @@ Suggests:
 License: GPL-3
 URL: 
 Encoding: UTF-8
-RoxygenNote: 7.3.3
 Roxygen: list(markdown = TRUE)
 VignetteBuilder: quarto
+Config/roxygen2/version: 8.0.0

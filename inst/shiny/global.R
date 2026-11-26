@@ -53,6 +53,7 @@ base_module_configs <- c(
   "modules/bayes_model.yml",
   "modules/bayes_forest.yml",
   "modules/bayes_compare.yml",
+  "modules/bayes_anohe.yml",
   "modules/bayes_ranking.yml",
   "modules/bayes_nodesplit.yml",
   "modules/bayes_results.yml",

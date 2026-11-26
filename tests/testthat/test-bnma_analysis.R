@@ -364,14 +364,23 @@ test_that("1. BaselineRiskRegression() sets RNGs correctly;
 
   #-------------------------------------------------------------------
 
+  # bnma extends the run until Gelman-Rubin convergence or until the maximum
+  # number of iterations is reached, so sample size and thinning depend on
+  # the MCMC draws, which differ between platforms despite the fixed seed.
+  # Compare against the model rather than fixed numbers.
   expected_mcmc_table <- data.frame(characteristic = c("Chains",
                                                        "Burn-in iterations",
                                                        "Sample iterations",
                                                        "Thinning factor"),
-                                    value = c(4, 36, 120, 1))
+                                    value = c(4,
+                                              result_1$burnin,
+                                              nrow(result_1$samples[[1]]),
+                                              result_1$n.thin))
 
   #Unit test 6
   expect_equal(GetBnmaMcmcCharacteristics(result_1), expected_mcmc_table)
+  expect_gt(result_1$burnin, 0)
+  expect_gt(nrow(result_1$samples[[1]]), 0)
   #-------------------------------------------------------------------
 
   expected_priors_table <- data.frame(parameter = c("Relative treatment effects",

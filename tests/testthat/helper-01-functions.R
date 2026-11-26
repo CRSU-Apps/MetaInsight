@@ -107,6 +107,7 @@ test_bayes_plot_downloads <- function(app, module, plot_id, dual = TRUE) {
 # reload from a save file and close alert
 reload_app <- function(app, path){
   app$set_inputs(tabs = "setup")
+  app$wait_for_idle(1000)
   app$set_inputs(setupSel = "setup_reload")
   app$upload_file("setup_reload-load_session" = path)
   app$click("setup_reload-goLoad_session")
