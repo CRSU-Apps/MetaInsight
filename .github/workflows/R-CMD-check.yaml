@@ -32,11 +32,22 @@ jobs:
       - uses: r-lib/actions/setup-pandoc@v2
       - uses: quarto-dev/quarto-actions/setup@v2
 
+      # rjags >= 5-0 requires JAGS 5, which is not yet packaged for Ubuntu, so build it from source
       - name: Install JAGS (Ubuntu)
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y jags
+          sudo apt-get install -y build-essential gfortran pkg-config libblas-dev liblapack-dev
+          curl -L https://sourceforge.net/projects/mcmc-jags/files/JAGS/5.x/Source/JAGS-5.0.2.tar.gz/download -o ${{ runner.temp }}/jags.tar.gz
+          tar -xzf ${{ runner.temp }}/jags.tar.gz -C ${{ runner.temp }}
+          cd ${{ runner.temp }}/JAGS-5.0.2
+          ./configure --prefix=/usr/local
+          make -j"$(nproc)"
+          sudo make install
+          sudo ldconfig
+          # pak may also apt-install JAGS 4 as a system requirement of rjags; make sure JAGS 5 is found first
+          echo "PKG_CONFIG_PATH=/usr/local/lib/pkgconfig" >> $GITHUB_ENV
+          PKG_CONFIG_PATH=/usr/local/lib/pkgconfig pkg-config --modversion jags
 
       - uses: r-lib/actions/setup-r@v2
         with:
@@ -48,13 +59,17 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           # Install JAGS
-          $jagsUrl = "https://sourceforge.net/projects/mcmc-jags/files/JAGS/4.x/Windows/JAGS-4.3.2.exe/download"
+          $jagsUrl = "https://sourceforge.net/projects/mcmc-jags/files/JAGS/5.x/Windows/Rtools45/JAGS-5.0.2.exe/download"
           $installerPath = "$env:TEMP\JAGS.exe"
           Invoke-WebRequest -UserAgent "Wget" -Uri $jagsUrl -OutFile $installerPath
           Start-Process -FilePath $installerPath -ArgumentList "/S" -Wait
 
-          # Add JAGS to PATH for all subsequent steps
-          echo "C:\Program Files\JAGS\JAGS-4.3.2\x64\bin" >> $env:GITHUB_PATH
+          # Add JAGS to PATH for all subsequent steps (located rather than hard-coded in case the install folder changes)
+          $jagsBin = Get-ChildItem -Path "C:\Program Files\JAGS" -Recurse -Filter "jags*.dll" -ErrorAction SilentlyContinue |
+            Where-Object { $_.DirectoryName -like "*x64\bin" } | Select-Object -First 1 -ExpandProperty DirectoryName
+          if (-not $jagsBin) { Get-ChildItem -Recurse "C:\Program Files\JAGS"; throw "Could not find the JAGS bin folder" }
+          echo "$jagsBin" >> $env:GITHUB_PATH
+          $env:PATH = "$jagsBin;$env:PATH"
 
           # Install rjags using the short paths
           Rscript -e "install.packages('rjags')"
@@ -63,14 +78,10 @@ jobs:
         if: runner.os == 'macOS'
         run: |
           # Install JAGS using PKG
-          curl -L https://sourceforge.net/projects/mcmc-jags/files/JAGS/4.x/Mac%20OS%20X/JAGS-4.3.2.pkg/download -o ${{ runner.temp }}/jags.pkg
+          curl -L https://sourceforge.net/projects/mcmc-jags/files/JAGS/5.x/macOS/JAGS-5.0.2-universal.pkg/download -o ${{ runner.temp }}/jags.pkg
           /usr/bin/sudo installer -allowUntrusted -dumplog -pkg ${{ runner.temp }}/jags.pkg -target /
 
-          # Install rjags with correct paths
           Rscript -e "install.packages('rjags')"
-
-          RLIB=$(Rscript -e "cat(R.home('lib'))")
-          sudo ln -sf /usr/local/lib/libjags.4.dylib ${RLIB}/libjags.4.dylib
 
       - name: Install Chrome
         uses: browser-actions/setup-chrome@latest
@@ -86,6 +97,9 @@ jobs:
         with:
           extra-packages: rcmdcheck, any::XML, local::.
           pak-version: devel # See https://github.com/r-lib/actions/issues/559
+
+      - name: Check rjags can load JAGS
+        run: Rscript -e "library(rjags)"  # startup message reports the linked JAGS version
 
       - uses: r-lib/actions/check-r-package@v2
 
